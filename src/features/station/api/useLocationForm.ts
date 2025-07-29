@@ -71,7 +71,12 @@ const useLocationForm = <T extends Record<string, any>>({
   const user = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user.superUser, context.loc_id);
+  const [schema, form] = getSchemaAndForm<T>(
+    loctype_id,
+    mode,
+    user.superUser,
+    formProps?.context?.loc_id
+  );
 
   const {data, success} = schema.safeParse({
     ...formProps.values,
