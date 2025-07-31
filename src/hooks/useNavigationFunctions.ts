@@ -51,6 +51,9 @@ export const useNavigationFunctions = () => {
     createStamdata: (options?: NavigateOptions) => {
       navigate('/field/stamdata', options);
     },
+    dataOverblik: (options?: NavigateOptions) => {
+      navigate('/overview/data-overblik', options);
+    },
   };
 
   const out = useMemo(() => {

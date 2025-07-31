@@ -32,7 +32,7 @@ export default function OverviewPage() {
   const [tabValue, setTabValue] = useAtom<number>(tabAtom);
   const [tabValueInner, setTabValueInner] = useAtom<number>(tabAtomInner);
   const user = useUser();
-  const {admin, createStamdata} = useNavigationFunctions();
+  const {admin, createStamdata, dataOverblik} = useNavigationFunctions();
   const {
     get: {data: boreholetabledata},
   } = useBorehole();
@@ -92,6 +92,13 @@ export default function OverviewPage() {
         {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
         <NavBar.Menu
           items={[
+            {
+              title: 'Data overblik',
+              icon: <FormatListBulletedIcon fontSize="medium" />,
+              onClick: () => {
+                dataOverblik();
+              },
+            },
             {
               title: 'Admin',
               icon: <AdminPanelSettingsIcon fontSize="medium" />,

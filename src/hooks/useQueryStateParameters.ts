@@ -1,4 +1,5 @@
 import {useQueryState, parseAsStringLiteral, parseAsBoolean} from 'nuqs';
+import {fragments} from '~/features/overview/consts';
 
 import {qaAdjustmentLiteral, stationPages} from '~/helpers/EnumHelper';
 
@@ -8,6 +9,13 @@ export function useStationPages() {
   return useQueryState(
     'page',
     parseAsStringLiteral(Object.values(stationPages)).withDefault(stationPages.PEJLING)
+  );
+}
+
+export function useDataFragmentState() {
+  return useQueryState(
+    'overblik',
+    parseAsStringLiteral(Object.values(fragments)).withDefault(fragments.projects)
   );
 }
 

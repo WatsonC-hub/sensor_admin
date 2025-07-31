@@ -7,6 +7,7 @@ import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
 import {useNotificationOverview} from './hooks/query/useNotificationOverview';
 import {useUser} from './features/auth/useUser';
+import DataOverview from './pages/overview/DataOverview';
 
 const Redirecter = () => {
   const {field} = useNavigationFunctions();
@@ -40,6 +41,14 @@ const Redirecter = () => {
             </>
           }
         /> */}
+        <Route
+          path="/overview/data-overblik"
+          element={
+            <>
+              <DataOverview />
+            </>
+          }
+        />
         <Route
           path="/field/*"
           element={
