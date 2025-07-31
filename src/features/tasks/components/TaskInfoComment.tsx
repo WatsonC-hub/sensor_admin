@@ -1,8 +1,8 @@
 import {Box, Typography} from '@mui/material';
-import moment from 'moment';
 import React from 'react';
 
 import {TaskComment} from '~/features/tasks/types';
+import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 
 type Props = {
   comment: TaskComment;
@@ -29,7 +29,7 @@ const TaskInfoComment = ({comment}: Props) => {
         borderBottom={1}
       >
         <b>{`${comment.display_name} `}</b>
-        {moment(comment.created_at).format('YYYY-MM-DD HH:mm')}
+        {convertDateWithTimeStamp(comment.created_at)}
       </Typography>
       <Typography
         py={1}

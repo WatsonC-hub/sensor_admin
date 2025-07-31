@@ -66,7 +66,6 @@ const useMap = <TData extends object>(
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
   const {loc_id: selectedLocId} = useDisplayState((state) => state);
-  const [, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
   const user = useUser();
   const [deleteTitle, setDeleteTitle] = useState<string>(
@@ -386,7 +385,6 @@ const useMap = <TData extends object>(
             let view = parkingIcon;
             if (highlight) view = hightlightParkingIcon;
             layer.setIcon(view);
-            setHighlightedParking(layer);
           } else if (layer.getIcon() === hightlightParkingIcon && parking.loc_id !== loc_id) {
             layer.setIcon(parkingIcon);
           }

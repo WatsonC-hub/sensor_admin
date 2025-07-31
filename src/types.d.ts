@@ -1,4 +1,5 @@
 import {SvgIconProps} from '@mui/material';
+import {Dayjs} from 'dayjs';
 import {ReactNode} from 'react';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -9,7 +10,7 @@ export interface Image {
   loc_id?: number;
   boreholeno: number;
   title: string;
-  date: string;
+  date: Dayjs;
   public: boolean;
   userid: number;
   comment: string;
@@ -59,9 +60,9 @@ export type Kontrol = {
   comment: string;
   gid: number;
   disttowatertable_m: number;
-  timeofmeas: string;
+  timeofmeas: Dayjs;
   useforcorrection: number;
-  pumpstop: string;
+  pumpstop: Dayjs | null;
   service: boolean;
   organisationid: number;
   organisationname: string;
@@ -71,6 +72,29 @@ export type Kontrol = {
 };
 
 export type BoreholeMeasurement = {
+  boreholeno: string;
+  intakeno: number;
+  timeofmeas: Dayjs;
+  disttowatertable_m: number;
+  deleted: boolean;
+  extrema: string | null;
+  gid: number;
+  last_uploaded: string;
+  organisationid: number;
+  organisationname: string;
+  pumpstop: Dayjs | null;
+  service: boolean;
+  updated_at: string;
+  uploaded_status: boolean;
+  useforcorrection: number;
+  userid: number;
+  uuid: string;
+  waterlevel?: number | null;
+  display_name?: string;
+  comment: string;
+};
+
+export type BoreholeMeasurementAPI = {
   boreholeno: string;
   intakeno: number;
   timeofmeas: string;
@@ -89,6 +113,8 @@ export type BoreholeMeasurement = {
   userid: number;
   uuid: string;
   waterlevel?: number | null;
+  display_name?: string;
+  comment: string;
 };
 
 export type MaalepunktTableData = {
@@ -105,8 +131,8 @@ export type MaalepunktTableData = {
 };
 
 export type Maalepunkt = {
-  startdate: string;
-  enddate: string;
+  startdate: Dayjs;
+  enddate: Dayjs;
   elevation: number;
   mp_description: string;
   gid: number;
@@ -116,10 +142,10 @@ export type Maalepunkt = {
 };
 
 export type MaalepunktPost = {
-  startdate: string;
-  enddate: string;
-  elevation: number;
-  mp_description: string;
+  startdate: Dayjs;
+  enddate: Dayjs;
+  elevation: number | null;
+  mp_description: string | undefined;
   gid: number;
 };
 
@@ -398,7 +424,7 @@ export type LocationTasks = {
   assigned_to: string;
   tstype_name: string;
   ts_name: string;
-  due_date: string;
+  due_date: Dayjs;
   name: string;
   description: string;
   status_name: string;

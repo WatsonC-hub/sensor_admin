@@ -1,7 +1,6 @@
-import {TextField} from '@mui/material';
-import {LocalizationProvider} from '@mui/x-date-pickers';
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import moment from 'moment/moment';
+import {DateTimePicker} from '@mui/x-date-pickers';
+import {PickerValue} from '@mui/x-date-pickers/internals';
+import dayjs, {Dayjs} from 'dayjs';
 import React from 'react';
 
 interface OwnDatePickerProps {
@@ -9,10 +8,10 @@ interface OwnDatePickerProps {
   error?: boolean;
   helperText?: string;
   disabled?: boolean;
-  value: Date | null;
-  onChange: (date: Date) => void;
-  max?: Date | null;
-  min?: Date | null;
+  value: Dayjs | null;
+  onChange: (date: PickerValue) => void;
+  max?: Dayjs | null;
+  min?: Dayjs | null;
   sx?: object;
   fullWidth?: boolean;
 }
@@ -30,29 +29,35 @@ const OwnDatePicker = ({
   sx,
 }: OwnDatePickerProps) => {
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="da">
-      <TextField
-        label={label}
-        type="datetime-local"
-        error={error}
-        helperText={helperText}
-        disabled={disabled}
-        value={moment(value).format('YYYY-MM-DDTHH:mm')}
-        onChange={(e) => {
-          onChange(moment(e.target.value).toDate());
-        }}
-        sx={error ? {} : sx}
-        inputProps={{
-          max: max ? moment(max).format('YYYY-MM-DDTHH:mm:ss') : null,
-          min: min ? moment(min).format('YYYY-MM-DDTHH:mm:ss') : null,
-        }}
-        InputLabelProps={{
-          shrink: true,
-        }}
-        fullWidth={fullWidth}
-        margin="dense"
-      />
-    </LocalizationProvider>
+    <DateTimePicker
+      label={label}
+      minDate={min ? dayjs(min) : undefined}
+      maxDate={max ? dayjs(max) : undefined}
+      disabled={disabled}
+      value={value}
+      onChange={(date) => {
+        onChange(date);
+      }}
+      sx={error ? {} : sx}
+      slotProps={{
+        textField: {
+          fullWidth: fullWidth,
+          margin: 'dense',
+          InputLabelProps: {
+            shrink: true,
+          },
+          InputProps: {
+            sx: {
+              '& > fieldset': {
+                borderColor: 'primary.main',
+              },
+            },
+          },
+          error: error,
+          helperText: helperText,
+        },
+      }}
+    />
   );
 };
 

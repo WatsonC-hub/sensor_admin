@@ -7,8 +7,8 @@ import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
 import {assignedToAtom} from '~/state/atoms';
 import {useAtomValue} from 'jotai';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
-import moment from 'moment';
 import {isEmptyObject} from '~/helpers/guardHelper';
+import dayjs from 'dayjs';
 
 const searchValue = (value: any, search_string: string): boolean => {
   if (typeof value === 'string') {
@@ -52,7 +52,7 @@ const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
 
   const activeFilter = data.inactive != true ? true : filter.showInactive || data.has_task;
   const keepLocationsWithoutNotifications =
-    (!data.has_task || !moment(data.due_date).isBefore(moment().add(1, 'month').toDate())) &&
+    (!data.has_task || !data.due_date?.isBefore(dayjs().add(1, 'month'))) &&
     !data.itinerary_id &&
     data.flag === null &&
     !data.no_unit
@@ -124,7 +124,13 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
 };
 
 export const useFilteredMapData = () => {
-  const {data: mapData} = useMapOverview();
+  const {data: mapData} = useMapOverview({
+    select: (data) =>
+      data.map((item) => ({
+        ...item,
+        due_date: item.due_date ? dayjs(item.due_date) : null,
+      })) ?? [],
+  });
   const assignedToListFilter = useAtomValue(assignedToAtom);
   const {data: boreholeMapdata} = useBoreholeMap();
   const [extraData, setExtraData] = useState<MapOverview | BoreholeMapData | null>(null);
@@ -182,7 +188,7 @@ export const useFilteredMapData = () => {
             if (!a.due_date) return 1;
             if (!b.due_date) return 1;
             if (a.due_date && b.due_date) {
-              return moment(a.due_date).diff(moment(b.due_date));
+              return a.due_date.diff(b.due_date);
             }
             return 0;
           });
@@ -190,7 +196,7 @@ export const useFilteredMapData = () => {
             if (!a.due_date) return 1;
             if (!b.due_date) return 1;
             if (a.due_date && b.due_date) {
-              return moment(a.due_date).diff(moment(b.due_date));
+              return a.due_date.diff(b.due_date);
             }
             return 0;
           });
@@ -201,8 +207,8 @@ export const useFilteredMapData = () => {
           if (aDate.length > 0 && !aDate[0].due_date && bDate.length > 0 && bDate[0].due_date)
             return 1;
 
-          if (aDate.length > 0 && bDate.length > 0)
-            return moment(aDate[0].due_date).diff(moment(bDate[0].due_date));
+          if (aDate.length > 0 && bDate.length > 0 && aDate[0].due_date && bDate[0].due_date)
+            return aDate[0].due_date.diff(bDate[0].due_date);
         }
         return -1;
       }

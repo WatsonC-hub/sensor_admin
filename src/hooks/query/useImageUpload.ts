@@ -1,4 +1,5 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -7,14 +8,14 @@ import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 type ImageData = {
   comment: string;
   public: string;
-  date: string;
+  date: Dayjs;
   uri: string | ArrayBuffer | null;
 };
 
 type EditImageData = {
   comment: string;
   public: string;
-  date: string;
+  date: Dayjs;
   imageurl?: string; // Assuming this property exists
 };
 
@@ -57,7 +58,7 @@ export const useImageUpload = (endpoint: string) => {
       formData.append('file', file);
       formData.append('comment', data.comment);
       formData.append('public', data.public);
-      formData.append('date', data.date);
+      formData.append('date', data.date.toISOString());
       const config = {
         headers: {'Content-Type': 'multipart/form-data'},
       };

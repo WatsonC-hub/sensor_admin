@@ -1,4 +1,5 @@
 import {queryOptions, useQuery, type UseQueryOptions} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
@@ -86,7 +87,7 @@ export interface MapOverview {
   groups: Group[];
   flag: FlagEnum | null;
   notification_id: NotificationIDEnum | null;
-  due_date: string | null;
+  due_date: Dayjs | null;
   notification_ids: NotificationIDEnum[] | null;
   mapicontype: 'notification' | 'task' | 'trip';
 }

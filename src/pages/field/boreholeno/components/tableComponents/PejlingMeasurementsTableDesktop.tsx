@@ -15,23 +15,11 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-
-type Kontrol = {
-  comment: string;
-  gid: number;
-  disttowatertable_m: number;
-  timeofmeas: string;
-  useforcorrection: number;
-  pumpstop: string;
-  service: boolean;
-  organisationid: number;
-  organisationname: string;
-  uploaded_status: boolean;
-};
+import {BoreholeMeasurement} from '~/types';
 
 interface Props {
-  data: Kontrol[];
-  handleEdit: (kontrol: Kontrol) => void;
+  data: BoreholeMeasurement[] | undefined;
+  handleEdit: (measurement: BoreholeMeasurement) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
@@ -52,7 +40,7 @@ export default function PejlingMeasurementsTableDesktop({
     setDialogOpen(true);
   };
 
-  const columns = useMemo<MRT_ColumnDef<Kontrol>[]>(
+  const columns = useMemo<MRT_ColumnDef<BoreholeMeasurement>[]>(
     () => [
       {
         accessorFn: (row) => convertDateWithTimeStamp(row.timeofmeas),
@@ -94,9 +82,11 @@ export default function PejlingMeasurementsTableDesktop({
     ],
     [unit]
   );
-  const [tableState, reset] = useStatefullTableAtom<Kontrol>('boreholePejlingTableState');
+  const [tableState, reset] = useStatefullTableAtom<BoreholeMeasurement>(
+    'boreholePejlingTableState'
+  );
 
-  const options: Partial<MRT_TableOptions<Kontrol>> = {
+  const options: Partial<MRT_TableOptions<BoreholeMeasurement>> = {
     enableFullScreenToggle: false,
     enableRowActions: true,
     renderRowActions: ({row}) => (
@@ -115,7 +105,7 @@ export default function PejlingMeasurementsTableDesktop({
     },
   };
 
-  const table = useTable<Kontrol>(
+  const table = useTable<BoreholeMeasurement>(
     columns,
     data,
     options,

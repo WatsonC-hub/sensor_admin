@@ -1,13 +1,12 @@
 import React from 'react';
 import {TextFieldVariants} from '@mui/material';
 import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
-import {DateTimePicker, DateTimePickerProps} from '@mui/x-date-pickers/DateTimePicker';
 
 import dayjs, {Dayjs} from 'dayjs';
-import {PickersActionBarAction} from '@mui/x-date-pickers';
+import {DatePicker, DatePickerProps, PickersActionBarAction} from '@mui/x-date-pickers';
 
-export type FormDateTimeProps<TFieldValues extends FieldValues> = Omit<
-  DateTimePickerProps<false>,
+export type FormDatePickerProps<TFieldValues extends FieldValues> = Omit<
+  DatePickerProps<false>,
   'value' | 'onChange' | 'renderInput'
 > & {
   name: Path<TFieldValues>;
@@ -20,7 +19,7 @@ export type FormDateTimeProps<TFieldValues extends FieldValues> = Omit<
   onChangeCallback?: (value: dayjs.Dayjs | null) => void;
 };
 
-const FormDateTime = <TFieldValues extends FieldValues>({
+const FormDatePicker = <TFieldValues extends FieldValues>({
   name,
   label,
   required = false,
@@ -29,7 +28,7 @@ const FormDateTime = <TFieldValues extends FieldValues>({
   onChangeCallback,
   slotProps,
   ...pickerProps
-}: FormDateTimeProps<TFieldValues>) => {
+}: FormDatePickerProps<TFieldValues>) => {
   const {control} = useFormContext<TFieldValues>();
   return (
     <Controller
@@ -38,7 +37,7 @@ const FormDateTime = <TFieldValues extends FieldValues>({
       rules={{required}}
       render={({field: {onChange, onBlur, value}, fieldState: {error}}) => {
         return (
-          <DateTimePicker
+          <DatePicker
             {...pickerProps}
             label={label}
             value={value}
@@ -47,11 +46,7 @@ const FormDateTime = <TFieldValues extends FieldValues>({
               if (onChangeCallback) onChangeCallback(newValue);
             }}
             reduceAnimations
-            timeSteps={{
-              minutes: 1,
-            }}
             disabled={disabled}
-            ampmInClock={false}
             slotProps={{
               ...slotProps,
               toolbar: {
@@ -101,4 +96,4 @@ const FormDateTime = <TFieldValues extends FieldValues>({
   );
 };
 
-export default FormDateTime;
+export default FormDatePicker;

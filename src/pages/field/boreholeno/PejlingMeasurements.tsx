@@ -3,11 +3,11 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import PejlingMeasurementsTableDesktop from '~/pages/field/boreholeno/components/tableComponents/PejlingMeasurementsTableDesktop';
 import PejlingMeasurementsTableMobile from '~/pages/field/boreholeno/components/tableComponents/PejlingMeasurementsTableMobile';
 import {useAppContext} from '~/state/contexts';
-import {Kontrol} from '~/types';
+import {BoreholeMeasurement} from '~/types';
 
 interface PejlingProps {
-  measurements: Array<Kontrol>;
-  handleEdit: (measurement: Kontrol) => void;
+  measurements: Array<BoreholeMeasurement> | undefined;
+  handleEdit: (measurement: BoreholeMeasurement) => void;
   handleDelete: (id: number) => void;
 }
 

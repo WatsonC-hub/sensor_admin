@@ -16,23 +16,22 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import moment from 'moment';
+import {PickerValue} from '@mui/x-date-pickers/internals';
+import dayjs from 'dayjs';
 import React, {useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {alertHeight} from '~/consts';
-import {Maalepunkt, Kontrol} from '~/types';
+import {MaalepunktTableData} from '~/types';
+import {OmittedKontrol} from '../Boreholeno';
 
 interface BoreholePejlingFormProps {
-  formData: Kontrol;
-  changeFormData: (
-    key: string,
-    value: string | boolean | null
-  ) => (key: string, value: string) => void;
+  formData: OmittedKontrol;
+  changeFormData: (key: keyof OmittedKontrol, value: any) => void;
   handleSubmit: () => void;
   resetFormData: () => void;
-  mpData: Array<Maalepunkt>;
+  mpData: Array<MaalepunktTableData> | undefined;
   openAddMP: () => void;
   lastMeasurementPump: boolean;
 }
@@ -64,11 +63,11 @@ export default function PejlingFormBorehole({
   };
 
   useEffect(() => {
-    if (mpData.length > 0) {
-      const mp: Array<Maalepunkt> = mpData.filter((elem) => {
+    if (mpData && mpData.length > 0) {
+      const mp: Array<MaalepunktTableData> = mpData.filter((elem) => {
         if (
-          moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
-          moment(formData.timeofmeas).isBefore(elem.enddate)
+          formData.timeofmeas.isSameOrAfter(elem.startdate) &&
+          formData.timeofmeas.isBefore(elem.enddate)
         ) {
           return true;
         }
@@ -82,18 +81,18 @@ export default function PejlingFormBorehole({
     }
   }, [formData.gid, mpData]);
 
-  const handleDateChange = (date: Date) => {
-    if (moment(date).isValid()) {
-      changeFormData('timeofmeas', date.toISOString());
+  const handleDateChange = (date: PickerValue) => {
+    if (dayjs(date).isValid()) {
+      changeFormData('timeofmeas', dayjs(date));
     }
 
     const mp = mpData?.filter((elem) => {
-      if (moment(date).isSameOrAfter(elem.startdate) && moment(date).isBefore(elem.enddate)) {
+      if (dayjs(date).isSameOrAfter(elem.startdate) && dayjs(date).isBefore(elem.enddate)) {
         return true;
       }
     });
 
-    if (mp.length > 0) {
+    if (mp && mp.length > 0) {
       setPejlingOutOfRange(false);
       setCurrentMP(mp[0]);
     } else {
@@ -124,7 +123,7 @@ export default function PejlingFormBorehole({
         </Typography>
 
         <Grid container spacing={3} alignItems="center" justifyContent="center">
-          {mpData.length < 1 ? (
+          {mpData && mpData.length < 1 ? (
             <Grid item xs={12} sm={12} display="flex" justifyContent="center">
               <Alert
                 severity="error"
@@ -253,8 +252,8 @@ export default function PejlingFormBorehole({
                       Tidspunkt for pejling
                     </Typography>
                   }
-                  value={moment(formData.timeofmeas).toDate()}
-                  onChange={(date: Date) => handleDateChange(date)}
+                  value={formData.timeofmeas}
+                  onChange={(date) => handleDateChange(date)}
                   error={pejlingOutOfRange}
                   helperText={pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : ''}
                 />
@@ -296,10 +295,10 @@ export default function PejlingFormBorehole({
                           ? 'Pumpestop skal være før pejletidspunkt'
                           : ''
                       }
-                      value={moment(formData.pumpstop).toDate()}
-                      onChange={(date) => changeFormData('pumpstop', date.toISOString())}
+                      value={formData.pumpstop}
+                      onChange={(date) => changeFormData('pumpstop', dayjs(date))}
                       disabled={!!formData.service}
-                      max={moment(formData.timeofmeas).toDate()}
+                      max={formData.timeofmeas}
                     />
                   </>
                 )}

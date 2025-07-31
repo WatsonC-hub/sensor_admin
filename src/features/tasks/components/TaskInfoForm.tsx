@@ -10,6 +10,7 @@ import {useTasks} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {Task} from '~/features/tasks/types';
 import {useDisplayState} from '~/hooks/ui';
+import dayjs from 'dayjs';
 
 // import {useTaskStore} from '../api/useTaskStore';
 
@@ -54,7 +55,9 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     const isDirty = dirtyFields[field_name];
 
     if (field_name === 'due_date' && field_value === '') field_value = null;
-
+    else if (field_name === 'due_date' && field_value !== null) {
+      field_value = dayjs(field_value).format('YYYY-MM-DD');
+    }
     const values = {[field_name]: field_value};
 
     if (field_name === 'assigned_to') {
@@ -111,24 +114,18 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           <TaskForm.StatusSelect onBlurCallback={async () => await handlePatch('status_id')} />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.DueDate
-            onBlurCallback={async () => await handlePatch('due_date')}
-            slotProps={{
-              input: {
-                endAdornment: (
-                  <IconButton
-                    disabled={!selectedTask.can_edit}
-                    size="small"
-                    onClick={() => {
-                      setDueDateDialogOpen(true);
-                    }}
-                  >
-                    <MoreTimeIcon fontSize="small" />
-                  </IconButton>
-                ),
-              },
-            }}
-          />
+          <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
+            <TaskForm.DueDate onChangeCallback={async () => await handlePatch('due_date')} />
+            <IconButton
+              disabled={!selectedTask.can_edit}
+              size="small"
+              onClick={() => {
+                setDueDateDialogOpen(true);
+              }}
+            >
+              <MoreTimeIcon fontSize="small" />
+            </IconButton>
+          </Box>
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6} alignContent={'center'} pb={0.5}>
           {selectedTask.can_edit ? (

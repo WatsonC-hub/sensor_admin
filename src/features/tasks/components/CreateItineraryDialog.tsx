@@ -9,6 +9,7 @@ import TaskForm from './TaskForm';
 import FormInput from '~/components/FormInput';
 
 import {z} from 'zod';
+import {zodDayjs} from '~/helpers/schemas';
 
 type CreateItineraryDialogProps = {
   dialogOpen: boolean;
@@ -20,7 +21,7 @@ const zodSchema = z.object({
     .string({required_error: 'Navn skal være angivet'})
     .max(255, 'Navn må maks være 255 tegn')
     .optional(),
-  due_date: z.string().nullish(),
+  due_date: zodDayjs().nullish(),
   assigned_to: z
     .string()
     .nullish()
@@ -40,7 +41,7 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
     createItinerary.mutate(
       {
         loc_ids: [],
-        due_date: data.due_date,
+        due_date: data.due_date?.format('YYYY-MM-DD'),
         assigned_to: data.assigned_to,
         name: data.name ?? '',
       },

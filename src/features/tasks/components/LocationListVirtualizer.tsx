@@ -8,7 +8,6 @@ import {useDisplayState} from '~/hooks/ui';
 import {Box, Divider, Typography} from '@mui/material';
 import {useMapFilterStore} from '~/features/map/store';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
-import moment from 'moment';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {BoreholeMapData} from '~/types';
 import BoreholeListItem from './BoreholeListItem';
@@ -35,8 +34,8 @@ const LocationListVirtualizer = () => {
         // tasks that are in locIds should be at the top of the list
         if (locIds.includes(a.loc_id) && !locIds.includes(b.loc_id)) return -1;
         if (!locIds.includes(a.loc_id) && locIds.includes(b.loc_id)) return 1;
-        if (moment(a.due_date).isBefore(b.due_date)) return -1;
-        if (moment(a.due_date).isAfter(b.due_date)) return 1;
+        if (a.due_date?.isBefore(b.due_date)) return -1;
+        if (a.due_date?.isAfter(b.due_date)) return 1;
       }
       if ('loc_id' in a) return -1;
       if ('loc_id' in b) return 1;

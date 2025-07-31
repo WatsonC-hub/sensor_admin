@@ -1,5 +1,5 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React, {ChangeEvent, createRef, useState} from 'react';
 
 import FabWrapper from '~/components/FabWrapper';
@@ -22,7 +22,7 @@ const ImagePage = () => {
     type: loc_id?.toString(),
     comment: '',
     public: false,
-    date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+    date: dayjs(),
   });
 
   const changeActiveImageData = (field: string, value: string) => {
@@ -36,7 +36,7 @@ const ImagePage = () => {
       type: loc_id?.toString(),
       comment: '',
       public: false,
-      date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+      date: dayjs(),
     });
     setOpenSave(true);
   };

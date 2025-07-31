@@ -10,7 +10,6 @@ interface Props {
 }
 
 const RenderActions = ({handleEdit, onDeleteBtnClick, disabled}: Props) => {
-  console.log(onDeleteBtnClick);
   return (
     <Box margin="0 auto" display="flex" justifyContent="flex-end">
       <IconButton edge="end" onClick={handleEdit} disabled={disabled} size="large">

@@ -1,8 +1,8 @@
 import {Typography, Box} from '@mui/material';
-import moment from 'moment';
 import React from 'react';
 
 import {TaskChanges, TaskStatus, TaskUser} from '~/features/tasks/types';
+import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
 
 type Props = {
   taskChanges: TaskChanges;
@@ -27,8 +27,8 @@ const TaskInfoChanges = ({taskChanges, taskUsers, taskStatus}: Props) => {
     (value) => value[0] === taskChanges.field_name
   )?.[1];
   if (taskChanges.field_name === 'due_date') {
-    if (old_value) old_value = moment(old_value).format('YYYY-MM-DD');
-    if (new_value) new_value = moment(new_value).format('YYYY-MM-DD');
+    if (old_value) old_value = convertDate(old_value);
+    if (new_value) new_value = convertDate(new_value);
   }
 
   if (taskChanges.field_name === 'assigned_to') {
@@ -54,9 +54,7 @@ const TaskInfoChanges = ({taskChanges, taskUsers, taskStatus}: Props) => {
         taskChanges={taskChanges}
       />
 
-      <Typography variant="body2">
-        {moment(taskChanges.created_at).format('YYYY-MM-DD HH:mm')}
-      </Typography>
+      <Typography variant="body2">{convertDateWithTimeStamp(taskChanges.created_at)}</Typography>
     </Box>
   );
 };

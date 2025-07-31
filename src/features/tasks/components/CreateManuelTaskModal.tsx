@@ -24,6 +24,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
     const submit = {
       ...values,
       name: values.name!,
+      due_date: values.due_date?.format('YYYY-MM-DD'),
       block_on_location:
         values.block_on_location === undefined
           ? values.block_on_location

@@ -14,6 +14,17 @@ interface MaalepunktBase {
   data?: any;
 }
 
+// type APIMaalepunkt = {
+//   startdate: string;
+//   enddate: string;
+//   elevation: number;
+//   mp_description: string;
+//   gid: number;
+//   ts_id: number;
+//   userid: string;
+//   display_name?: string;
+// };
+
 interface MaalepunktPost extends MaalepunktBase {
   data: {
     startdate: Dayjs;
