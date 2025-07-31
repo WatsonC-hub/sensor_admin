@@ -23,17 +23,17 @@ const Alarms = () => {
     () => [
       {
         accessorKey: 'gid',
-        header: 'GID',
+        header: 'ID',
         size: 10,
       },
       {
         accessorKey: 'name',
-        header: 'Alarm navn',
+        header: 'Navn',
         size: 20,
       },
       {
         accessorKey: 'alarm_interval',
-        header: 'interval (t)',
+        header: 'Interval (t)',
         size: 20,
       },
       {

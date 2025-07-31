@@ -48,13 +48,6 @@ const Units = () => {
         size: 120,
       },
       {
-        header: 'Slutdato',
-        id: 'enddate',
-        accessorFn: (row) =>
-          row.enddate ? new Date(row.enddate).toLocaleDateString('da-DK') : 'Ikke afsluttet',
-        size: 20,
-      },
-      {
         accessorKey: 'loc_name',
         header: 'Lokation',
         size: 20,
