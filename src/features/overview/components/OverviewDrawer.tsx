@@ -1,15 +1,11 @@
 import React, {ReactNode} from 'react';
 import {fragments} from '../consts';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {drawerOpenAtom} from '~/state/atoms';
-import {useAtom} from 'jotai';
 import WorkspacesIcon from '@mui/icons-material/Workspaces';
 import FolderIcon from '@mui/icons-material/Folder';
 import TimerIcon from '@mui/icons-material/Timer';
 import RouterIcon from '@mui/icons-material/Router';
 import {
   Box,
-  ClickAwayListener,
   Divider,
   Drawer,
   List,
@@ -36,16 +32,7 @@ const navIconStyle = (isSelected: boolean) => {
 };
 
 const OverviewDrawer = () => {
-  const {isTouch} = useBreakpoints();
-  const [openAtom, setOpen] = useAtom(drawerOpenAtom);
   const [fragmentToShow, setFragmentToShow] = useDataFragmentState();
-
-  const toggleDrawer = (newOpen: boolean) => {
-    setOpen(newOpen);
-  };
-
-  const open = openAtom;
-
   const items: Item[] = [
     {
       text: 'Projekter',
@@ -99,7 +86,6 @@ const OverviewDrawer = () => {
             }}
             onClick={() => {
               setFragmentToShow(item.fragment);
-              if (open) toggleDrawer(false);
             }}
           >
             <ListItemIcon
@@ -115,30 +101,11 @@ const OverviewDrawer = () => {
     );
   });
 
-  if (isTouch) {
-    return (
-      <Layout variant="temporary">
-        <List>{drawerItems}</List>
-      </Layout>
-    );
-  }
-
   return (
     <Layout variant="permanent">
       <List>{drawerItems}</List>
     </Layout>
   );
-
-  // return (
-  //   <Layout variant="permanent">
-  //     <Toolbar disableGutters sx={{justifyContent: 'center'}} onClick={() => toggleDrawer(!open)}>
-  //       <IconButton sx={{color: 'white'}}>
-  //         <Menu />
-  //       </IconButton>
-  //     </Toolbar>
-  //     <List>{drawerItems}</List>
-  //   </Layout>
-  // );
 };
 
 type LayoutProps = {
@@ -147,17 +114,11 @@ type LayoutProps = {
 };
 
 const Layout = ({children, variant}: LayoutProps) => {
-  const [openAtom, setOpen] = useAtom(drawerOpenAtom);
-  const open = openAtom;
-  const toggleDrawer = (newOpen: boolean) => {
-    setOpen(newOpen);
-  };
-
   return (
     <Box>
       <Drawer
         variant={variant}
-        open={open}
+        open={true}
         sx={{
           width: drawerWidth,
           flexShrink: 0,
@@ -168,9 +129,7 @@ const Layout = ({children, variant}: LayoutProps) => {
           },
         }}
       >
-        <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
-          <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
-        </ClickAwayListener>
+        <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
       </Drawer>
     </Box>
   );

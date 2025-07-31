@@ -153,6 +153,7 @@ export const statefullTableAtomFamily = atomFamily(
 export const dataToShowAtom = atom<Partial<DataToShow>>({});
 
 export const drawerOpenAtom = atom<boolean>(false);
+export const drawerFragmentAtom = atom<boolean>(false);
 export const initiateSelectAtom = atom<boolean>(false);
 export const initiateConfirmTimeseriesAtom = atom<boolean>(false);
 export const levelCorrectionAtom = atom<boolean>(false);
