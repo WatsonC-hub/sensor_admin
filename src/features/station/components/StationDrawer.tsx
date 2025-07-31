@@ -6,6 +6,7 @@ import {
   Edit,
   Router,
 } from '@mui/icons-material';
+import AlarmIcon from '@mui/icons-material/Alarm';
 import {
   Drawer,
   Box,
@@ -150,6 +151,14 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: !user?.QAPermission || metadata?.calculated,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
+        },
+        {
+          text: 'Alarmer',
+          page: stationPages.ALARM,
+          icon: <AlarmIcon />,
+          requiredTsId: true,
+          onHover: () => {},
+          disabled: !user?.superUser,
         },
         // {
         //   text: 'Stamdata',

@@ -1,7 +1,7 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
@@ -9,7 +9,6 @@ import {z} from 'zod';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import useLocationForm from '~/features/station/api/useLocationForm';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
 import {boreholeEditLocationSchema, defaultEditLocationSchema} from '~/features/station/schema';
@@ -21,7 +20,6 @@ import {useAppContext} from '~/state/contexts';
 const EditLocation = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {data: metadata} = useLocationData();
-  const {data: unit_history} = useUnitHistory();
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
@@ -54,12 +52,14 @@ const EditLocation = () => {
   });
 
   const [formMethods, LocationForm] = useLocationForm({
-    mode: 'Edit',
-    defaultValues: defaultValues,
-    initialLocTypeId: metadata?.loctype_id,
-    context: {
-      loc_id: loc_id,
+    formProps: {
+      context: {
+        loc_id: loc_id,
+      },
+      values: defaultValues,
     },
+    mode: 'Edit',
+    initialLocTypeId: metadata?.loctype_id,
   });
 
   const {
@@ -67,12 +67,6 @@ const EditLocation = () => {
     reset,
     handleSubmit,
   } = formMethods;
-
-  useEffect(() => {
-    if (metadata != undefined) {
-      reset(defaultValues);
-    }
-  }, [metadata, unit_history]);
 
   const Submit = async (data: z.infer<typeof schema>) => {
     const payload = {
@@ -94,7 +88,7 @@ const EditLocation = () => {
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
           <Button
             bttype="tertiary"
-            onClick={() => reset(defaultValues)}
+            onClick={() => reset()}
             disabled={location_permissions !== 'edit'}
           >
             Annuller

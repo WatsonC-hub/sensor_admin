@@ -14,6 +14,7 @@ export const stationPages = {
   ALGORITHMS: 'algoritmer',
   JUSTERINGER: 'justeringer',
   STAMDATA: 'stamdata',
+  ALARM: 'alarm',
 };
 
 export type StationPages = (typeof stationPages)[keyof typeof stationPages];

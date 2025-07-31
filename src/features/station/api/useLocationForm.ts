@@ -1,12 +1,11 @@
 import {
-  BaseLocation,
   baseLocationSchema,
   boreholeAddLocationSchema,
   boreholeEditLocationSchema,
   defaultAddLocationSchema,
   defaultEditLocationSchema,
 } from '../schema';
-import {DefaultValues, FieldValues, Path, useForm} from 'react-hook-form';
+import {DefaultValues, FieldValues, Path, useForm, UseFormProps} from 'react-hook-form';
 import {z, ZodObject} from 'zod';
 import React from 'react';
 import DefaultLocationForm from '../components/stamdata/stamdataComponents/DefaultLocationForm';
@@ -17,19 +16,11 @@ import DefaultLocationEditForm from '../components/stamdata/stamdataComponents/D
 import {useUser} from '~/features/auth/useUser';
 import {zodResolver} from '@hookform/resolvers/zod';
 
-type useLocationFormProps<T> =
-  | {
-      mode: 'Add';
-      defaultValues?: DefaultValues<T>;
-      initialLocTypeId?: number;
-      context: {loc_id: number | undefined};
-    }
-  | {
-      mode: 'Edit';
-      defaultValues?: DefaultValues<T>;
-      initialLocTypeId?: number;
-      context: {loc_id: number};
-    };
+type useLocationFormProps<T extends FieldValues> = {
+  formProps: UseFormProps<T, {loc_id: number | undefined}>;
+  mode: 'Add' | 'Edit';
+  initialLocTypeId?: number;
+};
 
 const getSchemaAndForm = <T extends FieldValues>(
   loctype_id: number,
@@ -72,27 +63,31 @@ const getSchemaAndForm = <T extends FieldValues>(
   return [selectedSchema as ZodObject<T>, selectedForm] as const;
 };
 
-const useLocationForm = <T extends BaseLocation>({
-  defaultValues,
+const useLocationForm = <T extends Record<string, any>>({
+  formProps,
   mode,
-  context,
   initialLocTypeId = -1,
 }: useLocationFormProps<T>) => {
   const user = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user.superUser, context.loc_id);
+  const [schema, form] = getSchemaAndForm<T>(
+    loctype_id,
+    mode,
+    user.superUser,
+    formProps?.context?.loc_id
+  );
 
   const {data, success} = schema.safeParse({
-    ...defaultValues,
+    ...formProps.values,
   });
   const defaultValuesData = data as unknown as DefaultValues<T>;
 
   const formMethods = useForm<T>({
     resolver: zodResolver(schema),
-    defaultValues: success ? defaultValuesData : defaultValues,
+    defaultValues: success ? defaultValuesData : formProps.defaultValues,
     mode: 'onTouched',
-    context: context,
+    ...formProps,
   });
 
   const {watch} = formMethods;

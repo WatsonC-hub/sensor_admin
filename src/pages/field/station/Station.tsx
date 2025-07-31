@@ -30,9 +30,10 @@ import {stationPages} from '~/helpers/EnumHelper';
 import GraphManager from '~/features/station/components/GraphManager';
 import EditLocation from './stamdata/EditLocation';
 import EditTimeseries from './stamdata/EditTimeseries';
+import Alarms from './alarms/Alarms';
 
 export default function Station() {
-  const {ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData();
   const [, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
@@ -55,11 +56,11 @@ export default function Station() {
 
   return (
     <Layout>
-      {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling />}
-      {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn />}
+      {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling key={ts_id} />}
+      {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn key={ts_id} />}
       {pageToShow === stationPages.GENERELTUDSTYR && (
         <>
-          <Box>
+          <Box key={ts_id}>
             <GraphManager
               defaultDataToShow={{
                 Kontrolmålinger: true,
@@ -67,13 +68,13 @@ export default function Station() {
             />
           </Box>
           <Divider />
-          <StationPageBoxLayout>
+          <StationPageBoxLayout key={`unit-${ts_id}`}>
             <EditUnit />
           </StationPageBoxLayout>
         </>
       )}
       {pageToShow === stationPages.GENERELTLOKATION && (
-        <StationPageBoxLayout>
+        <StationPageBoxLayout key={loc_id}>
           <Box
             sx={{
               borderRadius: 4,
@@ -86,7 +87,7 @@ export default function Station() {
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.GENERELTIDSSERIE && (
-        <StationPageBoxLayout>
+        <StationPageBoxLayout key={ts_id}>
           <Box
             sx={{
               borderRadius: 4,
@@ -98,11 +99,11 @@ export default function Station() {
           </Box>
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.ALGORITHMS && user?.QAPermission && <Algorithms />}
-      {pageToShow === stationPages.JUSTERINGER && user?.QAPermission && <QAHistory />}
+      {pageToShow === stationPages.ALGORITHMS && user?.QAPermission && <Algorithms key={ts_id} />}
+      {pageToShow === stationPages.JUSTERINGER && user?.QAPermission && <QAHistory key={ts_id} />}
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
-          <Box>
+          <Box key={ts_id}>
             <GraphManager
               defaultDataToShow={{
                 Kontrolmålinger: true,
@@ -110,28 +111,43 @@ export default function Station() {
             />
           </Box>
           <Divider />
-          <StationPageBoxLayout>
+          <StationPageBoxLayout key={ts_id}>
             <ReferenceForm />
           </StationPageBoxLayout>
         </>
       )}
+      {pageToShow === stationPages.ALARM && user?.superUser && (
+        <>
+          <Box key={ts_id}>
+            <GraphManager
+              defaultDataToShow={{
+                Kontrolmålinger: true,
+              }}
+            />
+          </Box>
+          <Divider />
+          <StationPageBoxLayout key={`alarm-${ts_id}`}>
+            <Alarms />
+          </StationPageBoxLayout>
+        </>
+      )}
       {pageToShow === stationPages.NØGLER && user?.contactAndKeysPermission && (
-        <StationPageBoxLayout>
+        <StationPageBoxLayout key={loc_id}>
           <LocationAccess />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.KONTAKTER && user?.contactAndKeysPermission && (
-        <StationPageBoxLayout>
+        <StationPageBoxLayout key={loc_id}>
           <ContactInfo />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.HUSKELISTE && user?.ressourcePermission && (
-        <StationPageBoxLayout>
+        <StationPageBoxLayout key={loc_id}>
           <Huskeliste />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.BILLEDER && (
-        <StationPageBoxLayout>
+        <StationPageBoxLayout key={loc_id}>
           <ImagePage />
         </StationPageBoxLayout>
       )}

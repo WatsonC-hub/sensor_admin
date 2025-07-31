@@ -26,6 +26,7 @@ import {
   initiateSelectAtom,
   levelCorrectionAtom,
   qaSelection,
+  tempHorizontalAtom,
 } from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
 import {DataToShow, HorizontalLine, QaGraphLabel} from '~/types';
@@ -47,7 +48,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const [initiateSelect, setInitiateSelect] = useAtom(initiateSelectAtom);
   const levelCorrection = useAtomValue(levelCorrectionAtom);
   const initiateConfirmTimeseries = useAtomValue(initiateConfirmTimeseriesAtom);
-  const [pagetoShow] = useStationPages();
+  const tempLines = useAtomValue(tempHorizontalAtom);
+  const [pageToShow] = useStationPages();
   const {data: timeseries_data} = useTimeseriesData();
   const loc_name = timeseries_data?.loc_name;
   const ts_name = timeseries_data?.ts_name;
@@ -141,6 +143,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const yControl = controlData?.map((d) => d.referenced_measurement);
   const textControl = controlData?.map((d) => correction_map[d.useforcorrection]);
 
+  // console.log('templines', tempLines);
   const [shapes, annotations] = useMemo(() => {
     const [qaShapes, qaAnnotate] = transformQAData(qaData ?? []);
     let shapes: Array<object> = [];
@@ -149,6 +152,39 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     Object.entries(dataToShow).forEach((entry) => {
       if (entry[1] == false) return;
       switch (entry[0]) {
+        case 'Alarm linjer':
+          shapes = [
+            ...shapes,
+            ...(tempLines?.map((elem) => {
+              return {
+                x0: 0,
+                x1: 0.97,
+                y0: elem.level,
+                y1: elem.level,
+                name: elem.name,
+                type: 'scatter',
+                xref: 'paper',
+                line: elem.line ?? {width: 1, dash: 'dash'},
+                mode: elem.mode ?? 'lines',
+              };
+            }) ?? []),
+          ];
+          annotations = [
+            ...annotations,
+            ...(tempLines?.map((elem) => {
+              return {
+                xref: 'paper',
+                yref: 'y',
+                x: 0,
+                xanchor: 'left',
+                yanchor: 'bottom',
+                showarrow: false,
+                text: elem.name,
+                y: elem.level,
+              };
+            }) ?? []),
+          ];
+          break;
         case 'Godkendt':
           shapes = [
             ...shapes,
@@ -342,7 +378,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     });
 
     return [shapes, annotations];
-  }, [dataToShow, adjustmentData, certifedData, qaData]);
+  }, [dataToShow, adjustmentData, certifedData, qaData, tempLines]);
 
   const data = [
     {
@@ -431,7 +467,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     }
   }, [dynamicMeasurement?.[0]]);
 
-  if (pagetoShow === 'justeringer') {
+  if (pageToShow === 'justeringer') {
     const handlePlotlySelected = (eventData: any) => {
       if (eventData === undefined) {
         return;

@@ -356,6 +356,7 @@ export type DataToShow = {
   'Valide værdier': boolean;
   'Fjernet data': boolean;
   Rådata: boolean;
+  'Alarm linjer': boolean;
 };
 
 type HorizontalLine = {

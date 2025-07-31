@@ -35,8 +35,8 @@ type Metadata = {
 
 type LocationMetadata = {
   loc_id: number;
-  loc_name: string;
   boreholeno: string | undefined;
+  loc_name: string;
   suffix: string | undefined;
   mainloc: string;
   subloc: string;

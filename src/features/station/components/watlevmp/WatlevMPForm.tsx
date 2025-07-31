@@ -2,7 +2,7 @@ import {Box, Typography} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 import {UseFormReturn} from 'react-hook-form';
-import {createTypedForm} from '~/components/Form';
+import {createTypedForm} from '~/components/formComponents/Form';
 import {initialWatlevmpData} from '~/features/stamdata/components/stamdata/const';
 import {WatlevMPFormValues} from '~/features/stamdata/components/stamdata/ReferenceForm';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
@@ -62,7 +62,7 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
         formMethods={formMethods}
         label={defaultValues?.gid ? 'Rediger målepunkt' : 'Indberet målepunkt'}
       >
-        <Form.FormInput
+        <Form.Input
           name="elevation"
           label="Pejlepunkt [m]"
           type="number"
@@ -73,16 +73,16 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
             },
           }}
         />
-        <Form.FormInput
+        <Form.Input
           name="startdate"
           label={defaultValues?.gid !== undefined ? 'Start dato' : 'Dato'}
           type="datetime-local"
         />
         {defaultValues?.gid !== undefined && (
-          <Form.FormInput name="enddate" label="Slut dato" type="datetime-local" />
+          <Form.Input name="enddate" label="Slut dato" type="datetime-local" />
         )}
 
-        <Form.FormInput
+        <Form.Input
           name="mp_description"
           label="Kommentar"
           placeholder="F.eks.Pejl top rør"

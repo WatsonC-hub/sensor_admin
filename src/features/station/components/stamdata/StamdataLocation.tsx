@@ -57,12 +57,14 @@ const StamdataLocation = ({children}: Props) => {
     queryKey: ['dtm'],
     queryFn: () => getDTMQuota(x, y),
     refetchOnWindowFocus: false,
-    enabled: x !== undefined && y !== undefined,
+    enabled: x !== undefined && y !== undefined && terrainqual === 'DTM',
   });
 
   useEffect(() => {
-    if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null) {
-      setValue('terrainlevel', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)));
+    if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null && terrainqual === 'DTM') {
+      setValue('terrainlevel', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)), {
+        shouldDirty: true,
+      });
     }
   }, [DTMData, terrainqual]);
 

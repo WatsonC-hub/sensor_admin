@@ -65,20 +65,32 @@ export const ContactInfoGetOptions = (loc_id: number | undefined) =>
     enabled: loc_id !== undefined && loc_id !== null,
   });
 
-export const useSearchContact = (loc_id: number | undefined, searchString: string) => {
+export const useSearchContact = (
+  loc_id: number | undefined,
+  searchString: string,
+  contact_role?: number
+) => {
+  let searchEndpoint = `/sensor_field/stamdata/contact/search_contact_info`;
+  let relevantContactsEndpoint = `/sensor_field/stamdata/contact/relevant_contacts/${loc_id}`;
+  if (contact_role) {
+    searchEndpoint += `/contact_role/${searchString}`;
+    relevantContactsEndpoint += `/contact_role`;
+  } else {
+    searchEndpoint += `/${searchString}`;
+  }
+
   const searched_contacts = useQuery({
-    queryKey: ['search_contact_info', searchString],
+    queryKey: [
+      `search_contact_info${contact_role !== undefined ? `/contact_role` : ''}`,
+      searchString,
+    ],
     queryFn: async () => {
       let data;
       if (searchString == '') {
-        const response = await apiClient.get<Array<ContactInfo>>(
-          `/sensor_field/stamdata/contact/relevant_contacts/${loc_id}`
-        );
+        const response = await apiClient.get<Array<ContactInfo>>(relevantContactsEndpoint);
         data = response.data;
       } else {
-        const response = await apiClient.get<Array<ContactInfo>>(
-          `/sensor_field/stamdata/contact/search_contact_info/${searchString}`
-        );
+        const response = await apiClient.get<Array<ContactInfo>>(`${searchEndpoint}`);
         data = response.data;
       }
 
@@ -92,17 +104,6 @@ export const useSearchContact = (loc_id: number | undefined, searchString: strin
 export const useContactInfo = (loc_id: number | undefined) => {
   const queryClient = useQueryClient();
   const get = useQuery(ContactInfoGetOptions(loc_id));
-
-  // const get_all = useQuery({
-  //   queryKey: ['all_contact_info'],
-  //   queryFn: async () => {
-  //     const {data} = await apiClient.get<Array<baseContactInfo>>(
-  //       `/sensor_field/stamdata/contact/all_contact_info`
-  //     );
-
-  //     return data;
-  //   },
-  // });
 
   const post = useMutation({
     ...contactInfoPostOptions,
