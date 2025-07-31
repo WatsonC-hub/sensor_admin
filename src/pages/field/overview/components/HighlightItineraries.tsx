@@ -42,7 +42,7 @@ const HighlightItineraries = ({setValue, value, onBlur, label = 'Itineraries'}: 
       forcePopupIcon={false}
       multiple
       fullWidth
-      value={value ?? []}
+      value={value?.filter((item) => options?.map((option) => option.id).includes(item.id)) ?? []}
       autoHighlight={true}
       onChange={(event, newValue) => {
         setValue(
