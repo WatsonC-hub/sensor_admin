@@ -26,7 +26,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
     state.setLocIds,
   ]);
 
-  const formMethods = useForm<Filter>({defaultValues: filters});
+  const formMethods = useForm<Filter>({defaultValues: filters, values: filters});
 
   const submit = (data: Filter) => {
     setMapFilter(data);
