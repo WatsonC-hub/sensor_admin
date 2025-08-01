@@ -4,6 +4,9 @@ const alarmContactSchema = z
   .object({
     contact_id: z.string().optional(),
     name: z.string().optional(),
+    sms: z.boolean().default(false),
+    email: z.boolean().default(false),
+    call: z.boolean().default(false),
   })
   .refine((contact) => contact.contact_id !== undefined && contact.contact_id !== '', {
     path: ['contact_id'],
@@ -17,6 +20,7 @@ const criteria = z.object({
     .number()
     .nullish()
     .transform((val) => (val === null ? undefined : val)),
+  category: z.string(),
   sms: z.boolean().default(false),
   email: z.boolean().default(false),
   call: z.boolean().default(false),

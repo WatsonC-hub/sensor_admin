@@ -1,77 +1,58 @@
-import {Grid2, MenuItem} from '@mui/material';
+import {Grid2} from '@mui/material';
 import React from 'react';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {AlarmCriteriaArrayFormValues} from '../schema';
-import {useFormContext} from 'react-hook-form';
+import SmsIcon from '@mui/icons-material/Sms';
+import EmailIcon from '@mui/icons-material/Email';
+import CallIcon from '@mui/icons-material/Call';
 
 type AlarmCriteriaFormProps = {
   index: number;
+  isCheckbox?: boolean;
 };
 
 const AlarmCriteriaTypedForm = createTypedForm<AlarmCriteriaArrayFormValues>();
 
-const AlarmCriteriaForm = ({index}: AlarmCriteriaFormProps) => {
-  const {watch} = useFormContext<AlarmCriteriaArrayFormValues>();
-  const criteria = watch(`criteria`);
+const criteriaTypes = [
+  {id: 'alarm_high', name: 'Øvre alarmniveau'},
+  {id: 'attention_high', name: 'Øvre opmærksomhedsniveau'},
+  {id: 'attention_low', name: 'Nedre opmærksomhedsniveau'},
+  {id: 'alarm_low', name: 'Nedre alarmniveau'},
+  {id: 'sender_ikke', name: 'Sender ikke'},
+] as const;
 
+const AlarmCriteriaForm = ({index, isCheckbox = false}: AlarmCriteriaFormProps) => {
   return (
-    <Grid2 container spacing={1} style={{width: '100%'}}>
-      <AlarmCriteriaTypedForm.Input
-        name={`criteria.${index}.name`}
-        select
-        fullWidth
-        label="Vælg niveau"
-        slotProps={{
-          select: {
-            displayEmpty: true,
-          },
-        }}
-        gridSizes={{xs: 12, sm: 6}}
-      >
-        <MenuItem value="" disabled>
-          Vælg niveau
-        </MenuItem>
-        <MenuItem
-          value="attention_high"
-          disabled={criteria?.some((c) => c.name === 'attention_high')}
-        >
-          Øvre opmærksomhedsniveau
-        </MenuItem>
-        <MenuItem
-          value="attention_low"
-          disabled={criteria?.some((c) => c.name === 'attention_low')}
-        >
-          Nedre opmærksomhedsniveau
-        </MenuItem>
-        <MenuItem value="alarm_high" disabled={criteria?.some((c) => c.name === 'alarm_high')}>
-          Øvre alarmniveau
-        </MenuItem>
-        <MenuItem value="alarm_low" disabled={criteria?.some((c) => c.name === 'alarm_low')}>
-          Nedre alarmniveau
-        </MenuItem>
-      </AlarmCriteriaTypedForm.Input>
-      <AlarmCriteriaTypedForm.Input
-        name={`criteria.${index}.criteria`}
-        type="number"
-        fullWidth
-        placeholder="Indtast kriterium"
-        label="Kriterium"
-        gridSizes={{xs: 12, sm: 6}}
-      />
+    <Grid2 container spacing={2} alignItems={'center'} style={{width: '100%'}}>
+      {isCheckbox ? (
+        <AlarmCriteriaTypedForm.Checkbox
+          name={`criteria.${index}.name`}
+          label="Sender ikke"
+          gridSizes={{xs: 12, sm: 6}}
+        />
+      ) : (
+        <AlarmCriteriaTypedForm.Input
+          name={`criteria.${index}.criteria`}
+          type="number"
+          fullWidth
+          placeholder="Indtast kriterium"
+          label={criteriaTypes[index]?.name}
+        />
+      )}
       <AlarmCriteriaTypedForm.Checkbox
         name={`criteria.${index}.sms`}
-        label={`SMS`}
-        gridSizes={{xs: 12, sm: 2}}
+        icon={<SmsIcon color="primary" />}
+        gridSizes={{xs: 12, sm: 1.7}}
       />
       <AlarmCriteriaTypedForm.Checkbox
         name={`criteria.${index}.email`}
-        label={`Email`}
-        gridSizes={{xs: 12, sm: 2}}
+        icon={<EmailIcon color="primary" />}
+        gridSizes={{xs: 12, sm: 1.7}}
       />
       <AlarmCriteriaTypedForm.Checkbox
         name={`criteria.${index}.call`}
-        label={`Opkald`}
-        gridSizes={{xs: 12, sm: 2}}
+        icon={<CallIcon color="primary" />}
+        gridSizes={{xs: 12, sm: 1.7}}
       />
     </Grid2>
   );

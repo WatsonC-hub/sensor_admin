@@ -9,12 +9,14 @@ type AlarmCriteria = {
 export type AlarmCriteriaType = {
   id: number;
   name: string;
+  category: string;
 };
 
 export type CriteriaTable = {
   id: number;
   name: string;
   criteria: number;
+  category: string;
   sms: boolean;
   email: boolean;
   call: boolean;
