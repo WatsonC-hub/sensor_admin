@@ -5,7 +5,7 @@ import {FormContext} from './const';
 
 type FormCheckboxProps<T extends FieldValues> = {
   name: Path<T>;
-  label: string;
+  label?: string;
   gridSizes?: GridBaseProps['size'];
   icon?: React.ReactNode;
 } & Omit<CheckboxProps, 'name' | 'checked' | 'onChange' | 'inputRef'>;
@@ -30,6 +30,9 @@ const FormCheckbox = <T extends FieldValues>({
               <Checkbox
                 {...field}
                 checked={!!field.value}
+                sx={{
+                  width: 'fit-content',
+                }}
                 onChange={(e) => {
                   field.onChange(e.target.checked);
                 }}
@@ -39,7 +42,7 @@ const FormCheckbox = <T extends FieldValues>({
           />
         }
         label={
-          <Box sx={{display: 'flex', alignItems: 'center'}}>
+          <Box sx={{display: 'flex', alignItems: 'center', width: 'fit-content'}}>
             {icon}
             {label}
           </Box>

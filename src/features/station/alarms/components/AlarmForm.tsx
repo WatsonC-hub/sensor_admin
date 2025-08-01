@@ -3,7 +3,7 @@ import {useFieldArray, useForm} from 'react-hook-form';
 import {createTypedForm} from '~/components/formComponents/Form';
 import AlarmCriteriaForm from './AlarmCriteriaForm';
 import {AlarmsFormValues, alarmsSchema} from '../schema';
-import {Box} from '@mui/material';
+import {Box, Grid2, Typography} from '@mui/material';
 import AlarmContactTypedForm from './AlarmContactForm';
 import {AddCircle, ExpandLess, ExpandMore} from '@mui/icons-material';
 import Button from '~/components/Button';
@@ -27,6 +27,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
   const {ts_id} = useAppContext(['ts_id']);
   const [criteriaCollapsed, setCriteriaCollapsed] = useState(false);
   const [contactsCollapsed, setContactsCollapsed] = useState(false);
+  const [alarmNotificationCollapsed, setAlarmNotificationCollapsed] = useState(false);
   const {
     post: postAlarm,
     put: putAlarm,
@@ -47,6 +48,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
           return {
             id: criteria.id,
             name: criteria.name,
+            category: criteria.category,
             criteria: undefined,
             sms: false,
             email: false,
@@ -126,6 +128,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
           .map((criteria) => ({
             id: criteria.id,
             criteria: criteria.criteria,
+            category: criteria.category,
             sms: criteria.sms,
             email: criteria.email,
             call: criteria.call,
@@ -176,6 +179,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
 
   return (
     <Form formMethods={alarmMethods} label="Alarm">
+      <Form.Input name="name" label="Alarm navn" placeholder="Indtast alarm navn" />
       <FormFieldset
         label="Kriterier"
         sx={{width: '100%', px: 1}}
@@ -183,11 +187,30 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         onClick={() => setCriteriaCollapsed(!criteriaCollapsed)}
       >
         {!criteriaCollapsed && (
-          <>
-            {criteriaFields.map((field, index) => (
-              <AlarmCriteriaForm key={field.id} index={index} />
-            ))}
-          </>
+          <Box>
+            {[...new Set(criteriaFields.map((field) => field.category))].map((category) => {
+              return (
+                <Box key={category}>
+                  <Typography variant="subtitle1" sx={{fontWeight: 'bold'}}>
+                    {category}
+                  </Typography>
+                  {criteriaFields
+                    .filter((field) => field.category === category)
+                    .map((field) => {
+                      const index = criteriaFields.findIndex((f) => f.id === field.id);
+                      return (
+                        <Box key={field.id}>
+                          <AlarmCriteriaForm
+                            index={index}
+                            isCheckbox={field.name === 'sender_ikke'}
+                          />
+                        </Box>
+                      );
+                    })}
+                </Box>
+              );
+            })}
+          </Box>
         )}
       </FormFieldset>
 
@@ -216,6 +239,9 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
                   addContact({
                     contact_id: '',
                     name: '',
+                    sms: false,
+                    email: false,
+                    call: false,
                   });
                 }}
                 sx={{ml: 'auto'}}
@@ -226,16 +252,31 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
           </>
         )}
       </FormFieldset>
-      <Form.Input name="name" label="Alarm navn" placeholder="Indtast alarm navn" />
-      <Form.Input
-        name="interval"
-        label="Interval (timer)"
-        type="number"
-        placeholder="Indtast interval i timer"
-      />
-
-      <Form.Input label="Start interval" type="time" name="from" />
-      <Form.Input label="Slut interval" type="time" name="to" />
+      <FormFieldset
+        label="Alarm notifikation"
+        sx={{width: '100%', px: 1}}
+        icon={alarmNotificationCollapsed ? <ExpandMore /> : <ExpandLess />}
+        onClick={() => setAlarmNotificationCollapsed(!alarmNotificationCollapsed)}
+      >
+        {!alarmNotificationCollapsed && (
+          <Grid2 container spacing={2} alignItems={'center'} style={{width: '100%'}}>
+            <Form.Input
+              label="Start interval"
+              type="time"
+              name="from"
+              gridSizes={{xs: 12, sm: 6}}
+            />
+            <Form.Input label="Slut interval" type="time" name="to" gridSizes={{xs: 12, sm: 6}} />
+            <Form.Input
+              name="interval"
+              label="Næste alarmering interval"
+              type="number"
+              placeholder="Indtast interval i timer"
+              gridSizes={{xs: 12, sm: 6}}
+            />
+          </Grid2>
+        )}
+      </FormFieldset>
       <Form.Checkbox name="signal_warning" label="Advar ved sender ikke" />
       <Form.Input
         name="comment"

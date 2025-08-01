@@ -1,14 +1,16 @@
 import React, {useState} from 'react';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {AlarmContactArrayFormValues} from '../schema';
-import Button from '~/components/Button';
-import {Delete} from '@mui/icons-material';
 import {Grid2} from '@mui/material';
 import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import {useAppContext} from '~/state/contexts';
 import {ContactInfo} from '~/types';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
 import {useFormContext} from 'react-hook-form';
+import SmsIcon from '@mui/icons-material/Sms';
+import EmailIcon from '@mui/icons-material/Email';
+import CallIcon from '@mui/icons-material/Call';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface AlarmContact {
   index: number;
@@ -32,19 +34,14 @@ const AlarmContactForm = ({index, remove, searchValue}: AlarmContact) => {
   } = useFormContext<AlarmContactArrayFormValues>();
 
   return (
-    <Grid2
-      container
-      style={{width: '100%'}}
-      alignItems={'center'}
-      spacing={1}
-      justifyContent={'space-between'}
-    >
+    <Grid2 container style={{width: '100%'}} alignItems={'center'} spacing={2}>
       <AlarmContactTypedForm.Autocomplete<ContactInfo>
         options={data ?? []}
         labelKey="navn"
         name={`contacts.${index}.contact_id`}
         label={`Kontakt`}
         fullWidth
+        gridSizes={{xs: 12, sm: 6}}
         error={errors?.contacts?.[index]?.contact_id?.message}
         inputValue={search}
         onSelectChange={(option) => {
@@ -65,16 +62,23 @@ const AlarmContactForm = ({index, remove, searchValue}: AlarmContact) => {
         clearOnBlur
         handleHomeEndKeys
       />
-      <Grid2 size={{xs: 6, sm: 2}} ml={'auto'} mr={2}>
-        <Button
-          bttype="tertiary"
-          startIcon={<Delete />}
-          onClick={() => {
-            remove(index);
-          }}
-        >
-          Fjern
-        </Button>
+      <AlarmContactTypedForm.Checkbox
+        name={`contacts.${index}.sms`}
+        icon={<SmsIcon color="primary" />}
+        gridSizes={{xs: 12, sm: 1.7}}
+      />
+      <AlarmContactTypedForm.Checkbox
+        name={`contacts.${index}.email`}
+        icon={<EmailIcon color="primary" />}
+        gridSizes={{xs: 12, sm: 1.7}}
+      />
+      <AlarmContactTypedForm.Checkbox
+        name={`contacts.${index}.call`}
+        icon={<CallIcon color="primary" />}
+        gridSizes={{xs: 12, sm: 1.7}}
+      />
+      <Grid2 size={{xs: 12, sm: 0.9}} pr={1} style={{display: 'flex', justifyContent: 'center'}}>
+        <CloseIcon color="action" sx={{cursor: 'pointer'}} onClick={() => remove(index)} />
       </Grid2>
     </Grid2>
   );
