@@ -5,7 +5,7 @@ const baseSchema = z.object({
   measurement: z.number().nullable(),
   // timeofmeas: z.string().min(1, 'Tidspunkt skal udfyldes'),
   timeofmeas: zodDayjs('Tidspunkt skal udfyldes'),
-  comment: z.string().optional(),
+  comment: z.string().nullish(),
   useforcorrection: z.coerce.number().default(0),
 });
 

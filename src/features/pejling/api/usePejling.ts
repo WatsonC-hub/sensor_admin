@@ -15,7 +15,7 @@ interface PejlingBase {
 
 interface PejlingPost extends PejlingBase {
   data: {
-    comment?: string;
+    comment?: string | null;
     measurement: number | null;
     timeofmeas: Dayjs;
     useforcorrection: number;
