@@ -2,7 +2,7 @@ import {z} from 'zod';
 import {zodDayjs} from '~/helpers/schemas';
 
 const baseSchema = z.object({
-  measurement: z.number().min(0).nullable(),
+  measurement: z.number().nullable(),
   // timeofmeas: z.string().min(1, 'Tidspunkt skal udfyldes'),
   timeofmeas: zodDayjs('Tidspunkt skal udfyldes'),
   comment: z.string().optional(),

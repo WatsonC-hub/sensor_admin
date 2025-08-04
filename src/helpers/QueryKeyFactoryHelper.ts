@@ -2,9 +2,9 @@ import {Dayjs} from 'dayjs';
 
 export const queryKeys = {
   Location: {
-    info: (loc_id: number | undefined) => ['location_info', loc_id] as const,
+    info: (loc_id: number | undefined) => ['location_info', 'metadata', loc_id] as const,
     metadata: (loc_id: number | undefined) => ['location_metadata', loc_id] as const,
-    timeseries: (loc_id: number | undefined) => ['timeseries', loc_id] as const,
+    timeseries: (loc_id: number | undefined) => ['timeseries', 'metadata', loc_id] as const,
     contacts: (loc_id: number) => ['contact_info', loc_id] as const,
     searchContacts: (search: string) => ['search_contact_info', search] as const,
     keys: (loc_id: number) => ['location_access', loc_id] as const,
@@ -19,7 +19,7 @@ export const queryKeys = {
     metadata: (ts_id: number | undefined) => ['metadata', ts_id] as const,
     // timeseries: (ts_id: number) => ['timeseries', ts_id] as const,
     allPejling: () => ['measurements'] as const,
-    pejling: (ts_id: number) => ['measurements', ts_id] as const,
+    pejling: (ts_id: number | undefined) => ['measurements', ts_id] as const,
     tilsyn: (ts_id: number) => ['service', ts_id] as const,
     maalepunkt: (ts_id: number) => ['watlevmp', ts_id] as const,
     availableUnits: (ts_id: number) => ['udstyr', ts_id] as const,
@@ -61,13 +61,13 @@ export const queryKeys = {
       ['last_jupiter_mp', boreholeno, intakeno] as const,
   },
   Map: {
-    all: () => ['map'] as const,
+    all: () => ['map', 'tasks', 'status'] as const,
   },
   Tasks: {
     all: () => ['tasks'] as const,
     byItinerary: (itinerary_id: string | null) => ['tasks', itinerary_id] as const,
-    closedTasks: (loc_id: number | undefined) => ['closed_tasks', loc_id] as const,
-    taskHistory: (task_id: string) => ['taskHistory', task_id] as const,
+    closedTasks: (loc_id: number | undefined) => ['tasks', 'closed_tasks', loc_id] as const,
+    taskHistory: (task_id: string) => ['tasks', 'taskHistory', task_id] as const,
     nextDueDate: (ts_id: number) => ['next_due_date', ts_id] as const,
     taskUsers: () => ['task_users'] as const,
     taskStatus: () => ['task_status'] as const,
@@ -76,7 +76,7 @@ export const queryKeys = {
     all: () => ['itineraries'] as const,
     byId: (itinerary_id: string | undefined) => ['itineraries', itinerary_id] as const,
     itineraryTasks: (itinerary_id: string | undefined) =>
-      ['itineraries_tasks', itinerary_id] as const,
+      ['tasks', 'itineraries_tasks', itinerary_id] as const,
   },
   Parking: {
     all: () => ['parking'] as const,

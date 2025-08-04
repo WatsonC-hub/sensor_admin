@@ -1,4 +1,10 @@
-import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  queryOptions,
+  MutationOptions,
+} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -55,12 +61,15 @@ const tasksPostOptions = {
     return result;
   },
 };
-const taskPatchOptions = {
+const taskPatchOptions: MutationOptions<DBTask, APIError, Mutation<PatchTask>> = {
   mutationKey: ['tasks_patch'],
-  mutationFn: async (mutation_data: Mutation<PatchTask>) => {
+  mutationFn: async (mutation_data) => {
     const {path, data} = mutation_data;
     const {data: result} = await apiClient.patch(`/sensor_admin/tasks/${path}`, data);
     return result;
+  },
+  meta: {
+    invalidates: [['tasks']],
   },
 };
 const tasksDelOptions = {
@@ -178,6 +187,9 @@ export const useTasks = () => {
     onSuccess: (data, variables, context) => {
       invalidateFromMeta(queryClient, context.meta);
       toast.success('Opgaver gemt');
+    },
+    meta: {
+      invalidates: [['tasks']],
     },
   });
 
