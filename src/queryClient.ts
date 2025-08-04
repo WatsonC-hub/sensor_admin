@@ -1,5 +1,5 @@
 import {createSyncStoragePersister} from '@tanstack/query-sync-storage-persister';
-import {MutationCache, QueryClient} from '@tanstack/react-query';
+import {matchQuery, MutationCache, QueryClient, QueryKey} from '@tanstack/react-query';
 import axios, {AxiosError} from 'axios';
 import {toast} from 'react-toastify';
 
@@ -18,6 +18,14 @@ type ErrorDetail = {
 type ErrorResponse = {
   detail: ErrorDetail | string;
 };
+
+declare module '@tanstack/react-query' {
+  interface Register {
+    mutationMeta: {
+      invalidates?: Array<QueryKey | ['tasks'] | ['status'] | ['metadata']>;
+    };
+  }
+}
 
 export type APIError = AxiosError<ErrorResponse>;
 
@@ -44,8 +52,14 @@ const queryClient = new QueryClient({
     },
   },
   mutationCache: new MutationCache({
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: queryKeys.Map.all()});
+    onSuccess: (_data, _variables, _context, mutation) => {
+      // queryClient.invalidateQueries({queryKey: queryKeys.Map.all()});
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          // invalidate all matching tags at once
+          // or everything if no meta is provided
+          mutation.meta?.invalidates?.some((queryKey) => matchQuery({queryKey}, query)) ?? false,
+      });
     },
     onError: (error) => {
       if (axios.isAxiosError(error)) {

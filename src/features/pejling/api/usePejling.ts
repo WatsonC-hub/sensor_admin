@@ -1,10 +1,9 @@
-import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
 import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
-import {PejlingInvalidation, queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
@@ -67,46 +66,43 @@ export const pejlingGetOptions = (ts_id: number | undefined) =>
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
     enabled: ts_id !== 0 && ts_id !== null && ts_id !== undefined,
+    meta: {
+      invalidates: [queryKeys.Timeseries.metadata(ts_id), queryKeys.Timeseries.pejling(ts_id)],
+    },
   });
 
-const onMutatePejling = async (ts_id: number, loc_id: number) => {
-  return {
-    meta: {
-      invalidates: PejlingInvalidation(ts_id, loc_id),
-    },
-  };
-};
-
 export const usePejling = () => {
-  const queryClient = useQueryClient();
-  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
+  const {ts_id} = useAppContext(['ts_id']);
 
   const get = useQuery(pejlingGetOptions(ts_id));
 
   const post = useMutation({
     ...pejlingPostOptions,
-    onMutate: async () => onMutatePejling(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Pejling gemt');
+    },
+    meta: {
+      invalidates: [queryKeys.Timeseries.pejling(ts_id)],
     },
   });
 
   const put = useMutation({
     ...pejlingPutOptions,
-    onMutate: async () => onMutatePejling(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Pejling ændret');
+    },
+    meta: {
+      invalidates: [queryKeys.Timeseries.pejling(ts_id)],
     },
   });
 
   const del = useMutation({
     ...pejlingDelOptions,
-    onMutate: async () => onMutatePejling(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Pejling slettet');
+    },
+    meta: {
+      invalidates: [queryKeys.Timeseries.pejling(ts_id)],
     },
   });
 

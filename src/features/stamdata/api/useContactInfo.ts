@@ -1,4 +1,10 @@
-import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  queryOptions,
+  MutationOptions,
+} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -18,15 +24,18 @@ interface ContactInfoPut extends ContactInfoBase {
   data: ContactTable;
 }
 
-const contactInfoPostOptions = {
+const contactInfoPostOptions: MutationOptions<any, APIError, ContactInfoPost> = {
   mutationKey: ['contact_info_post'],
-  mutationFn: async (mutation_data: ContactInfoPost) => {
+  mutationFn: async (mutation_data) => {
     const {path, data} = mutation_data;
     const {data: result} = await apiClient.post(
       `/sensor_field/stamdata/contact/contact_info/${path}`,
       data
     );
     return result;
+  },
+  meta: {
+    invalidates: [['contact_info']],
   },
 };
 
@@ -40,6 +49,9 @@ const contactInfoPutOptions = {
     );
     return result;
   },
+  meta: {
+    invalidates: [['contact_info']],
+  },
 };
 
 const contactInfoDelOptions = {
@@ -50,6 +62,9 @@ const contactInfoDelOptions = {
       `/sensor_field/stamdata/contact/contact_info/${path}`
     );
     return result;
+  },
+  meta: {
+    invalidates: [['contact_info']],
   },
 };
 
@@ -97,11 +112,10 @@ export const useContactInfo = (loc_id: number) => {
   const post = useMutation({
     ...contactInfoPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.contacts(loc_id),
-      });
-
       toast.success('Kontakt information gemt');
+    },
+    meta: {
+      invalidates: [queryKeys.Location.contacts(loc_id)],
     },
   });
 
