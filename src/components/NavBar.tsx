@@ -219,6 +219,7 @@ const NavBarMenu = ({
           </ListItemIcon>
           Guides
         </MenuItem>
+        <MenuItem
           key="old-version"
           onClick={() => {
             window.location.href = 'https://sensor-old.watsonc.dk';
