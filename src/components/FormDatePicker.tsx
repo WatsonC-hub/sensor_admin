@@ -1,9 +1,10 @@
 import React from 'react';
-import {TextFieldVariants} from '@mui/material';
+import {Box, TextFieldVariants} from '@mui/material';
 import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 
 import dayjs, {Dayjs} from 'dayjs';
 import {DatePicker, DatePickerProps, PickersActionBarAction} from '@mui/x-date-pickers';
+import CustomActionBar from '~/helpers/CustomActionBar';
 
 export type FormDatePickerProps<TFieldValues extends FieldValues> = Omit<
   DatePickerProps<false>,
@@ -17,6 +18,8 @@ export type FormDatePickerProps<TFieldValues extends FieldValues> = Omit<
   margin?: 'none' | 'dense' | undefined;
   variant?: TextFieldVariants;
   onChangeCallback?: (value: dayjs.Dayjs | null) => void;
+  customAction?: () => void;
+  customActionLabel?: 'next_control';
 };
 
 const FormDatePicker = <TFieldValues extends FieldValues>({
@@ -26,6 +29,8 @@ const FormDatePicker = <TFieldValues extends FieldValues>({
   disabled = false,
   margin = 'dense',
   onChangeCallback,
+  customAction,
+  customActionLabel,
   slotProps,
   ...pickerProps
 }: FormDatePickerProps<TFieldValues>) => {
@@ -41,12 +46,27 @@ const FormDatePicker = <TFieldValues extends FieldValues>({
             {...pickerProps}
             label={label}
             value={value}
+            closeOnSelect={false}
             onChange={(newValue) => {
               onChange(newValue);
-              if (onChangeCallback) onChangeCallback(newValue);
+            }}
+            onAccept={(newValue) => {
+              onChange(newValue);
+              if (onChangeCallback) {
+                onChangeCallback(newValue);
+              }
             }}
             reduceAnimations
             disabled={disabled}
+            slots={{
+              actionBar: (props) => {
+                return (
+                  <Box {...props}>
+                    <CustomActionBar customAction={customAction} {...props} />
+                  </Box>
+                );
+              },
+            }}
             slotProps={{
               ...slotProps,
               toolbar: {
@@ -64,7 +84,13 @@ const FormDatePicker = <TFieldValues extends FieldValues>({
                     textTransform: 'inherit',
                   },
                 },
-                actions: ['cancel', 'clear', 'today', 'accept'] as PickersActionBarAction[],
+                actions: [
+                  'cancel',
+                  'clear',
+                  'today',
+                  'accept',
+                  ...(customActionLabel ? [customActionLabel] : []),
+                ] as PickersActionBarAction[],
                 disableSpacing: true,
               },
               textField: {

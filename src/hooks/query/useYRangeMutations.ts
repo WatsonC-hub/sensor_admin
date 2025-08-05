@@ -1,9 +1,7 @@
-import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
-import {onAdjustmentMutation} from '~/helpers/QueryKeyFactoryHelper';
 import {rerunToast} from '~/helpers/toasts';
 import {useAppContext} from '~/state/contexts';
 
@@ -39,30 +37,31 @@ const yRangeDelOptions = {
 };
 
 export const useYRangeMutations = () => {
-  const queryClient = useQueryClient();
-  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
+  const {ts_id} = useAppContext(['ts_id']);
 
   const post = useMutation({
     ...yRangePostOptions,
-    onMutate: () => onAdjustmentMutation(ts_id, loc_id, true),
     onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       rerunToast(ts_id);
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
   const del = useMutation({
     ...yRangeDelOptions,
-    onMutate: () => onAdjustmentMutation(ts_id, loc_id, false),
     onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       rerunToast(ts_id);
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 

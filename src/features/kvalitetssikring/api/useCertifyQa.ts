@@ -1,9 +1,8 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useMutation} from '@tanstack/react-query';
 import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 
@@ -58,25 +57,8 @@ const certifyQaDelOptions = {
   },
 };
 
-const onMutateCertifyQa = (ts_id: number, loc_id: number) => {
-  return {
-    meta: {
-      invalidates: [
-        queryKeys.Timeseries.certifyQa(ts_id),
-        queryKeys.Location.timeseries(loc_id),
-        queryKeys.Map.all(),
-        queryKeys.Tasks.all(),
-        queryKeys.Itineraries.all(),
-        queryKeys.Timeseries.metadata(ts_id),
-        queryKeys.Timeseries.QAWithTsId(ts_id),
-      ],
-    },
-  };
-};
-
 export const useCertifyQa = () => {
-  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
-  const queryClient = useQueryClient();
+  const {ts_id} = useAppContext(['ts_id']);
   const get = useQuery({
     queryKey: queryKeys.Timeseries.certifyQa(ts_id),
     queryFn: async () => {
@@ -91,28 +73,31 @@ export const useCertifyQa = () => {
 
   const post = useMutation({
     ...certifyQaPostOptions,
-    onMutate: async () => onMutateCertifyQa(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Kvalitetsstempel gemt');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
   const put = useMutation({
     ...certifyQaPutOptions,
-    onMutate: async () => onMutateCertifyQa(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Kvalitetsstempel ændret');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
   const del = useMutation({
     ...certifyQaDelOptions,
-    onMutate: async () => onMutateCertifyQa(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Kvalitetsstempel slettet');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 

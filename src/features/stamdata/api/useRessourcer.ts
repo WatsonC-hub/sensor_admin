@@ -3,7 +3,6 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
@@ -62,14 +61,6 @@ export const getRessourcerOptions = (loc_id: number) =>
     },
   });
 
-const onMutateRessources = (loc_id: number) => {
-  return {
-    meta: {
-      invalidates: [queryKeys.Location.ressources(), queryKeys.Location.locationRessources(loc_id)],
-    },
-  };
-};
-
 export const useRessourcer = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const queryClient = useQueryClient();
@@ -88,28 +79,31 @@ export const useRessourcer = () => {
 
   const post = useMutation({
     ...ressourcerPostOptions,
-    onMutate: () => onMutateRessources(loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.Location.locationRessources(loc_id),
+      });
       toast.success('Huskeliste gemt');
     },
   });
 
   const put = useMutation({
     ...ressourcerPutOptions,
-    onMutate: () => onMutateRessources(loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.Location.locationRessources(loc_id),
+      });
       toast.success('Huskeliste ændret');
     },
   });
 
   const del = useMutation({
     ...ressourcerDelOptions,
-    onMutate: () => onMutateRessources(loc_id),
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.Location.locationRessources(loc_id),
+      });
       toast.success('Huskeliste slettet');
-      invalidateFromMeta(queryClient, context.meta);
     },
   });
 

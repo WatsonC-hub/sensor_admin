@@ -99,7 +99,10 @@ export type DBTask = {
   block_all: boolean;
 };
 
-export type PatchTask = Partial<Omit<DBTask, 'id' | 'blocks_notifications' | 'created_by'>> & {
+export type PatchTask = Partial<
+  Omit<DBTask, 'id' | 'blocks_notifications' | 'created_by' | 'due_date'>
+> & {
+  due_date?: string | null;
   is_created?: boolean;
 };
 

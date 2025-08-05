@@ -138,7 +138,7 @@ interface TimeseriesStatus {
 
 export const timeseriesStatusOptions = (loc_id: number) =>
   queryOptions({
-    queryKey: queryKeys.Location.timeseries(loc_id),
+    queryKey: queryKeys.Location.timeseries_status(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get<TimeseriesStatus[]>(
         `/sensor_field/timeseries_status/${loc_id}`

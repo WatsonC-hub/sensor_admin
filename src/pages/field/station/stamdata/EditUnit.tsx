@@ -9,7 +9,6 @@ import {z} from 'zod';
 import {apiClient} from '~/apiClient';
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import usePermissions from '~/features/permissions/api/usePermissions';
@@ -19,21 +18,7 @@ import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import UnitEndDateDialog from './UnitEndDialog';
 import useUnitForm from '~/features/station/api/useUnitForm';
 import {EditUnit as EditUnitType, editUnitSchema} from '~/features/station/schema';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 
-const onMutateUnit = (ts_id: number, loc_id: number) => {
-  return {
-    meta: {
-      invalidates: [
-        queryKeys.Timeseries.availableUnits(ts_id),
-        queryKeys.Location.timeseries(loc_id),
-        queryKeys.Timeseries.metadata(ts_id),
-        queryKeys.Map.all(),
-      ],
-    },
-  };
-};
 import UnitHistoryTable from './UnitHistoryTable';
 
 const EditUnit = () => {
@@ -57,10 +42,11 @@ const EditUnit = () => {
       const {data: out} = await apiClient.put(`/sensor_field/stamdata/update_unit/${ts_id}`, data);
       return out;
     },
-    onMutate: async () => onMutateUnit(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Udstyr er opdateret');
+    },
+    meta: {
+      invalidates: [['metadata'], ['register']],
     },
   });
 

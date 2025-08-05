@@ -1,5 +1,5 @@
 import {Box, Button, CircularProgress, Typography} from '@mui/material';
-import {UseMutationResult, useQuery, useQueryClient} from '@tanstack/react-query';
+import {UseMutationResult, useQuery} from '@tanstack/react-query';
 import dayjs, {Dayjs} from 'dayjs';
 import React from 'react';
 import {toast} from 'react-toastify';
@@ -31,7 +31,6 @@ type LastJupiterMPAPI = {
 
 const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps) => {
   const {boreholeno, intakeno} = useAppContext(['boreholeno', 'intakeno']);
-  const queryClient = useQueryClient();
   const {data, isLoading, isError, isSuccess} = useQuery({
     queryKey: queryKeys.Borehole.lastMP(boreholeno, intakeno),
     queryFn: async () => {
@@ -68,9 +67,6 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps
       watlevmpMutate.mutate(payload, {
         onSuccess: () => {
           toast.success('Målepunkt gemt');
-          queryClient.invalidateQueries({
-            queryKey: queryKeys.Borehole.watlevmp(boreholeno),
-          });
           setAddMPOpen(null);
         },
         onError: () => {

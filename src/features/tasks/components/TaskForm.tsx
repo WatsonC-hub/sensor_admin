@@ -1,14 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {
-  Box,
-  FormControlLabel,
-  MenuItem,
-  Switch,
-  TextFieldProps,
-  Typography,
-  Dialog,
-} from '@mui/material';
+import {Box, FormControlLabel, MenuItem, Switch, TextFieldProps, Typography} from '@mui/material';
 import React, {useEffect} from 'react';
 import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
@@ -16,13 +8,12 @@ import {z} from 'zod';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import {getNextDueDate, useTasks} from '~/features/tasks/api/useTasks';
+import {useTasks} from '~/features/tasks/api/useTasks';
 import {TaskUser} from '~/features/tasks/types';
 
 import {useTaskState} from '../api/useTaskState';
 import {merge} from 'lodash';
 import {useLocationData} from '~/hooks/query/useMetadata';
-import {toast} from 'react-toastify';
 import {zodDayjs} from '~/helpers/schemas';
 import FormDatePicker, {FormDatePickerProps} from '~/components/FormDatePicker';
 
@@ -385,67 +376,6 @@ const SelectTimeseries = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   );
 };
 
-const DueDateDialog = (
-  props: Omit<FormInputProps<FormValues>, 'name'> & {
-    ts_id: number;
-    open: boolean;
-    onClose: () => void;
-    onSubmit: () => void;
-  }
-) => {
-  const {setValue} = useFormContext<FormValues>();
-  const {ts_id, open, onClose, onSubmit} = props;
-  const {data: nextDueDate, error, isPending} = getNextDueDate(ts_id, open);
-
-  useEffect(() => {
-    if (nextDueDate && open && !isPending) {
-      setValue('due_date', nextDueDate, {
-        shouldDirty: true,
-        shouldTouch: true,
-      });
-    }
-  }, [nextDueDate]);
-
-  useEffect(() => {
-    if (error && open && error.response && typeof error.response.data.detail === 'string') {
-      toast.error(error.response.data.detail);
-      onClose();
-    }
-  }, [error, open]);
-
-  return (
-    <>
-      {error === null && !isPending && (
-        <Dialog open={open} onClose={onClose}>
-          <Box display={'flex'} flexDirection={'column'} gap={2} p={2}>
-            <Typography variant="h6">Sæt forfaldsdato til næste kontrol måling</Typography>
-            <FormInput name="due_date" label="Forfaldsdato" type="date" size="small" {...props} />
-            <Box
-              display={'flex'}
-              flexDirection={'row'}
-              justifyContent={'flex-end'}
-              alignItems={'center'}
-            >
-              <Button bttype="tertiary" onClick={onClose} sx={{mr: 1}}>
-                Luk
-              </Button>
-              <Button
-                bttype="primary"
-                onClick={() => {
-                  onSubmit();
-                }}
-                startIcon={<Save />}
-              >
-                Gem
-              </Button>
-            </Box>
-          </Box>
-        </Dialog>
-      )}
-    </>
-  );
-};
-
 TaskForm.SubmitButton = TaskSubmitButton;
 TaskForm.Input = Input;
 TaskForm.StatusSelect = StatusSelect;
@@ -456,6 +386,5 @@ TaskForm.BlockOnLocation = BlockOnLocation;
 TaskForm.BlockAll = BlockAll;
 TaskForm.SelectTimeseries = SelectTimeseries;
 TaskForm.AssignedToSelect = AssignedToSelect;
-TaskForm.DueDateDialog = DueDateDialog;
 
 export default TaskForm;

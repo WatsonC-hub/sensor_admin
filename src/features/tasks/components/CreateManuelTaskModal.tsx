@@ -51,6 +51,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
         defaultValues={{
           ts_id: ts_id ?? undefined,
           status_id: 1,
+          due_date: null,
         }}
       >
         <DialogContent

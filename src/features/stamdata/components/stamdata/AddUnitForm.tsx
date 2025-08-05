@@ -7,7 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import {PickerValue} from '@mui/x-date-pickers/internals';
-import {useQueryClient} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
@@ -22,7 +21,6 @@ import OwnDatePicker from '~/components/OwnDatePicker';
 import {useUser} from '~/features/auth/useUser';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
 import {AddUnit} from '~/features/station/schema';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 
 interface AddUnitFormProps {
@@ -45,7 +43,6 @@ export default function AddUnitForm({
     amount: number;
     subscription_type: string;
   } | null>(null);
-  const queryClient = useQueryClient();
   const [openCaptureDialog, setOpenCaptureDialog] = useState(false);
   const user = useUser();
 
@@ -133,7 +130,6 @@ export default function AddUnitForm({
     addUnit.mutate(payload, {
       onSuccess: () => {
         toast.success('Udstyr tilføjet');
-        queryClient.invalidateQueries({queryKey: queryKeys.Timeseries.metadata(ts_id)});
         setUdstyrDialogOpen(false);
         setConfirmDialogOpen(false);
       },

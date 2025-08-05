@@ -1,9 +1,8 @@
-import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 type ImageData = {
   comment: string;
@@ -47,8 +46,6 @@ const dataURLtoFile = (dataurl: string | ArrayBuffer | null, filename?: string) 
 };
 
 export const useImageUpload = (endpoint: string) => {
-  const queryClient = useQueryClient();
-
   const post = useMutation({
     mutationKey: ['image_post'],
     mutationFn: async (mutation_data: ImagePayload) => {
@@ -70,10 +67,8 @@ export const useImageUpload = (endpoint: string) => {
       );
       return res;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.images(),
-      });
+    meta: {
+      invalidates: [['register']],
     },
   });
 
@@ -85,10 +80,10 @@ export const useImageUpload = (endpoint: string) => {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.images(),
-      });
       toast.success('Ændringerne er blevet gemt');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
@@ -99,15 +94,8 @@ export const useImageUpload = (endpoint: string) => {
       const {data: res} = await apiClient.delete(`/sensor_field/${endpoint}/image/${path}`);
       return res;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.images(),
-      });
-    },
-    onError: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.images(),
-      });
+    meta: {
+      invalidates: [['register']],
     },
   });
 

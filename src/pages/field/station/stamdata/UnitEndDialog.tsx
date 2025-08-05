@@ -1,7 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Dialog, DialogTitle, DialogContent, MenuItem, DialogActions} from '@mui/material';
-import {useQueryClient, useQuery, useMutation} from '@tanstack/react-query';
+import {useQuery, useMutation} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import moment from 'moment';
 import {useForm, FormProvider} from 'react-hook-form';
@@ -14,7 +14,6 @@ import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
 import {UnitHistory} from '~/features/stamdata/api/useUnitHistory';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {zodDayjs} from '~/helpers/schemas';
 import {useAppContext} from '~/state/contexts';
@@ -29,23 +28,7 @@ type ChangeReason = {id: number; reason: string; default_actions: string | null}
 
 type Action = {action: string; label: string};
 
-const onTakeHomeMutation = (ts_id: number) => {
-  return {
-    meta: {
-      invalidates: [
-        queryKeys.Timeseries.availableUnits(ts_id),
-        queryKeys.Location.timeseries(ts_id),
-        queryKeys.Timeseries.metadata(ts_id),
-        queryKeys.Map.all(),
-        queryKeys.Tasks.all(),
-        queryKeys.AvailableUnits.all(),
-      ],
-    },
-  };
-};
-
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogProps) => {
-  const queryClient = useQueryClient();
   const {ts_id} = useAppContext(['ts_id']);
   const user = useUser();
 
@@ -121,11 +104,12 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       );
       return data;
     },
-    onMutate: () => onTakeHomeMutation(ts_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       handleClose();
       toast.success('Udstyret er hjemtaget');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 

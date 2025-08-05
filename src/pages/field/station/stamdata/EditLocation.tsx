@@ -13,28 +13,12 @@ import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import useLocationForm from '~/features/station/api/useLocationForm';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
 import {boreholeEditLocationSchema, defaultEditLocationSchema} from '~/features/station/schema';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
-const onMutateLocation = (ts_id: number | undefined, loc_id: number) => {
-  return {
-    meta: {
-      invalidates: [
-        queryKeys.Location.info(loc_id),
-        queryKeys.Timeseries.metadata(ts_id),
-        queryKeys.Location.metadata(loc_id),
-        queryKeys.Map.all(),
-      ],
-    },
-  };
-};
-
 const EditLocation = () => {
-  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {loc_id} = useAppContext(['loc_id']);
   const {data: metadata} = useLocationData();
   const {data: unit_history} = useUnitHistory();
   const {location_permissions} = usePermissions(loc_id);
@@ -49,9 +33,8 @@ const EditLocation = () => {
       );
       return out;
     },
-    onMutate: async () => onMutateLocation(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    meta: {
+      invalidates: [['metadata']],
     },
   });
 
@@ -94,8 +77,7 @@ const EditLocation = () => {
       ...data,
     };
     metadataEditLocationMutation.mutate(payload, {
-      onSuccess: (data, variables, context) => {
-        invalidateFromMeta(queryClient, context.meta);
+      onSuccess: () => {
         toast.success('Location er opdateret');
       },
     });
