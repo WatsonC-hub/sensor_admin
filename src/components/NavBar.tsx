@@ -1,4 +1,4 @@
-import {MapRounded, Person, Menu as MenuIcon, Help} from '@mui/icons-material';
+import {MapRounded, Person, Menu as MenuIcon, Help, History} from '@mui/icons-material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -207,6 +207,7 @@ const NavBarMenu = ({
             Profil
           </MenuItem>
         )}
+
         <MenuItem
           key="guides"
           onClick={() => {
@@ -217,6 +218,16 @@ const NavBarMenu = ({
             <Help />
           </ListItemIcon>
           Guides
+        </MenuItem>
+          key="old-version"
+          onClick={() => {
+            window.location.href = 'https://sensor-old.watsonc.dk';
+          }}
+        >
+          <ListItemIcon>
+            <History />
+          </ListItemIcon>
+          Gamle version
         </MenuItem>
         {!disableLogout && (
           <MenuItem onClick={handleClose}>
