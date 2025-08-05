@@ -1,4 +1,4 @@
-import {MapRounded, Person, Menu as MenuIcon} from '@mui/icons-material';
+import {MapRounded, Person, Menu as MenuIcon, NewReleases} from '@mui/icons-material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -199,6 +199,17 @@ const NavBarMenu = ({
             <Person />
           </ListItemIcon>
           Profil
+        </MenuItem>
+        <MenuItem
+          key="new-version"
+          onClick={() => {
+            window.location.href = 'https://sensor.watsonc.dk';
+          }}
+        >
+          <ListItemIcon>
+            <NewReleases />
+          </ListItemIcon>
+          Ny version
         </MenuItem>
         <MenuItem onClick={handleClose}>
           <LogOut>
