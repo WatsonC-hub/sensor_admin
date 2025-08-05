@@ -20,6 +20,7 @@ import {SelectionCommand} from './features/commandpalette/components/CommandCont
 import {usePageActions} from './features/commandpalette/hooks/usePageActions';
 import {Notification, useNotificationOverview} from './hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
+import ReleaseNoticeModal from './components/ReleaseNotice';
 
 const Router = () => {
   const user = useUser();
@@ -146,6 +147,7 @@ const Router = () => {
   return (
     <>
       <RemoveTrailingSlash />
+      <ReleaseNoticeModal />
       <Routes>
         <Route
           path="/"
