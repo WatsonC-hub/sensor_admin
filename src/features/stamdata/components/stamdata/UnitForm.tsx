@@ -1,4 +1,4 @@
-import {Grid, Grid2} from '@mui/material';
+import {Grid2} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 import {useFormContext} from 'react-hook-form';
