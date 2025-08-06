@@ -30,26 +30,11 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {toast} from 'react-toastify';
 import {ArrowBack, Save} from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import {queryClient} from '~/queryClient';
 import AlertDialog from '~/components/AlertDialog';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {withComponentPermission} from '~/hooks/withComponentPermission';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 import dayjs from 'dayjs';
-
-const onMutateTimeseries = (loc_id: number | undefined) => {
-  return {
-    meta: {
-      invalidates: [
-        queryKeys.Location.timeseries(loc_id),
-        queryKeys.Location.info(loc_id),
-        queryKeys.Location.permissions(loc_id),
-      ],
-    },
-  };
-};
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
@@ -162,10 +147,11 @@ const CreateStation = () => {
       return response.data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({queryKey: queryKeys.Location.timeseries(loc_id)});
-      queryClient.invalidateQueries({queryKey: queryKeys.Location.permissions(data.loc_id)});
       toast.success('Lokation oprettet');
       locationNavigate(data.loc_id, true);
+    },
+    meta: {
+      invalidates: [['metadata']],
     },
   });
 
@@ -181,13 +167,13 @@ const CreateStation = () => {
       );
       return out;
     },
-    onMutate: async () => onMutateTimeseries(loc_id),
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data) => {
       toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
-      invalidateFromMeta(queryClient, context.meta);
-      queryClient.invalidateQueries({queryKey: ['metadata', data.ts_id]});
       navigate('/');
       stationNavigate(data.ts_id);
+    },
+    meta: {
+      invalidates: [['metadata']],
     },
   });
 
@@ -204,15 +190,15 @@ const CreateStation = () => {
       );
       return out;
     },
-    onMutate: async () => onMutateTimeseries(loc_id),
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data) => {
       toast.success(
         loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
       );
-      invalidateFromMeta(queryClient, context.meta);
-      queryClient.invalidateQueries({queryKey: ['metadata', data.ts_id]});
       navigate('/');
       stationNavigate(data.ts_id);
+    },
+    meta: {
+      invalidates: [['metadata']],
     },
   });
 

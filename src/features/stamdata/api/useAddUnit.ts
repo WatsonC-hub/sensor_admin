@@ -73,23 +73,8 @@ const unitPostOptions = {
 //   },
 // };
 
-const onAddUnitMutation = (loc_id: number | undefined, ts_id: number | undefined) => {
-  return {
-    meta: {
-      invalidates: [
-        queryKeys.AvailableUnits.all(),
-        queryKeys.Location.timeseries(loc_id),
-        queryKeys.Location.metadata(loc_id),
-        queryKeys.Timeseries.metadata(ts_id),
-        queryKeys.Tasks.all(),
-        queryKeys.Map.all(),
-      ],
-    },
-  };
-};
-
 export const useUnit = () => {
-  const {loc_id, ts_id} = useAppContext([], ['loc_id', 'ts_id']);
+  const {ts_id} = useAppContext([], ['ts_id']);
   const queryClient = useQueryClient();
   const get = useQuery({
     queryKey: queryKeys.AvailableUnits.all(),
@@ -101,12 +86,17 @@ export const useUnit = () => {
   });
   const post = useMutation({
     ...unitPostOptions,
-    onMutate: () => onAddUnitMutation(loc_id, ts_id),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.AvailableUnits.all(),
       });
+      queryClient.invalidateQueries({
+        queryKey: ['register', ts_id],
+      });
       toast.success('Enhed gemt');
+    },
+    meta: {
+      invalidates: [['metadata']],
     },
   });
   // const put = useMutation({

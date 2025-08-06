@@ -197,6 +197,9 @@ const Boreholeno = () => {
         await apiClient.put(`/sensor_field/borehole/measurements/${data.gid}`, data);
       }
     },
+    meta: {
+      invalidates: [['register']],
+    },
   });
 
   const handlePejlingSubmit = () => {
@@ -208,9 +211,6 @@ const Boreholeno = () => {
         setPageToShow('pejling');
         setShowForm(null);
         toast.success('Kontrolmåling gemt');
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.Borehole.measurements(boreholeno),
-        });
       },
       onError: () => {
         toast.error('Kontrolmåling kunne ikke gemmes');
@@ -225,6 +225,9 @@ const Boreholeno = () => {
         await apiClient.put(`/sensor_field/borehole/watlevmp/${data.gid}`, data);
       }
     },
+    meta: {
+      invalidates: [['register']],
+    },
   });
 
   const handleMpSubmit = () => {
@@ -234,9 +237,6 @@ const Boreholeno = () => {
         resetMpData();
         setShowForm(null);
         toast.success('Målepunkt gemt');
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.Borehole.watlevmp(boreholeno),
-        });
       },
       onError: () => {
         toast.error('Der skete en fejl');

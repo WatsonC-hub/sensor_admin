@@ -75,7 +75,7 @@ export default function UnitForm({mode}: UnitFormProps) {
             label="Slutdato"
             disabled={!unit || startdato === undefined || disabled}
             required
-            maxDate={startdato}
+            minDate={startdato}
             sx={{minWidth: '200px'}}
           />
         )}

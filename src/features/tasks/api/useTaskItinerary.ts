@@ -1,4 +1,4 @@
-import {useQuery, useMutation, useQueryClient, UseQueryOptions} from '@tanstack/react-query';
+import {useQuery, useMutation, UseQueryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -16,7 +16,6 @@ import {
 } from '../types';
 import {useUser} from '~/features/auth/useUser';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 
 const itineraryPostOptions = {
   mutationKey: ['itinerary_post'],
@@ -57,19 +56,10 @@ type ItineraryOptions<T> = Partial<
   Omit<UseQueryOptions<Taskitinerary[], APIError, T>, 'queryKey' | 'queryFn'>
 >;
 
-const onMutateItinerary = () => {
-  return {
-    meta: {
-      invalidates: [queryKeys.Itineraries.all(), queryKeys.Tasks.all(), queryKeys.Map.all()],
-    },
-  };
-};
-
 const useTaskItinerary = <T = Taskitinerary[]>(
   id?: string | null,
   options?: ItineraryOptions<T>
 ) => {
-  const queryClient = useQueryClient();
   const user = useUser();
 
   const idRequired = id !== null && id !== undefined;
@@ -110,41 +100,41 @@ const useTaskItinerary = <T = Taskitinerary[]>(
 
   const createItinerary = useMutation({
     ...itineraryPostOptions,
-    onMutate: onMutateItinerary,
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
-
+    onSuccess: () => {
       toast.success('Tur oprettet');
+    },
+    meta: {
+      invalidates: [['itineraries']],
     },
   });
 
   const patch = useMutation({
     ...patchItineraryOptions,
-    onMutate: onMutateItinerary,
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
-
+    onSuccess: () => {
       toast.success('Tur opdateret');
+    },
+    meta: {
+      invalidates: [['itineraries']],
     },
   });
 
   const complete = useMutation({
     ...completeItineraryOptions,
-    onMutate: onMutateItinerary,
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
-
+    onSuccess: () => {
       toast.success('Tur færdiggjort');
+    },
+    meta: {
+      invalidates: [['itineraries']],
     },
   });
 
   const addLocationToTrip = useMutation({
     ...addLocationToItineraryOptions,
-    onMutate: onMutateItinerary,
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
-
+    onSuccess: () => {
       toast.success('Opgaver tilføjet til tur');
+    },
+    meta: {
+      invalidates: [['itineraries']],
     },
   });
 

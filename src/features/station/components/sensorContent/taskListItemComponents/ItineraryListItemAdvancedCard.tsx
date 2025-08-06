@@ -12,6 +12,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useDisplayState} from '~/hooks/ui';
+import dayjs from 'dayjs';
 type Props = {
   task: Task;
 };
@@ -32,7 +33,7 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
       ts_id: task.ts_id,
       status_id: status_id,
       assigned_to: task.assigned_to,
-      due_date: task.due_date,
+      due_date: dayjs(task.due_date).format('YYYY-MM-DD'),
     };
     const payload = {
       path: task.id,

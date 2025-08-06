@@ -2,7 +2,6 @@ import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/rea
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
@@ -11,12 +10,7 @@ interface AlgorithmsBase {
   path: string;
   data?: any;
 }
-// interface AlgorithmsPost extends AlgorithmsBase {
-//   data: {
-//     algorithm: string;
-//     parameters: Record<string, any>;
-//   };
-// }
+
 interface AlgorithmsPut extends AlgorithmsBase {
   data: {
     algorithm: string;
@@ -31,14 +25,6 @@ interface AlgorithmsRevert extends AlgorithmsBase {
   };
 }
 
-// export const algorithmsPostOptions = {
-//   mutationKey: ['algorithms_post'],
-//   mutationFn: async (mutation_data: AlgorithmsPost) => {
-//     const {data} = mutation_data;
-//     const {data: result} = await apiClient.post(`/sensor_admin/algorithms`, data);
-//     return result;
-//   },
-// };
 const algorithmsPutOptions = {
   mutationKey: ['algorithms_put'],
   mutationFn: async (mutation_data: AlgorithmsPut) => {
@@ -65,22 +51,6 @@ const algorithmsRevertOptions = {
   },
 };
 
-const onMutateAlgorithms = (ts_id: number, loc_id: number) => {
-  return {
-    meta: {
-      invalidates: [
-        queryKeys.Timeseries.algorithms(ts_id),
-        queryKeys.Location.timeseries(loc_id),
-        queryKeys.Map.all(),
-        queryKeys.Tasks.all(),
-        queryKeys.Itineraries.all(),
-        queryKeys.Timeseries.metadata(ts_id),
-        queryKeys.overblikByLocId(loc_id),
-      ],
-    },
-  };
-};
-
 export const getAlgorithmOptions = (ts_id: number) =>
   queryOptions<Array<QaAlgorithms>, APIError>({
     queryKey: queryKeys.Timeseries.algorithms(ts_id),
@@ -93,7 +63,7 @@ export const getAlgorithmOptions = (ts_id: number) =>
   });
 
 export const useAlgorithms = () => {
-  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
+  const {ts_id} = useAppContext(['ts_id']);
   const queryClient = useQueryClient();
   const get = useQuery(getAlgorithmOptions(ts_id));
 
@@ -111,27 +81,30 @@ export const useAlgorithms = () => {
 
   const put = useMutation({
     ...algorithmsPutOptions,
-    onMutate: async () => onMutateAlgorithms(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Ændringer gemt');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
   const del = useMutation({
     ...algorithmsDelOptions,
-    onMutate: async () => onMutateAlgorithms(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Algorithms slettet');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
   const revert = useMutation({
     ...algorithmsRevertOptions,
-    onMutate: async () => onMutateAlgorithms(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Algoritme nulstillet');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 

@@ -1,10 +1,9 @@
-import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
 import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
-import {queryKeys, TilsynInvalidation} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {TilsynItem} from '~/types';
@@ -72,44 +71,37 @@ export const tilsynGetOptions = (ts_id: number | undefined) =>
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
 
-const onMutateTilsyn = async (ts_id: number, loc_id: number) => {
-  return {
-    meta: {
-      invalidates: TilsynInvalidation(ts_id, loc_id),
-    },
-  };
-};
-
 export const useTilsyn = () => {
-  const queryClient = useQueryClient();
-
-  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
+  const {ts_id} = useAppContext(['ts_id']);
   const get = useQuery(tilsynGetOptions(ts_id));
 
   const post = useMutation({
     ...tilsynPostOptions,
-    onMutate: async () => onMutateTilsyn(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Tilsyn gemt');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
   const put = useMutation({
     ...tilsynPutOptions,
-    onMutate: async () => onMutateTilsyn(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Tilsyn ændret');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
   const del = useMutation({
     ...tilsynDelOptions,
-    onMutate: async () => onMutateTilsyn(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Tilsyn slettet');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 

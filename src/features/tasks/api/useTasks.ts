@@ -22,7 +22,6 @@ import {
 } from '../types';
 import {useDisplayState} from '~/hooks/ui';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 import dayjs, {Dayjs} from 'dayjs';
 
 type Mutation<TData> = {
@@ -68,9 +67,6 @@ const taskPatchOptions: MutationOptions<DBTask, APIError, Mutation<PatchTask>> =
     const {data: result} = await apiClient.patch(`/sensor_admin/tasks/${path}`, data);
     return result;
   },
-  meta: {
-    invalidates: [['tasks']],
-  },
 };
 const tasksDelOptions = {
   mutationKey: ['tasks_del'],
@@ -109,7 +105,7 @@ const deleteTaskFromItineraryOptions = {
   },
 };
 
-const getNextDueDateOptions = (ts_id: number, open: boolean) =>
+const getNextDueDateOptions = (ts_id: number) =>
   queryOptions<string, APIError, Dayjs>({
     queryKey: queryKeys.Tasks.nextDueDate(ts_id),
     queryFn: async () => {
@@ -119,46 +115,11 @@ const getNextDueDateOptions = (ts_id: number, open: boolean) =>
     select: (data): Dayjs => {
       return dayjs(data);
     },
-    enabled: ts_id !== undefined && ts_id !== null && open,
+    enabled: ts_id !== undefined && ts_id !== null,
   });
 
-export const getNextDueDate = (ts_id: number, open: boolean) => {
-  return useQuery(getNextDueDateOptions(ts_id, open));
-};
-
-const onMutateTasks = () => {
-  return {
-    meta: {
-      invalidates: [queryKeys.Tasks.all(), queryKeys.Itineraries.all(), queryKeys.Map.all()],
-    },
-  };
-};
-
-const onPutTasks = (task_id: string) => {
-  return {
-    meta: {
-      invalidates: [
-        queryKeys.Tasks.taskHistory(task_id),
-        queryKeys.Tasks.all(),
-        queryKeys.Map.all(),
-        queryKeys.Itineraries.all(),
-        queryKeys.Timeseries.all(),
-      ],
-    },
-  };
-};
-
-const onMutateItinerary = (itinerary_id: string) => {
-  return {
-    meta: {
-      invalidates: [
-        queryKeys.Itineraries.byId(itinerary_id),
-        queryKeys.Itineraries.itineraryTasks(itinerary_id),
-        queryKeys.Tasks.all(),
-        queryKeys.Map.all(),
-      ],
-    },
-  };
+export const getNextDueDate = (ts_id: number) => {
+  return useQuery(getNextDueDateOptions(ts_id));
 };
 
 // /location_related_tasks/{loc_id}
@@ -183,13 +144,8 @@ export const useTasks = () => {
 
   const post = useMutation({
     ...tasksPostOptions,
-    onMutate: onMutateTasks,
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Opgaver gemt');
-    },
-    meta: {
-      invalidates: [['tasks']],
     },
   });
 
@@ -197,13 +153,16 @@ export const useTasks = () => {
     ...taskPatchOptions,
     onMutate: async (mutation_data) => {
       const {path, data} = mutation_data;
-      const previous = queryClient.getQueryData<Task[]>(['tasks']);
-      queryClient.invalidateQueries({queryKey: queryKeys.Tasks.all()});
+      const previous = queryClient.getQueryData<Task[]>(queryKeys.Tasks.all());
       queryClient.setQueryData<Task[]>(
-        ['tasks'],
+        queryKeys.Tasks.all(),
         previous?.map((task) => {
           if (task.id === path) {
-            const updated = {...task, ...data};
+            const updated = {
+              ...task,
+              ...data,
+              due_date: data?.due_date ? dayjs(data.due_date) : null,
+            };
             return updated;
           }
 
@@ -214,9 +173,9 @@ export const useTasks = () => {
     onSuccess: (data, variables) => {
       const {path} = variables;
       if (path != data.id) {
-        const previous = queryClient.getQueryData<Task[]>(['tasks']);
+        const previous = queryClient.getQueryData<Task[]>(queryKeys.Tasks.all());
         queryClient.setQueryData<Task[]>(
-          ['tasks'],
+          queryKeys.Tasks.all(),
           previous?.map((task) => {
             if (task.id === path) {
               const updated = {...task, ...data};
@@ -228,8 +187,6 @@ export const useTasks = () => {
 
         setSelectedTask(data.id);
       }
-      const context = onPutTasks(data.id);
-      invalidateFromMeta(queryClient, context.meta);
     },
     onError: () => {
       queryClient.invalidateQueries({queryKey: queryKeys.Tasks.all()});
@@ -237,32 +194,24 @@ export const useTasks = () => {
   });
   const del = useMutation({
     ...tasksDelOptions,
-    onMutate: () => onMutateTasks(),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
-
+    onSuccess: () => {
       toast.success('Opgave slettet');
     },
   });
 
   const convertNotificationToTask = useMutation({
     ...convertNotificationToTaskOptions,
-    onMutate: onMutateTasks,
     onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Opgave oprettet');
     },
   });
 
   const updateNotification = useMutation({
     ...notificationUpdateStatus,
-    onMutate: () => onMutateTasks(),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
-    },
+    onSuccess: () => {},
   });
 
   const getUsers = useQuery<TaskUser[], APIError>({
@@ -287,13 +236,7 @@ export const useTasks = () => {
 
   const deleteTaskFromItinerary = useMutation({
     ...deleteTaskFromItineraryOptions,
-    onMutate: (variables) => {
-      const {path} = variables;
-      const splitted = path.split('/');
-      const id = splitted[splitted.length - 1];
-      return onMutateItinerary(id);
-    },
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables) => {
       const {path} = variables;
       const splitted = path.split('/');
       const id = splitted[splitted.length - 1];
@@ -309,9 +252,6 @@ export const useTasks = () => {
           return task;
         })
       );
-
-      invalidateFromMeta(queryClient, context.meta);
-
       toast.success('Opgaver fjernet fra tur');
     },
   });

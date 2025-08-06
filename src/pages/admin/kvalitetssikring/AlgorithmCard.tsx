@@ -77,11 +77,22 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
 
     qaAlgorithm?.parameters?.forEach((option) => {
       if (option.type === 'number') {
+        let zodValue = z.number();
+
+        if (option.min !== undefined) {
+          zodValue = zodValue.min(option.min, {message: `Skal være større end ${option.min}`});
+        }
+
+        if (option.max !== undefined) {
+          zodValue = zodValue.max(option.max, {message: `Skal være mindre end ${option.max}`});
+        }
+
+        if (option.nullable == true) {
+          //@ts-expect-error zod types are not correct
+          zodValue = zodValue.nullable();
+        }
         //@ts-expect-error zod types are not correct
-        schema.shape.parameters.shape[option.name] = z
-          .number()
-          .min(option.min, {message: `Skal være større end ${option.min}`})
-          .max(option.max, {message: `Skal være mindre end ${option.max}`});
+        schema.shape.parameters.shape[option.name] = zodValue;
       } else if (option.type === 'string') {
         //@ts-expect-error zod types are not correct
         schema.shape.parameters.shape[option.name] = z.string();

@@ -54,11 +54,6 @@ export const useTaskHistory = (task_id: string) => {
   });
   const addTaskComment = useMutation({
     ...taskCommentPostOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Tasks.taskHistory(task_id),
-      });
-    },
   });
   const editTaskComment = useMutation({
     ...taskCommentPutOptions,
@@ -74,9 +69,6 @@ export const useTaskHistory = (task_id: string) => {
   const deleteTaskComment = useMutation({
     ...taskCommentDelOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Tasks.taskHistory(task_id),
-      });
       toast.success('Opgave kommentar slettet');
     },
   });

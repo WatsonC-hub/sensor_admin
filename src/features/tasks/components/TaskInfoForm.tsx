@@ -1,16 +1,16 @@
 import {Delete} from '@mui/icons-material';
 // import DragHandleIcon from '@mui/icons-material/DragHandle';
-import {Box, Grid, IconButton, TextField, Tooltip, Typography} from '@mui/material';
+import {Box, Grid, TextField, Tooltip, Typography} from '@mui/material';
 import React, {useState} from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
-import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {getNextDueDate, useTasks} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {Task} from '~/features/tasks/types';
 import {useDisplayState} from '~/hooks/ui';
 import dayjs from 'dayjs';
+import {toast} from 'react-toastify';
 
 // import {useTaskStore} from '../api/useTaskStore';
 
@@ -20,10 +20,10 @@ type TaskInfoFormProps = {
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [dueDateDialogOpen, setDueDateDialogOpen] = useState<boolean>(false);
   const deleteTaskTitle = selectedTask.id.includes(':') ? 'Notifikationen kan ikke slettes' : '';
 
   const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
+  const {data: nextDueDate, error, isPending} = getNextDueDate(selectedTask.ts_id);
   // const removeFromItineraryTitle = !selectedTask.itinerary_id
   //   ? 'Opgaven er ikke tilknyttet en tur'
   //   : '';
@@ -36,8 +36,8 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const {
     trigger,
     getValues,
-    reset,
     formState: {dirtyFields},
+    setValue,
   } = useFormContext();
 
   const handleSubmit = (values: Partial<FieldValues>) => {
@@ -115,16 +115,21 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
-            <TaskForm.DueDate onChangeCallback={async () => await handlePatch('due_date')} />
-            <IconButton
-              disabled={!selectedTask.can_edit}
-              size="small"
-              onClick={() => {
-                setDueDateDialogOpen(true);
+            <TaskForm.DueDate
+              onChangeCallback={async () => await handlePatch('due_date')}
+              customActionLabel="next_control"
+              customAction={async () => {
+                if (!error && !isPending && nextDueDate) {
+                  setValue('due_date', nextDueDate, {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                  });
+                }
+                if (error && error.response && typeof error.response.data.detail === 'string') {
+                  toast.error(error.response.data.detail);
+                }
               }}
-            >
-              <MoreTimeIcon fontSize="small" />
-            </IconButton>
+            />
           </Box>
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6} alignContent={'center'} pb={0.5}>
@@ -248,7 +253,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           setSelectedTask(null);
         }}
       />
-      <TaskForm.DueDateDialog
+      {/* <TaskForm.DueDateDialog
         ts_id={selectedTask.ts_id}
         open={dueDateDialogOpen}
         onSubmit={async () => {
@@ -259,7 +264,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           setDueDateDialogOpen(false);
           reset();
         }}
-      />
+      /> */}
     </Box>
   );
 };

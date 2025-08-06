@@ -6,7 +6,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {httpStatusDescriptions} from '~/consts';
 import {excludeDelOptions, excludePostOptions, excludePutOptions} from '~/hooks/query/useExclude';
-import {queryKeys} from './helpers/QueryKeyFactoryHelper';
+import {tags, queryKeys} from './helpers/QueryKeyFactoryHelper';
 
 type ErrorDetail = {
   type: string;
@@ -22,7 +22,7 @@ type ErrorResponse = {
 declare module '@tanstack/react-query' {
   interface Register {
     mutationMeta: {
-      invalidates?: Array<QueryKey | ['tasks'] | ['status'] | ['metadata']>;
+      invalidates?: Array<QueryKey | Array<keyof typeof tags>>;
     };
   }
 }
@@ -53,12 +53,21 @@ const queryClient = new QueryClient({
   },
   mutationCache: new MutationCache({
     onSuccess: (_data, _variables, _context, mutation) => {
-      // queryClient.invalidateQueries({queryKey: queryKeys.Map.all()});
       queryClient.invalidateQueries({
         predicate: (query) =>
           // invalidate all matching tags at once
           // or everything if no meta is provided
-          mutation.meta?.invalidates?.some((queryKey) => matchQuery({queryKey}, query)) ?? false,
+          {
+            if (matchQuery({queryKey: ['map']}, query)) return true;
+            if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
+            if (matchQuery({queryKey: ['tasks']}, query)) return true;
+
+            return (
+              mutation.meta?.invalidates?.some((queryKey) => {
+                return queryKey.every((key) => query.queryKey.includes(key));
+              }) ?? false
+            );
+          },
       });
     },
     onError: (error) => {

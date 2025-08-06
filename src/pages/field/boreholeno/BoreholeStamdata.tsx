@@ -1,7 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {EditRounded, PhotoCameraRounded, Save} from '@mui/icons-material';
 import {Box, Card, CardContent, Grid2, InputAdornment, Typography} from '@mui/material';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
@@ -34,8 +34,6 @@ const BoreholeStamdata = () => {
   const [openCamera, setOpenCamera] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
 
-  const queryClient = useQueryClient();
-
   const {data: stamdata} = useQuery({
     queryKey: queryKeys.Borehole.stamdata(boreholeno, intakeno),
     queryFn: async () => {
@@ -58,8 +56,8 @@ const BoreholeStamdata = () => {
       );
       return out;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: queryKeys.Borehole.allStamdata()});
+    meta: {
+      invalidates: [['register']],
     },
   });
 

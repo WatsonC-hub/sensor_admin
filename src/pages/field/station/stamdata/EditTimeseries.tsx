@@ -12,24 +12,9 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
 import {boreholeEditTimeseriesSchema, defaultEditTimeseriesSchema} from '~/features/station/schema';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-
-const onMutateTimeseries = async (ts_id: number, loc_id: number) => {
-  return {
-    meta: {
-      invalidates: [
-        queryKeys.Location.timeseries(loc_id),
-        queryKeys.Timeseries.metadata(ts_id),
-        queryKeys.Location.info(loc_id),
-      ],
-    },
-  };
-};
 
 const EditTimeseries = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
@@ -46,10 +31,11 @@ const EditTimeseries = () => {
       );
       return out;
     },
-    onMutate: async () => onMutateTimeseries(ts_id, loc_id),
-    onSuccess: (data, variables, context) => {
-      invalidateFromMeta(queryClient, context.meta);
+    onSuccess: () => {
       toast.success('Tidsserie er opdateret');
+    },
+    meta: {
+      invalidates: [['metadata']],
     },
   });
 
@@ -99,8 +85,7 @@ const EditTimeseries = () => {
       ...data,
     };
     metadataEditTimeseriesMutation.mutate(payload, {
-      onSuccess: (data, variables, context) => {
-        invalidateFromMeta(queryClient, context.meta);
+      onSuccess: () => {
         toast.success('Tidsserie er opdateret');
       },
     });

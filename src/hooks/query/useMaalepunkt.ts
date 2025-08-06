@@ -3,9 +3,8 @@ import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError, queryClient} from '~/queryClient';
+import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {Maalepunkt} from '~/types';
 
@@ -71,18 +70,6 @@ const maalepunktDelOptions = {
   },
 };
 
-const onMutateMaalepunkt = (ts_id: number) => {
-  return {
-    meta: {
-      invalidates: [
-        queryKeys.Timeseries.maalepunkt(ts_id),
-        queryKeys.Timeseries.pejling(ts_id),
-        queryKeys.Timeseries.metadata(ts_id),
-      ],
-    },
-  };
-};
-
 export const getMaalepunktOptions = (ts_id: number) =>
   queryOptions<Array<Maalepunkt>, APIError>({
     queryKey: queryKeys.Timeseries.maalepunkt(ts_id),
@@ -104,31 +91,34 @@ export const useMaalepunkt = () => {
 
   const post = useMutation({
     ...maalepunktPostOptions,
-    onMutate: () => onMutateMaalepunkt(ts_id),
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       get.refetch();
-      invalidateFromMeta(queryClient, context.meta);
       toast.success('Målepunkt gemt');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
   const put = useMutation({
     ...maalepunktPutOptions,
-    onMutate: () => onMutateMaalepunkt(ts_id),
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       get.refetch();
-      invalidateFromMeta(queryClient, context.meta);
       toast.success('Målepunkt ændret');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
   const del = useMutation({
     ...maalepunktDelOptions,
-    onMutate: () => onMutateMaalepunkt(ts_id),
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       get.refetch();
-      invalidateFromMeta(queryClient, context.meta);
       toast.success('Målepunkt slettet');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 

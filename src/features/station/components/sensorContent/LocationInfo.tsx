@@ -59,7 +59,7 @@ const LocationInfo = () => {
       </Box>
       {location_data?.customer_name !== null && location_data?.customer_name !== undefined && (
         <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-          <Typography variant={'body2'}>Projekt info: </Typography>
+          <Typography variant={'body2'}>Projektinfo: </Typography>
           <Typography variant={'body2'}>{location_data?.customer_name}</Typography>
         </Box>
       )}
