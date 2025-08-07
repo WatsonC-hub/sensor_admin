@@ -1,4 +1,4 @@
-import {Box, Typography} from '@mui/material';
+import {Box, Grid2, Typography} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {useFormContext} from 'react-hook-form';
@@ -37,17 +37,18 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
       {
         accessorKey: 'calypso_id',
         header: 'Calypso ID',
-        size: 150,
+        size: 20,
       },
       {
         accessorFn: (row) => convertDateWithTimeStamp(row.startdato),
         header: 'Startdato',
+        size: 20,
       },
       {
         accessorFn: (row) =>
           row.slutdato < moment().toISOString() ? convertDateWithTimeStamp(row.slutdato) : 'Nu',
         header: 'Slutdato',
-        size: 150,
+        size: 20,
       },
     ],
     []
@@ -55,6 +56,8 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
 
   const options: Partial<MRT_TableOptions<UnitHistory>> = {
     enableRowActions: true,
+    enableColumnActions: false,
+    enableColumnFilters: false,
     renderRowActions: ({table, row}) => (
       <RenderActions
         handleEdit={() => {
@@ -113,15 +116,92 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
     },
     renderDetailPanel: ({row}) => {
       return (
-        <Box sx={{p: 2}} display="flex" flexDirection="column" gap={0.5}>
-          <Typography variant="body2">{`Startdato: ${convertDateWithTimeStamp(row.original.startdato)}`}</Typography>
-          <Typography variant="body2">{`Slutdato: ${convertDateWithTimeStamp(row.original.slutdato)}`}</Typography>
-          <Typography variant="body2">{`Calypso ID: ${row.original.calypso_id}`}</Typography>
-          <Typography variant="body2">{`Sensor ID: ${row.original.sensor_id}`}</Typography>
-          <Typography variant="body2">{`Sensor: ${row.original.sensorinfo}`}</Typography>
-          <Typography variant="body2">{`Terminal: ${row.original.terminal_id}`}</Typography>
-          <Typography variant="body2">{`Terminal type: ${row.original.terminal_type}`}</Typography>
-        </Box>
+        <Grid2 container spacing={1} direction={'column'} width={'100%'}>
+          <Grid2 container size={12} spacing={1} width={'fit-content'}>
+            <Grid2 width={100}>
+              <Typography variant="body2" fontWeight={'bold'}>
+                Startdato:
+              </Typography>
+            </Grid2>
+            <Grid2>
+              <Typography variant="body2" maxWidth={150}>
+                {convertDateWithTimeStamp(row.original.startdato)}
+              </Typography>
+            </Grid2>
+          </Grid2>
+          <Grid2 container size={12} spacing={1} width={'fit-content'}>
+            <Grid2 width={100}>
+              <Typography variant="body2" fontWeight={'bold'}>
+                Slutdato:
+              </Typography>
+            </Grid2>
+            <Grid2>
+              <Typography variant="body2" maxWidth={150}>
+                {convertDateWithTimeStamp(row.original.slutdato)}
+              </Typography>
+            </Grid2>
+          </Grid2>
+          <Grid2 container size={12} spacing={1} width={'fit-content'}>
+            <Grid2 width={100}>
+              <Typography variant="body2" fontWeight={'bold'}>
+                Calypso ID:
+              </Typography>
+            </Grid2>
+            <Grid2>
+              <Typography variant="body2" maxWidth={150}>
+                {row.original.calypso_id}
+              </Typography>
+            </Grid2>
+          </Grid2>
+          <Grid2 container size={12} spacing={1} width={'fit-content'}>
+            <Grid2 width={100}>
+              <Typography variant="body2" fontWeight={'bold'}>
+                Terminal ID:
+              </Typography>
+            </Grid2>
+            <Grid2>
+              <Typography variant="body2" maxWidth={150}>
+                {row.original.terminal_id}
+              </Typography>
+            </Grid2>
+          </Grid2>
+          <Grid2 container size={12} spacing={1} width={'fit-content'}>
+            <Grid2 width={100}>
+              <Typography variant="body2" fontWeight={'bold'}>
+                Terminal type:
+              </Typography>
+            </Grid2>
+            <Grid2>
+              <Typography variant="body2" maxWidth={150}>
+                {row.original.terminal_type}
+              </Typography>
+            </Grid2>
+          </Grid2>
+          <Grid2 container size={12} spacing={1} width={'fit-content'}>
+            <Grid2 width={100}>
+              <Typography variant="body2" fontWeight={'bold'}>
+                Sensor ID:
+              </Typography>
+            </Grid2>
+            <Grid2>
+              <Typography variant="body2" maxWidth={150}>
+                {row.original.sensor_id}
+              </Typography>
+            </Grid2>
+          </Grid2>
+          <Grid2 container size={12} spacing={1} width={'fit-content'}>
+            <Grid2 width={100}>
+              <Typography variant="body2" fontWeight={'bold'}>
+                Sensor:
+              </Typography>
+            </Grid2>
+            <Grid2>
+              <Typography variant="body2" maxWidth={150}>
+                {row.original.sensorinfo}
+              </Typography>
+            </Grid2>
+          </Grid2>
+        </Grid2>
       );
     },
     muiTableContainerProps: {
