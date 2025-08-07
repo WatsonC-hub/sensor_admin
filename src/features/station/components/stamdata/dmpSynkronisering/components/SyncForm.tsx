@@ -21,7 +21,8 @@ const SyncForm = ({formMethods, loctype_id, tstype_id, owners}: SyncFormProps) =
   const isWaterCourseOrLake = loctype_id === 1 || loctype_id === 6;
   const isBorehole = loctype_id === 9;
 
-  const canSyncDmp = isWaterCourseOrLake && isDmpType;
+  const canSyncDmp =
+    (isWaterCourseOrLake && isDmpType) || (isBorehole && isDmpType && isJupiterType);
   const canSyncJupiter = isBorehole && isJupiterType;
 
   const {

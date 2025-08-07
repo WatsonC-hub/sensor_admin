@@ -65,25 +65,12 @@ export const ContactInfoGetOptions = (loc_id: number | undefined) =>
     enabled: loc_id !== undefined && loc_id !== null,
   });
 
-export const useSearchContact = (
-  loc_id: number | undefined,
-  searchString: string,
-  contact_role?: number
-) => {
-  let searchEndpoint = `/sensor_field/stamdata/contact/search_contact_info`;
-  let relevantContactsEndpoint = `/sensor_field/stamdata/contact/relevant_contacts/${loc_id}`;
-  if (contact_role) {
-    searchEndpoint += `/contact_role/${searchString}`;
-    relevantContactsEndpoint += `/contact_role`;
-  } else {
-    searchEndpoint += `/${searchString}`;
-  }
+export const useSearchContact = (loc_id: number | undefined, searchString: string) => {
+  const searchEndpoint = `/sensor_field/stamdata/contact/search_contact_info/${searchString}`;
+  const relevantContactsEndpoint = `/sensor_field/stamdata/contact/relevant_contacts/${loc_id}`;
 
   const searched_contacts = useQuery({
-    queryKey: [
-      `search_contact_info${contact_role !== undefined ? `/contact_role` : ''}`,
-      searchString,
-    ],
+    queryKey: [`search_contact_info`, searchString],
     queryFn: async () => {
       let data;
       if (searchString == '') {

@@ -8,7 +8,7 @@ import CallIcon from '@mui/icons-material/Call';
 
 type AlarmCriteriaFormProps = {
   index: number;
-  isCheckbox?: boolean;
+  // disabled: boolean;
 };
 
 const AlarmCriteriaTypedForm = createTypedForm<AlarmCriteriaArrayFormValues>();
@@ -21,24 +21,14 @@ const criteriaTypes = [
   {id: 'sender_ikke', name: 'Sender ikke'},
 ] as const;
 
-const AlarmCriteriaForm = ({index, isCheckbox = false}: AlarmCriteriaFormProps) => {
+const AlarmCriteriaForm = ({index}: AlarmCriteriaFormProps) => {
   return (
     <Grid2 container spacing={2} alignItems={'center'} style={{width: '100%'}}>
-      {isCheckbox ? (
-        <AlarmCriteriaTypedForm.Checkbox
-          name={`criteria.${index}.name`}
-          label="Sender ikke"
-          gridSizes={{xs: 12, sm: 6}}
-        />
-      ) : (
-        <AlarmCriteriaTypedForm.Input
-          name={`criteria.${index}.criteria`}
-          type="number"
-          fullWidth
-          placeholder="Indtast kriterium"
-          label={criteriaTypes[index]?.name}
-        />
-      )}
+      <AlarmCriteriaTypedForm.Checkbox
+        name={`criteria.${index}.selected`}
+        label={criteriaTypes[index]?.name}
+        gridSizes={{xs: 12, sm: 6.8}}
+      />
       <AlarmCriteriaTypedForm.Checkbox
         name={`criteria.${index}.sms`}
         icon={<SmsIcon color="primary" />}

@@ -16,10 +16,7 @@ const alarmContactSchema = z
 const criteria = z.object({
   id: z.number().int().optional(),
   name: z.string(),
-  criteria: z
-    .number()
-    .nullish()
-    .transform((val) => (val === null ? undefined : val)),
+  selected: z.boolean().default(false),
   category: z.string(),
   sms: z.boolean().default(false),
   email: z.boolean().default(false),

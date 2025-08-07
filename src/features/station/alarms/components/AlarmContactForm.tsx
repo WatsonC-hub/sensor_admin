@@ -26,7 +26,7 @@ const AlarmContactForm = ({index, remove, searchValue}: AlarmContact) => {
   const debouncedSearch = useDebouncedValue(search, 500);
 
   // number 67 is the id for the contact type "Alarm"
-  const {data} = useSearchContact(loc_id, debouncedSearch, 67);
+  const {data} = useSearchContact(loc_id, debouncedSearch);
 
   const {
     formState: {errors},

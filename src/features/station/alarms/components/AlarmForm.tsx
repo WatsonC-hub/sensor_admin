@@ -11,8 +11,6 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {AlarmPost, alarmTable} from '../types';
 import {useAppContext} from '~/state/contexts';
 import {useAlarm} from '../api/useAlarm';
-import {useSetAtom} from 'jotai';
-import {tempHorizontalAtom} from '~/state/atoms';
 import {toast} from 'react-toastify';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 
@@ -34,7 +32,6 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     getCriteria: {data: criteria_types},
   } = useAlarm();
 
-  const setTempLines = useSetAtom(tempHorizontalAtom);
   const alarmMethods = useForm<AlarmsFormValues>({
     resolver: zodResolver(alarmsSchema),
     defaultValues: {
@@ -43,17 +40,8 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
       to: alarm?.latest_timeofday || '',
       criteria: criteria_types?.map((criteria) => {
         if (alarm?.alarmCriteria.map((c) => c.name).includes(criteria.name)) {
-          return alarm.alarmCriteria.find((c) => c.name === criteria.name);
-        } else {
-          return {
-            id: criteria.id,
-            name: criteria.name,
-            category: criteria.category,
-            criteria: undefined,
-            sms: false,
-            email: false,
-            call: false,
-          };
+          const alarmCriteria = alarm.alarmCriteria.find((c) => c.name === criteria.name);
+          return alarmCriteria;
         }
       }),
       contacts: alarm?.alarmContacts || [],
@@ -64,7 +52,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     mode: 'onTouched',
   });
 
-  const {control, reset, getValues} = alarmMethods;
+  const {control, reset} = alarmMethods;
 
   const handleSubmit = (data: AlarmsFormValues) => {
     if (alarm === undefined) {
@@ -73,24 +61,18 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         alarm_interval: data.interval,
         earliest_timeofday: data.from,
         latest_timeofday: data.to,
-        alarm_high: data.criteria.find((c) => c.name === 'alarm_high')?.criteria,
-        alarm_low: data.criteria.find((c) => c.name === 'alarm_low')?.criteria,
-        attention_high: data.criteria.find((c) => c.name === 'attention_high')?.criteria,
-        attention_low: data.criteria.find((c) => c.name === 'attention_low')?.criteria,
         note_to_include: data.comment,
         signal_warning: data.signal_warning,
         alarm_contacts: data.contacts?.map((contact) => ({
           contact_id: contact.contact_id,
         })),
-        alarm_criteria: data.criteria
-          ?.filter((c) => c.criteria !== undefined)
-          .map((criteria) => ({
-            id: criteria.id,
-            criteria: criteria.criteria,
-            sms: criteria.sms,
-            email: criteria.email,
-            call: criteria.call,
-          })),
+        alarm_criteria: data.criteria.map((criteria) => ({
+          id: criteria.id,
+          selected: criteria.selected,
+          sms: criteria.sms,
+          email: criteria.email,
+          call: criteria.call,
+        })),
       };
 
       const payload = {
@@ -111,10 +93,6 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         alarm_interval: data.interval,
         earliest_timeofday: data.from,
         latest_timeofday: data.to,
-        alarm_high: data.criteria.find((c) => c.name === 'alarm_high')?.criteria,
-        alarm_low: data.criteria.find((c) => c.name === 'alarm_low')?.criteria,
-        attention_high: data.criteria.find((c) => c.name === 'attention_high')?.criteria,
-        attention_low: data.criteria.find((c) => c.name === 'attention_low')?.criteria,
         note_to_include: data.comment,
         signal_warning: data.signal_warning,
         alarm_contacts:
@@ -123,16 +101,14 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
                 contact_id: contact.contact_id,
               }))
             : undefined,
-        alarm_criteria: data.criteria
-          ?.filter((c) => c.criteria !== undefined)
-          .map((criteria) => ({
-            id: criteria.id,
-            criteria: criteria.criteria,
-            category: criteria.category,
-            sms: criteria.sms,
-            email: criteria.email,
-            call: criteria.call,
-          })),
+        alarm_criteria: data.criteria.map((criteria) => ({
+          id: criteria.id,
+          selected: criteria.selected,
+          category: criteria.category,
+          sms: criteria.sms,
+          email: criteria.email,
+          call: criteria.call,
+        })),
       };
 
       const payload = {
@@ -164,19 +140,6 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     name: 'criteria',
   });
 
-  setTempLines(
-    getValues('criteria')
-      ?.filter((field) => field.criteria !== undefined && field.name)
-      .map((field) => {
-        return {
-          level: field.criteria!,
-          name: field.name!,
-          line: undefined,
-          mode: undefined,
-        };
-      })
-  );
-
   return (
     <Form formMethods={alarmMethods} label="Alarm">
       <Form.Input name="name" label="Alarm navn" placeholder="Indtast alarm navn" />
@@ -198,11 +161,14 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
                     .filter((field) => field.category === category)
                     .map((field) => {
                       const index = criteriaFields.findIndex((f) => f.id === field.id);
+                      // const disabled = alarm?.alarmCriteria.find(
+                      //   (c) => c.id === field.id
+                      // )?.disabled;
                       return (
                         <Box key={field.id}>
                           <AlarmCriteriaForm
                             index={index}
-                            isCheckbox={field.name === 'sender_ikke'}
+                            // disabled={disabled === undefined ? true : disabled}
                           />
                         </Box>
                       );

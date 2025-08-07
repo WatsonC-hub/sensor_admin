@@ -1,6 +1,6 @@
 type AlarmCriteria = {
   id: number | undefined;
-  criteria: number | undefined | null;
+  selected: boolean;
   sms: boolean;
   email: boolean;
   call: boolean;
@@ -15,7 +15,8 @@ export type AlarmCriteriaType = {
 export type CriteriaTable = {
   id: number;
   name: string;
-  criteria: number;
+  selected: boolean;
+  disabled: boolean;
   category: string;
   sms: boolean;
   email: boolean;
@@ -55,10 +56,6 @@ export type AlarmResponse = {
 export type AlarmPost = {
   name: string;
   alarm_interval: number;
-  alarm_high: number | undefined | null;
-  alarm_low: number | undefined | null;
-  attention_high: number | undefined | null;
-  attention_low: number | undefined | null;
   earliest_timeofday: string;
   latest_timeofday: string;
   note_to_include?: string;
