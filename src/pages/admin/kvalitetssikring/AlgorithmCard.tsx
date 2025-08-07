@@ -7,6 +7,7 @@ import {
   CardHeader,
   Checkbox,
   FormControlLabel,
+  MenuItem,
   Typography,
 } from '@mui/material';
 import React, {useEffect, useMemo, useState} from 'react';
@@ -77,17 +78,31 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
 
     qaAlgorithm?.parameters?.forEach((option) => {
       if (option.type === 'number') {
+        let zodValue = z.number();
+
+        if (option.min !== undefined) {
+          zodValue = zodValue.min(option.min, {message: `Skal være større end ${option.min}`});
+        }
+
+        if (option.max !== undefined) {
+          zodValue = zodValue.max(option.max, {message: `Skal være mindre end ${option.max}`});
+        }
+
+        if (option.nullable == true) {
+          //@ts-expect-error zod types are not correct
+          zodValue = zodValue.nullable();
+        }
         //@ts-expect-error zod types are not correct
-        schema.shape.parameters.shape[option.name] = z
-          .number()
-          .min(option.min, {message: `Skal være større end ${option.min}`})
-          .max(option.max, {message: `Skal være mindre end ${option.max}`});
+        schema.shape.parameters.shape[option.name] = zodValue;
       } else if (option.type === 'string') {
         //@ts-expect-error zod types are not correct
         schema.shape.parameters.shape[option.name] = z.string();
       } else if (option.type === 'boolean') {
         //@ts-expect-error zod types are not correct
         schema.shape.parameters.shape[option.name] = z.boolean();
+      } else if (option.type === 'select') {
+        //@ts-expect-error zod types are not correct
+        schema.shape.parameters.shape[option.name] = z.string().default('latest_measurement');
       }
     });
 
@@ -194,13 +209,29 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           <FormProvider {...formMethods}>
             {qaAlgorithm?.parameters?.map((option: QaAlgorithmParameters) => {
               return (
-                <FormInput
-                  key={option.name}
-                  fullWidth
-                  type={option.type}
-                  label={option.label}
-                  name={`parameters.${option.name}`}
-                />
+                <div key={option.name}>
+                  {option.type !== 'select' ? (
+                    <FormInput
+                      fullWidth
+                      type={option.type}
+                      label={option.label}
+                      name={`parameters.${option.name}`}
+                    />
+                  ) : (
+                    <FormInput
+                      fullWidth
+                      select
+                      label={option.label}
+                      name={`parameters.${option.name}`}
+                    >
+                      {option.options?.map((opt) => (
+                        <MenuItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </MenuItem>
+                      ))}
+                    </FormInput>
+                  )}
+                </div>
               );
             })}
           </FormProvider>

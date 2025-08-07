@@ -273,10 +273,12 @@ export type QaAlgorithms = {
 
 export type QaAlgorithmParameters = {
   label: string;
-  type: 'number' | 'string' | 'boolean';
-  min: number;
-  max: number;
+  type: 'number' | 'string' | 'boolean' | 'select';
+  min?: number;
+  max?: number;
+  nullable?: boolean;
   name: string;
+  options?: Array<{label: string; value: string}>;
 };
 
 export type QaAlgorithmsPut = {
