@@ -40,7 +40,16 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
 
-  const columns = useMemo<MRT_ColumnDef<UnitHistory>[]>(
+  const resetToDefault = (unit: UnitHistory) => {
+    const {data: parsedData} = editUnitSchema.safeParse({
+      unit_uuid: unit.uuid,
+      startdate: unit.startdato,
+      enddate: unit.slutdato,
+    });
+    reset(parsedData);
+  };
+
+  const desktopColumns = useMemo<MRT_ColumnDef<UnitHistory>[]>(
     () => [
       {
         accessorKey: 'calypso_id',
@@ -122,11 +131,7 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
               <RenderActions
                 handleEdit={() => {
                   setSelectedUnit(row.original.gid);
-                  reset({
-                    unit_uuid: row.original.uuid,
-                    startdate: row.original.startdato,
-                    enddate: row.original.slutdato,
-                  });
+                  resetToDefault(row.original);
                   table.setEditingRow(row);
                 }}
                 onDeleteBtnClick={() => {}}
@@ -149,11 +154,7 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
         <RenderActions
           handleEdit={() => {
             setSelectedUnit(row.original.gid);
-            reset({
-              unit_uuid: row.original.uuid,
-              startdate: row.original.startdato,
-              enddate: row.original.slutdato,
-            });
+            resetToDefault(row.original);
             table.setEditingRow(row);
           }}
           onDeleteBtnClick={() => {}}
