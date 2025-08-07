@@ -7,12 +7,13 @@ interface Props {
   disabled?: boolean;
   handleEdit: () => void;
   onDeleteBtnClick?: () => void;
+  size?: 'small' | 'medium' | 'large';
 }
 
-const RenderActions = ({handleEdit, onDeleteBtnClick, disabled}: Props) => {
+const RenderActions = ({handleEdit, onDeleteBtnClick, disabled, size}: Props) => {
   return (
     <Box margin="0 auto" display="flex" justifyContent="flex-end">
-      <IconButton edge="end" onClick={handleEdit} disabled={disabled} size="large">
+      <IconButton edge="end" onClick={handleEdit} disabled={disabled} size={size ?? 'large'}>
         <EditIcon />
       </IconButton>
       {onDeleteBtnClick && (
@@ -20,7 +21,7 @@ const RenderActions = ({handleEdit, onDeleteBtnClick, disabled}: Props) => {
           edge="end"
           onClick={onDeleteBtnClick}
           disabled={disabled}
-          size="large"
+          size={size ?? 'large'}
           style={{marginRight: '2px'}}
         >
           <DeleteIcon />
