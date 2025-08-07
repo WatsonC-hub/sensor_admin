@@ -7,6 +7,7 @@ import {
   CardHeader,
   Checkbox,
   FormControlLabel,
+  MenuItem,
   Typography,
 } from '@mui/material';
 import React, {useEffect, useMemo, useState} from 'react';
@@ -32,6 +33,8 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const {put: submitData, revert: revertToDefaults} = useAlgorithms(ts_id);
+
+  console.log('qaAlgorithm', qaAlgorithm);
 
   const handleRevert = () => {
     setDeleteDialogOpen(true);
@@ -99,6 +102,9 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
       } else if (option.type === 'boolean') {
         //@ts-expect-error zod types are not correct
         schema.shape.parameters.shape[option.name] = z.boolean();
+      } else if (option.type === 'select') {
+        //@ts-expect-error zod types are not correct
+        schema.shape.parameters.shape[option.name] = z.string().default('latest_measurement');
       }
     });
 
@@ -205,13 +211,31 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           <FormProvider {...formMethods}>
             {qaAlgorithm?.parameters?.map((option: QaAlgorithmParameters) => {
               return (
-                <FormInput
-                  key={option.name}
-                  fullWidth
-                  type={option.type}
-                  label={option.label}
-                  name={`parameters.${option.name}`}
-                />
+                <>
+                  {option.type !== 'select' ? (
+                    <FormInput
+                      key={option.name}
+                      fullWidth
+                      type={option.type}
+                      label={option.label}
+                      name={`parameters.${option.name}`}
+                    />
+                  ) : (
+                    <FormInput
+                      key={option.name}
+                      fullWidth
+                      select
+                      label={option.label}
+                      name={`parameters.${option.name}`}
+                    >
+                      {option.options?.map((opt) => (
+                        <MenuItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </MenuItem>
+                      ))}
+                    </FormInput>
+                  )}
+                </>
               );
             })}
           </FormProvider>
