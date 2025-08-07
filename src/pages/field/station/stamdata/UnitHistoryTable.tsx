@@ -42,12 +42,13 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
       {
         accessorFn: (row) => convertDateWithTimeStamp(row.startdato),
         header: 'Startdato',
+        size: 20,
       },
       {
         accessorFn: (row) =>
           row.slutdato < moment().toISOString() ? convertDateWithTimeStamp(row.slutdato) : 'Nu',
         header: 'Slutdato',
-        size: 150,
+        size: 20,
       },
     ],
     []
