@@ -34,8 +34,6 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
 
   const {put: submitData, revert: revertToDefaults} = useAlgorithms(ts_id);
 
-  console.log('qaAlgorithm', qaAlgorithm);
-
   const handleRevert = () => {
     setDeleteDialogOpen(true);
   };
