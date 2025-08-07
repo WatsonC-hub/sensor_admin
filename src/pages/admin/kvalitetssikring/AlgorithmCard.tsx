@@ -209,10 +209,9 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           <FormProvider {...formMethods}>
             {qaAlgorithm?.parameters?.map((option: QaAlgorithmParameters) => {
               return (
-                <>
+                <div key={option.name}>
                   {option.type !== 'select' ? (
                     <FormInput
-                      key={option.name}
                       fullWidth
                       type={option.type}
                       label={option.label}
@@ -220,7 +219,6 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
                     />
                   ) : (
                     <FormInput
-                      key={option.name}
                       fullWidth
                       select
                       label={option.label}
@@ -233,7 +231,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
                       ))}
                     </FormInput>
                   )}
-                </>
+                </div>
               );
             })}
           </FormProvider>
