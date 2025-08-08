@@ -37,7 +37,7 @@ const Alarms = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap={2} mt={1}>
+    <Box display="flex" flexDirection="column" gap={2} mt={1} sx={{flex: '1 1 auto'}}>
       <AlarmFormDialog open={open} onClose={cancel} setOpen={setOpen} />
       <AlarmTable alarms={mapped_alarms} />
       <FabWrapper

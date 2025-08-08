@@ -14,6 +14,7 @@ import AlarmContactTable from './AlarmContactTable';
 import AlarmCriteriaTable from './AlarmCriteriaTable';
 import {useAlarm} from '../api/useAlarm';
 import DeleteAlert from '~/components/DeleteAlert';
+import {setTableBoxStyle} from '~/consts';
 type AlarmTableProps = {
   alarms: Array<alarmTable> | undefined;
 };
@@ -93,20 +94,18 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
         width: 'fit-content',
       },
     },
-    muiDetailPanelProps: {
+    muiTableContainerProps: {
       sx: {
-        width: '100%',
-        maxHeight: '100%',
+        flex: '1 1 auto',
+        maxHeight: 'fit-content',
       },
     },
-
     renderDetailPanel: ({row}) => {
       const alarmContacts = row.original.alarmContacts || [];
       const alarmCriteria = row.original.alarmCriteria || [];
       return (
         (alarmCriteria.length > 0 || alarmContacts.length > 0) && (
           <Box
-            sx={{padding: 2}}
             display={'flex'}
             flexDirection={'row'}
             height={'100%'}
@@ -153,12 +152,6 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
         )
       );
     },
-    muiTableContainerProps: {
-      sx: {
-        flex: '1 1 1',
-        maxHeight: 'fit-content',
-      },
-    },
     renderRowActions: ({row, table}) => (
       <RenderActions
         disabled={Object.keys(row.original).length === 0}
@@ -173,16 +166,14 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
     ),
     renderEditRowDialogContent: ({row, table}) => {
       return (
-        <Box py={4} px={2} boxShadow={6}>
-          <AlarmFormDialog
-            open={true}
-            onClose={() => {
-              table.setEditingRow(null);
-            }}
-            setOpen={(open) => table.setEditingRow(open ? row : null)}
-            alarm={row.original}
-          />
-        </Box>
+        <AlarmFormDialog
+          open={true}
+          onClose={() => {
+            table.setEditingRow(null);
+          }}
+          setOpen={(open) => table.setEditingRow(open ? row : null)}
+          alarm={row.original}
+        />
       );
     },
     onEditingRowCancel: ({table}) => {
@@ -200,7 +191,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
   );
 
   return (
-    <Box alignItems={'center'}>
+    <Box flex={'1 1 auto'} sx={setTableBoxStyle(680)}>
       <Dialog
         open={alarmHistoryOpen}
         onClose={() => {

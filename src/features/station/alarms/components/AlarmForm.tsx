@@ -65,6 +65,9 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         signal_warning: data.signal_warning,
         alarm_contacts: data.contacts?.map((contact) => ({
           contact_id: contact.contact_id,
+          sms: contact.sms,
+          email: contact.email,
+          call: contact.call,
         })),
         alarm_criteria: data.criteria.map((criteria) => ({
           id: criteria.id,
@@ -99,6 +102,9 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
           data.contacts && data.contacts.length > 0
             ? data.contacts?.map((contact) => ({
                 contact_id: contact.contact_id,
+                sms: contact.sms,
+                email: contact.email,
+                call: contact.call,
               }))
             : undefined,
         alarm_criteria: data.criteria.map((criteria) => ({

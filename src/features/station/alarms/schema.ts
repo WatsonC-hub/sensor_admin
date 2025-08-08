@@ -22,14 +22,6 @@ const criteria = z.object({
   email: z.boolean().default(false),
   call: z.boolean().default(false),
 });
-// .refine((criteria) => criteria.criteria !== undefined, {
-//   path: ['criteria'],
-//   message: 'Kriterium er påkrævet',
-// })
-// .refine((criteria) => criteria.name !== '', {
-//   path: ['name'],
-//   message: 'Vælg et niveau',
-// });
 
 const contactArray = z.object({
   contacts: z.array(alarmContactSchema),

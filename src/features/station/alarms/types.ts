@@ -25,11 +25,17 @@ export type CriteriaTable = {
 
 export type AlarmContact = {
   contact_id: string | undefined;
+  sms: boolean;
+  email: boolean;
+  call: boolean;
 };
 
 export type ContactTable = {
   contact_id: string | undefined;
   name: string;
+  sms: boolean;
+  email: boolean;
+  call: boolean;
 };
 
 export type AlarmHistory = {

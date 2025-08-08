@@ -1,4 +1,4 @@
-import {Box} from '@mui/material';
+import {Box, Checkbox} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
@@ -16,6 +16,22 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         header: 'Navn',
         accessorKey: 'name',
         size: 20,
+      },
+      {
+        header: 'SMS/Mail/Mobil',
+        accessorKey: 'contactType',
+        size: 20,
+        maxSize: 20,
+        Cell: ({cell}) => {
+          const {sms, email, call} = cell.row.original;
+          return (
+            <Box>
+              <Checkbox checked={sms} disabled />
+              <Checkbox checked={email} disabled />
+              <Checkbox checked={call} disabled />
+            </Box>
+          );
+        },
       },
     ],
     []

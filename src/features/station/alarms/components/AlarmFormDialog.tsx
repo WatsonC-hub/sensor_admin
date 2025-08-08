@@ -1,4 +1,4 @@
-import {Box, Dialog, DialogContent, DialogTitle} from '@mui/material';
+import {Dialog, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
 import AlarmForm from './AlarmForm';
 import {alarmTable} from '../types';
@@ -15,9 +15,7 @@ const AlarmFormDialog = ({open, onClose, setOpen, alarm}: AlarmFormDialogProps) 
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Alarmer</DialogTitle>
       <DialogContent>
-        <Box display="flex" flexDirection="column" gap={1}>
-          <AlarmForm setOpen={setOpen} alarm={alarm} />
-        </Box>
+        <AlarmForm setOpen={setOpen} alarm={alarm} />
       </DialogContent>
     </Dialog>
   );
