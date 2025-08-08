@@ -80,6 +80,23 @@ const Units = () => {
             .flat();
           const uniqueParentValues = Array.from(new Set(parentValues));
 
+          // shows the group on the topmost parent row in case of a single instance of group(can include multiple groups if several are added to a location)
+          // if (
+          //   uniqueValues.length === 1 &&
+          //   uniqueParentValues.length === 1 &&
+          //   uniqueValues.length === uniqueParentValues.length
+          // )
+          //   return null;
+
+          // if (uniqueValues.length >= 1 && uniqueValues.length > uniqueParentValues.length) {
+          //   return (
+          //     <Typography fontWeight="bold" color="#000000" fontSize="0.875rem">
+          //       {uniqueValues.join(', ')}
+          //     </Typography>
+          //   );
+          // }
+
+          // Same as above, but the value is instead rendered on the location row
           if (
             uniqueValues.length === 1 &&
             uniqueParentValues.length === 1 &&
