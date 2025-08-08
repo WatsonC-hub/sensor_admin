@@ -23,7 +23,7 @@ const Units = () => {
           return row.projectno;
         },
         header: 'Projekt nummer',
-        size: 200,
+        size: 20,
         Cell: ({row}) => {
           return (
             <a
@@ -57,6 +57,7 @@ const Units = () => {
       {
         id: 'groups',
         header: 'Grupper',
+        size: 20,
         AggregatedCell: ({row}) => {
           const uniques = new Set(
             row
@@ -69,10 +70,27 @@ const Units = () => {
           );
           const uniqueValues = Array.from(uniques);
 
-          if (uniqueValues.filter((value) => value !== null).length === 1) {
+          const parentValues = row
+            .getParentRow()
+            ?.getLeafRows()
+            .filter(
+              (leafRow) => leafRow.original.groups.filter((group) => group !== null)?.length > 0
+            )
+            .map((leaf) => leaf.original.groups)
+            .flat();
+          const uniqueParentValues = Array.from(new Set(parentValues));
+
+          if (
+            uniqueValues.length === 1 &&
+            uniqueParentValues.length === 1 &&
+            uniqueValues.length !== uniqueParentValues.length
+          )
+            return null;
+
+          if (uniqueValues.length >= 1 && uniqueValues.length <= uniqueParentValues.length) {
             return (
               <Typography fontWeight="bold" color="#000000" fontSize="0.875rem">
-                {uniqueValues[0]}
+                {uniqueValues.join(', ')}
               </Typography>
             );
           }
@@ -90,11 +108,7 @@ const Units = () => {
               return null;
             }
           }
-          return (
-            <Typography color="#000000" fontSize="0.875rem">
-              {row.getValue<string>(column.id)}
-            </Typography>
-          );
+          return null;
         },
       },
       {
@@ -120,7 +134,7 @@ const Units = () => {
             .filter((val) => val !== undefined);
           const uniqueParentValues = Array.from(new Set(parentValues));
 
-          if (uniqueValues.length === 1 && uniqueParentValues.length === 1) return null;
+          if (uniqueParentValues.length === 1) return null;
 
           if (uniqueValues.length === 1) {
             return (
