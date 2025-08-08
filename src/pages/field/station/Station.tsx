@@ -99,8 +99,8 @@ export default function Station() {
           </Box>
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.ALGORITHMS && user?.QAPermission && <Algorithms key={ts_id} />}
-      {pageToShow === stationPages.JUSTERINGER && user?.QAPermission && <QAHistory key={ts_id} />}
+      {pageToShow === stationPages.ALGORITHMS && <Algorithms key={ts_id} />}
+      {pageToShow === stationPages.JUSTERINGER && <QAHistory key={ts_id} />}
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box key={ts_id}>
