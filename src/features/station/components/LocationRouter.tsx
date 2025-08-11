@@ -74,17 +74,17 @@ export default function LocationRouter() {
           <EditLocation />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.KONTAKTER && user?.contactAndKeysPermission && (
+      {pageToShow === stationPages.KONTAKTER && user?.features.contacts && (
         <StationPageBoxLayout>
           <ContactInfo />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.HUSKELISTE && user?.ressourcePermission && (
+      {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && (
         <StationPageBoxLayout>
           <Huskeliste />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.NØGLER && user?.contactAndKeysPermission && (
+      {pageToShow === stationPages.NØGLER && user?.features.keys && (
         <StationPageBoxLayout>
           <LocationAccess />
         </StationPageBoxLayout>

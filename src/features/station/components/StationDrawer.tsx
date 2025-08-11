@@ -140,7 +140,7 @@ const StationDrawer = () => {
           page: stationPages.JUSTERINGER,
           icon: <QueryStatsIcon />,
           requiredTsId: true,
-          disabled: !user?.iotAccess || metadata?.calculated,
+          disabled: !user?.features.iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getQAHistoryOptions(ts_id)),
         },
         {
@@ -148,7 +148,7 @@ const StationDrawer = () => {
           page: stationPages.ALGORITHMS,
           icon: <FunctionsIcon />,
           requiredTsId: true,
-          disabled: !user?.iotAccess || metadata?.calculated,
+          disabled: !user?.features.iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
         },
         // {
@@ -183,7 +183,7 @@ const StationDrawer = () => {
           page: stationPages.KONTAKTER,
           icon: <PersonIcon />,
           requiredTsId: false,
-          disabled: !user?.contactAndKeysPermission,
+          disabled: !user?.features.contacts,
           onHover: () => handlePrefetch(ContactInfoGetOptions(loc_id)),
         },
         {
@@ -191,7 +191,7 @@ const StationDrawer = () => {
           page: stationPages.NØGLER,
           icon: <KeyIcon />,
           requiredTsId: false,
-          disabled: !user?.contactAndKeysPermission,
+          disabled: !user?.features.keys,
           onHover: () => handlePrefetch(LocationAccessGetOptions(loc_id)),
         },
         {
@@ -199,7 +199,7 @@ const StationDrawer = () => {
           page: stationPages.HUSKELISTE,
           icon: <BackpackIcon />,
           requiredTsId: false,
-          disabled: !user?.ressourcePermission,
+          disabled: !user?.features.ressources,
           onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
         },
       ],
