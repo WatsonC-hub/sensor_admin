@@ -1,4 +1,4 @@
-import {Box, Typography, Link} from '@mui/material';
+import {Box, Typography, Link, IconButton} from '@mui/material';
 import React from 'react';
 import {convertDate} from '~/helpers/dateConverter';
 import {useTimeseriesStatus} from '~/hooks/query/useNotificationOverview';
@@ -6,12 +6,20 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useAppContext} from '~/state/contexts';
 import {CalendarIcon} from '@mui/x-date-pickers';
+import {useLocationInfo} from '../../api/useLocationInfo';
+import {useParkering} from '~/features/parkering/api/useParkering';
+import {utm} from '~/features/map/mapConsts';
+import DirectionsIcon from '@mui/icons-material/Directions';
 
 const TimeseriesList = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const {station} = useNavigationFunctions();
 
   const {data, isPending} = useTimeseriesStatus(loc_id);
+  const {data: location_data} = useLocationInfo(loc_id);
+  const {
+    get: {data: parkings},
+  } = useParkering();
 
   if (isPending) {
     return <Typography>Loading...</Typography>;
@@ -20,9 +28,43 @@ const TimeseriesList = () => {
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>
       {/* <TooltipWrapper description=""> */}
-      <Typography variant="h6" fontWeight={'bold'}>
-        Tidsserier
-      </Typography>
+      <Box
+        display={'flex'}
+        flexDirection={'row'}
+        justifyContent={'space-between'}
+        alignItems={'center'}
+      >
+        <Typography variant="h6" fontWeight={'bold'}>
+          Tidsserier
+        </Typography>
+
+        <IconButton
+          disabled={!location_data?.x || !location_data?.y}
+          onClick={() => {
+            const parking = parkings?.find((p) => p.loc_id === loc_id);
+            let x = location_data?.x;
+            let y = location_data?.y;
+            if (parking) {
+              x = parking.x;
+              y = parking.y;
+            }
+
+            const coords = utm.convertUtmToLatLng(x!, y!, 32, 'Z');
+            if (typeof coords === 'object') {
+              window.open(
+                `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`,
+                '_blank'
+              );
+            }
+          }}
+          sx={{
+            color: 'primary.main',
+            px: 0,
+          }}
+        >
+          <DirectionsIcon />
+        </IconButton>
+      </Box>
       {/* </TooltipWrapper> */}
       {data?.map((timeseries, index) => {
         return (
