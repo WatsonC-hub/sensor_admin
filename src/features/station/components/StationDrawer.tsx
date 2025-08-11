@@ -140,7 +140,7 @@ const StationDrawer = () => {
           page: stationPages.JUSTERINGER,
           icon: <QueryStatsIcon />,
           requiredTsId: true,
-          disabled: !user?.QAPermission || metadata?.calculated,
+          disabled: !user?.iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getQAHistoryOptions(ts_id)),
         },
         {
@@ -148,7 +148,7 @@ const StationDrawer = () => {
           page: stationPages.ALGORITHMS,
           icon: <FunctionsIcon />,
           requiredTsId: true,
-          disabled: !user?.QAPermission || metadata?.calculated,
+          disabled: !user?.iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
         },
         // {

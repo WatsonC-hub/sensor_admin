@@ -98,8 +98,8 @@ export default function Station() {
           </Box>
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.ALGORITHMS && user?.QAPermission && <Algorithms />}
-      {pageToShow === stationPages.JUSTERINGER && user?.QAPermission && <QAHistory />}
+      {pageToShow === stationPages.ALGORITHMS && user?.iotAccess && <Algorithms />}
+      {pageToShow === stationPages.JUSTERINGER && user?.iotAccess && <QAHistory />}
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box>
