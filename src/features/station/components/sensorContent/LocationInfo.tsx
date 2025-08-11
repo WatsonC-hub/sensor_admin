@@ -1,62 +1,23 @@
-import {Box, Chip, Grid2, IconButton, Link, Typography} from '@mui/material';
+import {Box, Chip, Grid2, Link, Typography} from '@mui/material';
 import React from 'react';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {getGroupLink} from '~/helpers/links';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 import {useLocationInfo} from '../../api/useLocationInfo';
-import DirectionsIcon from '@mui/icons-material/Directions';
-import {useParkering} from '~/features/parkering/api/useParkering';
-import {utm} from '~/features/map/mapConsts';
 
 const LocationInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);
 
   const {data: location_data} = useLocationInfo(loc_id);
-  const {
-    get: {data: parkings},
-  } = useParkering();
 
   const {isMobile} = useBreakpoints();
 
   return (
-    <Box display={'flex'} flexDirection={'column'} mt={1} gap={0.5}>
-      <Box
-        display={'flex'}
-        flexDirection={'row'}
-        justifyContent={'space-between'}
-        alignItems={'center'}
-      >
-        <Typography variant={'h6'} fontWeight={'bold'}>
-          {location_data?.loc_name}
-        </Typography>
-
-        <IconButton
-          disabled={!location_data?.x || !location_data?.y}
-          onClick={() => {
-            const parking = parkings?.find((p) => p.loc_id === loc_id);
-            let x = location_data?.x;
-            let y = location_data?.y;
-            if (parking) {
-              x = parking.x;
-              y = parking.y;
-            }
-
-            const coords = utm.convertUtmToLatLng(x!, y!, 32, 'Z');
-            if (typeof coords === 'object') {
-              window.open(
-                `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`,
-                '_blank'
-              );
-            }
-          }}
-          sx={{
-            color: 'primary.main',
-          }}
-        >
-          <DirectionsIcon />
-        </IconButton>
-      </Box>
+    <Box display={'flex'} flexDirection={'column'} mt={-2} gap={0.5}>
+      <Typography variant={'h6'} fontWeight={'bold'}>
+        {location_data?.loc_name}
+      </Typography>
       {location_data?.customer_name !== null && location_data?.customer_name !== undefined && (
         <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
           <Typography variant={'body2'}>Projektinfo: </Typography>
