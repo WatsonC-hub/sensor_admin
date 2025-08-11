@@ -8,8 +8,10 @@ import {
   Typography,
   Link,
   Box,
+  IconButton,
 } from '@mui/material';
 import Button from './Button';
+import {Close} from '@mui/icons-material';
 
 const RELEASE_NOTICE_KEY = 'fieldAppReleaseNotice_v2025_08';
 
@@ -24,6 +26,10 @@ export default function ReleaseNoticeModal() {
   }, []);
 
   const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleDoNotShow = () => {
     localStorage.setItem(RELEASE_NOTICE_KEY, 'dismissed');
     setOpen(false);
   };
@@ -31,8 +37,20 @@ export default function ReleaseNoticeModal() {
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>✨ Ny version af felt-appen</DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={handleClose}
+        sx={(theme) => ({
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme.palette.grey[500],
+        })}
+      >
+        <Close />
+      </IconButton>
       <DialogContent>
-        <DialogContentText component="div">
+        <DialogContentText component="div" color="black">
           <Typography gutterBottom>
             Vi har lanceret en ny og forbedret version af appen med fokus på{' '}
             <strong>hurtigere navigation</strong>, <strong>bedre overblik</strong> og{' '}
@@ -60,16 +78,17 @@ export default function ReleaseNoticeModal() {
               Læs release notes
             </Link>
           </Typography>
+          <br />
           <Typography>
-            🕰 Har du stadig brug for den gamle version? Linket til denne finder du ved at trykke på
-            de 3 prikker oppe i højre hjørne
+            ⚠️ <strong>OBS!</strong> Har du stadig brug for den gamle version? Linket til denne
+            finder du ved at trykke på de 3 prikker oppe i højre hjørne
           </Typography>
         </DialogContentText>
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleClose} bttype="primary" color="primary">
-          Forstået
+        <Button onClick={handleDoNotShow} bttype="primary" color="primary">
+          VIS IKKE IGEN
         </Button>
       </DialogActions>
     </Dialog>

@@ -139,7 +139,7 @@ export const useTasks = () => {
         ...task,
         due_date: task.due_date ? dayjs(task.due_date) : null,
       })),
-    staleTime: 1000 * 60 * 1,
+    staleTime: 1000 * 60 * 10, // 10 minutes
   });
 
   const post = useMutation({

@@ -72,7 +72,7 @@ const useTaskItinerary = <T = Taskitinerary[]>(
       const {data} = await apiClient.get('/sensor_admin/tasks/itineraries');
       return data;
     },
-    staleTime: 1000 * 60 * 2,
+    staleTime: 1000 * 60 * 10,
     enabled: permissionRequired,
     ...options,
     select: options?.select as (data: Taskitinerary[]) => T,
