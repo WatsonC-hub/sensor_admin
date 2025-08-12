@@ -255,11 +255,6 @@ const TerrainQuality = (
           refetchDTM();
         }
       }}
-      slotProps={{
-        select: {
-          displayEmpty: true,
-        },
-      }}
       {...props}
     >
       <MenuItem value={''} key={''}>
