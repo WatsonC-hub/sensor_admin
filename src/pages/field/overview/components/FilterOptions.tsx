@@ -49,8 +49,8 @@ const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
       />
       <Divider />
       <Grid container spacing={2}>
-        {user?.boreholeAccess && (
-          <Grid item sm={user?.iotAccess ? 6 : 12} flexGrow={1}>
+        {user?.features.boreholeAccess && (
+          <Grid item sm={user?.features.iotAccess ? 6 : 12} flexGrow={1}>
             <Typography variant="subtitle1">
               <u>Boringer</u>
             </Typography>
@@ -68,10 +68,10 @@ const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
             />
           </Grid>
         )}
-        {user?.iotAccess && (
+        {user?.features.iotAccess && (
           <Grid
             item
-            sm={user?.boreholeAccess ? 6 : 12}
+            sm={user?.features.boreholeAccess ? 6 : 12}
             display="flex"
             flexDirection="column"
             flexGrow={1}
