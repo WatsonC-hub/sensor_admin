@@ -18,6 +18,8 @@ export type Unit = {
   mainloc: string | null;
   description: string | null;
   groups: Array<string | null>;
+  has_alarm: number | null;
+  annual_price: number | null;
   subRows?: Unit[];
 };
 

@@ -208,6 +208,95 @@ const Units = () => {
           );
         },
       },
+      {
+        accessorKey: 'has_alarm',
+        header: 'Alarm',
+        size: 20,
+        // AggregatedCell: ({row, column}) => {
+        //   const subRows = row.subRows;
+        //   // if (row.original.projectno === '22.0045') {
+        //   //   console.log(row.parentId);
+        //   //   console.log(values);
+        //   // }
+        //   // if (row.parentId) {
+        //   //   const parentSubRows = row.getParentRow()?.subRows;
+        //   //   const parentValues = parentSubRows?.map((subRow) => subRow.getValue<string>(column.id));
+        //   //   const uniqueParentValues = Array.from(new Set(parentValues));
+        //   //   if (uniqueParentValues.length === 1) {
+        //   //     return null;
+        //   //   }
+        //   // }
+        //   const values = subRows
+        //     ?.map((subRow) => subRow.getValue<string>(column.id))
+        //     .filter((val) => val !== undefined);
+        //   const uniqueValues = Array.from(new Set(values));
+
+        //   if (uniqueValues.length === 1 && row.parentId === undefined) {
+        //     return (
+        //       <Typography fontWeight="bold" fontSize="0.875rem">
+        //         {uniqueValues[0]}
+        //       </Typography>
+        //     );
+        //   }
+
+        //   if (row.original.loc_name === '123.1651 - Baghave') {
+        //     console.log(row.parentId);
+        //     console.log(uniqueValues);
+        //   }
+
+        //   // if (row.parentId === undefined && uniqueValues.length === 1) {
+        //   //   return (
+        //   //     <Typography fontWeight="bold" fontSize="0.875rem">
+        //   //       {uniqueValues[0] ? 'Ja' : 'Nej'}
+        //   //     </Typography>
+        //   //   );
+        //   // }
+        //   return (
+        //     <Typography fontWeight="bold" fontSize="0.875rem">
+        //       {uniqueValues.length === 1 ? row.getValue<string>(column.id) : ''}
+        //     </Typography>
+        //   );
+        // },
+        Cell: ({row}) => {
+          const parentSubRows = row.getParentRow()?.subRows;
+          return (
+            <Typography fontSize="0.875rem">
+              {parentSubRows && parentSubRows.length > 1 ? row.original.has_alarm : ''}
+            </Typography>
+          );
+        },
+      },
+      {
+        accessorKey: 'annual_price',
+        header: 'Årlig pris',
+        size: 20,
+        AggregatedCell: ({row, column}) => {
+          const values = row.subRows?.map((subRow) => subRow.getValue<string>(column.id));
+          const total = values?.reduce((acc, val) => Number(acc) + Number(val), 0);
+          return (
+            <Box display="flex" flexDirection="row" gap={1}>
+              {row.parentId === undefined && (
+                <Typography fontWeight="bold" fontSize="0.875rem">
+                  Samlet årlig pris:
+                </Typography>
+              )}
+              <Typography color="#132c9f" fontSize="0.875rem">
+                {total?.toString().includes('.') ? total.toFixed(2) : total} kr.
+              </Typography>
+            </Box>
+          );
+        },
+        Cell: ({row, column}) => {
+          const parentSubRows = row.getParentRow()?.subRows;
+          return (
+            <Typography color="#132c9f" fontSize="0.875rem">
+              {parentSubRows &&
+                parentSubRows.length > 1 &&
+                Number(row.getValue<string>(column.id)).toFixed(2) + ' kr.'}
+            </Typography>
+          );
+        },
+      },
     ],
     []
   );
