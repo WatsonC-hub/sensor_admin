@@ -56,8 +56,13 @@ const CreateStation = () => {
 
   const {data: metadata} = useLocationData(loc_id);
 
-  const defaultValues = {
+  const data = {
     ...state,
+    ...metadata,
+  };
+
+  const defaultValues = {
+    ...data,
     loctype_id: 'loctype_id' in state ? state.loctype_id : -1,
     initial_project_no: metadata?.projectno ?? '',
   } as Partial<DefaultAddLocation | BoreholeAddLocation>;
