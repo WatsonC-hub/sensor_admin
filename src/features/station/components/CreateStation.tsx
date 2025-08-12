@@ -58,6 +58,7 @@ const CreateStation = () => {
 
   const data = {
     ...state,
+    terrainqual: 'DTM',
     ...metadata,
   };
 
