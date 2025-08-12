@@ -62,8 +62,16 @@ const StamdataLocation = ({children}: Props) => {
   });
 
   useEffect(() => {
-    if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null && terrainqual === 'DTM') {
-      setValue('terrainlevel', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)));
+    if (
+      isSuccess &&
+      DTMData.HentKoterRespons.data[0].kote !== null &&
+      terrainqual === 'DTM' &&
+      x &&
+      y
+    ) {
+      setValue('terrainlevel', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)), {
+        shouldDirty: true,
+      });
     }
   }, [DTMData, terrainqual]);
 
@@ -257,9 +265,6 @@ const TerrainQuality = (
       }}
       {...props}
     >
-      <MenuItem value={''} key={''}>
-        Vælg type
-      </MenuItem>
       <MenuItem value="dGPS" key="dGPS">
         dGPS
       </MenuItem>

@@ -16,7 +16,7 @@ const baseLocationSchema = z.object({
   y: z
     .number({required_error: 'Y-koordinat skal udfyldes'})
     .transform((val) => (typeof val === 'number' ? val : parseFloat(val))),
-  terrainqual: z.enum(['dGPS', 'DTM', '']).nullish(),
+  terrainqual: z.string(),
   terrainlevel: z.number().nullish(),
   description: z.string().nullish(),
   loctype_id: z
