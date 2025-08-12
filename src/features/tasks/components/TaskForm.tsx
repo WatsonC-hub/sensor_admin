@@ -74,7 +74,7 @@ const TaskForm = ({
   const {reset} = formMethods;
   useEffect(() => {
     reset(defaultValues);
-  }, [defaultValues, reset]);
+  }, [JSON.stringify(defaultValues), reset]);
 
   const innerSubmit = (data: FormValues) => {
     onSubmit(data, formMethods);
