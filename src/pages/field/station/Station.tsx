@@ -78,8 +78,8 @@ export default function Station() {
           <EditTimeseries />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.ALGORITHMS && <Algorithms />}
-      {pageToShow === stationPages.JUSTERINGER && <QAHistory />}
+      {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && <Algorithms />}
+      {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && <QAHistory />}
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box>
