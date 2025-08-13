@@ -123,13 +123,15 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
   return filteredData;
 };
 
+const mapSelect = (data: MapOverview[]) =>
+  data.map((item) => ({
+    ...item,
+    due_date: item.due_date ? dayjs(item.due_date) : null,
+  })) ?? [];
+
 export const useFilteredMapData = () => {
   const {data: mapData} = useMapOverview({
-    select: (data) =>
-      data.map((item) => ({
-        ...item,
-        due_date: item.due_date ? dayjs(item.due_date) : null,
-      })) ?? [],
+    select: mapSelect,
   });
   const assignedToListFilter = useAtomValue(assignedToAtom);
   const {data: boreholeMapdata} = useBoreholeMap();
