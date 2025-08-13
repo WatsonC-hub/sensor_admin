@@ -41,7 +41,7 @@ const initRange = [
 ];
 
 const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps) => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
 
   const setSelection = useSetAtom(qaSelection);
   const [initiateSelect, setInitiateSelect] = useAtom(initiateSelectAtom);
@@ -101,12 +101,12 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   });
 
   const {data: precipitation_data} = useQuery({
-    queryKey: ['precipitation_data', ts_id],
+    queryKey: ['precipitation_data', loc_id],
     queryFn: async () => {
       const starttime = moment(edgeDates?.firstDate).format('YYYY-MM-DDTHH:mm');
       const stoptime = moment(edgeDates?.lastDate).format('YYYY-MM-DDTHH:mm');
       const {data} = await apiClient.get(
-        `/data/timeseries/${ts_id}/precipitation/1?start=${starttime}&stop=${stoptime}`
+        `/wrapper/dmi/precipitation/location/${loc_id}?start=${starttime}&stop=${stoptime}&agg=balanced`
       );
       return data;
     },
@@ -404,8 +404,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     ...(dataToShow?.['Nedbør']
       ? [
           {
-            ...precipitation_data?.trace,
-            ...precipitation_data?.data,
+            ...precipitation_data,
             yaxis: 'y2',
           },
         ]
