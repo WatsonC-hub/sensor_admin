@@ -107,7 +107,7 @@ const CompoundPejling = ({
       setCurrentMP(internalCurrentMP);
 
       if (internalCurrentMP) {
-        dynamicMeas = Math.abs(internalCurrentMP.elevation - Number(measurement));
+        dynamicMeas = internalCurrentMP.elevation - Number(measurement);
         setDynamic([formattedTimeofMeas, dynamicMeas]);
         latestmeas = latestMeasurement?.measurement;
 
