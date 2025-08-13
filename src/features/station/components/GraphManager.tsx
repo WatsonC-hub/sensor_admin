@@ -112,7 +112,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       );
       return data;
     },
-    enabled: dataToShow['Nedbør'] && edgeDates !== undefined,
+    enabled: dataToShow['Nedbør'] && edgeDates !== undefined && edgeDates?.firstDate !== null,
     refetchOnWindowFocus: false,
   });
 
