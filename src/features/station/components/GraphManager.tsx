@@ -105,8 +105,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const {data: precipitation_data} = useQuery({
     queryKey: queryKeys.Timeseries.precipitationData(ts_id),
     queryFn: async () => {
-      const starttime = dayjs(edgeDates?.firstDate);
-      const stoptime = dayjs(edgeDates?.lastDate);
+      const starttime = dayjs(edgeDates?.firstDate).format('YYYY-MM-DDTHH:mm');
+      const stoptime = dayjs(edgeDates?.lastDate).format('YYYY-MM-DDTHH:mm');
       const {data} = await apiClient.get(
         `/data/timeseries/${ts_id}/precipitation/1?start=${starttime}&stop=${stoptime}`
       );
@@ -423,6 +423,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
     },
   ];
+
+  console.log(precipitation_data);
 
   useEffect(() => {
     if (dynamicMeasurement?.[0] != undefined && dynamicMeasurement?.[0] !== null) {
