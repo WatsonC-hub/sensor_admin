@@ -423,8 +423,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     },
   ];
 
-  console.log(precipitation_data);
-
   useEffect(() => {
     if (dynamicMeasurement?.[0] != undefined && dynamicMeasurement?.[0] !== null) {
       setXRange([
