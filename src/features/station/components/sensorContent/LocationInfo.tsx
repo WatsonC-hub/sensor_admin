@@ -8,6 +8,7 @@ import {useLocationInfo} from '../../api/useLocationInfo';
 import {useTimeseriesStatus} from '~/hooks/query/useNotificationOverview';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useDisplayState} from '~/hooks/ui';
+import Button from '~/components/Button';
 
 const LocationInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);
@@ -138,10 +139,21 @@ const LocationInfo = () => {
                 key={ressource}
               >
                 <Chip
-                  component={'button'}
                   variant="outlined"
                   size="small"
-                  label={ressource}
+                  label={
+                    <Button
+                      bttype="link"
+                      sx={{
+                        textTransform: 'none',
+                        '&:hover': {
+                          backgroundColor: 'transparent',
+                        },
+                      }}
+                    >
+                      {ressource}
+                    </Button>
+                  }
                   onClick={() => {
                     setTsId(timeseriesList?.[0].ts_id ?? null);
                     setPageToShow('huskeliste');
@@ -176,10 +188,21 @@ const LocationInfo = () => {
                 key={key}
               >
                 <Chip
-                  component={'button'}
                   variant="outlined"
                   size="small"
-                  label={key}
+                  label={
+                    <Button
+                      bttype="link"
+                      sx={{
+                        textTransform: 'none',
+                        '&:hover': {
+                          backgroundColor: 'transparent',
+                        },
+                      }}
+                    >
+                      {key}
+                    </Button>
+                  }
                   onClick={() => {
                     setTsId(timeseriesList?.[0].ts_id ?? null);
                     setPageToShow('nøgler');
@@ -204,10 +227,21 @@ const LocationInfo = () => {
             alignItems={'center'}
           >
             <Chip
-              component={'button'}
               variant="outlined"
               size="small"
-              label={'Åbn kontakter'}
+              label={
+                <Button
+                  bttype="link"
+                  sx={{
+                    textTransform: 'none',
+                    '&:hover': {
+                      backgroundColor: 'transparent',
+                    },
+                  }}
+                >
+                  {'Åbn kontakter'}
+                </Button>
+              }
               onClick={() => {
                 setTsId(timeseriesList?.[0].ts_id ?? null);
                 setPageToShow('kontakter');
