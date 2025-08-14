@@ -24,6 +24,29 @@ import {useUser} from '~/features/auth/useUser';
 import {Edit, ExpandLess, ExpandMore} from '@mui/icons-material';
 import TooltipWrapper from '~/components/TooltipWrapper';
 
+const selectData = (data: Taskitinerary[], user_id: number | undefined) => {
+  const reduced = data.reduce(
+    (acc: Record<string, Taskitinerary[]>, itinerary: Taskitinerary) => {
+      if (itinerary.assigned_to === user_id) {
+        if (!acc['Mine ture']) {
+          acc['Mine ture'] = [];
+        }
+        acc['Mine ture'].push(itinerary);
+        return acc;
+      }
+
+      const date = dayjs(itinerary.due_date).format('MMMM YYYY');
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(itinerary);
+      return acc;
+    },
+    {} as Record<string, Taskitinerary[]>
+  );
+  return reduced;
+};
+
 function Droppable({id, children, color}: {id: string; children: ReactNode; color?: string}) {
   const {isDropTarget, ref: setNodeRef} = useDroppable({
     id: id,
@@ -60,28 +83,7 @@ const TaskItiniaries = () => {
   const {
     get: {data},
   } = useTaskItinerary(undefined, {
-    select: (data) => {
-      const reduced = data.reduce(
-        (acc: Record<string, Taskitinerary[]>, itinerary: Taskitinerary) => {
-          if (itinerary.assigned_to === user?.user_id) {
-            if (!acc['Mine ture']) {
-              acc['Mine ture'] = [];
-            }
-            acc['Mine ture'].push(itinerary);
-            return acc;
-          }
-
-          const date = dayjs(itinerary.due_date).format('MMMM YYYY');
-          if (!acc[date]) {
-            acc[date] = [];
-          }
-          acc[date].push(itinerary);
-          return acc;
-        },
-        {} as Record<string, Taskitinerary[]>
-      );
-      return reduced;
-    },
+    select: (itineraries) => selectData(itineraries, user?.user_id),
   });
 
   const [filters, setFilters] = useMapFilterStore((state) => [state.filters, state.setFilters]);
@@ -98,7 +100,7 @@ const TaskItiniaries = () => {
   const {patch: updateItinerary} = useTaskItinerary();
 
   return (
-    <Box display="flex" maxHeight={'100%'} gap={1} flexDirection={'column'} overflow={'hidden'}>
+    <Box display="flex" maxHeight={'100%'} gap={1} flexDirection={'column'} overflow={'auto'}>
       <Typography variant="h6" sx={{padding: 1}}>
         Ture
       </Typography>
@@ -125,7 +127,7 @@ const TaskItiniaries = () => {
         </TooltipWrapper>
       </Box>
       {data && (
-        <Box overflow={'auto'} pb={0.5}>
+        <Box pb={0.5}>
           {Object.entries(data).map(([month, itineraries]) => {
             return (
               <Box key={month} display="flex" flexDirection={'column'} gap={1}>

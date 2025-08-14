@@ -80,6 +80,7 @@ export const useSearchLocationAccess = (loc_id: number, searchString: string) =>
       return data;
     },
     staleTime: 10 * 1000,
+    enabled: loc_id !== undefined,
   });
   return searched_location_access;
 };

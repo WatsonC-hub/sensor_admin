@@ -30,14 +30,9 @@ import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter
 import {withComponentPermission} from '~/hooks/withComponentPermission';
 
 const Overview = () => {
-  const [selectedTask, setSelectedTask] = useDisplayState((state) => [
-    state.selectedTask,
-    state.setSelectedTask,
-  ]);
-
   const [, setPageToShow] = useStationPages();
 
-  const {
+  const [
     loc_id,
     setLocId,
     ts_id,
@@ -51,7 +46,25 @@ const Overview = () => {
     setTripList,
     itinerary_id,
     setItineraryId,
-  } = useDisplayState((state) => state);
+    selectedTask,
+    setSelectedTask,
+  ] = useDisplayState((state) => [
+    state.loc_id,
+    state.setLocId,
+    state.ts_id,
+    state.closeLocation,
+    state.boreholeno,
+    state.setBoreholeNo,
+    state.intakeno,
+    state.loc_list,
+    state.setLocList,
+    state.trip_list,
+    state.setTripList,
+    state.itinerary_id,
+    state.setItineraryId,
+    state.selectedTask,
+    state.setSelectedTask,
+  ]);
 
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
@@ -181,7 +194,7 @@ const Overview = () => {
             }}
           >
             <AppContext.Provider value={{loc_id: loc_id!}}>
-              <SensorContent />
+              <SensorContent key={loc_id} />
             </AppContext.Provider>
           </WindowManager.Window>
 
@@ -194,7 +207,7 @@ const Overview = () => {
             onClose={() => setItineraryId(null)}
             height="100%"
           >
-            <Trip />
+            {itinerary_id !== null && <Trip key={itinerary_id} />}
           </WindowManager.Window>
 
           <WindowManager.Window
@@ -209,7 +222,7 @@ const Overview = () => {
             }}
           >
             <AppContext.Provider value={{boreholeno: boreholeno!}}>
-              <BoreholeContent />
+              <BoreholeContent key={boreholeno} />
             </AppContext.Provider>
           </WindowManager.Window>
 
@@ -221,7 +234,7 @@ const Overview = () => {
             minSize={2}
             onClose={() => setSelectedTask(null)}
           >
-            <Box p={1} overflow="auto">
+            <Box key={selectedTask} p={1} overflow="auto">
               <TaskInfo />
             </Box>
           </WindowManager.Window>
@@ -240,7 +253,7 @@ const Overview = () => {
             }}
           >
             <AppContext.Provider value={{boreholeno: boreholeno!, intakeno: intakeno!}}>
-              <BoreholeRouter />
+              <BoreholeRouter key={`${boreholeno}-${intakeno}`} />
             </AppContext.Provider>
           </WindowManager.Window>
 
@@ -259,7 +272,7 @@ const Overview = () => {
             height="100%"
           >
             <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}}>
-              <Station />
+              <Station key={ts_id} />
             </AppContext.Provider>
           </WindowManager.Window>
 
@@ -275,7 +288,7 @@ const Overview = () => {
             height="100%"
           >
             <AppContext.Provider value={{loc_id: loc_id ?? undefined}}>
-              <LocationRouter />
+              <LocationRouter key={`location-${loc_id}`} />
             </AppContext.Provider>
           </WindowManager.Window>
         </WindowManager>

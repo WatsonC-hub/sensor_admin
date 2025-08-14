@@ -40,7 +40,7 @@ export const getNotificationIcon = (marker: MapOverview) => {
     color: getColor({...marker}),
     icon: icon,
     num: '',
-    locId: marker.loc_id,
+    locId: `${marker.loc_id}`,
     itineraryId: marker.itinerary_id,
   });
   return L.divIcon({

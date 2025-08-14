@@ -74,8 +74,6 @@ export const queryKeys = {
   },
   Tasks: {
     all: () => ['tasks', 'register', 'itineraries'] as const,
-    byItinerary: (itinerary_id: string | null) =>
-      ['tasks', 'register', 'itineraries', itinerary_id] as const,
     closedTasks: (loc_id: number | undefined) => ['tasks', loc_id] as const,
     taskHistory: (task_id: string) => ['tasks', task_id] as const,
     nextDueDate: (ts_id: number) => ['next_due_date', 'register', ts_id] as const,
@@ -84,9 +82,11 @@ export const queryKeys = {
   },
   Itineraries: {
     all: () => ['tasks', 'itineraries'] as const,
-    byId: (itinerary_id: string | undefined) => ['tasks', 'itineraries', itinerary_id] as const,
+    byId: (itinerary_id: string | null) => ['tasks', 'itineraries', itinerary_id] as const,
     itineraryTasks: (itinerary_id: string | undefined) =>
-      ['tasks', 'register', 'itineraries', itinerary_id] as const,
+      ['tasks', itinerary_id, 'register', 'itineraries'] as const,
+    itineraryCollection: (itinerary_id: string | null) =>
+      ['tasks', 'collection', itinerary_id, 'register', 'itineraries'] as const,
   },
   Parking: {
     all: () => ['parking'] as const,

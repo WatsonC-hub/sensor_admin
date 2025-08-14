@@ -550,6 +550,11 @@ const useMap = <TData extends object>(
           );
         })?.options.data.itinerary_id;
 
+        const loc_ids = childMarkers
+          .map((marker) => marker.options.data.loc_id)
+          .filter(Boolean)
+          .join(' ');
+
         const color = getMaxColor(colors);
         return L.divIcon({
           className: 'svg-icon',
@@ -558,7 +563,7 @@ const useMap = <TData extends object>(
             color: color,
             icon: '',
             num: num,
-            locId: 'empty',
+            locId: loc_ids,
             itineraryId: task_itinerary_id ?? 'empty',
           }),
         });
