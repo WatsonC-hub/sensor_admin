@@ -1,6 +1,6 @@
 import {Box} from '@mui/material';
 
-import React from 'react';
+import React, {useCallback} from 'react';
 import WindowManager from '~/components/ui/WindowManager';
 import {DragDropProvider} from '@dnd-kit/react';
 import Map from '~/pages/Map';
@@ -88,34 +88,37 @@ const Overview = () => {
     });
   };
 
-  const clickCallback = (data: MapOverview | BoreholeMapData | null) => {
-    const {loc_id, selectedTask, boreholeno} = displayStore.getState();
+  const clickCallback = useCallback(
+    (data: MapOverview | BoreholeMapData | null) => {
+      const {loc_id, selectedTask, boreholeno} = displayStore.getState();
 
-    if (data === null && (loc_id !== null || selectedTask !== null || boreholeno !== null)) {
-      setLocId(null);
-      setSelectedTask(null);
-      setBoreholeNo(null);
-      setPageToShow(null);
-      document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
-        svg.classList.remove('selected-marker');
-      });
-      return;
-    }
-    if (data === null) return;
+      if (data === null && (loc_id !== null || selectedTask !== null || boreholeno !== null)) {
+        setLocId(null);
+        setSelectedTask(null);
+        setBoreholeNo(null);
+        setPageToShow(null);
+        document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
+          svg.classList.remove('selected-marker');
+        });
+        return;
+      }
+      if (data === null) return;
 
-    if ('loc_id' in data) {
-      setLocId(data.loc_id);
-      setSelectedTask(null);
-      document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
-        svg.classList.remove('selected-marker');
-        if (svg.getAttribute('data-loc-id') === data.loc_id.toString()) {
-          svg.classList.add('selected-marker');
-        }
-      });
-    } else if ('boreholeno' in data) {
-      setBoreholeNo(data.boreholeno);
-    }
-  };
+      if ('loc_id' in data) {
+        setLocId(data.loc_id);
+        setSelectedTask(null);
+        document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
+          svg.classList.remove('selected-marker');
+          if (svg.getAttribute('data-loc-id') === data.loc_id.toString()) {
+            svg.classList.add('selected-marker');
+          }
+        });
+      } else if ('boreholeno' in data) {
+        setBoreholeNo(data.boreholeno);
+      }
+    },
+    [setBoreholeNo, setLocId, setSelectedTask]
+  );
 
   return (
     <Box
@@ -133,7 +136,6 @@ const Overview = () => {
         <Map key="taskmap" clickCallback={clickCallback} />
       </Box>
       <DragDropProvider
-        key={loc_id}
         onDragStart={() => {
           if (!trip_list && !isTouch) setTripList(true);
         }}
@@ -183,7 +185,7 @@ const Overview = () => {
             minSize={1}
             priority={3}
             mobilePriority={3}
-            height={isMobile ? '100%' : '100%'}
+            height={'100%'}
             onClose={() => {
               // setSelectedData(null);
               closeLocation();
@@ -196,18 +198,6 @@ const Overview = () => {
             <AppContext.Provider value={{loc_id: loc_id!}}>
               <SensorContent key={loc_id} />
             </AppContext.Provider>
-          </WindowManager.Window>
-
-          <WindowManager.Window
-            key="itinerary"
-            priority={4}
-            mobilePriority={4}
-            show={itinerary_id !== null}
-            minSize={1}
-            onClose={() => setItineraryId(null)}
-            height="100%"
-          >
-            {itinerary_id !== null && <Trip key={itinerary_id} />}
           </WindowManager.Window>
 
           <WindowManager.Window
@@ -224,6 +214,18 @@ const Overview = () => {
             <AppContext.Provider value={{boreholeno: boreholeno!}}>
               <BoreholeContent key={boreholeno} />
             </AppContext.Provider>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="itinerary"
+            priority={4}
+            mobilePriority={4}
+            show={itinerary_id !== null}
+            minSize={1}
+            onClose={() => setItineraryId(null)}
+            height="100%"
+          >
+            {itinerary_id !== null && <Trip key={itinerary_id} />}
           </WindowManager.Window>
 
           <WindowManager.Window
