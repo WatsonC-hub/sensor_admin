@@ -103,7 +103,7 @@ const useLocationForm = <T extends BaseLocation>({
     setLoctypeId(loctype_id_watch);
   }, [loctype_id_watch]);
 
-  return [formMethods, form] as const;
+  return [formMethods, form, schema] as const;
 };
 
 export default useLocationForm;
