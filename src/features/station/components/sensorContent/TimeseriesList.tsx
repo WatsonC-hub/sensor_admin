@@ -22,7 +22,50 @@ const TimeseriesList = () => {
   } = useParkering();
 
   if (isPending) {
-    return <Typography>Loading...</Typography>;
+    return (
+      <Box display="flex" gap={1} flexDirection={'column'}>
+        {/* <TooltipWrapper description=""> */}
+        <Box
+          display={'flex'}
+          flexDirection={'row'}
+          justifyContent={'space-between'}
+          alignItems={'center'}
+        >
+          <Typography variant="h6" fontWeight={'bold'}>
+            Tidsserier
+          </Typography>
+
+          <IconButton
+            disabled={!location_data?.x || !location_data?.y}
+            onClick={() => {
+              const parking = parkings?.find((p) => p.loc_id === loc_id);
+              let x = location_data?.x;
+              let y = location_data?.y;
+              if (parking) {
+                x = parking.x;
+                y = parking.y;
+              }
+
+              const coords = utm.convertUtmToLatLng(x!, y!, 32, 'Z');
+              if (typeof coords === 'object') {
+                window.open(
+                  `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`,
+                  '_blank'
+                );
+              }
+            }}
+            sx={{
+              color: 'primary.main',
+            }}
+          >
+            <DirectionsIcon />
+          </IconButton>
+        </Box>
+        <Typography variant={'body2'} height={24} alignContent={'center'}>
+          Indlæser...
+        </Typography>
+      </Box>
+    );
   }
 
   return (
@@ -59,7 +102,6 @@ const TimeseriesList = () => {
           }}
           sx={{
             color: 'primary.main',
-            px: 0,
           }}
         >
           <DirectionsIcon />

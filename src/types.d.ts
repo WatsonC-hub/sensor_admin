@@ -25,7 +25,9 @@ export interface BoreholeMapData {
   intakeno: number[];
   plantname: string;
   plantid: number;
-  drilldepth: number[];
+  drilldepth: number;
+  description: string;
+  municipal: string | null;
   measurement: number[];
   status: number[];
   timeofmeas: string[];

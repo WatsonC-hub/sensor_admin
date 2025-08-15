@@ -2,7 +2,6 @@ import {Box, Chip, Grid2, Link, Typography} from '@mui/material';
 import React from 'react';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {getGroupLink} from '~/helpers/links';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 import {useLocationInfo} from '../../api/useLocationInfo';
 import {useTimeseriesStatus} from '~/hooks/query/useNotificationOverview';
@@ -16,8 +15,6 @@ const LocationInfo = () => {
   const {data: location_data} = useLocationInfo(loc_id);
   const {data: timeseriesList} = useTimeseriesStatus(loc_id);
   const [, setPageToShow] = useStationPages();
-
-  const {isMobile} = useBreakpoints();
 
   return (
     <Box display={'flex'} flexDirection={'column'} mt={-2} gap={0.5}>
@@ -78,40 +75,27 @@ const LocationInfo = () => {
             Grupper:
           </Typography>
           <Grid2 container gap={0.25} display={'flex'} flexDirection={'row'} justifyContent={'end'}>
-            {location_data && (
-              <>
-                {location_data.groups?.map((group) => {
-                  return (
-                    <Grid2
-                      size={undefined}
-                      display={'flex'}
-                      flexDirection={'row'}
-                      justifyContent={'flex-end'}
-                      key={group.id}
-                    >
-                      <Chip
-                        variant="outlined"
-                        size="small"
-                        label={
-                          <Box
-                            sx={{
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              maxWidth: isMobile ? '100px' : '150px',
-                            }}
-                          >
-                            <Link href={getGroupLink(group.id)} key={group.id}>
-                              {group.group_name}
-                            </Link>
-                          </Box>
-                        }
-                      />
-                    </Grid2>
-                  );
-                })}
-              </>
-            )}
+            {location_data.groups.map((group) => {
+              return (
+                <Grid2
+                  size={undefined}
+                  display={'flex'}
+                  flexDirection={'row'}
+                  justifyContent={'flex-end'}
+                  key={group.id}
+                >
+                  <Chip
+                    variant="outlined"
+                    size="small"
+                    label={
+                      <Link href={getGroupLink(group.id)} key={group.id}>
+                        {group.group_name}
+                      </Link>
+                    }
+                  />
+                </Grid2>
+              );
+            })}
           </Grid2>
         </Box>
       )}
@@ -141,19 +125,7 @@ const LocationInfo = () => {
                 <Chip
                   variant="outlined"
                   size="small"
-                  label={
-                    <Button
-                      bttype="link"
-                      sx={{
-                        textTransform: 'none',
-                        '&:hover': {
-                          backgroundColor: 'transparent',
-                        },
-                      }}
-                    >
-                      {ressource}
-                    </Button>
-                  }
+                  label={<Link>{ressource}</Link>}
                   onClick={() => {
                     setTsId(timeseriesList?.[0].ts_id ?? null);
                     setPageToShow('huskeliste');
