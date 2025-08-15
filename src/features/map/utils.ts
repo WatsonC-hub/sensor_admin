@@ -49,3 +49,42 @@ export const getNotificationIcon = (marker: MapOverview) => {
     iconAnchor: [12, 24],
   });
 };
+
+export function preventClickAfterTouchend(id: string, longPressDuration = 600) {
+  let longPressTimer: number;
+  let suppressClick = false;
+
+  const element = document.getElementById(id);
+
+  element?.addEventListener('touchstart', (e) => {
+    // Only handle single-finger touches
+    if (e.touches.length > 1) return;
+    longPressTimer = setTimeout(() => {
+      // Trigger your context menu logic
+      suppressClick = true;
+    }, longPressDuration);
+  });
+
+  element?.addEventListener('touchend', () => {
+    clearTimeout(longPressTimer);
+    // Let click suppression only last a tiny bit
+    if (suppressClick) {
+      setTimeout(() => {
+        suppressClick = false;
+      }, 100);
+    }
+  });
+
+  const contextMenues = document.querySelectorAll('.leaflet-contextmenu');
+
+  contextMenues.forEach((menu) => {
+    menu?.addEventListener('click', (e) => {
+      if (suppressClick) {
+        // toast.info('Click suppressed');
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+    });
+  });
+}

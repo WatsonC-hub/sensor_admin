@@ -24,7 +24,11 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.min.css';
 import useMap from '../features/map/components/useMap';
 import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
-import {getBoreholesIcon, getNotificationIcon} from '~/features/map/utils';
+import {
+  getBoreholesIcon,
+  getNotificationIcon,
+  preventClickAfterTouchend,
+} from '~/features/map/utils';
 import {utm} from '../features/map/mapConsts';
 import {queryClient} from '~/queryClient';
 import {useUser} from '~/features/auth/useUser';
@@ -365,6 +369,14 @@ const Map = ({clickCallback}: MapProps) => {
     markerLayer?.addLayers(markers);
   }, [filteredData, markerLayer]);
 
+  useEffect(() => {
+    document.getElementById('test')?.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+
+    preventClickAfterTouchend('test');
+  }, []);
+
   return (
     <>
       <DeleteAlert
@@ -388,7 +400,7 @@ const Map = ({clickCallback}: MapProps) => {
       <Box position={'absolute'} zIndex={401} p={0} mr={2} width={'100%'}>
         <SearchAndFilterMap data={data} handleSearchSelect={handleSearchSelect} />
       </Box>
-      <Box id="test" sx={{width: '100%', height: '100%'}} />
+      <Box id="test" className="no-select" sx={{width: '100%', height: '100%'}} />
     </>
   );
 };

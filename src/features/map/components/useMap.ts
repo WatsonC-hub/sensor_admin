@@ -143,7 +143,7 @@ const useMap = <TData extends object>(
 
   const buildMap = () => {
     const map = L.map(id, {
-      tapHold: true,
+      // tapHold: true,
       contextmenu: true,
       contextmenuItems: items,
     }).setView(pan, zoom);

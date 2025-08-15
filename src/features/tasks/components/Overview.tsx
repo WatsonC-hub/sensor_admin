@@ -131,6 +131,8 @@ const Overview = () => {
       <Box
         sx={{
           height: '100%',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          backgroundColor: 'primary.main',
         }}
       >
         <Map key="taskmap" clickCallback={clickCallback} />
