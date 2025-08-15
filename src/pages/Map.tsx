@@ -24,7 +24,11 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.min.css';
 import useMap from '../features/map/components/useMap';
 import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
-import {getBoreholesIcon, getNotificationIcon} from '~/features/map/utils';
+import {
+  getBoreholesIcon,
+  getNotificationIcon,
+  preventClickAfterTouchend,
+} from '~/features/map/utils';
 import {utm} from '../features/map/mapConsts';
 import {queryClient} from '~/queryClient';
 import {useUser} from '~/features/auth/useUser';
@@ -106,7 +110,6 @@ const Map = ({clickCallback}: MapProps) => {
     },
     warning: {displayAlert, setDisplayAlert},
     defaultContextmenuItems,
-    doneRendering,
   } = useMap('test', filteredData, contextmenuItems, clickCallback);
 
   const prefetchQueries = (loc_id: number) => {
@@ -230,6 +233,30 @@ const Map = ({clickCallback}: MapProps) => {
     return marker;
   };
 
+  const createHiddenBoreholeMarker = (element: BoreholeMapData) => {
+    // @ts-expect-error Getlayers returns markers
+    const markers: L.Marker[] = markerLayer.getLayers();
+    const marker = markers.find((marker) => marker.options.title == element.boreholeno);
+
+    if (marker) {
+      marker.openPopup();
+      map?.flyTo(marker.getLatLng(), 14, {animate: false});
+      marker.fire('click');
+      setExtraData(null);
+      setSelectedMarker(marker.options.data);
+    } else {
+      const hiddenMarker = createBoreholeMarker(element);
+      setExtraData(element);
+      setSelectedMarker(element);
+      if (hiddenMarker) {
+        // hightlightedMarker = marker;
+        hiddenMarker.openPopup();
+        map?.flyTo(hiddenMarker.getLatLng(), 14, {animate: false});
+        hiddenMarker.fire('click');
+      }
+    }
+  };
+
   const createHiddenLocationMarker = (loc_name: string) => {
     // @ts-expect-error Getlayers returns markers
     const markers: L.Marker[] = markerLayer.getLayers();
@@ -296,20 +323,11 @@ const Map = ({clickCallback}: MapProps) => {
 
           const element = data[0];
 
-          const point: L.LatLngExpression = [element.latitude, element.longitude];
-
-          const marker = createBoreholeMarker(element);
-
-          if (markerLayer) {
-            marker.addTo(markerLayer);
-            map?.flyTo(point, 17, {animate: false});
-            marker.fire('click');
-            setSelectedMarker(element);
-          }
+          createHiddenBoreholeMarker(element);
         }
       }
     },
-    [markerLayer, createHiddenLocationMarker]
+    [markerLayer, createHiddenLocationMarker, createHiddenBoreholeMarker]
   );
 
   useEffect(() => {
@@ -349,7 +367,15 @@ const Map = ({clickCallback}: MapProps) => {
     });
 
     markerLayer?.addLayers(markers);
-  }, [filteredData, doneRendering]);
+  }, [filteredData, markerLayer]);
+
+  useEffect(() => {
+    document.getElementById('test')?.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+
+    preventClickAfterTouchend('test');
+  }, []);
 
   return (
     <>
@@ -374,7 +400,7 @@ const Map = ({clickCallback}: MapProps) => {
       <Box position={'absolute'} zIndex={401} p={0} mr={2} width={'100%'}>
         <SearchAndFilterMap data={data} handleSearchSelect={handleSearchSelect} />
       </Box>
-      <Box id="test" sx={{width: '100%', height: '100%'}} />
+      <Box id="test" className="no-select" sx={{width: '100%', height: '100%'}} />
     </>
   );
 };

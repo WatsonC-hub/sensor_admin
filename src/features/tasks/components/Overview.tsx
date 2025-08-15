@@ -1,6 +1,6 @@
 import {Box} from '@mui/material';
 
-import React from 'react';
+import React, {useCallback} from 'react';
 import WindowManager from '~/components/ui/WindowManager';
 import {DragDropProvider} from '@dnd-kit/react';
 import TaskMap from '~/pages/Map';
@@ -30,14 +30,9 @@ import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter
 import {withComponentPermission} from '~/hooks/withComponentPermission';
 
 const Overview = () => {
-  const [selectedTask, setSelectedTask] = useDisplayState((state) => [
-    state.selectedTask,
-    state.setSelectedTask,
-  ]);
-
   const [, setPageToShow] = useStationPages();
 
-  const {
+  const [
     loc_id,
     setLocId,
     ts_id,
@@ -51,7 +46,25 @@ const Overview = () => {
     setTripList,
     itinerary_id,
     setItineraryId,
-  } = useDisplayState((state) => state);
+    selectedTask,
+    setSelectedTask,
+  ] = useDisplayState((state) => [
+    state.loc_id,
+    state.setLocId,
+    state.ts_id,
+    state.closeLocation,
+    state.boreholeno,
+    state.setBoreholeNo,
+    state.intakeno,
+    state.loc_list,
+    state.setLocList,
+    state.trip_list,
+    state.setTripList,
+    state.itinerary_id,
+    state.setItineraryId,
+    state.selectedTask,
+    state.setSelectedTask,
+  ]);
 
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
@@ -75,34 +88,37 @@ const Overview = () => {
     });
   };
 
-  const clickCallback = (data: MapOverview | BoreholeMapData | null) => {
-    const {loc_id, selectedTask, boreholeno} = displayStore.getState();
+  const clickCallback = useCallback(
+    (data: MapOverview | BoreholeMapData | null) => {
+      const {loc_id, selectedTask, boreholeno} = displayStore.getState();
 
-    if (data === null && (loc_id !== null || selectedTask !== null || boreholeno !== null)) {
-      setLocId(null);
-      setSelectedTask(null);
-      setBoreholeNo(null);
-      setPageToShow(null);
-      document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
-        svg.classList.remove('selected-marker');
-      });
-      return;
-    }
-    if (data === null) return;
+      if (data === null && (loc_id !== null || selectedTask !== null || boreholeno !== null)) {
+        setLocId(null);
+        setSelectedTask(null);
+        setBoreholeNo(null);
+        setPageToShow(null);
+        document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
+          svg.classList.remove('selected-marker');
+        });
+        return;
+      }
+      if (data === null) return;
 
-    if ('loc_id' in data) {
-      setLocId(data.loc_id);
-      setSelectedTask(null);
-      document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
-        svg.classList.remove('selected-marker');
-        if (svg.getAttribute('data-loc-id') === data.loc_id.toString()) {
-          svg.classList.add('selected-marker');
-        }
-      });
-    } else if ('boreholeno' in data) {
-      setBoreholeNo(data.boreholeno);
-    }
-  };
+      if ('loc_id' in data) {
+        setLocId(data.loc_id);
+        setSelectedTask(null);
+        document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
+          svg.classList.remove('selected-marker');
+          if (svg.getAttribute('data-loc-id') === data.loc_id.toString()) {
+            svg.classList.add('selected-marker');
+          }
+        });
+      } else if ('boreholeno' in data) {
+        setBoreholeNo(data.boreholeno);
+      }
+    },
+    [setBoreholeNo, setLocId, setSelectedTask]
+  );
 
   return (
     <Box
@@ -115,12 +131,13 @@ const Overview = () => {
       <Box
         sx={{
           height: '100%',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          backgroundColor: 'primary.main',
         }}
       >
         <TaskMap key="taskmap" clickCallback={clickCallback} />
       </Box>
       <DragDropProvider
-        key={loc_id}
         onDragStart={() => {
           if (!trip_list && !isTouch) setTripList(true);
         }}
@@ -170,7 +187,7 @@ const Overview = () => {
             minSize={1}
             priority={3}
             mobilePriority={3}
-            height={isMobile ? '100%' : '100%'}
+            height={'100%'}
             onClose={() => {
               // setSelectedData(null);
               closeLocation();
@@ -181,20 +198,8 @@ const Overview = () => {
             }}
           >
             <AppContext.Provider value={{loc_id: loc_id!}}>
-              <SensorContent />
+              <SensorContent key={loc_id} />
             </AppContext.Provider>
-          </WindowManager.Window>
-
-          <WindowManager.Window
-            key="itinerary"
-            priority={4}
-            mobilePriority={4}
-            show={itinerary_id !== null}
-            minSize={1}
-            onClose={() => setItineraryId(null)}
-            height="100%"
-          >
-            <Trip />
           </WindowManager.Window>
 
           <WindowManager.Window
@@ -209,8 +214,20 @@ const Overview = () => {
             }}
           >
             <AppContext.Provider value={{boreholeno: boreholeno!}}>
-              <BoreholeContent />
+              <BoreholeContent key={boreholeno} />
             </AppContext.Provider>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="itinerary"
+            priority={4}
+            mobilePriority={4}
+            show={itinerary_id !== null}
+            minSize={1}
+            onClose={() => setItineraryId(null)}
+            height="100%"
+          >
+            {itinerary_id !== null && <Trip key={itinerary_id} />}
           </WindowManager.Window>
 
           <WindowManager.Window
@@ -221,7 +238,7 @@ const Overview = () => {
             minSize={2}
             onClose={() => setSelectedTask(null)}
           >
-            <Box p={1} overflow="auto">
+            <Box key={selectedTask} p={1} overflow="auto">
               <TaskInfo />
             </Box>
           </WindowManager.Window>
@@ -240,7 +257,7 @@ const Overview = () => {
             }}
           >
             <AppContext.Provider value={{boreholeno: boreholeno!, intakeno: intakeno!}}>
-              <BoreholeRouter />
+              <BoreholeRouter key={`${boreholeno}-${intakeno}`} />
             </AppContext.Provider>
           </WindowManager.Window>
 
@@ -259,7 +276,7 @@ const Overview = () => {
             height="100%"
           >
             <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}}>
-              <Station />
+              <Station key={ts_id} />
             </AppContext.Provider>
           </WindowManager.Window>
 
@@ -275,7 +292,7 @@ const Overview = () => {
             height="100%"
           >
             <AppContext.Provider value={{loc_id: loc_id ?? undefined}}>
-              <LocationRouter />
+              <LocationRouter key={`location-${loc_id}`} />
             </AppContext.Provider>
           </WindowManager.Window>
         </WindowManager>

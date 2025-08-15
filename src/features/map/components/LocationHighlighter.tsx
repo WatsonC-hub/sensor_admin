@@ -19,7 +19,7 @@ function LocationHighlighter({selectedLocId, color}: LocationHighlighterProps) {
 
     // Insert rule with the selected loc_id and a CSS variable for color
     styleTag.textContent = `
-      svg[data-loc-id="${selectedLocId}"] path.droplet {
+      svg[data-loc-id~="${selectedLocId}"] path.droplet {
         stroke: ${color};
         stroke-width: 2.5px;
       }

@@ -79,7 +79,7 @@ const useTaskItinerary = <T = Taskitinerary[]>(
   });
 
   const getItinerary = useQuery<Taskitinerary, APIError>({
-    queryKey: queryKeys.Itineraries.byId(id ?? undefined),
+    queryKey: queryKeys.Itineraries.byId(id ?? null),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/tasks/itineraries/${id}`);
       return data;

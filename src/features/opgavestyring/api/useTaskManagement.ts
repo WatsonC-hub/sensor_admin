@@ -5,18 +5,17 @@ import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {PejlingItem, TaskCollection, TilsynItem} from '~/types';
 
 export const useTaskManagement = (itinerary_id: string | null) => {
+  console.log(`Fetching tasks for itinerary: ${itinerary_id}`);
+
   const {data} = useQuery({
-    queryKey: queryKeys.Tasks.byItinerary(itinerary_id),
+    queryKey: queryKeys.Itineraries.itineraryCollection(itinerary_id),
     queryFn: async () => {
       const {data} = await apiClient.get<TaskCollection>(
-        `/sensor_admin/tasks/task_collection/${itinerary_id}`,
-        {}
+        `/sensor_admin/tasks/task_collection/${itinerary_id}`
       );
       return data;
     },
-    staleTime: 1000 * 60 * 1, // 1 minute
-    refetchInterval: 1000 * 60 * 60, // 1 hour
-    enabled: itinerary_id !== undefined && itinerary_id !== null,
+    // enabled: itinerary_id !== undefined && itinerary_id !== null,
   });
 
   const serviceData: TilsynItem[] = [];
