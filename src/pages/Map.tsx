@@ -106,7 +106,6 @@ const Map = ({clickCallback}: MapProps) => {
     },
     warning: {displayAlert, setDisplayAlert},
     defaultContextmenuItems,
-    doneRendering,
   } = useMap('test', filteredData, contextmenuItems, clickCallback);
 
   const prefetchQueries = (loc_id: number) => {
@@ -230,6 +229,30 @@ const Map = ({clickCallback}: MapProps) => {
     return marker;
   };
 
+  const createHiddenBoreholeMarker = (element: BoreholeMapData) => {
+    // @ts-expect-error Getlayers returns markers
+    const markers: L.Marker[] = markerLayer.getLayers();
+    const marker = markers.find((marker) => marker.options.title == element.boreholeno);
+
+    if (marker) {
+      marker.openPopup();
+      map?.flyTo(marker.getLatLng(), 14, {animate: false});
+      marker.fire('click');
+      setExtraData(null);
+      setSelectedMarker(marker.options.data);
+    } else {
+      const hiddenMarker = createBoreholeMarker(element);
+      setExtraData(element);
+      setSelectedMarker(element);
+      if (hiddenMarker) {
+        // hightlightedMarker = marker;
+        hiddenMarker.openPopup();
+        map?.flyTo(hiddenMarker.getLatLng(), 14, {animate: false});
+        hiddenMarker.fire('click');
+      }
+    }
+  };
+
   const createHiddenLocationMarker = (loc_name: string) => {
     // @ts-expect-error Getlayers returns markers
     const markers: L.Marker[] = markerLayer.getLayers();
@@ -296,20 +319,11 @@ const Map = ({clickCallback}: MapProps) => {
 
           const element = data[0];
 
-          const point: L.LatLngExpression = [element.latitude, element.longitude];
-
-          const marker = createBoreholeMarker(element);
-
-          if (markerLayer) {
-            marker.addTo(markerLayer);
-            map?.flyTo(point, 17, {animate: false});
-            marker.fire('click');
-            setSelectedMarker(element);
-          }
+          createHiddenBoreholeMarker(element);
         }
       }
     },
-    [markerLayer, createHiddenLocationMarker]
+    [markerLayer, createHiddenLocationMarker, createHiddenBoreholeMarker]
   );
 
   useEffect(() => {
@@ -349,7 +363,7 @@ const Map = ({clickCallback}: MapProps) => {
     });
 
     markerLayer?.addLayers(markers);
-  }, [filteredData, doneRendering]);
+  }, [filteredData, markerLayer]);
 
   return (
     <>

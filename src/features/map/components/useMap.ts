@@ -662,7 +662,6 @@ const useMap = <TData extends object>(
     },
     warning: {displayAlert, setDisplayAlert},
     defaultContextmenuItems,
-    doneRendering,
   };
 };
 
