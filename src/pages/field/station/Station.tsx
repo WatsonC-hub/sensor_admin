@@ -98,8 +98,8 @@ export default function Station() {
           </Box>
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.ALGORITHMS && user?.QAPermission && <Algorithms />}
-      {pageToShow === stationPages.JUSTERINGER && user?.QAPermission && <QAHistory />}
+      {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && <Algorithms />}
+      {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && <QAHistory />}
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box>
@@ -115,17 +115,17 @@ export default function Station() {
           </StationPageBoxLayout>
         </>
       )}
-      {pageToShow === stationPages.NØGLER && user?.contactAndKeysPermission && (
+      {pageToShow === stationPages.NØGLER && user?.features.keys && (
         <StationPageBoxLayout>
           <LocationAccess />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.KONTAKTER && user?.contactAndKeysPermission && (
+      {pageToShow === stationPages.KONTAKTER && user?.features.contacts && (
         <StationPageBoxLayout>
           <ContactInfo />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.HUSKELISTE && user?.ressourcePermission && (
+      {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && (
         <StationPageBoxLayout>
           <Huskeliste />
         </StationPageBoxLayout>
@@ -178,7 +178,7 @@ const Layout = ({children}: LayoutProps) => {
           )}
           <BatteryStatus />
           <NavBar.Home />
-          {user?.adminAccess && <NotificationList />}
+          {user?.features.iotAccess && <NotificationList />}
           <NavBar.Menu
             highligtFirst={false}
             items={[

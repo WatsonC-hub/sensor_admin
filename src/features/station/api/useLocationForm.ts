@@ -81,7 +81,7 @@ const useLocationForm = <T extends BaseLocation>({
   const user = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user.superUser, context.loc_id);
+  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user?.superUser, context.loc_id);
 
   const {data, success} = schema.safeParse({
     ...defaultValues,
@@ -103,7 +103,7 @@ const useLocationForm = <T extends BaseLocation>({
     setLoctypeId(loctype_id_watch);
   }, [loctype_id_watch]);
 
-  return [formMethods, form] as const;
+  return [formMethods, form, schema] as const;
 };
 
 export default useLocationForm;

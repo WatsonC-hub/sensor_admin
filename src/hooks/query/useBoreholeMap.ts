@@ -4,7 +4,7 @@ import {useUser} from '~/features/auth/useUser';
 import {BoreholeMapData} from '~/types';
 
 export const useBoreholeMap = () => {
-  const {boreholeAccess} = useUser();
+  const user = useUser();
 
   const query = useQuery<BoreholeMapData[]>({
     queryKey: ['borehole_map'],
@@ -13,7 +13,7 @@ export const useBoreholeMap = () => {
       return data;
     },
     staleTime: 10 * 1000,
-    enabled: boreholeAccess,
+    enabled: user?.features.boreholeAccess,
   });
   return query;
 };

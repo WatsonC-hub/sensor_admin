@@ -144,7 +144,7 @@ const LocationAccess = () => {
       <FabWrapper
         icon={<KeyIcon />}
         text="Tilføj nøgle eller kode"
-        disabled={!user?.contactAndKeysPermission || disabled}
+        disabled={!user?.features.keys || disabled}
         onClick={() => setOpenDialog(true)}
         sx={{visibility: openDialog ? 'hidden' : 'visible'}}
       />

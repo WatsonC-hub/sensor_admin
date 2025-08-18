@@ -68,7 +68,7 @@ const Map = () => {
 
   const {data: boreholeMapdata} = useBoreholeMap();
 
-  const {data: mapData} = useNotificationOverviewMap({enabled: user?.iotAccess});
+  const {data: mapData} = useNotificationOverviewMap({enabled: user?.features.iotAccess});
 
   const data = useMemo(() => {
     return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
@@ -76,7 +76,7 @@ const Map = () => {
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
-  if (user?.iotAccess)
+  if (user?.features.iotAccess)
     contextmenuItems.push(
       {
         text: 'Opret ny lokation',
@@ -370,7 +370,7 @@ const Map = () => {
             <SensorContent data={selectedMarker} />
           )}
           {selectedMarker == null && <LegendContent />}
-          {selectedMarker && 'boreholeno' in selectedMarker && user?.boreholeAccess && (
+          {selectedMarker && 'boreholeno' in selectedMarker && user?.features.boreholeAccess && (
             <BoreholeContent data={selectedMarker} />
           )}
         </DrawerComponent>

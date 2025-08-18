@@ -84,13 +84,6 @@ const pwaOptions: Partial<VitePWAOptions> = {
   },
 };
 
-// const sentryOptions = {
-//   org: 'watsonc',
-//   project: 'calypso-field',
-//   include: ['./dist'],
-//   authToken: process.env.SENTRY_AUTH_TOKEN,
-// };
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [

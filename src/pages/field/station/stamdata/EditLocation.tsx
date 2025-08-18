@@ -12,7 +12,7 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import useLocationForm from '~/features/station/api/useLocationForm';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
-import {boreholeEditLocationSchema, defaultEditLocationSchema} from '~/features/station/schema';
+import {BaseLocation} from '~/features/station/schema';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {queryClient} from '~/queryClient';
@@ -40,22 +40,9 @@ const EditLocation = () => {
     },
   });
 
-  let schema;
-
-  if (metadata?.loctype_id === 9) {
-    schema = boreholeEditLocationSchema;
-  } else {
-    schema = defaultEditLocationSchema;
-  }
-
-  const {data: defaultValues} = schema.safeParse({
-    ...metadata,
-    initial_project_no: metadata?.projectno,
-  });
-
-  const [formMethods, LocationForm] = useLocationForm({
+  const [formMethods, LocationForm, locationSchema] = useLocationForm({
     mode: 'Edit',
-    defaultValues: defaultValues,
+    defaultValues: {...metadata} as BaseLocation,
     initialLocTypeId: metadata?.loctype_id,
     context: {
       loc_id: loc_id,
@@ -70,11 +57,11 @@ const EditLocation = () => {
 
   useEffect(() => {
     if (metadata != undefined) {
-      reset(defaultValues);
+      reset();
     }
   }, [metadata, unit_history]);
 
-  const Submit = async (data: z.infer<typeof schema>) => {
+  const Submit: (data: z.infer<typeof locationSchema>) => void = (data) => {
     const payload = {
       ...data,
     };
@@ -94,7 +81,7 @@ const EditLocation = () => {
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
           <Button
             bttype="tertiary"
-            onClick={() => reset(defaultValues)}
+            onClick={() => reset()}
             disabled={location_permissions !== 'edit'}
           >
             Annuller
