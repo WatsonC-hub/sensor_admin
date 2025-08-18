@@ -15,18 +15,11 @@ const Redirecter = () => {
 
   useNotificationOverview({notifyOnChangeProps: []});
   useEffect(() => {
-    if (user && !user.iotAccess && location.pathname == '/') {
+    if (user && !user.features.iotAccess && location.pathname == '/') {
       // navigate('/field');
       field();
     }
-  }, [user?.iotAccess]);
-
-  useEffect(() => {
-    if (user && !user.adminAccess && location.pathname == '/') {
-      // navigate('/field');
-      field();
-    }
-  }, [user?.adminAccess]);
+  }, [user?.features.iotAccess]);
 
   return (
     <>

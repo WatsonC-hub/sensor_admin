@@ -5,15 +5,17 @@ import {apiClient} from '~/apiClient';
 type User = {
   user_id: number;
   org_id: number | null;
-  boreholeAccess: boolean;
-  iotAccess: boolean;
-  adminAccess: boolean;
   superUser: boolean;
-  advancedTaskPermission: boolean;
-  simpleTaskPermission: boolean;
-  QAPermission: boolean;
-  contactAndKeysPermission: boolean;
-  ressourcePermission: boolean;
+  features: Features;
+};
+
+export type Features = {
+  iotAccess: boolean;
+  boreholeAccess: boolean;
+  contacts: boolean;
+  keys: boolean;
+  ressources: boolean;
+  routesAndParking: boolean;
 };
 
 export const userQueryOptions = queryOptions({
@@ -31,5 +33,15 @@ export const userQueryOptions = queryOptions({
 export const useUser = () => {
   const {data} = useQuery(userQueryOptions);
 
-  return data as User;
+  return data
+    ? ({
+        ...data,
+      } as UserAccessControl)
+    : null;
+};
+
+export type UserAccessControl = User & {
+  superUser: boolean;
+  advancedTaskPermission: boolean;
+  simpleTaskPermission: boolean;
 };

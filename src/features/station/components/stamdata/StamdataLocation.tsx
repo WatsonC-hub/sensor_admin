@@ -1,5 +1,5 @@
 import {MenuItem, Typography, InputAdornment, TextField} from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
+import {RefetchOptions, useQuery} from '@tanstack/react-query';
 import React, {ChangeEvent, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 import {apiClient} from '~/apiClient';
@@ -25,6 +25,7 @@ import {stationPages} from '~/helpers/EnumHelper';
 
 import {useAppContext} from '~/state/contexts';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {queryClient} from '~/queryClient';
 
 type Props = {
   children: React.ReactNode;
@@ -37,7 +38,7 @@ type locationType = {
 
 const LocationContext = React.createContext(
   {} as {
-    refetchDTM: () => void;
+    refetchDTM: (options?: RefetchOptions | undefined) => void;
   }
 );
 
@@ -48,7 +49,7 @@ const StamdataLocation = ({children}: Props) => {
 
   const x = watch('x');
   const y = watch('y');
-  const terrainqual = watch('terrainqual', '');
+  const terrainqual = watch('terrainqual');
   const {
     data: DTMData,
     isSuccess,
@@ -61,10 +62,17 @@ const StamdataLocation = ({children}: Props) => {
   });
 
   useEffect(() => {
-    if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null) {
+    if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null && terrainqual === 'DTM') {
       setValue('terrainlevel', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)));
     }
   }, [DTMData, terrainqual]);
+
+  useEffect(() => {
+    if (terrainqual === 'DTM')
+      queryClient.invalidateQueries({
+        queryKey: ['dtm'],
+      });
+  }, [x, y]);
 
   return (
     <LocationContext.Provider
@@ -132,7 +140,7 @@ const X = (
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
   const {refetchDTM} = React.useContext(LocationContext);
-  const watchTerrainqual = watch('terrainqual', '');
+  const watchTerrainqual = watch('terrainqual');
 
   return (
     <FormInput
@@ -168,7 +176,7 @@ const Y = (
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
   const {refetchDTM} = React.useContext(LocationContext);
-  const watchTerrainqual = watch('terrainqual', '');
+  const watchTerrainqual = watch('terrainqual');
 
   return (
     <FormInput
@@ -242,11 +250,22 @@ const TerrainQuality = (
           refetchDTM();
         }
       }}
+      slotProps={{
+        select: {
+          displayEmpty: true,
+        },
+      }}
       {...props}
     >
-      <MenuItem value=""> Vælg type </MenuItem>
-      <MenuItem value="dGPS">dGPS</MenuItem>
-      <MenuItem value="DTM">DTM</MenuItem>
+      <MenuItem value={''} key={''}>
+        Vælg type
+      </MenuItem>
+      <MenuItem value="dGPS" key="dGPS">
+        dGPS
+      </MenuItem>
+      <MenuItem value="DTM" key="DTM">
+        DTM
+      </MenuItem>
     </FormInput>
   );
 };
