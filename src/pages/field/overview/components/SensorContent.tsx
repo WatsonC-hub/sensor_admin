@@ -48,7 +48,7 @@ const SensorContent = () => {
     <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
       <LocationInfo />
       <TimeseriesList />
-      {user?.simpleTaskPermission && <TaskList setCreateTaskDialog={setCreateTaskDialog} />}
+      <TaskList setCreateTaskDialog={setCreateTaskDialog} />
       {location?.itinerary_id && user?.advancedTaskPermission && (
         <ItineraryCardList itinerary_id={location.itinerary_id} />
       )}
@@ -76,7 +76,7 @@ const SensorContent = () => {
                   startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
                   disabled={!enableDragToTrip}
                 >
-                  Træk til tur
+                  {!location?.itinerary_id ? 'Træk til tur' : 'Træk til anden tur'}
                 </Button>
               </Box>
             ) : (
@@ -87,7 +87,7 @@ const SensorContent = () => {
                   startIcon={<DriveEtaIcon sx={{cursor: 'auto'}} fontSize="small" />}
                   disabled={!enableDragToTrip}
                 >
-                  Tilføj til tur
+                  {!location?.itinerary_id ? 'Tilføj til tur' : 'Tilføj til anden tur'}
                 </Button>
               </Box>
             )}

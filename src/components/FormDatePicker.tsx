@@ -20,6 +20,7 @@ export type FormDatePickerProps<TFieldValues extends FieldValues> = Omit<
   onChangeCallback?: (value: dayjs.Dayjs | null) => void;
   customAction?: () => void;
   customActionLabel?: 'next_control';
+  customActionDisabled?: boolean;
 };
 
 const FormDatePicker = <TFieldValues extends FieldValues>({
@@ -31,6 +32,7 @@ const FormDatePicker = <TFieldValues extends FieldValues>({
   onChangeCallback,
   customAction,
   customActionLabel,
+  customActionDisabled,
   slotProps,
   ...pickerProps
 }: FormDatePickerProps<TFieldValues>) => {
@@ -62,7 +64,11 @@ const FormDatePicker = <TFieldValues extends FieldValues>({
               actionBar: (props) => {
                 return (
                   <Box {...props}>
-                    <CustomActionBar customAction={customAction} {...props} />
+                    <CustomActionBar
+                      customAction={customAction}
+                      disabled={customActionDisabled}
+                      {...props}
+                    />
                   </Box>
                 );
               },
@@ -91,7 +97,6 @@ const FormDatePicker = <TFieldValues extends FieldValues>({
                   'accept',
                   ...(customActionLabel ? [customActionLabel] : []),
                 ] as PickersActionBarAction[],
-                disableSpacing: true,
               },
               textField: {
                 ...slotProps?.textField,

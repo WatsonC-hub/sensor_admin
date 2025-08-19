@@ -28,7 +28,7 @@ const CircleBox = ({
         ...defaultStyling,
         ...sx,
         borderRadius: '9999px',
-        color: 'white',
+        color: 'inherit',
         display: 'flex',
         width: '1.5em',
         height: '1.5em',

@@ -39,6 +39,7 @@ import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
 import {SelectionCommand} from '~/features/commandpalette/components/CommandContext';
 
 import {NotListedLocation} from '@mui/icons-material';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 interface LocItems {
   name: string;
@@ -51,6 +52,7 @@ interface MapProps {
 }
 
 const Map = ({clickCallback}: MapProps) => {
+  const {isMobile} = useBreakpoints();
   const {createStamdata, location} = useNavigationFunctions();
   const [setSelectLocId, setEditRouteLayer, setEditParkingLayer] = useMapUtilityStore((state) => [
     state.setSelectedLocId,
@@ -397,7 +399,7 @@ const Map = ({clickCallback}: MapProps) => {
         message="Vælg venligst hvor parkeringen skal oprettes."
         handleOpret={() => null}
       />
-      <Box position={'absolute'} zIndex={401} p={0} mr={2} width={'100%'}>
+      <Box position={'absolute'} zIndex={401} p={0} mr={2} width={isMobile ? '100%' : undefined}>
         <SearchAndFilterMap data={data} handleSearchSelect={handleSearchSelect} />
       </Box>
       <Box id="test" className="no-select" sx={{width: '100%', height: '100%'}} />

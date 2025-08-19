@@ -40,7 +40,7 @@ const EditLocation = () => {
 
   const [formMethods, LocationForm, locationSchema] = useLocationForm({
     mode: 'Edit',
-    defaultValues: {...metadata} as BaseLocation,
+    defaultValues: {...metadata, initial_project_no: metadata?.projectno} as BaseLocation,
     initialLocTypeId: metadata?.loctype_id,
     context: {
       loc_id: loc_id,

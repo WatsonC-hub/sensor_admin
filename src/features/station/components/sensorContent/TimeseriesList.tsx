@@ -111,7 +111,7 @@ const TimeseriesList = () => {
       {data?.map((timeseries, index) => {
         return (
           <Box key={index} display="flex" justifyContent={'space-between'} alignItems="center">
-            <Box display="flex" gap={1} sx={{cursor: 'pointer'}}>
+            <Box display="flex" gap={1} sx={{cursor: 'pointer', color: 'white'}}>
               <NotificationIcon
                 iconDetails={{
                   notification_id: timeseries.notification_id,
