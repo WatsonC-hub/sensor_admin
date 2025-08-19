@@ -44,7 +44,7 @@ const LogOut = ({children}: {children?: ReactNode}) => {
     queryClient.removeQueries({
       predicate: (query) => !matchQuery({queryKey: userQueryOptions.queryKey}, query),
     });
-    await queryClient.invalidateQueries({queryKey: ['user']});
+    await queryClient.invalidateQueries({queryKey: userQueryOptions.queryKey});
     home();
   };
 
