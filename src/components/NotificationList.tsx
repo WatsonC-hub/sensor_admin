@@ -96,6 +96,7 @@ const NotificationList = () => {
         }}
         onClick={handleClick}
         disabled={
+          !user?.simpleTaskPermission &&
           (notifications === undefined || notifications.length === 0) &&
           (tasksOnStation === undefined || tasksOnStation.length === 0)
         }
