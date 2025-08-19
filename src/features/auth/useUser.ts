@@ -34,9 +34,9 @@ export const userQueryOptions = queryOptions({
 });
 
 export const useUser = () => {
-  const {data} = useQuery(userQueryOptions);
+  const {data, isError} = useQuery(userQueryOptions);
 
-  return data
+  return data && !isError
     ? ({
         ...data,
         advancedTaskPermission: data?.features?.tasks === TaskPermission.advanced,

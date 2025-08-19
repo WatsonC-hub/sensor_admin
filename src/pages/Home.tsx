@@ -7,8 +7,7 @@ import {useUser} from '~/features/auth/useUser';
 import AddLocationAlt from '@mui/icons-material/AddLocationAlt';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {Box} from '@mui/material';
-import GuardedOverview from '~/features/tasks/components/Overview';
-import {withComponentPermission} from '~/hooks/withComponentPermission';
+import Overview from '~/features/tasks/components/Overview';
 
 const Home = () => {
   const {isMobile} = useBreakpoints();
@@ -17,7 +16,7 @@ const Home = () => {
 
   return (
     <>
-      <NavBar key="map" zIndex={100}>
+      <NavBar zIndex={100}>
         <NavBar.Logo />
         {/* <TooltipWrapper
           color="white"
@@ -48,11 +47,9 @@ const Home = () => {
         </Box>
       </NavBar>
 
-      <GuardedOverview />
+      <Overview />
     </>
   );
 };
 
-const GuardedHome = withComponentPermission(Home, 'features', ['boreholeAccess', 'iotAccess']);
-
-export default GuardedHome;
+export default Home;
