@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import {useQueryClient} from '@tanstack/react-query';
+import {matchQuery, useQueryClient} from '@tanstack/react-query';
 import {useAtom, useSetAtom} from 'jotai';
 import {useState, ReactNode, MouseEventHandler} from 'react';
 // import {useNavigate} from 'react-router-dom';
@@ -39,11 +39,13 @@ const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();
   const {home} = useNavigationFunctions();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await apiClient.get('/auth/logout/secure');
+    queryClient.removeQueries({
+      predicate: (query) => !matchQuery({queryKey: userQueryOptions.queryKey}, query),
+    });
+    await queryClient.invalidateQueries({queryKey: userQueryOptions.queryKey});
     home();
-    apiClient.get('/auth/logout/secure');
-    queryClient.clear();
-    queryClient.fetchQuery(userQueryOptions);
   };
 
   return (

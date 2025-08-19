@@ -18,7 +18,7 @@ function App() {
   const posthog = usePostHog();
   const user = useUser();
 
-  const {isPending} = useQuery(userQueryOptions);
+  const {isPending, isFetched} = useQuery(userQueryOptions);
 
   useEffect(() => {
     // prefetch user
@@ -44,11 +44,11 @@ function App() {
     }
   }, [user, posthog]);
 
-  if (user === undefined || isPending) {
+  if (user === null && isPending) {
     return <LoadingSkeleton />;
   }
 
-  if (user === null) {
+  if (user === null && isFetched) {
     return (
       <>
         <NavBar>

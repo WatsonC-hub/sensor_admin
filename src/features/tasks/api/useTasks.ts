@@ -23,6 +23,7 @@ import {
 import {useDisplayState} from '~/hooks/ui';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import dayjs, {Dayjs} from 'dayjs';
+import {useUser} from '~/features/auth/useUser';
 
 type Mutation<TData> = {
   path: string;
@@ -105,7 +106,7 @@ const deleteTaskFromItineraryOptions = {
   },
 };
 
-const getNextDueDateOptions = (ts_id: number) =>
+const getNextDueDateOptions = (ts_id: number | undefined) =>
   queryOptions<string, APIError, Dayjs>({
     queryKey: queryKeys.Tasks.nextDueDate(ts_id),
     queryFn: async () => {
@@ -118,7 +119,7 @@ const getNextDueDateOptions = (ts_id: number) =>
     enabled: ts_id !== undefined && ts_id !== null,
   });
 
-export const getNextDueDate = (ts_id: number) => {
+export const useNextDueDate = (ts_id: number | undefined) => {
   return useQuery(getNextDueDateOptions(ts_id));
 };
 
@@ -127,6 +128,7 @@ export const useTasks = () => {
   const queryClient = useQueryClient();
 
   const [setSelectedTask] = useDisplayState((state) => [state.setSelectedTask]);
+  const user = useUser();
 
   const get = useQuery<Array<TaskAPI>, APIError, Task[]>({
     queryKey: queryKeys.Tasks.all(),
@@ -222,6 +224,7 @@ export const useTasks = () => {
       return data;
     },
     staleTime: 1000 * 60 * 60,
+    enabled: user?.simpleTaskPermission && user?.features.iotAccess,
   });
 
   const getStatus = useQuery<TaskStatus[], APIError>({
@@ -232,6 +235,7 @@ export const useTasks = () => {
       return data;
     },
     staleTime: 1000 * 60 * 60,
+    enabled: user?.simpleTaskPermission && user?.features.iotAccess,
   });
 
   const deleteTaskFromItinerary = useMutation({

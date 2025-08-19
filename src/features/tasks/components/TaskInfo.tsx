@@ -21,6 +21,7 @@ const TaskInfo = () => {
   const defaultValues = useMemo(() => {
     if (!task) return;
     return {
+      ts_id: task.ts_id,
       name: task.name,
       description: task.description,
       status_id: task.status_id,

@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import {queryClient} from './queryClient';
+import {userQueryOptions} from './features/auth/useUser';
 
 const apiClient = axios.create({baseURL: '/api', withCredentials: true});
 
@@ -21,13 +22,12 @@ apiClient.interceptors.response.use(
     return response;
   },
   function (error) {
-    // const originalRequest = error.config;
-    if (error?.response?.status === 401) {
-      queryClient.setQueryData(['user'], () => null);
+    const originalRequest = error.config;
+
+    if (error?.response?.status === 401 && originalRequest.url != '/auth/me/secure') {
+      queryClient.invalidateQueries({queryKey: userQueryOptions.queryKey});
     }
 
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
     return Promise.reject(error);
   }
 );

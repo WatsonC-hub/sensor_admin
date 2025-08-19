@@ -32,7 +32,6 @@ import {ArrowBack, Save} from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AlertDialog from '~/components/AlertDialog';
 import {useLocationData} from '~/hooks/query/useMetadata';
-import {withComponentPermission} from '~/hooks/withComponentPermission';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import dayjs from 'dayjs';
 
@@ -538,9 +537,4 @@ const CreateStation = () => {
   );
 };
 
-const GuardedCreateStation = withComponentPermission(CreateStation, 'features', [
-  'boreholeAccess',
-  'iotAccess',
-]);
-
-export default GuardedCreateStation;
+export default CreateStation;

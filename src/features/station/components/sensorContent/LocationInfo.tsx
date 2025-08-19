@@ -17,16 +17,16 @@ const LocationInfo = () => {
   const [, setPageToShow] = useStationPages();
 
   return (
-    <Box display={'flex'} flexDirection={'column'} mt={-2} gap={0.5}>
+    <Box display={'flex'} flexDirection={'column'} mt={-2}>
       <Typography variant={'h6'} fontWeight={'bold'}>
         {location_data?.loc_name}
       </Typography>
       {location_data?.customer_name !== null && location_data?.customer_name !== undefined && (
-        <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+        <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} gap={1}>
           <Typography variant={'body2'} height={24} alignContent={'center'}>
-            Projektinfo:{' '}
+            Projektinfo:
           </Typography>
-          <Typography variant={'body2'} height={24} alignContent={'center'}>
+          <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
             {location_data?.customer_name}
           </Typography>
         </Box>
@@ -38,7 +38,7 @@ const LocationInfo = () => {
             Projekt nr.:{' '}
           </Typography>
           <Box display={'flex'} flexDirection={'row'} gap={1}>
-            <Typography variant={'body2'} height={24} alignContent={'center'}>
+            <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
               {location_data?.projectno}
             </Typography>
             <Link
@@ -64,7 +64,7 @@ const LocationInfo = () => {
           <Typography variant={'body2'} height={24} alignContent={'center'}>
             Lokationstype:
           </Typography>
-          <Typography variant={'body2'} height={24} alignContent={'center'}>
+          <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
             {location_data?.loctype_name}
           </Typography>
         </Box>

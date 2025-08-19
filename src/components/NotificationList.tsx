@@ -53,10 +53,6 @@ const NotificationList = () => {
     setModalOpen(false);
   };
 
-  // const closeUpdateModal = () => {
-  //   setUpdateModalOpen(false);
-  // };
-
   if (loc_id == undefined) {
     loc_id = data?.filter((elem) => elem.ts_id == ts_id)[0]?.loc_id;
   }
@@ -93,7 +89,16 @@ const NotificationList = () => {
         aria-controls="notifications-menu"
         aria-haspopup="menu"
         color="inherit"
+        sx={{
+          '&:disabled': {
+            color: 'grey.500',
+          },
+        }}
         onClick={handleClick}
+        disabled={
+          (notifications === undefined || notifications.length === 0) &&
+          (tasksOnStation === undefined || tasksOnStation.length === 0)
+        }
       >
         <Badge
           badgeContent={notifications?.length}
@@ -105,19 +110,20 @@ const NotificationList = () => {
             },
           }}
         >
-          {' '}
-          <Badge
-            badgeContent={tasksOnStation?.length}
-            anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
-            sx={{
-              '& .MuiBadge-badge': {
-                // color: 'grey.800',
-                backgroundColor: '#1798e9',
-              },
-            }}
-          >
-            <NotificationsIcon />
-          </Badge>
+          {
+            <Badge
+              badgeContent={tasksOnStation?.length}
+              anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+              sx={{
+                '& .MuiBadge-badge': {
+                  // color: 'grey.800',
+                  backgroundColor: '#1798e9',
+                },
+              }}
+            >
+              <NotificationsIcon />
+            </Badge>
+          }
         </Badge>
       </IconButton>
       <Menu
@@ -144,36 +150,38 @@ const NotificationList = () => {
           </MenuItem>
         )}
         {isPending && <MenuItem>Indlæser...</MenuItem>}
-        {user?.simpleTaskPermission &&
-          notifications?.map((notification, index) => {
-            const splitted = notification.ts_name.split(notification.loc_name);
-            return (
-              <MenuItem
-                key={index}
-                sx={{gap: 0.5}}
-                onClick={() => {
+        {notifications?.map((notification, index) => {
+          const splitted = notification.ts_name.split(notification.loc_name);
+          return (
+            <MenuItem
+              key={index}
+              sx={{gap: 0.5}}
+              onClick={() => {
+                if (user?.simpleTaskPermission) {
                   setSelectedTask(notification.ts_id + ':' + notification.notification_id);
                   tasksNavigation();
+                }
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  fontSize: '1.5rem',
+                  color: 'white',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    fontSize: '1.5rem',
-                  }}
-                >
-                  <NotificationIcon iconDetails={notification} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={notification.opgave}
-                  secondary={
-                    splitted[splitted.length - 1].replace('-', '').trim() +
-                    ' - ' +
-                    notification.dato?.slice(0, 10)
-                  }
-                />
-              </MenuItem>
-            );
-          })}
+                <NotificationIcon iconDetails={notification} />
+              </ListItemIcon>
+              <ListItemText
+                primary={notification.opgave}
+                secondary={
+                  splitted[splitted.length - 1].replace('-', '').trim() +
+                  ' - ' +
+                  notification.dato?.slice(0, 10)
+                }
+              />
+            </MenuItem>
+          );
+        })}
         {tasksOnStation?.map((task, index) => {
           return (
             <MenuItem

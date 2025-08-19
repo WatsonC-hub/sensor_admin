@@ -54,20 +54,17 @@ const queryClient = new QueryClient({
   mutationCache: new MutationCache({
     onSuccess: (_data, _variables, _context, mutation) => {
       queryClient.invalidateQueries({
-        predicate: (query) =>
-          // invalidate all matching tags at once
-          // or everything if no meta is provided
-          {
-            if (matchQuery({queryKey: ['map']}, query)) return true;
-            if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
-            if (matchQuery({queryKey: ['tasks']}, query)) return true;
+        predicate: (query) => {
+          if (matchQuery({queryKey: ['map']}, query)) return true;
+          if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
+          if (matchQuery({queryKey: ['tasks']}, query)) return true;
 
-            return (
-              mutation.meta?.invalidates?.some((queryKey) => {
-                return queryKey.every((key) => query.queryKey.includes(key));
-              }) ?? false
-            );
-          },
+          return (
+            mutation.meta?.invalidates?.some((queryKey) => {
+              return queryKey.every((key) => query.queryKey.includes(key));
+            }) ?? false
+          );
+        },
       });
     },
     onError: (error) => {

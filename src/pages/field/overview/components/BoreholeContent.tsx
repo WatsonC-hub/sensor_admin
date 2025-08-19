@@ -23,7 +23,7 @@ const BoreholeContent = () => {
           <Typography variant={'h6'} fontWeight={'bold'}>
             {boreholeno}
           </Typography>
-          <Typography variant={'body2'} height={24} alignContent={'center'}>
+          <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
             Indlæser...
           </Typography>
         </Box>
@@ -47,7 +47,7 @@ const BoreholeContent = () => {
               <Directions />
             </IconButton>
           </Box>
-          <Typography variant={'body2'} height={24} alignContent={'center'}>
+          <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
             Indlæser...
           </Typography>
         </Box>
@@ -56,37 +56,37 @@ const BoreholeContent = () => {
   }
 
   return (
-    <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
-      <Box display={'flex'} flexDirection={'column'} mt={-2} gap={0.5}>
+    <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={1} overflow="auto">
+      <Box display={'flex'} flexDirection={'column'} mt={-2}>
         <Typography variant={'h6'} fontWeight={'bold'}>
           {boreholeno}
         </Typography>
         {data.description && (
           <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-            <Typography variant={'body2'} height={24} alignContent={'center'}>
+            <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
               Beskrivelse:{' '}
             </Typography>
-            <Typography variant={'body2'} height={24} alignContent={'center'}>
+            <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
               {data.description}
             </Typography>
           </Box>
         )}
         {data.plantname && (
-          <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+          <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} gap={1}>
             <Typography variant={'body2'} height={24} alignContent={'center'}>
-              Anlæg:{' '}
+              Anlæg:
             </Typography>
-            <Typography variant={'body2'} height={24} alignContent={'center'}>
+            <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
               {data.plantname} ({data.plantid})
             </Typography>
           </Box>
         )}
         {data.drilldepth && (
           <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-            <Typography variant={'body2'} height={24} alignContent={'center'}>
-              Borings dybde:{' '}
+            <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
+              Borings dybde:
             </Typography>
-            <Typography variant={'body2'} height={24} alignContent={'center'}>
+            <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
               {data.drilldepth} m
             </Typography>
           </Box>

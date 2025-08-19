@@ -27,7 +27,6 @@ import {fullScreenAtom} from '~/state/atoms';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import LocationHighlighter from '~/features/map/components/LocationHighlighter';
 import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
-import {withComponentPermission} from '~/hooks/withComponentPermission';
 
 const Overview = () => {
   const [, setPageToShow] = useStationPages();
@@ -307,9 +306,4 @@ const Overview = () => {
   );
 };
 
-const GuardedOverview = withComponentPermission(Overview, 'features', [
-  'boreholeAccess',
-  'iotAccess',
-]);
-
-export default GuardedOverview;
+export default Overview;

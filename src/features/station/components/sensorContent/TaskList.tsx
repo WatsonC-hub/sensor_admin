@@ -12,6 +12,7 @@ import {isSimpleTask} from '~/features/tasks/helpers';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useUser} from '~/features/auth/useUser';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import TaskListItemNoneCard from './taskListItemComponents/TaskListItemNoneCard';
 
 const sortTasks = (a: Task, b: Task) => {
   if ((a.blocks_notifications.includes(1) || a.blocks_notifications.includes(207)) && !a.is_created)
@@ -76,10 +77,14 @@ const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
       {location_tasks?.map((task) => {
         return (
           <Box key={task.id}>
-            {isSimpleTask(task) ? (
-              <TaskListItemSimpleCard task={task} />
+            {user?.simpleTaskPermission === true ? (
+              isSimpleTask(task) ? (
+                <TaskListItemSimpleCard task={task} />
+              ) : (
+                <TaskListItemAdvancedCard task={task} />
+              )
             ) : (
-              <TaskListItemAdvancedCard task={task} />
+              <TaskListItemNoneCard task={task} />
             )}
           </Box>
         );

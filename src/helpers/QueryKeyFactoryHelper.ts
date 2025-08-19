@@ -76,7 +76,7 @@ export const queryKeys = {
     all: () => ['tasks', 'register', 'itineraries'] as const,
     closedTasks: (loc_id: number | undefined) => ['tasks', loc_id] as const,
     taskHistory: (task_id: string) => ['tasks', task_id] as const,
-    nextDueDate: (ts_id: number) => ['next_due_date', 'register', ts_id] as const,
+    nextDueDate: (ts_id: number | undefined) => ['next_due_date', 'register', ts_id] as const,
     taskUsers: () => ['task_users'] as const,
     taskStatus: () => ['task_status'] as const,
   },

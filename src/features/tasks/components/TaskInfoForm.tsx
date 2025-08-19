@@ -5,12 +5,11 @@ import React, {useState} from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
-import {getNextDueDate, useTasks} from '~/features/tasks/api/useTasks';
+import {useTasks} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {Task} from '~/features/tasks/types';
 import {useDisplayState} from '~/hooks/ui';
 import dayjs from 'dayjs';
-import {toast} from 'react-toastify';
 
 // import {useTaskStore} from '../api/useTaskStore';
 
@@ -23,7 +22,6 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const deleteTaskTitle = selectedTask.id.includes(':') ? 'Notifikationen kan ikke slettes' : '';
 
   const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
-  const {data: nextDueDate, error, isPending} = getNextDueDate(selectedTask.ts_id);
   // const removeFromItineraryTitle = !selectedTask.itinerary_id
   //   ? 'Opgaven er ikke tilknyttet en tur'
   //   : '';
@@ -37,7 +35,6 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     trigger,
     getValues,
     formState: {dirtyFields},
-    setValue,
   } = useFormContext();
 
   const handleSubmit = (values: Partial<FieldValues>) => {
@@ -115,21 +112,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
-            <TaskForm.DueDate
-              onChangeCallback={async () => await handlePatch('due_date')}
-              customActionLabel="next_control"
-              customAction={async () => {
-                if (!error && !isPending && nextDueDate) {
-                  setValue('due_date', nextDueDate, {
-                    shouldDirty: true,
-                    shouldTouch: true,
-                  });
-                }
-                if (error && error.response && typeof error.response.data.detail === 'string') {
-                  toast.error(error.response.data.detail);
-                }
-              }}
-            />
+            <TaskForm.DueDate onChangeCallback={async () => await handlePatch('due_date')} />
           </Box>
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6} alignContent={'center'} pb={0.5}>

@@ -8,7 +8,7 @@ import {z} from 'zod';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {useNextDueDate, useTasks} from '~/features/tasks/api/useTasks';
 import {TaskUser} from '~/features/tasks/types';
 
 import {useTaskState} from '../api/useTaskState';
@@ -16,6 +16,8 @@ import {merge} from 'lodash';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {zodDayjs} from '~/helpers/schemas';
 import FormDatePicker, {FormDatePickerProps} from '~/components/FormDatePicker';
+import {toast} from 'react-toastify';
+import {useDisplayState} from '~/hooks/ui';
 
 const zodSchema = z.object({
   ts_id: z.number({required_error: 'Tidsserie skal være angivet'}),
@@ -106,6 +108,12 @@ const Input = (props: FormInputProps<FormValues>) => {
 
 const DueDate = (props: Omit<FormDatePickerProps<FormValues>, 'name'>) => {
   const {disabled} = React.useContext(TaskFormContext);
+  const {setValue, watch} = useFormContext<FormValues>();
+  const ts_id_display = useDisplayState((state) => state.ts_id);
+  const selectedTimeseriesTsId = watch('ts_id');
+  const ts_id = ts_id_display ?? selectedTimeseriesTsId;
+  const {data: nextDueDate, error, isPending} = useNextDueDate(ts_id);
+
   return (
     <FormDatePicker
       name="due_date"
@@ -116,6 +124,19 @@ const DueDate = (props: Omit<FormDatePickerProps<FormValues>, 'name'>) => {
           size: 'small',
         },
       }}
+      customActionLabel="next_control"
+      customAction={async () => {
+        if (!error && !isPending && nextDueDate) {
+          setValue('due_date', nextDueDate, {
+            shouldDirty: true,
+            shouldTouch: true,
+          });
+        }
+        if (error && error.response && typeof error.response.data.detail === 'string') {
+          toast.error(error.response.data.detail);
+        }
+      }}
+      customActionDisabled={!ts_id}
       {...props}
       disabled={disabled || props.disabled}
     />
