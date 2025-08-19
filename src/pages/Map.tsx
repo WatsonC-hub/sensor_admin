@@ -169,7 +169,7 @@ const Map = ({clickCallback}: MapProps) => {
       },
     ];
 
-    if (user?.superUser) {
+    if (user?.features.routesAndParking) {
       locationMenu = [
         ...locationMenu,
         {
