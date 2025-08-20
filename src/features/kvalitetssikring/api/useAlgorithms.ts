@@ -2,18 +2,15 @@ import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/rea
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
+import {useAppContext} from '~/state/contexts';
 import {QaAlgorithms} from '~/types';
 interface AlgorithmsBase {
   path: string;
   data?: any;
 }
-// interface AlgorithmsPost extends AlgorithmsBase {
-//   data: {
-//     algorithm: string;
-//     parameters: Record<string, any>;
-//   };
-// }
+
 interface AlgorithmsPut extends AlgorithmsBase {
   data: {
     algorithm: string;
@@ -28,14 +25,6 @@ interface AlgorithmsRevert extends AlgorithmsBase {
   };
 }
 
-// export const algorithmsPostOptions = {
-//   mutationKey: ['algorithms_post'],
-//   mutationFn: async (mutation_data: AlgorithmsPost) => {
-//     const {data} = mutation_data;
-//     const {data: result} = await apiClient.post(`/sensor_admin/algorithms`, data);
-//     return result;
-//   },
-// };
 const algorithmsPutOptions = {
   mutationKey: ['algorithms_put'],
   mutationFn: async (mutation_data: AlgorithmsPut) => {
@@ -62,23 +51,25 @@ const algorithmsRevertOptions = {
   },
 };
 
-export const getAlgorithmOptions = (ts_id: number | undefined) =>
+export const getAlgorithmOptions = (ts_id: number) =>
   queryOptions<Array<QaAlgorithms>, APIError>({
-    queryKey: ['algorithms', ts_id],
+    queryKey: queryKeys.Timeseries.algorithms(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/algorithms/${ts_id}`);
       return data;
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: ts_id !== undefined,
   });
 
-export const useAlgorithms = (ts_id: number | undefined) => {
+export const useAlgorithms = () => {
+  const {ts_id} = useAppContext(['ts_id']);
   const queryClient = useQueryClient();
   const get = useQuery(getAlgorithmOptions(ts_id));
 
   const handlePrefetch = () => {
     queryClient.prefetchQuery({
-      queryKey: ['algorithms', ts_id],
+      queryKey: queryKeys.Timeseries.algorithms(ts_id),
       queryFn: async () => {
         const {data} = await apiClient.get<Array<QaAlgorithms>>(
           `/sensor_admin/algorithms/${ts_id}`
@@ -91,19 +82,19 @@ export const useAlgorithms = (ts_id: number | undefined) => {
   const put = useMutation({
     ...algorithmsPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['algorithms', ts_id],
-      });
       toast.success('Ændringer gemt');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
   const del = useMutation({
     ...algorithmsDelOptions,
     onSuccess: () => {
       toast.success('Algorithms slettet');
-      queryClient.invalidateQueries({
-        queryKey: ['algorithms', ts_id],
-      });
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
@@ -111,9 +102,9 @@ export const useAlgorithms = (ts_id: number | undefined) => {
     ...algorithmsRevertOptions,
     onSuccess: () => {
       toast.success('Algoritme nulstillet');
-      queryClient.invalidateQueries({
-        queryKey: ['algorithms', ts_id],
-      });
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 

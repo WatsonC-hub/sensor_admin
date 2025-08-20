@@ -1,5 +1,4 @@
 import {Box, Typography} from '@mui/material';
-import moment from 'moment';
 import React from 'react';
 import {UseFormReturn} from 'react-hook-form';
 import {createTypedForm} from '~/components/Form';
@@ -37,8 +36,6 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
 
     const data = {
       ...mpData,
-      startdate: moment(mpData.startdate).toISOString(),
-      enddate: moment(mpData.enddate).toISOString(),
     };
 
     if (mpData.gid === undefined) {
@@ -73,14 +70,11 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
             },
           }}
         />
-        <Form.FormInput
+        <Form.FormDateTime
           name="startdate"
           label={defaultValues?.gid !== undefined ? 'Start dato' : 'Dato'}
-          type="datetime-local"
         />
-        {defaultValues?.gid !== undefined && (
-          <Form.FormInput name="enddate" label="Slut dato" type="datetime-local" />
-        )}
+        {defaultValues?.gid !== undefined && <Form.FormDateTime name="enddate" label="Slut dato" />}
 
         <Form.FormInput
           name="mp_description"

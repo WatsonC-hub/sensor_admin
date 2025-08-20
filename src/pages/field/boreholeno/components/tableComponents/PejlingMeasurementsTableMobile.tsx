@@ -15,14 +15,14 @@ import {
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
-import {Kontrol} from '~/types';
+import {BoreholeMeasurement} from '~/types';
 
 interface Props {
-  data: Kontrol[];
-  handleEdit: (kontrol: Kontrol) => void;
+  data: BoreholeMeasurement[] | undefined;
+  handleEdit: (measurement: BoreholeMeasurement) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
@@ -43,7 +43,7 @@ export default function PejlingMeasurementsTableMobile({
     setDialogOpen(true);
   };
 
-  const columns = useMemo<MRT_ColumnDef<Kontrol>[]>(
+  const columns = useMemo<MRT_ColumnDef<BoreholeMeasurement>[]>(
     () => [
       {
         accessorFn: (row) => row,
@@ -93,7 +93,7 @@ export default function PejlingMeasurementsTableMobile({
     [unit, disabled, handleEdit]
   );
 
-  const options: Partial<MRT_TableOptions<Kontrol>> = {
+  const options: Partial<MRT_TableOptions<BoreholeMeasurement>> = {
     renderDetailPanel: ({row}) => (
       <Box
         sx={{
@@ -147,7 +147,14 @@ export default function PejlingMeasurementsTableMobile({
     ),
   };
 
-  const table = useTable<Kontrol>(columns, data, options, undefined, TableTypes.LIST);
+  const table = useTable<BoreholeMeasurement>(
+    columns,
+    data,
+    options,
+    undefined,
+    TableTypes.LIST,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
     <Box>

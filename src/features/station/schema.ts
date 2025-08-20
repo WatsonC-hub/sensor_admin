@@ -1,5 +1,5 @@
-import moment from 'moment';
 import {z} from 'zod';
+import {zodDayjs} from '~/helpers/schemas';
 
 const baseLocationSchema = z.object({
   groups: z
@@ -16,7 +16,7 @@ const baseLocationSchema = z.object({
   y: z
     .number({required_error: 'Y-koordinat skal udfyldes'})
     .transform((val) => (typeof val === 'number' ? val : parseFloat(val))),
-  terrainqual: z.enum(['dGPS', 'DTM', '']).nullish(),
+  terrainqual: z.string(),
   terrainlevel: z.number().nullish(),
   description: z.string().nullish(),
   loctype_id: z
@@ -75,17 +75,17 @@ const watlevmpAddSchema = z.object({
 
 const addUnitSchema = z.object({
   unit_uuid: z.string(),
-  startdate: z.string(),
+  startdate: zodDayjs('Startdato skal udfyldes').optional(),
 });
 
 const editUnitSchema = z
   .object({
     unit_uuid: z.string(),
-    startdate: z.string().default(() => moment().format('YYYY-MM-DD')),
-    enddate: z.string(),
+    startdate: zodDayjs('Startdato skal udfyldes'),
+    enddate: zodDayjs('Slutdato skal udfyldes'),
   })
   .superRefine((unit, ctx) => {
-    if (moment(unit.startdate) > moment(unit.enddate)) {
+    if (unit.startdate.isSameOrAfter(unit.enddate)) {
       ctx.addIssue({
         code: z.ZodIssueCode.invalid_date,
         message: 'start dato må ikke være senere end slut dato',
@@ -93,7 +93,7 @@ const editUnitSchema = z
       });
       ctx.addIssue({
         code: z.ZodIssueCode.invalid_date,
-        message: 'slut dato må ikke være tidligere end start datoo',
+        message: 'slut dato må ikke være tidligere end start dato',
         path: ['enddate'],
       });
     }

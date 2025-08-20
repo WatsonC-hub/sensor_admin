@@ -1,13 +1,14 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Grid} from '@mui/material';
-import moment from 'moment';
 import React, {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import Button from '~/components/Button';
+import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
+import {zodDayjs} from '~/helpers/schemas';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import {LevelCorrection} from '~/types';
 
@@ -21,20 +22,20 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
   const {put} = useLevelCorrection();
 
   const schema = z.object({
-    date: z
-      .string()
-      .min(1, {message: 'Dato ugyldig'})
-      .transform((value) => moment(value).toISOString()),
-    comment: z.string().min(0).max(255, {message: 'Maks 255 tegn'}),
+    date: zodDayjs('Dato er påkrævet'),
+    comment: z.string().min(0).max(255, {message: 'Maks 255 tegn'}).nullable(),
   });
+
+  const {data: parsedData} = schema.safeParse(data);
 
   const formMethods = useForm({
     resolver: zodResolver(schema),
-    defaultValues: data,
+    defaultValues: parsedData,
   });
 
   useEffect(() => {
-    reset(data);
+    const {data: parsedData} = schema.safeParse(data);
+    reset(parsedData);
   }, [data]);
 
   const {
@@ -43,14 +44,11 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
     formState: {dirtyFields},
   } = formMethods;
 
-  const submit = (values: LevelCorrection) => {
+  const submit = (values: z.infer<typeof schema>) => {
     if (Object.keys(dirtyFields).length > 0) {
       put.mutate({
         path: `${data.ts_id}/${data.gid}`,
-        data: {
-          date: values.date,
-          comment: values.comment,
-        },
+        data: values,
       });
     }
     setOpen();
@@ -67,17 +65,9 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
         borderColor="grey.500"
         p={1}
       >
-        <Grid container>
+        <Grid container spacing={0.5}>
           <Grid item xs={12} xl={5} alignSelf={'center'}>
-            <Box
-              alignItems={'center'}
-              justifySelf={'center'}
-              display="flex"
-              flexDirection="row"
-              gap={1}
-            >
-              <FormInput name="date" label="Dato" fullWidth type="datetime-local" required />
-            </Box>
+            <FormDateTime name="date" label="Dato" required />
           </Grid>
           <Grid item xs={12} xl={7}>
             <FormInput name="comment" label="Kommentar" multiline rows={2} />

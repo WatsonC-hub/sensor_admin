@@ -7,6 +7,7 @@ import {toast} from 'react-toastify';
 
 import {limitDecimalNumbers, splitTimeFromDate} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
 import {queryClient} from '~/queryClient';
@@ -87,6 +88,7 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
       ...MRT_Localization_DA,
       noRecordsToDisplay: errorMessage ?? MRT_Localization_DA.noRecordsToDisplay,
     },
+    enableFullScreenToggle: false,
     positionExpandColumn: 'last',
     positionActionsColumn: 'last',
     enableRowActions: true,
@@ -105,7 +107,9 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
         sx={{p: 0.5, marginRight: 0.5}}
         edge="end"
         onClick={async () => {
-          await queryClient.invalidateQueries({queryKey: ['latest_measurement', ts_id]});
+          await queryClient.invalidateQueries({
+            queryKey: queryKeys.Timeseries.latestMeasurement(ts_id),
+          });
           toast.success('Genindlæst seneste måling');
         }}
         size="large"

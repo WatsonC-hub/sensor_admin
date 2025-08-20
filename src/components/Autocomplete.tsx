@@ -6,6 +6,7 @@ import {
   TextField,
   TextFieldProps,
 } from '@mui/material';
+import {merge} from 'lodash';
 import React from 'react';
 import LinkableTooltip from './LinkableTooltip';
 
@@ -48,13 +49,33 @@ const ExtendedAutocomplete = <T extends object>({
       getOptionLabel={(option) => (option[labelKey] ? `${option[labelKey]}` : '')}
       renderInput={(params) => {
         const {InputProps} = params;
+        let sx = {
+          pb: 0,
+          '& .MuiInputBase-input.Mui-disabled': {
+            WebkitTextFillColor: '#000000',
+          },
+          '& .MuiInputLabel-root': {
+            color: 'primary.main',
+          }, //styles the label
+          '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+          '& .MuiOutlinedInput-root': {
+            '& > fieldset': {borderColor: 'primary.main'},
+          },
+          '.MuiFormHelperText-root': {
+            position: 'absolute',
+            top: '90%',
+          },
+        };
+
+        if (textFieldsProps.sx) {
+          sx = merge(sx, textFieldsProps.sx);
+        }
         return (
           <TextField
             {...params}
             {...textFieldsProps}
             fullWidth
             margin="dense"
-            InputLabelProps={{shrink: true}}
             slotProps={{
               inputLabel: {shrink: true},
               input: {
@@ -76,21 +97,7 @@ const ExtendedAutocomplete = <T extends object>({
             variant="outlined"
             error={Boolean(error)}
             helperText={Boolean(error) && error}
-            sx={{
-              pb: 0,
-              '& .MuiInputBase-input.Mui-disabled': {
-                WebkitTextFillColor: '#000000',
-              },
-              '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-              '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-              '& .MuiOutlinedInput-root': {
-                '& > fieldset': {borderColor: 'primary.main'},
-              },
-              '.MuiFormHelperText-root': {
-                position: 'absolute',
-                top: '90%',
-              },
-            }}
+            sx={sx}
           />
         );
       }}

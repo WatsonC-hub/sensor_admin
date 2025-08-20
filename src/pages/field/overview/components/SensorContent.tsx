@@ -1,136 +1,116 @@
-import {Box, Typography} from '@mui/material';
-
+import {Box, Tooltip} from '@mui/material';
 import Button from '~/components/Button';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import type {NotificationMap} from '~/hooks/query/useNotificationOverview';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import {useDrawerContext} from '~/state/contexts';
+import LocationInfo from '~/features/station/components/sensorContent/LocationInfo';
+import TaskList from '~/features/station/components/sensorContent/TaskList';
+import TimeseriesList from '~/features/station/components/sensorContent/TimeseriesList';
+import {useAppContext} from '~/state/contexts';
+import {useState} from 'react';
+import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
+import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
+import TaskHistoryList from '~/features/station/components/sensorContent/TaskHistoryList';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import {useDraggable} from '@dnd-kit/react';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import DriveEtaIcon from '@mui/icons-material/DriveEta';
+import AddToTripDialog from './AddToTripDialog';
+import {useUser} from '~/features/auth/useUser';
+import {useTaskState} from '~/features/tasks/api/useTaskState';
+import {StatusEnum} from '~/features/tasks/types';
 
-interface SensorContentProps {
-  data: NotificationMap;
-}
+const SensorContent = () => {
+  const {loc_id} = useAppContext(['loc_id'], []);
 
-const SensorContent = ({data}: SensorContentProps) => {
-  const drawerContext = useDrawerContext();
-  const {station, adminKvalitetssikring} = useNavigationFunctions();
+  const {isMobile} = useBreakpoints();
+  const [createTaskDialog, setCreateTaskDialog] = useState(false);
+  const [openTripDialog, setOpenTripDialog] = useState(false);
+  const user = useUser();
+  const {tasks} = useTaskState();
 
-  const all_notifications = [...data.otherNotifications];
-  const unique_stations = all_notifications
-    .filter((item, index, self) => index === self.findIndex((t) => t.ts_id === item.ts_id))
-    .filter((item) => item.ts_id !== null);
+  const {data: location} = useMapOverview({
+    select: (data) => {
+      return data.find((location) => location.loc_id === loc_id);
+    },
+  });
+
+  const enableDragToTrip = tasks?.some(
+    (task) => task.loc_id === loc_id && task.status_id == StatusEnum.FIELD
+  );
+
+  const {ref} = useDraggable({
+    id: 'location' + loc_id,
+    data: {loc_id},
+    feedback: 'clone',
+    disabled: !enableDragToTrip,
+  });
+
   return (
-    <>
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 1,
-          flexWrap: 'wrap',
-        }}
-      >
-        {unique_stations.map((notification, index) => {
-          const splitted = notification.ts_name.split(notification.loc_name);
-          return (
-            <Box
-              key={index}
-              sx={{
-                display: 'flex',
-                gap: 0.5,
-                alignItems: 'center',
-              }}
-            >
-              <Button
-                bttype="link"
-                onClick={() => station(notification.loc_id, notification.ts_id)}
-              >
-                {splitted[splitted.length - 1].replace('-', '').trim()}
-              </Button>
-              <Box display="flex" gap={0.5}>
-                <NotificationIcon iconDetails={notification} />
-                {/* <Typography variant="body2">{notification.opgave}</Typography> */}
-              </Box>
-              {/* <Typography variant="body2">{convertDateWithTimeStamp(notification.dato)}</Typography> */}
-            </Box>
-          );
-        })}
-      </Box>
-
-      {drawerContext === 'full' && (
-        <>
-          <Typography variant="h6">Notifikationer</Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 1,
-              flexWrap: 'wrap',
-            }}
-          >
-            {[data, ...data.otherNotifications]
-              .filter((item) => item.opgave !== null)
-              .map((notification, index) => {
-                // notification.notification_id;
-                const splitted = notification.ts_name.split(notification.loc_name);
-                return (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: 'flex',
-                      gap: 0.5,
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Button
-                      bttype="link"
-                      onClick={() => {
-                        if (notification.isqa) {
-                          adminKvalitetssikring(notification.ts_id, notification.loc_id);
-                        } else {
-                          station(notification.loc_id, notification.ts_id);
-                        }
-                      }}
-                    >
-                      {splitted[splitted.length - 1].replace('-', '').trim()}
-                    </Button>
-                    <Box display="flex" gap={1}>
-                      <NotificationIcon iconDetails={notification} />
-                      <Typography variant="body2">{notification.opgave}</Typography>
-                    </Box>
-                    <Typography variant="body2">
-                      {convertDateWithTimeStamp(notification.dato)}
-                    </Typography>
-                  </Box>
-                );
-              })}
-          </Box>
-        </>
+    <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
+      <LocationInfo />
+      <TimeseriesList />
+      <TaskList setCreateTaskDialog={setCreateTaskDialog} />
+      {location?.itinerary_id && user?.advancedTaskPermission && (
+        <ItineraryCardList itinerary_id={location.itinerary_id} />
       )}
 
-      {/* <Box display="flex" gap={1} ml="auto" mr={0}>
-        <Button
-          bttype="tertiary"
-          color="primary"
-          onClick={() => {
-            window.open(
-              `https://www.google.com/maps/search/?api=1&query=${data.latitude},${data.longitude}`,
-              '_blank'
-            );
-          }}
-          startIcon={<DirectionsIcon />}
-        >
-          Google Maps
-        </Button>
-        <Button
-          bttype="primary"
-          color="primary"
-          onClick={() => {
-            location(data.locid);
-          }}
-          startIcon={<PlaceIcon />}
-        >
-          Lokalitet
-        </Button>
-      </Box> */}
-    </>
+      {user?.advancedTaskPermission && (
+        <Box display="flex" gap={2} flexDirection={'row'} alignSelf={'center'}>
+          <Tooltip
+            title={
+              !enableDragToTrip
+                ? 'Lav en opgave til feltarbejde for at kunne trække til tur'
+                : 'Træk til tur for at tilføje opgaver'
+            }
+            arrow
+          >
+            {!isMobile ? (
+              <Box
+                display="flex"
+                ref={ref}
+                flexDirection={'row'}
+                alignItems={'center'}
+                alignSelf={'center'}
+              >
+                <Button
+                  bttype="primary"
+                  startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
+                  disabled={!enableDragToTrip}
+                >
+                  {!location?.itinerary_id ? 'Træk til tur' : 'Træk til anden tur'}
+                </Button>
+              </Box>
+            ) : (
+              <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>
+                <Button
+                  bttype="primary"
+                  onClick={() => setOpenTripDialog(true)}
+                  startIcon={<DriveEtaIcon sx={{cursor: 'auto'}} fontSize="small" />}
+                  disabled={!enableDragToTrip}
+                >
+                  {!location?.itinerary_id ? 'Tilføj til tur' : 'Tilføj til anden tur'}
+                </Button>
+              </Box>
+            )}
+          </Tooltip>
+        </Box>
+      )}
+
+      {user?.simpleTaskPermission && <TaskHistoryList />}
+
+      {user?.simpleTaskPermission && (
+        <CreateManuelTaskModal
+          open={createTaskDialog}
+          closeModal={() => setCreateTaskDialog(false)}
+        />
+      )}
+      {user?.advancedTaskPermission && (
+        <AddToTripDialog
+          open={openTripDialog}
+          onClose={() => setOpenTripDialog(false)}
+          loc_id={loc_id}
+        />
+      )}
+    </Box>
   );
 };
 

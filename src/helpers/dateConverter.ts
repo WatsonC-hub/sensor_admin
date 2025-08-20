@@ -2,32 +2,55 @@
 Adding one to the month is mainly done because the method date.getMonth return a zero based value, which means it will show the previous month
 */
 
-import moment from 'moment';
+import dayjs, {Dayjs} from 'dayjs';
 
-const convertDate = (date: string) => {
-  return moment(date).format('DD-MM-YYYY');
+const convertDate = (date: string | Dayjs) => {
+  if (dayjs.isDayjs(date)) {
+    return date.locale('da').format('L');
+  }
+  return dayjs(date).locale('da').format('L');
 };
 
-const convertDateWithTimeStamp = (dateString: string | null) => {
+const convertDateWithTimeStamp = (dateString: string | Dayjs | Date | null | undefined) => {
   if (dateString === null) {
     return '';
   }
 
-  return moment(dateString).format('DD-MM-YYYY HH:mm');
+  if (dayjs.isDayjs(dateString)) {
+    return dateString.format('L LT');
+  }
+
+  const date = dayjs(dateString).format('L LT');
+  return date;
 };
 
-const checkEndDateIsUnset = (dateString: string) => {
-  const date: Date = new Date(dateString);
-  return date.getFullYear() === 2099;
+const convertToLocalDate = (date: dayjs.Dayjs | undefined) => {
+  return date?.format('L LT');
+};
+
+const checkEndDateIsUnset = (dateString: string | Dayjs) => {
+  if (dayjs.isDayjs(dateString)) {
+    return dateString.year() === 2099;
+  }
+
+  const date = dayjs(dateString);
+  return date.year() === 2099;
 };
 
 const calculatePumpstop = (
-  timeofmeas: string,
-  pumpstop: string | null | undefined,
+  timeofmeas: string | Dayjs,
+  pumpstop: string | Dayjs | null | undefined,
   service: boolean | null
 ) => {
+  if (dayjs.isDayjs(timeofmeas)) {
+    timeofmeas = timeofmeas.toISOString();
+  }
+  if (dayjs.isDayjs(pumpstop)) {
+    pumpstop = pumpstop.toISOString();
+  }
+
   return pumpstop !== null && pumpstop !== undefined
-    ? moment(timeofmeas).diff(moment(pumpstop), 'hours') + ' timer siden'
+    ? dayjs(timeofmeas).diff(dayjs(pumpstop), 'hours') + ' timer siden'
     : service === true
       ? 'I drift'
       : '-';
@@ -43,9 +66,13 @@ const limitDecimalNumbers = (value: number | null) => {
 };
 
 const splitTimeFromDate = (dateString: string) => {
-  const date = moment(dateString).format('DD-MM-YYYY HH:mm');
+  const date = dayjs(dateString).format('L LT');
   const time = date.split(' ');
   return time;
+};
+
+const convertToShorthandDate = (date: string | null | undefined) => {
+  return dayjs(date).format('ll');
 };
 
 export {
@@ -55,4 +82,6 @@ export {
   calculatePumpstop,
   limitDecimalNumbers,
   splitTimeFromDate,
+  convertToShorthandDate,
+  convertToLocalDate,
 };

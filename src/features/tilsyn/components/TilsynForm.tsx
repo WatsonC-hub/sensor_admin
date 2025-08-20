@@ -6,22 +6,24 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import {Controller, useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
+import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
-import {TilsynItem} from '~/types';
+import {TilsynSchemaType} from '~/pages/field/station/tilsyn/Tilsyn';
 
 interface TilsynFormPops {
-  handleServiceSubmit: (values: TilsynItem) => void;
+  handleServiceSubmit: (values: TilsynSchemaType) => void;
   cancel: () => void;
 }
 
 export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops) {
-  const {getValues, control, handleSubmit} = useFormContext<TilsynItem>();
+  const {getValues, control, handleSubmit} = useFormContext<TilsynSchemaType>();
   return (
     <Card
       style={{marginBottom: 25}}
       sx={{
-        width: {xs: '100%', sm: '60%'},
+        width: {xs: '100%'},
         textAlign: 'center',
+        maxWidth: 600,
         justifyContent: 'center',
         alignContent: 'center',
         alignSelf: 'center',
@@ -33,16 +35,7 @@ export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops
         </Typography>
         <Grid container spacing={3} alignItems="center" justifyContent="center">
           <Grid item xs={12} sm={7}>
-            <FormInput
-              name="dato"
-              label="Dato"
-              fullWidth
-              type="datetime-local"
-              required
-              sx={{
-                mb: 2,
-              }}
-            />
+            <FormDateTime name="dato" label="Dato for tilsyn" sx={{mb: 2}} />
           </Grid>
           <Grid item xs={12} sm={7}>
             <Controller
@@ -116,7 +109,10 @@ export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops
               </Button>
               <Button
                 bttype="primary"
-                onClick={handleSubmit(handleServiceSubmit)}
+                onClick={handleSubmit((onvalid) => {
+                  console.log('onvalid', onvalid);
+                  handleServiceSubmit(onvalid);
+                })}
                 startIcon={<SaveIcon />}
               >
                 Gem

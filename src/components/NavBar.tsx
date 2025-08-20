@@ -1,8 +1,10 @@
-import {MapRounded, Person, Menu as MenuIcon} from '@mui/icons-material';
+import {MapRounded, Person, Menu as MenuIcon, Help, History} from '@mui/icons-material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import PlaceIcon from '@mui/icons-material/Place';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import {
   AppBar,
   Box,
@@ -15,7 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import {useQueryClient} from '@tanstack/react-query';
+import {matchQuery, useQueryClient} from '@tanstack/react-query';
 import {useAtom, useSetAtom} from 'jotai';
 import {useState, ReactNode, MouseEventHandler} from 'react';
 // import {useNavigate} from 'react-router-dom';
@@ -27,21 +29,23 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom, drawerOpenAtom} from '~/state/atoms';
-
+import CloseIcon from '@mui/icons-material/Close';
 import Button from './Button';
+import {useDisplayState} from '~/hooks/ui';
 import {useNavigate} from 'react-router-dom';
 import {userQueryOptions} from '~/features/auth/useUser';
-import LinkableTooltip from './LinkableTooltip';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();
   const {home} = useNavigationFunctions();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await apiClient.get('/auth/logout/secure');
+    queryClient.removeQueries({
+      predicate: (query) => !matchQuery({queryKey: userQueryOptions.queryKey}, query),
+    });
+    await queryClient.invalidateQueries({queryKey: userQueryOptions.queryKey});
     home();
-    apiClient.get('/auth/logout/secure');
-    queryClient.clear();
-    queryClient.fetchQuery(userQueryOptions);
   };
 
   return (
@@ -56,14 +60,14 @@ const LogOut = ({children}: {children?: ReactNode}) => {
 };
 
 const HomeButton = () => {
-  const {field} = useNavigationFunctions();
+  const {home} = useNavigationFunctions();
 
   return (
     <Tooltip title="Tilbage til kortet" arrow>
       <IconButton
         color="inherit"
         onClick={() => {
-          field();
+          home();
         }}
         size="large"
       >
@@ -73,9 +77,9 @@ const HomeButton = () => {
   );
 };
 
-const AppBarLayout = ({children}: {children?: ReactNode}) => {
+const AppBarLayout = ({children, zIndex}: {children?: ReactNode; zIndex?: number}) => {
   return (
-    <AppBar position="sticky" enableColorOnDark sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
+    <AppBar position="sticky" enableColorOnDark sx={{zIndex: zIndex}}>
       <Toolbar
         sx={{
           height: appBarHeight,
@@ -135,9 +139,13 @@ const AppBarLayout = ({children}: {children?: ReactNode}) => {
 const NavBarMenu = ({
   highligtFirst,
   items,
+  disableLogout = false,
+  disableProfile = true,
 }: {
   highligtFirst?: boolean;
   items?: {title: string; icon: ReactNode; onClick: () => void}[];
+  disableLogout?: boolean;
+  disableProfile?: boolean;
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -188,25 +196,52 @@ const NavBarMenu = ({
             </MenuItem>
           ))}
 
+        {!disableProfile && (
+          <MenuItem
+            key="profile"
+            onClick={() => {
+              window.location.href = 'https://admin.watsonc.dk/profile';
+            }}
+          >
+            <ListItemIcon>
+              <Person />
+            </ListItemIcon>
+            Profil
+          </MenuItem>
+        )}
+
         <MenuItem
-          key="profile"
+          key="guides"
           onClick={() => {
-            window.location.href = 'https://admin.watsonc.dk/profile';
+            window.open('https://www.watsonc.dk/guides/', '_blank');
           }}
         >
           <ListItemIcon>
-            <Person />
+            <Help />
           </ListItemIcon>
-          Profil
+          Guides
         </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <LogOut>
-            <ListItemIcon>
-              <LogoutIcon fontSize="medium" />
-            </ListItemIcon>
-            {'Logout'}
-          </LogOut>
+        <MenuItem
+          key="old-version"
+          onClick={() => {
+            window.location.href = 'https://sensor-old.watsonc.dk';
+          }}
+        >
+          <ListItemIcon>
+            <History />
+          </ListItemIcon>
+          Gamle version
         </MenuItem>
+        {!disableLogout && (
+          <MenuItem onClick={handleClose}>
+            <LogOut>
+              <ListItemIcon>
+                <LogoutIcon fontSize="medium" />
+              </ListItemIcon>
+              {'Logout'}
+            </LogOut>
+          </MenuItem>
+        )}
       </Menu>
     </>
   );
@@ -251,6 +286,57 @@ const GoBack = () => {
   );
 };
 
+const Close = ({onClick}: {onClick: () => void}) => {
+  return (
+    <IconButton color="inherit" onClick={onClick} size="large">
+      <CloseIcon />
+    </IconButton>
+  );
+};
+
+const LocationList = () => {
+  const [loc_list, setLocList] = useDisplayState((state) => [state.loc_list, state.setLocList]);
+  const {isMobile} = useBreakpoints();
+
+  return (
+    <Button
+      sx={{
+        color: loc_list ? 'secondary.main' : 'inherit',
+        minWidth: isMobile ? 0 : undefined,
+        minHeight: isMobile ? 0 : undefined,
+        px: isMobile ? 1 : undefined,
+      }}
+      bttype={'primary'}
+      onClick={() => setLocList(!loc_list)}
+      startIcon={!isMobile && <PlaceIcon />}
+    >
+      {isMobile && <PlaceIcon />}
+      {!isMobile && 'Lokationsliste'}
+    </Button>
+  );
+};
+
+const TripList = () => {
+  const [trip_list, setTripList] = useDisplayState((state) => [state.trip_list, state.setTripList]);
+  const {isMobile} = useBreakpoints();
+  return (
+    <Button
+      sx={{
+        color: trip_list ? 'secondary.main' : 'inherit',
+        minWidth: isMobile ? 0 : undefined,
+        minHeight: isMobile ? 0 : undefined,
+        px: isMobile ? 1 : undefined,
+      }}
+      bttype={'primary'}
+      onClick={() => setTripList(!trip_list)}
+      startIcon={!isMobile && <DirectionsCarIcon />}
+    >
+      {isMobile && <DirectionsCarIcon />}
+      {!isMobile && 'Ture'}
+    </Button>
+  );
+};
+
 const ScannerAsTitle = () => {
   const setOpenQRScanner = useSetAtom(captureDialogAtom);
 
@@ -285,8 +371,8 @@ const Title = ({title}: {title: string}) => {
   );
 };
 
-const NavBar = ({children}: {children?: ReactNode}) => {
-  return <AppBarLayout>{children}</AppBarLayout>;
+const NavBar = ({children, zIndex}: {children?: ReactNode; zIndex?: number}) => {
+  return <AppBarLayout zIndex={zIndex}>{children}</AppBarLayout>;
 };
 
 NavBar.Logo = Logo;
@@ -295,6 +381,9 @@ NavBar.Menu = NavBarMenu;
 NavBar.Home = HomeButton;
 NavBar.Title = Title;
 NavBar.Scanner = ScannerAsTitle;
+NavBar.Close = Close;
+NavBar.LocationList = LocationList;
+NavBar.TripList = TripList;
 NavBar.StationDrawerMenu = StationDrawerMenu;
 
 export default NavBar;

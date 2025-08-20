@@ -5,6 +5,7 @@ import {GridBaseProps, Grid2} from '@mui/material';
 import FormFieldset from './FormFieldset';
 import Button from './Button';
 import {Save} from '@mui/icons-material';
+import FormDateTime, {FormDateTimeProps} from './FormDateTime';
 
 export function createTypedForm<T extends FieldValues>() {
   const FormContext = React.createContext<{
@@ -48,6 +49,20 @@ export function createTypedForm<T extends FieldValues>() {
     );
   };
 
+  type DateTimeProps = Omit<FormDateTimeProps<T>, 'name'> & {
+    name: Path<T>;
+    gridSizes?: GridBaseProps['size'];
+  };
+
+  const FormDateTimeWrapper = ({name, gridSizes, ...props}: DateTimeProps) => {
+    const {gridSizes: contextGridSizes} = React.useContext(FormContext);
+    return (
+      <Grid2 size={gridSizes ?? contextGridSizes}>
+        <FormDateTime<T> name={name} {...props} />
+      </Grid2>
+    );
+  };
+
   const Submit = ({submit}: {submit: (values: T) => void}) => {
     const {
       handleSubmit,
@@ -84,6 +99,7 @@ export function createTypedForm<T extends FieldValues>() {
   };
 
   Form.FormInput = FormInputWrapper;
+  Form.FormDateTime = FormDateTimeWrapper;
   Form.Submit = Submit;
   Form.Cancel = Cancel;
 

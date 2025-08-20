@@ -1,5 +1,6 @@
 import {createTheme} from '@mui/material';
 import {daDK} from '@mui/material/locale';
+import {daDK as dateDaDK} from '@mui/x-date-pickers/locales';
 
 declare module '@mui/material' {
   interface BreakpointOverrides {
@@ -12,6 +13,15 @@ declare module '@mui/material' {
 
 const theme = createTheme(
   {
+    components: {
+      MuiDialog: {
+        styleOverrides: {
+          paper: {
+            borderRadius: 16,
+          },
+        },
+      },
+    },
     palette: {
       mode: 'light',
       primary: {
@@ -35,6 +45,7 @@ const theme = createTheme(
     typography: {
       fontFamily: 'Open Sans',
     },
+
     breakpoints: {
       values: {
         xs: 0,
@@ -49,7 +60,8 @@ const theme = createTheme(
       },
     },
   },
-  daDK
+  daDK,
+  dateDaDK
 );
 
 export default theme;

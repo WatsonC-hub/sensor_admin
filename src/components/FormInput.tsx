@@ -1,8 +1,8 @@
-import {Box, InputAdornment, TextField, TextFieldProps} from '@mui/material';
+import {Box, TextField, TextFieldProps} from '@mui/material';
 import moment from 'moment';
 import {ChangeEvent, FocusEvent} from 'react';
 import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-form';
-import LinkableTooltip from './LinkableTooltip';
+import TooltipWrapper from './TooltipWrapper';
 export type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
   name: Path<TFieldValues>;
   warning?: (value: any) => string | undefined;
@@ -12,7 +12,7 @@ export type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & 
   onChangeCallback?: (value: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | number) => void;
   onBlurCallback?: (value: FocusEvent<HTMLInputElement | HTMLTextAreaElement> | number) => void;
   type?: string;
-  fieldDescriptionText?: string;
+  infoText?: string;
 };
 
 const FormInput = <TFieldValues extends FieldValues>({
@@ -28,11 +28,10 @@ const FormInput = <TFieldValues extends FieldValues>({
   variant = 'outlined',
   sx,
   className,
-  InputLabelProps,
   slotProps,
   onKeyDown,
   helperText,
-  fieldDescriptionText,
+  infoText,
   fullWidth = true,
   ...otherProps
 }: FormInputProps<TFieldValues>) => {
@@ -44,6 +43,8 @@ const FormInput = <TFieldValues extends FieldValues>({
   if (!transform) {
     transform = (e) => e;
   }
+
+  const Wrapper = infoText ? TooltipWrapper : Box;
 
   return (
     <Controller
@@ -61,101 +62,111 @@ const FormInput = <TFieldValues extends FieldValues>({
         const warningMessage = warning && warning(value);
 
         return (
-          <TextField
-            {...otherProps}
-            key={name}
-            name={name}
-            type={type}
-            value={value ?? ''}
-            onBlur={(e) => {
-              onBlur();
-              if (onBlurCallback) onBlurCallback(e);
-            }}
-            ref={ref}
-            sx={{
-              // pt: 1,
-              // pt: 2,
-              pb: 1,
-              '& .MuiInputBase-input.Mui-disabled': {
-                WebkitTextFillColor: '#000000',
-              },
-              '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-              '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-              '& .MuiOutlinedInput-root': {
-                '& > fieldset': {borderColor: 'primary.main'},
-              },
-              '.MuiFormHelperText-root': {
-                color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
-                position: 'absolute',
-                top: 'calc(100% - 8px)',
-              },
-              ...sx,
-            }}
-            className={'swiper-no-swiping' + (className ? ' ' + className : '')}
-            variant={variant}
-            InputLabelProps={{shrink: true, style: {zIndex: 0}, ...InputLabelProps}}
-            fullWidth={fullWidth}
-            margin={margin}
-            onKeyDown={(e) => {
-              if (type === 'number' && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
-                e.preventDefault();
-              }
-              if (onKeyDown) onKeyDown(e);
-            }}
-            slotProps={{
-              input: {
-                ...slotProps?.input,
-                endAdornment: (
-                  <>
-                    {slotProps?.input && 'endAdornment' in slotProps.input
-                      ? slotProps?.input.endAdornment
-                      : undefined}
-                    <Box sx={{display: 'flex', alignItems: 'center'}}>
-                      <InputAdornment position="end">
-                        {fieldDescriptionText && (
-                          <LinkableTooltip fieldDescriptionText={fieldDescriptionText} />
-                        )}
-                      </InputAdornment>
-                    </Box>
-                  </>
-                ),
-
-                sx:
-                  type === 'number'
-                    ? {
-                        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                          display: 'none',
-                        },
-                        '& input[type=number]': {
-                          MozAppearance: 'textfield',
-                        },
-                      }
-                    : {},
-              },
-              inputLabel: {
-                shrink: true,
-                sx: {
-                  zIndex: 0,
+          <Wrapper description={infoText} width={'100%'} sx={{position: 'relative'}}>
+            <TextField
+              {...otherProps}
+              key={name}
+              name={name}
+              type={type}
+              value={value ?? ''}
+              onBlur={(e) => {
+                onBlur();
+                if (onBlurCallback) onBlurCallback(e);
+              }}
+              ref={ref}
+              sx={{
+                pb: 1,
+                // '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+                // '& .MuiOutlinedInput-root': {
+                //   minHeight: '40px',
+                // },
+                // '.MuiFormHelperText-root': {
+                //   color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
+                //   position: 'absolute',
+                //   top: 'calc(100% - 8px)',
+                // },
+                ...sx,
+              }}
+              className={className ?? ''}
+              variant={variant}
+              fullWidth={fullWidth}
+              margin={margin}
+              onKeyDown={(e) => {
+                if (type === 'number' && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+                  e.preventDefault();
+                }
+                if (onKeyDown) onKeyDown(e);
+              }}
+              slotProps={{
+                htmlInput: {
+                  ...slotProps?.htmlInput,
+                  sx: {
+                    borderColor: 'primary.main',
+                    '& .Mui-focused': {
+                      borderColor: 'primary.main',
+                    },
+                  },
                 },
-                ...slotProps?.inputLabel,
-              },
-            }}
-            onChange={(e) => {
-              if (type === 'number' && e.target.value !== '') {
-                onChange(transform(Number(e.target.value)));
-                if (onChangeCallback) onChangeCallback(Number(e.target.value));
-              } else if (type === 'number' && e.target.value === '') {
-                onChange(null);
-              } else {
-                onChange(transform(e));
-                if (onChangeCallback) onChangeCallback(e);
-              }
-            }}
-            error={!!errorMessage}
-            helperText={errorMessage || warningMessage || (helperText ?? '')}
-          >
-            {children}
-          </TextField>
+                input: {
+                  sx: {
+                    '& .Mui-disabled': {
+                      WebkitTextFillColor: '#000000',
+                      color: 'rgba(0, 0, 0, 0.38)',
+                    },
+
+                    '& > fieldset': {
+                      borderColor: 'primary.main',
+                    },
+                    ...(type === 'number'
+                      ? {
+                          '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
+                            {
+                              display: 'none',
+                            },
+                          '& input[type=number]': {
+                            MozAppearance: 'textfield',
+                          },
+                        }
+                      : {}),
+                  },
+                  ...slotProps?.input,
+                },
+                formHelperText: {
+                  sx: {
+                    color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
+                    position: 'absolute',
+                    top: 'calc(100% - 8px)',
+                  },
+                  ...slotProps?.formHelperText,
+                },
+                inputLabel: {
+                  shrink: true,
+
+                  sx: {
+                    '& .Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'},
+                    color: 'primary.main',
+                    zIndex: 0,
+                  },
+                  ...slotProps?.inputLabel,
+                },
+              }}
+              onChange={(e) => {
+                if (type === 'number' && e.target.value !== '') {
+                  onChange(transform(Number(e.target.value)));
+                  if (onChangeCallback) onChangeCallback(Number(e.target.value));
+                } else if (type === 'number' && e.target.value === '') {
+                  onChange(null);
+                } else {
+                  onChange(transform(e));
+                  if (onChangeCallback) onChangeCallback(e);
+                }
+              }}
+              error={!!errorMessage}
+              helperText={errorMessage || warningMessage || (helperText ?? '')}
+            >
+              {children}
+            </TextField>
+          </Wrapper>
         );
       }}
     />

@@ -1,11 +1,12 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import React, {ChangeEvent, createRef, useState} from 'react';
 
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 
@@ -21,7 +22,7 @@ const ImagePage = () => {
     type: loc_id?.toString(),
     comment: '',
     public: false,
-    date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+    date: dayjs(),
   });
 
   const changeActiveImageData = (field: string, value: string) => {
@@ -35,7 +36,7 @@ const ImagePage = () => {
       type: loc_id?.toString(),
       comment: '',
       public: false,
-      date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+      date: dayjs(),
     });
     setOpenSave(true);
   };
@@ -64,13 +65,15 @@ const ImagePage = () => {
 
   return (
     <>
-      <Images
-        type={'station'}
-        typeId={loc_id ? loc_id.toString() : ''}
-        setOpenSave={setOpenSave}
-        setActiveImage={setActiveImage}
-        setShowForm={setShowForm}
-      />
+      <StationPageBoxLayout>
+        <Images
+          type={'station'}
+          typeId={loc_id ? loc_id.toString() : ''}
+          setOpenSave={setOpenSave}
+          setActiveImage={setActiveImage}
+          setShowForm={setShowForm}
+        />
+      </StationPageBoxLayout>
       <FabWrapper
         icon={<AddAPhotoRounded />}
         text={'Tilføj billeder'}

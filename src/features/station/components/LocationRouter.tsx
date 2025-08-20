@@ -24,6 +24,11 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {stationPages} from '~/helpers/EnumHelper';
 import EditLocation from '~/pages/field/station/stamdata/EditLocation';
 
+import {Fullscreen, FullscreenExit} from '@mui/icons-material';
+import {useAtom} from 'jotai';
+import {fullScreenAtom} from '~/state/atoms';
+import {useDisplayState} from '~/hooks/ui';
+
 export default function LocationRouter() {
   const queryClient = useQueryClient();
   useAppContext(['loc_id']);
@@ -74,21 +79,9 @@ export default function LocationRouter() {
           <EditLocation />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.KONTAKTER && user?.features.contacts && (
-        <StationPageBoxLayout>
-          <ContactInfo />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && (
-        <StationPageBoxLayout>
-          <Huskeliste />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.NØGLER && user?.features.keys && (
-        <StationPageBoxLayout>
-          <LocationAccess />
-        </StationPageBoxLayout>
-      )}
+      {pageToShow === stationPages.KONTAKTER && user?.features?.contacts && <ContactInfo />}
+      {pageToShow === stationPages.HUSKELISTE && user?.features?.ressources && <Huskeliste />}
+      {pageToShow === stationPages.NØGLER && user?.features?.keys && <LocationAccess />}
     </Layout>
   );
 }
@@ -100,6 +93,9 @@ interface LayoutProps {
 const Layout = ({children}: LayoutProps) => {
   const {data: metadata} = useLocationData();
   const {isMobile} = useBreakpoints();
+  const setLocId = useDisplayState((state) => state.setLocId);
+  const [pageToShow, setPageToShow] = useStationPages();
+  const [fullscreen, setFullscreen] = useAtom(fullScreenAtom);
 
   return (
     <>
@@ -128,8 +124,23 @@ const Layout = ({children}: LayoutProps) => {
               </IconButton>
             </Tooltip>
           )}
-          <NavBar.Home />
-          <NavBar.Menu highligtFirst={false} />
+          {!isMobile && (
+            <IconButton
+              onClick={() => {
+                setFullscreen((prev) => !prev);
+              }}
+              color="inherit"
+              size="large"
+            >
+              {fullscreen ? <FullscreenExit /> : <Fullscreen />}
+            </IconButton>
+          )}
+          <NavBar.Close
+            onClick={() => {
+              if (pageToShow) setPageToShow(null);
+              setLocId(null);
+            }}
+          />
         </Box>
       </NavBar>
 

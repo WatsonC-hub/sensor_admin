@@ -11,6 +11,7 @@ import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
 import SelectContactInfo from '~/features/stamdata/components/stationDetails/contacts/SelectContactInfo';
 import {contact_info} from '~/features/stamdata/components/stationDetails/zodSchemas';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {useAppContext} from '~/state/contexts';
 import {ContactTable} from '~/types';
 
@@ -65,16 +66,18 @@ const ContactInfo = () => {
 
   return (
     <>
-      <FormProvider {...formMethods}>
-        {openContactInfoDialog && (
-          <SelectContactInfo open={openContactInfoDialog} setOpen={setOpenContactInfoDialog} />
-        )}
-        <ContactInfoTable delContact={handleDelete} editContact={handleEdit} />
-      </FormProvider>
+      <StationPageBoxLayout>
+        <FormProvider {...formMethods}>
+          {openContactInfoDialog && (
+            <SelectContactInfo open={openContactInfoDialog} setOpen={setOpenContactInfoDialog} />
+          )}
+          <ContactInfoTable delContact={handleDelete} editContact={handleEdit} />
+        </FormProvider>
+      </StationPageBoxLayout>
       <FabWrapper
         icon={<PersonAddIcon />}
         text="Tilføj kontakt"
-        disabled={!user?.features.contacts || location_permissions !== 'edit'}
+        disabled={!user?.features?.contacts || location_permissions !== 'edit'}
         onClick={() => {
           reset();
           setOpenContactInfoDialog(true);

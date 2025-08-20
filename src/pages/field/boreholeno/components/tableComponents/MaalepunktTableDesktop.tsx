@@ -12,10 +12,12 @@ import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {MaalepunktTableData} from '~/types';
+import {BoreholeMaalepunkt} from '../../Boreholeno';
+import dayjs from 'dayjs';
 
 interface Props {
-  data: MaalepunktTableData[];
-  handleEdit: (maalepuntk: MaalepunktTableData) => void;
+  data: MaalepunktTableData[] | undefined;
+  handleEdit: (maalepuntk: BoreholeMaalepunkt) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
@@ -70,11 +72,17 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
   const [tableState, reset] = useStatefullTableAtom<MaalepunktTableData>('MaalepunktTableState');
 
   const options: Partial<MRT_TableOptions<MaalepunktTableData>> = {
+    enableFullScreenToggle: false,
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          handleEdit(row.original);
+          const maalepunkt: BoreholeMaalepunkt = {
+            ...row.original,
+            startdate: dayjs(row.original.startdate),
+            enddate: dayjs(row.original.enddate),
+          };
+          handleEdit(maalepunkt);
         }}
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);

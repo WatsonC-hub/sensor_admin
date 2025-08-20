@@ -1,15 +1,16 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Card, CardContent, Grid, InputAdornment, TextField, Typography} from '@mui/material';
-import moment from 'moment';
+import {PickerValue} from '@mui/x-date-pickers/internals';
+import dayjs from 'dayjs';
 import React, {useState} from 'react';
 
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
-import {Maalepunkt} from '~/types';
+import {BoreholeMaalepunkt} from '~/pages/field/boreholeno/Boreholeno';
 
 interface MaalepunktFormProps {
-  formData: Maalepunkt;
-  changeFormData: (key: string, value: any) => void;
+  formData: BoreholeMaalepunkt;
+  changeFormData: (key: keyof BoreholeMaalepunkt, value: any) => void;
   handleSubmit: () => void;
   handleCancel: () => void;
 }
@@ -29,15 +30,15 @@ export default function MaalepunktForm({
     }, 2500);
   };
 
-  const handleStartdateChange = (date: Date) => {
-    if (moment(date).isValid()) {
-      changeFormData('startdate', date);
+  const handleStartdateChange = (date: PickerValue) => {
+    if (dayjs(date).isValid()) {
+      changeFormData('startdate', dayjs(date));
     }
   };
 
-  const handleEnddateChange = (date: Date) => {
-    if (moment(date).isValid()) {
-      changeFormData('enddate', date);
+  const handleEnddateChange = (date: PickerValue) => {
+    if (dayjs(date).isValid()) {
+      changeFormData('enddate', dayjs(date));
     }
   };
 
@@ -87,8 +88,8 @@ export default function MaalepunktForm({
           <Grid item xs={12} sm={6}>
             <OwnDatePicker
               label={'Start dato'}
-              value={moment(formData.startdate).toDate()}
-              onChange={(date: Date) => handleStartdateChange(date)}
+              value={formData.startdate}
+              onChange={(date) => handleStartdateChange(date)}
               fullWidth
             />
           </Grid>
@@ -96,8 +97,8 @@ export default function MaalepunktForm({
             <Grid item xs={12} sm={6}>
               <OwnDatePicker
                 label={'Slut dato'}
-                value={moment(formData.enddate).toDate()}
-                onChange={(date: Date) => handleEnddateChange(date)}
+                value={formData.enddate}
+                onChange={(date) => handleEnddateChange(date)}
                 fullWidth
               />
             </Grid>

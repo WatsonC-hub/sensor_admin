@@ -1,7 +1,8 @@
 import {Box, useTheme} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import {useAtom, useAtomValue, useSetAtom} from 'jotai';
-import moment from 'moment';
+
 import {Layout} from 'plotly.js';
 import React, {useEffect, useMemo, useState} from 'react';
 import {toast} from 'react-toastify';
@@ -14,6 +15,7 @@ import {
 } from '~/consts';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
 import {usePejling} from '~/features/pejling/api/usePejling';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import {useGraphData} from '~/hooks/query/useGraphData';
@@ -36,12 +38,12 @@ interface GraphManagerProps {
 }
 
 const initRange = [
-  moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
-  moment().format('YYYY-MM-DDTHH:mm'),
+  dayjs('1900-01-01').format('YYYY-MM-DDTHH:mm'),
+  dayjs().format('YYYY-MM-DDTHH:mm'),
 ];
 
 const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps) => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
 
   const setSelection = useSetAtom(qaSelection);
   const [initiateSelect, setInitiateSelect] = useAtom(initiateSelectAtom);
@@ -72,7 +74,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
 
   const {
     get: {data: certifedData},
-  } = useCertifyQa(ts_id);
+  } = useCertifyQa();
   const {
     get: {data: controlData},
   } = usePejling();
@@ -80,7 +82,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const {data: adjustmentData} = useAdjustmentData(ts_id);
 
   const {data: qaData} = useQuery({
-    queryKey: ['qa_labels', ts_id],
+    queryKey: queryKeys.Timeseries.qaLabels(ts_id),
     queryFn: async ({signal}) => {
       const {data} = await apiClient.get<Array<QaGraphLabel>>(`/sensor_admin/qa_labels/${ts_id}`, {
         signal,
@@ -91,7 +93,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   });
 
   const {data: removed_data} = useQuery({
-    queryKey: ['removed_data', ts_id],
+    queryKey: queryKeys.Timeseries.removedData(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/removed_data/${ts_id}`);
       return data;
@@ -101,12 +103,12 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   });
 
   const {data: precipitation_data} = useQuery({
-    queryKey: ['precipitation_data', ts_id],
+    queryKey: queryKeys.Timeseries.precipitationData(loc_id),
     queryFn: async () => {
-      const starttime = moment(edgeDates?.firstDate).format('YYYY-MM-DDTHH:mm');
-      const stoptime = moment(edgeDates?.lastDate).format('YYYY-MM-DDTHH:mm');
+      const starttime = dayjs(edgeDates?.firstDate).format('YYYY-MM-DDTHH:mm');
+      const stoptime = dayjs(edgeDates?.lastDate).format('YYYY-MM-DDTHH:mm');
       const {data} = await apiClient.get(
-        `/data/timeseries/${ts_id}/precipitation/1?start=${starttime}&stop=${stoptime}`
+        `/wrapper/dmi/precipitation/location/${loc_id}?start=${starttime}&stop=${stoptime}&agg=balanced`
       );
       return data;
     },
@@ -115,7 +117,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   });
 
   const {data: lines_data} = useQuery({
-    queryKey: ['lines_data', ts_id],
+    queryKey: queryKeys.Timeseries.linesData(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<HorizontalLine[]>(`/data/timeseries/${ts_id}/lines`);
       return data;
@@ -125,7 +127,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   });
 
   const {data: rawData} = useQuery({
-    queryKey: ['rawdata', ts_id],
+    queryKey: queryKeys.Timeseries.rawData(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/rawdata/${ts_id}`);
       if (data === null) {
@@ -156,7 +158,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
               return {
                 type: 'rect',
                 x0: edgeDates?.firstDate,
-                x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x1: dayjs(d.date).format('YYYY-MM-DDTHH:mm'),
                 y0: 0,
                 y1: 1,
                 yref: 'paper',
@@ -174,7 +176,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
               return {
                 xref: 'x',
                 yref: 'paper',
-                x: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x: dayjs(d.date).format('YYYY-MM-DDTHH:mm'),
                 xanchor: 'right',
                 yanchor: 'bottom',
                 showarrow: false,
@@ -250,8 +252,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
             ...(adjustmentData?.levelcorrection?.map((d) => {
               return {
                 type: 'line',
-                x0: moment(d.date).format('YYYY-MM-DD HH:mm'),
-                x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x0: dayjs(d.date).format('YYYY-MM-DDTHH:mm'),
+                x1: dayjs(d.date).format('YYYY-MM-DDTHH:mm'),
                 y0: 0,
                 y1: 1,
                 yref: 'paper',
@@ -268,7 +270,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
               return {
                 xref: 'x',
                 yref: 'paper',
-                x: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x: dayjs(d.date).format('YYYY-MM-DDTHH:mm'),
                 xanchor: 'left',
                 yanchor: 'bottom',
                 showarrow: false,
@@ -284,8 +286,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
             ...(certifedData?.map((data) => {
               return {
                 type: 'line',
-                x0: moment(data.date).format('YYYY-MM-DD HH:mm'),
-                x1: moment(data.date).format('YYYY-MM-DD HH:mm'),
+                x0: dayjs(data.date).format('YYYY-MM-DDTHH:mm'),
+                x1: dayjs(data.date).format('YYYY-MM-DDTHH:mm'),
                 y0: 0,
                 y1: 1,
                 yref: 'paper',
@@ -404,8 +406,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     ...(dataToShow?.['Nedbør']
       ? [
           {
-            ...precipitation_data?.trace,
-            ...precipitation_data?.data,
+            ...precipitation_data,
             yaxis: 'y2',
           },
         ]
@@ -423,10 +424,10 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   ];
 
   useEffect(() => {
-    if (dynamicMeasurement?.[0] != undefined) {
+    if (dynamicMeasurement?.[0] != undefined && dynamicMeasurement?.[0] !== null) {
       setXRange([
-        moment(dynamicMeasurement?.[0]).subtract(4, 'day').format('YYYY-MM-DD'),
-        moment(dynamicMeasurement?.[0]).add(3, 'day').format('YYYY-MM-DD'),
+        dayjs(dynamicMeasurement?.[0]).subtract(4, 'day').format('YYYY-MM-DDTHH:mm'),
+        dayjs(dynamicMeasurement?.[0]).add(3, 'day').format('YYYY-MM-DDTHH:mm'),
       ]);
     }
   }, [dynamicMeasurement?.[0]]);
@@ -447,8 +448,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
         ) {
           const prevIndex =
             graphData.x
-              .map((x) => moment(x).toISOString())
-              .indexOf(moment(eventData.points[0].x).toISOString()) - 1;
+              .map((x) => dayjs(x).toISOString())
+              .indexOf(dayjs(eventData.points[0].x).toISOString()) - 1;
           const prevDate = graphData.x.at(prevIndex);
           const prevValue = graphData.y.at(prevIndex);
 
@@ -568,7 +569,7 @@ const transformQAData = (data: Array<QaGraphLabel>) => {
   });
 
   const annotateList = data
-    ?.sort((a, b) => moment(a.startdate).diff(moment(b.startdate)))
+    ?.sort((a, b) => dayjs(a.startdate).diff(dayjs(b.startdate)))
     .map((d, index) => {
       let y;
       switch (index % 4) {

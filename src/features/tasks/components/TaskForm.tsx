@@ -1,0 +1,411 @@
+import {zodResolver} from '@hookform/resolvers/zod';
+import {Save} from '@mui/icons-material';
+import {Box, FormControlLabel, MenuItem, Switch, TextFieldProps, Typography} from '@mui/material';
+import React, {useEffect} from 'react';
+import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
+import {z} from 'zod';
+
+import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
+import Button from '~/components/Button';
+import FormInput, {FormInputProps} from '~/components/FormInput';
+import {useNextDueDate, useTasks} from '~/features/tasks/api/useTasks';
+import {TaskUser} from '~/features/tasks/types';
+
+import {useTaskState} from '../api/useTaskState';
+import {merge} from 'lodash';
+import {useLocationData} from '~/hooks/query/useMetadata';
+import {zodDayjs} from '~/helpers/schemas';
+import FormDatePicker, {FormDatePickerProps} from '~/components/FormDatePicker';
+import {toast} from 'react-toastify';
+import {useDisplayState} from '~/hooks/ui';
+
+const zodSchema = z.object({
+  ts_id: z.number({required_error: 'Tidsserie skal være angivet'}),
+  name: z
+    .string({required_error: 'Navn skal være angivet'})
+    .min(5, 'Navn skal være mindst 5 tegn')
+    .max(255, 'Navn må maks være 255 tegn'),
+  description: z.string().nullish(),
+  status_id: z.number().optional(),
+  due_date: zodDayjs().nullish(),
+  assigned_to: z
+    .string()
+    .nullish()
+    .transform((value) => (value === '' ? null : value)),
+  blocks_notifications: z.array(z.number()).or(z.literal('alle')).optional(),
+  block_on_location: z.string().optional(),
+  block_all: z.string().optional(),
+  loctypename: z.string().optional(),
+  tstype_name: z.string().optional(),
+  project_text: z.string().nullish(),
+  projectno: z.string().nullish(),
+  location_name: z.string().optional(),
+});
+
+export type FormValues = z.infer<typeof zodSchema>;
+
+type Props = {
+  onSubmit: (data: FormValues, formMethods?: UseFormReturn<FormValues>) => void;
+  onError?: (error: any) => void;
+  defaultValues?: Partial<FormValues>;
+  children?: React.ReactNode;
+  disabled?: boolean;
+  schema?: z.ZodObject<any, any, any>;
+};
+
+const TaskFormContext = React.createContext(
+  {} as {
+    onSubmit: (data: FormValues) => void;
+    onError?: (error: any) => void;
+    disabled?: boolean;
+  }
+);
+
+const TaskForm = ({
+  onSubmit,
+  onError = (error) => console.log(error),
+  children,
+  defaultValues,
+  disabled,
+  schema = zodSchema,
+}: Props) => {
+  const formMethods = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: defaultValues,
+  });
+  const {reset} = formMethods;
+  useEffect(() => {
+    reset(defaultValues);
+  }, [JSON.stringify(defaultValues), reset]);
+
+  const innerSubmit = (data: FormValues) => {
+    onSubmit(data, formMethods);
+  };
+
+  return (
+    <TaskFormContext.Provider value={{onSubmit: innerSubmit, onError, disabled}}>
+      <FormProvider {...formMethods}>{children}</FormProvider>
+    </TaskFormContext.Provider>
+  );
+};
+
+const TaskSubmitButton = () => {
+  const {onSubmit, onError} = React.useContext(TaskFormContext);
+
+  const {handleSubmit} = useFormContext<FormValues>();
+
+  return (
+    <Button bttype="primary" onClick={handleSubmit(onSubmit, onError)} startIcon={<Save />}>
+      Gem
+    </Button>
+  );
+};
+
+const Input = (props: FormInputProps<FormValues>) => {
+  const {disabled} = React.useContext(TaskFormContext);
+  return <FormInput {...props} size="small" disabled={disabled || props.disabled} />;
+};
+
+const DueDate = (props: Omit<FormDatePickerProps<FormValues>, 'name'>) => {
+  const {disabled} = React.useContext(TaskFormContext);
+  const {setValue, watch} = useFormContext<FormValues>();
+  const ts_id_display = useDisplayState((state) => state.ts_id);
+  const selectedTimeseriesTsId = watch('ts_id');
+  const ts_id = ts_id_display ?? selectedTimeseriesTsId;
+  const {data: nextDueDate, error, isPending} = useNextDueDate(ts_id);
+
+  return (
+    <FormDatePicker
+      name="due_date"
+      label="Forfaldsdato"
+      format="L"
+      slotProps={{
+        textField: {
+          size: 'small',
+        },
+      }}
+      customActionLabel="next_control"
+      customAction={async () => {
+        if (!error && !isPending && nextDueDate) {
+          setValue('due_date', nextDueDate, {
+            shouldDirty: true,
+            shouldTouch: true,
+          });
+        }
+        if (error && error.response && typeof error.response.data.detail === 'string') {
+          toast.error(error.response.data.detail);
+        }
+      }}
+      customActionDisabled={!ts_id}
+      {...props}
+      disabled={disabled || props.disabled}
+    />
+  );
+};
+
+interface StatusSelectProps extends Omit<FormInputProps<FormValues>, 'name'> {
+  disableClosedStatus?: boolean;
+}
+
+const StatusSelect = ({disableClosedStatus = false, ...props}: StatusSelectProps) => {
+  const {disabled} = React.useContext(TaskFormContext);
+  const {
+    getStatus: {data: task_status},
+  } = useTasks();
+
+  return (
+    <FormInput
+      name="status_id"
+      label="Status"
+      select
+      size="small"
+      placeholder="Vælg status..."
+      fullWidth
+      {...props}
+      disabled={disabled || props.disabled}
+    >
+      {task_status
+        ?.filter((item) => !(disableClosedStatus && item.category == 'closed'))
+        .map((status) => {
+          return (
+            <MenuItem key={status.id} value={status.id}>
+              {status.name}
+            </MenuItem>
+          );
+        })}
+    </FormInput>
+  );
+};
+
+const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
+  const {disabled} = React.useContext(TaskFormContext);
+  const {
+    getUsers: {data: taskUsers},
+  } = useTasks();
+  const {control} = useFormContext<FormValues>();
+
+  const textfieldProps = {
+    label: 'Ansvarlig',
+    placeholder: 'Vælg opgave ansvarlig',
+  };
+
+  let mergedProps: Partial<TextFieldProps> = textfieldProps;
+  if (props.textFieldsProps) {
+    mergedProps = merge(textfieldProps, props.textFieldsProps);
+  }
+
+  return (
+    <Controller
+      name="assigned_to"
+      control={control}
+      render={({field: {onChange, value}, fieldState: {error}}) => (
+        <ExtendedAutocomplete<TaskUser>
+          {...props}
+          disabled={disabled || props.disabled}
+          options={taskUsers ?? []}
+          labelKey="display_name"
+          error={error?.message}
+          size="small"
+          onChange={(option) => {
+            if (option == null) {
+              onChange(null);
+              return;
+            }
+            if ('id' in option) {
+              onChange(option.id);
+            }
+          }}
+          selectValue={taskUsers?.find((item) => item.id === value) ?? null}
+          filterOptions={(options, params) => {
+            const {inputValue} = params;
+
+            const filter = options.filter((option) =>
+              option.display_name?.toLowerCase().includes(inputValue.toLowerCase())
+            );
+
+            return filter;
+          }}
+          renderOption={(props, option) => {
+            return (
+              <li {...props} key={option.id}>
+                <Box display={'flex'} flexDirection={'row'}>
+                  <Typography variant="body2">{option.display_name}</Typography>
+                </Box>
+              </li>
+            );
+          }}
+          textFieldsProps={mergedProps}
+        />
+      )}
+    />
+  );
+};
+
+const AssignedToSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {disabled} = React.useContext(TaskFormContext);
+  const {
+    getUsers: {data: taskUsers},
+  } = useTasks();
+
+  return (
+    <FormInput
+      name="assigned_to"
+      label="Ansvarlig"
+      select
+      size="small"
+      placeholder="Vælg ansvarlig..."
+      fullWidth
+      {...props}
+      disabled={disabled || props.disabled}
+    >
+      {taskUsers?.map((user) => {
+        return (
+          <MenuItem key={user.id} value={user.id}>
+            {user.display_name}
+          </MenuItem>
+        );
+      })}
+    </FormInput>
+  );
+};
+
+type BlockNotificationsProps = Omit<FormInputProps<FormValues>, 'name'> & {
+  notification_id: number | null;
+};
+
+const BlockNotifications = ({notification_id, onChangeCallback}: BlockNotificationsProps) => {
+  const {disabled} = React.useContext(TaskFormContext);
+  const {control} = useFormContext<FormValues>();
+
+  return (
+    <Controller<FormValues, 'blocks_notifications'>
+      control={control}
+      name={'blocks_notifications'}
+      render={({field: {value, onChange, ref, name}}) => {
+        let switchValue: boolean;
+        if (
+          value === null ||
+          (Array.isArray(value) && notification_id && value.includes(notification_id))
+        ) {
+          switchValue = false;
+        } else {
+          switchValue = true;
+        }
+
+        return (
+          <Box
+            display={'flex'}
+            flexDirection={'row'}
+            alignItems={'center'}
+            justifyContent={'center'}
+            height={'100%'}
+          >
+            <FormControlLabel
+              control={
+                <Switch
+                  ref={ref}
+                  checked={switchValue}
+                  size="small"
+                  color="primary"
+                  aria-label={name}
+                  disabled={disabled}
+                  onChange={(e, value) => {
+                    if (value) {
+                      onChange('alle');
+                    } else {
+                      onChange([notification_id]);
+                    }
+                    if (onChangeCallback) onChangeCallback(e);
+                  }}
+                />
+              }
+              label={'Bloker alle notifikationer'}
+            />
+          </Box>
+        );
+      }}
+    />
+  );
+};
+
+const BlockOnLocation = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {disabled} = React.useContext(TaskFormContext);
+  return (
+    <FormInput
+      name="block_on_location"
+      select
+      size="small"
+      placeholder="Vælg..."
+      {...props}
+      disabled={disabled || props.disabled}
+    >
+      <MenuItem key={'bloker'} value={'false'}>
+        tidsserie
+      </MenuItem>
+      <MenuItem key={'bloker_alle'} value={'true'}>
+        lokation
+      </MenuItem>
+    </FormInput>
+  );
+};
+
+const BlockAll = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {selectedTask} = useTaskState();
+  const {disabled} = React.useContext(TaskFormContext);
+
+  return (
+    <FormInput
+      name="block_all"
+      select
+      placeholder="Vælg..."
+      size="small"
+      {...props}
+      disabled={disabled || props.disabled}
+    >
+      <MenuItem key={'bloker'} value={'false'}>
+        {selectedTask?.blocks_notifications.length === 0 ? 'ingen' : selectedTask?.name}
+      </MenuItem>
+      <MenuItem key={'bloker_alle'} value={'true'}>
+        alle
+      </MenuItem>
+    </FormInput>
+  );
+};
+
+const SelectTimeseries = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {disabled} = React.useContext(TaskFormContext);
+  const {data: metadata} = useLocationData();
+
+  return (
+    <FormInput
+      name="ts_id"
+      select
+      size="small"
+      placeholder="Vælg..."
+      fullWidth
+      {...props}
+      disabled={disabled || props.disabled}
+    >
+      {metadata?.timeseries?.map((timeseries) => {
+        return (
+          <MenuItem key={timeseries.ts_id} value={timeseries.ts_id}>
+            {(timeseries.prefix ? timeseries.prefix + ' - ' : '') + ' ' + timeseries.tstype_name}
+          </MenuItem>
+        );
+      })}
+    </FormInput>
+  );
+};
+
+TaskForm.SubmitButton = TaskSubmitButton;
+TaskForm.Input = Input;
+TaskForm.StatusSelect = StatusSelect;
+TaskForm.AssignedTo = AssignedTo;
+TaskForm.BlockNotifications = BlockNotifications;
+TaskForm.DueDate = DueDate;
+TaskForm.BlockOnLocation = BlockOnLocation;
+TaskForm.BlockAll = BlockAll;
+TaskForm.SelectTimeseries = SelectTimeseries;
+TaskForm.AssignedToSelect = AssignedToSelect;
+
+export default TaskForm;

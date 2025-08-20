@@ -10,6 +10,7 @@ import {ressourcer} from '~/features/stamdata/components/stationDetails/zodSchem
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 import {Ressourcer} from './multiselect/types';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 
 const Huskeliste = () => {
   const {isMobile} = useBreakpoints();
@@ -33,23 +34,25 @@ const Huskeliste = () => {
   const {control} = formMethods;
 
   return (
-    <FormProvider {...formMethods}>
-      <Controller
-        key={'ressourcer'}
-        name="ressourcer"
-        control={control}
-        disabled={location_permissions !== 'edit'}
-        render={
-          !isMobile
-            ? ({field: {onChange, value}}) => (
-                <TransferList value={value ?? []} setValue={onChange} />
-              )
-            : ({field: {onChange, value}}) => (
-                <Autocomplete value={value ?? []} setValue={onChange} />
-              )
-        }
-      />
-    </FormProvider>
+    <StationPageBoxLayout>
+      <FormProvider {...formMethods}>
+        <Controller
+          key={'ressourcer'}
+          name="ressourcer"
+          control={control}
+          disabled={location_permissions !== 'edit'}
+          render={
+            !isMobile
+              ? ({field: {onChange, value}}) => (
+                  <TransferList value={value ?? []} setValue={onChange} />
+                )
+              : ({field: {onChange, value}}) => (
+                  <Autocomplete value={value ?? []} setValue={onChange} />
+                )
+          }
+        />
+      </FormProvider>
+    </StationPageBoxLayout>
   );
 };
 

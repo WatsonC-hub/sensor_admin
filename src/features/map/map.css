@@ -1,0 +1,11 @@
+:root {
+  --icon-size: 36px;
+}
+
+.svg-icon {
+  height: var(--icon-size) !important;
+  width: var(--icon-size) !important;
+  margin-left: calc(var(--icon-size) / -2) !important;
+  margin-top: calc(var(--icon-size) / -1) !important;
+  color: white;
+}

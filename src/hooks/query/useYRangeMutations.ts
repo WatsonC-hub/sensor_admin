@@ -1,4 +1,4 @@
-import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -37,7 +37,6 @@ const yRangeDelOptions = {
 };
 
 export const useYRangeMutations = () => {
-  const queryClient = useQueryClient();
   const {ts_id} = useAppContext(['ts_id']);
 
   const post = useMutation({
@@ -45,11 +44,11 @@ export const useYRangeMutations = () => {
     onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['qa_all', Number(variables.path)],
-      });
+    onSuccess: () => {
       rerunToast(ts_id);
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
@@ -59,10 +58,10 @@ export const useYRangeMutations = () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['qa_all'],
-      });
       rerunToast(ts_id);
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 

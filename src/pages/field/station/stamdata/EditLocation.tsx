@@ -15,11 +15,10 @@ import StamdataLocation from '~/features/station/components/stamdata/StamdataLoc
 import {BaseLocation} from '~/features/station/schema';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
 const EditLocation = () => {
-  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {loc_id} = useAppContext(['loc_id']);
   const {data: metadata} = useLocationData();
   const {data: unit_history} = useUnitHistory();
   const {location_permissions} = usePermissions(loc_id);
@@ -34,15 +33,14 @@ const EditLocation = () => {
       );
       return out;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['location_data', loc_id]});
-      queryClient.invalidateQueries({queryKey: ['metadata', ts_id]});
+    meta: {
+      invalidates: [['metadata']],
     },
   });
 
   const [formMethods, LocationForm, locationSchema] = useLocationForm({
     mode: 'Edit',
-    defaultValues: {...metadata} as BaseLocation,
+    defaultValues: {...metadata, initial_project_no: metadata?.projectno} as BaseLocation,
     initialLocTypeId: metadata?.loctype_id,
     context: {
       loc_id: loc_id,
@@ -73,7 +71,14 @@ const EditLocation = () => {
   };
 
   return (
-    <Box maxWidth={1080}>
+    <Box
+      maxWidth={1080}
+      sx={{
+        borderRadius: 4,
+        boxShadow: 3,
+        padding: 2,
+      }}
+    >
       <FormProvider {...formMethods}>
         <StamdataLocation>
           <LocationForm size={size} loc_id={loc_id} />

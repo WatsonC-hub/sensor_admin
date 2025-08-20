@@ -119,14 +119,14 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         header: 'Navn',
         accessorKey: 'navn',
         enableColumnActions: false,
-        size: 20,
+        size: 2,
       },
       {
         header: 'Rolle',
         id: 'contact_role_name',
         enableColumnActions: false,
         accessorFn: (row) => row.contact_role_name,
-        size: 20,
+        size: 2,
       },
     ],
     []
@@ -139,6 +139,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
       ...MRT_Localization_DA,
       noRecordsToDisplay: 'Ingen kontakter er tilknyttet denne lokation eller projekt',
     },
+
     enableTopToolbar: false,
     enablePagination: false,
     enableRowActions: true,
@@ -187,7 +188,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.relation_id, setDialogOpen, setContactID);
         }}
-        disabled={!user?.features.contacts || disabled}
+        disabled={!user?.features?.contacts || disabled}
       />
     ),
     renderToolbarInternalActions: ({table}) => {
@@ -204,9 +205,11 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
 
         muiTableHeadCellProps: {
           align: 'right',
+          padding: 'none',
         },
         muiTableBodyCellProps: {
           align: 'right',
+          padding: 'none',
         },
       },
     },
@@ -238,7 +241,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
   };
 
   return (
-    <Box>
+    <Box sx={{minWidth: '300px'}}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}

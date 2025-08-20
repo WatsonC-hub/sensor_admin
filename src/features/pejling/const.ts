@@ -1,12 +1,12 @@
-import moment from 'moment';
 import {
   PejlingBoreholeSchemaType,
   PejlingSchemaType,
 } from '../station/components/pejling/PejlingSchema';
+import dayjs from 'dayjs';
 
 export const initialData = () =>
   ({
-    timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
+    timeofmeas: dayjs(),
     measurement: 0,
     useforcorrection: 0,
     comment: '',
@@ -14,7 +14,7 @@ export const initialData = () =>
 
 export const boreholeInitialData = () =>
   ({
-    timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
+    timeofmeas: dayjs(),
     measurement: 0,
     useforcorrection: 0,
     comment: '',

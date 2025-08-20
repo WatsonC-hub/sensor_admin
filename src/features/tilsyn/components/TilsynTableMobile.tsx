@@ -18,7 +18,7 @@ import {useQueryTable} from '~/hooks/useTable';
 import {TilsynItem} from '~/types';
 
 interface Props {
-  handleEdit: (tilyn: TilsynItem) => void;
+  handleEdit: (tilsyn: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
   disabled: boolean;
 }

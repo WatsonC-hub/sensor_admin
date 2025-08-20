@@ -2,6 +2,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {Parking} from '~/types';
 
 interface ParkeringBase {
@@ -54,7 +55,7 @@ export const useParkering = () => {
   const queryClient = useQueryClient();
 
   const get = useQuery({
-    queryKey: ['parking'],
+    queryKey: queryKeys.Parking.all(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Parking>>(`/sensor_field/stamdata/parking`);
 
@@ -67,7 +68,7 @@ export const useParkering = () => {
     ...parkeringPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['parking'],
+        queryKey: queryKeys.Parking.all(),
       });
       toast.success('Parkering gemt');
     },
@@ -77,7 +78,7 @@ export const useParkering = () => {
     ...parkeringPutOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['parking'],
+        queryKey: queryKeys.Parking.all(),
       });
       toast.success('Parkering ændret');
     },
@@ -86,10 +87,10 @@ export const useParkering = () => {
   const del = useMutation({
     ...parkeringDelOptions,
     onSuccess: () => {
-      toast.success('Parkering slettet');
       queryClient.invalidateQueries({
-        queryKey: ['parking'],
+        queryKey: queryKeys.Parking.all(),
       });
+      toast.success('Parkering slettet');
     },
   });
 

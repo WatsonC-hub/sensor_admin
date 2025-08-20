@@ -10,12 +10,12 @@ const computeInitialState = (initialState: any) => {
   return initialState;
 };
 
-export default function useFormData(initialState: any) {
+export default function useFormData<T>(initialState: T) {
   // if any of the initial state values are functions, call them to get the initial state
 
-  const [formData, setFormData] = useState(computeInitialState(initialState));
+  const [formData, setFormData] = useState<T>(initialState);
 
-  const changeFormData = (key: string, value: any) => {
+  const changeFormData = (key: keyof T, value: any) => {
     setFormData({...formData, [key]: value});
   };
 
@@ -23,9 +23,9 @@ export default function useFormData(initialState: any) {
     setFormData(computeInitialState(initialState));
   };
 
-  const setFormDataFromObject = (obj: any) => {
+  const setFormDataFromObject = (obj: T) => {
     setFormData(obj);
   };
 
-  return [formData, setFormDataFromObject, changeFormData, resetFormData];
+  return [formData, setFormDataFromObject, changeFormData, resetFormData] as const;
 }

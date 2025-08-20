@@ -30,10 +30,11 @@ import {
 import StepWizard from '../wizard/StepWizard';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import useQAHistory from '../api/useQAHistory';
-import moment from 'moment';
 import Button from '~/components/Button';
 import {toast} from 'react-toastify';
 import GraphManager from '~/features/station/components/GraphManager';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import dayjs from 'dayjs';
 
 export default function QAHistory() {
   const {ts_id} = useAppContext(['ts_id']);
@@ -46,7 +47,7 @@ export default function QAHistory() {
   const {
     get: {data: certify},
     post: postQaData,
-  } = useCertifyQa(ts_id);
+  } = useCertifyQa();
 
   const {data, isPending} = useQAHistory(ts_id);
 
@@ -130,7 +131,7 @@ export default function QAHistory() {
   const handleSubmit = () => {
     const payload = {
       path: `${ts_id}`,
-      data: {level: 1, date: moment().toISOString()},
+      data: {level: 1, date: dayjs()},
     };
     postQaData.mutate(payload);
     setDataAdjustment(null);
@@ -200,13 +201,20 @@ export default function QAHistory() {
       </Box>
       <Divider />
       <StationPageBoxLayout>
-        <StepWizard />
-        <Box width={'100%'} m="auto" borderRadius={4}>
-          <Typography variant="h5">Aktive justeringer</Typography>
+        <Box>
+          <StepWizard />
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <TooltipWrapper
+              description="På denne side kan du se historikken for justeringer af tidsserien. Læs mere om justeringer i guiden."
+              url="https://www.watsonc.dk/guides/side-oversigt/#%F0%9F%93%88-juster-data"
+            >
+              <Typography variant="h5">Aktive justeringer</Typography>
+            </TooltipWrapper>
+          </Box>
           <AdjustmentDataTable data={data} />
         </Box>
-        <CustomSpeedDial actions={speedDialActions} />
       </StationPageBoxLayout>
+      <CustomSpeedDial actions={speedDialActions} />
       {dialog}
     </>
   );

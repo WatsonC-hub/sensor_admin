@@ -14,16 +14,32 @@ import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 import {initialWatlevmpData} from './const';
 import {Maalepunkt} from '~/types';
-import moment from 'moment';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import {zodDayjs} from '~/helpers/schemas';
+import dayjs from 'dayjs';
 
-const schema = z.object({
-  gid: z.number().optional(),
-  startdate: z.string(),
-  enddate: z.string().default(moment('2099-01-01').format('YYYY-MM-DDTHH:mm')),
-  elevation: z.number().nullable(),
-  mp_description: z.string().optional(),
-});
-
+const schema = z
+  .object({
+    gid: z.number().optional(),
+    startdate: zodDayjs('Start dato skal være udfyldt'),
+    enddate: zodDayjs('Slut dato skal være udfyldt').default(dayjs('2099-01-01')),
+    elevation: z.number().nullable(),
+    mp_description: z.string().optional(),
+  })
+  .superRefine(({enddate, startdate}, ctx) => {
+    if (enddate && startdate && enddate.isBefore(startdate)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Slut dato skal være efter start dato',
+        path: ['enddate'],
+      });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Start dato skal være før slut dato',
+        path: ['startdate'],
+      });
+    }
+  });
 export type WatlevMPFormValues = z.infer<typeof schema>;
 
 export default function ReferenceForm() {
@@ -31,9 +47,11 @@ export default function ReferenceForm() {
   const {isMobile} = useBreakpoints();
   const [showForm, setShowForm] = useShowFormState();
 
+  const {data: safeParsedData} = schema.safeParse(initialWatlevmpData());
+
   const formMethods = useForm<WatlevMPFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: initialWatlevmpData(),
+    defaultValues: safeParsedData,
     mode: 'onTouched',
   });
 
@@ -46,38 +64,36 @@ export default function ReferenceForm() {
 
   const disabled = permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit';
 
-  const {
-    get: {data: watlevmp},
-    del: deleteWatlevmp,
-  } = useMaalepunkt();
+  const {del: deleteWatlevmp} = useMaalepunkt();
 
   const handleDeleteMaalepunkt = (gid: number | undefined) => {
     deleteWatlevmp.mutate({path: `${ts_id}/${gid}`});
   };
 
   const handleEdit = (data: Maalepunkt) => {
-    reset(data);
+    const {data: parsedData} = schema.safeParse(data);
+    reset(parsedData);
     setShowForm(true);
   };
 
   return (
     <>
-      {showForm && <WatlevMPForm formMethods={formMethods} />}
-      {isMobile ? (
-        <MaalepunktTableMobile
-          data={watlevmp}
-          handleEdit={handleEdit}
-          handleDelete={handleDeleteMaalepunkt}
-          disabled={disabled}
-        />
-      ) : (
-        <MaalepunktTableDesktop
-          data={watlevmp}
-          handleEdit={handleEdit}
-          handleDelete={handleDeleteMaalepunkt}
-          disabled={disabled}
-        />
-      )}
+      <StationPageBoxLayout>
+        {showForm && <WatlevMPForm formMethods={formMethods} />}
+        {isMobile ? (
+          <MaalepunktTableMobile
+            handleEdit={handleEdit}
+            handleDelete={handleDeleteMaalepunkt}
+            disabled={disabled}
+          />
+        ) : (
+          <MaalepunktTableDesktop
+            handleEdit={handleEdit}
+            handleDelete={handleDeleteMaalepunkt}
+            disabled={disabled}
+          />
+        )}
+      </StationPageBoxLayout>
       <FabWrapper
         icon={<AddCircle />}
         text="Tilføj målepunkt"
