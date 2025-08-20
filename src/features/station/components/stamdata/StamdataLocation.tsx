@@ -322,13 +322,15 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
       pageToShow !== stationPages.GENERELTLOKATION
     ) {
       const borehole = searchOptions?.find((opt) => opt.boreholeno === searchBorehole?.boreholeno);
-      // @ts-expect-error error in type definition
-      const latlng = utm.convertLatLngToUtm(borehole?.latitude, borehole?.longitude, 32);
+      if (borehole) {
+        // @ts-expect-error error in type definition
+        const latlng = utm.convertLatLngToUtm(borehole?.latitude, borehole?.longitude, 32);
 
-      setValue('x', parseFloat(latlng.Easting.toFixed(1)));
-      setValue('y', parseFloat(latlng.Northing.toFixed(1)));
-      trigger('x');
-      trigger('y');
+        setValue('x', parseFloat(latlng.Easting.toFixed(1)));
+        setValue('y', parseFloat(latlng.Northing.toFixed(1)));
+        trigger('x');
+        trigger('y');
+      }
     }
   }, [searchOptions]);
 
@@ -387,6 +389,11 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
                   placeholder: 'Søg efter DGU boringer...',
                   required: true,
                 }}
+                noOptionsText={
+                  search === undefined || search === ''
+                    ? 'Indtast DGU nummer for at påbegynde søgning...'
+                    : 'Ingen resultater'
+                }
                 onInputChange={(event, searchValue) => {
                   if (searchValue !== '' && loctype_id === 9) {
                     const searchString = {
