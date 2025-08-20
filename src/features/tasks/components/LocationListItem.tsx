@@ -121,7 +121,13 @@ const LocationListItem = ({itemData, onClick}: Props) => {
                         setSelectedTask(task.id);
                       }}
                     >
-                      <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
+                      <Box
+                        display={'flex'}
+                        flexDirection={'row'}
+                        color={'white'}
+                        gap={1}
+                        alignItems={'center'}
+                      >
                         <NotificationIcon
                           iconDetails={{
                             has_task: task.is_created,
@@ -131,8 +137,8 @@ const LocationListItem = ({itemData, onClick}: Props) => {
                             due_date: task.due_date,
                           }}
                         />
-                        <Typography variant="body2">{task.name}</Typography>
                       </Box>
+                      <Typography variant="body2">{task.name}</Typography>
                     </Link>
                   </Grid2>
                   <Grid2 size={4} display={'flex'} flexDirection={'column'} alignItems={'start'}>
