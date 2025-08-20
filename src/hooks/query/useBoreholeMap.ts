@@ -1,19 +1,25 @@
 import {useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {BoreholeMapData} from '~/types';
 
-export const useBoreholeMap = () => {
-  const {boreholeAccess} = useUser();
+// type Options = Partial<Omit<UseQueryOptions<BoreholeMapData[]>, 'queryKey' | 'queryFn'>>;
 
-  const query = useQuery<BoreholeMapData[]>({
-    queryKey: ['borehole_map'],
+export const useBoreholeMap = <TData = BoreholeMapData[]>(
+  select?: (data: BoreholeMapData[]) => TData
+) => {
+  const user = useUser();
+
+  const query = useQuery({
+    queryKey: queryKeys.boreholeMap(),
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/borehole_map`);
+      const {data} = await apiClient.get<BoreholeMapData[]>(`/sensor_field/borehole_map`);
       return data;
     },
     staleTime: 10 * 1000,
-    enabled: boreholeAccess,
+    enabled: user?.features?.boreholeAccess,
+    select,
   });
   return query;
 };

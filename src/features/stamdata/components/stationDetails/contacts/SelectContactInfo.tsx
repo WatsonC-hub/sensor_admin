@@ -104,7 +104,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
                     });
                   }
                 }}
-                selectValue={selectedContactInfo!}
+                selectValue={selectedContactInfo}
                 filterOptions={(options) => {
                   return options;
                 }}

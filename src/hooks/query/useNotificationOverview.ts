@@ -1,7 +1,10 @@
-import {UseQueryResult, useQuery, type UseQueryOptions} from '@tanstack/react-query';
-import {reverse, sortBy} from 'lodash';
+import {queryOptions, useQuery, type UseQueryOptions} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 
 import {apiClient} from '~/apiClient';
+import {useUser} from '~/features/auth/useUser';
+import {FlagEnum, NotificationIDEnum} from '~/features/notifications/consts';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {Group} from '~/types';
 
 export interface Notification {
@@ -17,8 +20,8 @@ export interface Notification {
   opgave: string | null;
   dato: string | null;
   color: string | null;
-  flag: number;
-  notification_id: number;
+  flag: FlagEnum;
+  notification_id: NotificationIDEnum;
   status: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
   enddate: string | null;
   projectno: string | null;
@@ -29,100 +32,143 @@ export interface Notification {
   groups: Group[];
   loctype_id: number;
   calculated: boolean | null;
+  type: 'task' | 'notification' | 'itinerary' | 'none';
   parking_id: number;
-}
-
-export interface NotificationMap extends Notification {
-  otherNotifications: Notification[];
-  obsNotifications: Notification[];
+  calypso_id: number | null;
 }
 
 type NotificationOverviewOptions = Partial<
   Omit<UseQueryOptions<Notification[]>, 'queryKey' | 'queryFn'>
 >;
 
-const sortByNotifyType = (item: Notification) => {
-  switch (item.notify_type) {
-    case 'primary':
-      return 3;
-    case 'obs':
-      return 2;
-    case 'station':
-      return 1;
-    default:
-      return 0;
-  }
-};
-
-const nullState: Partial<Notification> = {
-  opgave: null,
-  dato: null,
-  color: null,
-  flag: 0,
-  notification_id: 0,
-  status: null,
-  enddate: null,
-  notify_type: null,
-};
-
 export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
+  const user = useUser();
   const query = useQuery<Notification[]>({
-    queryKey: ['overblik'],
+    queryKey: queryKeys.overblik(),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/overblik`);
+
       return data;
     },
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
     staleTime: 10 * 1000,
+    enabled: user?.features?.iotAccess,
     ...options,
   });
   return query;
 };
 
-export const useNotificationOverviewMap = (
-  options?: NotificationOverviewOptions
-): UseQueryResult<NotificationMap[], Error> => {
-  // @ts-expect-error - This is a valid use case for the hook
-  return useNotificationOverview({
-    ...options,
-    select: (data) => {
-      const sorted = reverse(
-        sortBy(data, [
-          sortByNotifyType,
-          (item) => (item.status ? item.status : ''),
-          (item) => item.flag,
-          (item) => (item.projectno ? item.projectno : ''),
-        ])
-      );
-
-      const grouped = sorted.reduce((acc: NotificationMap[], item: Notification) => {
-        const existing = acc.find((accItem) => accItem.loc_id === item.loc_id);
-
-        if (existing) {
-          if (item.notify_type === 'obs') {
-            existing.obsNotifications.push(item);
-          }
-          existing.otherNotifications.push(item);
-
-          if (existing.active == null) {
-            existing.active = item.active;
-          } else {
-            existing.active = item.active || existing.active;
-          }
-        } else {
-          if (item.notify_type === 'primary') {
-            acc.push({...item, otherNotifications: [], obsNotifications: []});
-          } else if (item.notify_type === 'obs') {
-            acc.push({...item, ...nullState, otherNotifications: [item], obsNotifications: [item]});
-          } else {
-            acc.push({...item, ...nullState, otherNotifications: [item], obsNotifications: []});
-          }
-        }
-        return acc;
-      }, []);
-
-      return grouped;
+export const useLocationNotificationOverview = (loc_id: number | undefined) => {
+  return useQuery<Notification[]>({
+    queryKey: queryKeys.overblikByLocId(loc_id),
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_admin/overblik/${loc_id}`);
+      return data;
     },
+    staleTime: 10,
+    enabled: loc_id !== undefined && loc_id !== -1,
+  });
+};
+
+export interface MapOverview {
+  loc_id: number;
+  loc_name: string;
+  longitude: number;
+  latitude: number;
+  loctype_id: number;
+  parking_id: number | null;
+  itinerary_id: string | null;
+  no_unit: boolean;
+  inactive: boolean | null;
+  is_customer_service: boolean | null;
+  projectno: string | null;
+  has_task: boolean;
+  groups: Group[];
+  flag: FlagEnum | null;
+  notification_id: NotificationIDEnum | null;
+  due_date: Dayjs | null;
+  notification_ids: NotificationIDEnum[] | null;
+  mapicontype: 'notification' | 'task' | 'trip';
+}
+
+const mapOverviewOptions = queryOptions<MapOverview[]>({
+  queryKey: queryKeys.Map.all(),
+  queryFn: async () => {
+    const {data} = await apiClient.get<MapOverview[]>(`/sensor_field/map_data`);
+    return data;
+  },
+  staleTime: 30 * 1000, // Data is fresh for 30 seconds
+  refetchInterval: 60 * 1000, // Background refresh every 1 min
+  refetchOnWindowFocus: false,
+  refetchOnMount: false,
+});
+
+type MapOverviewOptions<T> = Partial<
+  Omit<UseQueryOptions<MapOverview[], Error, T>, 'queryKey' | 'queryFn'>
+>;
+
+export const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T>) => {
+  const user = useUser();
+
+  return useQuery({
+    ...mapOverviewOptions,
+    ...options,
+    select: options?.select as (data: MapOverview[]) => T,
+    enabled: user?.features?.iotAccess,
+  });
+};
+
+interface TimeseriesStatus {
+  ts_id: number;
+  loc_id: number;
+  parameter: string;
+  prefix: string | null;
+  is_calculated: boolean;
+  notification_id: NotificationIDEnum | null;
+  flag: FlagEnum | null;
+  opgave: string | null;
+  has_task: boolean;
+  due_date: string | null;
+  no_unit: boolean;
+  inactive: boolean | null;
+  projectno: string | null;
+  is_customer_service: boolean | null;
+}
+
+export const timeseriesStatusOptions = (loc_id: number) =>
+  queryOptions({
+    queryKey: queryKeys.Location.timeseries_status(loc_id),
+    queryFn: async () => {
+      const {data} = await apiClient.get<TimeseriesStatus[]>(
+        `/sensor_field/timeseries_status/${loc_id}`
+      );
+      return data;
+    },
+    staleTime: 1000 * 60 * 1,
+  });
+
+export const useTimeseriesStatus = (loc_id: number) => {
+  const user = useUser();
+  return useQuery({
+    ...timeseriesStatusOptions(loc_id),
+    enabled: user?.features?.iotAccess,
+  });
+};
+
+type NotificationType = {
+  gid: number;
+  name: string;
+  flag: FlagEnum;
+};
+
+export const useNotificationTypes = () => {
+  return useQuery({
+    queryKey: queryKeys.notificationTypes(),
+    queryFn: async () => {
+      const {data} = await apiClient.get<NotificationType[]>('/sensor_admin/notification-types');
+      return data;
+    },
+    staleTime: 1000 * 60 * 60,
   });
 };

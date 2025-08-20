@@ -1,4 +1,5 @@
-import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -6,14 +7,14 @@ import {apiClient} from '~/apiClient';
 type ImageData = {
   comment: string;
   public: string;
-  date: string;
+  date: Dayjs;
   uri: string | ArrayBuffer | null;
 };
 
 type EditImageData = {
   comment: string;
   public: string;
-  date: string;
+  date: Dayjs;
   imageurl?: string; // Assuming this property exists
 };
 
@@ -45,8 +46,6 @@ const dataURLtoFile = (dataurl: string | ArrayBuffer | null, filename?: string) 
 };
 
 export const useImageUpload = (endpoint: string) => {
-  const queryClient = useQueryClient();
-
   const post = useMutation({
     mutationKey: ['image_post'],
     mutationFn: async (mutation_data: ImagePayload) => {
@@ -56,7 +55,7 @@ export const useImageUpload = (endpoint: string) => {
       formData.append('file', file);
       formData.append('comment', data.comment);
       formData.append('public', data.public);
-      formData.append('date', data.date);
+      formData.append('date', data.date.toISOString());
       const config = {
         headers: {'Content-Type': 'multipart/form-data'},
       };
@@ -68,10 +67,8 @@ export const useImageUpload = (endpoint: string) => {
       );
       return res;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['images'],
-      });
+    meta: {
+      invalidates: [['register']],
     },
   });
 
@@ -83,10 +80,10 @@ export const useImageUpload = (endpoint: string) => {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['images'],
-      });
       toast.success('Ændringerne er blevet gemt');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
@@ -97,15 +94,8 @@ export const useImageUpload = (endpoint: string) => {
       const {data: res} = await apiClient.delete(`/sensor_field/${endpoint}/image/${path}`);
       return res;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['images'],
-      });
-    },
-    onError: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['images'],
-      });
+    meta: {
+      invalidates: [['register']],
     },
   });
 

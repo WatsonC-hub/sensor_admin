@@ -189,7 +189,7 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.id, setDialogOpen, setLocationAccessID);
         }}
-        disabled={!user?.contactAndKeysPermission || disabled}
+        disabled={!user?.features?.keys || disabled}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

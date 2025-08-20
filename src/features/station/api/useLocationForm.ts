@@ -16,11 +16,19 @@ import DefaultLocationEditForm from '../components/stamdata/stamdataComponents/D
 import {useUser} from '~/features/auth/useUser';
 import {zodResolver} from '@hookform/resolvers/zod';
 
-type useLocationFormProps<T extends FieldValues> = {
-  formProps: UseFormProps<T, {loc_id: number | undefined}>;
-  mode: 'Add' | 'Edit';
-  initialLocTypeId?: number;
-};
+type useLocationFormProps<T> =
+  | {
+      mode: 'Add';
+      defaultValues?: DefaultValues<T>;
+      initialLocTypeId?: number;
+      context: {loc_id: number | undefined};
+    }
+  | {
+      mode: 'Edit';
+      defaultValues?: DefaultValues<T>;
+      initialLocTypeId?: number;
+      context: {loc_id: number};
+    };
 
 const getSchemaAndForm = <T extends FieldValues>(
   loctype_id: number,
@@ -64,30 +72,25 @@ const getSchemaAndForm = <T extends FieldValues>(
 };
 
 const useLocationForm = <T extends Record<string, any>>({
-  formProps,
+  defaultValues,
   mode,
+  context,
   initialLocTypeId = -1,
 }: useLocationFormProps<T>) => {
   const user = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm<T>(
-    loctype_id,
-    mode,
-    user.superUser,
-    formProps?.context?.loc_id
-  );
+  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user?.superUser, context.loc_id);
 
   const {data, success} = schema.safeParse({
-    ...formProps.values,
+    ...defaultValues,
   });
   const defaultValuesData = data as unknown as DefaultValues<T>;
 
   const formMethods = useForm<T>({
     resolver: zodResolver(schema),
-    defaultValues: success ? defaultValuesData : formProps.defaultValues,
+    defaultValues: success ? defaultValuesData : defaultValues,
     mode: 'onTouched',
-    ...formProps,
   });
 
   const {watch} = formMethods;
@@ -98,7 +101,7 @@ const useLocationForm = <T extends Record<string, any>>({
     setLoctypeId(loctype_id_watch);
   }, [loctype_id_watch]);
 
-  return [formMethods, form] as const;
+  return [formMethods, form, schema] as const;
 };
 
 export default useLocationForm;

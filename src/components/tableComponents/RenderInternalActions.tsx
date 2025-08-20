@@ -5,6 +5,7 @@ import {
   MRT_TableInstance,
   MRT_ToggleFiltersButton,
   MRT_ShowHideColumnsButton,
+  MRT_ToggleFullScreenButton,
 } from 'material-react-table';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -29,6 +30,7 @@ const RenderInternalActions = <TData extends MRT_RowData>({
 
       {isTouch ? null : <MRT_ToggleFiltersButton table={table} />}
       {isTouch ? null : <MRT_ShowHideColumnsButton table={table} />}
+      {isTouch ? null : <MRT_ToggleFullScreenButton table={table} />}
     </Box>
   );
 };

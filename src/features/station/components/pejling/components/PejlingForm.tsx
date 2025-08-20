@@ -5,22 +5,12 @@ const PejlingForm = () => {
   return (
     <Grid2
       container
-      display={'flex'}
-      size={12}
       flexDirection={'column'}
-      alignItems={'center'}
       alignContent={'center'}
       justifyContent={'center'}
-      spacing={2}
+      p={1}
     >
-      <Grid2
-        container
-        size={12}
-        display={'flex'}
-        flexDirection={'row'}
-        alignContent={'center'}
-        justifyContent={'center'}
-      >
+      <Grid2 size={12} justifyItems={'center'}>
         <CompoundPejling.NotPossible />
       </Grid2>
 
@@ -28,11 +18,11 @@ const PejlingForm = () => {
         <CompoundPejling.Measurement />
         <CompoundPejling.WaterlevelAlert />
       </Grid2>
-      <Grid2 container spacing={1} size={12} mb={2} display={'flex'} flexDirection={'row'}>
-        <CompoundPejling.TimeOfMeas sx={{mb: 0}} label="Tidspunkt for pejling" />
+      <Grid2 mb={1}>
+        <CompoundPejling.TimeOfMeas label="Tidspunkt" />
       </Grid2>
       <CompoundPejling.Correction />
-      <CompoundPejling.Comment />
+      <CompoundPejling.Comment fullWidth />
     </Grid2>
   );
 };

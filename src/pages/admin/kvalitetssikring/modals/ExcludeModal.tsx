@@ -2,15 +2,17 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 // import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import {Box, FormControl, FormControlLabel, Radio, RadioGroup, Typography} from '@mui/material';
+import dayjs from 'dayjs';
 import {useAtomValue} from 'jotai';
-import moment from 'moment';
 import {parseAsString, useQueryState} from 'nuqs';
 import {useEffect, useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
+import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
+import {zodDayjs} from '~/helpers/schemas';
 import {useExclude} from '~/hooks/query/useExclude';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -21,8 +23,8 @@ interface ExcludeModalProps {
 }
 
 const schema = z.object({
-  startDate: z.string().nullable(),
-  endDate: z.string().nullable(),
+  startDate: zodDayjs('Dato fra er påkrævet'),
+  endDate: zodDayjs('Dato til er påkrævet'),
   startValue: z.string().nullable(),
   endValue: z.string().nullable(),
   comment: z.string().optional(),
@@ -35,14 +37,22 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   const selection = useAtomValue(qaSelection);
   const {data: timeseries_data} = useTimeseriesData();
   const {isMobile} = useBreakpoints();
-
-  const x0 = moment(selection?.range?.x[0]);
-  const x1 = moment(selection?.range?.x[1]);
+  const x0 = dayjs(selection?.range?.x[0]);
+  const x1 = dayjs(selection?.range?.x[1]);
   const y0 = selection?.range ? selection?.range.y[0] : 0;
   const y1 = selection?.range ? selection?.range.y[1] : 0;
 
+  const {data: parsedData} = schema.safeParse({
+    startDate: x0,
+    endDate: x1,
+    startValue: y0.toFixed(4),
+    endValue: y1.toFixed(4),
+    comment: '',
+  });
+
   const formMethods = useForm<ExcludeModalValues>({
     resolver: zodResolver(schema),
+    defaultValues: parsedData,
     mode: 'onTouched',
   });
 
@@ -56,8 +66,8 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
       {
         path: `${timeseries_data?.ts_id}`,
         data: {
-          startdate: moment(values.startDate).toISOString(),
-          enddate: moment(values.endDate).toISOString(),
+          startdate: values.startDate,
+          enddate: values.endDate,
           min_value: radio == 'selected' ? Number(values.startValue) : null,
           max_value: radio == 'selected' ? Number(values.endValue) : null,
           comment: values.comment ?? '',
@@ -72,8 +82,8 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   };
 
   useEffect(() => {
-    setValue('startDate', moment.min(x0, x1).format('YYYY-MM-DD HH:mm'));
-    setValue('endDate', moment.max(x0, x1).format('YYYY-MM-DD HH:mm'));
+    setValue('startDate', dayjs.min(x0, x1));
+    setValue('endDate', dayjs.max(x0, x1));
     setValue('startValue', Math.min(y0, y1).toFixed(4));
     setValue('endValue', Math.max(y0, y1).toFixed(4));
   }, [selection]);
@@ -89,18 +99,8 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
           alignItems={'center'}
           gap={2}
         >
-          <FormInput<ExcludeModalValues>
-            name="startDate"
-            label="Dato fra"
-            type="datetime-local"
-            required
-          />
-          <FormInput<ExcludeModalValues>
-            name="endDate"
-            label="Dato til"
-            type="datetime-local"
-            required
-          />
+          <FormDateTime<ExcludeModalValues> name="startDate" label="Dato fra" required />
+          <FormDateTime<ExcludeModalValues> name="endDate" label="Dato til" required />
         </Box>
         <Box
           display={'flex'}

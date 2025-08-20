@@ -1,11 +1,12 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {AdjustmentTypes} from '~/helpers/EnumHelper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 
-export const getQAHistoryOptions = (ts_id: number | undefined) =>
+export const getQAHistoryOptions = (ts_id: number) =>
   queryOptions<any, APIError>({
-    queryKey: ['qa_all', ts_id],
+    queryKey: queryKeys.Timeseries.QAWithTsId(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/qa_all/${ts_id}`);
       return data;
@@ -43,6 +44,7 @@ export const getQAHistoryOptions = (ts_id: number | undefined) =>
       return out;
     },
     enabled: typeof ts_id == 'number',
+    staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
   });
 

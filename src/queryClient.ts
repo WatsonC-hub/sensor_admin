@@ -1,11 +1,12 @@
 import {createSyncStoragePersister} from '@tanstack/query-sync-storage-persister';
-import {MutationCache, QueryClient} from '@tanstack/react-query';
+import {matchQuery, MutationCache, QueryClient, QueryKey} from '@tanstack/react-query';
 import axios, {AxiosError} from 'axios';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {httpStatusDescriptions} from '~/consts';
 import {excludeDelOptions, excludePostOptions, excludePutOptions} from '~/hooks/query/useExclude';
+import {tags, queryKeys} from './helpers/QueryKeyFactoryHelper';
 
 type ErrorDetail = {
   type: string;
@@ -17,6 +18,14 @@ type ErrorDetail = {
 type ErrorResponse = {
   detail: ErrorDetail | string;
 };
+
+declare module '@tanstack/react-query' {
+  interface Register {
+    mutationMeta: {
+      invalidates?: Array<QueryKey | Array<keyof typeof tags>>;
+    };
+  }
+}
 
 export type APIError = AxiosError<ErrorResponse>;
 
@@ -43,8 +52,20 @@ const queryClient = new QueryClient({
     },
   },
   mutationCache: new MutationCache({
-    onSuccess: () => {
-      console.log('Data gemt!');
+    onSuccess: (_data, _variables, _context, mutation) => {
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          if (matchQuery({queryKey: ['map']}, query)) return true;
+          if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
+          if (matchQuery({queryKey: ['tasks']}, query)) return true;
+
+          return (
+            mutation.meta?.invalidates?.some((queryKey) => {
+              return queryKey.every((key) => query.queryKey.includes(key));
+            }) ?? false
+          );
+        },
+      });
     },
     onError: (error) => {
       if (axios.isAxiosError(error)) {
@@ -91,7 +112,7 @@ const queryClient = new QueryClient({
 
 queryClient.setMutationDefaults(['pejling'], {
   mutationFn: async (data: {gid: number; stationid: number}) => {
-    await queryClient.cancelQueries({queryKey: ['measurements']});
+    await queryClient.cancelQueries({queryKey: queryKeys.Timeseries.allPejling()});
     if (data.gid === -1) {
       return apiClient.post(`/sensor_field/station/measurements/${data.stationid}`, data);
     } else {

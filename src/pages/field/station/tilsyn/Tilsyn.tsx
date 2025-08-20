@@ -1,8 +1,10 @@
+import {zodResolver} from '@hookform/resolvers/zod';
 import {PlaylistAddRounded} from '@mui/icons-material';
 import {Box, Divider} from '@mui/material';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
+import {z} from 'zod';
 
 import FabWrapper from '~/components/FabWrapper';
 import usePermissions from '~/features/permissions/api/usePermissions';
@@ -12,22 +14,32 @@ import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
 import {stationPages} from '~/helpers/EnumHelper';
+import {zodDayjs} from '~/helpers/schemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 import {TilsynItem} from '~/types';
 
+const tilsynSchema = z.object({
+  dato: zodDayjs('Tidspunkt skal være udfyldt'),
+  gid: z.number().optional().default(-1),
+  batteriskift: z.boolean().optional().default(false),
+  tilsyn: z.boolean().optional().default(false),
+  kommentar: z.string().optional(),
+});
+
+export type TilsynSchemaType = z.infer<typeof tilsynSchema>;
+
 export default function Tilsyn() {
   const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const [showForm, setShowForm] = useShowFormState();
   const {isTouch, isLaptop} = useBreakpoints();
-  const initialData: TilsynItem = {
-    dato: moment().format('YYYY-MM-DDTHH:mm'),
+  const initialData: TilsynSchemaType = {
+    dato: dayjs(),
     gid: -1,
     batteriskift: false,
     kommentar: '',
     tilsyn: false,
-    user_id: null,
   };
 
   const {
@@ -35,32 +47,38 @@ export default function Tilsyn() {
     location_permissions,
   } = usePermissions(loc_id);
 
-  const formMethods = useForm<TilsynItem>({defaultValues: initialData});
+  const {data: tilsynData} = tilsynSchema.safeParse(initialData);
+
+  const formMethods = useForm<TilsynSchemaType>({
+    resolver: zodResolver(tilsynSchema),
+    defaultValues: tilsynData,
+    mode: 'onTouched',
+  });
 
   const {reset, getValues} = formMethods;
 
   const {post: postTilsyn, put: putTilsyn, del: delTilsyn} = useTilsyn();
 
-  const handleServiceSubmit = (values: TilsynItem) => {
-    const tilsyn = {...values, dato: moment(values.dato).toISOString()};
-
+  const handleServiceSubmit = (values: TilsynSchemaType) => {
     const mutationOptions = {
       onSuccess: () => {
         resetFormData();
       },
     };
 
-    if (tilsyn.gid === -1) {
-      const payload = {data: tilsyn, path: `${ts_id}`};
+    if (values.gid === -1) {
+      const payload = {data: values, path: `${ts_id}`};
       postTilsyn.mutate(payload, mutationOptions);
     } else {
-      const payload = {data: tilsyn, path: `${ts_id}/${tilsyn.gid}`};
+      const payload = {data: values, path: `${ts_id}/${values.gid}`};
       putTilsyn.mutate(payload, mutationOptions);
     }
   };
 
   const handleEdit = (data: TilsynItem) => {
-    reset(data, {keepDirty: true});
+    const {data: parsedData} = tilsynSchema.safeParse(data);
+
+    reset(parsedData, {keepDirty: true});
     setShowForm(true);
   };
 
@@ -115,16 +133,16 @@ export default function Tilsyn() {
             disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           />
         </Box>
-        <FabWrapper
-          icon={<PlaylistAddRounded />}
-          text={'Tilføj ' + stationPages.TILSYN}
-          onClick={() => {
-            setShowForm(true);
-          }}
-          disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
-          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-        />
       </StationPageBoxLayout>
+      <FabWrapper
+        icon={<PlaylistAddRounded />}
+        text={'Tilføj ' + stationPages.TILSYN}
+        onClick={() => {
+          setShowForm(true);
+        }}
+        disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+      />
     </>
   );
 }

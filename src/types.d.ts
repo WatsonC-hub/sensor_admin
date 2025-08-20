@@ -1,7 +1,7 @@
 import {SvgIconProps} from '@mui/material';
+import {Dayjs} from 'dayjs';
 import {ReactNode} from 'react';
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export interface Image {
@@ -10,33 +10,13 @@ export interface Image {
   loc_id?: number;
   boreholeno: number;
   title: string;
-  date: string;
+  date: Dayjs;
   public: boolean;
   userid: number;
   comment: string;
   imageurl: string;
   organisationid?: number;
 }
-
-export type TableData = {
-  ts_id: number;
-  calypso_id: number;
-  ts_name: string;
-  tstype_name: string;
-  customer_name: string;
-  loc_id: number;
-  color: string;
-  opgave: string;
-  active: boolean;
-  flag: number;
-  loctype_id: number;
-  loc_name: string;
-  prefix: string;
-  calculated: boolean;
-  x: number;
-  y: number;
-  notification_id: number;
-};
 
 export interface BoreholeMapData {
   boreholeno: string;
@@ -45,7 +25,9 @@ export interface BoreholeMapData {
   intakeno: number[];
   plantname: string;
   plantid: number;
-  drilldepth: number[];
+  drilldepth: number;
+  description: string;
+  municipal: string | null;
   measurement: number[];
   status: number[];
   timeofmeas: string[];
@@ -80,9 +62,9 @@ export type Kontrol = {
   comment: string;
   gid: number;
   disttowatertable_m: number;
-  timeofmeas: string;
+  timeofmeas: Dayjs;
   useforcorrection: number;
-  pumpstop: string;
+  pumpstop: Dayjs | null;
   service: boolean;
   organisationid: number;
   organisationname: string;
@@ -92,6 +74,29 @@ export type Kontrol = {
 };
 
 export type BoreholeMeasurement = {
+  boreholeno: string;
+  intakeno: number;
+  timeofmeas: Dayjs;
+  disttowatertable_m: number;
+  deleted: boolean;
+  extrema: string | null;
+  gid: number;
+  last_uploaded: string;
+  organisationid: number;
+  organisationname: string;
+  pumpstop: Dayjs | null;
+  service: boolean;
+  updated_at: string;
+  uploaded_status: boolean;
+  useforcorrection: number;
+  userid: number;
+  uuid: string;
+  waterlevel?: number | null;
+  display_name?: string;
+  comment: string;
+};
+
+export type BoreholeMeasurementAPI = {
   boreholeno: string;
   intakeno: number;
   timeofmeas: string;
@@ -110,6 +115,8 @@ export type BoreholeMeasurement = {
   userid: number;
   uuid: string;
   waterlevel?: number | null;
+  display_name?: string;
+  comment: string;
 };
 
 export type MaalepunktTableData = {
@@ -126,8 +133,8 @@ export type MaalepunktTableData = {
 };
 
 export type Maalepunkt = {
-  startdate: string;
-  enddate: string;
+  startdate: Dayjs;
+  enddate: Dayjs;
   elevation: number;
   mp_description: string;
   gid: number;
@@ -137,10 +144,10 @@ export type Maalepunkt = {
 };
 
 export type MaalepunktPost = {
-  startdate: string;
-  enddate: string;
-  elevation: number;
-  mp_description: string;
+  startdate: Dayjs;
+  enddate: Dayjs;
+  elevation: number | null;
+  mp_description: string | undefined;
   gid: number;
 };
 
@@ -150,7 +157,6 @@ export type TilsynItem = {
   gid: number;
   kommentar?: string | undefined;
   tilsyn: boolean;
-  user_id: string | null;
   display_name?: string;
 };
 
@@ -184,6 +190,13 @@ export type Group = {
   id: string;
   group_name: string;
   new?: boolean;
+};
+
+export type SimpleItinerary = {
+  name: string;
+  assigned_to_name: string | null;
+  due_date: string | null;
+  id: string | null;
 };
 
 export type ContactInfo = {
@@ -346,6 +359,82 @@ export type DialAction = {
   color: string;
   toastTip: string;
   dialog?: boolean;
+};
+
+type TaskContact = {
+  id: string;
+  navn: string;
+  telefonnummer: Optional[string];
+  email: Optional[string];
+  comment: Optional[string];
+  contact_role_name: string;
+  loc_id: number;
+  loc_name: string;
+};
+
+type TaskLocationAccess = {
+  id: number;
+  navn: string;
+  type: string;
+  placering: string;
+  kommentar: string;
+  kode: string;
+  loc_name: string;
+  contact_name: string;
+};
+
+type TaskNotifications = {
+  loc_id: number;
+  ts_id: number;
+  tstype_name: string;
+  ts_name: string;
+  notification_id: number;
+  opgave: string;
+  color: string;
+  flag: number;
+};
+
+export type TaskCollection = {
+  contacts: Array<TaskContact>;
+  location_access: Array<TaskLocationAccess>;
+  ressourcer: Array<TaskRessources>;
+  units: Array<TaskUnits>;
+  notifications: Array<TaskNotifications>;
+  tasks: Array<LocationTasks>;
+};
+
+export type TaskRessources = {
+  kategori: string;
+  navn: string;
+};
+
+export type TaskUnits = {
+  name: string;
+  terminal_type: string;
+  sensorinfo: string;
+  sensor_id: string;
+  terminal_id: string;
+  ts_name: string;
+  tstype_name: string;
+  startdate: string;
+  enddate: string;
+};
+
+export type LocationTasks = {
+  id: string;
+  loc_id: number;
+  ts_id: number;
+  status_id: number;
+  assigned_to: string;
+  tstype_name: string;
+  ts_name: string;
+  due_date: Dayjs;
+  name: string;
+  description: string;
+  status_name: string;
+  display_name: string;
+  blocks_notifications: number[];
+  notification_name: string;
 };
 
 export type DataToShow = {

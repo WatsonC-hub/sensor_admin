@@ -6,8 +6,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import {useQueryClient} from '@tanstack/react-query';
-import moment from 'moment';
+import {PickerValue} from '@mui/x-date-pickers/internals';
+import dayjs from 'dayjs';
+
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
@@ -42,7 +43,6 @@ export default function AddUnitForm({
     amount: number;
     subscription_type: string;
   } | null>(null);
-  const queryClient = useQueryClient();
   const [openCaptureDialog, setOpenCaptureDialog] = useState(false);
   const user = useUser();
 
@@ -57,7 +57,7 @@ export default function AddUnitForm({
     calypso_id: '',
     sensor_id: '',
     uuid: '',
-    fra: new Date(),
+    fra: dayjs(),
   });
 
   const uniqueCalypsoIds = [
@@ -97,7 +97,7 @@ export default function AddUnitForm({
     if (option == null) {
       setUnitData((currentUnit) => ({...currentUnit, calypso_id: '', uuid: ''}));
       setValue('unit_uuid', '', {shouldDirty: true});
-      setValue('startdate', '', {shouldDirty: true});
+      setValue('startdate', undefined, {shouldDirty: true});
       return;
     }
     setUnitData((currentUnit) => ({
@@ -110,7 +110,7 @@ export default function AddUnitForm({
     if (sensors && sensors.length === 1) {
       setUnitData((currentUnit) => ({...currentUnit, uuid: sensors[0].unit_uuid}));
       setValue('unit_uuid', sensors[0].unit_uuid, {shouldDirty: true});
-      setValue('startdate', moment(unitData.fra).toISOString(), {
+      setValue('startdate', dayjs(unitData.fra), {
         shouldDirty: true,
       });
     }
@@ -121,16 +121,15 @@ export default function AddUnitForm({
     setUnitData({...unitData, uuid: event.target.value});
   };
 
-  const handleDateChange = (date: Date) => {
+  const handleDateChange = (date: PickerValue) => {
     trigger();
-    setUnitData({...unitData, fra: date});
+    setUnitData({...unitData, fra: dayjs(date)});
   };
 
   const handleAddUnit = (payload: UnitPost) => {
     addUnit.mutate(payload, {
       onSuccess: () => {
         toast.success('Udstyr tilføjet');
-        queryClient.invalidateQueries({queryKey: ['metadata', ts_id]});
         setUdstyrDialogOpen(false);
         setConfirmDialogOpen(false);
       },
@@ -148,8 +147,8 @@ export default function AddUnitForm({
         path: `${ts_id}`,
         data: {
           unit_uuid: unit.unit_uuid,
-          startdate: moment(unitData.fra).toISOString(),
-          enddate: moment('2099-01-01T12:00:00').toISOString(),
+          startdate: dayjs(unitData.fra),
+          enddate: dayjs('2099-01-01T12:00:00'),
         },
       };
       if (user?.superUser) {
@@ -175,7 +174,7 @@ export default function AddUnitForm({
       if (!unit) return;
 
       setValue('unit_uuid', unit.unit_uuid, {shouldDirty: true});
-      setValue('startdate', moment(unitData.fra).toISOString(), {
+      setValue('startdate', dayjs(unitData.fra), {
         shouldDirty: true,
       });
 
@@ -200,8 +199,7 @@ export default function AddUnitForm({
   };
 
   useEffect(() => {
-    if (udstyrDialogOpen === true)
-      setUnitData((currentUnit) => ({...currentUnit, fra: new Date()}));
+    if (udstyrDialogOpen === true) setUnitData((currentUnit) => ({...currentUnit, fra: dayjs()}));
   }, [udstyrDialogOpen, setUnitData]);
 
   return (
@@ -286,8 +284,8 @@ export default function AddUnitForm({
               </TextField>
               <OwnDatePicker
                 label={'Fra'}
-                value={unitData.fra}
-                onChange={(date: Date) => handleDateChange(date)}
+                value={dayjs(unitData.fra)}
+                onChange={(date) => handleDateChange(date)}
               />
             </DialogContent>
             <DialogActions>
@@ -335,8 +333,8 @@ export default function AddUnitForm({
                 path: `${ts_id}`,
                 data: {
                   unit_uuid: unitData?.uuid,
-                  startdate: moment(unitData.fra).toISOString(),
-                  enddate: moment('2099-01-01T12:00:00').toISOString(),
+                  startdate: dayjs(unitData.fra),
+                  enddate: dayjs('2099-01-01T12:00:00'),
                   inherit_invoice: false,
                 },
               })
@@ -351,8 +349,8 @@ export default function AddUnitForm({
                 path: `${ts_id}`,
                 data: {
                   unit_uuid: unitData?.uuid,
-                  startdate: moment(unitData.fra).toISOString(),
-                  enddate: moment('2099-01-01T12:00:00').toISOString(),
+                  startdate: dayjs(unitData.fra),
+                  enddate: dayjs('2099-01-01T12:00:00'),
                   inherit_invoice: true,
                 },
               })

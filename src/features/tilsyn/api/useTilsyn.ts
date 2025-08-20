@@ -1,7 +1,9 @@
-import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {TilsynItem} from '~/types';
@@ -15,10 +17,9 @@ interface TilsynPost extends TilsynBase {
   data: {
     batteriskift: boolean;
     tilsyn: boolean;
-    dato: string;
+    dato: Dayjs;
     gid: number;
     kommentar?: string;
-    user_id: string | null;
   };
 }
 
@@ -26,10 +27,9 @@ interface TilsynPut extends TilsynPost {
   data: {
     batteriskift: boolean;
     tilsyn: boolean;
-    dato: string;
+    dato: Dayjs;
     gid: number;
     kommentar?: string;
-    user_id: string | null;
   };
 }
 
@@ -62,33 +62,36 @@ const tilsynDelOptions = {
 
 export const tilsynGetOptions = (ts_id: number | undefined) =>
   queryOptions<Array<TilsynItem>, APIError>({
-    queryKey: ['service', ts_id],
+    queryKey: queryKeys.Timeseries.tilsyn(ts_id!),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/service/${ts_id}`);
       return data;
     },
     enabled: ts_id !== undefined && ts_id !== null,
+    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 
 export const useTilsyn = () => {
-  const queryClient = useQueryClient();
-
   const {ts_id} = useAppContext(['ts_id']);
   const get = useQuery(tilsynGetOptions(ts_id));
 
   const post = useMutation({
     ...tilsynPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['service', ts_id]});
       toast.success('Tilsyn gemt');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
   const put = useMutation({
     ...tilsynPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['service', ts_id]});
       toast.success('Tilsyn ændret');
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
@@ -96,7 +99,9 @@ export const useTilsyn = () => {
     ...tilsynDelOptions,
     onSuccess: () => {
       toast.success('Tilsyn slettet');
-      queryClient.invalidateQueries({queryKey: ['service', ts_id]});
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 

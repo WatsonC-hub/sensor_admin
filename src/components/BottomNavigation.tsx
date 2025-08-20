@@ -1,4 +1,4 @@
-import {BottomNavigation, BottomNavigationAction, Paper, SvgIconProps, Box} from '@mui/material';
+import {BottomNavigation, BottomNavigationAction, Box, SvgIconProps} from '@mui/material';
 import React from 'react';
 
 import {stationPages} from '~/helpers/EnumHelper';
@@ -40,43 +40,53 @@ const CustomBottomNavigation = <T extends string>({
   const visibleItems = items.slice(0, threshold);
 
   return (
-    <Box sx={{mt: isMobile ? 15 : 8, zIndex: (theme) => theme.zIndex.drawer + 8}}>
-      <Paper sx={{position: 'fixed', bottom: 0, width: '100%'}} elevation={3}>
-        <BottomNavigation
-          value={pageToShow}
-          showLabels
-          onChange={(event, newValue) => {
-            onChange(event, newValue);
-          }}
-          sx={{
-            backgroundColor: 'primary.main',
-          }}
-        >
-          {visibleItems
-            .filter((item) => item.display || item.display === undefined)
-            .map((item) => {
-              if (
-                item.isCalculated !== undefined &&
-                item.isCalculated &&
-                item.value === stationPages.TILSYN
-              ) {
-                return;
-              }
+    // <Box sx={{mt: isMobile ? 15 : 8, zIndex: (theme) => theme.zIndex.drawer + 8}}>
+    <Box
+      sx={{
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        backgroundColor: 'primary.main',
+      }}
+    >
+      <BottomNavigation
+        value={pageToShow}
+        showLabels
+        onChange={(event, newValue) => {
+          onChange(event, newValue);
+        }}
+        sx={{
+          // zIndex: 3,
+          // position: 'absolute',
+          width: '100%',
+          // bottom: 0,
+          // height: 'fit-content',
+          backgroundColor: 'primary.main',
+        }}
+      >
+        {visibleItems
+          .filter((item) => item.display || item.display === undefined)
+          .map((item) => {
+            if (
+              item.isCalculated !== undefined &&
+              item.isCalculated &&
+              item.value === stationPages.TILSYN
+            ) {
+              return;
+            }
 
-              return (
-                <BottomNavigationAction
-                  key={item.value}
-                  label={<CustomBottomNavigationActionLabel {...item} />}
-                  value={item.value}
-                  sx={bottomNavStyle}
-                  onFocus={item.handlePrefetch}
-                  onMouseEnter={item.handlePrefetch}
-                />
-              );
-            })}
-        </BottomNavigation>
-      </Paper>
+            return (
+              <BottomNavigationAction
+                key={item.value}
+                label={<CustomBottomNavigationActionLabel {...item} />}
+                value={item.value}
+                sx={bottomNavStyle}
+                onFocus={item.handlePrefetch}
+                onMouseEnter={item.handlePrefetch}
+              />
+            );
+          })}
+      </BottomNavigation>
     </Box>
+    // </Box>
   );
 };
 

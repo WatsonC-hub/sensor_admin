@@ -60,7 +60,6 @@ const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
                 data.map((item) => item.gid).includes(selected == '' ? 0 : selected) ? selected : ''
               }
               onChange={handleChange}
-              className="swiper-no-swiping"
             >
               {data?.map((item) => {
                 const endDate =

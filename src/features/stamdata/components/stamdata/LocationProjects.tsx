@@ -2,18 +2,11 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {Link} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import {useQuery} from '@tanstack/react-query';
 import {FieldError, Noop} from 'react-hook-form';
 
-import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
-
-interface Project {
-  project_no: string;
-  customer_name: string | null;
-  project_info: string | null;
-}
+import useLocationProject, {Project} from '../../api/useLocationProject';
 
 interface LocationProjectsProps {
   value: string | undefined | null;
@@ -29,15 +22,9 @@ const getLabel = (project: Project | null) => {
 };
 
 const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationProjectsProps) => {
-  const {data: options} = useQuery({
-    queryKey: ['location_projects'],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<Project>>(
-        '/sensor_field/stamdata/location_projects'
-      );
-      return data;
-    },
-  });
+  const {
+    get: {data: options},
+  } = useLocationProject();
 
   const user = useUser();
 

@@ -20,7 +20,6 @@ const FormTextField = ({value, label, disabled, ...rest}: FormTextFieldProps) =>
           '& > fieldset': {borderColor: 'primary.main'},
         },
       }}
-      className="swiper-no-swiping"
       disabled={disabled}
       variant="outlined"
       id={label}

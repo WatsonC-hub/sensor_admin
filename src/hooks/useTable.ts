@@ -7,9 +7,10 @@ import {
   type MRT_ColumnDef,
   useMaterialReactTable,
   type MRT_TableInstance,
+  MRT_TableState,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import {useMemo} from 'react';
+import {useMemo, useState} from 'react';
 
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
@@ -40,7 +41,10 @@ const getOptions = <TData extends MRT_RowData>(
       animation: 'wave',
     },
     paginationDisplayMode: 'pages',
-    muiTablePaperProps: {
+    muiTablePaperProps: ({table}) => ({
+      style: {
+        zIndex: table.getState().isFullScreen ? 1200 : undefined,
+      },
       sx: {
         width: '100%',
         flex: '1 1 0',
@@ -50,7 +54,7 @@ const getOptions = <TData extends MRT_RowData>(
         zIndex: 0,
         borderRadius: 4,
       },
-    },
+    }),
     muiSearchTextFieldProps: {
       sx: {
         '& .MuiOutlinedInput-root': {
@@ -201,6 +205,20 @@ const getOptions = <TData extends MRT_RowData>(
   return desktopOptions;
 };
 
+const excludeColumnFilterFnsOnFirst = <TData extends MRT_RowData>(
+  state: Partial<MRT_TableState<TData>> | undefined,
+  isFirstRender: boolean
+) => {
+  if (isFirstRender) {
+    if (state?.columnFilterFns) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const {columnFilterFns, ...rest} = state;
+      return rest;
+    }
+  }
+  return state;
+};
+
 export const useTable = <TData extends MRT_RowData>(
   columns: MRT_ColumnDef<TData>[],
   data: TData[] | undefined | null,
@@ -210,6 +228,7 @@ export const useTable = <TData extends MRT_RowData>(
   merge_method: string | undefined = MergeType.RECURSIVEMERGE
 ): MRT_TableInstance<TData> => {
   const breakpoints = useBreakpoints();
+  const [isFirstRender, setIsFirstRender] = useState(true);
 
   let tableOptions: Partial<MRT_TableOptions<TData>> = options;
   if (merge_method === MergeType.SHALLOWMERGE)
@@ -217,17 +236,28 @@ export const useTable = <TData extends MRT_RowData>(
   else if (merge_method === MergeType.RECURSIVEMERGE)
     tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
 
+  const tableState = excludeColumnFilterFnsOnFirst(state?.state, isFirstRender);
+
   const table = useMaterialReactTable({
     columns,
     data: data ?? [],
     ...tableOptions,
     ...state,
     state: {
-      ...state?.state,
+      ...tableState,
       isLoading: data === undefined,
       showSkeletons: data === undefined,
     },
   });
+
+  if (isFirstRender) {
+    // Sets the columnFilterFns on the first render to avoid a bug with the columnFilterFns not being set correctly
+    table.setColumnFilterFns((prev) => ({
+      ...prev,
+      ...(state?.state?.columnFilterFns ?? {}),
+    }));
+    setIsFirstRender(false);
+  }
 
   return table;
 };

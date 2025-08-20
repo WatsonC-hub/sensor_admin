@@ -1,3 +1,5 @@
+import AddIcon from '@mui/icons-material/Add';
+
 import {
   AddCircle,
   PhotoLibraryRounded,
@@ -45,8 +47,10 @@ import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms
 import {getImageOptions} from '../api/useImages';
 import {stationPages, StationPages} from '~/helpers/EnumHelper';
 import MinimalSelect from './MinimalSelect';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 type Item = {
   text: string;
@@ -56,19 +60,21 @@ type Item = {
   onHover?: () => void;
   requiredTsId: boolean;
   disabled?: boolean;
+  tooltip?: string;
 };
 
 type DrawerItems = {
   text?: string;
   items: Item[];
   disabled?: boolean;
-  settings?: {
+  settings?: Array<{
     icon: ReactNode;
     page: StationPages;
     disabled?: boolean;
     requiredTsId: boolean;
     onHover?: () => void;
-  };
+    onClick?: () => void;
+  }>;
 };
 
 const navIconStyle = (isSelected: boolean) => {
@@ -80,7 +86,9 @@ const StationDrawer = () => {
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
   const {isTouch} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
+  const {data: locationdata} = useLocationData();
   const user = useUser();
+  const {createStamdata} = useNavigationFunctions();
 
   const handlePrefetch = <TData extends object>(
     options: OmitKeyof<UseQueryOptions<TData, APIError>, 'queryFn'>
@@ -97,13 +105,28 @@ const StationDrawer = () => {
   const items: DrawerItems[] = [
     {
       text: 'Tidsserie',
-      settings: {
-        icon: <Edit />,
-        page: stationPages.GENERELTIDSSERIE,
-        requiredTsId: true,
-        disabled: metadata?.calculated || !metadata?.ts_id,
-        onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-      },
+      settings: [
+        {
+          icon: <AddIcon />,
+          page: stationPages.STAMDATA,
+          requiredTsId: false,
+          onClick: () => {
+            createStamdata({
+              state: {
+                ...(ts_id ? metadata : locationdata),
+                initial_project_no: ts_id ? metadata?.projectno : locationdata?.projectno,
+              },
+            });
+          },
+        },
+        {
+          icon: <Edit />,
+          page: stationPages.GENERELTIDSSERIE,
+          requiredTsId: true,
+          disabled: metadata?.calculated || !metadata?.ts_id,
+          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+        },
+      ],
       items: [
         {
           text: 'Kontrol',
@@ -119,6 +142,7 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.calculated,
           onHover: () => handlePrefetch(tilsynGetOptions(ts_id)),
+          // tooltip: 'På denne side kan du se og redigere tilsyn for din tidsserie.',
         },
         {
           text: 'Målepunkt',
@@ -126,7 +150,8 @@ const StationDrawer = () => {
           icon: <StraightenRounded />,
           requiredTsId: true,
           disabled: metadata?.tstype_id != 1 || metadata?.calculated,
-          onHover: () => handlePrefetch(getMaalepunktOptions(ts_id)),
+          onHover: () => handlePrefetch(getMaalepunktOptions(ts_id!)),
+          // tooltip: 'På denne side kan du se og redigere målepunkter til din tidsserie.',
         },
         {
           text: 'Udstyr',
@@ -135,22 +160,26 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.calculated,
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+          // tooltip: 'På denne side kan du se og redigere udstyr til din tidsserie.',
         },
         {
           text: 'Juster data',
           page: stationPages.JUSTERINGER,
           icon: <QueryStatsIcon />,
           requiredTsId: true,
-          disabled: !user?.QAPermission || metadata?.calculated,
-          onHover: () => handlePrefetch(getQAHistoryOptions(ts_id)),
+          disabled: !user?.features?.iotAccess || metadata?.calculated,
+          onHover: () => handlePrefetch(getQAHistoryOptions(ts_id!)),
+          tooltip:
+            'På denne side kan du kvalitetssikre din tidsserie ved blandt andet at justere data, fjerne data og se historik for ændringer.',
         },
         {
           text: 'Juster advarsler',
           page: stationPages.ALGORITHMS,
           icon: <FunctionsIcon />,
           requiredTsId: true,
-          disabled: !user?.QAPermission || metadata?.calculated,
-          onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
+          disabled: !user?.features?.iotAccess || metadata?.calculated,
+          onHover: () => handlePrefetch(getAlgorithmOptions(ts_id!)),
+          tooltip: 'På denne side kan du justere advarsler for din tidsserie.',
         },
         {
           text: 'Alarmer',
@@ -160,24 +189,19 @@ const StationDrawer = () => {
           onHover: () => {},
           disabled: !user?.superUser,
         },
-        // {
-        //   text: 'Stamdata',
-        //   page: stationPages.GENERELTIDSSERIE,
-        //   icon: <Edit />,
-        //   requiredTsId: true,
-        //   onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-        // },
       ],
     },
 
     {
       text: 'Lokation',
-      settings: {
-        page: stationPages.GENERELTLOKATION,
-        icon: <Edit />,
-        requiredTsId: false,
-        onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-      },
+      settings: [
+        {
+          page: stationPages.GENERELTLOKATION,
+          icon: <Edit />,
+          requiredTsId: false,
+          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+        },
+      ],
       items: [
         {
           text: 'Billeder',
@@ -192,7 +216,7 @@ const StationDrawer = () => {
           page: stationPages.KONTAKTER,
           icon: <PersonIcon />,
           requiredTsId: false,
-          disabled: !user?.contactAndKeysPermission,
+          disabled: !user?.features.contacts,
           onHover: () => handlePrefetch(ContactInfoGetOptions(loc_id)),
         },
         {
@@ -200,7 +224,7 @@ const StationDrawer = () => {
           page: stationPages.NØGLER,
           icon: <KeyIcon />,
           requiredTsId: false,
-          disabled: !user?.contactAndKeysPermission,
+          disabled: !user?.features.keys,
           onHover: () => handlePrefetch(LocationAccessGetOptions(loc_id)),
         },
         {
@@ -208,7 +232,7 @@ const StationDrawer = () => {
           page: stationPages.HUSKELISTE,
           icon: <BackpackIcon />,
           requiredTsId: false,
-          disabled: !user?.ressourcePermission,
+          disabled: !user?.features.ressources,
           onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
         },
       ],
@@ -235,21 +259,29 @@ const StationDrawer = () => {
           }}
         >
           <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
-          {category.settings && !category.settings.disabled && (
-            <ListItemIcon
-              sx={{
-                color: navIconStyle(pageToShow === category.settings.page),
-                minWidth: 0,
-                cursor: 'pointer',
-              }}
-              onClick={() => {
-                if (category.settings) setPageToShow(category.settings.page);
-                if (open) toggleDrawer(false);
-              }}
-            >
-              {category.settings.icon}
-            </ListItemIcon>
-          )}
+          <Box alignItems={'center'} display="flex" gap={1}>
+            {category.settings &&
+              category.settings
+                .filter((setting) => setting?.disabled == false || setting?.disabled == undefined)
+                .map((setting, index) => (
+                  <ListItemIcon
+                    key={index}
+                    sx={{
+                      color: navIconStyle(pageToShow === setting.page),
+                      minWidth: 0,
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                      if (setting.onClick) {
+                        setting.onClick();
+                      } else setPageToShow(setting.page);
+                      if (open) toggleDrawer(false);
+                    }}
+                  >
+                    {setting.icon}
+                  </ListItemIcon>
+                ))}
+          </Box>
         </ListItem>
 
         {category.items
@@ -268,6 +300,8 @@ const StationDrawer = () => {
             const mouseLeave = () => {
               clearTimeout(timer);
             };
+
+            const Wrapper = item.tooltip ? TooltipWrapper : React.Fragment;
 
             return (
               <ListItem
@@ -294,7 +328,13 @@ const StationDrawer = () => {
                   <ListItemIcon sx={{color: navIconStyle(pageToShow === item.page), minWidth: 42}}>
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText>{item.text}</ListItemText>
+                  <ListItemText>
+                    <Wrapper
+                      {...(item.tooltip ? {description: item.tooltip, withIcon: false} : {})}
+                    >
+                      {item.text}
+                    </Wrapper>
+                  </ListItemText>
                 </ListItemButton>
               </ListItem>
             );
@@ -345,40 +385,32 @@ const Layout = ({children, variant}: LayoutProps) => {
   };
 
   return (
-    <Box>
-      <Drawer
-        variant={variant}
-        open={open}
-        sx={{
+    <Drawer
+      variant={variant}
+      open={open}
+      sx={{
+        width: drawerWidth,
+        [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: {
-            width: drawerWidth,
-            backgroundColor: 'primary.main',
-            pt: '64px',
-            pb: isTouch ? '64px' : '0px',
-          },
-        }}
-      >
-        <Box pt={2} pl={2}>
-          {!isTouch && <MinimalSelect />}
-          {isTouch && (
-            <Typography
-              textOverflow="ellipsis"
-              overflow="hidden"
-              px={2}
-              whiteSpace="wrap"
-              color="white"
-            >
-              {locationdata?.loc_name}
-            </Typography>
-          )}
-        </Box>
-        <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
-          <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
-        </ClickAwayListener>
-      </Drawer>
-    </Box>
+          position: 'relative',
+          backgroundColor: 'primary.main',
+        },
+      }}
+    >
+      <Box pt={2} px={1}>
+        {/* <TooltipWrapper description="" color="white"> */}
+        {!isTouch && <MinimalSelect />}
+        {isTouch && (
+          <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
+            {locationdata?.loc_name}
+          </Typography>
+        )}
+        {/* </TooltipWrapper> */}
+      </Box>
+      <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
+        <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
+      </ClickAwayListener>
+    </Drawer>
   );
 };
 

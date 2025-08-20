@@ -81,6 +81,7 @@ export default function PejlingMeasurementsTableDesktop({
 
   const options: Partial<MRT_TableOptions<PejlingItem>> = {
     enableRowActions: true,
+    enableFullScreenToggle: false,
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {

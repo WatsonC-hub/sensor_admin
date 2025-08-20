@@ -3,6 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
@@ -50,9 +51,9 @@ const ressourcerDelOptions = {
   },
 };
 
-export const getRessourcerOptions = (loc_id: number | undefined) =>
+export const getRessourcerOptions = (loc_id: number) =>
   queryOptions<Array<Ressourcer>, APIError>({
-    queryKey: ['ressourcer', loc_id],
+    queryKey: queryKeys.Location.locationRessources(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/ressourcer/${loc_id}`);
 
@@ -64,12 +65,13 @@ export const useRessourcer = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const queryClient = useQueryClient();
   const get = useQuery({
-    queryKey: ['ressourcer'],
+    queryKey: queryKeys.Location.ressources(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Ressourcer>>(`/sensor_field/stamdata/ressourcer`);
 
       return data;
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: loc_id !== undefined,
   });
 
@@ -79,10 +81,7 @@ export const useRessourcer = () => {
     ...ressourcerPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['ressourcer'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['ressourcer', loc_id],
+        queryKey: queryKeys.Location.locationRessources(loc_id),
       });
       toast.success('Huskeliste gemt');
     },
@@ -92,10 +91,7 @@ export const useRessourcer = () => {
     ...ressourcerPutOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['ressourcer'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['ressourcer', loc_id],
+        queryKey: queryKeys.Location.locationRessources(loc_id),
       });
       toast.success('Huskeliste ændret');
     },
@@ -104,13 +100,10 @@ export const useRessourcer = () => {
   const del = useMutation({
     ...ressourcerDelOptions,
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.Location.locationRessources(loc_id),
+      });
       toast.success('Huskeliste slettet');
-      queryClient.invalidateQueries({
-        queryKey: ['ressourcer'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['ressourcer', loc_id],
-      });
     },
   });
 

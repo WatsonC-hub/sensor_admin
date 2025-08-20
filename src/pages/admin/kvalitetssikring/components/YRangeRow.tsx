@@ -56,12 +56,6 @@ const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
     setOpen();
   };
 
-  // const handleDelete = () => {
-  //   del.mutate({
-  //     path: `${data.ts_id}`,
-  //   });
-  // };
-
   return (
     <FormProvider {...formMethods}>
       <Box

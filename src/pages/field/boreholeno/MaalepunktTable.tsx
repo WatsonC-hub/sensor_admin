@@ -4,10 +4,11 @@ import MaalepunktTableDesktop from '~/pages/field/boreholeno/components/tableCom
 import MaalepunktTableMobile from '~/pages/field/boreholeno/components/tableComponents/MaalepunktTableMobile';
 import {useAppContext} from '~/state/contexts';
 import {MaalepunktTableData} from '~/types';
+import {BoreholeMaalepunkt} from './Boreholeno';
 
 interface MaalepunktTableProps {
-  watlevmp: Array<MaalepunktTableData>;
-  handleEdit: (Maalepunkt: MaalepunktTableData) => void;
+  watlevmp: Array<MaalepunktTableData> | undefined;
+  handleEdit: (Maalepunkt: BoreholeMaalepunkt) => void;
   handleDelete: (gid: number) => void;
 }
 
