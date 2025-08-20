@@ -74,7 +74,7 @@ export default function ReleaseNoticeModal() {
           </Typography>
           <Typography>
             📘{' '}
-            <Link href="https://www.watsonc.dk/guides/01-09-2025/" target="_blank" rel="noopener">
+            <Link href="https://www.watsonc.dk/guides/20-08-2025/" target="_blank" rel="noopener">
               Læs release notes
             </Link>
           </Typography>
