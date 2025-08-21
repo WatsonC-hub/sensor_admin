@@ -36,9 +36,11 @@ const EditLocation = () => {
     },
   });
 
+  const default_data = {...metadata, initial_project_no: metadata?.projectno} as BaseLocation;
+
   const [formMethods, LocationForm, locationSchema] = useLocationForm({
     mode: 'Edit',
-    defaultValues: {...metadata, initial_project_no: metadata?.projectno} as BaseLocation,
+    defaultValues: default_data,
     initialLocTypeId: metadata?.loctype_id,
   });
 
@@ -50,7 +52,7 @@ const EditLocation = () => {
 
   useEffect(() => {
     if (metadata != undefined) {
-      reset();
+      reset(default_data);
     }
   }, [metadata, unit_history]);
 
