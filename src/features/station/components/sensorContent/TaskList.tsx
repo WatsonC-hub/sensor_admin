@@ -56,23 +56,27 @@ const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
             Opgaver
           </Typography>
         </TooltipWrapper>
-        <Tooltip
-          title={
-            location_data?.timeseries.length === 0
-              ? 'Ingen tidsserie er fundet på denne lokation'
-              : ''
-          }
-          arrow
-        >
-          <Box>
-            <IconButton
-              onClick={() => setCreateTaskDialog(true)}
-              disabled={location_data?.timeseries.length === 0}
+        <>
+          {user?.simpleTaskPermission && (
+            <Tooltip
+              title={
+                location_data?.timeseries.length === 0
+                  ? 'Ingen tidsserie er fundet på denne lokation'
+                  : ''
+              }
+              arrow
             >
-              <AddIcon />
-            </IconButton>
-          </Box>
-        </Tooltip>
+              <Box>
+                <IconButton
+                  onClick={() => setCreateTaskDialog(true)}
+                  disabled={location_data?.timeseries.length === 0}
+                >
+                  <AddIcon />
+                </IconButton>
+              </Box>
+            </Tooltip>
+          )}
+        </>
       </Box>
       {location_tasks?.map((task) => {
         return (
