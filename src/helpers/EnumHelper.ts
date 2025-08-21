@@ -1,8 +1,8 @@
 export const stationPages = {
-  GENERELTLOKATION: 'gl',
-  GENERELTUDSTYR: 'gu',
-  GENERELTIDSSERIE: 'gt',
-  SENDEINTERVAL: 'sendeinterval',
+  GENERELTLOKATION: 'lokation',
+  GENERELTUDSTYR: 'udstyr',
+  GENERELTIDSSERIE: 'tidsserier',
+  KONFIGURATION: 'konfiguration',
   PEJLING: 'pejling',
   TILSYN: 'tilsyn',
   KONTAKTER: 'kontakter',

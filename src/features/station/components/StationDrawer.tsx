@@ -7,6 +7,7 @@ import {
   StraightenRounded,
   Edit,
   Router,
+  Settings,
 } from '@mui/icons-material';
 import {
   Drawer,
@@ -151,6 +152,16 @@ const StationDrawer = () => {
           disabled: metadata?.tstype_id != 1 || metadata?.calculated,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id!)),
           // tooltip: 'På denne side kan du se og redigere målepunkter til din tidsserie.',
+        },
+        {
+          text: 'Konfiguration',
+          page: stationPages.KONFIGURATION,
+          icon: <Settings />,
+          requiredTsId: true,
+          disabled: metadata?.calculated,
+          onHover: () => null,
+          tooltip:
+            'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
         },
         {
           text: 'Udstyr',
