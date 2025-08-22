@@ -24,15 +24,11 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         maxSize: 20,
         Cell: ({cell}) => {
           const {sms} = cell.row.original;
-          const smsString = `${sms.from} - ${sms.to}`;
+          const smsString = `${sms.from?.split(':')[0]} - ${sms.to?.split(':')[0]}`;
           return (
-            <Box display="flex" alignItems="center">
+            <Box display="flex" flexDirection={'column'} alignItems="center">
               <Checkbox checked={sms.sms} disabled />
-              {sms.sms && (
-                <Typography variant="body2" sx={{ml: 1}}>
-                  {smsString}
-                </Typography>
-              )}
+              {sms.sms && <Typography variant="body2">{smsString}</Typography>}
             </Box>
           );
         },
@@ -44,15 +40,11 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         maxSize: 20,
         Cell: ({cell}) => {
           const {email} = cell.row.original;
-          const emailString = `${email.from} - ${email.to}`;
+          const emailString = `${email.from?.split(':')[0]} - ${email.to?.split(':')[0]}`;
           return (
-            <Box display="flex" alignItems="center">
+            <Box display="flex" flexDirection={'column'} alignItems="center">
               <Checkbox checked={email.email} disabled />
-              {email.email && (
-                <Typography variant="body2" sx={{ml: 1}}>
-                  {emailString}
-                </Typography>
-              )}
+              {email.email && <Typography variant="body2">{emailString}</Typography>}
             </Box>
           );
         },
@@ -64,15 +56,11 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         maxSize: 20,
         Cell: ({cell}) => {
           const {call} = cell.row.original;
-          const callString = `${call.from} - ${call.to}`;
+          const callString = `${call.from?.split(':')[0]} - ${call.to?.split(':')[0]}`;
           return (
-            <Box display="flex" alignItems="center">
+            <Box display="flex" flexDirection={'column'} alignItems="center">
               <Checkbox checked={call.call} disabled />
-              {call.call && (
-                <Typography variant="body2" sx={{ml: 1}}>
-                  {callString}
-                </Typography>
-              )}
+              {call.call && <Typography variant="body2">{callString}</Typography>}
             </Box>
           );
         },
