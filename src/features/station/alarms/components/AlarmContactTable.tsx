@@ -1,4 +1,4 @@
-import {Box, Checkbox} from '@mui/material';
+import {Box, Checkbox, Typography} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
@@ -18,17 +18,61 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         size: 20,
       },
       {
-        header: 'SMS/Mail/Mobil',
-        accessorKey: 'contactType',
+        header: 'SMS',
+        accessorKey: 'sms',
         size: 20,
         maxSize: 20,
         Cell: ({cell}) => {
-          const {sms, email, call} = cell.row.original;
+          const {sms} = cell.row.original;
+          const smsString = `${sms.from} - ${sms.to}`;
           return (
-            <Box>
-              <Checkbox checked={sms} disabled />
-              <Checkbox checked={email} disabled />
-              <Checkbox checked={call} disabled />
+            <Box display="flex" alignItems="center">
+              <Checkbox checked={sms.sms} disabled />
+              {sms.sms && (
+                <Typography variant="body2" sx={{ml: 1}}>
+                  {smsString}
+                </Typography>
+              )}
+            </Box>
+          );
+        },
+      },
+      {
+        header: 'Email',
+        accessorKey: 'email',
+        size: 20,
+        maxSize: 20,
+        Cell: ({cell}) => {
+          const {email} = cell.row.original;
+          const emailString = `${email.from} - ${email.to}`;
+          return (
+            <Box display="flex" alignItems="center">
+              <Checkbox checked={email.email} disabled />
+              {email.email && (
+                <Typography variant="body2" sx={{ml: 1}}>
+                  {emailString}
+                </Typography>
+              )}
+            </Box>
+          );
+        },
+      },
+      {
+        header: 'Call',
+        accessorKey: 'call',
+        size: 20,
+        maxSize: 20,
+        Cell: ({cell}) => {
+          const {call} = cell.row.original;
+          const callString = `${call.from} - ${call.to}`;
+          return (
+            <Box display="flex" alignItems="center">
+              <Checkbox checked={call.call} disabled />
+              {call.call && (
+                <Typography variant="body2" sx={{ml: 1}}>
+                  {callString}
+                </Typography>
+              )}
             </Box>
           );
         },

@@ -6,17 +6,17 @@ import {
   TextField,
   TextFieldProps,
 } from '@mui/material';
-import {merge} from 'lodash';
 import React from 'react';
 import LinkableTooltip from './LinkableTooltip';
 import {merge} from 'lodash';
 
-export type AutoCompleteFieldProps<T> = Omit<
-  AutocompleteProps<T, false, false, false>,
+// notice we add M extends boolean to control multiple
+export type AutoCompleteFieldProps<T, M extends boolean = false> = Omit<
+  AutocompleteProps<T, M, false, false>,
   'renderInput'
 > & {
-  selectValue: T | null;
-  onChange: (value: T | null) => void;
+  selectValue: M extends true ? T[] : T | null;
+  onChange: (value: M extends true ? T[] : T | null) => void;
   labelKey: keyof T;
   options: T[];
   error?: string | undefined;
@@ -24,7 +24,7 @@ export type AutoCompleteFieldProps<T> = Omit<
   fieldDescriptionText?: string;
 };
 
-const ExtendedAutocomplete = <T extends object>({
+const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
   selectValue,
   onChange,
   options,
@@ -33,9 +33,9 @@ const ExtendedAutocomplete = <T extends object>({
   textFieldsProps,
   fieldDescriptionText,
   ...autocompleteProps
-}: AutoCompleteFieldProps<T>): React.ReactElement => {
+}: AutoCompleteFieldProps<T, M>): React.ReactElement => {
   return (
-    <Autocomplete<T>
+    <Autocomplete<T, M, false, false>
       id="demo"
       value={selectValue}
       options={options}
@@ -57,8 +57,10 @@ const ExtendedAutocomplete = <T extends object>({
           },
           '& .MuiInputLabel-root': {
             color: 'primary.main',
-          }, //styles the label
-          '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+          },
+          '& .MuiInputLabel-root.Mui-disabled': {
+            color: 'rgba(0, 0, 0, 0.38)',
+          },
           '& .MuiOutlinedInput-root': {
             '& > fieldset': {borderColor: 'primary.main'},
           },

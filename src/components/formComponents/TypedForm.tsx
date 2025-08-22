@@ -7,7 +7,7 @@ type Props<T extends FieldValues> = {
   formMethods: UseFormReturn<T>;
   children: React.ReactNode;
   gridSizes?: GridBaseProps['size'];
-  label: string;
+  label?: string;
 };
 
 const TypedForm = <T extends FieldValues>({
@@ -19,11 +19,17 @@ const TypedForm = <T extends FieldValues>({
   return (
     <FormContext.Provider value={{gridSizes}}>
       <FormProvider {...formMethods}>
-        <FormFieldset label={label} sx={{px: 1}}>
+        {label ? (
+          <FormFieldset label={label} sx={{px: 1}}>
+            <Grid2 container spacing={1}>
+              {children}
+            </Grid2>
+          </FormFieldset>
+        ) : (
           <Grid2 container spacing={1}>
             {children}
           </Grid2>
-        </FormFieldset>
+        )}
       </FormProvider>
     </FormContext.Provider>
   );

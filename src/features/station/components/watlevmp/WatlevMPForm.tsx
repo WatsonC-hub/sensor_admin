@@ -70,11 +70,11 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
             },
           }}
         />
-        <Form.FormDateTime
+        <Form.DateTime
           name="startdate"
           label={defaultValues?.gid !== undefined ? 'Start dato' : 'Dato'}
         />
-        {defaultValues?.gid !== undefined && <Form.FormDateTime name="enddate" label="Slut dato" />}
+        {defaultValues?.gid !== undefined && <Form.DateTime name="enddate" label="Slut dato" />}
 
         <Form.Input
           name="mp_description"

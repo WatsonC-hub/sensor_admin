@@ -1,41 +1,60 @@
-type AlarmCriteria = {
-  id: number | undefined;
-  selected: boolean;
-  sms: boolean;
-  email: boolean;
-  call: boolean;
-};
+import {Group} from '~/types';
 
 export type AlarmCriteriaType = {
   id: number;
-  name: string;
-  category: string;
 };
 
 export type CriteriaTable = {
-  id: number;
+  gid: number;
+  notification_gid: number;
   name: string;
-  selected: boolean;
-  disabled: boolean;
-  category: string;
-  sms: boolean;
-  email: boolean;
-  call: boolean;
 };
 
 export type AlarmContact = {
   contact_id: string | undefined;
+  name: string;
   sms: boolean;
+  sms_to: string | undefined;
+  sms_from: string | undefined;
   email: boolean;
+  email_to: string | undefined;
+  email_from: string | undefined;
   call: boolean;
+  call_to: string | undefined;
+  call_from: string | undefined;
+};
+
+export type AlarmContactPost = {
+  contact_id: string | undefined;
+  sms: boolean;
+  sms_to: string | undefined;
+  sms_from: string | undefined;
+  email: boolean;
+  email_to: string | undefined;
+  email_from: string | undefined;
+  call: boolean;
+  call_to: string | undefined;
+  call_from: string | undefined;
 };
 
 export type ContactTable = {
   contact_id: string | undefined;
   name: string;
-  sms: boolean;
-  email: boolean;
-  call: boolean;
+  sms: {
+    sms: boolean;
+    to: string | undefined;
+    from: string | undefined;
+  };
+  email: {
+    email: boolean;
+    to: string | undefined;
+    from: string | undefined;
+  };
+  call: {
+    call: boolean;
+    to: string | undefined;
+    from: string | undefined;
+  };
 };
 
 export type AlarmHistory = {
@@ -50,34 +69,24 @@ export type AlarmHistory = {
 export type AlarmResponse = {
   gid: number;
   name: string;
-  alarm_interval: number;
-  earliest_timeofday: string;
-  latest_timeofday: string;
   note_to_include?: string;
-  signal_warning: boolean;
-  criteria: Array<CriteriaTable>;
-  contacts: Array<ContactTable>;
+  alarm_notifications: Array<number>;
+  alarm_contacts: Array<AlarmContact>;
 };
 
 export type AlarmPost = {
   name: string;
-  alarm_interval: number;
-  earliest_timeofday: string;
-  latest_timeofday: string;
   note_to_include?: string;
-  alarm_contacts: Array<AlarmContact> | undefined;
-  alarm_criteria: Array<AlarmCriteria> | undefined;
-  signal_warning: boolean;
+  groups: Array<string>;
+  alarm_contacts: Array<AlarmContactPost>;
+  notification_ids: Array<number> | undefined;
 };
 
 export type alarmTable = {
   gid: number;
   name: string;
-  earliest_timeofday: string;
-  latest_timeofday: string;
-  alarm_interval: number;
   note_to_include: string | undefined;
-  alarmCriteria: Array<CriteriaTable>;
-  alarmContacts: Array<ContactTable>;
-  signal_warning: boolean;
+  groups: Array<Group> | undefined;
+  alarm_notifications: Array<number>;
+  alarm_contacts: Array<ContactTable>;
 };

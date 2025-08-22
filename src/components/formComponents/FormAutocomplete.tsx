@@ -4,22 +4,22 @@ import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 import {FormContext} from './const';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '../Autocomplete';
 
-type FormAutocompleteProps<T extends FieldValues, K extends object> = {
+type FormAutocompleteProps<T extends FieldValues, K extends object, M extends boolean = false> = {
   name: Path<T>;
   label: string;
   gridSizes?: GridBaseProps['size'];
   icon?: React.ReactNode;
-  onChangeCallback?: (value: keyof K | null) => void;
-  onSelectChange: (value: keyof K) => K | null;
-} & Omit<AutoCompleteFieldProps<K>, 'selectValue' | 'onChange'>;
+  onChangeCallback?: (value: M extends true ? K[] : K) => void;
+  onSelectChange: (value: M extends true ? Array<K> : K) => M extends true ? K[] : K | null;
+} & Omit<AutoCompleteFieldProps<K, M>, 'selectValue' | 'onChange'>;
 
-const FormAutocomplete = <T extends FieldValues, K extends object>({
+const FormAutocomplete = <T extends FieldValues, K extends object, M extends boolean = false>({
   name,
   gridSizes,
   onChangeCallback,
   onSelectChange,
   ...props
-}: FormAutocompleteProps<T, K>) => {
+}: FormAutocompleteProps<T, K, M>) => {
   const {control} = useFormContext<T>();
   const {gridSizes: contextGridSizes} = React.useContext(FormContext);
   return (
@@ -27,15 +27,15 @@ const FormAutocomplete = <T extends FieldValues, K extends object>({
       <Controller
         name={name}
         control={control}
-        render={({field}) => {
+        render={({field: {value, onChange}}) => {
+          const selectValue = onSelectChange(value);
           return (
-            <ExtendedAutocomplete<K>
-              selectValue={onSelectChange(field.value as keyof K)}
+            <ExtendedAutocomplete<K, M>
+              selectValue={selectValue}
               onChange={(value) => {
-                field.onChange(value);
-
-                if (onChangeCallback && value && 'id' in value)
-                  onChangeCallback(value.id as keyof K);
+                onChange(value);
+                if (onChangeCallback && value && typeof value === 'object')
+                  onChangeCallback(value as M extends true ? K[] : K);
               }}
               {...props}
             />

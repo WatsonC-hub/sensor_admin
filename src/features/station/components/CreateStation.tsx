@@ -70,13 +70,11 @@ const CreateStation = () => {
   const [locationFormMethods, LocationForm] = useLocationForm<
     DefaultAddLocation | BoreholeAddLocation
   >({
-    formProps: {
-      defaultValues: defaultValues,
-      context: {
-        loc_id: loc_id,
-      },
-    },
+    defaultValues: defaultValues,
     mode: 'Add',
+    context: {
+      loc_id: loc_id,
+    },
     initialLocTypeId: defaultValues.loctype_id ? defaultValues.loctype_id : -1,
   });
 

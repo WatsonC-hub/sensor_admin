@@ -14,7 +14,7 @@ const Submit = <T extends FieldValues>({submit}: {submit: (values: T) => void}) 
       fullWidth={false}
       startIcon={<Save />}
       disabled={Object.keys(errors).length > 0}
-      onClick={handleSubmit(submit, (errors) => console.log(errors))}
+      onClick={handleSubmit(submit, (errors) => console.log('errors:', errors))}
     >
       Gem
     </Button>

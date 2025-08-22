@@ -1,18 +1,22 @@
 import React, {useState} from 'react';
-import {useFieldArray, useForm} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 import {createTypedForm} from '~/components/formComponents/Form';
 import AlarmCriteriaForm from './AlarmCriteriaForm';
 import {AlarmsFormValues, alarmsSchema} from '../schema';
-import {Box, Grid2, Typography} from '@mui/material';
+import {Box, Chip, Tooltip, Typography} from '@mui/material';
 import AlarmContactTypedForm from './AlarmContactForm';
-import {AddCircle, ExpandLess, ExpandMore} from '@mui/icons-material';
-import Button from '~/components/Button';
+import {ExpandLess, ExpandMore} from '@mui/icons-material';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {AlarmPost, alarmTable} from '../types';
 import {useAppContext} from '~/state/contexts';
 import {useAlarm} from '../api/useAlarm';
 import {toast} from 'react-toastify';
 import FormFieldset from '~/components/formComponents/FormFieldset';
+import {useLocationData} from '~/hooks/query/useMetadata';
+import {Group} from '~/types';
+import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {useQuery} from '@tanstack/react-query';
 
 type AlarmFormProps = {
   setOpen: (open: boolean) => void;
@@ -22,67 +26,60 @@ type AlarmFormProps = {
 const Form = createTypedForm<AlarmsFormValues>();
 
 const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
-  const {ts_id} = useAppContext(['ts_id']);
-  const [criteriaCollapsed, setCriteriaCollapsed] = useState(false);
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const [contactsCollapsed, setContactsCollapsed] = useState(false);
-  const [alarmNotificationCollapsed, setAlarmNotificationCollapsed] = useState(false);
-  const {
-    post: postAlarm,
-    put: putAlarm,
-    getCriteria: {data: criteria_types},
-  } = useAlarm();
+  const {data: location_data} = useLocationData(loc_id);
+  const {post: postAlarm, put: putAlarm} = useAlarm();
+
+  const {data: options} = useQuery({
+    queryKey: queryKeys.Groups.all(),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<Group>>('/sensor_field/stamdata/location_groups');
+      return data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 
   const alarmMethods = useForm<AlarmsFormValues>({
     resolver: zodResolver(alarmsSchema),
     defaultValues: {
       name: alarm?.name || '',
-      from: alarm?.earliest_timeofday || '',
-      to: alarm?.latest_timeofday || '',
-      criteria: criteria_types?.map((criteria) => {
-        if (alarm?.alarmCriteria.map((c) => c.name).includes(criteria.name)) {
-          const alarmCriteria = alarm.alarmCriteria.find((c) => c.name === criteria.name);
-          return alarmCriteria;
-        }
-      }),
-      contacts: alarm?.alarmContacts || [],
-      interval: alarm?.alarm_interval || undefined,
+      groups: alarm?.groups || [],
+      criteria: alarm?.alarm_notifications ?? [],
+      contacts: alarm?.alarm_contacts || [],
       comment: alarm?.note_to_include || '',
-      signal_warning: alarm?.signal_warning || false,
     },
     mode: 'onTouched',
   });
 
-  const {control, reset} = alarmMethods;
+  const {reset} = alarmMethods;
 
   const handleSubmit = (data: AlarmsFormValues) => {
     if (alarm === undefined) {
       const alarm_data: AlarmPost = {
         name: data.name,
-        alarm_interval: data.interval,
-        earliest_timeofday: data.from,
-        latest_timeofday: data.to,
         note_to_include: data.comment,
-        signal_warning: data.signal_warning,
-        alarm_contacts: data.contacts?.map((contact) => ({
-          contact_id: contact.contact_id,
-          sms: contact.sms,
-          email: contact.email,
-          call: contact.call,
-        })),
-        alarm_criteria: data.criteria.map((criteria) => ({
-          id: criteria.id,
-          selected: criteria.selected,
-          sms: criteria.sms,
-          email: criteria.email,
-          call: criteria.call,
-        })),
+        groups: data.groups.map((group) => group.id),
+        alarm_contacts:
+          data.contacts?.map((contact) => ({
+            contact_id: contact.contact_id ?? '',
+            sms: contact.sms?.sms ?? false,
+            sms_to: contact.sms?.to ?? undefined,
+            sms_from: contact.sms?.from ?? undefined,
+            email: contact.email?.email ?? false,
+            email_to: contact.email?.to ?? undefined,
+            email_from: contact.email?.from ?? undefined,
+            call: contact.call?.call ?? false,
+            call_to: contact.call?.to ?? undefined,
+            call_from: contact.call?.from ?? undefined,
+          })) ?? [],
+        notification_ids: data.criteria,
       };
 
       const payload = {
         path: `${ts_id}`,
         data: alarm_data,
       };
-
       postAlarm(payload, {
         onSuccess: () => {
           setOpen(false);
@@ -93,28 +90,22 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     } else {
       const alarm_data: AlarmPost = {
         name: data.name,
-        alarm_interval: data.interval,
-        earliest_timeofday: data.from,
-        latest_timeofday: data.to,
         note_to_include: data.comment,
-        signal_warning: data.signal_warning,
+        groups: data.groups.map((group) => group.id),
         alarm_contacts:
-          data.contacts && data.contacts.length > 0
-            ? data.contacts?.map((contact) => ({
-                contact_id: contact.contact_id,
-                sms: contact.sms,
-                email: contact.email,
-                call: contact.call,
-              }))
-            : undefined,
-        alarm_criteria: data.criteria.map((criteria) => ({
-          id: criteria.id,
-          selected: criteria.selected,
-          category: criteria.category,
-          sms: criteria.sms,
-          email: criteria.email,
-          call: criteria.call,
-        })),
+          data.contacts?.map((contact) => ({
+            contact_id: contact.contact_id ?? '',
+            sms: contact.sms?.sms ?? false,
+            sms_to: contact.sms?.to ?? undefined,
+            sms_from: contact.sms?.from ?? undefined,
+            email: contact.email?.email ?? false,
+            email_to: contact.email?.to ?? undefined,
+            email_from: contact.email?.from ?? undefined,
+            call: contact.call?.call ?? false,
+            call_to: contact.call?.to ?? undefined,
+            call_from: contact.call?.from ?? undefined,
+          })) ?? [],
+        notification_ids: data.criteria,
       };
 
       const payload = {
@@ -132,59 +123,69 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     }
   };
 
-  const {
-    fields: contactFields,
-    append: addContact,
-    remove: removeContact,
-  } = useFieldArray({
-    control,
-    name: 'contacts',
-  });
-
-  const {fields: criteriaFields} = useFieldArray({
-    control,
-    name: 'criteria',
-  });
-
   return (
-    <Form formMethods={alarmMethods} label="Alarm">
-      <Form.Input name="name" label="Alarm navn" placeholder="Indtast alarm navn" />
-      <FormFieldset
-        label="Kriterier"
-        sx={{width: '100%', px: 1}}
-        icon={criteriaCollapsed ? <ExpandMore /> : <ExpandLess />}
-        onClick={() => setCriteriaCollapsed(!criteriaCollapsed)}
+    <Form formMethods={alarmMethods}>
+      <Form.Input
+        name="name"
+        label="Alarm navn"
+        placeholder="Indtast alarm navn"
+        gridSizes={{xs: 12}}
+      />
+      <Tooltip
+        title={location_data?.groups ? '' : 'Ingen grupper tilgængelige på lokationen'}
+        arrow
       >
-        {!criteriaCollapsed && (
-          <Box>
-            {[...new Set(criteriaFields.map((field) => field.category))].map((category) => {
-              return (
-                <Box key={category}>
-                  <Typography variant="subtitle1" sx={{fontWeight: 'bold'}}>
-                    {category}
-                  </Typography>
-                  {criteriaFields
-                    .filter((field) => field.category === category)
-                    .map((field) => {
-                      const index = criteriaFields.findIndex((f) => f.id === field.id);
-                      // const disabled = alarm?.alarmCriteria.find(
-                      //   (c) => c.id === field.id
-                      // )?.disabled;
-                      return (
-                        <Box key={field.id}>
-                          <AlarmCriteriaForm
-                            index={index}
-                            // disabled={disabled === undefined ? true : disabled}
-                          />
-                        </Box>
-                      );
-                    })}
-                </Box>
+        <Form.Autocomplete<Group, true>
+          labelKey="group_name"
+          disabled={
+            location_data === undefined ||
+            location_data.groups == undefined ||
+            location_data.groups.length === 0
+          }
+          name="groups"
+          options={
+            options?.filter((group) =>
+              location_data?.groups?.map((g) => g.id).includes(group.id)
+            ) ?? []
+          }
+          multiple={true}
+          label={'Lokationsgrupper'}
+          fullWidth
+          gridSizes={12}
+          onSelectChange={(option) => {
+            return option;
+          }}
+          textFieldsProps={{
+            label: 'Lokationsgrupper',
+            placeholder: 'Vælg grupper, som alarmen skal gælde for...',
+          }}
+          renderTags={(value, getTagProps) => {
+            return value.map((option, index) => {
+              const content = (
+                <Typography display="inline" variant="body2">
+                  {option.group_name}
+                </Typography>
               );
-            })}
-          </Box>
-        )}
-      </FormFieldset>
+
+              return (
+                <Chip
+                  {...getTagProps({index})}
+                  variant="outlined"
+                  label={content}
+                  component={'div'}
+                  key={index}
+                />
+              );
+            });
+          }}
+          filterSelectedOptions
+          selectOnFocus
+          clearOnBlur
+          handleHomeEndKeys
+        />
+      </Tooltip>
+
+      <AlarmCriteriaForm />
 
       <FormFieldset
         label="Kontakter"
@@ -192,64 +193,8 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         icon={contactsCollapsed ? <ExpandMore /> : <ExpandLess />}
         onClick={() => setContactsCollapsed(!contactsCollapsed)}
       >
-        {!contactsCollapsed && (
-          <>
-            {contactFields.map((field, index) => (
-              <div key={field.id}>
-                <AlarmContactTypedForm
-                  index={index}
-                  searchValue={field.name}
-                  remove={removeContact}
-                />
-              </div>
-            ))}
-            <Box ml={'auto'} display="flex" mt={1}>
-              <Button
-                bttype="primary"
-                startIcon={<AddCircle />}
-                onClick={() => {
-                  addContact({
-                    contact_id: '',
-                    name: '',
-                    sms: false,
-                    email: false,
-                    call: false,
-                  });
-                }}
-                sx={{ml: 'auto'}}
-              >
-                Tilføj
-              </Button>
-            </Box>
-          </>
-        )}
+        {!contactsCollapsed && <AlarmContactTypedForm />}
       </FormFieldset>
-      <FormFieldset
-        label="Alarm notifikation"
-        sx={{width: '100%', px: 1}}
-        icon={alarmNotificationCollapsed ? <ExpandMore /> : <ExpandLess />}
-        onClick={() => setAlarmNotificationCollapsed(!alarmNotificationCollapsed)}
-      >
-        {!alarmNotificationCollapsed && (
-          <Grid2 container spacing={2} alignItems={'center'} style={{width: '100%'}}>
-            <Form.Input
-              label="Start interval"
-              type="time"
-              name="from"
-              gridSizes={{xs: 12, sm: 6}}
-            />
-            <Form.Input label="Slut interval" type="time" name="to" gridSizes={{xs: 12, sm: 6}} />
-            <Form.Input
-              name="interval"
-              label="Næste alarmering interval"
-              type="number"
-              placeholder="Indtast interval i timer"
-              gridSizes={{xs: 12, sm: 6}}
-            />
-          </Grid2>
-        )}
-      </FormFieldset>
-      <Form.Checkbox name="signal_warning" label="Advar ved sender ikke" />
       <Form.Input
         name="comment"
         label="Kommentar"

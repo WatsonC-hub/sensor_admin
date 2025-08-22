@@ -1,7 +1,7 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
@@ -39,8 +39,11 @@ const EditLocation = () => {
   const default_data = {...metadata, initial_project_no: metadata?.projectno} as BaseLocation;
 
   const [formMethods, LocationForm, locationSchema] = useLocationForm({
-    mode: 'Edit',
     defaultValues: default_data,
+    mode: 'Edit',
+    context: {
+      loc_id,
+    },
     initialLocTypeId: metadata?.loctype_id,
   });
 
@@ -54,7 +57,7 @@ const EditLocation = () => {
     if (metadata != undefined) {
       reset(default_data);
     }
-  }, [metadata, unit_history]);
+  }, [metadata]);
 
   const Submit: (data: z.infer<typeof locationSchema>) => void = (data) => {
     const payload = {

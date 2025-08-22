@@ -186,7 +186,7 @@ const StationDrawer = () => {
           page: stationPages.ALARM,
           icon: <AlarmIcon />,
           requiredTsId: true,
-          onHover: () => {},
+          onHover: () => null,
           disabled: !user?.superUser,
         },
       ],

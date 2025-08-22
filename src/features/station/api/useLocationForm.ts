@@ -5,7 +5,7 @@ import {
   defaultAddLocationSchema,
   defaultEditLocationSchema,
 } from '../schema';
-import {DefaultValues, FieldValues, Path, useForm, UseFormProps} from 'react-hook-form';
+import {DefaultValues, FieldValues, Path, useForm} from 'react-hook-form';
 import {z, ZodObject} from 'zod';
 import React from 'react';
 import DefaultLocationForm from '../components/stamdata/stamdataComponents/DefaultLocationForm';

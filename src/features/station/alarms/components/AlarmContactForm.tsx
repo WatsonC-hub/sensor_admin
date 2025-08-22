@@ -1,86 +1,317 @@
 import React, {useState} from 'react';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {AlarmContactArrayFormValues} from '../schema';
-import {Grid2} from '@mui/material';
+import {
+  Box,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Grid2,
+  TextField,
+  Typography,
+} from '@mui/material';
 import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import {useAppContext} from '~/state/contexts';
-import {ContactInfo} from '~/types';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
-import {useFormContext} from 'react-hook-form';
+import {useFieldArray, useFormContext} from 'react-hook-form';
 import SmsIcon from '@mui/icons-material/Sms';
 import EmailIcon from '@mui/icons-material/Email';
 import CallIcon from '@mui/icons-material/Call';
 import CloseIcon from '@mui/icons-material/Close';
-
-interface AlarmContact {
-  index: number;
-  remove: (index: number) => void;
-  searchValue: string | undefined;
-}
+import {ContactInfo} from '~/types';
+import {Edit} from '@mui/icons-material';
+import Button from '~/components/Button';
 
 const AlarmContactTypedForm = createTypedForm<AlarmContactArrayFormValues>();
 
-const AlarmContactForm = ({index, remove, searchValue}: AlarmContact) => {
+type TestAlarmContactType = {
+  contact_id: string | undefined;
+  name: string;
+};
+
+type TestAlarmContact = {
+  contacts: TestAlarmContactType[];
+};
+
+const transformData = (data: ContactInfo[]) => {
+  const alarmContacts: TestAlarmContact = {
+    contacts: data.map((item) => ({
+      contact_id: item.id ?? undefined,
+      name: item.navn,
+    })),
+  };
+  return alarmContacts;
+};
+
+const AlarmContactForm = () => {
   const {loc_id} = useAppContext(['loc_id']);
-  const [search, setSearch] = useState<string>(searchValue || '');
+  const [search, setSearch] = useState<string>('');
   const debouncedSearch = useDebouncedValue(search, 500);
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const [mode, setMode] = useState<'add' | 'edit' | 'view'>('view');
+  const [currentIndex, setCurrentIndex] = useState<number>(-1);
 
   // number 67 is the id for the contact type "Alarm"
-  const {data} = useSearchContact(loc_id, debouncedSearch);
+  const {data} = useSearchContact(loc_id, debouncedSearch, transformData);
 
   const {
     formState: {errors},
-    setValue,
+    control,
+    watch,
   } = useFormContext<AlarmContactArrayFormValues>();
+  const contacts = watch('contacts');
+  const currentValues = currentIndex >= 0 ? watch(`contacts.${currentIndex}`) : null;
 
+  const {append: addContact, remove: removeContact} = useFieldArray({
+    control,
+    name: 'contacts',
+  });
   return (
-    <Grid2 container style={{width: '100%'}} alignItems={'center'} spacing={2}>
-      <AlarmContactTypedForm.Autocomplete<ContactInfo>
-        options={data ?? []}
-        labelKey="navn"
-        name={`contacts.${index}.contact_id`}
-        label={`Kontakt`}
+    <>
+      {contacts.length > 0 &&
+        mode === 'view' &&
+        contacts.map((field, fieldIndex) => {
+          return (
+            <Box
+              key={`contacts.${fieldIndex}`}
+              display="flex"
+              flexDirection="column"
+              gap={1}
+              width="100%"
+            >
+              <Box
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="space-between"
+                gap={1}
+                pb={2}
+              >
+                <Typography ml={2}>{field?.name}</Typography>
+                <Box display="flex" flexDirection="row" alignItems={'center'} gap={1} mr={1}>
+                  <Edit
+                    color="action"
+                    sx={{cursor: 'pointer'}}
+                    onClick={() => {
+                      setMode('edit');
+                      setCurrentIndex(fieldIndex);
+                      setContactDialogOpen(true);
+                    }}
+                  />
+                  <CloseIcon
+                    color="action"
+                    sx={{cursor: 'pointer'}}
+                    onClick={() => removeContact(fieldIndex)}
+                  />
+                </Box>
+              </Box>
+              <Box display="flex" flexDirection="row" alignItems={'center'} gap={1}>
+                <Checkbox checked={field.sms?.sms} disabled />
+                <SmsIcon color="primary" />
+                <TextField fullWidth value={field.sms?.from} type="time" disabled />
+                <TextField fullWidth value={field.sms?.to} type="time" disabled />
+              </Box>
+              <Box display="flex" flexDirection="row" alignItems={'center'} gap={1}>
+                <Checkbox checked={field.email?.email} disabled />
+                <EmailIcon color="primary" />
+                <TextField fullWidth value={field.email?.from} type="time" disabled />
+                <TextField fullWidth value={field.email?.to} type="time" disabled />
+              </Box>
+              <Box display="flex" flexDirection="row" alignItems={'center'} gap={1}>
+                <Checkbox checked={field.call?.call} disabled />
+                <CallIcon color="primary" />
+                <TextField fullWidth value={field.call?.from} type="time" disabled />
+                <TextField fullWidth value={field.call?.to} type="time" disabled />
+              </Box>
+              {contacts.length - 1 !== fieldIndex && <Divider />}
+            </Box>
+          );
+        })}
+
+      <Dialog
+        open={contactDialogOpen}
+        onClose={() => {
+          setContactDialogOpen(false);
+          if (mode === 'add') removeContact(contacts.length - 1);
+          setMode('view');
+        }}
         fullWidth
-        gridSizes={{xs: 12, sm: 6}}
-        error={errors?.contacts?.[index]?.contact_id?.message}
-        inputValue={search}
-        onSelectChange={(option) => {
-          return data?.find((item) => item.id === option) ?? null;
+      >
+        <DialogTitle>{mode === 'add' ? 'Tilføj kontakt' : 'Rediger kontakt'}</DialogTitle>
+        <DialogContent sx={{width: '100%'}}>
+          <Grid2 size={{xs: 12, sm: 12}} width={'100%'} direction={'row'} alignItems="center">
+            <AlarmContactTypedForm.Autocomplete<TestAlarmContactType>
+              options={data?.contacts ?? []}
+              labelKey="name"
+              name={`contacts.${currentIndex}`}
+              label={`Kontakt`}
+              gridSizes={{xs: 12, sm: 6}}
+              error={errors?.contacts?.[currentIndex]?.contact_id?.message}
+              inputValue={search}
+              onSelectChange={(option) => {
+                const updated = {
+                  ...currentValues,
+                  contact_id: option?.contact_id,
+                  name: option?.name,
+                };
+                return updated;
+              }}
+              textFieldsProps={{
+                label: 'Kontakt',
+                placeholder: 'Søg og vælg kontakt...',
+                required: true,
+              }}
+              onInputChange={(event, value) => {
+                setSearch(value);
+              }}
+            />
+          </Grid2>
+          <Box display="flex" flexDirection="row" alignItems={'center'} gap={1}>
+            <AlarmContactTypedForm.Checkbox
+              name={`contacts.${currentIndex}.sms.sms`}
+              icon={<SmsIcon color="primary" />}
+              gridSizes={{xs: 12, sm: 2}}
+            />
+            <Box
+              key={`contacts.${currentIndex}.sms`}
+              display="flex"
+              flexDirection="row"
+              width="100%"
+              gap={1}
+            >
+              <AlarmContactTypedForm.Input
+                name={`contacts.${currentIndex}.sms.from`}
+                label="Start interval"
+                type="time"
+                disabled={!currentValues?.sms?.sms}
+                gridSizes={{xs: 12, sm: 6}}
+              />
+              <AlarmContactTypedForm.Input
+                name={`contacts.${currentIndex}.sms.to`}
+                label="Slut interval"
+                type="time"
+                disabled={!currentValues?.sms?.sms}
+                gridSizes={{xs: 12, sm: 6}}
+              />
+            </Box>
+          </Box>
+          <Box display="flex" flexDirection="row" alignItems={'center'} gap={1}>
+            <AlarmContactTypedForm.Checkbox
+              name={`contacts.${currentIndex}.email.email`}
+              icon={<EmailIcon color="primary" />}
+              gridSizes={{xs: 12, sm: 2}}
+            />
+            <Box
+              key={`contacts.${currentIndex}.email`}
+              display="flex"
+              flexDirection="row"
+              width="100%"
+              gap={1}
+            >
+              <AlarmContactTypedForm.Input
+                name={`contacts.${currentIndex}.email.from`}
+                label="Start interval"
+                type="time"
+                disabled={!currentValues?.email?.email}
+                gridSizes={{xs: 12, sm: 6}}
+              />
+              <AlarmContactTypedForm.Input
+                name={`contacts.${currentIndex}.email.to`}
+                label="Slut interval"
+                type="time"
+                disabled={!currentValues?.email?.email}
+                gridSizes={{xs: 12, sm: 6}}
+              />
+            </Box>
+          </Box>
+          <Box display="flex" flexDirection="row" alignItems={'center'} gap={1}>
+            <AlarmContactTypedForm.Checkbox
+              name={`contacts.${currentIndex}.call.call`}
+              icon={<CallIcon color="primary" />}
+              gridSizes={{xs: 12, sm: 2}}
+            />
+            <Box
+              key={`contacts.${currentIndex}.call`}
+              display="flex"
+              flexDirection="row"
+              width="100%"
+              gap={1}
+            >
+              <AlarmContactTypedForm.Input
+                name={`contacts.${currentIndex}.call.from`}
+                label="Start interval"
+                type="time"
+                disabled={!currentValues?.call?.call}
+                gridSizes={{xs: 12, sm: 6}}
+              />
+              <AlarmContactTypedForm.Input
+                name={`contacts.${currentIndex}.call.to`}
+                label="Slut interval"
+                type="time"
+                disabled={!currentValues?.call?.call}
+                gridSizes={{xs: 12, sm: 6}}
+              />
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            bttype="tertiary"
+            onClick={() => {
+              setContactDialogOpen(false);
+              if (mode === 'add') removeContact(contacts.length - 1);
+              setMode('view');
+            }}
+          >
+            Annuller
+          </Button>
+          <Button
+            bttype="primary"
+            onClick={() => {
+              setContactDialogOpen(false);
+              setMode('view');
+            }}
+            sx={{ml: 'auto'}}
+          >
+            {mode === 'add' ? 'Tilføj' : 'Gem'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Button
+        bttype="primary"
+        onClick={() => {
+          setMode('add');
+          setContactDialogOpen(true);
+          addContact({
+            contact_id: '',
+            name: '',
+            sms: {
+              sms: false,
+              to: undefined,
+              from: undefined,
+            },
+            email: {
+              email: false,
+              to: undefined,
+              from: undefined,
+            },
+            call: {
+              call: false,
+
+              to: undefined,
+              from: undefined,
+            },
+          });
+          setCurrentIndex(contacts.length);
         }}
-        textFieldsProps={{
-          label: 'Kontakt',
-          placeholder: 'Søg og vælg kontakt...',
-          required: true,
-        }}
-        onChangeCallback={(option) => {
-          setValue(`contacts.${index}.contact_id`, option ?? undefined);
-        }}
-        onInputChange={(event, value) => {
-          setSearch(value);
-        }}
-        selectOnFocus
-        clearOnBlur
-        handleHomeEndKeys
-      />
-      <AlarmContactTypedForm.Checkbox
-        name={`contacts.${index}.sms`}
-        icon={<SmsIcon color="primary" />}
-        gridSizes={{xs: 12, sm: 1.7}}
-      />
-      <AlarmContactTypedForm.Checkbox
-        name={`contacts.${index}.email`}
-        icon={<EmailIcon color="primary" />}
-        gridSizes={{xs: 12, sm: 1.7}}
-      />
-      <AlarmContactTypedForm.Checkbox
-        name={`contacts.${index}.call`}
-        icon={<CallIcon color="primary" />}
-        gridSizes={{xs: 12, sm: 1.7}}
-      />
-      <Grid2 size={{xs: 12, sm: 0.9}} pr={1} style={{display: 'flex', justifyContent: 'center'}}>
-        <CloseIcon color="action" sx={{cursor: 'pointer'}} onClick={() => remove(index)} />
-      </Grid2>
-    </Grid2>
+        sx={{ml: 'auto'}}
+      >
+        Udfyld kontakt
+      </Button>
+    </>
   );
 };
 

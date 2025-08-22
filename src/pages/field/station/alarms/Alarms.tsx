@@ -12,7 +12,6 @@ const Alarms = () => {
   const [pageToShow] = useStationPages();
   const [showForm] = useShowFormState();
   const [open, setOpen] = React.useState(false);
-  // const setTempLines = useSetAtom(tempHorizontalAtom);
   const {
     get: {data: alarms},
   } = useAlarm();
@@ -22,13 +21,9 @@ const Alarms = () => {
       ({
         gid: alarm.gid,
         name: alarm.name,
-        earliest_timeofday: alarm.earliest_timeofday,
-        latest_timeofday: alarm.latest_timeofday,
-        alarm_interval: alarm.alarm_interval,
         note_to_include: alarm.note_to_include,
-        alarmCriteria: alarm.criteria ?? [],
-        alarmContacts: alarm.contacts ?? [],
-        signal_warning: alarm.signal_warning ?? false,
+        alarm_notifications: alarm.alarm_notifications ?? [],
+        alarm_contacts: alarm.alarm_contacts ?? [],
       }) as alarmTable
   );
 

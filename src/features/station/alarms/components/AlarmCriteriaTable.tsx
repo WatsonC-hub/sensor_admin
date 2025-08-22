@@ -1,54 +1,42 @@
-import {Box, Checkbox} from '@mui/material';
+import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
-import {CriteriaTable} from '../types';
-
-const criteriaTypes = [
-  {id: 'alarm_high', name: 'Øvre alarmniveau'},
-  {id: 'alarm_low', name: 'Nedre alarmniveau'},
-  {id: 'attention_high', name: 'Øvre opmærksomhedsniveau'},
-  {id: 'attention_low', name: 'Nedre opmærksomhedsniveau'},
-] as const;
+import useNotificationType, {NotificationType} from '~/hooks/query/useNotificationTypes';
 
 type AlarmCriteriaTableProps = {
-  otherAlarms: Array<CriteriaTable> | undefined;
+  alarm_notifications: Array<number> | undefined;
 };
 
-const AlarmCriteriaTable = ({otherAlarms}: AlarmCriteriaTableProps) => {
-  const columns = useMemo<MRT_ColumnDef<CriteriaTable>[]>(
+const AlarmCriteriaTable = ({alarm_notifications}: AlarmCriteriaTableProps) => {
+  const {
+    get: {data: notifications},
+  } = useNotificationType();
+  const data = notifications?.filter((n) => alarm_notifications?.some((o) => o === n.gid));
+  const columns = useMemo<MRT_ColumnDef<NotificationType>[]>(
     () => [
       {
         header: 'Navn',
         id: 'name',
-        accessorFn: (row) => criteriaTypes.find((c) => c.id === row.name)?.name || row.name,
+        accessorFn: (row) => {
+          return row.name;
+        },
       },
       {
-        header: 'Kriteria',
-        accessorKey: 'criteria',
-      },
-      {
-        header: 'SMS/Mail/Mobil',
-        accessorKey: 'contactType',
+        header: 'Kritiskhed',
+        id: 'notification_gid',
         size: 20,
-        maxSize: 20,
-        Cell: ({cell}) => {
-          const {sms, email, call} = cell.row.original;
-          return (
-            <Box>
-              <Checkbox checked={sms} disabled />
-              <Checkbox checked={email} disabled />
-              <Checkbox checked={call} disabled />
-            </Box>
-          );
+        accessorFn: (row) => {
+          const flag = row.flag;
+          return flag === 3 ? 'Kritisk' : flag === 2 ? 'Opmærksom' : 'Ukritisk';
         },
       },
     ],
-    []
+    [notifications]
   );
 
-  const options: Partial<MRT_TableOptions<CriteriaTable>> = {
+  const options: Partial<MRT_TableOptions<NotificationType>> = {
     enableColumnActions: false,
     enableColumnFilters: false,
     enableSorting: false,
@@ -72,9 +60,9 @@ const AlarmCriteriaTable = ({otherAlarms}: AlarmCriteriaTableProps) => {
     },
   };
 
-  const table = useTable<CriteriaTable>(
+  const table = useTable<NotificationType>(
     columns,
-    otherAlarms,
+    data ?? [],
     options,
     undefined,
     TableTypes.TABLE,

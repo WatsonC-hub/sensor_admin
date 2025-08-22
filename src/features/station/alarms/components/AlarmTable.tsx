@@ -42,10 +42,6 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
         size: 20,
       },
       {
-        header: 'Alarm Interval (timer)',
-        accessorKey: 'alarm_interval',
-      },
-      {
         header: 'Kommentar',
         accessorKey: 'note_to_include',
         maxSize: 200,
@@ -56,20 +52,6 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
             },
           };
         },
-      },
-      {
-        header: 'Tidligste signalering',
-        accessorKey: 'earliest_timeofday',
-      },
-      {
-        header: 'Seneste signalering',
-        accessorKey: 'latest_timeofday',
-      },
-      {
-        header: 'Signalering',
-        accessorKey: 'signal_warning',
-        size: 20,
-        Cell: ({renderedCellValue}) => (renderedCellValue ? 'Ja' : 'Nej'),
       },
     ],
     []
@@ -101,22 +83,23 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
       },
     },
     renderDetailPanel: ({row}) => {
-      const alarmContacts = row.original.alarmContacts || [];
-      const alarmCriteria = row.original.alarmCriteria || [];
+      const alarmContacts = row.original.alarm_contacts || [];
+      const alarmCriteria = row.original.alarm_notifications || [];
       return (
         (alarmCriteria.length > 0 || alarmContacts.length > 0) && (
           <Box
             display={'flex'}
             flexDirection={'row'}
             height={'100%'}
-            justifyContent={'space-around'}
+            justifyContent={'space-between'}
+            gap={2}
           >
             {alarmCriteria.length > 0 && (
               <Box>
                 <Typography variant="body2" fontWeight={'bold'} height={34} alignContent={'center'}>
                   Alarm kriterier
                 </Typography>
-                <AlarmCriteriaTable otherAlarms={alarmCriteria} />
+                <AlarmCriteriaTable alarm_notifications={alarmCriteria} />
               </Box>
             )}
             {alarmContacts && alarmContacts.length > 0 && (
