@@ -1,9 +1,10 @@
-import {Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import useNotificationType, {NotificationType} from '~/hooks/query/useNotificationTypes';
+import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 
 type AlarmCriteriaTableProps = {
   alarm_notifications: Array<number> | undefined;
@@ -21,6 +22,21 @@ const AlarmCriteriaTable = ({alarm_notifications}: AlarmCriteriaTableProps) => {
         id: 'name',
         accessorFn: (row) => {
           return row.name;
+        },
+        Cell: ({cell, row}) => {
+          return (
+            <Box display="flex" alignItems="center" flexDirection="row" gap={1}>
+              <Typography variant="body2" color="white">
+                <NotificationIcon
+                  iconDetails={{
+                    notification_id: row.original.gid,
+                    flag: row.original.flag,
+                  }}
+                />
+              </Typography>
+              <span>{cell.getValue<string>()}</span>
+            </Box>
+          );
         },
       },
       {
