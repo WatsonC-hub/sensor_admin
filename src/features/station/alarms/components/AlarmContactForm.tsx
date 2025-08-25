@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {createTypedForm} from '~/components/formComponents/Form';
-import {AlarmContactArrayFormValues} from '../schema';
+import {AlarmContactArrayFormValues, AlarmContactFormType} from '../schema';
 import {
   Box,
   Checkbox,
@@ -16,13 +16,13 @@ import {
 import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import {useAppContext} from '~/state/contexts';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
-import {useFieldArray, useFormContext} from 'react-hook-form';
+import {useFormContext} from 'react-hook-form';
 import SmsIcon from '@mui/icons-material/Sms';
 import EmailIcon from '@mui/icons-material/Email';
 import CallIcon from '@mui/icons-material/Call';
 import CloseIcon from '@mui/icons-material/Close';
 import {ContactInfo} from '~/types';
-import {Edit} from '@mui/icons-material';
+import {Add, Edit} from '@mui/icons-material';
 import Button from '~/components/Button';
 
 const AlarmContactTypedForm = createTypedForm<AlarmContactArrayFormValues>();
@@ -46,6 +46,14 @@ const transformData = (data: ContactInfo[]) => {
   return alarmContacts;
 };
 
+const removeContact = (index: number, contacts: AlarmContactFormType[]) => {
+  return contacts.filter((_, i) => i !== index);
+};
+
+const addContact = (contact: AlarmContactFormType, contacts: AlarmContactFormType[]) => {
+  return [...contacts, contact];
+};
+
 const AlarmContactForm = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const [search, setSearch] = useState<string>('');
@@ -59,16 +67,13 @@ const AlarmContactForm = () => {
 
   const {
     formState: {errors},
-    control,
     watch,
+    setValue,
+    resetField,
   } = useFormContext<AlarmContactArrayFormValues>();
   const contacts = watch('contacts');
   const currentValues = currentIndex >= 0 ? watch(`contacts.${currentIndex}`) : null;
 
-  const {append: addContact, remove: removeContact} = useFieldArray({
-    control,
-    name: 'contacts',
-  });
   return (
     <>
       {contacts.length > 0 &&
@@ -98,13 +103,14 @@ const AlarmContactForm = () => {
                     onClick={() => {
                       setMode('edit');
                       setCurrentIndex(fieldIndex);
+                      resetField(`contacts.${fieldIndex}`);
                       setContactDialogOpen(true);
                     }}
                   />
                   <CloseIcon
                     color="action"
                     sx={{cursor: 'pointer'}}
-                    onClick={() => removeContact(fieldIndex)}
+                    onClick={() => setValue('contacts', removeContact(fieldIndex, contacts))}
                   />
                 </Box>
               </Box>
@@ -135,7 +141,8 @@ const AlarmContactForm = () => {
         open={contactDialogOpen}
         onClose={() => {
           setContactDialogOpen(false);
-          if (mode === 'add') removeContact(contacts.length - 1);
+          if (mode === 'add') setValue('contacts', removeContact(contacts.length - 1, contacts));
+          else if (mode === 'edit') resetField(`contacts.${currentIndex}`);
           setMode('view');
         }}
         fullWidth
@@ -262,7 +269,9 @@ const AlarmContactForm = () => {
             bttype="tertiary"
             onClick={() => {
               setContactDialogOpen(false);
-              if (mode === 'add') removeContact(contacts.length - 1);
+              if (mode === 'add')
+                setValue('contacts', removeContact(contacts.length - 1, contacts));
+              else if (mode === 'edit') resetField(`contacts.${currentIndex}`);
               setMode('view');
             }}
           >
@@ -274,6 +283,7 @@ const AlarmContactForm = () => {
               setContactDialogOpen(false);
               setMode('view');
             }}
+            disabled={errors?.contacts?.[currentIndex] !== undefined}
             sx={{ml: 'auto'}}
           >
             {mode === 'add' ? 'Tilføj' : 'Gem'}
@@ -282,34 +292,41 @@ const AlarmContactForm = () => {
       </Dialog>
       <Button
         bttype="primary"
+        startIcon={<Add />}
         onClick={() => {
           setMode('add');
           setContactDialogOpen(true);
-          addContact({
-            contact_id: '',
-            name: '',
-            sms: {
-              sms: false,
-              to: undefined,
-              from: undefined,
-            },
-            email: {
-              email: false,
-              to: undefined,
-              from: undefined,
-            },
-            call: {
-              call: false,
+          setValue(
+            'contacts',
+            addContact(
+              {
+                contact_id: '',
+                name: '',
+                sms: {
+                  sms: false,
+                  to: undefined,
+                  from: undefined,
+                },
+                email: {
+                  email: false,
+                  to: undefined,
+                  from: undefined,
+                },
+                call: {
+                  call: false,
 
-              to: undefined,
-              from: undefined,
-            },
-          });
+                  to: undefined,
+                  from: undefined,
+                },
+              },
+              contacts
+            )
+          );
           setCurrentIndex(contacts.length);
         }}
         sx={{ml: 'auto'}}
       >
-        Udfyld kontakt
+        Tilføj ny kontakt
       </Button>
     </>
   );
