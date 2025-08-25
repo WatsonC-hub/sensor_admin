@@ -1,116 +1,235 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, InputAdornment, TextField, Typography} from '@mui/material';
-import React from 'react';
+import {Alert, Box, InputAdornment, MenuItem, TextField, Typography} from '@mui/material';
+import dayjs from 'dayjs';
+import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
-import {useTimeseriesConfiguration} from '~/features/station/api/useTimeseriesConfiguration';
+import {
+  useTimeseriesConfiguration,
+  useTimeseriesConfigurationMutation,
+} from '~/features/station/api/useTimeseriesConfiguration';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
+import ConfigAlert from './ConfigAlert';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 const ConfigurationSchema = z.object({
-  sampleInterval: z.number().min(1, 'Måleinterval skal være mindst 1 minut'),
-  sendInterval: z.number().min(1, 'Sendingsinterval skal være mindst 1 minut'),
+  sampleInterval: z
+    .number({required_error: 'Måleinterval er påkrævet'})
+    .min(1, 'Måleinterval skal være mindst 1 minut'),
+  sendInterval: z
+    .number({required_error: 'Sendeinterval er påkrævet'})
+    .min(1, 'Sendingsinterval skal være mindst 1 minut'),
 });
+
+type ConfigForm = {
+  sampleInterval: number | undefined;
+  sendInterval: number | undefined;
+};
+
+type ConfigSubmit = z.infer<typeof ConfigurationSchema>;
+
+const NUM_OPTIONS = 100;
+
+const convertMinutesToTime = (minutes: number) => {
+  return dayjs('1970-01-01T00:00').add(minutes, 'minute').format('HH:mm');
+};
+
+const getOptions = (sampleInterval: number | undefined) => {
+  if (!sampleInterval) return [];
+  return Array.from({length: NUM_OPTIONS}, (_, i) => i + 1).map((value) => {
+    const interval = value * sampleInterval;
+
+    const label = convertMinutesToTime(interval) + ` (${value} målinger)`;
+
+    return (
+      <MenuItem key={interval} value={interval}>
+        {label}
+      </MenuItem>
+    );
+  });
+};
 
 const Configuration = () => {
   const {ts_id} = useAppContext(['ts_id']);
 
-  const {data} = useTimeseriesConfiguration(ts_id);
+  const {data, isPending} = useTimeseriesConfiguration(ts_id);
+  const {mutate} = useTimeseriesConfigurationMutation(ts_id);
+  const {isMobile} = useBreakpoints();
+  const [options, setOptions] = useState<React.ReactNode[]>([]);
 
-  const formMethods = useForm({
+  const values = data?.savedConfig ? data.savedConfig : undefined;
+
+  const formMethods = useForm<ConfigForm, unknown, ConfigSubmit>({
     resolver: zodResolver(ConfigurationSchema),
     defaultValues: {
-      sampleInterval: data?.savedConfig?.sampleInterval || undefined,
-      sendInterval: data?.savedConfig?.sendInterval || undefined,
+      sampleInterval: values?.sampleInterval || undefined,
+      sendInterval: values?.sendInterval || undefined,
     },
+    values: values,
   });
 
   const {
     handleSubmit,
     reset,
-    formState: {isSubmitting},
+    formState: {isSubmitting, isDirty},
+    getValues,
   } = formMethods;
 
+  useEffect(() => {
+    if (data) setOptions(getOptions(data?.savedConfig?.sampleInterval));
+  }, [data]);
+  //   const sampleInterval = watch('sampleInterval');
+  //   const sendInterval = watch('sendInterval');
+
+  // Make select options for sendInterval based on sampleInterval with a map
+
+  if (isPending) {
+    return (
+      <Layout>
+        <Box minWidth={isMobile ? '70vw' : 800}>
+          <LoadingSkeleton />
+        </Box>
+      </Layout>
+    );
+  }
+
   return (
-    <Box
-      maxWidth={1080}
-      sx={{
-        borderRadius: 4,
-        boxShadow: 3,
-        padding: 2,
-      }}
-      display="flex"
-      flexDirection="column"
-      gap={1}
-    >
+    <Layout>
       <FormProvider {...formMethods}>
-        <Typography variant="h6" gutterBottom>
-          Konfiguration
-        </Typography>
+        <Box width="fit-content" alignItems="center">
+          <TooltipWrapper
+            color="info"
+            description="De aktuelle sendeforhold er det vi har målt på de data vi har modtaget. Det betyder i nogle tilfælde at det er estimerede værdier."
+          >
+            <Typography variant="body1">Aktuelle sendeforhold</Typography>
+          </TooltipWrapper>
+        </Box>
 
-        <Typography variant="body1" gutterBottom>
-          Aktuelle sendeforhold
-        </Typography>
-
-        <Box display="flex" flexDirection="row" gap={2} mb={2}>
+        <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} mb={2}>
           <TextField
-            type="number"
             label="Måleinterval"
             disabled
+            fullWidth
             value={data?.currentConfig?.sampleInterval || ''}
             slotProps={{
               input: {
-                endAdornment: <InputAdornment position="start">minutter</InputAdornment>,
+                startAdornment: <InputAdornment position="start">hvert</InputAdornment>,
+                endAdornment: <InputAdornment position="start">minut</InputAdornment>,
               },
             }}
           />
           <TextField
-            type="number"
             label="Sendingsinterval"
             disabled
-            value={data?.currentConfig?.sendInterval || ''}
+            fullWidth
+            value={
+              data?.currentConfig?.sendInterval
+                ? convertMinutesToTime(data?.currentConfig?.sendInterval)
+                : ''
+            }
             slotProps={{
               input: {
-                endAdornment: <InputAdornment position="start">minutter</InputAdornment>,
+                startAdornment: <InputAdornment position="start">hver</InputAdornment>,
+                endAdornment: <InputAdornment position="start">time</InputAdornment>,
               },
             }}
           />
         </Box>
+        <Box width="fit-content" alignItems="center">
+          <TooltipWrapper
+            color="info"
+            description="Ændringer i sendeforhold træder først i kraft når de er gemt og udstyret har opsamlet de
+          nye sendeforhold."
+          >
+            <Typography variant="body1">Ønsket sendeforhold</Typography>
+          </TooltipWrapper>
+        </Box>
+        {!data?.configPossible && (
+          <Alert severity="warning">
+            Det tilknyttede udstyr understøtter ikke ændring af sendeforhold via systemet.
+          </Alert>
+        )}
 
-        <Typography variant="body1" gutterBottom>
-          Gemte sendeforhold
-        </Typography>
-        <Box display="flex" flexDirection="row" gap={2} mb={2}>
+        <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} mb={-3}>
           <FormInput
             name="sampleInterval"
-            type="number"
             label="Måleinterval"
-            fullWidth={false}
+            type="number"
+            transform={(value: number) => {
+              // transform the value to a positive integer
+              if (value < 0) return Math.ceil(value);
+              return Math.floor(value);
+            }}
+            fullWidth
+            // onChangeCallback={() => {
+            //   // reset sendInterval when sampleInterval changes
+            //   formMethods.setValue('sendInterval', undefined);
+            // }}
+            onBlurCallback={() => {
+              // reset sendInterval when sampleInterval changes
+              const sampleInterval = getValues('sampleInterval');
+              const sendInterval = getValues('sendInterval');
+              setOptions(getOptions(sampleInterval));
+
+              if (
+                sendInterval &&
+                sampleInterval &&
+                Number.isInteger(sendInterval / sampleInterval) === false
+              ) {
+                formMethods.setValue('sendInterval', undefined);
+              }
+            }}
+            disabled={!data?.configPossible}
             slotProps={{
               input: {
-                endAdornment: <InputAdornment position="start">minutter</InputAdornment>,
+                startAdornment: <InputAdornment position="start">hvert</InputAdornment>,
+                endAdornment: <InputAdornment position="start">minut</InputAdornment>,
               },
             }}
           />
+
           <FormInput
             name="sendInterval"
-            type="number"
+            select
+            fullWidth
             label="Sendeinterval"
-            fullWidth={false}
-            slotProps={{
-              input: {
-                endAdornment: <InputAdornment position="start">minutter</InputAdornment>,
+            disabled={!data?.configPossible || options.length === 0}
+            SelectProps={{
+              MenuProps: {
+                sx: {
+                  maxHeight: '300px',
+                },
               },
             }}
-          />
+            slotProps={{
+              input: {
+                startAdornment: <InputAdornment position="start">hver</InputAdornment>,
+                endAdornment: (
+                  <InputAdornment position="start" sx={{mr: 2}}>
+                    time
+                  </InputAdornment>
+                ),
+              },
+            }}
+          >
+            {options}
+          </FormInput>
         </Box>
+        <ConfigAlert
+          status={data?.configState || null}
+          handleResend={handleSubmit((data) => mutate(data))}
+        />
+
         <Box display="flex" justifyContent="flex-end">
           <Button
             bttype="primary"
-            disabled={isSubmitting}
-            onClick={handleSubmit((data) => console.log(data))}
+            disabled={isSubmitting || !data?.configPossible || !isDirty}
+            onClick={handleSubmit((data) => mutate(data))}
             startIcon={<Save />}
           >
             Gem
@@ -118,15 +237,40 @@ const Configuration = () => {
           <Button
             bttype="tertiary"
             onClick={() => reset()}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !data?.configPossible}
             sx={{marginLeft: 1}}
           >
             Annuller
           </Button>
         </Box>
       </FormProvider>
-    </Box>
+    </Layout>
   );
 };
 
 export default Configuration;
+
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout = ({children}: LayoutProps) => {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        p: 2,
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 1,
+      }}
+    >
+      <Typography variant="h6" gutterBottom>
+        Konfiguration
+      </Typography>
+      {children}
+    </Box>
+  );
+};

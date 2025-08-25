@@ -46,7 +46,7 @@ export const queryKeys = {
     edgeDates: (ts_id: number | undefined) => ['all_range', ts_id] as const,
     graphData: (ts_id: number | undefined, xRange: Array<Dayjs>) =>
       ['graphData', ts_id, xRange] as const,
-    configuration: (ts_id: number | undefined) => ['configuration', 'register', ts_id] as const,
+    configuration: (ts_id: number) => ['configuration', 'register', ts_id] as const,
   },
   Borehole: {
     stamdata: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
