@@ -15,6 +15,7 @@ export type Configuration = {
   savedConfig: Config | null;
   configPossible: boolean;
   configState: 'inSync' | 'pending' | 'failed' | null;
+  estimatedConfigChange: string | null;
 };
 
 export const timeseriesConfigurationOptions = (ts_id: number) =>

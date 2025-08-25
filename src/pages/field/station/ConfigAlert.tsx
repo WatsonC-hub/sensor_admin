@@ -15,7 +15,7 @@ const ConfigAlert = ({status, handleResend}: Props) => {
     case 'pending':
       return (
         <Alert severity="warning">
-          Tidsseriens konfiguration afventer på at blive opsamlet af udstyret.
+          Tidsseriens konfiguration afventer at blive opsamlet af udstyret.
         </Alert>
       );
     case 'failed':

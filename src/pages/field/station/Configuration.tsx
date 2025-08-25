@@ -16,6 +16,7 @@ import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
 import ConfigAlert from './ConfigAlert';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
@@ -88,6 +89,8 @@ const Configuration = () => {
 
   // Make select options for sendInterval based on sampleInterval with a map
 
+  const configChange = convertDateWithTimeStamp(data?.estimatedConfigChange);
+
   if (isPending) {
     return (
       <Layout>
@@ -154,7 +157,10 @@ const Configuration = () => {
             Det tilknyttede udstyr understøtter ikke ændring af sendeforhold via systemet.
           </Alert>
         )}
-
+        <ConfigAlert
+          status={data?.configState || null}
+          handleResend={handleSubmit((data) => mutate(data))}
+        />
         <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} mb={-3}>
           <FormInput
             name="sampleInterval"
@@ -220,10 +226,12 @@ const Configuration = () => {
             {options}
           </FormInput>
         </Box>
-        <ConfigAlert
-          status={data?.configState || null}
-          handleResend={handleSubmit((data) => mutate(data))}
-        />
+
+        {configChange && (
+          <Typography variant="body2" color="textSecondary" sx={{mt: 1, mb: 2}}>
+            Forventet tidspunkt for omkonfigurering: {configChange}
+          </Typography>
+        )}
 
         <Box display="flex" justifyContent="flex-end">
           <Button
