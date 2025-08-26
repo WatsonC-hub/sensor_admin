@@ -7,6 +7,7 @@ import {
   StraightenRounded,
   Edit,
   Router,
+  Settings,
 } from '@mui/icons-material';
 import {
   Drawer,
@@ -33,8 +34,8 @@ import {drawerOpenAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
 import {metadataQueryOptions, useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useUser} from '~/features/auth/useUser';
-import {OmitKeyof, UseQueryOptions} from '@tanstack/react-query';
-import {APIError, queryClient} from '~/queryClient';
+import {UseQueryOptions} from '@tanstack/react-query';
+import {queryClient} from '~/queryClient';
 import {pejlingGetOptions} from '~/features/pejling/api/usePejling';
 import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
 import {getMaalepunktOptions} from '~/hooks/query/useMaalepunkt';
@@ -48,6 +49,7 @@ import {stationPages, StationPages} from '~/helpers/EnumHelper';
 import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {timeseriesConfigurationOptions} from '../api/useTimeseriesConfiguration';
 
 const drawerWidth = 200;
 
@@ -89,8 +91,8 @@ const StationDrawer = () => {
   const user = useUser();
   const {createStamdata} = useNavigationFunctions();
 
-  const handlePrefetch = <TData extends object>(
-    options: OmitKeyof<UseQueryOptions<TData, APIError>, 'queryFn'>
+  const handlePrefetch = <TData extends object, TError extends Error>(
+    options: UseQueryOptions<TData, TError>
   ) => {
     queryClient.prefetchQuery({...options, staleTime: 1000 * 10});
   };
@@ -151,6 +153,16 @@ const StationDrawer = () => {
           disabled: metadata?.tstype_id != 1 || metadata?.calculated,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id!)),
           // tooltip: 'På denne side kan du se og redigere målepunkter til din tidsserie.',
+        },
+        {
+          text: 'Konfiguration',
+          page: stationPages.KONFIGURATION,
+          icon: <Settings />,
+          requiredTsId: true,
+          disabled: metadata?.calculated,
+          onHover: () => handlePrefetch(timeseriesConfigurationOptions(ts_id!)),
+          tooltip:
+            'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
         },
         {
           text: 'Udstyr',

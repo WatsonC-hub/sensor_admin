@@ -32,6 +32,7 @@ import {Fullscreen, FullscreenExit} from '@mui/icons-material';
 import GraphManager from '~/features/station/components/GraphManager';
 import EditLocation from './stamdata/EditLocation';
 import EditTimeseries from './stamdata/EditTimeseries';
+import Configuration from './Configuration';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -76,6 +77,11 @@ export default function Station() {
       {pageToShow === stationPages.GENERELTIDSSERIE && (
         <StationPageBoxLayout>
           <EditTimeseries />
+        </StationPageBoxLayout>
+      )}
+      {pageToShow === stationPages.KONFIGURATION && (
+        <StationPageBoxLayout>
+          <Configuration />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && <Algorithms />}
