@@ -1,7 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Alert, Box, InputAdornment, MenuItem, TextField, Typography} from '@mui/material';
-import dayjs from 'dayjs';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
@@ -37,7 +36,9 @@ type ConfigSubmit = z.infer<typeof ConfigurationSchema>;
 const NUM_OPTIONS = 100;
 
 const convertMinutesToTime = (minutes: number) => {
-  return dayjs('1970-01-01T00:00').add(minutes, 'minute').format('HH:mm');
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours} t ${mins} min`;
 };
 
 const getOptions = (sampleInterval: number | undefined) => {
