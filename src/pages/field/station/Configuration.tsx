@@ -139,7 +139,6 @@ const Configuration = () => {
             slotProps={{
               input: {
                 startAdornment: <InputAdornment position="start">hver</InputAdornment>,
-                endAdornment: <InputAdornment position="start">time</InputAdornment>,
               },
             }}
           />
@@ -216,11 +215,6 @@ const Configuration = () => {
             slotProps={{
               input: {
                 startAdornment: <InputAdornment position="start">hver</InputAdornment>,
-                endAdornment: (
-                  <InputAdornment position="start" sx={{mr: 2}}>
-                    time
-                  </InputAdornment>
-                ),
               },
             }}
           >
