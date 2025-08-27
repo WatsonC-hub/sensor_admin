@@ -8,7 +8,7 @@ const Configuration = () => {
     <>
       <Layout>
         <Typography variant="h6" gutterBottom>
-          Måle og sendeintervaller
+          Måle- og sendeforhold
         </Typography>
         <UnitMeasurementConfig />
       </Layout>
