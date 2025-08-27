@@ -8,7 +8,7 @@ import {useTaskState} from '~/features/tasks/api/useTaskState';
 import useTaskItinerary from '../api/useTaskItinerary';
 
 import {useTasks} from '../api/useTasks';
-import {Task, Taskitinerary} from '../types';
+import {Taskitinerary} from '../types';
 import {convertToShorthandDate} from '~/helpers/dateConverter';
 import {useDisplayState} from '~/hooks/ui';
 import {DatePicker} from '@mui/x-date-pickers';
@@ -139,17 +139,19 @@ const TaskItiniaries = () => {
                     const itinerary_tasks = tasks?.filter(
                       (task) => task.itinerary_id === itinerary.id
                     );
+
                     const loc_ids = [...new Set(itinerary_tasks?.map((task) => task.loc_id))];
-                    const grouped_location_tasks = itinerary_tasks?.reduce(
-                      (acc: Record<number, Task[]>, task) => {
-                        if (!acc[task.loc_id]) {
-                          acc[task.loc_id] = [];
-                        }
-                        acc[task.loc_id].push(task);
-                        return acc;
-                      },
-                      {}
-                    );
+
+                    const locations = loc_ids
+                      .map((loc_id) => ({
+                        loc_id,
+                        loc_name:
+                          itinerary_tasks?.find((task) => task.loc_id === loc_id)?.location_name ??
+                          '',
+                      }))
+                      .sort((a, b) =>
+                        a.loc_name.localeCompare(b.loc_name, 'da', {sensitivity: 'base'})
+                      );
 
                     let color = undefined;
 
@@ -386,10 +388,10 @@ const TaskItiniaries = () => {
                             >
                               <Box display="flex" gap={0.5} flexDirection={'column'}>
                                 {expanded
-                                  ? loc_ids.map((loc_id) => {
+                                  ? locations.map((location) => {
                                       return (
                                         <Box
-                                          key={loc_id}
+                                          key={location.loc_id}
                                           display="flex"
                                           gap={1}
                                           alignItems={'center'}
@@ -401,10 +403,10 @@ const TaskItiniaries = () => {
                                               <Link
                                                 onClick={(e) => {
                                                   e.stopPropagation();
-                                                  setLocId(loc_id);
+                                                  setLocId(location.loc_id);
                                                 }}
                                               >
-                                                {grouped_location_tasks?.[loc_id][0].location_name}
+                                                {location.loc_name}
                                               </Link>
                                             </Typography>
                                           </Box>
