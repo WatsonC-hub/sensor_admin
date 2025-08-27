@@ -1,6 +1,6 @@
 import {Box, Chip, Grid2, IconButton, Link, Typography} from '@mui/material';
 
-import {useSearchBorehole} from '~/features/station/api/useBorehole';
+import {useFindBorehole} from '~/features/station/api/useBorehole';
 import {getGroupLink} from '~/helpers/links';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -13,10 +13,9 @@ const BoreholeContent = () => {
   const {boreholeno} = useAppContext(['boreholeno']);
   const {boreholeIntake} = useNavigationFunctions();
 
-  const {data: boreholes} = useSearchBorehole(boreholeno);
-  const data = boreholes?.find((borehole) => borehole.boreholeno === boreholeno);
+  const {data, isLoading} = useFindBorehole(boreholeno);
 
-  if (data === undefined) {
+  if (isLoading || !data) {
     return (
       <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
         <Box display={'flex'} flexDirection={'column'} mt={-2} gap={0.5}>
