@@ -10,17 +10,20 @@ type FormAutocompleteProps<T extends FieldValues, K extends object, M extends bo
   gridSizes?: GridBaseProps['size'];
   icon?: React.ReactNode;
   onChangeCallback?: (value: M extends true ? K[] : K) => void;
-  onSelectChange: (value: M extends true ? Array<K> : K) => M extends true ? K[] : K | null;
+  // onSelectChange: (value: M extends true ? Array<K> : K) => M extends true ? K[] : K | null;
 } & Omit<AutoCompleteFieldProps<K, M>, 'selectValue' | 'onChange'>;
 
 const FormAutocomplete = <T extends FieldValues, K extends object, M extends boolean = false>({
   name,
   gridSizes,
   onChangeCallback,
-  onSelectChange,
+  // onSelectChange,
   ...props
 }: FormAutocompleteProps<T, K, M>) => {
-  const {control} = useFormContext<T>();
+  const {
+    control,
+    formState: {errors},
+  } = useFormContext<T>();
   const {gridSizes: contextGridSizes} = React.useContext(FormContext);
   return (
     <Grid2 size={gridSizes ?? contextGridSizes}>
@@ -28,14 +31,17 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
         name={name}
         control={control}
         render={({field: {value, onChange}}) => {
-          const selectValue = onSelectChange(value);
+          // const selectedValue = props.multiple
+          //   ? props.options.filter((o) => (value as (string | number)[]).includes(o.id))
+          //   : (props.options.find((o) => o.id === value) ?? null);
+
           return (
             <ExtendedAutocomplete<K, M>
-              selectValue={selectValue}
+              selectValue={value}
+              error={errors[name]?.message as string | undefined}
               onChange={(value) => {
                 onChange(value);
-                if (onChangeCallback && value && typeof value === 'object')
-                  onChangeCallback(value as M extends true ? K[] : K);
+                if (onChangeCallback) onChangeCallback(value as M extends true ? K[] : K);
               }}
               {...props}
             />

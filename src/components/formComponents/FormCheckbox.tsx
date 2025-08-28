@@ -18,6 +18,7 @@ type FormCheckboxProps<T extends FieldValues> = {
   gridSizes?: GridBaseProps['size'];
   icon?: React.ReactNode;
   gridProps?: Grid2Props;
+  onChangeCallback?: (value: boolean) => void;
   warning?: (value: boolean) => string | undefined;
 } & Omit<CheckboxProps, 'name' | 'checked' | 'onChange' | 'inputRef'>;
 
@@ -27,6 +28,7 @@ const FormCheckbox = <T extends FieldValues>({
   gridSizes,
   icon,
   gridProps,
+  onChangeCallback,
   warning,
   ...props
 }: FormCheckboxProps<T>) => {
@@ -49,6 +51,7 @@ const FormCheckbox = <T extends FieldValues>({
                   }}
                   onChange={(e) => {
                     onChange(e.target.checked);
+                    if (onChangeCallback) onChangeCallback(e.target.checked);
                   }}
                   {...props}
                 />

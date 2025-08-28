@@ -1,7 +1,7 @@
 import {apiClient} from '~/apiClient';
 import {MutateOptions, queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {useAppContext} from '~/state/contexts';
-import {AlarmCriteriaType, AlarmHistory, AlarmPost, AlarmResponse, alarmTable} from '../types';
+import {AlarmNotificationType, AlarmHistory, AlarmPost, AlarmResponse, alarmTable} from '../types';
 import {queryClient} from '~/queryClient';
 
 interface AlarmBase {
@@ -55,12 +55,12 @@ const alarmDelOptions = {
   },
 };
 
-const alarmCriteriaGetOptions = (ts_id: number | undefined) => {
+const alarmNotificationGetOptions = (ts_id: number | undefined) => {
   return {
-    queryKey: ['alarm_criteria', ts_id],
+    queryKey: ['alarm_notification', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<AlarmCriteriaType>>(
-        `/sensor_field/stamdata/alarms/criteria`
+      const {data} = await apiClient.get<Array<AlarmNotificationType>>(
+        `/sensor_field/stamdata/alarms/notification`
       );
       return data;
     },
@@ -79,36 +79,37 @@ const alarmGetOptions = (ts_id: number | undefined) =>
     },
     enabled: !!ts_id,
     select: (data) => {
-      const transformedAlarm: alarmTable[] = data.map(
-        (alarm) =>
-          ({
-            gid: alarm.gid,
-            name: alarm.name,
-            note_to_include: alarm.note_to_include,
-            groups: [],
-            alarm_notifications: alarm.alarm_notifications,
-            alarm_contacts: alarm.alarm_contacts.map((contact) => ({
+      const transformedAlarms: alarmTable[] = data.map((alarm) => {
+        const transformedAlarm = {
+          id: alarm.id,
+          name: alarm.name,
+          comment: alarm.comment,
+          group_id: alarm.group_id ?? '',
+          alarm_notifications: alarm.alarm_notifications ?? [],
+          alarm_contacts:
+            alarm.alarm_contacts?.map((contact) => ({
               contact_id: contact.contact_id,
               name: contact.name,
               sms: {
-                sms: contact.sms,
-                to: contact.sms_to,
-                from: contact.sms_from,
+                selected: contact.sms ?? false,
+                to: contact.sms_to?.slice(0, contact.sms_to.lastIndexOf(':')) ?? '',
+                from: contact.sms_from?.slice(0, contact.sms_from.lastIndexOf(':')) ?? '',
               },
               email: {
-                email: contact.email,
-                to: contact.email_to,
-                from: contact.email_from,
+                selected: contact.email ?? false,
+                to: contact.email_to?.slice(0, contact.email_to.lastIndexOf(':')) ?? '',
+                from: contact.email_from?.slice(0, contact.email_from.lastIndexOf(':')) ?? '',
               },
               call: {
-                call: contact.call,
-                to: contact.call_to,
-                from: contact.call_from,
+                selected: contact.call ?? false,
+                to: contact.call_to?.slice(0, contact.call_to.lastIndexOf(':')) ?? '',
+                from: contact.call_from?.slice(0, contact.call_from.lastIndexOf(':')) ?? '',
               },
-            })),
-          }) as alarmTable
-      );
-      return transformedAlarm;
+            })) ?? [],
+        } as alarmTable;
+        return transformedAlarm;
+      });
+      return transformedAlarms;
     },
   });
 
@@ -158,13 +159,13 @@ export const useAlarm = () => {
     },
   });
 
-  const getCriteria = useQuery({
-    ...alarmCriteriaGetOptions(ts_id),
+  const getAlarmNotification = useQuery({
+    ...alarmNotificationGetOptions(ts_id),
   });
 
   return {
     get,
-    getCriteria,
+    getAlarmNotification,
     getHistory,
     post: (data: AlarmsPost, options?: MutateOptions<any, Error, AlarmsPost, unknown>) =>
       post.mutate(data, options),

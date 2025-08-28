@@ -16,16 +16,16 @@ const Alarms = () => {
     get: {data: alarms},
   } = useAlarm();
 
-  const mapped_alarms = alarms?.map(
-    (alarm) =>
-      ({
-        gid: alarm.gid,
-        name: alarm.name,
-        note_to_include: alarm.note_to_include,
-        alarm_notifications: alarm.alarm_notifications ?? [],
-        alarm_contacts: alarm.alarm_contacts ?? [],
-      }) as alarmTable
-  );
+  const mapped_alarms = alarms?.map((alarm) => {
+    return {
+      id: alarm.id,
+      name: alarm.name,
+      comment: alarm.comment,
+      alarm_notifications: alarm.alarm_notifications ?? [],
+      alarm_contacts: alarm.alarm_contacts ?? [],
+      group_id: alarm.group_id ?? '',
+    } as alarmTable;
+  });
 
   const cancel = () => {
     setOpen(false);

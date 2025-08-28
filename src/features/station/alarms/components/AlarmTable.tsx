@@ -11,10 +11,11 @@ import AlarmHistoryTable from './AlarmHistoryTable';
 import {alarmTable} from '../types';
 import AlarmFormDialog from './AlarmFormDialog';
 import AlarmContactTable from './AlarmContactTable';
-import AlarmCriteriaTable from './AlarmCriteriaTable';
+import AlarmNotificationTable from './AlarmNotificationTable';
 import {useAlarm} from '../api/useAlarm';
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
+import {useLocationData} from '~/hooks/query/useMetadata';
 type AlarmTableProps = {
   alarms: Array<alarmTable> | undefined;
 };
@@ -22,15 +23,15 @@ type AlarmTableProps = {
 const AlarmTable = ({alarms}: AlarmTableProps) => {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState<boolean>(false);
   const {ts_id} = useAppContext(['ts_id']);
-  const [selectedGid, setSelectedGid] = React.useState<number>(-1);
-
+  const [selectedId, setSelectedId] = React.useState<string>('');
+  const {data: location_data} = useLocationData();
   const {
     getHistory: {data: alarmHistory},
     del: deleteAlarm,
   } = useAlarm();
 
   const handleDelete = async () => {
-    deleteAlarm({path: `${ts_id}/delete/${selectedGid}`});
+    deleteAlarm({path: `${ts_id}/delete/${selectedId}`});
   };
 
   const [alarmHistoryOpen, setAlarmHistoryOpen] = React.useState<boolean>(false);
@@ -52,6 +53,12 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
             },
           };
         },
+      },
+      {
+        header: 'Grupper',
+        id: 'group_id',
+        accessorFn: (row) =>
+          location_data?.groups.find((group) => group.id === row.group_id)?.group_name,
       },
     ],
     []
@@ -84,9 +91,9 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
     },
     renderDetailPanel: ({row}) => {
       const alarmContacts = row.original.alarm_contacts || [];
-      const alarmCriteria = row.original.alarm_notifications || [];
+      const alarmNotification = row.original.alarm_notifications || [];
       return (
-        (alarmCriteria.length > 0 || alarmContacts.length > 0) && (
+        (alarmNotification.length > 0 || alarmContacts.length > 0) && (
           <Box
             display={'flex'}
             flexDirection={'row'}
@@ -94,12 +101,12 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
             justifyContent={'space-between'}
             gap={2}
           >
-            {alarmCriteria.length > 0 && (
+            {alarmNotification.length > 0 && (
               <Box>
                 <Typography variant="body2" fontWeight={'bold'} height={34} alignContent={'center'}>
-                  Alarm kriterier
+                  Alarm notifikationer
                 </Typography>
-                <AlarmCriteriaTable alarm_notifications={alarmCriteria} />
+                <AlarmNotificationTable alarm_notifications={alarmNotification} />
               </Box>
             )}
             {alarmContacts && alarmContacts.length > 0 && (
@@ -142,7 +149,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
           table.setEditingRow(row);
         }}
         onDeleteBtnClick={() => {
-          setSelectedGid(row.original.gid);
+          setSelectedId(row.original.id);
           setOpenDeleteDialog(true);
         }}
       />

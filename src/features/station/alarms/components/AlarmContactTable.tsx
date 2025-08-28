@@ -24,11 +24,11 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         maxSize: 20,
         Cell: ({cell}) => {
           const {sms} = cell.row.original;
-          const smsString = `${sms.from?.split(':')[0]} - ${sms.to?.split(':')[0]}`;
+          const smsString = `${sms.from} - ${sms.to}`;
           return (
             <Box display="flex" flexDirection={'column'} alignItems="center">
-              <Checkbox checked={sms.sms} disabled />
-              {sms.sms && <Typography variant="body2">{smsString}</Typography>}
+              <Checkbox checked={sms.selected} disabled />
+              {sms.selected && <Typography variant="body2">{smsString}</Typography>}
             </Box>
           );
         },
@@ -40,11 +40,11 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         maxSize: 20,
         Cell: ({cell}) => {
           const {email} = cell.row.original;
-          const emailString = `${email.from?.split(':')[0]} - ${email.to?.split(':')[0]}`;
+          const emailString = `${email.from} - ${email.to}`;
           return (
             <Box display="flex" flexDirection={'column'} alignItems="center">
-              <Checkbox checked={email.email} disabled />
-              {email.email && <Typography variant="body2">{emailString}</Typography>}
+              <Checkbox checked={email.selected} disabled />
+              {email.selected && <Typography variant="body2">{emailString}</Typography>}
             </Box>
           );
         },
@@ -56,11 +56,11 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         maxSize: 20,
         Cell: ({cell}) => {
           const {call} = cell.row.original;
-          const callString = `${call.from?.split(':')[0]} - ${call.to?.split(':')[0]}`;
+          const callString = `${call.from} - ${call.to}`;
           return (
             <Box display="flex" flexDirection={'column'} alignItems="center">
-              <Checkbox checked={call.call} disabled />
-              {call.call && <Typography variant="body2">{callString}</Typography>}
+              <Checkbox checked={call.selected} disabled />
+              {call.selected && <Typography variant="body2">{callString}</Typography>}
             </Box>
           );
         },

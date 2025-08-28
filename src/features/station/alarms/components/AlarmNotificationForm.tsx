@@ -8,17 +8,15 @@ import {getColor} from '~/features/notifications/utils';
 import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import SouthIcon from '@mui/icons-material/South';
 
-const AlarmCriteriaTypedForm = createTypedForm<AlarmsFormValues>();
+const AlarmNotificationTypedForm = createTypedForm<AlarmsFormValues>();
 
-const AlarmCriteriaForm = () => {
-  const {setValue, watch} = useFormContext<AlarmsFormValues>();
-  const criteria = watch('criteria');
+const AlarmNotificationForm = () => {
+  const {setValue, watch, trigger} = useFormContext<AlarmsFormValues>();
+  const Notification_ids = watch('notification_ids');
 
   const {
     get: {data},
   } = useNotificationType();
-
-  if (data === undefined || data.length === 0) return null;
 
   return (
     <Box display={'flex'} flexDirection={'column'} width={'100%'} gap={1}>
@@ -35,10 +33,12 @@ const AlarmCriteriaForm = () => {
               borderColor: sensorColors[FlagEnum.CRITICAL].color,
             }}
             onClick={() => {
-              setValue('criteria', [
+              setValue('notification_ids', [
                 ...new Set([
-                  ...criteria,
-                  ...data.filter((item) => item.flag === FlagEnum.CRITICAL).map((item) => item.gid),
+                  ...Notification_ids,
+                  ...(data
+                    ?.filter((item) => item.flag === FlagEnum.CRITICAL)
+                    .map((item) => item.gid) ?? []),
                 ]),
               ]);
             }}
@@ -56,10 +56,12 @@ const AlarmCriteriaForm = () => {
               borderRadius: 2.5,
             }}
             onClick={() => {
-              setValue('criteria', [
+              setValue('notification_ids', [
                 ...new Set([
-                  ...criteria,
-                  ...data.filter((item) => item.flag === FlagEnum.WARNING).map((item) => item.gid),
+                  ...Notification_ids,
+                  ...(data
+                    ?.filter((item) => item.flag === FlagEnum.WARNING)
+                    .map((item) => item.gid) ?? []),
                 ]),
               ]);
             }}
@@ -77,14 +79,14 @@ const AlarmCriteriaForm = () => {
               borderRadius: 2.5,
             }}
             onClick={() => {
-              const criteriaArray = [
+              const alarmNotificationArray = [
                 ...new Set([
-                  ...criteria,
-                  ...data.filter((item) => item.flag === FlagEnum.INFO).map((item) => item.gid),
+                  ...Notification_ids,
+                  ...(data?.filter((item) => item.flag === FlagEnum.INFO).map((item) => item.gid) ??
+                    []),
                 ]),
               ];
-              // console.log(criteriaArray);
-              setValue('criteria', criteriaArray);
+              setValue('notification_ids', alarmNotificationArray);
             }}
             endIcon={<SouthIcon sx={{width: '16px'}} />}
           >
@@ -92,27 +94,41 @@ const AlarmCriteriaForm = () => {
           </Button>
         </ButtonGroup>
       </Box>
-      <AlarmCriteriaTypedForm.Autocomplete<NotificationType, true>
-        options={data}
+      <AlarmNotificationTypedForm.Autocomplete<NotificationType, true>
+        options={data ?? []}
         labelKey="name"
-        name="criteria"
+        name="notification_ids"
         multiple={true}
         label={`Notifikationer`}
         fullWidth
         gridSizes={12}
-        onSelectChange={() => {
-          return data.filter((o) => criteria.includes(o.gid));
-        }}
         textFieldsProps={{
           label: 'Notifikationer',
           placeholder: 'Søg og vælg notifikation...',
           required: true,
         }}
+        getOptionLabel={(o) => {
+          if (!o) return '';
+
+          if (typeof o === 'string') {
+            return data?.find((item) => item.gid === o)?.name ?? '';
+          }
+
+          return o ? (o.name ?? '') : '';
+        }}
+        onChangeCallback={(value) => {
+          setValue(
+            'notification_ids',
+            value.map((v) => (typeof v === 'number' ? v : v.gid))
+          );
+          trigger('notification_ids');
+        }}
         renderTags={(value, getTagProps) => {
           return value.map((option, index) => {
+            const gid = typeof option === 'number' ? option : option.gid;
             const content = (
               <Typography display="inline" variant="body2">
-                {data.find((item) => item.gid === option.gid)?.name}
+                {data?.find((item) => item.gid === gid)?.name}
               </Typography>
             );
 
@@ -122,7 +138,7 @@ const AlarmCriteriaForm = () => {
                 label={content}
                 sx={{
                   backgroundColor: getColor({
-                    flag: data.find((item) => item.gid === option.gid)?.flag ?? 0,
+                    flag: data?.find((item) => item.gid === gid)?.flag ?? 0,
                   }),
                   color: 'HighlightText',
                   opacity: 0.8,
@@ -134,6 +150,15 @@ const AlarmCriteriaForm = () => {
             );
           });
         }}
+        renderOption={(props, option) => {
+          return (
+            <li {...props} key={option.gid}>
+              <Typography display="inline" variant="body2">
+                {option.name}
+              </Typography>
+            </li>
+          );
+        }}
         filterSelectedOptions
         selectOnFocus
         clearOnBlur
@@ -143,4 +168,4 @@ const AlarmCriteriaForm = () => {
   );
 };
 
-export default AlarmCriteriaForm;
+export default AlarmNotificationForm;

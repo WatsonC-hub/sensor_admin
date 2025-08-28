@@ -6,15 +6,17 @@ import {useTable} from '~/hooks/useTable';
 import useNotificationType, {NotificationType} from '~/hooks/query/useNotificationTypes';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 
-type AlarmCriteriaTableProps = {
+type AlarmNotificationTableProps = {
   alarm_notifications: Array<number> | undefined;
 };
 
-const AlarmCriteriaTable = ({alarm_notifications}: AlarmCriteriaTableProps) => {
+const AlarmNotificationTable = ({alarm_notifications}: AlarmNotificationTableProps) => {
   const {
     get: {data: notifications},
   } = useNotificationType();
-  const data = notifications?.filter((n) => alarm_notifications?.some((o) => o === n.gid));
+  const data = notifications
+    ?.filter((n) => alarm_notifications?.some((o) => o === n.gid))
+    .sort((a, b) => b.flag - a.flag);
   const columns = useMemo<MRT_ColumnDef<NotificationType>[]>(
     () => [
       {
@@ -25,29 +27,29 @@ const AlarmCriteriaTable = ({alarm_notifications}: AlarmCriteriaTableProps) => {
         },
         Cell: ({cell, row}) => {
           return (
-            <Box display="flex" alignItems="center" flexDirection="row" gap={1}>
-              <Typography variant="body2" color="white">
-                <NotificationIcon
-                  iconDetails={{
-                    notification_id: row.original.gid,
-                    flag: row.original.flag,
-                  }}
-                />
+            <Box display="flex" alignItems="center" flexDirection="row" color="white" gap={1}>
+              <NotificationIcon
+                iconDetails={{
+                  notification_id: row.original.gid,
+                  flag: row.original.flag,
+                }}
+              />
+              <Typography variant="body2" color="textPrimary">
+                {cell.getValue<string>()}
               </Typography>
-              <span>{cell.getValue<string>()}</span>
             </Box>
           );
         },
       },
-      {
-        header: 'Kritiskhed',
-        id: 'notification_gid',
-        size: 20,
-        accessorFn: (row) => {
-          const flag = row.flag;
-          return flag === 3 ? 'Kritisk' : flag === 2 ? 'Opmærksom' : 'Ukritisk';
-        },
-      },
+      // {
+      //   header: 'Kritiskhed',
+      //   id: 'gid',
+      //   size: 20,
+      //   accessorFn: (row) => {
+      //     const flag = row.flag;
+      //     return flag === 3 ? 'Kritisk' : flag === 2 ? 'Opmærksom' : 'Ukritisk';
+      //   },
+      // },
     ],
     [notifications]
   );
@@ -92,4 +94,4 @@ const AlarmCriteriaTable = ({alarm_notifications}: AlarmCriteriaTableProps) => {
   );
 };
 
-export default AlarmCriteriaTable;
+export default AlarmNotificationTable;

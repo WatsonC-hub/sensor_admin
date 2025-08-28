@@ -1,17 +1,15 @@
-import {Group} from '~/types';
-
-export type AlarmCriteriaType = {
+export type AlarmNotificationType = {
   id: number;
 };
 
-export type CriteriaTable = {
+export type AlarmNotificationTable = {
   gid: number;
   notification_gid: number;
   name: string;
 };
 
 export type AlarmContact = {
-  contact_id: string | undefined;
+  contact_id: string;
   name: string;
   sms: boolean;
   sms_to: string | undefined;
@@ -38,20 +36,20 @@ export type AlarmContactPost = {
 };
 
 export type ContactTable = {
-  contact_id: string | undefined;
+  contact_id: string;
   name: string;
   sms: {
-    sms: boolean;
+    selected: boolean;
     to: string | undefined;
     from: string | undefined;
   };
   email: {
-    email: boolean;
+    selected: boolean;
     to: string | undefined;
     from: string | undefined;
   };
   call: {
-    call: boolean;
+    selected: boolean;
     to: string | undefined;
     from: string | undefined;
   };
@@ -67,26 +65,32 @@ export type AlarmHistory = {
 };
 
 export type AlarmResponse = {
-  gid: number;
+  id: string;
   name: string;
-  note_to_include?: string;
-  alarm_notifications: Array<number>;
-  alarm_contacts: Array<AlarmContact>;
+  comment?: string;
+  group_id: string | undefined;
+  alarm_notifications: Array<number> | undefined;
+  alarm_contacts: Array<AlarmContact> | undefined;
 };
 
 export type AlarmPost = {
   name: string;
-  note_to_include?: string;
-  groups: Array<string>;
+  comment?: string;
+  group_id: string;
   alarm_contacts: Array<AlarmContactPost>;
   notification_ids: Array<number> | undefined;
 };
 
 export type alarmTable = {
-  gid: number;
+  id: string;
   name: string;
-  note_to_include: string | undefined;
-  groups: Array<Group> | undefined;
+  comment: string | undefined;
+  group_id: string | undefined;
   alarm_notifications: Array<number>;
   alarm_contacts: Array<ContactTable>;
+};
+
+export type AlarmContactTypeDialog = {
+  contact_id: string | undefined;
+  name: string;
 };

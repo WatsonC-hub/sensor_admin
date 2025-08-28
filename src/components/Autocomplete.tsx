@@ -46,8 +46,12 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys
-      isOptionEqualToValue={(option, value) => option[labelKey] === value[labelKey]}
-      getOptionLabel={(option) => (option[labelKey] ? `${option[labelKey]}` : '')}
+      isOptionEqualToValue={(option, value) => {
+        return option[labelKey] === value[labelKey];
+      }}
+      getOptionLabel={(option) => {
+        return option[labelKey] ? `${option[labelKey]}` : '';
+      }}
       renderInput={(params) => {
         const {InputProps} = params;
         let sx = {
