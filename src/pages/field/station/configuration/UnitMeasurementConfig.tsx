@@ -97,6 +97,9 @@ const UnitMeasurementConfig = () => {
   }
 
   const configChange = convertDateWithTimeStamp(data?.estimatedConfigChange);
+  const num_measurements = data?.currentConfig?.sendInterval
+    ? Math.round(data?.currentConfig?.sendInterval / data?.currentConfig?.sampleInterval)
+    : 0;
   return (
     <FormProvider {...formMethods}>
       <Box width="fit-content" alignItems="center">
@@ -127,7 +130,8 @@ const UnitMeasurementConfig = () => {
           fullWidth
           value={
             data?.currentConfig?.sendInterval
-              ? convertMinutesToTime(data?.currentConfig?.sendInterval)
+              ? convertMinutesToTime(data?.currentConfig?.sendInterval) +
+                ` (${num_measurements} målinger)`
               : ''
           }
           slotProps={{
@@ -216,11 +220,9 @@ const UnitMeasurementConfig = () => {
         </FormInput>
       </Box>
 
-      {configChange && (
-        <Typography variant="body2" color="textSecondary" sx={{mt: 1, mb: 2}}>
-          Forventet tidspunkt for omkonfigurering: {configChange}
-        </Typography>
-      )}
+      <Typography variant="body2" color="textSecondary" sx={{mt: 1, mb: 2}}>
+        Forventet tidspunkt for omkonfigurering {configChange ? configChange : 'ukendt'}
+      </Typography>
 
       <Box display="flex" justifyContent="flex-end">
         <Button
