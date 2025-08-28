@@ -108,7 +108,7 @@ const TaskItiniaries = () => {
         <Box px={1}>
           <TooltipWrapper
             description="Læs mere om ture i vores dokumentation for at få et bedre overblik over hvordan du kan bruge ture i Field appen"
-            url="https://watsonc.dk/guides/field#ture"
+            url="https://watsonc.dk/guides/opgavestyring/#serviceture"
           >
             <Button
               bttype="primary"
