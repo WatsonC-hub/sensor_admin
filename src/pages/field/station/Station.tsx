@@ -32,7 +32,7 @@ import {Fullscreen, FullscreenExit} from '@mui/icons-material';
 import GraphManager from '~/features/station/components/GraphManager';
 import EditLocation from './stamdata/EditLocation';
 import EditTimeseries from './stamdata/EditTimeseries';
-import Configuration from './Configuration';
+import Configuration from './configuration/Configuration';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
