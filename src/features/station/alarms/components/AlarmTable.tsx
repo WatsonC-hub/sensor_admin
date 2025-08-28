@@ -45,7 +45,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
         size: 20,
       },
       {
-        header: 'Grupper',
+        header: 'Gruppe',
         id: 'group_id',
         accessorFn: (row) =>
           location_data?.groups.find((group) => group.id === row.group_id)?.group_name,
