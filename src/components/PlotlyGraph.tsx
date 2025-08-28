@@ -1,5 +1,4 @@
 import {Box, ClickAwayListener, Tooltip} from '@mui/material';
-import moment from 'moment';
 import type {
   Layout,
   PlotData,
@@ -27,6 +26,8 @@ import {useAppContext} from '~/state/contexts';
 
 import {DataToShow} from '~/types';
 import GraphSwitch from '~/features/station/components/GraphSwitch';
+import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
+import dayjs from 'dayjs';
 
 interface PlotlyGraphProps {
   plotEventProps?: {
@@ -61,10 +62,38 @@ export default function PlotlyGraph({
   const {data: metadata} = useTimeseriesData();
   const tstype_name = metadata?.tstype_name;
   const unit = metadata?.unit;
+  const plot = document.getElementById('graph');
+  if (plot) Plotly.Plots.resize(plot);
+  // console.log('plot', Plotly.rezi);
   const [isOpen, setIsOpen] = useState(false);
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
 
   const {mutation: correctMutation} = useCorrectData(metadata?.ts_id, 'graphData');
+  usePageActions([
+    {
+      id: 'correctData',
+      name: 'Genberegn data',
+      perform: () => {
+        correctMutation.mutate();
+      },
+      icon: <ReplayIcon />,
+      type: 'action',
+      shortcut: 'G',
+      group: 'Station',
+    },
+    {
+      id: 'downloadData',
+      name: 'Download data',
+      perform: () => {
+        const url = 'https://www.watsonc.dk/calypso/data_export/?ts_ids=' + ts_id;
+        window.open(url);
+      },
+      icon: <Download />,
+      type: 'action',
+      shortcut: 'D',
+      group: 'Station',
+    },
+  ]);
 
   const {isTouch, isMobile} = useBreakpoints();
 
@@ -88,7 +117,6 @@ export default function PlotlyGraph({
 
   const handleRelayout = (e: any) => {
     const doubleclick = e['xaxis.autorange'] === true && e['yaxis.autorange'] === true;
-
     if (doubleclick) {
       graphLayout('all');
       return;
@@ -129,18 +157,18 @@ export default function PlotlyGraph({
 
     if (dates.firstDate && dates.lastDate) {
       let range: Array<string> = [];
-      const lastDate = moment(dates.lastDate).format('YYYY-MM-DDTHH:mm');
+      const lastDate = dayjs(dates.lastDate).format('YYYY-MM-DDTHH:mm');
       if (type === 'all') {
-        const startDate = moment(dates.firstDate).format('YYYY-MM-DDTHH:mm');
+        const startDate = dayjs(dates.firstDate).format('YYYY-MM-DDTHH:mm');
         range = [startDate, lastDate];
       } else if (type === 'year') {
-        const x = moment(dates.lastDate).subtract(1, 'year').format('YYYY-MM-DDTHH:mm');
+        const x = dayjs(dates.lastDate).subtract(1, 'year').format('YYYY-MM-DDTHH:mm');
         range = [x, lastDate];
       } else if (type === 'month') {
-        const x = moment(dates.lastDate).subtract(1, 'month').format('YYYY-MM-DDTHH:mm');
+        const x = dayjs(dates.lastDate).subtract(1, 'month').format('YYYY-MM-DDTHH:mm');
         range = [x, lastDate];
       } else if (type === 'week') {
-        const x = moment(dates.lastDate).subtract(7, 'days').format('YYYY-MM-DDTHH:mm');
+        const x = dayjs(dates.lastDate).subtract(7, 'days').format('YYYY-MM-DDTHH:mm');
         range = [x, lastDate];
       }
 
@@ -277,7 +305,7 @@ export default function PlotlyGraph({
         onSelected={(e) => {
           if (plotEventProps?.onSelected) plotEventProps.onSelected(e);
         }}
-        divId="qagraphDiv"
+        divId="graph"
         onRelayout={handleRelayout}
         data={data}
         layout={{...mergedLayout, shapes: shapes, annotations: annotations}}

@@ -2,7 +2,6 @@ import {AddCircle} from '@mui/icons-material';
 import {Card, Box, Divider, Typography} from '@mui/material';
 
 import {useQuery} from '@tanstack/react-query';
-import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider} from 'react-hook-form';
 
@@ -11,6 +10,8 @@ import FabWrapper from '~/components/FabWrapper';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
 import usePermissions from '~/features/permissions/api/usePermissions';
+
+import GraphManager from '~/features/station/components/GraphManager';
 import usePejlingForm from '~/features/station/components/pejling/api/usePejlingForm';
 import CompoundPejling from '~/features/station/components/pejling/CompoundPejling';
 import {
@@ -18,7 +19,6 @@ import {
   PejlingSchemaType,
 } from '~/features/station/components/pejling/PejlingSchema';
 import {PejlingItem, LatestMeasurement} from '~/types';
-import GraphManager from '~/features/station/components/GraphManager';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
@@ -31,6 +31,7 @@ import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {useSetAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const Pejling = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -53,7 +54,7 @@ const Pejling = () => {
     location_permissions,
   } = usePermissions(loc_id);
 
-  const [formMethods, PejlingForm, Table, getInitialData] = usePejlingForm({
+  const [formMethods, PejlingForm, Table, getInitialData, schema] = usePejlingForm({
     loctype_id: timeseries_data?.loctype_id,
     tstype_id: timeseries_data?.tstype_id,
   });
@@ -64,7 +65,7 @@ const Pejling = () => {
     isError,
     error,
   } = useQuery<LatestMeasurement, APIError>({
-    queryKey: ['latest_measurement', ts_id],
+    queryKey: queryKeys.Timeseries.latestMeasurement(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<LatestMeasurement>(
         `/sensor_field/station/latest_measurement/${ts_id}`
@@ -72,7 +73,7 @@ const Pejling = () => {
 
       return data;
     },
-    staleTime: 10,
+    staleTime: 1000 * 60 * 2,
     enabled: ts_id !== undefined && ts_id !== null && ts_id !== -1,
   });
 
@@ -85,7 +86,7 @@ const Pejling = () => {
       path: `${ts_id}`,
       data: {
         ...values,
-        timeofmeas: moment(values.timeofmeas).toISOString(),
+        timeofmeas: values.timeofmeas,
       },
     };
 
@@ -116,8 +117,9 @@ const Pejling = () => {
   };
 
   const handleEdit = (data: PejlingItem) => {
-    data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
-    reset(data);
+    // data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
+    const {data: parsedData} = schema.safeParse(data);
+    reset(parsedData);
     setShowForm(true);
     setGid(data.gid);
   };
@@ -165,19 +167,16 @@ const Pejling = () => {
           {showForm === true && (
             <Card
               sx={{
-                marginLeft: {xs: '0%'},
-                mb: 3,
-                padding: 2,
                 borderRadius: 2.5,
                 display: 'flex',
                 flexDirection: 'column',
-                textAlign: 'center',
                 alignItems: 'center',
               }}
             >
-              <Typography variant="h5" component="h3" sx={{mb: 2}}>
+              <Typography variant="h5" component="h3">
                 {gid === undefined ? 'Indberet kontrol' : 'Rediger kontrol'}
               </Typography>
+
               <CompoundPejling
                 submit={handlePejlingSubmit}
                 cancel={handleCancel}
@@ -201,18 +200,18 @@ const Pejling = () => {
             disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           />
         </Box>
-        <FabWrapper
-          icon={<AddCircle />}
-          text="Tilføj kontrol"
-          disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
-          onClick={() => {
-            setIsPump(measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false);
-            reset(getInitialData());
-            setShowForm(true);
-          }}
-          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-        />
       </StationPageBoxLayout>
+      <FabWrapper
+        icon={<AddCircle />}
+        text="Tilføj kontrol"
+        disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+        onClick={() => {
+          setIsPump(measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false);
+          reset(getInitialData());
+          setShowForm(true);
+        }}
+        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+      />
     </>
   );
 };

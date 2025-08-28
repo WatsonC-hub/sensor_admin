@@ -22,7 +22,7 @@ import Button from '~/components/Button';
 import useWatlevmpForm from '../api/useWatlevmpForm';
 import {useMutation} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
-import {useLocation} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import useTimeseriesForm from '../api/useTimeseriesForm';
 import StamdataWatlevmp from './stamdata/StamdataWatlevmp';
 import DefaultWatlevmpForm from './stamdata/stamdataComponents/DefaultWatlevmpForm';
@@ -32,6 +32,8 @@ import {ArrowBack, Save} from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AlertDialog from '~/components/AlertDialog';
 import {useLocationData} from '~/hooks/query/useMetadata';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import dayjs from 'dayjs';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
@@ -39,6 +41,7 @@ const CreateStation = () => {
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
   const size = isMobile ? 12 : 6;
+  const navigate = useNavigate();
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   let {state} = useLocation();
   const [activeStep, setActiveStep] = useState(
@@ -48,11 +51,13 @@ const CreateStation = () => {
   state = state ?? {};
 
   const loc_id: number | undefined = state?.loc_id ?? undefined;
+  const {data: locationData, isPending} = useLocationData(loc_id);
 
   const {data: metadata} = useLocationData(loc_id);
 
   const data = {
     ...state,
+    terrainqual: 'DTM',
     ...metadata,
   };
 
@@ -122,7 +127,7 @@ const CreateStation = () => {
   const unitFormMethods = useUnitForm<AddUnit>({
     mode: 'Add',
     defaultValues: {
-      startdate: '',
+      startdate: dayjs(),
       unit_uuid: '',
     },
   });
@@ -152,7 +157,10 @@ const CreateStation = () => {
     },
     onSuccess: (data) => {
       toast.success('Lokation oprettet');
-      locationNavigate(data.loc_id);
+      locationNavigate(data.loc_id, true);
+    },
+    meta: {
+      invalidates: [['metadata']],
     },
   });
 
@@ -170,7 +178,11 @@ const CreateStation = () => {
     },
     onSuccess: (data) => {
       toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
-      stationNavigate(data.loc_id, data.ts_id);
+      navigate('/');
+      stationNavigate(data.ts_id);
+    },
+    meta: {
+      invalidates: [['metadata']],
     },
   });
 
@@ -191,8 +203,11 @@ const CreateStation = () => {
       toast.success(
         loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
       );
-
-      stationNavigate(data.loc_id, data.ts_id);
+      navigate('/');
+      stationNavigate(data.ts_id);
+    },
+    meta: {
+      invalidates: [['metadata']],
     },
   });
 
@@ -307,6 +322,10 @@ const CreateStation = () => {
   }, [loctype_id]);
 
   useEffect(() => {
+    if (!isPending && locationData) resetLocation(defaultValues);
+  }, [locationData, isPending]);
+
+  useEffect(() => {
     clearWatlevmpErrors();
   }, [tstype_id]);
 
@@ -314,7 +333,9 @@ const CreateStation = () => {
     <>
       <NavBar>
         <NavBar.GoBack />
-        <NavBar.Title title="Opret Stamdata" />
+
+        <NavBar.Logo />
+
         <NavBar.Menu />
       </NavBar>
       <Box display="flex" flexDirection={'column'} overflow="auto">
@@ -330,6 +351,16 @@ const CreateStation = () => {
           size={size}
           py={2}
         >
+          <Box display={'flex'} flexDirection={'row'} justifyContent={'center'} width="100%">
+            <TooltipWrapper
+              description="Læs mere om hvordan en lokation oprettes"
+              url="https://www.watsonc.dk/guides/opret-ny-lokation-tidsserie/"
+            >
+              <Typography variant="h5" textAlign={'center'} fontWeight={'bold'}>
+                Opret ny station
+              </Typography>
+            </TooltipWrapper>
+          </Box>
           <Stepper nonLinear activeStep={activeStep} alternativeLabel>
             <Step
               key={'lokation'}

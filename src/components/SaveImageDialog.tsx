@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import moment from 'moment';
+import dayjs, {Dayjs} from 'dayjs';
 import React from 'react';
 import {toast} from 'react-toastify';
 
@@ -21,7 +21,7 @@ interface SaveImageDialogProps {
     gid: number;
     comment: string;
     public: boolean;
-    date: string;
+    date: Dayjs;
     imageurl?: string; // Assuming this property exists
     // Add any other properties as needed
   };
@@ -56,7 +56,7 @@ function SaveImageDialog({
         data: {
           comment: activeImage.comment,
           public: activeImage.public.toString(),
-          date: moment(activeImage.date).toISOString(),
+          date: activeImage.date,
           uri: dataUri,
         },
       };
@@ -77,7 +77,7 @@ function SaveImageDialog({
         data: {
           comment: activeImage.comment,
           public: activeImage.public.toString(),
-          date: moment(activeImage.date).toISOString(),
+          date: activeImage.date,
         },
       };
 
@@ -151,8 +151,8 @@ function SaveImageDialog({
             />
             <OwnDatePicker
               label={'Dato'}
-              value={moment(activeImage.date).toDate()}
-              onChange={(date) => changeData('date', moment(date).format('YYYY-MM-DD HH:mm'))}
+              value={activeImage.date}
+              onChange={(date) => changeData('date', dayjs(date))}
             />
           </Grid>
         </Grid>

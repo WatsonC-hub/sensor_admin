@@ -9,9 +9,8 @@ import {z} from 'zod';
 import {apiClient} from '~/apiClient';
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import FabWrapper from '~/components/FabWrapper';
 import {BuildRounded} from '@mui/icons-material';
@@ -19,10 +18,11 @@ import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import UnitEndDateDialog from './UnitEndDialog';
 import useUnitForm from '~/features/station/api/useUnitForm';
 import {EditUnit as EditUnitType, editUnitSchema} from '~/features/station/schema';
+
 import UnitHistoryTable from './UnitHistoryTable';
 
 const EditUnit = () => {
-  const {ts_id, loc_id} = useAppContext(['ts_id'], ['loc_id']);
+  const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData();
   const {data: unit_history} = useUnitHistory();
   const [selectedUnit, setSelectedUnit] = useState<number | ''>(unit_history?.[0]?.gid ?? '');
@@ -43,8 +43,10 @@ const EditUnit = () => {
       return out;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['udstyr', ts_id]});
-      queryClient.invalidateQueries({queryKey: ['metadata', ts_id]});
+      toast.success('Udstyr er opdateret');
+    },
+    meta: {
+      invalidates: [['metadata'], ['register']],
     },
   });
 
@@ -52,8 +54,8 @@ const EditUnit = () => {
 
   const {data: defaultValues} = editUnitSchema.safeParse({
     unit_uuid: unit?.uuid,
-    startdate: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm'),
-    enddate: moment(unit?.slutdato).format('YYYY-MM-DDTHH:mm'),
+    startdate: unit?.startdato,
+    enddate: unit?.slutdato,
   });
 
   const formMethods = useUnitForm<EditUnitType>({
@@ -65,44 +67,38 @@ const EditUnit = () => {
     const payload = {
       gid: selectedUnit,
       ...data,
-      startdate: moment(data.startdate).toISOString(),
-      enddate: moment(data.enddate).toISOString(),
     };
-    metadataEditUnitMutation.mutate(payload, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ['metadata', ts_id],
-        });
-        toast.success('Udstyr er opdateret');
-      },
-    });
+    metadataEditUnitMutation.mutate(payload);
   };
 
   return (
     <>
-      <Box
-        maxWidth={1080}
-        sx={{
-          borderRadius: 4,
-          padding: '16px',
-        }}
-      >
-        <FormProvider {...formMethods}>
-          <UnitHistoryTable submit={Submit} setSelectedUnit={setSelectedUnit} />
-          <UnitEndDateDialog
-            openDialog={openDialog}
-            setOpenDialog={setOpenDialog}
-            unit={unit_history?.[0]}
-          />
-          <AddUnitForm
-            udstyrDialogOpen={openAddUdstyr}
-            setUdstyrDialogOpen={setOpenAddUdstyr}
-            tstype_id={tstype_id}
-            mode="edit"
-          />
-        </FormProvider>
-      </Box>
-
+      <StationPageBoxLayout>
+        <Box
+          maxWidth={1080}
+          sx={{
+            borderRadius: 4,
+            padding: '16px',
+          }}
+        >
+          <FormProvider {...formMethods}>
+            <UnitHistoryTable submit={Submit} setSelectedUnit={setSelectedUnit} />
+            {openDialog && (
+              <UnitEndDateDialog
+                openDialog={openDialog}
+                setOpenDialog={setOpenDialog}
+                unit={unit_history?.[0]}
+              />
+            )}
+            <AddUnitForm
+              udstyrDialogOpen={openAddUdstyr}
+              setUdstyrDialogOpen={setOpenAddUdstyr}
+              tstype_id={tstype_id}
+              mode="edit"
+            />
+          </FormProvider>
+        </Box>
+      </StationPageBoxLayout>
       <FabWrapper
         icon={<BuildRounded />}
         text={fabText}

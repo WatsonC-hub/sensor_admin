@@ -10,8 +10,11 @@ import React, {useState} from 'react';
 
 import Button from '~/components/Button';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {apiClient, loginAPI, resetPassword} from '~/pages/field/fieldAPI';
+import {apiClient} from '~/apiClient';
+import {loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {queryClient} from '~/queryClient';
+import {userQueryOptions} from '~/features/auth/useUser';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 export default function Login() {
   const [userName, setUserName] = useState('');
@@ -40,12 +43,13 @@ export default function Login() {
             updatedAt: Date.now(),
           });
           queryClient.prefetchQuery({
-            queryKey: ['overblik'],
+            queryKey: queryKeys.overblik(),
             queryFn: async ({signal}) => {
               const {data} = await apiClient.get(`/sensor_admin/overblik`, {signal});
               return data;
             },
           });
+          queryClient.prefetchQuery(userQueryOptions);
           home();
         },
       }
@@ -116,6 +120,17 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             error={!!loginError}
             helperText={!!loginError && loginError}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSubmit();
+              } else if (e.key === 'Escape') {
+                e.preventDefault();
+                setUserName('');
+                setPassword('');
+                setLoginError('');
+              }
+            }}
           />
           <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2}}>
             <Button

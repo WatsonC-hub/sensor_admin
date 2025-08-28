@@ -17,21 +17,25 @@ import {
 } from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
 import {Maalepunkt} from '~/types';
 
 interface Props {
-  data: Maalepunkt[] | undefined;
   handleEdit: (maalepunkt: Maalepunkt) => void;
   handleDelete: (gid: number | undefined) => void;
   disabled: boolean;
 }
 
-export default function MaalepunktTableMobile({data, handleEdit, handleDelete, disabled}: Props) {
+export default function MaalepunktTableMobile({handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
   const {data: timeseries} = useTimeseriesData();
+
+  const {
+    get: {data},
+  } = useMaalepunkt();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -128,7 +132,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, d
   );
 
   return (
-    <Box sx={setTableBoxStyle(320)} width={'100%'}>
+    <Box sx={data && data.length > 4 ? setTableBoxStyle(320) : {}} width={'100%'}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}

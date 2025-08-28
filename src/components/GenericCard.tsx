@@ -33,7 +33,7 @@ const GenericCard = ({
     boxShadow: shadow,
   };
 
-  sx = merge(sx, props.sx);
+  sx = merge(props.sx, sx);
 
   return (
     <Card

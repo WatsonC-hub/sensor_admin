@@ -3,7 +3,7 @@ import MuiButton from '@mui/material/Button';
 import {merge} from 'lodash';
 
 interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
-  bttype: 'primary' | 'secondary' | 'tertiary' | 'link';
+  bttype: 'primary' | 'secondary' | 'tertiary' | 'link' | 'itinerary';
   children: React.ReactNode;
   target?: string;
 }
@@ -38,7 +38,20 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
     };
   }
 
-  sx = merge({}, props.sx, sx);
+  if (bttype === 'itinerary') {
+    sx = {
+      textTransform: 'initial',
+      my: 0.5,
+      p: '0.25rem 1rem',
+      borderRadius: 9999,
+      backgroundColor: 'white',
+      '&:disabled': {
+        backgroundColor: 'grey.200',
+      },
+    };
+  }
+
+  sx = merge({}, sx, props.sx);
 
   return (
     <MuiButton {...props} variant={bttype == 'link' ? 'text' : 'outlined'} sx={sx}>

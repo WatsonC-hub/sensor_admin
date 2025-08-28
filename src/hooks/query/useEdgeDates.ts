@@ -1,6 +1,7 @@
 import {useQuery} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 
 type EdgeDates = {
@@ -10,7 +11,7 @@ type EdgeDates = {
 
 export const useEdgeDates = (ts_id: number | undefined | null) => {
   const query = useQuery<EdgeDates | null, APIError>({
-    queryKey: ['all_range', ts_id],
+    queryKey: queryKeys.Timeseries.edgeDates(ts_id ?? undefined),
     queryFn: async () => {
       const {data} = await apiClient.get<EdgeDates | null>(
         `/sensor_field/station/graph_all_range/${ts_id}`

@@ -15,7 +15,6 @@ import {boreholeInitialData, initialData} from '~/features/pejling/const';
 import PejlingBoreholeTableMobile from '../components/tables/PejlingBoreholeTableMobile';
 import PejlingBoreholeTableDesktop from '../components/tables/PejlingBoreholeTableDesktop';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
-import moment from 'moment';
 import {zodResolver} from '@hookform/resolvers/zod';
 
 type PejlingFormProps = {
@@ -76,16 +75,21 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
 
       const mpData = opts[1]?.mpData;
       const out = await zodResolver(schema)(...opts);
-      const mp = mpData?.filter((elem) => {
+
+      if (values.timeofmeas === null) {
+        return out;
+      }
+
+      const mp = mpData?.some((elem) => {
         if (
-          moment(values.timeofmeas).isSameOrAfter(elem.startdate) &&
-          moment(values.timeofmeas).isBefore(elem.enddate)
+          values.timeofmeas.isSameOrAfter(elem.startdate) &&
+          values.timeofmeas.isBefore(elem.enddate)
         ) {
           return true;
         }
       });
 
-      if (mpData && (!mp || mp.length === 0) && tstype_id === 1) {
+      if (!mp && tstype_id === 1 && values.timeofmeas != null) {
         out.errors = {
           ...out.errors,
           timeofmeas: {
@@ -104,7 +108,7 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
     },
   });
 
-  return [formMethods, form, table, getInitialData] as const;
+  return [formMethods, form, table, getInitialData, schema] as const;
 };
 
 export default usePejlingForm;

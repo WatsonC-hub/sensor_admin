@@ -1,55 +1,48 @@
+// import {parseAsArrayOf, parseAsInteger, useQueryState} from 'nuqs';
 import {useMemo} from 'react';
 import {NavigateOptions, useNavigate} from 'react-router-dom';
+
+import {useDisplayState} from './ui';
 
 export const useNavigationFunctions = () => {
   const navigate = useNavigate();
 
+  const {setLocId, setTsId, setBoreholeNo, setIntakeNo, reset} = useDisplayState((state) => {
+    return {
+      setLocId: state.setLocId,
+      setTsId: state.setTsId,
+      setBoreholeNo: state.setBoreholeNo,
+      setIntakeNo: state.setIntakeNo,
+      reset: state.reset,
+    };
+  });
+
   const homeFunctions = {
-    home: () => navigate('/field'),
-    register: () => navigate('/register'),
+    home: () => {
+      navigate('/', {replace: true});
+      reset();
+    },
   };
 
   const adminFunctions = {
-    admin: () => navigate('/admin'),
-    adminNotifikationer: () => navigate('/admin/notifikationer'),
-    adminKvalitetssikring: (ts_id: number, loc_id: number) =>
-      navigate({
-        pathname: '/field/location/' + loc_id + '/' + ts_id,
-        search: '?page=justeringer',
-      }),
+    tasks: () => navigate('/admin/opgaver'),
   };
 
   const fieldFunctions = {
-    field: () => navigate('/field'),
-    location: (loc_id: number, options?: NavigateOptions) =>
-      navigate('/field/location/' + loc_id, options),
-    station: (
-      loc_id: number | undefined,
-      station_id: number | undefined,
-      options?: NavigateOptions
-    ) =>
-      navigate(
-        {
-          pathname: '/field/location/' + loc_id + '/' + station_id,
-        },
-        options
-      ),
-    stamdata: (
-      loc_id: number,
-      station_id: number,
-      tabValue: string = '0',
-      options?: NavigateOptions
-    ) =>
-      navigate(
-        '/field/location/' + loc_id + '/' + station_id + '?page=stamdata&tab=' + tabValue,
-        options
-      ),
-    borehole: (boreholeno: string, options?: NavigateOptions) =>
-      navigate('/field/borehole/' + boreholeno, options),
-    boreholeIntake: (boreholeno: string, intake: string | number, options?: NavigateOptions) =>
-      navigate('/field/borehole/' + boreholeno + '/' + intake, options),
+    location: (loc_id: number, navigateHome?: boolean) => {
+      if (navigateHome) homeFunctions.home();
+      setLocId(loc_id);
+    },
+    station: (ts_id: number, navigateHome?: boolean) => {
+      if (navigateHome) homeFunctions.home();
+      setTsId(ts_id);
+    },
+    boreholeIntake: (boreholeno: string, intake: number) => {
+      setBoreholeNo(boreholeno);
+      setIntakeNo(intake);
+    },
     createStamdata: (options?: NavigateOptions) => {
-      navigate('/field/stamdata', options);
+      navigate('/stamdata', options);
     },
     dataOverblik: (options?: NavigateOptions) => {
       navigate('/overview/data-overblik', options);

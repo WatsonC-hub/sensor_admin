@@ -7,7 +7,6 @@ import CardMedia from '@mui/material/CardMedia';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import type {UseMutationResult} from '@tanstack/react-query';
-import moment from 'moment';
 import React, {useState} from 'react';
 import {toast} from 'react-toastify';
 
@@ -62,8 +61,8 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         justifyContent: 'center',
         flexDirection: 'column ',
         borderRadius: 5,
-        width: 'fit-content',
-        height: 'fit-content',
+        minWidth: 0,
+        width: isMobile ? '300px' : '480px',
       }}
       key={image.gid.toString()}
     >
@@ -98,7 +97,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         }}
       >
         <Typography variant="body2" color="textSecondary" align="right" component="p">
-          {moment(image.date).format('YYYY-MM-DD HH:mm')}
+          {image.date.format('L LT')}
         </Typography>
         <Typography
           variant="body2"

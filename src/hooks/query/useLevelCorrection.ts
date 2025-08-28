@@ -1,4 +1,5 @@
-import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -8,8 +9,8 @@ import {useAppContext} from '~/state/contexts';
 type LevelCorrectionPayload = {
   path: string;
   data: {
-    date: string;
-    comment: string | undefined;
+    date: Dayjs;
+    comment?: string | null;
   };
 };
 
@@ -45,7 +46,6 @@ const levelCorrectionDelOptions = {
 };
 
 export const useLevelCorrection = () => {
-  const queryClient = useQueryClient();
   const {ts_id} = useAppContext(['ts_id']);
 
   const post = useMutation({
@@ -53,11 +53,11 @@ export const useLevelCorrection = () => {
     onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['qa_all', Number(variables.path)],
-      });
+    onSuccess: () => {
       rerunToast(ts_id);
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
@@ -67,10 +67,10 @@ export const useLevelCorrection = () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['qa_all'],
-      });
       rerunToast(ts_id);
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
@@ -80,10 +80,10 @@ export const useLevelCorrection = () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['qa_all'],
-      });
       rerunToast(ts_id);
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 

@@ -6,6 +6,7 @@ import React, {useEffect, useState} from 'react';
 import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 import {BoreholeMeasurement} from '~/types';
@@ -34,7 +35,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState<Array<string | number>>([]);
 
   const {data: jupiterData} = useQuery({
-    queryKey: ['jupiter_waterlevel', boreholeno, intakeno],
+    queryKey: queryKeys.Borehole.jupiterData(boreholeno, intakeno),
     queryFn: async () => {
       const {data} = await apiClient.get<JupiterData>(
         `/sensor_field/borehole/jupiter/measurements/${boreholeno}/${intakeno}`
@@ -82,7 +83,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
   });
 
   const plotOurData: Partial<PlotData> = {
-    x: xOurData,
+    x: Array.prototype.map((item) => item.toISOString(), xOurData),
     y: yOurData,
     name: 'Calypso data',
     type: 'scattergl',

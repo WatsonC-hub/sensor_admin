@@ -20,11 +20,12 @@ import Button from '~/components/Button';
 import {Save} from '@mui/icons-material';
 import {useAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
-import moment from 'moment';
 import {LatestMeasurement, Maalepunkt} from '~/types';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {get} from 'lodash';
 import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
 
 interface PejlingProps {
   submit: (values: PejlingSchemaType | PejlingBoreholeSchemaType) => void;
@@ -87,12 +88,18 @@ const CompoundPejling = ({
   useEffect(() => {
     let latestmeas: number | undefined = undefined;
     let dynamicMeas: number | undefined = undefined;
+    if (timeofmeas == null) {
+      setDynamic([]);
+      setHide(true);
+      setCurrentMP(null);
+      setElevationDiff(undefined);
+      return;
+    }
+
+    const formattedTimeofMeas = timeofmeas.format('YYYY-MM-DD HH:mm');
     if (isWaterLevel && mpData !== undefined && mpData.length > 0) {
       const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
-        if (
-          moment(timeofmeas).isSameOrAfter(elem.startdate) &&
-          moment(timeofmeas).isBefore(elem.enddate)
-        ) {
+        if (timeofmeas.isSameOrAfter(elem.startdate) && timeofmeas.isBefore(elem.enddate)) {
           return true;
         }
       });
@@ -101,10 +108,10 @@ const CompoundPejling = ({
 
       if (internalCurrentMP) {
         dynamicMeas = internalCurrentMP.elevation - Number(measurement);
-        setDynamic([timeofmeas, dynamicMeas]);
+        setDynamic([formattedTimeofMeas, dynamicMeas]);
         latestmeas = latestMeasurement?.measurement;
 
-        const diff = moment(timeofmeas).diff(moment(latestMeasurement?.timeofmeas), 'days');
+        const diff = timeofmeas.diff(latestMeasurement?.timeofmeas, 'days');
         setHide(Math.abs(diff) > 1);
       } else {
         setDynamic([]);
@@ -112,7 +119,7 @@ const CompoundPejling = ({
       }
     } else {
       dynamicMeas = Number(measurement);
-      setDynamic([timeofmeas, dynamicMeas]);
+      setDynamic([formattedTimeofMeas, dynamicMeas]);
     }
     if (latestmeas == undefined || dynamicMeas == undefined) setElevationDiff(undefined);
     else setElevationDiff(Math.abs(dynamicMeas - latestmeas));
@@ -204,26 +211,42 @@ const Measurement = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => 
 };
 
 const TimeOfMeas = (
-  props: Omit<FormInputProps<PejlingSchemaType | PejlingBoreholeSchemaType>, 'name'>
+  props: Omit<FormDateTimeProps<PejlingSchemaType | PejlingBoreholeSchemaType>, 'name'>
 ) => {
   const {watch, trigger} = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
   const service = watch('service');
+
   return (
-    <FormInput
+    <FormDateTime<PejlingSchemaType | PejlingBoreholeSchemaType>
       name="timeofmeas"
       label="Dato"
-      fullWidth
-      type="datetime-local"
       onChangeCallback={() => {
         if (!service) {
           trigger('pumpstop');
         }
       }}
       required
-      sx={{mb: 2}}
+      openTo="hours"
       {...props}
     />
   );
+
+  // return (
+  //   <FormInput
+  //     name="timeofmeas"
+  //     label="Dato"
+  //     fullWidth
+  //     type="datetime-local"
+  //     onChangeCallback={() => {
+  //       if (!service) {
+  //         trigger('pumpstop');
+  //       }
+  //     }}
+  //     required
+  //     sx={{mb: 2}}
+  //     {...props}
+  //   />
+  // );
 };
 
 const Comment = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
@@ -256,7 +279,12 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
       render={({field: {value, onChange}, fieldState: {error}}) => {
         return (
           <FormControl component="fieldset">
-            <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>
+            <TooltipWrapper
+              description="Anvendelsen af en pejling er et vigtigt aspekt af at få en korrekt kotesat vandstand. Læs mere på linket hvis du er i tvivl om hvad anvendelserne gør."
+              url="https://www.watsonc.dk/guides/kontrolpejling/#anvendelsestyper"
+            >
+              <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>{' '}
+            </TooltipWrapper>
             <RadioGroup
               value={value + ''}
               onChange={(e) => {
@@ -326,19 +354,24 @@ const NotPossible = () => {
   const {setValue} = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
 
   return (
-    <FormControlLabel
-      control={
-        <Checkbox
-          checked={notPossible}
-          onChange={(e) => {
-            setValue('measurement', e.target.checked ? null : 0);
-            setValue('extrema', e.target.checked ? 'A' : undefined);
-            setNotPossible(e.target.checked);
-          }}
-        />
-      }
-      label="Måling ikke mulig"
-    />
+    <TooltipWrapper
+      withIcon={false}
+      description="Dette bruges til at dokumentere hvorvidt en pejling har været umuligt grundet eks. overtryk eller tørlægning."
+    >
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={notPossible}
+            onChange={(e) => {
+              setValue('measurement', e.target.checked ? null : 0);
+              setValue('extrema', e.target.checked ? 'A' : undefined);
+              setNotPossible(e.target.checked);
+            }}
+          />
+        }
+        label="Måling ikke mulig"
+      />
+    </TooltipWrapper>
   );
 };
 
@@ -446,22 +479,20 @@ const Service = () => {
   );
 };
 
-const PumpStop = (props: Omit<FormInputProps<PejlingBoreholeSchemaType>, 'name'>) => {
+const PumpStop = (
+  props: Omit<FormDateTimeProps<PejlingSchemaType | PejlingBoreholeSchemaType>, 'name'>
+) => {
   const {watch} = useFormContext<PejlingBoreholeSchemaType>();
   const timeofmeas = watch('timeofmeas');
   const service = watch('service');
+
   return (
-    <FormInput
-      type="datetime-local"
+    <FormDateTime<PejlingSchemaType | PejlingBoreholeSchemaType>
       name="pumpstop"
       label="Tidspunkt for pumpestop"
-      fullWidth
       disabled={!!service}
-      slotProps={{
-        htmlInput: {
-          max: moment(timeofmeas).format('YYYY-MM-DDTHH:mm:ss'),
-        },
-      }}
+      rules={{required: !service}}
+      maxDate={timeofmeas}
       {...props}
     />
   );

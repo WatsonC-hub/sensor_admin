@@ -20,6 +20,24 @@ import theme from '~/theme';
 import App from './App';
 
 import '~/index.css';
+import {CommandProvider} from './features/commandpalette/components/CommandContext';
+import moment from 'moment';
+import 'moment/locale/da';
+import dayjs from 'dayjs';
+import dayDA from 'dayjs/locale/da';
+import {LocalizationProvider} from '@mui/x-date-pickers';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import minMax from 'dayjs/plugin/minMax';
+
+dayjs.extend(localizedFormat);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(minMax);
+dayjs.locale('da', dayDA);
+moment.locale('da');
 
 if (import.meta.env.PROD) {
   Sentry.init({
@@ -69,9 +87,13 @@ root.render(
                 autocapture: import.meta.env.MODE !== 'development',
               }}
             >
-              <NuqsAdapter>
-                <App />
-              </NuqsAdapter>
+              <CommandProvider>
+                <NuqsAdapter>
+                  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="da">
+                    <App />
+                  </LocalizationProvider>
+                </NuqsAdapter>
+              </CommandProvider>
             </PostHogProvider>
             <ReactQueryDevtools initialIsOpen={false} />
             <ToastContainer

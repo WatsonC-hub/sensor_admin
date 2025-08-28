@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-14 -12 50 50">
+  <path fill="currentColor" d="M0 0h22v2H0zm0 20h22v2H0z" />
+  <path
+    fill="none"
+    transform="translate(-1,-1)"
+    stroke="currentColor"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="2"
+    d="m8 16l4 4l4-4M8 8l4-4l4 4"
+  />
+</svg>

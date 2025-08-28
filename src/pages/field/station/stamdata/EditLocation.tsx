@@ -11,14 +11,13 @@ import Button from '~/components/Button';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import useLocationForm from '~/features/station/api/useLocationForm';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
-import {boreholeEditLocationSchema, defaultEditLocationSchema} from '~/features/station/schema';
+import {BaseLocation} from '~/features/station/schema';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
 const EditLocation = () => {
-  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {loc_id} = useAppContext(['loc_id']);
   const {data: metadata} = useLocationData();
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
@@ -32,33 +31,16 @@ const EditLocation = () => {
       );
       return out;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['location_data', loc_id]});
-      queryClient.invalidateQueries({queryKey: ['metadata', ts_id]});
+    meta: {
+      invalidates: [['metadata']],
     },
   });
 
-  let schema;
+  const default_data = {...metadata, initial_project_no: metadata?.projectno} as BaseLocation;
 
-  if (metadata?.loctype_id === 9) {
-    schema = boreholeEditLocationSchema;
-  } else {
-    schema = defaultEditLocationSchema;
-  }
-
-  const {data: defaultValues} = schema.safeParse({
-    ...metadata,
-    initial_project_no: metadata?.projectno,
-  });
-
-  const [formMethods, LocationForm] = useLocationForm({
-    formProps: {
-      context: {
-        loc_id: loc_id,
-      },
-      values: defaultValues,
-    },
+  const [formMethods, LocationForm, locationSchema] = useLocationForm({
     mode: 'Edit',
+    defaultValues: default_data,
     initialLocTypeId: metadata?.loctype_id,
   });
 
@@ -68,7 +50,13 @@ const EditLocation = () => {
     handleSubmit,
   } = formMethods;
 
-  const Submit = async (data: z.infer<typeof schema>) => {
+  useEffect(() => {
+    if (metadata != undefined) {
+      reset(default_data);
+    }
+  }, [metadata, unit_history]);
+
+  const Submit: (data: z.infer<typeof locationSchema>) => void = (data) => {
     const payload = {
       ...data,
     };
@@ -80,7 +68,14 @@ const EditLocation = () => {
   };
 
   return (
-    <Box maxWidth={1080}>
+    <Box
+      maxWidth={1080}
+      sx={{
+        borderRadius: 4,
+        boxShadow: 3,
+        padding: 2,
+      }}
+    >
       <FormProvider {...formMethods}>
         <StamdataLocation>
           <LocationForm size={size} loc_id={loc_id} />

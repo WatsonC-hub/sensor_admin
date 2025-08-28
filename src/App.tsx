@@ -5,28 +5,23 @@ import {ErrorBoundary} from 'react-error-boundary';
 
 import NavBar from '~/components/NavBar';
 import LoadingSkeleton from '~/LoadingSkeleton';
-import Redirecter from '~/Redirecter';
+import Router from '~/Router';
 import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
-import useBreakpoints from './hooks/useBreakpoints';
-import {useNavigationFunctions} from './hooks/useNavigationFunctions';
-import {useUser} from './features/auth/useUser';
+import {useUser, userQueryOptions} from './features/auth/useUser';
 import {usePostHog} from 'posthog-js/react';
+import DisplayStateProvider from './helpers/DisplayStateProvider';
+import {useQuery} from '@tanstack/react-query';
+import CommandPalette from './features/commandpalette/components/CommandPalette';
 
 function App() {
-  const {field} = useNavigationFunctions();
   const posthog = usePostHog();
-
-  const {isMobile} = useBreakpoints();
   const user = useUser();
 
-  useEffect(() => {
-    if (isMobile && location.pathname == '/') {
-      field();
-    }
-  }, [isMobile]);
+  const {isPending, isFetched} = useQuery(userQueryOptions);
 
   useEffect(() => {
+    // prefetch user
     const ele = document.getElementById('ipl-progress-indicator');
     if (ele) {
       // fade out
@@ -49,11 +44,11 @@ function App() {
     }
   }, [user, posthog]);
 
-  if (user === undefined) {
+  if (user === null && isPending) {
     return <LoadingSkeleton />;
   }
 
-  if (user === null) {
+  if (user === null && isFetched) {
     return (
       <>
         <NavBar>
@@ -74,16 +69,15 @@ function App() {
         </>
       )}
       onError={(error) => {
-        console.error('application crash', error);
         Sentry.captureException(error);
-        if (error.message.includes('Failed to fetch dynamically imported module')) {
-          // window.location.reload(true);
-        }
       }}
     >
       <Suspense fallback={<LoadingSkeleton />}>
-        <Redirecter />
+        <DisplayStateProvider>
+          <Router />
+        </DisplayStateProvider>
       </Suspense>
+      <CommandPalette />
     </ErrorBoundary>
   );
 }

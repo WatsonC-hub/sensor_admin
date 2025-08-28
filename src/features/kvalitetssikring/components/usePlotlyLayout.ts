@@ -41,6 +41,24 @@ const desktopLayout: Partial<Layout> = {
     autorange: true,
     type: 'date',
     showline: true,
+    tickformatstops: [
+      {
+        dtickrange: [null, 3600000], // < 1 hour
+        value: '%H:%M\n%a %d %b', // 14:00 \n Mon 01 Jan
+      },
+      {
+        dtickrange: [3600000, 86400000], // 1 hour to 1 day
+        value: '%H:%M\n%a %d %b', // 14:00 \n Mon 01 Jan
+      },
+      {
+        dtickrange: [86400000, 604800000], // 1 day to 1 week
+        value: '%a %d %b', // Mon 01 Jan
+      },
+      {
+        dtickrange: [604800000, null], // > 1 week
+        value: '%d.%m.%Y', // 01.01.2025
+      },
+    ],
   },
   yaxis: {
     title: {
@@ -66,6 +84,24 @@ const mobileLayout: Partial<Layout> = {
   xaxis: {
     autorange: true,
     type: 'date',
+    tickformatstops: [
+      {
+        dtickrange: [null, 3600000], // < 1 hour
+        value: '%H:%M\n%a %d %b', // 14:00 \n Mon 01 Jan
+      },
+      {
+        dtickrange: [3600000, 86400000], // 1 hour to 1 day
+        value: '%H:%M\n%a %d %b', // 14:00 \n Mon 01 Jan
+      },
+      {
+        dtickrange: [86400000, 604800000], // 1 day to 1 week
+        value: '%a %d %b', // Mon 01 Jan
+      },
+      {
+        dtickrange: [604800000, null], // > 1 week
+        value: '%d.%m.%Y', // 01.01.2025
+      },
+    ],
   },
   yaxis: {
     showline: true,

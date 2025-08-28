@@ -1,6 +1,6 @@
 import {MenuItem, Typography, InputAdornment, TextField} from '@mui/material';
 import {RefetchOptions, useQuery} from '@tanstack/react-query';
-import React, {ChangeEvent, useEffect} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 import {apiClient} from '~/apiClient';
 import FormInput, {FormInputProps} from '~/components/FormInput';
@@ -15,16 +15,12 @@ import {
 } from '../../schema';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
-import {Borehole, useSearchBorehole} from '../../api/useBorehole';
+import {Borehole} from '../../api/useBorehole';
 import {utm} from '~/features/map/mapConsts';
-import {useAtom} from 'jotai';
-import {boreholeSearchAtom} from '~/state/atoms';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
-import {stationPages} from '~/helpers/EnumHelper';
-
 import {useAppContext} from '~/state/contexts';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {queryClient} from '~/queryClient';
 
 type Props = {
@@ -55,14 +51,20 @@ const StamdataLocation = ({children}: Props) => {
     isSuccess,
     refetch: refetchDTM,
   } = useQuery({
-    queryKey: ['dtm'],
+    queryKey: queryKeys.dtm(),
     queryFn: () => getDTMQuota(x, y),
     refetchOnWindowFocus: false,
     enabled: x !== undefined && y !== undefined && terrainqual === 'DTM',
   });
 
   useEffect(() => {
-    if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null && terrainqual === 'DTM') {
+    if (
+      isSuccess &&
+      DTMData.HentKoterRespons.data[0].kote !== null &&
+      terrainqual === 'DTM' &&
+      x &&
+      y
+    ) {
       setValue('terrainlevel', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)), {
         shouldDirty: true,
       });
@@ -96,7 +98,7 @@ const LoctypeSelect = (
   >
 ) => {
   const {data} = useQuery({
-    queryKey: ['location_types'],
+    queryKey: queryKeys.locationTypes(),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/location_types`);
       return data;
@@ -113,7 +115,7 @@ const LoctypeSelect = (
           placeholder="Vælg type"
           select
           required
-          // fieldDescriptionText="Vælg lokationstype. "
+          infoText="Lokationstypen kan betyde hvilke muligheder der er for at tilføje data til lokationen. F.eks. kan DGU boringer oprettes smartere og synkroniseres til GEUS."
           {...props}
         >
           <MenuItem value={-1} key={-1}>
@@ -147,10 +149,11 @@ const X = (
   return (
     <FormInput
       name="x"
-      label="X koordinat"
+      label="X [UTM32]"
       type="number"
       required
       placeholder="Indtast X-koordinat"
+      infoText="X-koordinaten er i UTM32 koordinatsystemet. For Danmark er det mellem 400000 og 900000."
       warning={(value) => {
         if (value < 400000 || value > 900000) {
           return 'X-koordinat er uden for Danmark';
@@ -183,7 +186,7 @@ const Y = (
   return (
     <FormInput
       name="y"
-      label="Y koordinat"
+      label="Y [UTM32]"
       type="number"
       required
       placeholder="Indtast Y-koordinat"
@@ -259,9 +262,6 @@ const TerrainQuality = (
       }}
       {...props}
     >
-      <MenuItem value={''} key={''}>
-        Vælg type
-      </MenuItem>
       <MenuItem value="dGPS" key="dGPS">
         dGPS
       </MenuItem>
@@ -293,112 +293,110 @@ const Locname = (
 };
 
 const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
-  const [pageToShow] = useStationPages();
   const {
     setValue,
+    control,
     formState: {errors},
     watch,
     trigger,
   } = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
-  const [search, setSearch] = useAtom(boreholeSearchAtom);
+  const [selectedBorehole, setSelectedBorehole] = useState<Borehole | null>(null);
+  const [search, setSearch] = useState<string>('');
   const [filteredOptions, setFilteredOptions] = React.useState<Borehole[]>([]);
   const loctype_id = watch('loctype_id', 9);
-  const boreholeno = watch('boreholeno');
-
-  const {data: searchOptions, isFetching} = useSearchBorehole(boreholeno);
-
-  useEffect(() => {
-    if (
-      boreholeno !== undefined &&
-      searchOptions &&
-      searchOptions.length > 0 &&
-      pageToShow !== stationPages.GENERELTLOKATION
-    ) {
-      const borehole = searchOptions?.find((opt) => opt.boreholeno === boreholeno);
-      // @ts-expect-error error in type definition
-      const latlng = utm.convertLatLngToUtm(borehole?.latitude, borehole?.longitude, 32);
-
-      setValue('x', parseFloat(latlng.Easting.toFixed(1)));
-      setValue('y', parseFloat(latlng.Northing.toFixed(1)));
-      trigger('x');
-      trigger('y');
-    }
-  }, [searchOptions]);
 
   return (
-    <>
-      {loctype_id && (
-        <ExtendedAutocomplete<Borehole>
-          {...props}
-          options={filteredOptions ?? []}
-          loading={isFetching}
-          labelKey="boreholeno"
-          onChange={(option) => {
-            if (option == null) {
-              setValue('boreholeno', '');
-              trigger('boreholeno');
-              return;
-            }
-            if ('boreholeno' in option) {
-              setValue('boreholeno', option.boreholeno, {shouldDirty: true});
-              trigger('boreholeno');
-            }
-          }}
-          error={errors.boreholeno?.message}
-          selectValue={boreholeno !== undefined ? ({boreholeno: boreholeno} as Borehole) : null}
-          // selectValue={boreholeno !== undefined ? ({boreholeno: boreholeno} as Borehole) : null}
-          filterOptions={(options, params) => {
-            const {inputValue} = params;
+    <Controller
+      name="boreholeno"
+      control={control}
+      render={({field: {onChange}}) => {
+        return (
+          <>
+            {loctype_id === 9 && (
+              <ExtendedAutocomplete<Borehole>
+                {...props}
+                options={filteredOptions ?? []}
+                labelKey="boreholeno"
+                onChange={async (option) => {
+                  if (option == null) {
+                    onChange(null);
+                    setSelectedBorehole(null);
+                    trigger('boreholeno');
+                    return;
+                  }
+                  if ('boreholeno' in option) {
+                    onChange(option.boreholeno);
+                    setSelectedBorehole(option);
+                    // @ts-expect-error error in type definition
+                    const latlng = utm.convertLatLngToUtm(option.latitude, option.longitude, 32);
+                    setValue('x', parseFloat(latlng.Easting.toFixed(1)), {shouldValidate: true});
+                    setValue('y', parseFloat(latlng.Northing.toFixed(1)), {shouldValidate: true});
+                    trigger('boreholeno');
+                  }
+                }}
+                error={errors.boreholeno?.message}
+                selectValue={selectedBorehole}
+                filterOptions={(options, params) => {
+                  const {inputValue} = params;
+                  const filter = options.filter((option) =>
+                    option.boreholeno?.includes(inputValue)
+                  );
 
-            const filter = options.filter((option) => option.boreholeno?.includes(inputValue));
-
-            return filter;
-          }}
-          inputValue={search}
-          renderOption={(props, option) => {
-            return (
-              <li {...props} key={option.boreholeno}>
-                <Typography>{option.boreholeno}</Typography>
-              </li>
-            );
-          }}
-          textFieldsProps={{
-            label: 'DGU nummer',
-            placeholder: 'Søg efter DGU boringer...',
-            required: true,
-          }}
-          // fieldDescriptionText={props.fieldDescriptionText}
-          onInputChange={(event, searchValue) => {
-            const searchString = {
-              query: {
-                bool: {
-                  must: {
-                    query_string: {
-                      query: searchValue,
-                    },
-                  },
-                },
-              },
-            };
-
-            if (searchValue !== '' && loctype_id)
-              postElasticSearch(searchString).then((res) => {
-                setFilteredOptions(
-                  res.data.hits.hits.map((hit: any) => {
-                    return {
-                      boreholeno: hit._source.properties.boreholeno,
+                  return filter;
+                }}
+                inputValue={search}
+                renderOption={(props, option) => {
+                  return (
+                    <li {...props} key={option.boreholeno}>
+                      <Typography>{option.boreholeno}</Typography>
+                    </li>
+                  );
+                }}
+                textFieldsProps={{
+                  label: 'DGU nummer',
+                  placeholder: 'Søg efter DGU boringer...',
+                  required: true,
+                }}
+                noOptionsText={
+                  search === undefined || search === ''
+                    ? 'Indtast DGU nummer for at påbegynde søgning...'
+                    : 'Ingen resultater'
+                }
+                onInputChange={(event, searchValue) => {
+                  if (searchValue !== '' && loctype_id === 9) {
+                    const searchString = {
+                      query: {
+                        bool: {
+                          must: {
+                            query_string: {
+                              query: searchValue,
+                            },
+                          },
+                        },
+                      },
                     };
-                  })
-                );
-              });
-            if (searchValue === '' && loctype_id) {
-              setValue('boreholeno', '');
-            }
-            setSearch(searchValue);
-          }}
-        />
-      )}
-    </>
+                    postElasticSearch(searchString).then((res) => {
+                      setFilteredOptions(
+                        res.data.hits.hits.map((hit: any) => {
+                          return {
+                            boreholeno: hit._source.properties.boreholeno,
+                            latitude: hit._source.geometry.coordinates[1],
+                            longitude: hit._source.geometry.coordinates[0],
+                          };
+                        })
+                      );
+                    });
+                  }
+                  setSearch(searchValue);
+
+                  return searchValue;
+                }}
+              />
+            )}
+          </>
+        );
+      }}
+    />
   );
 };
 
@@ -446,7 +444,7 @@ const Groups = (
           setValue={onChange}
           onBlur={onBlur}
           disable={props.disabled}
-          fieldDescriptionText={props.fieldDescriptionText}
+          fieldDescriptionText={props.infoText}
         />
       )}
     />

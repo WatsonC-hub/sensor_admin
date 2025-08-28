@@ -1,4 +1,3 @@
-import AddIcon from '@mui/icons-material/Add';
 import {Box, Divider, IconButton, Tooltip, Typography} from '@mui/material';
 import React, {ReactNode, useEffect} from 'react';
 
@@ -14,7 +13,7 @@ import ActionArea from '~/features/station/components/ActionArea';
 import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useDisplayState} from '~/hooks/ui';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
@@ -27,6 +26,9 @@ import StationPageBoxLayout from '~/features/station/components/StationPageBoxLa
 import useBreakpoints from '~/hooks/useBreakpoints';
 import StationDrawer from '~/features/station/components/StationDrawer';
 import {stationPages} from '~/helpers/EnumHelper';
+import {useAtom} from 'jotai';
+import {fullScreenAtom} from '~/state/atoms';
+import {Fullscreen, FullscreenExit} from '@mui/icons-material';
 import GraphManager from '~/features/station/components/GraphManager';
 import EditLocation from './stamdata/EditLocation';
 import EditTimeseries from './stamdata/EditTimeseries';
@@ -61,96 +63,37 @@ export default function Station() {
       {pageToShow === stationPages.GENERELTUDSTYR && (
         <>
           <Box key={ts_id}>
-            <GraphManager
-              defaultDataToShow={{
-                Kontrolmålinger: true,
-              }}
-            />
+            <GraphManager />
           </Box>
           <Divider />
-          <StationPageBoxLayout key={`unit-${ts_id}`}>
-            <EditUnit />
-          </StationPageBoxLayout>
+          <EditUnit />
         </>
       )}
       {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout key={loc_id}>
-          <Box
-            sx={{
-              borderRadius: 4,
-              boxShadow: 3,
-              padding: '16px',
-            }}
-          >
-            <EditLocation />
-          </Box>
+          <EditLocation />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.GENERELTIDSSERIE && (
         <StationPageBoxLayout key={ts_id}>
-          <Box
-            sx={{
-              borderRadius: 4,
-              boxShadow: 3,
-              padding: '16px',
-            }}
-          >
-            <EditTimeseries />
-          </Box>
+          <EditTimeseries />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.ALGORITHMS && <Algorithms key={ts_id} />}
-      {pageToShow === stationPages.JUSTERINGER && <QAHistory key={ts_id} />}
+      {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && <Algorithms />}
+      {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && <QAHistory />}
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box key={ts_id}>
-            <GraphManager
-              defaultDataToShow={{
-                Kontrolmålinger: true,
-              }}
-            />
+            <GraphManager />
           </Box>
           <Divider />
-          <StationPageBoxLayout key={ts_id}>
-            <ReferenceForm />
-          </StationPageBoxLayout>
+          <ReferenceForm />
         </>
       )}
-      {pageToShow === stationPages.ALARM && user?.superUser && (
-        <>
-          <Box key={ts_id}>
-            <GraphManager
-              defaultDataToShow={{
-                Kontrolmålinger: true,
-              }}
-            />
-          </Box>
-          <Divider />
-          <StationPageBoxLayout key={`alarm-${ts_id}`}>
-            <Alarms />
-          </StationPageBoxLayout>
-        </>
-      )}
-      {pageToShow === stationPages.NØGLER && user?.contactAndKeysPermission && (
-        <StationPageBoxLayout key={loc_id}>
-          <LocationAccess />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.KONTAKTER && user?.contactAndKeysPermission && (
-        <StationPageBoxLayout key={loc_id}>
-          <ContactInfo />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.HUSKELISTE && user?.ressourcePermission && (
-        <StationPageBoxLayout key={loc_id}>
-          <Huskeliste />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.BILLEDER && (
-        <StationPageBoxLayout key={loc_id}>
-          <ImagePage />
-        </StationPageBoxLayout>
-      )}
+      {pageToShow === stationPages.NØGLER && user?.features.keys && <LocationAccess />}
+      {pageToShow === stationPages.KONTAKTER && user?.features.contacts && <ContactInfo />}
+      {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && <Huskeliste />}
+      {pageToShow === stationPages.BILLEDER && <ImagePage />}
     </Layout>
   );
 }
@@ -160,16 +103,16 @@ interface LayoutProps {
 }
 
 const Layout = ({children}: LayoutProps) => {
-  const {isTouch} = useBreakpoints();
+  const {isTouch, isMobile} = useBreakpoints();
   const {data: locationdata} = useLocationData();
-  const {data: metadata} = useTimeseriesData();
-  const user = useUser();
-  const {createStamdata} = useNavigationFunctions();
+  const setTsId = useDisplayState((state) => state.setTsId);
+  const [pageToShow, setPageToShow] = useStationPages();
+  const [fullscreen, setFullscreen] = useAtom(fullScreenAtom);
 
   return (
     <>
-      <NavBar>
-        {isTouch ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
+      <NavBar key={'station'} zIndex={9999}>
+        {isTouch && <NavBar.StationDrawerMenu />}
         <Box display="block" flexGrow={1} overflow="hidden">
           {!isTouch && (
             <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
@@ -193,42 +136,48 @@ const Layout = ({children}: LayoutProps) => {
             </Tooltip>
           )}
           <BatteryStatus />
-          <NavBar.Home />
-          {user?.adminAccess && <NotificationList />}
-          <NavBar.Menu
-            highligtFirst={false}
-            items={[
-              {
-                title: 'Opret tidsserie',
-                icon: <AddIcon />,
-                onClick: () => {
-                  createStamdata({
-                    state: {...metadata, initial_project_no: metadata?.projectno},
-                  });
-                },
-              },
-            ]}
+          <NotificationList />
+          {!isMobile && (
+            <IconButton
+              onClick={() => {
+                setFullscreen((prev) => !prev);
+              }}
+              color="inherit"
+              size="large"
+            >
+              {fullscreen ? <FullscreenExit /> : <Fullscreen />}
+            </IconButton>
+          )}
+          <NavBar.Close
+            onClick={() => {
+              if (pageToShow) setPageToShow(null);
+              setTsId(null);
+            }}
           />
         </Box>
       </NavBar>
       <Box
         component="main"
-        sx={{flexGrow: 1, display: 'flex', flexDirection: 'row', maxHeight: 'calc(100vh - 64px)'}}
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'row',
+          overflow: 'hidden',
+        }}
       >
         <StationDrawer />
         <Box
           display="flex"
-          width={'100%'}
           flexGrow={1}
-          gap={1}
           minWidth={0}
+          gap={1}
           flexDirection={'column'}
           overflow="auto"
         >
           {children}
-          {isTouch && <ActionArea />}
         </Box>
       </Box>
+      {isMobile && <ActionArea />}
     </>
   );
 };

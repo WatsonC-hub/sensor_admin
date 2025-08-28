@@ -12,23 +12,25 @@ import {
 } from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {Maalepunkt} from '~/types';
 
 interface Props {
-  data: Maalepunkt[] | undefined;
   handleEdit: (maalepunkt: Maalepunkt) => void;
   handleDelete: (gid: number | undefined) => void;
   disabled: boolean;
 }
 
-export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, disabled}: Props) {
+export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const {data: timeseries} = useTimeseriesData();
-
+  const {
+    get: {data},
+  } = useMaalepunkt();
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
@@ -72,6 +74,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
 
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
     localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
+    enableFullScreenToggle: false,
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions

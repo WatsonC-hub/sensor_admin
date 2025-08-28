@@ -5,13 +5,14 @@ import React from 'react';
 
 import {apiClient} from '~/apiClient';
 import BatteryIndicator from '~/components/BatteryIndicator';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 import {BatteryStatusType} from '~/types';
 
 const BatteryStatus = () => {
   const {ts_id} = useAppContext([], ['ts_id']);
   const {data: battery_status} = useQuery({
-    queryKey: ['battery_status', ts_id],
+    queryKey: queryKeys.Timeseries.batteryStatus(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<BatteryStatusType>(
         `/sensor_field/station/battery_status/${ts_id}`
@@ -19,7 +20,7 @@ const BatteryStatus = () => {
       return data;
     },
     enabled: ts_id !== undefined && ts_id !== null,
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 60 * 4, // 4 hours
   });
 
   let tooltipText = '';
@@ -63,7 +64,7 @@ const BatteryStatus = () => {
     <>
       {battery_status && (
         <Tooltip arrow title={<Box whiteSpace="pre-line">{tooltipText}</Box>} enterTouchDelay={0}>
-          <Box height="24px">
+          <Box height="24px" onClick={() => {}}>
             <BatteryIndicator percentage={(battery_status.battery_percentage ?? 0) * 100} />
           </Box>
         </Tooltip>

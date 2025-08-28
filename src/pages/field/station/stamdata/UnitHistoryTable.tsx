@@ -20,6 +20,7 @@ import {useAppContext} from '~/state/contexts';
 import SaveIcon from '@mui/icons-material/Save';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {renderDetailStyle} from '~/consts';
+import {editUnitSchema} from '~/features/station/schema';
 
 interface UnitHistoryTableProps {
   submit: (data: any) => void;
@@ -38,6 +39,15 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
   const {data: metadata} = useTimeseriesData();
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
+
+  const resetToDefault = (unit: UnitHistory) => {
+    const {data: parsedData} = editUnitSchema.safeParse({
+      unit_uuid: unit.uuid,
+      startdate: unit.startdato,
+      enddate: unit.slutdato,
+    });
+    reset(parsedData);
+  };
 
   const desktopColumns = useMemo<MRT_ColumnDef<UnitHistory>[]>(
     () => [
@@ -121,11 +131,7 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
               <RenderActions
                 handleEdit={() => {
                   setSelectedUnit(row.original.gid);
-                  reset({
-                    unit_uuid: row.original.uuid,
-                    startdate: row.original.startdato,
-                    enddate: row.original.slutdato,
-                  });
+                  resetToDefault(row.original);
                   table.setEditingRow(row);
                 }}
                 onDeleteBtnClick={() => {}}
@@ -148,11 +154,7 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
         <RenderActions
           handleEdit={() => {
             setSelectedUnit(row.original.gid);
-            reset({
-              unit_uuid: row.original.uuid,
-              startdate: row.original.startdato,
-              enddate: row.original.slutdato,
-            });
+            resetToDefault(row.original);
             table.setEditingRow(row);
           }}
           onDeleteBtnClick={() => {}}
@@ -171,11 +173,7 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
             <Button
               bttype="tertiary"
               onClick={() => {
-                reset({
-                  unit_uuid: row.original.uuid,
-                  startdate: row.original.startdato,
-                  enddate: row.original.slutdato,
-                });
+                resetToDefault(row.original);
                 table.setEditingRow(null);
               }}
             >

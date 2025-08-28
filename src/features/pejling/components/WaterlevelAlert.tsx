@@ -32,7 +32,6 @@ const DisplayWaterlevelAlert = ({
         gap: 2,
       }}
       mx={'auto'}
-      maxWidth={400}
     >
       {elevationDiff !== undefined && (
         <Alert
@@ -57,7 +56,9 @@ const DisplayWaterlevelAlert = ({
         }}
       >
         {pejlingOutOfRange ? (
-          <Typography>Der er intet målepunkt registreret på det valgte tidspunkt.</Typography>
+          <Typography maxWidth={200}>
+            Der er intet målepunkt registreret på det valgte tidspunkt.
+          </Typography>
         ) : (
           <>
             <Typography>Målepunkt: {MPTitle}</Typography>

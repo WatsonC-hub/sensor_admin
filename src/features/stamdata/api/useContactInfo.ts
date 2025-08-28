@@ -1,7 +1,14 @@
-import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  queryOptions,
+  MutationOptions,
+} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {ContactInfo, ContactTable} from '~/types';
 
@@ -17,15 +24,18 @@ interface ContactInfoPut extends ContactInfoBase {
   data: ContactTable;
 }
 
-const contactInfoPostOptions = {
+const contactInfoPostOptions: MutationOptions<any, APIError, ContactInfoPost> = {
   mutationKey: ['contact_info_post'],
-  mutationFn: async (mutation_data: ContactInfoPost) => {
+  mutationFn: async (mutation_data) => {
     const {path, data} = mutation_data;
     const {data: result} = await apiClient.post(
       `/sensor_field/stamdata/contact/contact_info/${path}`,
       data
     );
     return result;
+  },
+  meta: {
+    invalidates: [['contact_info']],
   },
 };
 
@@ -39,6 +49,9 @@ const contactInfoPutOptions = {
     );
     return result;
   },
+  meta: {
+    invalidates: [['contact_info']],
+  },
 };
 
 const contactInfoDelOptions = {
@@ -50,11 +63,14 @@ const contactInfoDelOptions = {
     );
     return result;
   },
+  meta: {
+    invalidates: [['contact_info']],
+  },
 };
 
-export const ContactInfoGetOptions = (loc_id: number | undefined) =>
+export const ContactInfoGetOptions = (loc_id: number) =>
   queryOptions<Array<ContactTable>, APIError>({
-    queryKey: ['contact_info', loc_id],
+    queryKey: queryKeys.Location.contacts(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<ContactTable>>(
         `/sensor_field/stamdata/contact/contact_info/${loc_id}`
@@ -80,10 +96,7 @@ export const useSearchContact = (
   }
 
   const searched_contacts = useQuery({
-    queryKey: [
-      `search_contact_info${contact_role !== undefined ? `/contact_role` : ''}`,
-      searchString,
-    ],
+    queryKey: queryKeys.Location.searchContacts(searchString),
     queryFn: async () => {
       let data;
       if (searchString == '') {
@@ -101,18 +114,17 @@ export const useSearchContact = (
   return searched_contacts;
 };
 
-export const useContactInfo = (loc_id: number | undefined) => {
+export const useContactInfo = (loc_id: number) => {
   const queryClient = useQueryClient();
   const get = useQuery(ContactInfoGetOptions(loc_id));
 
   const post = useMutation({
     ...contactInfoPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['contact_info'],
-      });
-
       toast.success('Kontakt information gemt');
+    },
+    meta: {
+      invalidates: [queryKeys.Location.contacts(loc_id)],
     },
   });
 
@@ -120,7 +132,7 @@ export const useContactInfo = (loc_id: number | undefined) => {
     ...contactInfoPutOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contact_info'],
+        queryKey: queryKeys.Location.contacts(loc_id),
       });
 
       toast.success('Kontakt information ændret');
@@ -132,7 +144,7 @@ export const useContactInfo = (loc_id: number | undefined) => {
     onSuccess: () => {
       toast.success('Kontakt information slettet');
       queryClient.invalidateQueries({
-        queryKey: ['contact_info'],
+        queryKey: queryKeys.Location.contacts(loc_id),
       });
     },
   });

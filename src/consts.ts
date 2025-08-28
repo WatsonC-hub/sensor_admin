@@ -18,72 +18,6 @@ export const navIconStyle = (isSelected: boolean) => {
 
 export const mapboxToken = mapToken;
 
-export const boreholeColors: Record<
-  number,
-  {
-    color: string;
-    text: string;
-  }
-> = {
-  1: {
-    color: '#4caf50',
-    text: 'OK',
-  },
-  2: {
-    color: '#f1c21b',
-    text: 'Skal snart pejles',
-  },
-  3: {
-    color: '#ff832b',
-    text: 'Pejleinterval overskredet',
-  },
-  0: {
-    color: '#4caf50',
-    text: 'OK',
-  },
-};
-
-// Colors ['#d32f2f', '#ff8c2e', '#ffb13f', '#4caf50', '#9F2B68', '#334FFF']
-export const sensorColors: Record<
-  number,
-  {
-    color: string;
-    text: string;
-  }
-> = {
-  3: {
-    color: '#d32f2f',
-    text: 'Kritisk',
-  },
-  2: {
-    color: '#ff832b',
-    text: 'Advarsel',
-  },
-  1: {
-    color: '#f1c21b',
-    text: 'Info',
-  },
-  0: {
-    color: '#4caf50',
-    text: 'OK',
-  },
-  '-1': {
-    color: '#9F2B68',
-    text: 'Ukendt',
-  },
-};
-
-export const sensorLocationTypeColors: Record<number | string, {color: string; text: string}> = {
-  12: {
-    color: '#AFFFAD',
-    text: 'Enkeltmåling',
-  },
-  '-1': {
-    color: '#70C8FF',
-    text: 'Ny opsætning',
-  },
-};
-
 export const correction_map: Record<number, string> = {
   0: 'Kontrol',
   1: 'Korrektion fremadrettet',
@@ -103,10 +37,8 @@ export const setGraphHeight = (matches: boolean) => {
 
 export const qaHistorySkeletonHeight = '40px';
 
-export const tabsHeight = '48px';
-
-export const calculateContentHeight = (pixelToSubtract: number) => {
-  return `calc(100vh - ${pixelToSubtract}px)`;
+const calculateContentHeight = (pixelToSubtract: number) => {
+  return `calc(100dvh - ${pixelToSubtract}px)`;
 };
 
 export const setTableBoxStyle = (pixelToSubtract: number) => {

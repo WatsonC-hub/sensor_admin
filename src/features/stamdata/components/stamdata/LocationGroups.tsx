@@ -7,9 +7,10 @@ import {Noop} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {getGroupLink} from '~/helpers/links';
-import {apiClient} from '~/pages/field/fieldAPI';
+import {apiClient} from '~/apiClient';
 import {Group} from '~/types';
 import LinkableTooltip from '~/components/LinkableTooltip';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const filter = createFilterOptions<Group>({
   ignoreCase: true,
@@ -38,12 +39,12 @@ const LocationGroups = ({
   fieldDescriptionText,
 }: LocationGroupsProps) => {
   const {data: options} = useQuery({
-    queryKey: ['location_groups'],
+    queryKey: queryKeys.Groups.all(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Group>>('/sensor_field/stamdata/location_groups');
       return data;
     },
-    staleTime: 10 * 1000,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   return (
@@ -134,7 +135,7 @@ const LocationGroups = ({
           fullWidth
           variant="outlined"
           label={label}
-          placeholder="Indtast gruppe(r)..."
+          placeholder="Vælg gruppe(r)..."
           onBlur={onBlur}
           slotProps={{
             input: {

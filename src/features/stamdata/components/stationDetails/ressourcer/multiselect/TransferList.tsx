@@ -265,7 +265,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
     <>
       {options && options.length > 0 && categories && categories.length > 0 && (
         <Box my={1} gap={1} display={'flex'} flexDirection={'row'}>
-          {customList(left ?? [], leftCategory ?? [], 'Liste')}
+          {customList(left ?? [], leftCategory ?? [], 'Valgbare')}
           <Box display={'flex'} flexDirection="column" justifyContent="center">
             <Button
               sx={{my: 0.5}}
