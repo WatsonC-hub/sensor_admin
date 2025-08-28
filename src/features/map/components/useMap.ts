@@ -2,11 +2,12 @@ import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet-active-area';
 // import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.markercluster';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-import {useAtom} from 'jotai';
+import {useAtom, useAtomValue} from 'jotai';
 import L from 'leaflet';
 import {LocateControl} from 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
@@ -41,6 +42,8 @@ import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
+import {usedHeightAtom, usedWidthAtom} from '~/state/atoms';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 const useMap = <TData extends object>(
   id: string,
@@ -58,6 +61,9 @@ const useMap = <TData extends object>(
     state.setEditParkingLayer,
     state.setEditRouteLayer,
   ]);
+  const usedWidth = useAtomValue(usedWidthAtom);
+  const usedHeight = useAtomValue(usedHeightAtom);
+  const {isMobile} = useBreakpoints();
 
   const [doneRendering, setDoneRendering] = useState(false);
   const [zoom, setZoom] = useAtom(zoomAtom);
@@ -643,6 +649,27 @@ const useMap = <TData extends object>(
       fg.clearLayers();
     }
   }, [filters.itineraries.length]);
+
+  useEffect(() => {
+    if (mapRef.current && doneRendering) {
+      const right = usedWidth + (isMobile ? 0 : 20);
+      const left = isMobile ? 0 : 50;
+      const top = isMobile ? 0 : 50;
+      const bottom = usedHeight + (isMobile ? 0 : 50);
+      // @ts-expect-error active area missing in type definition
+      mapRef.current.setActiveArea(
+        {
+          pointerEvents: 'none',
+          position: 'absolute',
+          top: `${top}px`,
+          left: `${left}px`,
+          right: `${right}px`,
+          bottom: `${bottom}px`,
+        },
+        true
+      );
+    }
+  }, [usedWidth, usedHeight, doneRendering, isMobile]);
 
   return {
     map: mapRef.current,
