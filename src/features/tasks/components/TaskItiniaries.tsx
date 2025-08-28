@@ -251,13 +251,6 @@ const TaskItiniaries = () => {
                                     },
                                   },
                                   textField: {
-                                    slotProps: {
-                                      input: {
-                                        sx: {
-                                          display: 'none',
-                                        },
-                                      },
-                                    },
                                     sx: {
                                       justifyContent: 'flex-end',
                                       position: 'absolute',
