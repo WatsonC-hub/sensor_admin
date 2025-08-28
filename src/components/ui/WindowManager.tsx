@@ -133,7 +133,7 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
   }
 
   setTimeout(() => {
-    setUsedWidth(usedWidth);
+    if (width - usedWidth > 600) setUsedWidth(usedWidth);
   }, 0);
 
   return (
