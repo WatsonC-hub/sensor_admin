@@ -9,7 +9,6 @@ import {
 import {merge} from 'lodash';
 import React from 'react';
 import LinkableTooltip from './LinkableTooltip';
-import {merge} from 'lodash';
 
 export type AutoCompleteFieldProps<T> = Omit<
   AutocompleteProps<T, false, false, false>,

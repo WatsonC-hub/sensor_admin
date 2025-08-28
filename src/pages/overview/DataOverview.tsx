@@ -2,10 +2,11 @@ import {Box} from '@mui/material';
 import React from 'react';
 import NavBar from '~/components/NavBar';
 import Alarms from '~/features/overview/components/Alarms';
+import DetailedOverview from '~/features/overview/components/DetailedOverview';
 import Groups from '~/features/overview/components/Groups';
 import OverviewDrawer from '~/features/overview/components/OverviewDrawer';
 import Projects from '~/features/overview/components/Projects';
-import Units from '~/features/overview/components/Units';
+
 import {useDataFragmentState} from '~/hooks/useQueryStateParameters';
 
 const DataOverview = () => {
@@ -15,7 +16,7 @@ const DataOverview = () => {
       {fragmentToShow === 'projects' && <Projects />}
       {fragmentToShow === 'groups' && <Groups />}
       {fragmentToShow === 'alarms' && <Alarms />}
-      {fragmentToShow === 'units' && <Units />}
+      {fragmentToShow === 'units' && <DetailedOverview />}
     </Layout>
   );
 };

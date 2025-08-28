@@ -1,7 +1,7 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 
-export type Unit = {
+export type Details = {
   calypso_id: string | null;
   projectno: string | null;
   loc_id: number | null;
@@ -20,26 +20,26 @@ export type Unit = {
   groups: Array<string | null>;
   has_alarm: number | null;
   annual_price: number | null;
-  subRows?: Unit[];
+  subRows?: Details[];
 };
 
-const unitGetOptions = queryOptions({
-  queryKey: ['lookup_units'],
+const detailGetOptions = queryOptions({
+  queryKey: ['lookup_detail'],
   queryFn: async () => {
     // Fetch units from API
-    const {data} = await apiClient.get<Array<Unit>>('/overview/units');
+    const {data} = await apiClient.get<Array<Details>>('/overview/detail');
 
     return data;
   },
   staleTime: 1000 * 60 * 5, // 5 minutes
 });
 
-const useUnits = () => {
-  const get = useQuery(unitGetOptions);
+const useDetails = () => {
+  const get = useQuery(detailGetOptions);
 
   return {
     get,
   };
 };
 
-export default useUnits;
+export default useDetails;

@@ -21,6 +21,7 @@ import {usePageActions} from './features/commandpalette/hooks/usePageActions';
 import {Notification, useNotificationOverview} from './hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import ReleaseNoticeModal from './components/ReleaseNotice';
+import DataOverview from './pages/overview/DataOverview';
 
 const Router = () => {
   const user = useUser();
@@ -162,6 +163,14 @@ const Router = () => {
           element={
             <AppContext.Provider value={{}}>
               <GuardedCreateStation />
+            </AppContext.Provider>
+          }
+        />
+        <Route
+          path="/overview/data-overblik"
+          element={
+            <AppContext.Provider value={{}}>
+              <DataOverview />
             </AppContext.Provider>
           }
         />

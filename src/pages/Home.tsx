@@ -12,7 +12,7 @@ import Overview from '~/features/tasks/components/Overview';
 const Home = () => {
   const {isMobile} = useBreakpoints();
   const user = useUser();
-  const {createStamdata} = useNavigationFunctions();
+  const {createStamdata, dataOverblik} = useNavigationFunctions();
 
   return (
     <>
@@ -38,6 +38,13 @@ const Home = () => {
                       icon: <AddLocationAlt fontSize="medium" />,
                       onClick: () => {
                         createStamdata();
+                      },
+                    },
+                    {
+                      title: 'Overblik',
+                      icon: <AddLocationAlt fontSize="medium" />,
+                      onClick: () => {
+                        dataOverblik();
                       },
                     },
                   ]
