@@ -50,7 +50,7 @@ export const queryKeys = {
   Borehole: {
     stamdata: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
       ['borehole_stamdata', 'register', boreholeno, intakeno] as const,
-    boreholeSearch: (boreholeno: string | undefined | null) =>
+    findBorehole: (boreholeno: string | undefined | null) =>
       ['search_borehole', 'register', boreholeno] as const,
     intakeList: (boreholeno: string | undefined | null) =>
       ['intake_list', 'register', boreholeno] as const,

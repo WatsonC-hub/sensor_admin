@@ -10,25 +10,17 @@ export type Borehole = {
   longitude: number;
 };
 
-export const searchBorehole = (boreholeno: string | undefined | null) => {
-  const innerFn = async () => {
-    if (!boreholeno) {
-      return [];
-    }
-    const {data} = await apiClient.get<Array<BoreholeMapData>>(
-      `/sensor_field/boreholes/${boreholeno}`
-    );
+export const findBorehole = async (boreholeno: string | undefined | null) => {
+  const {data} = await apiClient.get<BoreholeMapData>(`/sensor_field/jupiter/search/${boreholeno}`);
 
-    return data;
-  };
-  return innerFn;
+  return data;
 };
 
 const boreholeSearchOptions = (boreholeno: string | undefined | null) => {
   const user = useUser();
   return queryOptions({
-    queryKey: queryKeys.Borehole.boreholeSearch(boreholeno),
-    queryFn: searchBorehole(boreholeno),
+    queryKey: queryKeys.Borehole.findBorehole(boreholeno),
+    queryFn: () => findBorehole(boreholeno),
     staleTime: 10 * 1000,
     enabled:
       boreholeno !== undefined &&
@@ -38,7 +30,7 @@ const boreholeSearchOptions = (boreholeno: string | undefined | null) => {
   });
 };
 
-export const useSearchBorehole = (boreholeno: string | undefined | null) => {
+export const useFindBorehole = (boreholeno: string | undefined | null) => {
   const searched_boreholes = useQuery(boreholeSearchOptions(boreholeno));
   return searched_boreholes;
 };
