@@ -16,6 +16,7 @@ import {useAlarm} from '../api/useAlarm';
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
 import {useLocationData} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
 type AlarmTableProps = {
   alarms: Array<alarmTable> | undefined;
 };
@@ -24,6 +25,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState<boolean>(false);
   const {ts_id} = useAppContext(['ts_id']);
   const [selectedId, setSelectedId] = React.useState<string>('');
+  const {isMobile} = useBreakpoints();
   const {data: location_data} = useLocationData();
   const {
     getHistory: {data: alarmHistory},
@@ -43,6 +45,12 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
         size: 20,
       },
       {
+        header: 'Grupper',
+        id: 'group_id',
+        accessorFn: (row) =>
+          location_data?.groups.find((group) => group.id === row.group_id)?.group_name,
+      },
+      {
         header: 'Kommentar',
         accessorKey: 'note_to_include',
         maxSize: 200,
@@ -53,12 +61,6 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
             },
           };
         },
-      },
-      {
-        header: 'Grupper',
-        id: 'group_id',
-        accessorFn: (row) =>
-          location_data?.groups.find((group) => group.id === row.group_id)?.group_name,
       },
     ],
     []
@@ -181,7 +183,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
   );
 
   return (
-    <Box flex={'1 1 auto'} sx={setTableBoxStyle(680)}>
+    <Box flex={'1 1 auto'} minWidth={!isMobile ? 750 : 'auto'} sx={setTableBoxStyle(680)}>
       <Dialog
         open={alarmHistoryOpen}
         onClose={() => {

@@ -76,7 +76,7 @@ export type AlarmResponse = {
 export type AlarmPost = {
   name: string;
   comment?: string;
-  group_id: string;
+  group_id: string | undefined;
   alarm_contacts: Array<AlarmContactPost>;
   notification_ids: Array<number> | undefined;
 };

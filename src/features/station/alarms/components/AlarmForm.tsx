@@ -41,12 +41,12 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
       contacts: alarm?.alarm_contacts || [],
       comment: alarm?.comment || '',
     },
-    values: {
-      name: alarm?.name || '',
-      group_id: alarm?.group_id ?? '',
-      notification_ids: alarm?.alarm_notifications ?? [],
-      contacts: alarm?.alarm_contacts || [],
-      comment: alarm?.comment || '',
+    values: alarm && {
+      name: alarm.name,
+      group_id: alarm.group_id,
+      notification_ids: alarm.alarm_notifications,
+      contacts: alarm.alarm_contacts,
+      comment: alarm.comment,
     },
     mode: 'onTouched',
   });

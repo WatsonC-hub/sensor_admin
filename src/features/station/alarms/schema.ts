@@ -84,7 +84,7 @@ const alarmNotificationArray = z.object({
 });
 export const alarmsSchema = z.object({
   name: z.string().min(1, 'Navn er påkrævet'),
-  group_id: z.string(),
+  group_id: z.string().optional(),
   comment: z.string().optional(),
   notification_ids: alarmNotificationArray.shape.notification_ids,
   contacts: contactArray.shape.contacts.optional(),
