@@ -16,13 +16,13 @@ const TripContactTable = ({ressources}: Props) => {
       {
         header: 'Kategori',
         accessorKey: 'kategori',
-        size: 150,
+        size: 20,
         grow: false,
       },
       {
         header: 'navn',
         accessorKey: 'navn',
-        size: 150,
+        size: 250,
         enableGrouping: false,
         grow: false,
       },
@@ -32,44 +32,14 @@ const TripContactTable = ({ressources}: Props) => {
 
   const options: Partial<MRT_TableOptions<TaskRessources>> = useMemo(
     () => ({
-      defaultColumn: {
-        grow: 1,
-        minSize: 200,
-        size: 200,
-      },
-      enableFullScreenToggle: false,
-      enableGlobalFilter: false,
-      positionExpandColumn: 'first',
       enableColumnActions: false,
-      enableColumnFilters: false,
       enablePagination: false,
       enableSorting: false,
-      enableTableFooter: false,
-      enableStickyHeader: false,
-      enableMultiSort: false,
-      enableFilters: false,
       groupedColumnMode: 'remove',
-      enableGlobalFilterRankedResults: false,
       muiTableContainerProps: {},
       enableGrouping: true,
       enableTopToolbar: false,
-      enableFacetedValues: true,
       enableBottomToolbar: false,
-      enableExpanding: false,
-      enableExpandAll: false,
-      muiTableHeadCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-        },
-      },
-      muiTableBodyCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-          whiteSpace: 'pre-line',
-        },
-      },
       state: {
         grouping: ['kategori'],
       },
