@@ -32,6 +32,7 @@ const TripContactTable = ({ressources}: Props) => {
 
   const options: Partial<MRT_TableOptions<TaskRessources>> = useMemo(
     () => ({
+      positionExpandColumn: 'first',
       enableColumnActions: false,
       enablePagination: false,
       enableSorting: false,

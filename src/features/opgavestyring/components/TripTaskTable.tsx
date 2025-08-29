@@ -34,7 +34,7 @@ const TripTaskTable = ({tasks}: Props) => {
         justifyContent="space-between"
         p={1}
       >
-        <Typography ml={1} variant="h6" fontWeight={'bold'}>
+        <Typography variant="h6" fontWeight={'bold'}>
           Opgaver
         </Typography>
         <Box display="flex" flexDirection="row" alignContent={'center'} gap={1}>
@@ -42,7 +42,13 @@ const TripTaskTable = ({tasks}: Props) => {
             Object.keys(value).map((notification_id) => {
               const id = parseInt(notification_id);
               return (
-                <Box key={notification_id} display="flex" alignItems={'center'} flexDirection="row">
+                <Box
+                  key={notification_id}
+                  ml={2}
+                  display="flex"
+                  alignItems={'center'}
+                  flexDirection="row"
+                >
                   {id !== 0 && (
                     <Box display={'flex'} width={18} height={18}>
                       {getIcon({notification_id: id}, false)}
@@ -56,17 +62,6 @@ const TripTaskTable = ({tasks}: Props) => {
             })}
         </Box>
       </Box>
-
-      {/* <Box>
-        <DeleteAlert
-          dialogOpen={dialogOpen}
-          setDialogOpen={setDialogOpen}
-          onOkDelete={() => {
-            if (taskId) onDeleteBtnClick(taskId);
-          }}
-        />
-        <MaterialReactTable table={table} />
-      </Box> */}
     </>
   );
 };
