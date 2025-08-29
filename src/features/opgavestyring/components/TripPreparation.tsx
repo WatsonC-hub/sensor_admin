@@ -8,13 +8,14 @@ import TripRessourcesTable from '~/features/opgavestyring/components/TripRessour
 import TripUnitTable from '~/features/opgavestyring/components/TripUnitTable';
 import {TaskCollection} from '~/types';
 import TripTaskTable from './TripTaskTable';
-import TripTaskCardList from './TripTaskCardList';
 import Button from '~/components/Button';
 import {Check} from '@mui/icons-material';
 import AlertDialog from '~/components/AlertDialog';
 import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
 import {useDisplayState} from '~/hooks/ui';
 import LoadingSkeleton from '~/LoadingSkeleton';
+import TripLocationAccess from './TripLocationAccess';
+import TripContacts from './TripContacts';
 
 interface TripPreparationProps {
   data: TaskCollection | undefined;
@@ -123,8 +124,11 @@ const TripPreparation = ({data}: TripPreparationProps) => {
       </Typography>
       <TripRessourcesTable ressources={data?.ressourcer} />
 
+      <TripLocationAccess keys={data?.location_access} />
+
+      <TripContacts contacts={data?.contacts} />
       <TripTaskTable tasks={data?.tasks} />
-      <TripTaskCardList data={data} />
+      {/* <TripTaskCardList data={data} /> */}
 
       <Typography ml={2} variant="h5">
         Udstyr

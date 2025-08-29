@@ -29,8 +29,8 @@ const TripTaskTable = ({tasks}: Props) => {
     <>
       <Box
         display="flex"
-        flexDirection="row"
-        alignItems={'center'}
+        flexDirection="column"
+        alignItems={'start'}
         justifyContent="space-between"
         p={1}
       >
