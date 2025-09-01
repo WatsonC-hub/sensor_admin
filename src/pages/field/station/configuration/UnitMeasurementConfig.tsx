@@ -6,9 +6,9 @@ import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {
-  useTimeseriesConfiguration,
-  useTimeseriesConfigurationMutation,
-} from '~/features/station/api/useTimeseriesConfiguration';
+  useTimeseriesMeasureSampleSend,
+  useTimeseriesMeasureSampleSendMutation,
+} from '~/features/station/api/useTimeseriesMeasureSampleSend';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
@@ -58,8 +58,8 @@ const getOptions = (sampleInterval: number | undefined) => {
 
 const UnitMeasurementConfig = () => {
   const {ts_id} = useAppContext(['ts_id']);
-  const {data, isPending} = useTimeseriesConfiguration(ts_id);
-  const {mutate} = useTimeseriesConfigurationMutation(ts_id);
+  const {data, isPending} = useTimeseriesMeasureSampleSend(ts_id);
+  const {mutate} = useTimeseriesMeasureSampleSendMutation(ts_id);
   const [options, setOptions] = useState<React.ReactNode[]>([]);
   const {isMobile} = useBreakpoints();
   const values = data?.savedConfig ? data.savedConfig : undefined;

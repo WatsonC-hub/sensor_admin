@@ -49,7 +49,7 @@ import {stationPages, StationPages} from '~/helpers/EnumHelper';
 import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import {timeseriesConfigurationOptions} from '../api/useTimeseriesConfiguration';
+import {timeseriesMeasureSampleSendOptions} from '../api/useTimeseriesMeasureSampleSend';
 
 const drawerWidth = 200;
 
@@ -160,7 +160,7 @@ const StationDrawer = () => {
           icon: <Settings />,
           requiredTsId: true,
           disabled: metadata?.calculated,
-          onHover: () => handlePrefetch(timeseriesConfigurationOptions(ts_id!)),
+          onHover: () => handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!)),
           tooltip:
             'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
         },

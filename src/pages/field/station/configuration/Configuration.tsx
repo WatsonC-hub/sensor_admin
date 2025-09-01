@@ -2,6 +2,7 @@ import {Box, Typography} from '@mui/material';
 import React from 'react';
 
 import UnitMeasurementConfig from './UnitMeasurementConfig';
+import YearlyControlsConfig from './YearlyControlsConfig';
 
 const Configuration = () => {
   return (
@@ -11,6 +12,10 @@ const Configuration = () => {
           Måle- og sendeforhold
         </Typography>
         <UnitMeasurementConfig />
+        <Typography variant="h6" gutterBottom>
+          Kontrol interval
+        </Typography>
+        <YearlyControlsConfig />
       </Layout>
     </>
   );

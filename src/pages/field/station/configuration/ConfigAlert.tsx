@@ -1,7 +1,7 @@
 import {Alert} from '@mui/material';
 import React from 'react';
 import Button from '~/components/Button';
-import {Configuration} from '~/features/station/api/useTimeseriesConfiguration';
+import {Configuration} from '~/features/station/api/useTimeseriesMeasureSampleSend';
 
 type Props = {
   status: Configuration['configState'];
