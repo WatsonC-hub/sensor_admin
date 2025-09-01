@@ -176,6 +176,26 @@ const SensorDepth = (
   );
 };
 
+const ServiceInterval = (
+  props: Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'>
+) => {
+  return (
+    <FormInput
+      type="number"
+      label="Service interval"
+      name="service_interval"
+      disabled={props.disabled}
+      fullWidth
+      slotProps={{
+        input: {
+          endAdornment: <InputAdornment position="start">kontrol/år</InputAdornment>,
+        },
+      }}
+      {...props}
+    />
+  );
+};
+
 const TimeseriesID = () => {
   const {ts_id} = useAppContext(['ts_id']);
   return (
@@ -213,5 +233,6 @@ StamdataTimeseries.Prefix = Prefix;
 StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;
 StamdataTimeseries.TimeseriesID = TimeseriesID;
+StamdataTimeseries.ServiceInterval = ServiceInterval;
 
 export default StamdataTimeseries;

@@ -16,6 +16,7 @@ type Metadata = {
   tstype_id: number;
   tstype_name: string;
   sensor_depth_m: number;
+  service_interval: number | null;
   x: number;
   y: number;
   terrainlevel: number;
@@ -58,6 +59,7 @@ type LocationMetadata = {
     prefix: string | null;
     tstype_name: string;
     intakeno: number;
+    service_interval: number | null;
   }>;
 };
 
@@ -113,6 +115,7 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
               prefix: data.prefix,
               tstype_name: data.tstype_name,
               intakeno: data.intakeno,
+              service_interval: data.service_interval,
             };
           }),
       };

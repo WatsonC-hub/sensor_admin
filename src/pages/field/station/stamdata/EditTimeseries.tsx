@@ -51,6 +51,7 @@ const EditTimeseries = () => {
     prefix: metadata?.prefix,
     sensor_depth_m: metadata?.sensor_depth_m,
     intakeno: metadata?.intakeno,
+    service_interval: metadata?.service_interval,
   });
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({
@@ -84,11 +85,7 @@ const EditTimeseries = () => {
     const payload = {
       ...data,
     };
-    metadataEditTimeseriesMutation.mutate(payload, {
-      onSuccess: () => {
-        toast.success('Tidsserie er opdateret');
-      },
-    });
+    metadataEditTimeseriesMutation.mutate(payload);
   };
 
   return (
