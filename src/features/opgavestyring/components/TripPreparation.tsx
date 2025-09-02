@@ -8,20 +8,20 @@ import TripRessourcesTable from '~/features/opgavestyring/components/TripRessour
 import TripUnitTable from '~/features/opgavestyring/components/TripUnitTable';
 import {TaskCollection} from '~/types';
 import TripTaskTable from './TripTaskTable';
-import TripTaskCardList from './TripTaskCardList';
 import Button from '~/components/Button';
 import {Check} from '@mui/icons-material';
 import AlertDialog from '~/components/AlertDialog';
 import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
 import {useDisplayState} from '~/hooks/ui';
 import LoadingSkeleton from '~/LoadingSkeleton';
+import TripLocationAccess from './TripLocationAccess';
+import TripContacts from './TripContacts';
 
 interface TripPreparationProps {
   data: TaskCollection | undefined;
 }
 
 const TripPreparation = ({data}: TripPreparationProps) => {
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [completeOpen, setCompleteOpen] = React.useState(false);
   const [editName, setEditName] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
@@ -37,13 +37,7 @@ const TripPreparation = ({data}: TripPreparationProps) => {
   }
 
   return (
-    <Box
-      display={'flex'}
-      flexDirection={'column'}
-      overflow={'auto'}
-      gap={1}
-      // sx={{paddingBottom: 'env(--safe-area-inset-bottom, 16px)'}}
-    >
+    <Box display={'flex'} flexDirection={'column'} overflow={'auto'} gap={1}>
       <Box display="flex" alignItems={'center'} gap={1} mb={2}>
         {editName === false ? (
           <IconButton
@@ -90,7 +84,6 @@ const TripPreparation = ({data}: TripPreparationProps) => {
             defaultValue={itinerary.name}
             size="small"
             variant={'outlined'}
-            // disabled={editName === false}
             onBlur={(e) => {
               if ('value' in e.target && e.target.value !== itinerary.name) {
                 const payload = {
@@ -123,8 +116,10 @@ const TripPreparation = ({data}: TripPreparationProps) => {
       </Typography>
       <TripRessourcesTable ressources={data?.ressourcer} />
 
+      <TripLocationAccess keys={data?.location_access} />
+
+      <TripContacts contacts={data?.contacts} />
       <TripTaskTable tasks={data?.tasks} />
-      <TripTaskCardList data={data} />
 
       <Typography ml={2} variant="h5">
         Udstyr
@@ -142,30 +137,12 @@ const TripPreparation = ({data}: TripPreparationProps) => {
         >
           Afslut tur
         </Button>
-        {/* <Button
-          bttype="primary"
-          sx={{borderRadius: 2.5}}
-          startIcon={<Delete />}
-          onClick={() => {
-            setDeleteOpen(true);
-          }}
-        >
-          Slet
-        </Button> */}
       </Box>
-      <AlertDialog
-        open={deleteOpen}
-        setOpen={setDeleteOpen}
-        title="Slet opgave"
-        message="Er du sikker på at du vil slette opgaven?"
-        handleOpret={() => {}}
-      />
       <AlertDialog
         open={completeOpen}
         setOpen={setCompleteOpen}
         title="Afslut tur"
-        message="Ansvarlig og forfaldsdato på alle opgaver på lokationer tilhørende turen ændres til turens ansvarlig og forfaldsdato. Turen bliver derefter færdiggjort. Er du sikker på at du vil færdiggøre turen?"
-        // message="Færdiggørelse fjerner alle lokationer fra turen og ændrer ansvarlig på ikke færdiggjorte opgaver. Er du sikker på at du vil færdiggøre opgaven?"
+        message="Er du sikker på at du vil færdiggøre turen?"
         handleOpret={() => {
           complete.mutate({path: `${itinerary_id}`});
           setItineraryId(null);

@@ -18,10 +18,10 @@ type ReducedUnits = {
 const TripUnitTable = ({units}: Props) => {
   const reducedUnits: Record<string, ReducedUnits> | undefined = units?.reduce(
     (acc: Record<string, ReducedUnits>, unit) => {
-      if (!acc[unit.terminal_type]) {
-        acc[unit.terminal_type] = {
+      if (!acc[unit.sensorinfo]) {
+        acc[unit.sensorinfo] = {
           terminal_type:
-            units?.filter((u) => u.terminal_type === unit.terminal_type).length +
+            units?.filter((u) => u.sensorinfo === unit.sensorinfo).length +
             'x ' +
             unit.terminal_type,
           sensorinfo: unit.sensorinfo,

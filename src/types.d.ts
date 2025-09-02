@@ -374,11 +374,11 @@ type TaskContact = {
 
 type TaskLocationAccess = {
   id: number;
-  navn: string;
+  name: string;
   type: string;
-  placering: string;
+  physical_location: string;
   kommentar: string;
-  kode: string;
+  code: string;
   loc_name: string;
   contact_name: string;
 };
