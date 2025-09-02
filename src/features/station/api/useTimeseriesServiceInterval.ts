@@ -22,7 +22,7 @@ export const timeseriesServiceIntervalOptions = (ts_id: number) =>
     queryKey: queryKeys.Timeseries.ServiceInterval(ts_id!),
     queryFn: async () => {
       const {data} = await apiClient.get<ServiceConfiguration>(
-        `/sensor_field/configuration/service_interval/${ts_id}`
+        `/sensor_field/configuration/yearly_controls/${ts_id}`
       );
       return data;
     },
@@ -41,7 +41,7 @@ export const useTimeseriesServiceIntervalMutation = (ts_id: number) => {
   return useMutation({
     mutationFn: async (data: ServiceConfigurationUpdate) => {
       const {data: out} = await apiClient.post(
-        `/sensor_field/configuration/service_interval/${ts_id}`,
+        `/sensor_field/configuration/yearly_controls/${ts_id}`,
         data
       );
       return out;

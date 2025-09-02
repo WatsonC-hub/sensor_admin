@@ -40,6 +40,7 @@ const YearlyControlsConfig = () => {
     defaultValues: {
       controls_per_year: values?.controlsPerYear,
       isCustomerService: values?.isCustomerService,
+      lead_time: values?.leadTime,
     },
     values: {
       controls_per_year: values?.controlsPerYear,
