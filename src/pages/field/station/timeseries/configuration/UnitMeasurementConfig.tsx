@@ -10,7 +10,6 @@ import {
   useTimeseriesMeasureSampleSendMutation,
 } from '~/features/station/api/useTimeseriesMeasureSampleSend';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
 import ConfigAlert from './ConfigAlert';
 import {z} from 'zod';
@@ -90,8 +89,8 @@ const UnitMeasurementConfig = () => {
 
   if (isPending) {
     return (
-      <Box minWidth={isMobile ? '70vw' : 800}>
-        <LoadingSkeleton />
+      <Box minWidth={isMobile ? '70vw' : 500} height={500}>
+        <Typography>Loading</Typography>
       </Box>
     );
   }

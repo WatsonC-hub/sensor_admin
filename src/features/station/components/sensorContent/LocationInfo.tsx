@@ -18,8 +18,13 @@ const LocationInfo = () => {
 
   return (
     <Box display={'flex'} flexDirection={'column'} mt={-2}>
-      <Typography variant={'h6'} fontWeight={'bold'}>
+      <Typography display={'flex'} flexDirection={'column'} variant={'h6'} fontWeight={'bold'}>
         {location_data?.loc_name}
+        {location_data?.sla && (
+          <Typography mt={-1} ml={2} fontStyle={'italic'} fontWeight={'bold'} variant={'caption'}>
+            SLA: {location_data?.sla} dage
+          </Typography>
+        )}
       </Typography>
       {location_data?.customer_name !== null && location_data?.customer_name !== undefined && (
         <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} gap={1}>

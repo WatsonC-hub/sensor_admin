@@ -156,7 +156,7 @@ const StationDrawer = () => {
         },
         {
           text: 'Konfiguration',
-          page: stationPages.KONFIGURATION,
+          page: stationPages.TIDSSERIEKONFIGURATION,
           icon: <Settings />,
           requiredTsId: true,
           disabled: metadata?.calculated,
@@ -237,6 +237,14 @@ const StationDrawer = () => {
           requiredTsId: false,
           disabled: !user?.features.ressources,
           onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
+        },
+        {
+          text: 'Konfiguration',
+          page: stationPages.LOKATIONKONFIGURATION,
+          icon: <Settings />,
+          requiredTsId: true,
+          // tooltip:
+          //   'På denne side kan du konfigurere din lokation, såsom at ændre måleinterval eller sendeinterval.',
         },
       ],
     },

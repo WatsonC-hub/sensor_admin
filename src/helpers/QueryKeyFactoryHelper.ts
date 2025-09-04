@@ -21,6 +21,8 @@ export const queryKeys = {
       ['location_permissions', 'metadata', loc_id] as const,
     minimalSelectList: (loc_id: number | undefined) =>
       ['tsList', 'location_metadata', 'metadata', loc_id] as const,
+    SLAConfiguration: (loc_id: number | undefined) =>
+      ['sla_configuration', 'register', loc_id] as const,
   },
   Timeseries: {
     all: () => ['timeseries'] as const,
