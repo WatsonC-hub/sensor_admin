@@ -100,7 +100,7 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                       fontWeight={'bold'}
                       variant={'caption'}
                     >
-                      SLA: {task.sla.format('l')}
+                      SLA frist: {task.sla.format('l')}
                     </Typography>
                   )}
                 </Box>
