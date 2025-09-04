@@ -20,9 +20,9 @@ const LocationInfo = () => {
     <Box display={'flex'} flexDirection={'column'} mt={-2}>
       <Typography display={'flex'} flexDirection={'column'} variant={'h6'} fontWeight={'bold'}>
         {location_data?.loc_name}
-        {location_data?.sla && (
+        {location_data?.sla && location_data.sla > 0 && (
           <Typography mt={-1} ml={2} fontStyle={'italic'} fontWeight={'bold'} variant={'caption'}>
-            SLA: {location_data?.sla} dage
+            SLA: {location_data?.sla} {location_data.sla > 1 ? 'dage' : 'dag'}
           </Typography>
         )}
       </Typography>
