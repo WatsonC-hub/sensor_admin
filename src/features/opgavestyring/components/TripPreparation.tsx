@@ -142,7 +142,6 @@ const TripPreparation = ({data}: TripPreparationProps) => {
         {editComment === false ? (
           <Typography
             variant="h6"
-            fontWeight={'bold'}
             fontSize={'1.1rem'}
             color={itinerary.comment ? 'black' : 'text.secondary'}
           >
