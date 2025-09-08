@@ -27,28 +27,16 @@ const TripTaskTable = ({tasks}: Props) => {
   }, {});
   return (
     <>
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems={'start'}
-        justifyContent="space-between"
-        p={1}
-      >
+      <Box display="flex" flexDirection="column" alignItems={'start'} justifyContent="start" p={1}>
         <Typography variant="h6" fontWeight={'bold'}>
           Opgaver
         </Typography>
-        <Box display="flex" flexDirection="row" alignContent={'center'} gap={1}>
+        <Box display="flex" flexDirection="column">
           {value &&
             Object.keys(value).map((notification_id) => {
               const id = parseInt(notification_id);
               return (
-                <Box
-                  key={notification_id}
-                  ml={2}
-                  display="flex"
-                  alignItems={'center'}
-                  flexDirection="row"
-                >
+                <Box key={notification_id} ml={0.5} display="flex" alignItems={'center'}>
                   {id !== 0 && (
                     <Box display={'flex'} width={18} height={18}>
                       {getIcon({notification_id: id}, false)}
