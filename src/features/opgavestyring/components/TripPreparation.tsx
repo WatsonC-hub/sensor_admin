@@ -39,8 +39,8 @@ const TripPreparation = ({data}: TripPreparationProps) => {
   }
 
   return (
-    <Box display={'flex'} flexDirection={'column'} overflow={'auto'} gap={1}>
-      <Box display="flex" alignItems={'center'} gap={1} mb={2}>
+    <Box display={'flex'} flexDirection={'column'} overflow={'auto'} gap={2}>
+      <Box display="flex" alignItems={'center'} gap={1}>
         {editName === false ? (
           <IconButton
             onClick={() => {
@@ -96,20 +96,11 @@ const TripPreparation = ({data}: TripPreparationProps) => {
                 updateItinerary.mutate(payload);
               }
             }}
-            slotProps={{
-              input: {
-                sx: {
-                  textAlign: 'center',
-
-                  '& .MuiInputBase-input': {py: 0.5},
-                },
-              },
-            }}
             placeholder="Indtast navn..."
           />
         )}
       </Box>
-      <Box display="flex" alignItems={'center'} gap={1} mb={2}>
+      <Box display="flex" alignItems={'center'} gap={1} mb={1} mr={1}>
         {editComment === false ? (
           <IconButton
             onClick={() => {
@@ -166,31 +157,32 @@ const TripPreparation = ({data}: TripPreparationProps) => {
               }
             }}
             multiline
-            sx={{
-              mr: 2,
-            }}
-            slotProps={{
-              input: {
-                sx: {
-                  textAlign: 'center',
-
-                  '& .MuiInputBase-input': {py: 0.5},
-                },
-              },
-            }}
             placeholder="Indtast kommentar..."
           />
         )}
       </Box>
 
-      <Typography ml={2} variant="h5">
-        Pakkeliste
-      </Typography>
-      <TripRessourcesTable ressources={data?.ressourcer} />
+      <Box>
+        <Typography ml={2} variant="h5">
+          Pakkeliste
+        </Typography>
+        <TripRessourcesTable ressources={data?.ressourcer} />
+      </Box>
 
-      <TripLocationAccess keys={data?.location_access} />
+      <Box>
+        <Typography ml={2} variant="h5">
+          Nøgler
+        </Typography>
+        <TripLocationAccess keys={data?.location_access} />
+      </Box>
 
-      <TripContacts contacts={data?.contacts} />
+      <Box>
+        <Typography ml={2} variant="h5">
+          Kontakter
+        </Typography>
+        <TripContacts contacts={data?.contacts} />
+      </Box>
+
       <TripTaskTable tasks={data?.tasks} />
 
       <Typography ml={2} variant="h5">
