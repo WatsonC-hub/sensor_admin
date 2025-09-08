@@ -21,8 +21,6 @@ const AlarmGroup = () => {
       group_name: group.group_name,
     })) ?? [];
 
-  if (!options) return null;
-
   return (
     <Tooltip title={location_data?.groups ? '' : 'Ingen grupper tilgængelige på lokationen'} arrow>
       <FormAutocomplete<AlarmsFormValues, AlarmGroupOptions, false>
@@ -43,7 +41,7 @@ const AlarmGroup = () => {
             return location_data?.groups?.find((item) => item.id === o)?.group_name ?? '';
           }
 
-          return o ? (o.group_name ?? '') : '';
+          return o.group_name;
         }}
         label={'Lokationsgrupper'}
         fullWidth

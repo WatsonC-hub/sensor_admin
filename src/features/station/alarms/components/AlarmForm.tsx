@@ -14,6 +14,7 @@ import FormFieldset from '~/components/formComponents/FormFieldset';
 import AlarmContactForm from './AlarmContactForm';
 import AlarmContactFormDialog from './AlarmContactFormDialog';
 import AlarmGroup from './AlarmGroup';
+import DeleteAlert from '~/components/DeleteAlert';
 
 type AlarmFormProps = {
   setOpen: (open: boolean) => void;
@@ -26,6 +27,8 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
   const {ts_id} = useAppContext(['ts_id']);
 
   const [contactsCollapsed, setContactsCollapsed] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [draftAlarm, setDraftAlarm] = useState<AlarmsFormValues | undefined>(undefined);
 
   const {post: postAlarm, put: putAlarm} = useAlarm();
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
@@ -55,7 +58,12 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
 
   const contacts = watch('contacts');
 
-  const handleSubmit = (data: AlarmsFormValues) => {
+  const handleDelete = () => {
+    handleSubmit(draftAlarm!, true);
+    setDeleteDialogOpen(false);
+  };
+
+  const handleSubmit = (data: AlarmsFormValues, forceSubmit?: boolean) => {
     const contacts =
       data.contacts?.map((contact) => ({
         contact_id: contact.contact_id ?? '',
@@ -74,7 +82,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
       const alarm_data: AlarmPost = {
         name: data.name,
         comment: data.comment,
-        group_id: data.group_id,
+        group_id: data.group_id ?? undefined,
         alarm_contacts: contacts,
         notification_ids: data.notification_ids,
       };
@@ -91,10 +99,23 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         },
       });
     } else {
+      if (
+        forceSubmit !== true &&
+        alarm?.group_id !== undefined &&
+        alarm?.group_id !== '' &&
+        (data.group_id === undefined || data.group_id === null || data.group_id === '')
+      ) {
+        setDeleteDialogOpen(true);
+        setDraftAlarm(data);
+        return;
+      } else {
+        setDraftAlarm(undefined);
+      }
+
       const alarm_data: AlarmPost = {
         name: data.name,
         comment: data.comment,
-        group_id: data.group_id,
+        group_id: data.group_id ?? undefined,
         alarm_contacts: contacts,
         notification_ids: data.notification_ids,
       };
@@ -164,6 +185,16 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         values={contacts}
         setValues={setValue}
         currentIndex={currentIndex}
+      />
+      <DeleteAlert
+        dialogOpen={deleteDialogOpen}
+        onCancel={() => {
+          setDeleteDialogOpen(false);
+          setDraftAlarm(undefined);
+        }}
+        setDialogOpen={setDeleteDialogOpen}
+        onOkDelete={handleDelete}
+        title="Du er i gang med at fjerne en gruppe fra alarmen. Det vil medføre til at alarmen bliver fjernet fra alle lokationer som har samme gruppe. Er du sikker på at du vil fortsætte?"
       />
     </>
   );

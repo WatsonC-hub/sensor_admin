@@ -1,4 +1,4 @@
-import {Box, Checkbox, Typography} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
@@ -27,8 +27,11 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
           const smsString = `${sms.from} - ${sms.to}`;
           return (
             <Box display="flex" flexDirection={'column'} alignItems="center">
-              <Checkbox checked={sms.selected} disabled />
-              {sms.selected && <Typography variant="body2">{smsString}</Typography>}
+              {!sms.selected ? (
+                <Typography variant="body2">-</Typography>
+              ) : (
+                <Typography variant="body2">{smsString}</Typography>
+              )}
             </Box>
           );
         },
@@ -43,8 +46,11 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
           const emailString = `${email.from} - ${email.to}`;
           return (
             <Box display="flex" flexDirection={'column'} alignItems="center">
-              <Checkbox checked={email.selected} disabled />
-              {email.selected && <Typography variant="body2">{emailString}</Typography>}
+              {!email.selected ? (
+                <Typography variant="body2">-</Typography>
+              ) : (
+                <Typography variant="body2">{emailString}</Typography>
+              )}
             </Box>
           );
         },
@@ -59,8 +65,11 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
           const callString = `${call.from} - ${call.to}`;
           return (
             <Box display="flex" flexDirection={'column'} alignItems="center">
-              <Checkbox checked={call.selected} disabled />
-              {call.selected && <Typography variant="body2">{callString}</Typography>}
+              {!call.selected ? (
+                <Typography variant="body2">-</Typography>
+              ) : (
+                <Typography variant="body2">{callString}</Typography>
+              )}
             </Box>
           );
         },

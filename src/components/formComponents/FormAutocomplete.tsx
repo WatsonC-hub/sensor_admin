@@ -31,10 +31,6 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
         name={name}
         control={control}
         render={({field: {value, onChange}}) => {
-          // const selectedValue = props.multiple
-          //   ? props.options.filter((o) => (value as (string | number)[]).includes(o.id))
-          //   : (props.options.find((o) => o.id === value) ?? null);
-
           return (
             <ExtendedAutocomplete<K, M>
               selectValue={value}
