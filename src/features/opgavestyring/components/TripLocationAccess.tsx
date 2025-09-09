@@ -1,7 +1,10 @@
-import {Box} from '@mui/material';
+import {Link, Box} from '@mui/material';
+
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, stationPages, TableTypes} from '~/helpers/EnumHelper';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useTable} from '~/hooks/useTable';
 import {TaskLocationAccess} from '~/types';
 
@@ -10,37 +13,46 @@ type TripLocationAccessProps = {
 };
 
 const TripLocationAccess = ({keys}: TripLocationAccessProps) => {
+  const {location} = useNavigationFunctions();
+  const [, setPageToShow] = useStationPages();
   const columns = useMemo<MRT_ColumnDef<TaskLocationAccess>[]>(
     () => [
       {
         header: 'Navn',
         accessorKey: 'name',
-        size: 100,
+        size: 60,
+      },
+      {
+        header: 'Lokationer',
+        accessorKey: 'loc_names',
+        Cell: ({cell, row}) => (
+          <>
+            {(cell.getValue<string[]>() || []).map((loc, index) => (
+              <Link
+                key={index}
+                sx={{cursor: 'pointer'}}
+                display="block"
+                onClick={() => {
+                  location(row.original.loc_ids[index]);
+                  setPageToShow(stationPages.KONTAKTER);
+                }}
+              >
+                {loc}
+              </Link>
+            ))}
+          </>
+        ),
+        size: 150,
       },
       {
         header: 'Type',
         accessorKey: 'type',
-        size: 20,
+        size: 30,
       },
       {
         header: 'Fysisk placering',
-        accessorKey: 'physical_location',
-        size: 20,
-      },
-      {
-        header: 'Kode',
-        accessorKey: 'code',
-        size: 20,
-      },
-      {
-        header: 'Kontakt',
-        accessorKey: 'contact_name',
-        size: 20,
-      },
-      {
-        header: 'Kommentar',
-        accessorKey: 'comment',
-        size: 20,
+        accessorFn: (row) => row.physical_location || 'WatsonC',
+        size: 30,
       },
     ],
     []

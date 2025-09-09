@@ -376,10 +376,8 @@ type TaskLocationAccess = {
   name: string;
   type: string;
   physical_location: string;
-  kommentar: string;
-  code: string;
-  loc_name: string;
-  contact_name: string;
+  loc_ids: Array<number>;
+  loc_names: Array<string>;
 };
 
 type TaskNotifications = {
