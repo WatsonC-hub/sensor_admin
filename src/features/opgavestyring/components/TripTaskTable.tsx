@@ -11,6 +11,7 @@ type Props = {
 };
 
 const TripTaskTable = ({tasks}: Props) => {
+  const gridSize = tasks?.map((task) => task.count).some((count) => count > 9) ? 1.2 : 1;
   return (
     <>
       <Typography variant="h5" ml={2}>
@@ -34,9 +35,14 @@ const TripTaskTable = ({tasks}: Props) => {
                 alignItems={'center'}
                 width={'100%'}
               >
-                <Grid2 size={1.2} alignContent={'center'}>
-                  <Typography fontSize={12} display="flex" alignItems={'center'}>
-                    {task.count}
+                <Grid2 size={gridSize} alignContent={'center'}>
+                  <Typography
+                    fontSize={12}
+                    display="flex"
+                    alignItems={'center'}
+                    justifyContent={'space-between'}
+                  >
+                    {task.count}x
                     {task.blocks_notifications.length > 0 ? (
                       <Box width={18} height={18} alignItems={'center'}>
                         {getIcon({notification_id: task.blocks_notifications[0]}, false)}

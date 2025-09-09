@@ -412,7 +412,7 @@ export type TaskUnits = {
 };
 
 export type LocationTasks = {
-  count: string;
+  count: number;
   name: string;
   blocks_notifications: Array<number>;
 };
