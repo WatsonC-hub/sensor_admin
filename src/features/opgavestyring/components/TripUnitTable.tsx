@@ -1,4 +1,5 @@
-import {Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
+
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo} from 'react';
 
@@ -10,77 +11,35 @@ type Props = {
   units: Array<TaskUnits> | undefined;
 };
 
-type ReducedUnits = {
-  terminal_type: string;
-  sensorinfo: string;
-};
-
 const TripUnitTable = ({units}: Props) => {
-  const reducedUnits: Record<string, ReducedUnits> | undefined = units?.reduce(
-    (acc: Record<string, ReducedUnits>, unit) => {
-      if (!acc[unit.sensorinfo]) {
-        acc[unit.sensorinfo] = {
-          terminal_type:
-            units?.filter((u) => u.sensorinfo === unit.sensorinfo).length +
-            'x ' +
-            unit.terminal_type,
-          sensorinfo: unit.sensorinfo,
-        };
-      }
-      return acc;
-    },
-    {}
-  );
-
-  units?.sort((a, b) => {
-    if (a.name === b.name) {
-      if (a.startdate > b.startdate) return -1;
-      if (a.startdate < b.startdate) return 1;
-    } else if (a.name < b.name) return -1;
-    else if (a.name > b.name) return 1;
-    return 0;
-  });
-
-  const columns = useMemo<MRT_ColumnDef<ReducedUnits>[]>(
+  const columns = useMemo<MRT_ColumnDef<TaskUnits>[]>(
     () => [
-      // {
-      //   header: 'Navn',
-      //   accessorKey: 'name',
-      //   size: 100,
-      // },
-      // {
-      //   header: 'Tidsserie type',
-      //   accessorKey: 'tstype_name',
-      //   size: 100,
-      // },
       {
         header: 'Terminal',
-        accessorKey: 'terminal_type',
-        size: 100,
+        accessorKey: 'terminal_name',
+        size: 20,
       },
       {
         header: 'Sensor',
-        accessorKey: 'sensorinfo',
-        size: 100,
+        accessorKey: 'sensor_names',
+        Cell: ({cell}) => (
+          <div>
+            {(cell.getValue<string[]>() || []).map((sensor_name, index) => (
+              <div key={index}>
+                <Typography fontSize="0.85rem" display="block">
+                  {sensor_name}
+                </Typography>
+              </div>
+            ))}
+          </div>
+        ),
+        size: 220,
       },
-      // {
-      //   accessorFn: (row) => convertDateWithTimeStamp(row.),
-      //   id: 'startdate',
-      //   header: 'Start dato',
-      //   accessorKey: 'startdate',
-      //   size: 100,
-      // },
-      // {
-      //   accessorFn: (row) => convertDateWithTimeStamp(row.enddate),
-      //   id: 'enddate',
-      //   header: 'Slut dato',
-      //   size: 100,
-      // },
     ],
     []
   );
 
-  const options: Partial<MRT_TableOptions<ReducedUnits>> = useMemo(
+  const options: Partial<MRT_TableOptions<TaskUnits>> = useMemo(
     () => ({
       enableFullScreenToggle: false,
       enableGlobalFilter: false,
@@ -114,9 +73,9 @@ const TripUnitTable = ({units}: Props) => {
     []
   );
 
-  const table = useTable<ReducedUnits>(
+  const table = useTable<TaskUnits>(
     columns,
-    reducedUnits ? Object.values(reducedUnits) : undefined,
+    units,
     options,
     undefined,
     TableTypes.TABLE,

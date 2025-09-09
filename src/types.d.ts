@@ -406,15 +406,8 @@ export type TaskRessources = {
 };
 
 export type TaskUnits = {
-  name: string;
-  terminal_type: string;
-  sensorinfo: string;
-  sensor_id: string;
-  terminal_id: string;
-  ts_name: string;
-  tstype_name: string;
-  startdate: string;
-  enddate: string;
+  terminal_name: string;
+  sensor_names: Array<string>;
 };
 
 export type LocationTasks = {
