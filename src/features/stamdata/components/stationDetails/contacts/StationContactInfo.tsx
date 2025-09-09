@@ -53,8 +53,6 @@ export default function StationContactInfo({
   const id = setIsEditing && watch('id');
   const mobile = watch('mobile');
   const contact_role = watch('contact_role');
-  const contact_type = watch('contact_type');
-  const notify_required = watch('notify_required');
 
   useEffect(() => {
     if (setIsEditing) {
@@ -62,13 +60,6 @@ export default function StationContactInfo({
       else setIsEditing(false);
     }
   }, [id]);
-
-  useEffect(() => {
-    console.log('test');
-    if (contact_role === 1 && contact_type === ContactInfoType.Projekt) {
-      setValue('notify_required', false);
-    }
-  }, [notify_required && contact_role === 1 && contact_type === ContactInfoType.Projekt]);
 
   return (
     <Grid container spacing={1} my={1} alignItems="center">
@@ -187,9 +178,7 @@ export default function StationContactInfo({
               control={
                 <Checkbox
                   checked={value}
-                  disabled={
-                    tableModal || (contact_role === 1 && contact_type === ContactInfoType.Projekt)
-                  }
+                  disabled={tableModal || contact_role === 1}
                   onChange={(checked) => onChange(checked)}
                   name="notify_required"
                   color="primary"
