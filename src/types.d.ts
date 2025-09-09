@@ -214,8 +214,8 @@ export type ContactInfo = {
 
 export type ContactTable = {
   id: string;
-  navn: string;
-  telefonnummer: string | null;
+  name: string;
+  mobile: string | null;
   email: string | null;
   contact_role: number;
   comment?: string;
@@ -224,6 +224,7 @@ export type ContactTable = {
   relation_id: number;
   contact_type: string;
   contact_role_name?: string;
+  notify_required?: boolean;
 };
 
 export type Access = {
@@ -366,10 +367,8 @@ type TaskContact = {
   navn: string;
   telefonnummer: Optional[string];
   email: Optional[string];
-  comment: Optional[string];
-  contact_role_name: string;
-  loc_id: number;
-  loc_name: string;
+  loc_ids: Array<number>;
+  loc_names: Array<string>;
 };
 
 type TaskLocationAccess = {
