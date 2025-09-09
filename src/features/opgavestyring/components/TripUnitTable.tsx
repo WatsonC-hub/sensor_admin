@@ -18,6 +18,11 @@ const TripUnitTable = ({units}: Props) => {
         header: 'Terminal',
         accessorKey: 'terminal_name',
         size: 20,
+        Cell: ({cell, row}) => (
+          <Typography fontSize="0.85rem" display="block">
+            {row.original.count + 'x ' + cell.getValue<string>()}
+          </Typography>
+        ),
       },
       {
         header: 'Sensor',

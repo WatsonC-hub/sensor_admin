@@ -406,25 +406,15 @@ export type TaskRessources = {
 };
 
 export type TaskUnits = {
+  count: number;
   terminal_name: string;
   sensor_names: Array<string>;
 };
 
 export type LocationTasks = {
-  id: string;
-  loc_id: number;
-  ts_id: number;
-  status_id: number;
-  assigned_to: string;
-  tstype_name: string;
-  ts_name: string;
-  due_date: Dayjs;
+  count: string;
   name: string;
-  description: string;
-  status_name: string;
-  display_name: string;
-  blocks_notifications: number[];
-  notification_name: string;
+  blocks_notifications: Array<number>;
 };
 
 export type DataToShow = {
