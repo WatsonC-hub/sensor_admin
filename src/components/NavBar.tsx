@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 
 import {matchQuery, useQueryClient} from '@tanstack/react-query';
-import {useAtom, useSetAtom} from 'jotai';
+import {useAtom} from 'jotai';
 import {useState, ReactNode, MouseEventHandler} from 'react';
 // import {useNavigate} from 'react-router-dom';
 
@@ -28,12 +28,14 @@ import {appBarHeight} from '~/consts';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
-import {captureDialogAtom, drawerOpenAtom} from '~/state/atoms';
+import {drawerOpenAtom} from '~/state/atoms';
 import CloseIcon from '@mui/icons-material/Close';
 import Button from './Button';
 import {useDisplayState} from '~/hooks/ui';
 import {useNavigate} from 'react-router-dom';
 import {userQueryOptions} from '~/features/auth/useUser';
+import {toast} from 'react-toastify';
+import CaptureDialog from './CaptureDialog';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();
@@ -338,21 +340,67 @@ const TripList = () => {
 };
 
 const ScannerAsTitle = () => {
-  const setOpenQRScanner = useSetAtom(captureDialogAtom);
+  const [open, setOpen] = useState(false);
+  async function getData(labelid: string | number) {
+    const {data} = await apiClient.get(`/sensor_field/calypso_id/${labelid}`);
+    return data;
+  }
+
+  const {location, station, boreholeIntake} = useNavigationFunctions();
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleScan = async (data: any, calypso_id: number | null) => {
+    if (!calypso_id) {
+      toast.error('QR-koden er ikke gyldig', {autoClose: 2000});
+      handleClose();
+      return;
+    }
+
+    try {
+      const resp = await getData(calypso_id);
+
+      if (resp.loc_id) {
+        if (resp.ts_id) {
+          location(resp.loc_id, true);
+          station(resp.ts_id);
+        } else {
+          location(resp.loc_id, true);
+        }
+      } else if (resp.boreholeno) {
+        if (resp.intakeno) {
+          boreholeIntake(resp.boreholeno, resp.intakeno);
+        }
+      } else {
+        toast.error('Ukendt fejl', {autoClose: 2000});
+      }
+      handleClose();
+    } catch (e: any) {
+      toast.error(e.response?.data?.detail ? e.response?.data?.detail : 'Ukendt fejl', {
+        autoClose: 2000,
+      });
+      handleClose();
+    }
+  };
 
   return (
-    <IconButton
-      sx={{
-        position: 'absolute',
-        left: '50%',
-        transform: 'translateX(-50%)',
-      }}
-      color="inherit"
-      onClick={() => setOpenQRScanner(true)}
-      size="large"
-    >
-      <QrCodeScannerIcon />
-    </IconButton>
+    <>
+      <IconButton
+        sx={{
+          position: 'absolute',
+          left: '50%',
+          transform: 'translateX(-50%)',
+        }}
+        color="inherit"
+        onClick={() => setOpen(true)}
+        size="large"
+      >
+        <QrCodeScannerIcon />
+      </IconButton>
+      {open && <CaptureDialog open={open} handleClose={handleClose} handleScan={handleScan} />}
+    </>
   );
 };
 
