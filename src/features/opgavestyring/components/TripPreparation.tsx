@@ -8,23 +8,25 @@ import TripRessourcesTable from '~/features/opgavestyring/components/TripRessour
 import TripUnitTable from '~/features/opgavestyring/components/TripUnitTable';
 import {TaskCollection} from '~/types';
 import TripTaskTable from './TripTaskTable';
-import TripTaskCardList from './TripTaskCardList';
 import Button from '~/components/Button';
 import {Check} from '@mui/icons-material';
 import AlertDialog from '~/components/AlertDialog';
 import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
 import {useDisplayState} from '~/hooks/ui';
 import LoadingSkeleton from '~/LoadingSkeleton';
+import TripLocationAccess from './TripLocationAccess';
+import TripContacts from './TripContacts';
 
 interface TripPreparationProps {
   data: TaskCollection | undefined;
 }
 
 const TripPreparation = ({data}: TripPreparationProps) => {
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [completeOpen, setCompleteOpen] = React.useState(false);
   const [editName, setEditName] = useState<boolean>(false);
+  const [editComment, setEditComment] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
+  const [comment, setComment] = useState<string | null>(null);
   const [itinerary_id, setItineraryId] = useDisplayState((state) => [
     state.itinerary_id,
     state.setItineraryId,
@@ -37,14 +39,8 @@ const TripPreparation = ({data}: TripPreparationProps) => {
   }
 
   return (
-    <Box
-      display={'flex'}
-      flexDirection={'column'}
-      overflow={'auto'}
-      gap={1}
-      // sx={{paddingBottom: 'env(--safe-area-inset-bottom, 16px)'}}
-    >
-      <Box display="flex" alignItems={'center'} gap={1} mb={2}>
+    <Box display={'flex'} flexDirection={'column'} overflow={'auto'} gap={1}>
+      <Box display="flex" alignItems={'center'} gap={1}>
         {editName === false ? (
           <IconButton
             onClick={() => {
@@ -76,13 +72,12 @@ const TripPreparation = ({data}: TripPreparationProps) => {
         )}
         {editName === false ? (
           <Typography
-            ml={2}
             variant="h6"
             fontWeight={'bold'}
-            fontSize={'1.2rem'}
+            fontSize={'1.1rem'}
             color={itinerary.name ? 'black' : 'text.secondary'}
           >
-            {itinerary.name ? itinerary.name : 'Indtast tur navn...'}
+            {itinerary.name ? itinerary.name : 'Indtast navn...'}
           </Typography>
         ) : (
           <TextField
@@ -90,7 +85,6 @@ const TripPreparation = ({data}: TripPreparationProps) => {
             defaultValue={itinerary.name}
             size="small"
             variant={'outlined'}
-            // disabled={editName === false}
             onBlur={(e) => {
               if ('value' in e.target && e.target.value !== itinerary.name) {
                 const payload = {
@@ -102,33 +96,72 @@ const TripPreparation = ({data}: TripPreparationProps) => {
                 updateItinerary.mutate(payload);
               }
             }}
-            slotProps={{
-              input: {
-                sx: {
-                  textAlign: 'center',
-                  fontSize: '1.2rem',
-                  fontWeight: 'bold',
-
-                  '& .MuiInputBase-input': {py: 0.5, pl: 2, height: '1.2rem'},
-                },
-              },
+            placeholder="Indtast navn..."
+          />
+        )}
+      </Box>
+      <Box display="flex" alignItems={'center'} gap={1} mb={1} mr={1}>
+        {editComment === false ? (
+          <IconButton
+            onClick={() => {
+              setEditComment(true);
+              setComment(itinerary.comment);
             }}
-            placeholder="Indtast tur navn..."
+            sx={{color: 'primary.main', width: 32, height: 32}}
+          >
+            <EditIcon sx={{p: 0.3}} />
+          </IconButton>
+        ) : (
+          <IconButton
+            onClick={() => {
+              setEditComment(false);
+              if (comment !== itinerary.comment) {
+                const payload = {
+                  path: `${itinerary.id}`,
+                  data: {
+                    comment: comment,
+                  },
+                };
+                updateItinerary.mutate(payload);
+              }
+            }}
+            sx={{color: 'primary.main', width: 32, height: 32}}
+          >
+            <CheckIcon sx={{p: 0.3}} />
+          </IconButton>
+        )}
+        {editComment === false ? (
+          <Typography variant="body2" color={itinerary.comment ? 'black' : 'text.secondary'}>
+            {itinerary.comment ? itinerary.comment : 'Indtast kommentar...'}
+          </Typography>
+        ) : (
+          <TextField
+            key={itinerary.id}
+            defaultValue={itinerary.comment}
+            fullWidth
+            size="small"
+            variant={'outlined'}
+            onBlur={(e) => {
+              if ('value' in e.target && e.target.value !== itinerary.comment) {
+                const payload = {
+                  path: `${itinerary.id}`,
+                  data: {
+                    comment: e.target.value,
+                  },
+                };
+                updateItinerary.mutate(payload);
+              }
+            }}
+            multiline
+            placeholder="Indtast kommentar..."
           />
         )}
       </Box>
 
-      <Typography ml={2} variant="h5">
-        Pakkeliste
-      </Typography>
       <TripRessourcesTable ressources={data?.ressourcer} />
-
+      <TripLocationAccess keys={data?.location_access} />
+      <TripContacts contacts={data?.contacts} />
       <TripTaskTable tasks={data?.tasks} />
-      <TripTaskCardList data={data} />
-
-      <Typography ml={2} variant="h5">
-        Udstyr
-      </Typography>
       <TripUnitTable units={data?.units} />
 
       <Box display="flex" gap={1} flexDirection={'row'} alignSelf={'center'}>
@@ -142,30 +175,12 @@ const TripPreparation = ({data}: TripPreparationProps) => {
         >
           Afslut tur
         </Button>
-        {/* <Button
-          bttype="primary"
-          sx={{borderRadius: 2.5}}
-          startIcon={<Delete />}
-          onClick={() => {
-            setDeleteOpen(true);
-          }}
-        >
-          Slet
-        </Button> */}
       </Box>
-      <AlertDialog
-        open={deleteOpen}
-        setOpen={setDeleteOpen}
-        title="Slet opgave"
-        message="Er du sikker på at du vil slette opgaven?"
-        handleOpret={() => {}}
-      />
       <AlertDialog
         open={completeOpen}
         setOpen={setCompleteOpen}
         title="Afslut tur"
-        message="Ansvarlig og forfaldsdato på alle opgaver på lokationer tilhørende turen ændres til turens ansvarlig og forfaldsdato. Turen bliver derefter færdiggjort. Er du sikker på at du vil færdiggøre turen?"
-        // message="Færdiggørelse fjerner alle lokationer fra turen og ændrer ansvarlig på ikke færdiggjorte opgaver. Er du sikker på at du vil færdiggøre opgaven?"
+        message="Er du sikker på at du vil færdiggøre turen?"
         handleOpret={() => {
           complete.mutate({path: `${itinerary_id}`});
           setItineraryId(null);

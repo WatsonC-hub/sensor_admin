@@ -11,7 +11,7 @@ export const queryKeys = {
     metadata: (loc_id: number | undefined) => ['location_metadata', 'metadata', loc_id] as const,
     timeseries_status: (loc_id: number | undefined) =>
       ['timeseries_status', 'metadata', 'register', 'tasks', loc_id] as const,
-    contacts: (loc_id: number) => ['contact_info', loc_id] as const,
+    contacts: (loc_id: number) => ['contact_info', 'metadata', loc_id] as const,
     searchContacts: (search: string) => ['search_contact_info', search] as const,
     keys: (loc_id: number) => ['location_access', loc_id] as const,
     searchKeys: (search: string) => ['search_location_access', search] as const,

@@ -57,7 +57,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
     () => [
       {
         header: 'Navn',
-        accessorKey: 'navn',
+        accessorKey: 'name',
         enableColumnActions: false,
         size: 120,
       },
@@ -99,7 +99,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
       },
       {
         header: 'Tlf.',
-        accessorKey: 'telefonnummer',
+        accessorKey: 'mobile',
         size: 20,
         enableColumnActions: false,
       },
@@ -107,6 +107,13 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         header: 'Kommentar',
         accessorKey: 'comment',
         size: 20,
+        enableColumnActions: false,
+      },
+      {
+        header: 'Kontaktes inden besøg',
+        id: 'notify_required',
+        accessorFn: (row) => (row.notify_required ? 'Ja' : 'Nej'),
+        size: 150,
         enableColumnActions: false,
       },
     ],
@@ -117,7 +124,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
     () => [
       {
         header: 'Navn',
-        accessorKey: 'navn',
+        accessorKey: 'name',
         enableColumnActions: false,
         size: 2,
       },
@@ -156,9 +163,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
               if ((e.target as HTMLElement).innerText && !disabled) {
                 reset({
                   ...row.original,
-                  telefonnummer: row.original.telefonnummer
-                    ? parseInt(row.original.telefonnummer)
-                    : null,
+                  mobile: row.original.mobile ? parseInt(row.original.mobile) : null,
                 });
                 table.setEditingRow(row);
               }
@@ -180,7 +185,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         handleEdit={() => {
           reset({
             ...row.original,
-            telefonnummer: row.original.telefonnummer ? parseInt(row.original.telefonnummer) : null,
+            mobile: row.original.mobile ? parseInt(row.original.mobile) : null,
           });
           setIsUser(row.original.org !== '');
           setOpenContactInfoDialog(true);
@@ -234,7 +239,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
     editContact({
       ...details,
       email: details.email ?? '',
-      telefonnummer: details.telefonnummer ? details.telefonnummer.toString() : null,
+      mobile: details.mobile ? details.mobile.toString() : null,
     });
     setOpenContactInfoDialog(false);
     setIsUser(false);

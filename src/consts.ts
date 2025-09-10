@@ -74,6 +74,7 @@ export const initialContactData = {
   comment: '',
   user_id: null,
   contact_type: '-1',
+  notify_required: false,
 };
 
 export const initialLocationAccessData = {
