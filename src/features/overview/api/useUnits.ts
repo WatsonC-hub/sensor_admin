@@ -1,26 +1,50 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
-
+// u.calypso_id,
+// u.terminal_id,
+// u.unit_uuid,
+// s.channel,
+// s.sensor_id,
+// s.sensortype_id,
+// s2."type",
+// all_t.parameter,
+// tt.tstype_name,
+// l.loc_name,
+// uth.enddate,
+// ld.timeofmeas,
+// case
+//     when uth.enddate is not null
+//     and ld.timeofmeas is not null
+//     and uth.enddate > now()
+//     and ld.timeofmeas > (now() - (1 || 'days'::text)::interval) then 0
+//     when (uth.enddate is null
+//         or uth.enddate < now())
+//     and (ld.timeofmeas is null
+//         or ld.timeofmeas < (now() - (1 || 'days'::text)::interval)) then 1
+//     when (uth.enddate is null
+//         or uth.enddate < now())
+//     and ld.timeofmeas > (now() - (1 || 'days'::text)::interval) then 2
+//     when uth.enddate is not null
+//     and uth.enddate > now()
+//     and (ld.timeofmeas is null
+//         or ld.timeofmeas < (now() - (1 || 'days'::text)::interval)) then 3
+// end as flag
 export type Details = {
-  calypso_id: string | null;
-  projectno: string | null;
-  loc_id: number | null;
-  ts_id: number | null;
-  prefix: string | null;
+  calypso_id: string;
+  terminal_id: string;
+  unit_uuid: string;
+  channel: string;
+  sensor_id: string;
+  sensortype_id: string;
+  type: string;
+  ts_id: number;
+  parameter: string;
+  tstype_name: string;
+  loc_id: number;
+  loc_name: string;
   enddate: string | null;
-  project_title: string | null;
-  startdate: string;
-  sensorinfo: string | null;
-  terminal_id: string | null;
-  ts_data: string | null;
-  ts_logtype: string | null;
-  loc_name: string | null;
-  mainloc: string | null;
-  description: string | null;
-  groups: Array<string | null>;
-  has_alarm: number | null;
-  annual_price: number | null;
-  subRows?: Details[];
+  timeofmeas: string | null;
+  flag: number | null;
 };
 
 const detailGetOptions = queryOptions({

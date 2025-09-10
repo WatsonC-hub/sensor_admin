@@ -18,8 +18,8 @@ export const useNavigationFunctions = () => {
   });
 
   const homeFunctions = {
-    home: () => {
-      navigate('/', {replace: true});
+    home: (replace: boolean = true) => {
+      navigate('/', {replace: replace});
       reset();
     },
   };
@@ -29,12 +29,12 @@ export const useNavigationFunctions = () => {
   };
 
   const fieldFunctions = {
-    location: (loc_id: number, navigateHome?: boolean) => {
-      if (navigateHome) homeFunctions.home();
+    location: (loc_id: number, navigateHome?: boolean, replace: boolean = true) => {
+      if (navigateHome) homeFunctions.home(replace);
       setLocId(loc_id);
     },
-    station: (ts_id: number, navigateHome?: boolean) => {
-      if (navigateHome) homeFunctions.home();
+    station: (ts_id: number, navigateHome?: boolean, replace: boolean = true) => {
+      if (navigateHome) homeFunctions.home(replace);
       setTsId(ts_id);
     },
     boreholeIntake: (boreholeno: string, intake: number) => {
