@@ -1,10 +1,11 @@
-import {Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo} from 'react';
 
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {TaskRessources} from '~/types';
+import {sharedTableOptions} from '../shared_options';
 
 type Props = {
   ressources: Array<TaskRessources> | undefined;
@@ -14,17 +15,8 @@ const TripContactTable = ({ressources}: Props) => {
   const columns = useMemo<MRT_ColumnDef<TaskRessources>[]>(
     () => [
       {
-        header: 'Kategori',
-        accessorKey: 'kategori',
-        size: 20,
-        grow: false,
-      },
-      {
-        header: 'navn',
+        header: 'Navn',
         accessorKey: 'navn',
-        size: 250,
-        enableGrouping: false,
-        grow: false,
       },
     ],
     []
@@ -32,22 +24,12 @@ const TripContactTable = ({ressources}: Props) => {
 
   const options: Partial<MRT_TableOptions<TaskRessources>> = useMemo(
     () => ({
-      positionExpandColumn: 'first',
-      enableColumnActions: false,
-      enablePagination: false,
-      enableSorting: false,
-      groupedColumnMode: 'remove',
-      muiTableContainerProps: {},
-      enableGrouping: true,
-      enableTopToolbar: false,
-      enableBottomToolbar: false,
-      state: {
-        grouping: ['kategori'],
-      },
-      initialState: {
-        expanded: true,
-        grouping: ['kategori'],
-      },
+      ...(sharedTableOptions as Partial<MRT_TableOptions<TaskRessources>>),
+      renderTopToolbar: (
+        <Typography variant="body1" pt={1} px={1}>
+          Pakkeliste
+        </Typography>
+      ),
     }),
     []
   );

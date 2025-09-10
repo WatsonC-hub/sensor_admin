@@ -24,7 +24,9 @@ interface TripPreparationProps {
 const TripPreparation = ({data}: TripPreparationProps) => {
   const [completeOpen, setCompleteOpen] = React.useState(false);
   const [editName, setEditName] = useState<boolean>(false);
+  const [editComment, setEditComment] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
+  const [comment, setComment] = useState<string | null>(null);
   const [itinerary_id, setItineraryId] = useDisplayState((state) => [
     state.itinerary_id,
     state.setItineraryId,
@@ -38,7 +40,7 @@ const TripPreparation = ({data}: TripPreparationProps) => {
 
   return (
     <Box display={'flex'} flexDirection={'column'} overflow={'auto'} gap={1}>
-      <Box display="flex" alignItems={'center'} gap={1} mb={2}>
+      <Box display="flex" alignItems={'center'} gap={1}>
         {editName === false ? (
           <IconButton
             onClick={() => {
@@ -70,13 +72,12 @@ const TripPreparation = ({data}: TripPreparationProps) => {
         )}
         {editName === false ? (
           <Typography
-            ml={2}
             variant="h6"
             fontWeight={'bold'}
-            fontSize={'1.2rem'}
+            fontSize={'1.1rem'}
             color={itinerary.name ? 'black' : 'text.secondary'}
           >
-            {itinerary.name ? itinerary.name : 'Indtast tur navn...'}
+            {itinerary.name ? itinerary.name : 'Indtast navn...'}
           </Typography>
         ) : (
           <TextField
@@ -95,35 +96,72 @@ const TripPreparation = ({data}: TripPreparationProps) => {
                 updateItinerary.mutate(payload);
               }
             }}
-            slotProps={{
-              input: {
-                sx: {
-                  textAlign: 'center',
-                  fontSize: '1.2rem',
-                  fontWeight: 'bold',
-
-                  '& .MuiInputBase-input': {py: 0.5, pl: 2, height: '1.2rem'},
-                },
-              },
+            placeholder="Indtast navn..."
+          />
+        )}
+      </Box>
+      <Box display="flex" alignItems={'center'} gap={1} mb={1} mr={1}>
+        {editComment === false ? (
+          <IconButton
+            onClick={() => {
+              setEditComment(true);
+              setComment(itinerary.comment);
             }}
-            placeholder="Indtast tur navn..."
+            sx={{color: 'primary.main', width: 32, height: 32}}
+          >
+            <EditIcon sx={{p: 0.3}} />
+          </IconButton>
+        ) : (
+          <IconButton
+            onClick={() => {
+              setEditComment(false);
+              if (comment !== itinerary.comment) {
+                const payload = {
+                  path: `${itinerary.id}`,
+                  data: {
+                    comment: comment,
+                  },
+                };
+                updateItinerary.mutate(payload);
+              }
+            }}
+            sx={{color: 'primary.main', width: 32, height: 32}}
+          >
+            <CheckIcon sx={{p: 0.3}} />
+          </IconButton>
+        )}
+        {editComment === false ? (
+          <Typography variant="body2" color={itinerary.comment ? 'black' : 'text.secondary'}>
+            {itinerary.comment ? itinerary.comment : 'Indtast kommentar...'}
+          </Typography>
+        ) : (
+          <TextField
+            key={itinerary.id}
+            defaultValue={itinerary.comment}
+            fullWidth
+            size="small"
+            variant={'outlined'}
+            onBlur={(e) => {
+              if ('value' in e.target && e.target.value !== itinerary.comment) {
+                const payload = {
+                  path: `${itinerary.id}`,
+                  data: {
+                    comment: e.target.value,
+                  },
+                };
+                updateItinerary.mutate(payload);
+              }
+            }}
+            multiline
+            placeholder="Indtast kommentar..."
           />
         )}
       </Box>
 
-      <Typography ml={2} variant="h5">
-        Pakkeliste
-      </Typography>
       <TripRessourcesTable ressources={data?.ressourcer} />
-
       <TripLocationAccess keys={data?.location_access} />
-
       <TripContacts contacts={data?.contacts} />
       <TripTaskTable tasks={data?.tasks} />
-
-      <Typography ml={2} variant="h5">
-        Udstyr
-      </Typography>
       <TripUnitTable units={data?.units} />
 
       <Box display="flex" gap={1} flexDirection={'row'} alignSelf={'center'}>

@@ -26,6 +26,7 @@ const zodSchema = z.object({
     .string()
     .nullish()
     .transform((value) => (value === '' ? null : value)),
+  comment: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof zodSchema>;
@@ -44,6 +45,7 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
         due_date: data.due_date?.format('YYYY-MM-DD'),
         assigned_to: data.assigned_to,
         name: data.name ?? '',
+        comment: data.comment ?? '',
       },
       {
         onSuccess: () => {
@@ -86,6 +88,17 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
           </Box>
           <Box display={'flex'} flexDirection={'row'}>
             <TaskForm.AssignedTo />
+          </Box>
+          <Box display={'flex'} flexDirection={'row'}>
+            <FormInput
+              name="comment"
+              size="small"
+              label="Kommentar"
+              placeholder="Indtast kommentar..."
+              required={false}
+              multiline
+              minRows={3}
+            />
           </Box>
         </DialogContent>
         <DialogActions>

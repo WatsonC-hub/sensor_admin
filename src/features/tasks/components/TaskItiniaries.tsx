@@ -189,7 +189,25 @@ const TaskItiniaries = () => {
                             flexDirection={'row'}
                             alignItems={'center'}
                             justifyContent={'center'}
-                            sx={{backgroundColor: color ? color : 'primary.main'}}
+                            sx={{
+                              backgroundColor: color ? color : 'primary.main',
+                              cursor: 'pointer',
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (
+                                'localName' in e.target &&
+                                (e.target.localName as string) !== 'path' &&
+                                (e.target.localName as string) !== 'input' &&
+                                (e.target.localName as string) !== 'li' &&
+                                (e.target.localName as string) !== 'p' &&
+                                (e.target.localName as string) !== 'svg' &&
+                                (e.target.localName as string) !== 'button' &&
+                                (e.target.localName as string) !== 'div'
+                              ) {
+                                setItineraryId(itinerary.id);
+                              }
+                            }}
                           >
                             <Box display={'flex'} flexDirection={'column'}>
                               {due_date.split(' ').map((value, index) => {
@@ -200,6 +218,7 @@ const TaskItiniaries = () => {
                                     fontSize={'small'}
                                     fontWeight={index !== 2 ? 'bold' : 'normal'}
                                     lineHeight={1.2}
+                                    sx={{cursor: 'pointer'}}
                                   >
                                     {value}
                                   </Typography>
@@ -225,16 +244,6 @@ const TaskItiniaries = () => {
                                     updateItinerary.mutate(payload);
                                   }
                                 }}
-                                sx={{
-                                  '& .MuiIconButton-root, .MuiSvgIcon-root': {
-                                    width: '125px',
-                                    height: '80px',
-                                    borderRadius: 0,
-                                  },
-                                  '& .MuiInputBase-root, .MuiOutlinedInput-input': {
-                                    display: 'none',
-                                  },
-                                }}
                                 slotProps={{
                                   inputAdornment: {
                                     sx: {
@@ -258,7 +267,6 @@ const TaskItiniaries = () => {
                                       opacity: 0,
                                       left: -15,
                                       top: -15,
-                                      cursor: 'pointer',
                                     },
                                   },
                                 }}
@@ -274,18 +282,7 @@ const TaskItiniaries = () => {
                             display={'flex'}
                             flexDirection={'column'}
                             justifyContent={'center'}
-                            onClick={(e) => {
-                              if (
-                                'localName' in e.target &&
-                                (e.target.localName as string) !== 'path' &&
-                                (e.target.localName as string) !== 'input' &&
-                                (e.target.localName as string) !== 'li' &&
-                                (e.target.localName as string) !== 'p' &&
-                                (e.target.localName as string) !== 'span' &&
-                                (e.target.localName as string) !== 'svg'
-                              )
-                                setItineraryId(itinerary.id);
-                            }}
+                            sx={{cursor: 'default'}}
                           >
                             <Typography
                               fontSize={'small'}
@@ -394,6 +391,7 @@ const TaskItiniaries = () => {
                                           <Box display="flex" gap={0.5} flexDirection={'row'}>
                                             <Typography fontSize={'small'} width={'fit-content'}>
                                               <Link
+                                                sx={{cursor: 'pointer'}}
                                                 onClick={(e) => {
                                                   e.stopPropagation();
                                                   setLocId(location.loc_id);
@@ -410,6 +408,7 @@ const TaskItiniaries = () => {
                               </Box>
                               {expanded ? (
                                 <ExpandLess
+                                  sx={{cursor: 'pointer'}}
                                   onClick={() => {
                                     setExpandItinerary((prev) => ({
                                       ...prev,
@@ -419,6 +418,7 @@ const TaskItiniaries = () => {
                                 />
                               ) : (
                                 <ExpandMore
+                                  sx={{cursor: 'pointer'}}
                                   onClick={() => {
                                     setExpandItinerary((prev) => ({
                                       ...prev,
@@ -437,6 +437,7 @@ const TaskItiniaries = () => {
                             display={'flex'}
                             flexDirection={'row'}
                             alignItems={'center'}
+                            sx={{cursor: 'default'}}
                           >
                             <IconButton
                               sx={{

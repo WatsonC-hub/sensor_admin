@@ -1,85 +1,68 @@
-import {Box} from '@mui/material';
+import {Link, Box, Typography} from '@mui/material';
+
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, stationPages, TableTypes} from '~/helpers/EnumHelper';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useTable} from '~/hooks/useTable';
 import {TaskLocationAccess} from '~/types';
+import {sharedTableOptions} from '../shared_options';
 
 type TripLocationAccessProps = {
   keys: Array<TaskLocationAccess> | undefined;
 };
 
 const TripLocationAccess = ({keys}: TripLocationAccessProps) => {
+  const {location} = useNavigationFunctions();
+  const [, setPageToShow] = useStationPages();
   const columns = useMemo<MRT_ColumnDef<TaskLocationAccess>[]>(
     () => [
       {
         header: 'Navn',
         accessorKey: 'name',
-        size: 100,
+        grow: 1,
+        maxSize: 120,
       },
       {
-        header: 'Type',
-        accessorKey: 'type',
-        size: 20,
+        header: 'Lokationer',
+        accessorKey: 'loc_names',
+        Cell: ({cell, row}) => (
+          <>
+            {(cell.getValue<string[]>() || []).map((loc, index) => (
+              <Link
+                key={index}
+                sx={{cursor: 'pointer'}}
+                display="block"
+                onClick={() => {
+                  location(row.original.loc_ids[index]);
+                  setPageToShow(stationPages.KONTAKTER);
+                }}
+              >
+                {loc}
+              </Link>
+            ))}
+          </>
+        ),
+        maxSize: 120,
       },
       {
         header: 'Fysisk placering',
-        accessorKey: 'physical_location',
-        size: 20,
-      },
-      {
-        header: 'Kode',
-        accessorKey: 'code',
-        size: 20,
-      },
-      {
-        header: 'Kontakt',
-        accessorKey: 'contact_name',
-        size: 20,
-      },
-      {
-        header: 'Kommentar',
-        accessorKey: 'comment',
-        size: 20,
+        accessorFn: (row) => row.physical_location || 'WatsonC',
+        maxSize: 120,
       },
     ],
-    []
+    [keys]
   );
 
   const options: Partial<MRT_TableOptions<TaskLocationAccess>> = useMemo(
     () => ({
-      enableFullScreenToggle: false,
-      enableGlobalFilter: false,
-      positionExpandColumn: 'first',
-      enableColumnActions: false,
-      enableColumnFilters: false,
-      enablePagination: false,
-      enableSorting: false,
-      enableTableFooter: false,
-      enableStickyHeader: false,
-      enableMultiSort: false,
-      enableFilters: false,
-      groupedColumnMode: 'remove',
-      enableGlobalFilterRankedResults: false,
-      muiTableContainerProps: {},
-      enableTopToolbar: false,
-      enableFacetedValues: true,
-      enableBottomToolbar: false,
-      enableExpanding: false,
-      enableExpandAll: false,
-      muiTableHeadCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-        },
-      },
-      muiTableBodyCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-          whiteSpace: 'pre-line',
-        },
-      },
+      ...(sharedTableOptions as Partial<MRT_TableOptions<TaskLocationAccess>>),
+      renderTopToolbar: (
+        <Typography variant="body1" pt={1} px={1}>
+          Nøgler
+        </Typography>
+      ),
     }),
     []
   );

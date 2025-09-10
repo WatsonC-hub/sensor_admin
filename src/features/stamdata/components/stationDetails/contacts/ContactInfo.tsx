@@ -45,8 +45,8 @@ const ContactInfo = () => {
       path: `${loc_id}`,
       data: {
         id: contactInfo.id,
-        navn: contactInfo.navn,
-        telefonnummer: contactInfo.telefonnummer,
+        name: contactInfo.name,
+        mobile: contactInfo.mobile,
         email: email,
         contact_role: contactInfo.contact_role,
         comment: contactInfo.comment,
@@ -54,6 +54,7 @@ const ContactInfo = () => {
         user_id: contactInfo.user_id ?? null,
         relation_id: contactInfo.relation_id,
         contact_type: contactInfo.contact_type,
+        notify_required: contactInfo.notify_required ?? false,
       },
     };
 

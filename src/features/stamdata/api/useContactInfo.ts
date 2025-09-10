@@ -1,10 +1,4 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  queryOptions,
-  MutationOptions,
-} from '@tanstack/react-query';
+import {useQuery, useMutation, queryOptions, MutationOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -34,9 +28,6 @@ const contactInfoPostOptions: MutationOptions<any, APIError, ContactInfoPost> = 
     );
     return result;
   },
-  meta: {
-    invalidates: [['contact_info']],
-  },
 };
 
 const contactInfoPutOptions = {
@@ -49,9 +40,6 @@ const contactInfoPutOptions = {
     );
     return result;
   },
-  meta: {
-    invalidates: [['contact_info']],
-  },
 };
 
 const contactInfoDelOptions = {
@@ -62,9 +50,6 @@ const contactInfoDelOptions = {
       `/sensor_field/stamdata/contact/contact_info/${path}`
     );
     return result;
-  },
-  meta: {
-    invalidates: [['contact_info']],
   },
 };
 
@@ -115,27 +100,22 @@ export const useSearchContact = (
 };
 
 export const useContactInfo = (loc_id: number) => {
-  const queryClient = useQueryClient();
   const get = useQuery(ContactInfoGetOptions(loc_id));
 
   const post = useMutation({
     ...contactInfoPostOptions,
-    onSuccess: () => {
-      toast.success('Kontakt information gemt');
-    },
     meta: {
-      invalidates: [queryKeys.Location.contacts(loc_id)],
+      invalidates: [['metadata']],
     },
   });
 
   const put = useMutation({
     ...contactInfoPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.contacts(loc_id),
-      });
-
       toast.success('Kontakt information ændret');
+    },
+    meta: {
+      invalidates: [['metadata']],
     },
   });
 
@@ -143,9 +123,9 @@ export const useContactInfo = (loc_id: number) => {
     ...contactInfoDelOptions,
     onSuccess: () => {
       toast.success('Kontakt information slettet');
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.contacts(loc_id),
-      });
+    },
+    meta: {
+      invalidates: [['metadata']],
     },
   });
 

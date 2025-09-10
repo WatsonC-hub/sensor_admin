@@ -1,68 +1,75 @@
 import {Box, Typography} from '@mui/material';
-import React from 'react';
+import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import React, {useMemo} from 'react';
 
 import {getIcon} from '~/features/notifications/utils';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {useTable} from '~/hooks/useTable';
 
 import {LocationTasks} from '~/types';
+import {sharedTableOptions} from '../shared_options';
 
 type Props = {
   tasks: Array<LocationTasks> | undefined;
 };
 
 const TripTaskTable = ({tasks}: Props) => {
-  const value = tasks?.reduce((acc: Record<string, {count: number; name: string}>, task) => {
-    if (task.blocks_notifications !== undefined && task.blocks_notifications.length > 0) {
-      task.blocks_notifications?.forEach((block) => {
-        if (acc[block] === undefined) {
-          acc[block] = {count: 1, name: task.name};
-        } else acc[block].count += 1;
-      });
-      return acc;
-    } else {
-      if (acc[0] === undefined) {
-        acc[0] = {count: 1, name: 'Manuelle opgaver'};
-      } else acc[0].count += 1;
-      return acc;
-    }
-  }, {});
-  return (
-    <>
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems={'start'}
-        justifyContent="space-between"
-        p={1}
-      >
-        <Typography variant="h6" fontWeight={'bold'}>
+  const moreSpace = tasks?.some((task) => task.count > 9) ?? false;
+  const columns = useMemo<MRT_ColumnDef<LocationTasks>[]>(
+    () => [
+      {
+        header: 'Opgave type',
+        accessorKey: 'name',
+        Cell: ({cell, row}) => (
+          <Box display="flex" gap={1} alignItems="center">
+            <Box
+              display={'flex'}
+              flexDirection={'row'}
+              alignItems={'center'}
+              gap={moreSpace ? 0.5 : 0}
+            >
+              <Typography width={20} variant="body2">
+                {row.original.count + 'x '}
+              </Typography>
+              <Box height={22} width={22} display="flex" alignSelf={'center'}>
+                {row.original.blocks_notifications.length > 0
+                  ? getIcon({notification_id: row.original.blocks_notifications?.[0]}, false)
+                  : getIcon({mapicontype: 'task'}, false)}
+              </Box>
+            </Box>
+            <Typography variant="body2">{cell.getValue<string>()}</Typography>
+          </Box>
+        ),
+      },
+    ],
+    [moreSpace]
+  );
+
+  const options: Partial<MRT_TableOptions<LocationTasks>> = useMemo(
+    () => ({
+      ...(sharedTableOptions as Partial<MRT_TableOptions<LocationTasks>>),
+      renderTopToolbar: (
+        <Typography variant="body1" pt={1} px={1}>
           Opgaver
         </Typography>
-        <Box display="flex" flexDirection="row" alignContent={'center'} gap={1}>
-          {value &&
-            Object.keys(value).map((notification_id) => {
-              const id = parseInt(notification_id);
-              return (
-                <Box
-                  key={notification_id}
-                  ml={2}
-                  display="flex"
-                  alignItems={'center'}
-                  flexDirection="row"
-                >
-                  {id !== 0 && (
-                    <Box display={'flex'} width={18} height={18}>
-                      {getIcon({notification_id: id}, false)}
-                    </Box>
-                  )}
-                  <Typography variant="caption">{value?.[id].count}x</Typography>
-                  &nbsp;
-                  <Typography variant="caption">{value?.[id].name}</Typography>
-                </Box>
-              );
-            })}
-        </Box>
-      </Box>
-    </>
+      ),
+    }),
+    []
+  );
+
+  const table = useTable<LocationTasks>(
+    columns,
+    tasks,
+    options,
+    undefined,
+    TableTypes.TABLE,
+    MergeType.SHALLOWMERGE
+  );
+
+  return (
+    <Box p={1}>
+      <MaterialReactTable table={table} />
+    </Box>
   );
 };
 

@@ -1,21 +1,48 @@
-import {Box} from '@mui/material';
+import {Box, Link, Typography} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, stationPages, TableTypes} from '~/helpers/EnumHelper';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useTable} from '~/hooks/useTable';
 import {TaskContact} from '~/types';
+import {sharedTableOptions} from '../shared_options';
 
 type TripContactsProps = {
   contacts: Array<TaskContact> | undefined;
 };
 
 const TripContacts = ({contacts}: TripContactsProps) => {
+  const {location} = useNavigationFunctions();
+  const [, setPageToShow] = useStationPages();
   const columns = useMemo<MRT_ColumnDef<TaskContact>[]>(
     () => [
       {
         header: 'Navn',
         accessorKey: 'name',
-        size: 120,
+        size: contacts && contacts.length > 0 ? 120 : 20,
+      },
+      {
+        header: 'Lokationer',
+        accessorKey: 'loc_names',
+        Cell: ({cell, row}) => (
+          <>
+            {(cell.getValue<string[]>() || []).map((loc, index) => (
+              <Link
+                key={index}
+                sx={{cursor: 'pointer'}}
+                display="block"
+                onClick={() => {
+                  location(row.original.loc_ids[index]);
+                  setPageToShow(stationPages.KONTAKTER);
+                }}
+              >
+                {loc}
+              </Link>
+            ))}
+          </>
+        ),
+        size: contacts && contacts.length > 0 ? 150 : 20,
       },
       {
         header: 'Telefon',
@@ -27,54 +54,18 @@ const TripContacts = ({contacts}: TripContactsProps) => {
         accessorKey: 'email',
         size: 20,
       },
-      {
-        header: 'Rolle',
-        accessorKey: 'role_name',
-        size: 20,
-      },
-      {
-        header: 'Kommentar',
-        accessorKey: 'comment',
-        size: 20,
-      },
     ],
-    []
+    [contacts]
   );
 
   const options: Partial<MRT_TableOptions<TaskContact>> = useMemo(
     () => ({
-      enableFullScreenToggle: false,
-      enableGlobalFilter: false,
-      positionExpandColumn: 'first',
-      enableColumnActions: false,
-      enableColumnFilters: false,
-      enablePagination: false,
-      enableSorting: false,
-      enableTableFooter: false,
-      enableStickyHeader: false,
-      enableMultiSort: false,
-      enableFilters: false,
-      groupedColumnMode: 'remove',
-      enableGlobalFilterRankedResults: false,
-      muiTableContainerProps: {},
-      enableTopToolbar: false,
-      enableFacetedValues: true,
-      enableBottomToolbar: false,
-      enableExpanding: false,
-      enableExpandAll: false,
-      muiTableHeadCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-        },
-      },
-      muiTableBodyCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-          whiteSpace: 'pre-line',
-        },
-      },
+      ...(sharedTableOptions as Partial<MRT_TableOptions<TaskContact>>),
+      renderTopToolbar: (
+        <Typography variant="body1" pt={1} px={1}>
+          Kontakter
+        </Typography>
+      ),
     }),
     []
   );

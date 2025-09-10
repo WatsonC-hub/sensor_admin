@@ -20,13 +20,11 @@ import {StatusEnum} from '~/features/tasks/types';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext(['loc_id'], []);
-
   const {isMobile} = useBreakpoints();
   const [createTaskDialog, setCreateTaskDialog] = useState(false);
   const [openTripDialog, setOpenTripDialog] = useState(false);
   const user = useUser();
   const {tasks} = useTaskState();
-
   const {data: location} = useMapOverview({
     select: (data) => {
       return data.find((location) => location.loc_id === loc_id);
