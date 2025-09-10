@@ -1,4 +1,4 @@
-import {Link, Box} from '@mui/material';
+import {Link, Box, Typography} from '@mui/material';
 
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
@@ -7,6 +7,7 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useTable} from '~/hooks/useTable';
 import {TaskLocationAccess} from '~/types';
+import {sharedTableOptions} from '../shared_options';
 
 type TripLocationAccessProps = {
   keys: Array<TaskLocationAccess> | undefined;
@@ -20,7 +21,7 @@ const TripLocationAccess = ({keys}: TripLocationAccessProps) => {
       {
         header: 'Navn',
         accessorKey: 'name',
-        size: 60,
+        size: keys && keys.length > 0 ? 60 : 20,
       },
       {
         header: 'Lokationer',
@@ -42,56 +43,25 @@ const TripLocationAccess = ({keys}: TripLocationAccessProps) => {
             ))}
           </>
         ),
-        size: 150,
-      },
-      {
-        header: 'Type',
-        accessorKey: 'type',
-        size: 30,
+        size: keys && keys.length > 0 ? 150 : 20,
       },
       {
         header: 'Fysisk placering',
         accessorFn: (row) => row.physical_location || 'WatsonC',
-        size: 30,
+        size: keys && keys.length > 0 ? 30 : 20,
       },
     ],
-    []
+    [keys]
   );
 
   const options: Partial<MRT_TableOptions<TaskLocationAccess>> = useMemo(
     () => ({
-      enableFullScreenToggle: false,
-      enableGlobalFilter: false,
-      positionExpandColumn: 'first',
-      enableColumnActions: false,
-      enableColumnFilters: false,
-      enablePagination: false,
-      enableSorting: false,
-      enableTableFooter: false,
-      enableStickyHeader: false,
-      enableMultiSort: false,
-      enableFilters: false,
-      groupedColumnMode: 'remove',
-      enableGlobalFilterRankedResults: false,
-      muiTableContainerProps: {},
-      enableTopToolbar: false,
-      enableFacetedValues: true,
-      enableBottomToolbar: false,
-      enableExpanding: false,
-      enableExpandAll: false,
-      muiTableHeadCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-        },
-      },
-      muiTableBodyCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-          whiteSpace: 'pre-line',
-        },
-      },
+      ...(sharedTableOptions as Partial<MRT_TableOptions<TaskLocationAccess>>),
+      renderTopToolbar: (
+        <Typography variant="body1" pt={1} px={1}>
+          Nøgler
+        </Typography>
+      ),
     }),
     []
   );

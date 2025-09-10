@@ -1,4 +1,4 @@
-import {Box, Link} from '@mui/material';
+import {Box, Link, Typography} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, stationPages, TableTypes} from '~/helpers/EnumHelper';
@@ -6,6 +6,7 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useTable} from '~/hooks/useTable';
 import {TaskContact} from '~/types';
+import {sharedTableOptions} from '../shared_options';
 
 type TripContactsProps = {
   contacts: Array<TaskContact> | undefined;
@@ -19,7 +20,7 @@ const TripContacts = ({contacts}: TripContactsProps) => {
       {
         header: 'Navn',
         accessorKey: 'name',
-        size: 120,
+        size: contacts && contacts.length > 0 ? 120 : 20,
       },
       {
         header: 'Lokationer',
@@ -41,7 +42,7 @@ const TripContacts = ({contacts}: TripContactsProps) => {
             ))}
           </>
         ),
-        size: 150,
+        size: contacts && contacts.length > 0 ? 150 : 20,
       },
       {
         header: 'Telefon',
@@ -54,43 +55,17 @@ const TripContacts = ({contacts}: TripContactsProps) => {
         size: 20,
       },
     ],
-    []
+    [contacts]
   );
 
   const options: Partial<MRT_TableOptions<TaskContact>> = useMemo(
     () => ({
-      enableFullScreenToggle: false,
-      enableGlobalFilter: false,
-      positionExpandColumn: 'first',
-      enableColumnActions: false,
-      enableColumnFilters: false,
-      enablePagination: false,
-      enableSorting: false,
-      enableTableFooter: false,
-      enableStickyHeader: false,
-      enableMultiSort: false,
-      enableFilters: false,
-      groupedColumnMode: 'remove',
-      enableGlobalFilterRankedResults: false,
-      muiTableContainerProps: {},
-      enableTopToolbar: false,
-      enableFacetedValues: true,
-      enableBottomToolbar: false,
-      enableExpanding: false,
-      enableExpandAll: false,
-      muiTableHeadCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-        },
-      },
-      muiTableBodyCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-          whiteSpace: 'pre-line',
-        },
-      },
+      ...(sharedTableOptions as Partial<MRT_TableOptions<TaskContact>>),
+      renderTopToolbar: (
+        <Typography variant="body1" pt={1} px={1}>
+          Kontakter
+        </Typography>
+      ),
     }),
     []
   );

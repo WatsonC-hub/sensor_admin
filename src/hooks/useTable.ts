@@ -50,9 +50,12 @@ const getOptions = <TData extends MRT_RowData>(
         flex: '1 1 0',
         display: 'flex',
         flexFlow: 'column',
-        boxShadow: breakpoints.isMobile ? 'none' : '3',
+        boxShadow: '3',
         zIndex: 0,
         borderRadius: 4,
+        borderWidth: 1,
+        borderColor: 'grey.300',
+        borderStyle: 'solid',
       },
     }),
     muiSearchTextFieldProps: {

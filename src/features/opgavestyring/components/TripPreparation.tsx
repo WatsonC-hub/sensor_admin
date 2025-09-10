@@ -39,7 +39,7 @@ const TripPreparation = ({data}: TripPreparationProps) => {
   }
 
   return (
-    <Box display={'flex'} flexDirection={'column'} overflow={'auto'} gap={2}>
+    <Box display={'flex'} flexDirection={'column'} overflow={'auto'} gap={1}>
       <Box display="flex" alignItems={'center'} gap={1}>
         {editName === false ? (
           <IconButton
@@ -131,11 +131,7 @@ const TripPreparation = ({data}: TripPreparationProps) => {
           </IconButton>
         )}
         {editComment === false ? (
-          <Typography
-            variant="h6"
-            fontSize={'1.1rem'}
-            color={itinerary.comment ? 'black' : 'text.secondary'}
-          >
+          <Typography variant="body2" color={itinerary.comment ? 'black' : 'text.secondary'}>
             {itinerary.comment ? itinerary.comment : 'Indtast kommentar...'}
           </Typography>
         ) : (
@@ -162,32 +158,10 @@ const TripPreparation = ({data}: TripPreparationProps) => {
         )}
       </Box>
 
-      <Box>
-        <Typography ml={2} variant="h5">
-          Pakkeliste
-        </Typography>
-        <TripRessourcesTable ressources={data?.ressourcer} />
-      </Box>
-
-      <Box>
-        <Typography ml={2} variant="h5">
-          Nøgler
-        </Typography>
-        <TripLocationAccess keys={data?.location_access} />
-      </Box>
-
-      <Box>
-        <Typography ml={2} variant="h5">
-          Kontakter
-        </Typography>
-        <TripContacts contacts={data?.contacts} />
-      </Box>
-
+      <TripRessourcesTable ressources={data?.ressourcer} />
+      <TripLocationAccess keys={data?.location_access} />
+      <TripContacts contacts={data?.contacts} />
       <TripTaskTable tasks={data?.tasks} />
-
-      <Typography ml={2} variant="h5">
-        Udstyr
-      </Typography>
       <TripUnitTable units={data?.units} />
 
       <Box display="flex" gap={1} flexDirection={'row'} alignSelf={'center'}>

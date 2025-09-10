@@ -6,6 +6,7 @@ import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {TaskUnits} from '~/types';
+import {sharedTableOptions} from '../shared_options';
 
 type Props = {
   units: Array<TaskUnits> | undefined;
@@ -46,34 +47,12 @@ const TripUnitTable = ({units}: Props) => {
 
   const options: Partial<MRT_TableOptions<TaskUnits>> = useMemo(
     () => ({
-      enableFullScreenToggle: false,
-      enableGlobalFilter: false,
-      enableColumnActions: false,
-      enableColumnFilters: false,
-      enablePagination: false,
-      enableSorting: false,
-      enableTableFooter: false,
-      enableStickyHeader: false,
-      enableMultiSort: false,
-      enableFilters: false,
-      enableGlobalFilterRankedResults: false,
-      muiTableContainerProps: {},
-      enableGrouping: false,
-      enableTopToolbar: false,
-      enableBottomToolbar: false,
-      muiTableHeadCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-        },
-      },
-      muiTableBodyCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-          whiteSpace: 'pre-line',
-        },
-      },
+      ...(sharedTableOptions as Partial<MRT_TableOptions<TaskUnits>>),
+      renderTopToolbar: (
+        <Typography variant="body1" pt={1} px={1}>
+          Udstyr
+        </Typography>
+      ),
     }),
     []
   );
