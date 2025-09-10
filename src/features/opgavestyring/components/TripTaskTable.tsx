@@ -1,73 +1,75 @@
-import {Assignment} from '@mui/icons-material';
-import {Box, Grid2, Typography} from '@mui/material';
-import React from 'react';
+import {Box, Typography} from '@mui/material';
+import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import React, {useMemo} from 'react';
 
 import {getIcon} from '~/features/notifications/utils';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {useTable} from '~/hooks/useTable';
 
 import {LocationTasks} from '~/types';
+import {sharedTableOptions} from '../shared_options';
 
 type Props = {
   tasks: Array<LocationTasks> | undefined;
 };
 
 const TripTaskTable = ({tasks}: Props) => {
-  const gridSize = tasks?.map((task) => task.count).some((count) => count > 9) ? 1.2 : 1;
+  const moreSpace = tasks?.some((task) => task.count > 9) ?? false;
+  const columns = useMemo<MRT_ColumnDef<LocationTasks>[]>(
+    () => [
+      {
+        header: 'Opgave type',
+        accessorKey: 'name',
+        Cell: ({cell, row}) => (
+          <Box display="flex" gap={1} alignItems="center">
+            <Box
+              display={'flex'}
+              flexDirection={'row'}
+              alignItems={'center'}
+              gap={moreSpace ? 0.5 : 0}
+            >
+              <Typography width={20} variant="body2">
+                {row.original.count + 'x '}
+              </Typography>
+              <Box height={22} width={22} display="flex" alignSelf={'center'}>
+                {row.original.blocks_notifications.length > 0
+                  ? getIcon({notification_id: row.original.blocks_notifications?.[0]}, false)
+                  : getIcon({mapicontype: 'task'}, false)}
+              </Box>
+            </Box>
+            <Typography variant="body2">{cell.getValue<string>()}</Typography>
+          </Box>
+        ),
+      },
+    ],
+    [moreSpace]
+  );
+
+  const options: Partial<MRT_TableOptions<LocationTasks>> = useMemo(
+    () => ({
+      ...(sharedTableOptions as Partial<MRT_TableOptions<LocationTasks>>),
+      renderTopToolbar: (
+        <Typography variant="body1" pt={1} px={1}>
+          Opgaver
+        </Typography>
+      ),
+    }),
+    []
+  );
+
+  const table = useTable<LocationTasks>(
+    columns,
+    tasks,
+    options,
+    undefined,
+    TableTypes.TABLE,
+    MergeType.SHALLOWMERGE
+  );
+
   return (
-    <>
-      <Typography variant="h5" ml={2}>
-        Opgaver
-      </Typography>
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems={'start'}
-        justifyContent="start"
-        gap={0.5}
-        px={2}
-        mt={-1}
-      >
-        {tasks &&
-          tasks.map((task) => {
-            return (
-              <Grid2
-                container
-                key={task.blocks_notifications.length > 0 ? task.blocks_notifications[0] : 0}
-                alignItems={'center'}
-                width={'100%'}
-              >
-                <Grid2 size={gridSize} alignContent={'center'}>
-                  <Typography
-                    fontSize={12}
-                    display="flex"
-                    alignItems={'center'}
-                    justifyContent={'space-between'}
-                  >
-                    {task.count}x
-                    {task.blocks_notifications.length > 0 ? (
-                      <Box width={18} height={18} alignItems={'center'}>
-                        {getIcon({notification_id: task.blocks_notifications[0]}, false)}
-                      </Box>
-                    ) : (
-                      <Box
-                        display={'flex'}
-                        width={18}
-                        height={18}
-                        alignItems={'center'}
-                        justifyContent={'center'}
-                      >
-                        {<Assignment fontSize="inherit" />}
-                      </Box>
-                    )}
-                  </Typography>
-                </Grid2>
-                <Grid2 size={10.5}>
-                  <Typography variant="caption">{task.name}</Typography>
-                </Grid2>
-              </Grid2>
-            );
-          })}
-      </Box>
-    </>
+    <Box p={1}>
+      <MaterialReactTable table={table} />
+    </Box>
   );
 };
 

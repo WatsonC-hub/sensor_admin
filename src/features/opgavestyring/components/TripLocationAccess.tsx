@@ -21,7 +21,8 @@ const TripLocationAccess = ({keys}: TripLocationAccessProps) => {
       {
         header: 'Navn',
         accessorKey: 'name',
-        size: keys && keys.length > 0 ? 60 : 20,
+        grow: 1,
+        maxSize: 120,
       },
       {
         header: 'Lokationer',
@@ -43,12 +44,12 @@ const TripLocationAccess = ({keys}: TripLocationAccessProps) => {
             ))}
           </>
         ),
-        size: keys && keys.length > 0 ? 150 : 20,
+        maxSize: 120,
       },
       {
         header: 'Fysisk placering',
         accessorFn: (row) => row.physical_location || 'WatsonC',
-        size: keys && keys.length > 0 ? 30 : 20,
+        maxSize: 120,
       },
     ],
     [keys]

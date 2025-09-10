@@ -374,7 +374,6 @@ type TaskContact = {
 type TaskLocationAccess = {
   id: number;
   name: string;
-  type: string;
   physical_location: string;
   loc_ids: Array<number>;
   loc_names: Array<string>;
