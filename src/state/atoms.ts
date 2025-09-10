@@ -132,8 +132,6 @@ export const atomWithTimedStorage = <T>(key: string, initialValue: T, timeout_ms
     getOnInit: true,
   });
 
-export const captureDialogAtom = atom(false);
-
 export const qaSelection = atom<{
   range?: {x: Array<string>; y: Array<number>};
   points?: PlotDatum[];
