@@ -206,7 +206,7 @@ export default function QAHistory() {
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <TooltipWrapper
               description="På denne side kan du se historikken for justeringer af tidsserien. Læs mere om justeringer i guiden."
-              url="https://www.watsonc.dk/guides/side-oversigt/#%F0%9F%93%88-juster-data"
+              url="https://www.watsonc.dk/guides/side-oversigt/#juster-data"
             >
               <Typography variant="h5">Aktive justeringer</Typography>
             </TooltipWrapper>

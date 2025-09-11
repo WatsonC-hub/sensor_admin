@@ -214,8 +214,8 @@ export type ContactInfo = {
 
 export type ContactTable = {
   id: string;
-  navn: string;
-  telefonnummer: string | null;
+  name: string;
+  mobile: string | null;
   email: string | null;
   contact_role: number;
   comment?: string;
@@ -224,6 +224,7 @@ export type ContactTable = {
   relation_id: number;
   contact_type: string;
   contact_role_name?: string;
+  notify_required?: boolean;
 };
 
 export type Access = {
@@ -366,21 +367,16 @@ type TaskContact = {
   navn: string;
   telefonnummer: Optional[string];
   email: Optional[string];
-  comment: Optional[string];
-  contact_role_name: string;
-  loc_id: number;
-  loc_name: string;
+  loc_ids: Array<number>;
+  loc_names: Array<string>;
 };
 
 type TaskLocationAccess = {
   id: number;
-  navn: string;
-  type: string;
-  placering: string;
-  kommentar: string;
-  kode: string;
-  loc_name: string;
-  contact_name: string;
+  name: string;
+  physical_location: string;
+  loc_ids: Array<number>;
+  loc_names: Array<string>;
 };
 
 type TaskNotifications = {
@@ -409,32 +405,15 @@ export type TaskRessources = {
 };
 
 export type TaskUnits = {
-  name: string;
-  terminal_type: string;
-  sensorinfo: string;
-  sensor_id: string;
-  terminal_id: string;
-  ts_name: string;
-  tstype_name: string;
-  startdate: string;
-  enddate: string;
+  count: number;
+  terminal_name: string;
+  sensor_names: Array<string>;
 };
 
 export type LocationTasks = {
-  id: string;
-  loc_id: number;
-  ts_id: number;
-  status_id: number;
-  assigned_to: string;
-  tstype_name: string;
-  ts_name: string;
-  due_date: Dayjs;
+  count: number;
   name: string;
-  description: string;
-  status_name: string;
-  display_name: string;
-  blocks_notifications: number[];
-  notification_name: string;
+  blocks_notifications: Array<number>;
 };
 
 export type DataToShow = {

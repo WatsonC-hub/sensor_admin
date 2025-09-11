@@ -2,11 +2,9 @@ import {useQuery} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {PejlingItem, TaskCollection, TilsynItem} from '~/types';
+import {TaskCollection} from '~/types';
 
 export const useTaskManagement = (itinerary_id: string | null) => {
-  console.log(`Fetching tasks for itinerary: ${itinerary_id}`);
-
   const {data} = useQuery({
     queryKey: queryKeys.Itineraries.itineraryCollection(itinerary_id),
     queryFn: async () => {
@@ -15,11 +13,7 @@ export const useTaskManagement = (itinerary_id: string | null) => {
       );
       return data;
     },
-    // enabled: itinerary_id !== undefined && itinerary_id !== null,
   });
 
-  const serviceData: TilsynItem[] = [];
-  const pejlingData: PejlingItem[] = [];
-
-  return {serviceData, pejlingData, data};
+  return data;
 };

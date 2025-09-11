@@ -1,10 +1,11 @@
-import {Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo} from 'react';
 
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {TaskRessources} from '~/types';
+import {sharedTableOptions} from '../shared_options';
 
 type Props = {
   ressources: Array<TaskRessources> | undefined;
@@ -14,17 +15,8 @@ const TripContactTable = ({ressources}: Props) => {
   const columns = useMemo<MRT_ColumnDef<TaskRessources>[]>(
     () => [
       {
-        header: 'Kategori',
-        accessorKey: 'kategori',
-        size: 150,
-        grow: false,
-      },
-      {
-        header: 'navn',
+        header: 'Navn',
         accessorKey: 'navn',
-        size: 150,
-        enableGrouping: false,
-        grow: false,
       },
     ],
     []
@@ -32,51 +24,12 @@ const TripContactTable = ({ressources}: Props) => {
 
   const options: Partial<MRT_TableOptions<TaskRessources>> = useMemo(
     () => ({
-      defaultColumn: {
-        grow: 1,
-        minSize: 200,
-        size: 200,
-      },
-      enableFullScreenToggle: false,
-      enableGlobalFilter: false,
-      positionExpandColumn: 'first',
-      enableColumnActions: false,
-      enableColumnFilters: false,
-      enablePagination: false,
-      enableSorting: false,
-      enableTableFooter: false,
-      enableStickyHeader: false,
-      enableMultiSort: false,
-      enableFilters: false,
-      groupedColumnMode: 'remove',
-      enableGlobalFilterRankedResults: false,
-      muiTableContainerProps: {},
-      enableGrouping: true,
-      enableTopToolbar: false,
-      enableFacetedValues: true,
-      enableBottomToolbar: false,
-      enableExpanding: false,
-      enableExpandAll: false,
-      muiTableHeadCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-        },
-      },
-      muiTableBodyCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-          whiteSpace: 'pre-line',
-        },
-      },
-      state: {
-        grouping: ['kategori'],
-      },
-      initialState: {
-        expanded: true,
-        grouping: ['kategori'],
-      },
+      ...(sharedTableOptions as Partial<MRT_TableOptions<TaskRessources>>),
+      renderTopToolbar: (
+        <Typography variant="body1" pt={1} px={1}>
+          Pakkeliste
+        </Typography>
+      ),
     }),
     []
   );

@@ -8,7 +8,7 @@ import {useTaskState} from '~/features/tasks/api/useTaskState';
 import useTaskItinerary from '../api/useTaskItinerary';
 
 import {useTasks} from '../api/useTasks';
-import {Task, Taskitinerary} from '../types';
+import {Taskitinerary} from '../types';
 import {convertToShorthandDate} from '~/helpers/dateConverter';
 import {useDisplayState} from '~/hooks/ui';
 import {DatePicker} from '@mui/x-date-pickers';
@@ -108,7 +108,7 @@ const TaskItiniaries = () => {
         <Box px={1}>
           <TooltipWrapper
             description="Læs mere om ture i vores dokumentation for at få et bedre overblik over hvordan du kan bruge ture i Field appen"
-            url="https://watsonc.dk/guides/field#ture"
+            url="https://watsonc.dk/guides/opgavestyring/#serviceture"
           >
             <Button
               bttype="primary"
@@ -139,17 +139,19 @@ const TaskItiniaries = () => {
                     const itinerary_tasks = tasks?.filter(
                       (task) => task.itinerary_id === itinerary.id
                     );
+
                     const loc_ids = [...new Set(itinerary_tasks?.map((task) => task.loc_id))];
-                    const grouped_location_tasks = itinerary_tasks?.reduce(
-                      (acc: Record<number, Task[]>, task) => {
-                        if (!acc[task.loc_id]) {
-                          acc[task.loc_id] = [];
-                        }
-                        acc[task.loc_id].push(task);
-                        return acc;
-                      },
-                      {}
-                    );
+
+                    const locations = loc_ids
+                      .map((loc_id) => ({
+                        loc_id,
+                        loc_name:
+                          itinerary_tasks?.find((task) => task.loc_id === loc_id)?.location_name ??
+                          '',
+                      }))
+                      .sort((a, b) =>
+                        a.loc_name.localeCompare(b.loc_name, 'da', {sensitivity: 'base'})
+                      );
 
                     let color = undefined;
 
@@ -187,7 +189,25 @@ const TaskItiniaries = () => {
                             flexDirection={'row'}
                             alignItems={'center'}
                             justifyContent={'center'}
-                            sx={{backgroundColor: color ? color : 'primary.main'}}
+                            sx={{
+                              backgroundColor: color ? color : 'primary.main',
+                              cursor: 'pointer',
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (
+                                'localName' in e.target &&
+                                (e.target.localName as string) !== 'path' &&
+                                (e.target.localName as string) !== 'input' &&
+                                (e.target.localName as string) !== 'li' &&
+                                (e.target.localName as string) !== 'p' &&
+                                (e.target.localName as string) !== 'svg' &&
+                                (e.target.localName as string) !== 'button' &&
+                                (e.target.localName as string) !== 'div'
+                              ) {
+                                setItineraryId(itinerary.id);
+                              }
+                            }}
                           >
                             <Box display={'flex'} flexDirection={'column'}>
                               {due_date.split(' ').map((value, index) => {
@@ -198,6 +218,7 @@ const TaskItiniaries = () => {
                                     fontSize={'small'}
                                     fontWeight={index !== 2 ? 'bold' : 'normal'}
                                     lineHeight={1.2}
+                                    sx={{cursor: 'pointer'}}
                                   >
                                     {value}
                                   </Typography>
@@ -223,16 +244,6 @@ const TaskItiniaries = () => {
                                     updateItinerary.mutate(payload);
                                   }
                                 }}
-                                sx={{
-                                  '& .MuiIconButton-root, .MuiSvgIcon-root': {
-                                    width: '125px',
-                                    height: '80px',
-                                    borderRadius: 0,
-                                  },
-                                  '& .MuiInputBase-root, .MuiOutlinedInput-input': {
-                                    display: 'none',
-                                  },
-                                }}
                                 slotProps={{
                                   inputAdornment: {
                                     sx: {
@@ -249,13 +260,6 @@ const TaskItiniaries = () => {
                                     },
                                   },
                                   textField: {
-                                    slotProps: {
-                                      input: {
-                                        sx: {
-                                          display: 'none',
-                                        },
-                                      },
-                                    },
                                     sx: {
                                       justifyContent: 'flex-end',
                                       position: 'absolute',
@@ -263,7 +267,6 @@ const TaskItiniaries = () => {
                                       opacity: 0,
                                       left: -15,
                                       top: -15,
-                                      cursor: 'pointer',
                                     },
                                   },
                                 }}
@@ -279,18 +282,7 @@ const TaskItiniaries = () => {
                             display={'flex'}
                             flexDirection={'column'}
                             justifyContent={'center'}
-                            onClick={(e) => {
-                              if (
-                                'localName' in e.target &&
-                                (e.target.localName as string) !== 'path' &&
-                                (e.target.localName as string) !== 'input' &&
-                                (e.target.localName as string) !== 'li' &&
-                                (e.target.localName as string) !== 'p' &&
-                                (e.target.localName as string) !== 'span' &&
-                                (e.target.localName as string) !== 'svg'
-                              )
-                                setItineraryId(itinerary.id);
-                            }}
+                            sx={{cursor: 'default'}}
                           >
                             <Typography
                               fontSize={'small'}
@@ -386,10 +378,10 @@ const TaskItiniaries = () => {
                             >
                               <Box display="flex" gap={0.5} flexDirection={'column'}>
                                 {expanded
-                                  ? loc_ids.map((loc_id) => {
+                                  ? locations.map((location) => {
                                       return (
                                         <Box
-                                          key={loc_id}
+                                          key={location.loc_id}
                                           display="flex"
                                           gap={1}
                                           alignItems={'center'}
@@ -399,12 +391,13 @@ const TaskItiniaries = () => {
                                           <Box display="flex" gap={0.5} flexDirection={'row'}>
                                             <Typography fontSize={'small'} width={'fit-content'}>
                                               <Link
+                                                sx={{cursor: 'pointer'}}
                                                 onClick={(e) => {
                                                   e.stopPropagation();
-                                                  setLocId(loc_id);
+                                                  setLocId(location.loc_id);
                                                 }}
                                               >
-                                                {grouped_location_tasks?.[loc_id][0].location_name}
+                                                {location.loc_name}
                                               </Link>
                                             </Typography>
                                           </Box>
@@ -415,6 +408,7 @@ const TaskItiniaries = () => {
                               </Box>
                               {expanded ? (
                                 <ExpandLess
+                                  sx={{cursor: 'pointer'}}
                                   onClick={() => {
                                     setExpandItinerary((prev) => ({
                                       ...prev,
@@ -424,6 +418,7 @@ const TaskItiniaries = () => {
                                 />
                               ) : (
                                 <ExpandMore
+                                  sx={{cursor: 'pointer'}}
                                   onClick={() => {
                                     setExpandItinerary((prev) => ({
                                       ...prev,
@@ -442,6 +437,7 @@ const TaskItiniaries = () => {
                             display={'flex'}
                             flexDirection={'row'}
                             alignItems={'center'}
+                            sx={{cursor: 'default'}}
                           >
                             <IconButton
                               sx={{

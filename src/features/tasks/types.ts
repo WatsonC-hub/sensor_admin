@@ -184,6 +184,7 @@ export type Taskitinerary = {
   created_by: string;
   created_at: string;
   name: string;
+  comment: string | null;
 };
 
 export type PostTaskitinerary = Omit<

@@ -11,7 +11,7 @@ const Trip = () => {
 
   const {itinerary_id} = useDisplayState((state) => state);
 
-  const {data} = useTaskManagement(itinerary_id);
+  const data = useTaskManagement(itinerary_id);
 
   return (
     <Box display={'flex'} flexDirection={'column'} mt={4} mb={isMobile ? 0 : 2} overflow={'hidden'}>

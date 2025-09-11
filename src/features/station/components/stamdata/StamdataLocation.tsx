@@ -15,16 +15,12 @@ import {
 } from '../../schema';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
-import {Borehole, useSearchBorehole} from '../../api/useBorehole';
+import {Borehole} from '../../api/useBorehole';
 import {utm} from '~/features/map/mapConsts';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
-import {stationPages} from '~/helpers/EnumHelper';
-
 import {useAppContext} from '~/state/contexts';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import useDebouncedValue from '~/hooks/useDebouncedValue';
 import {queryClient} from '~/queryClient';
 
 type Props = {
@@ -296,49 +292,42 @@ const Locname = (
   );
 };
 
-const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
-  const [pageToShow] = useStationPages();
+type BoreholeNoProps = Partial<AutoCompleteFieldProps<Borehole>> & {
+  editing: boolean;
+};
+
+const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
   const {
     setValue,
     control,
-    formState: {errors},
+    formState: {errors, defaultValues, dirtyFields},
     watch,
     trigger,
   } = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
-  const [searchBorehole, setSearchBorehole] = useState<Borehole | null>(null);
+  const boreholeno = watch('boreholeno');
+  const x = watch('x');
+  const y = watch('y');
+  const [selectedBorehole, setSelectedBorehole] = useState<Borehole | null>(null);
+
   const [search, setSearch] = useState<string>('');
-  const debouncedSearch = useDebouncedValue(search, 500);
   const [filteredOptions, setFilteredOptions] = React.useState<Borehole[]>([]);
   const loctype_id = watch('loctype_id', 9);
-  const boreholeno = watch('boreholeno');
-
-  const {data: searchOptions} = useSearchBorehole(debouncedSearch);
 
   useEffect(() => {
-    if (
-      searchBorehole !== undefined &&
-      searchOptions &&
-      searchOptions.length > 0 &&
-      pageToShow !== stationPages.GENERELTLOKATION
-    ) {
-      const borehole = searchOptions?.find((opt) => opt.boreholeno === searchBorehole?.boreholeno);
-      if (borehole) {
-        // @ts-expect-error error in type definition
-        const latlng = utm.convertLatLngToUtm(borehole?.latitude, borehole?.longitude, 32);
-
-        setValue('x', parseFloat(latlng.Easting.toFixed(1)));
-        setValue('y', parseFloat(latlng.Northing.toFixed(1)));
-        trigger('x');
-        trigger('y');
-      }
+    if (boreholeno === defaultValues?.boreholeno && dirtyFields.boreholeno === undefined) {
+      setSelectedBorehole(
+        defaultValues && dirtyFields.boreholeno === undefined
+          ? {
+              boreholeno: defaultValues.boreholeno!,
+              latitude: defaultValues.y!,
+              longitude: defaultValues.x!,
+            }
+          : null
+      );
+    } else if (editing === false) {
+      setSelectedBorehole(boreholeno ? {boreholeno, latitude: x, longitude: y} : null);
     }
-  }, [searchOptions]);
-
-  useEffect(() => {
-    if (boreholeno) {
-      setSearchBorehole({boreholeno} as Borehole);
-    }
-  }, [boreholeno !== null && boreholeno !== undefined]);
+  }, [boreholeno]);
 
   return (
     <Controller
@@ -352,24 +341,27 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
                 {...props}
                 options={filteredOptions ?? []}
                 labelKey="boreholeno"
-                onChange={(option) => {
+                onChange={async (option) => {
                   if (option == null) {
                     onChange(null);
-                    setSearchBorehole(null);
+                    setSelectedBorehole(null);
                     trigger('boreholeno');
                     return;
                   }
                   if ('boreholeno' in option) {
                     onChange(option.boreholeno);
-                    setSearchBorehole(option);
+                    setSelectedBorehole(option);
+                    // @ts-expect-error error in type definition
+                    const latlng = utm.convertLatLngToUtm(option.latitude, option.longitude, 32);
+                    setValue('x', parseFloat(latlng.Easting.toFixed(1)), {shouldValidate: true});
+                    setValue('y', parseFloat(latlng.Northing.toFixed(1)), {shouldValidate: true});
                     trigger('boreholeno');
                   }
                 }}
                 error={errors.boreholeno?.message}
-                selectValue={searchBorehole}
+                selectValue={selectedBorehole}
                 filterOptions={(options, params) => {
                   const {inputValue} = params;
-
                   const filter = options.filter((option) =>
                     option.boreholeno?.includes(inputValue)
                   );
@@ -412,6 +404,8 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
                         res.data.hits.hits.map((hit: any) => {
                           return {
                             boreholeno: hit._source.properties.boreholeno,
+                            latitude: hit._source.geometry.coordinates[1],
+                            longitude: hit._source.geometry.coordinates[0],
                           };
                         })
                       );
@@ -433,8 +427,8 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
 const BoreholeSuffix = (
   props: Omit<FormInputProps<BoreholeAddLocation | BoreholeEditLocation>, 'name' | 'label'>
 ) => {
-  const {getValues} = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
-  const boreholeno = getValues('boreholeno');
+  const {watch} = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
+  const boreholeno = watch('boreholeno');
   return (
     <FormInput
       name="suffix"

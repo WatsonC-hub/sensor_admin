@@ -34,7 +34,7 @@ import {queryClient} from '~/queryClient';
 import {useUser} from '~/features/auth/useUser';
 import {debounce} from 'lodash';
 import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
-import {searchBorehole} from '~/features/station/api/useBorehole';
+import {findBorehole} from '~/features/station/api/useBorehole';
 import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
 import {SelectionCommand} from '~/features/commandpalette/components/CommandContext';
 
@@ -321,11 +321,9 @@ const Map = ({clickCallback}: MapProps) => {
         if (value.sensor) {
           createHiddenLocationMarker(value.name);
         } else {
-          const data = await searchBorehole(value.name)();
+          const data = await findBorehole(value.name);
 
-          const element = data[0];
-
-          createHiddenBoreholeMarker(element);
+          createHiddenBoreholeMarker(data);
         }
       }
     },
