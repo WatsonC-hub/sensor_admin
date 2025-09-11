@@ -242,7 +242,8 @@ const StationDrawer = () => {
           text: 'Konfiguration',
           page: stationPages.LOKATIONKONFIGURATION,
           icon: <Settings />,
-          requiredTsId: true,
+          requiredTsId: false,
+          disabled: !user?.superUser,
           // tooltip:
           //   'På denne side kan du konfigurere din lokation, såsom at ændre måleinterval eller sendeinterval.',
         },

@@ -100,7 +100,7 @@ export default function Station() {
       {pageToShow === stationPages.KONTAKTER && user?.features.contacts && <ContactInfo />}
       {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && <Huskeliste />}
       {pageToShow === stationPages.BILLEDER && <ImagePage />}
-      {pageToShow === stationPages.LOKATIONKONFIGURATION && (
+      {pageToShow === stationPages.LOKATIONKONFIGURATION && user?.superUser && (
         <StationPageBoxLayout>
           <LocationConfiguration />
         </StationPageBoxLayout>
