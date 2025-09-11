@@ -292,18 +292,42 @@ const Locname = (
   );
 };
 
-const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
+type BoreholeNoProps = Partial<AutoCompleteFieldProps<Borehole>> & {
+  editing: boolean;
+};
+
+const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
   const {
     setValue,
     control,
-    formState: {errors},
+    formState: {errors, defaultValues, dirtyFields},
     watch,
     trigger,
   } = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
+  const boreholeno = watch('boreholeno');
+  const x = watch('x');
+  const y = watch('y');
   const [selectedBorehole, setSelectedBorehole] = useState<Borehole | null>(null);
+
   const [search, setSearch] = useState<string>('');
   const [filteredOptions, setFilteredOptions] = React.useState<Borehole[]>([]);
   const loctype_id = watch('loctype_id', 9);
+
+  useEffect(() => {
+    if (boreholeno === defaultValues?.boreholeno && dirtyFields.boreholeno === undefined) {
+      setSelectedBorehole(
+        defaultValues && dirtyFields.boreholeno === undefined
+          ? {
+              boreholeno: defaultValues.boreholeno!,
+              latitude: defaultValues.y!,
+              longitude: defaultValues.x!,
+            }
+          : null
+      );
+    } else if (editing === false) {
+      setSelectedBorehole(boreholeno ? {boreholeno, latitude: x, longitude: y} : null);
+    }
+  }, [boreholeno]);
 
   return (
     <Controller
@@ -403,8 +427,8 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
 const BoreholeSuffix = (
   props: Omit<FormInputProps<BoreholeAddLocation | BoreholeEditLocation>, 'name' | 'label'>
 ) => {
-  const {getValues} = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
-  const boreholeno = getValues('boreholeno');
+  const {watch} = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
+  const boreholeno = watch('boreholeno');
   return (
     <FormInput
       name="suffix"
