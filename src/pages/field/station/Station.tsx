@@ -33,6 +33,8 @@ import GraphManager from '~/features/station/components/GraphManager';
 import EditLocation from './stamdata/EditLocation';
 import EditTimeseries from './stamdata/EditTimeseries';
 import Alarms from './alarms/Alarms';
+import TimeseriesConfiguration from './timeseries/configuration/Configuration';
+import LocationConfiguration from './location/Configuration';
 
 export default function Station() {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
@@ -79,6 +81,11 @@ export default function Station() {
       {pageToShow === stationPages.GENERELTIDSSERIE && (
         <StationPageBoxLayout key={ts_id}>
           <EditTimeseries />
+        </StationPageBoxLayout>
+      )}
+      {pageToShow === stationPages.TIDSSERIEKONFIGURATION && (
+        <StationPageBoxLayout>
+          <TimeseriesConfiguration />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && (
@@ -135,6 +142,11 @@ export default function Station() {
       {pageToShow === stationPages.BILLEDER && (
         <StationPageBoxLayout key={loc_id}>
           <ImagePage />
+        </StationPageBoxLayout>
+      )}
+      {pageToShow === stationPages.LOKATIONKONFIGURATION && user?.superUser && (
+        <StationPageBoxLayout>
+          <LocationConfiguration />
         </StationPageBoxLayout>
       )}
     </Layout>

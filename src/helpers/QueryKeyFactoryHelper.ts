@@ -11,7 +11,7 @@ export const queryKeys = {
     metadata: (loc_id: number | undefined) => ['location_metadata', 'metadata', loc_id] as const,
     timeseries_status: (loc_id: number | undefined) =>
       ['timeseries_status', 'metadata', 'register', 'tasks', loc_id] as const,
-    contacts: (loc_id: number) => ['contact_info', loc_id] as const,
+    contacts: (loc_id: number) => ['contact_info', 'metadata', loc_id] as const,
     searchContacts: (search: string) => ['search_contact_info', search] as const,
     keys: (loc_id: number) => ['location_access', loc_id] as const,
     searchKeys: (search: string) => ['search_location_access', search] as const,
@@ -21,6 +21,8 @@ export const queryKeys = {
       ['location_permissions', 'metadata', loc_id] as const,
     minimalSelectList: (loc_id: number | undefined) =>
       ['tsList', 'location_metadata', 'metadata', loc_id] as const,
+    SLAConfiguration: (loc_id: number | undefined) =>
+      ['sla_configuration', 'register', loc_id] as const,
   },
   Timeseries: {
     all: () => ['timeseries'] as const,
@@ -46,6 +48,8 @@ export const queryKeys = {
     edgeDates: (ts_id: number | undefined) => ['all_range', ts_id] as const,
     graphData: (ts_id: number | undefined, xRange: Array<Dayjs>) =>
       ['graphData', ts_id, xRange] as const,
+    MeasureSampleSend: (ts_id: number) => ['measure_sample_send', 'register', ts_id] as const,
+    ServiceInterval: (ts_id: number) => ['service_interval', 'register', ts_id] as const,
   },
   Borehole: {
     stamdata: (boreholeno: string | undefined | null, intakeno: number | undefined) =>

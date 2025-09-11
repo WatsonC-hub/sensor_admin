@@ -79,6 +79,7 @@ export type Task = {
   can_edit: boolean;
   flag: FlagEnum;
   prefix: string | null;
+  sla: Dayjs | null;
 };
 
 export type TaskAPI = Omit<Task, 'due_date'> & {
@@ -183,6 +184,7 @@ export type Taskitinerary = {
   created_by: string;
   created_at: string;
   name: string;
+  comment: string | null;
 };
 
 export type PostTaskitinerary = Omit<

@@ -140,6 +140,7 @@ export const useTasks = () => {
       data.map((task) => ({
         ...task,
         due_date: task.due_date ? dayjs(task.due_date) : null,
+        sla: task.sla ? dayjs(task.sla) : null,
       })),
     staleTime: 1000 * 60 * 1, // 1 minute
   });

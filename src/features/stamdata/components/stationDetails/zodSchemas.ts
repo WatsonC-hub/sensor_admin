@@ -4,13 +4,14 @@ import {AccessType} from '~/helpers/EnumHelper';
 
 const contact_info = z.object({
   id: z.string().nullish(),
-  navn: z.string({required_error: 'Navn på kontakten skal udfyldes'}),
-  telefonnummer: z.number().nullish(),
+  name: z.string({required_error: 'Navn på kontakten skal udfyldes'}),
+  mobile: z.number().nullish(),
   email: z.union([z.string().email('Det skal være en valid email'), z.literal('')]).nullable(),
   comment: z.string().optional(),
   contact_role: z.number().gt(-1, 'Der skal vælges en værdi fra listen'),
   user_id: z.string().nullish(),
   contact_type: z.string(),
+  notify_required: z.boolean().optional().default(false),
 });
 
 const contact_info_table = contact_info.extend({

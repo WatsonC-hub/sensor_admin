@@ -86,7 +86,7 @@ const EditLocation = () => {
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
           <Button
             bttype="tertiary"
-            onClick={() => reset()}
+            onClick={() => reset(default_data)}
             disabled={location_permissions !== 'edit'}
           >
             Annuller
