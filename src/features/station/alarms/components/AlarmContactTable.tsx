@@ -85,6 +85,7 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
     enablePagination: false,
     enableGlobalFilter: false,
     enableTopToolbar: false,
+    enableBottomToolbar: false,
     muiTablePaperProps: {
       sx: {
         width: 'fit-content',
@@ -104,7 +105,6 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
     muiTableContainerProps: {
       sx: {
         width: '100%',
-        height: '100%',
       },
     },
   };
@@ -119,7 +119,7 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
   );
 
   return (
-    <Box alignItems={'center'} height={'100%'} width={'100%'}>
+    <Box alignItems={'center'}>
       <MaterialReactTable table={table} />
     </Box>
   );

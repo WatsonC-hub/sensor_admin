@@ -85,13 +85,13 @@ const AlarmContactFormDialog = ({
     }
 
     if (currentIndex !== -1) {
-      setValues('contacts', [
-        ...(values || []).slice(0, currentIndex),
-        data,
-        ...(values || []).slice(currentIndex + 1),
-      ]);
+      setValues(
+        'contacts',
+        [...(values || []).slice(0, currentIndex), data, ...(values || []).slice(currentIndex + 1)],
+        {shouldDirty: true}
+      );
     } else {
-      setValues('contacts', [...(values || []), data]);
+      setValues('contacts', [...(values || []), data], {shouldDirty: true});
     }
 
     onClose();
@@ -143,7 +143,7 @@ const AlarmContactFormDialog = ({
               }}
               onChangeCallback={(value) => {
                 if (value && value.contact_id) {
-                  setValue(`contact_id`, value.contact_id);
+                  setValue(`contact_id`, value.contact_id, {shouldDirty: true});
                   trigger(`contact_id`);
                 }
               }}
@@ -172,8 +172,8 @@ const AlarmContactFormDialog = ({
                 icon={<SmsIcon color="primary" />}
                 onChangeCallback={(value) => {
                   if (!value) {
-                    setValue(`sms.from`, '');
-                    setValue(`sms.to`, '');
+                    setValue(`sms.from`, '', {shouldDirty: true});
+                    setValue(`sms.to`, '', {shouldDirty: true});
                     trigger(`sms.from`);
                     trigger(`sms.to`);
                     // reset(getValues());
@@ -213,8 +213,8 @@ const AlarmContactFormDialog = ({
                 icon={<EmailIcon color="primary" />}
                 onChangeCallback={(value) => {
                   if (!value) {
-                    setValue(`email.from`, '');
-                    setValue(`email.to`, '');
+                    setValue(`email.from`, '', {shouldDirty: true});
+                    setValue(`email.to`, '', {shouldDirty: true});
                     trigger(`email.from`);
                     trigger(`email.to`);
                     // reset(getValues());
@@ -254,8 +254,8 @@ const AlarmContactFormDialog = ({
                 icon={<CallIcon color="primary" />}
                 onChangeCallback={(value) => {
                   if (!value) {
-                    setValue(`call.from`, '');
-                    setValue(`call.to`, '');
+                    setValue(`call.from`, '', {shouldDirty: true});
+                    setValue(`call.to`, '', {shouldDirty: true});
                     trigger(`call.from`);
                     trigger(`call.to`);
                     // reset(getValues());

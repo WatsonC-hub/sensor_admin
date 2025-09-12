@@ -3,6 +3,7 @@ import React from 'react';
 
 import UnitMeasurementConfig from './UnitMeasurementConfig';
 import YearlyControlsConfig from './YearlyControlsConfig';
+import Synchronization from './Synchronization';
 
 const Configuration = () => {
   return (
@@ -18,6 +19,12 @@ const Configuration = () => {
           Kontrol interval
         </Typography>
         <YearlyControlsConfig />
+      </Layout>
+      <Layout>
+        <Typography variant="h6" gutterBottom>
+          Synkronisering
+        </Typography>
+        <Synchronization />
       </Layout>
     </>
   );

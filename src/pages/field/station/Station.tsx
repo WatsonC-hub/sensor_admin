@@ -64,7 +64,7 @@ export default function Station() {
       {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn key={ts_id} />}
       {pageToShow === stationPages.GENERELTUDSTYR && (
         <>
-          <Box key={ts_id}>
+          <Box key={`graph-${ts_id}`}>
             <GraphManager />
           </Box>
           <Divider />
@@ -74,12 +74,12 @@ export default function Station() {
         </>
       )}
       {pageToShow === stationPages.GENERELTLOKATION && (
-        <StationPageBoxLayout key={loc_id}>
+        <StationPageBoxLayout key={`location-${loc_id}`}>
           <EditLocation />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.GENERELTIDSSERIE && (
-        <StationPageBoxLayout key={ts_id}>
+        <StationPageBoxLayout key={`timeseries-${ts_id}`}>
           <EditTimeseries />
         </StationPageBoxLayout>
       )}
@@ -89,14 +89,14 @@ export default function Station() {
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && (
-        <Algorithms key={ts_id} />
+        <Algorithms key={`algorithms-${ts_id}`} />
       )}
       {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && (
-        <QAHistory key={ts_id} />
+        <QAHistory key={`justeringer-${ts_id}`} />
       )}
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
-          <Box key={ts_id}>
+          <Box key={`graph-${ts_id}`}>
             <GraphManager
               defaultDataToShow={{
                 Kontrolmålinger: true,
@@ -104,14 +104,14 @@ export default function Station() {
             />
           </Box>
           <Divider />
-          <StationPageBoxLayout key={ts_id}>
+          <StationPageBoxLayout key={`timeseries-${ts_id}`}>
             <ReferenceForm />
           </StationPageBoxLayout>
         </>
       )}
       {pageToShow === stationPages.ALARM && user?.superUser && (
         <>
-          <Box key={ts_id}>
+          <Box key={`graph-${ts_id}`}>
             <GraphManager
               defaultDataToShow={{
                 Kontrolmålinger: true,

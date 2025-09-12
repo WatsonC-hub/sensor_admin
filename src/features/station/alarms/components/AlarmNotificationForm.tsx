@@ -33,14 +33,18 @@ const AlarmNotificationForm = () => {
               borderColor: sensorColors[FlagEnum.CRITICAL].color,
             }}
             onClick={() => {
-              setValue('notification_ids', [
-                ...new Set([
-                  ...Notification_ids,
-                  ...(data
-                    ?.filter((item) => item.flag === FlagEnum.CRITICAL)
-                    .map((item) => item.gid) ?? []),
-                ]),
-              ]);
+              setValue(
+                'notification_ids',
+                [
+                  ...new Set([
+                    ...Notification_ids,
+                    ...(data
+                      ?.filter((item) => item.flag === FlagEnum.CRITICAL)
+                      .map((item) => item.gid) ?? []),
+                  ]),
+                ],
+                {shouldDirty: true}
+              );
             }}
             endIcon={<SouthIcon sx={{width: '16px'}} />}
           >
@@ -56,14 +60,18 @@ const AlarmNotificationForm = () => {
               borderRadius: 2.5,
             }}
             onClick={() => {
-              setValue('notification_ids', [
-                ...new Set([
-                  ...Notification_ids,
-                  ...(data
-                    ?.filter((item) => item.flag === FlagEnum.WARNING)
-                    .map((item) => item.gid) ?? []),
-                ]),
-              ]);
+              setValue(
+                'notification_ids',
+                [
+                  ...new Set([
+                    ...Notification_ids,
+                    ...(data
+                      ?.filter((item) => item.flag === FlagEnum.WARNING)
+                      .map((item) => item.gid) ?? []),
+                  ]),
+                ],
+                {shouldDirty: true}
+              );
             }}
             endIcon={<SouthIcon sx={{width: '16px'}} />}
           >
@@ -86,7 +94,7 @@ const AlarmNotificationForm = () => {
                     []),
                 ]),
               ];
-              setValue('notification_ids', alarmNotificationArray);
+              setValue('notification_ids', alarmNotificationArray, {shouldDirty: true});
             }}
             endIcon={<SouthIcon sx={{width: '16px'}} />}
           >
@@ -119,7 +127,8 @@ const AlarmNotificationForm = () => {
         onChangeCallback={(value) => {
           setValue(
             'notification_ids',
-            value.map((v) => (typeof v === 'number' ? v : v.gid))
+            value.map((v) => (typeof v === 'number' ? v : v.gid)),
+            {shouldDirty: true}
           );
           trigger('notification_ids');
         }}

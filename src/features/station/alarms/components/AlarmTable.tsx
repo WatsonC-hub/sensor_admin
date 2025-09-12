@@ -16,7 +16,6 @@ import {useAlarm} from '../api/useAlarm';
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
 import {useLocationData} from '~/hooks/query/useMetadata';
-import useBreakpoints from '~/hooks/useBreakpoints';
 type AlarmTableProps = {
   alarms: Array<alarmTable> | undefined;
 };
@@ -25,7 +24,6 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState<boolean>(false);
   const {ts_id} = useAppContext(['ts_id']);
   const [selectedId, setSelectedId] = React.useState<string>('');
-  const {isMobile} = useBreakpoints();
   const {data: location_data} = useLocationData();
   const {
     getHistory: {data: alarmHistory},
@@ -75,20 +73,9 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
     enableGlobalFilter: false,
     enableTopToolbar: false,
     enableBottomToolbar: false,
-    muiTableBodyCellProps: {
+    muiTableHeadProps: {
       sx: {
-        width: 'fit-content',
-      },
-    },
-    muiTableHeadCellProps: {
-      sx: {
-        width: 'fit-content',
-      },
-    },
-    muiTableContainerProps: {
-      sx: {
-        flex: '1 1 auto',
-        maxHeight: 'fit-content',
+        zIndex: 3,
       },
     },
     renderDetailPanel: ({row}) => {
@@ -183,7 +170,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
   );
 
   return (
-    <Box flex={'1 1 auto'} minWidth={!isMobile ? 750 : 'auto'} sx={setTableBoxStyle(680)}>
+    <Box sx={setTableBoxStyle(800)} overflow={'hidden'} pb={1}>
       <Dialog
         open={alarmHistoryOpen}
         onClose={() => {

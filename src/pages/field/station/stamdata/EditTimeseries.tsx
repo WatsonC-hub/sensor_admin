@@ -1,48 +1,28 @@
-import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
-import {FormProvider, useForm} from 'react-hook-form';
+import {FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
-import {z} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
-import useSync from '~/features/station/components/stamdata/dmpSynkronisering/api/useSync';
-import SyncForm from '~/features/station/components/stamdata/dmpSynkronisering/components/SyncForm';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
 import {boreholeEditTimeseriesSchema, defaultEditTimeseriesSchema} from '~/features/station/schema';
-import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
-
-const SyncSchema = z.object({
-  sync_dmp: z.boolean().optional(),
-  owner_cvr: z.number().optional(),
-  owner_name: z.union([z.string(), z.literal('')]).optional(),
-  jupiter: z.boolean().optional(),
-});
-
-export type SyncFormValues = z.infer<typeof SyncSchema>;
 
 const EditTimeseries = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData(ts_id);
-  const {data: location_data} = useLocationData(loc_id);
 
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
-
-  const {
-    get: {data: sync_data},
-    post: postSync,
-    del: deleteSync,
-  } = useSync();
 
   const metadataEditTimeseriesMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -60,21 +40,6 @@ const EditTimeseries = () => {
     },
   });
 
-  const result = useQuery({
-    queryKey: ['owners'],
-    queryFn: async () => {
-      const data = await fetch(`https://kemidata.miljoeportal.dk/api/metadata?language=da`).then(
-        async (res) => {
-          const metadata = await res.json();
-          return metadata.stationOwners;
-        }
-      );
-      return data;
-    },
-  });
-
-  const owners: Array<{cvr: string; name: string}> = result.data;
-  const owner = owners?.find((owner) => owner.cvr === sync_data?.owner_cvr?.toString());
   let schema;
 
   if (metadata?.loctype_id === 9) {
@@ -88,23 +53,6 @@ const EditTimeseries = () => {
     sensor_depth_m: metadata?.sensor_depth_m,
     intakeno: metadata?.intakeno,
   });
-
-  const syncMethods = useForm<SyncFormValues>({
-    resolver: zodResolver(SyncSchema),
-    mode: 'onTouched',
-    values: {
-      jupiter: sync_data?.jupiter ?? undefined,
-      sync_dmp: sync_data?.owner_cvr ? true : undefined,
-      owner_name: owner?.name ?? '',
-      owner_cvr: owner?.cvr ? parseInt(owner.cvr) : undefined,
-    },
-  });
-
-  const {
-    getValues: getSyncValues,
-    reset: resetSync,
-    formState: {isDirty: syncIsDirty, isValid: syncIsValid},
-  } = syncMethods;
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({
     formProps: {
@@ -136,35 +84,7 @@ const EditTimeseries = () => {
       const payload = {
         ...data,
       };
-      metadataEditTimeseriesMutation.mutate(payload, {
-        onSuccess: () => {
-          toast.success('Tidsserie er opdateret');
-        },
-      });
-    }
-
-    if (syncIsValid && syncIsDirty) {
-      const syncData = getSyncValues();
-      const cvr = owners?.find((owner) => owner.name === syncData.owner_name)?.cvr;
-
-      const syncPayload = {
-        path: `${ts_id}`,
-        data: {
-          ...(syncData.sync_dmp
-            ? {
-                ...syncData,
-                owner_cvr: cvr ? parseInt(cvr) : undefined,
-              }
-            : {}),
-          jupiter: syncData.jupiter,
-        },
-      };
-
-      postSync.mutate(syncPayload);
-
-      if (syncData.sync_dmp == false) {
-        deleteSync.mutate({path: ts_id.toString()});
-      }
+      metadataEditTimeseriesMutation.mutate(payload);
     }
   };
 
@@ -187,20 +107,11 @@ const EditTimeseries = () => {
           </StamdataTimeseries>
         </FormFieldset>
 
-        <SyncForm
-          key={`sync-form-${ts_id}`}
-          formMethods={syncMethods}
-          loctype_id={location_data?.loctype_id}
-          tstype_id={metadata?.tstype_id}
-          owners={owners}
-        />
-
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
           <Button
             bttype="tertiary"
             onClick={() => {
               reset(defaultValues);
-              resetSync();
             }}
             disabled={location_permissions !== 'edit'}
           >
@@ -209,10 +120,7 @@ const EditTimeseries = () => {
 
           <Button
             bttype="primary"
-            disabled={
-              ((!isDirty || !isValid) && (!syncIsDirty || !syncIsValid)) ||
-              location_permissions !== 'edit'
-            }
+            disabled={!isDirty || !isValid || location_permissions !== 'edit'}
             onClick={Submit}
             startIcon={<SaveIcon />}
             sx={{marginRight: 1}}

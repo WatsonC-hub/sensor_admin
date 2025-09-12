@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {AlarmContactFormType, AlarmsFormValues} from '../schema';
 import {Box, Checkbox, Divider, TextField, Typography} from '@mui/material';
-import {useContactInfo, useSearchContact} from '~/features/stamdata/api/useContactInfo';
+import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import {useAppContext} from '~/state/contexts';
 import {useFormContext} from 'react-hook-form';
 import SmsIcon from '@mui/icons-material/Sms';
@@ -11,43 +11,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import {Add, Edit} from '@mui/icons-material';
 import Button from '~/components/Button';
 
-// const defaultContact = {
-//   contact_id: '',
-//   name: '',
-//   sms: {
-//     sms: false,
-//     to: undefined,
-//     from: undefined,
-//   },
-//   email: {
-//     email: false,
-//     to: undefined,
-//     from: undefined,
-//   },
-//   call: {
-//     call: false,
-
-//     to: undefined,
-//     from: undefined,
-//   },
-// };
-
 const removeContact = (index: number, contacts: AlarmContactFormType[]) => {
   return contacts.filter((_, i) => i !== index);
 };
-
-// const addContact = (contact: AlarmContactFormType, contacts: AlarmContactFormType[]) => {
-//   return [...contacts, contact];
-// };
-
-// const triggerErrors = async (
-//   trigger: (value: FieldPath<AlarmsFormValues>) => Promise<boolean>,
-//   index: number,
-//   path: keyof AlarmContactFormType
-// ) => {
-//   const result = await trigger(`contacts.${index}.${path}`);
-//   return result;
-// };
 
 type AlarmContactFormProps = {
   setContactDialogOpen: (open: boolean) => void;
@@ -100,7 +66,6 @@ const AlarmContactForm = ({
                     onClick={() => {
                       setMode('edit');
                       setCurrentIndex(fieldIndex);
-                      // resetField(`contacts.${fieldIndex}`);
                       setContactDialogOpen(true);
                     }}
                   />
@@ -139,10 +104,6 @@ const AlarmContactForm = ({
         onClick={() => {
           setMode('add');
           setContactDialogOpen(true);
-          // if (contacts) {
-          //   setValue('contacts', addContact(defaultContact, contacts));
-          //   setCurrentIndex(contacts.length);
-          // }
         }}
         sx={{ml: 'auto'}}
       >

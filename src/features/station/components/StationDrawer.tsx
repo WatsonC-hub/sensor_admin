@@ -315,7 +315,10 @@ const StationDrawer = () => {
             let timer = 0;
 
             const mouseEnter = () => {
-              timer = setTimeout(item.onHover ? item.onHover : () => {}, 100);
+              timer = setTimeout(
+                item.onHover && pageToShow !== item.page ? item.onHover : () => {},
+                100
+              );
             };
 
             const mouseLeave = () => {

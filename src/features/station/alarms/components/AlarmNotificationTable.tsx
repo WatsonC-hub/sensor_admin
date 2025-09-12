@@ -41,15 +41,6 @@ const AlarmNotificationTable = ({alarm_notifications}: AlarmNotificationTablePro
           );
         },
       },
-      // {
-      //   header: 'Kritiskhed',
-      //   id: 'gid',
-      //   size: 20,
-      //   accessorFn: (row) => {
-      //     const flag = row.flag;
-      //     return flag === 3 ? 'Kritisk' : flag === 2 ? 'Opmærksom' : 'Ukritisk';
-      //   },
-      // },
     ],
     [notifications]
   );
@@ -61,6 +52,7 @@ const AlarmNotificationTable = ({alarm_notifications}: AlarmNotificationTablePro
     enablePagination: false,
     enableGlobalFilter: false,
     enableTopToolbar: false,
+    enableBottomToolbar: false,
     muiTablePaperProps: {
       sx: {
         width: 'fit-content',
@@ -84,11 +76,11 @@ const AlarmNotificationTable = ({alarm_notifications}: AlarmNotificationTablePro
     options,
     undefined,
     TableTypes.TABLE,
-    MergeType.SHALLOWMERGE
+    MergeType.RECURSIVEMERGE
   );
 
   return (
-    <Box alignItems={'center'}>
+    <Box alignItems={'center'} width={'fit-content'}>
       <MaterialReactTable table={table} />
     </Box>
   );

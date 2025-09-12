@@ -54,7 +54,12 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     mode: 'onTouched',
   });
 
-  const {reset, watch, setValue} = alarmMethods;
+  const {
+    reset,
+    watch,
+    setValue,
+    formState: {dirtyFields, isDirty},
+  } = alarmMethods;
 
   const contacts = watch('contacts');
 
@@ -99,6 +104,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         },
       });
     } else {
+      console.log(alarm, data);
       if (
         forceSubmit !== true &&
         alarm?.group_id !== undefined &&
@@ -134,6 +140,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     }
   };
 
+  console.log(isDirty, dirtyFields);
   return (
     <>
       <Form formMethods={alarmMethods}>
@@ -194,7 +201,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         }}
         setDialogOpen={setDeleteDialogOpen}
         onOkDelete={handleDelete}
-        title="Du er i gang med at fjerne en gruppe fra alarmen. Det vil medføre til at alarmen bliver fjernet fra alle lokationer som har samme gruppe. Er du sikker på at du vil fortsætte?"
+        title="Fjernelse af gruppen medfører, at alarmen ikke længere vises på de lokationer, der er knyttet til denne gruppe. Er du sikker på, at du vil fortsætte?"
       />
     </>
   );

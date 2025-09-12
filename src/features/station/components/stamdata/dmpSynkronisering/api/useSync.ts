@@ -1,7 +1,6 @@
 import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
-import {SyncFormValues} from '~/pages/field/station/stamdata/EditTimeseries';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
@@ -9,7 +8,12 @@ interface SyncBase {
   path: string;
 }
 
-type Sync = SyncFormValues;
+type Sync = {
+  sync_dmp?: boolean;
+  owner_cvr?: number;
+  owner_name?: string;
+  jupiter?: boolean;
+};
 
 interface SyncPost extends SyncBase {
   data: Sync;
