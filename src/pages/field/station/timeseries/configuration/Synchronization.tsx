@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useQuery} from '@tanstack/react-query';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import useSync from '~/features/station/components/stamdata/dmpSynkronisering/api/useSync';
@@ -21,7 +21,11 @@ type SyncFormValues = z.infer<typeof SyncSchema>;
 
 const Form = createTypedForm<SyncFormValues>();
 
-const Synchronization = () => {
+type SynchronizationProps = {
+  setCanSync: (value: boolean) => void; // Placeholder until sync logic is implemented
+};
+
+const Synchronization = ({setCanSync}: SynchronizationProps) => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData(ts_id);
   const {data: location_data} = useLocationData(loc_id);
@@ -101,6 +105,12 @@ const Synchronization = () => {
       deleteSync.mutate({path: ts_id.toString()});
     }
   };
+
+  useEffect(() => {
+    if (metadata && location_data && user) {
+      setCanSync(!!((canSyncDmp && user?.superUser) || canSyncJupiter));
+    }
+  }, [metadata, location_data, user]);
 
   return (
     <Box display={'flex'} flexDirection="column">
