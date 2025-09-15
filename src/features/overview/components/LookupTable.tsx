@@ -27,6 +27,28 @@ const LookupTable = <TData extends MRT_RowData>(
       variant: 'outlined',
       size: 'small',
     },
+    displayColumnDefOptions: {
+      'mrt-row-expand': {
+        header: '',
+        size: 10,
+        muiTableHeadCellProps: {
+          sx: {
+            padding: 0,
+          },
+        },
+      },
+      'mrt-row-actions': {
+        header: '',
+        size: 20, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
+        grow: false,
+        muiTableHeadCellProps: {
+          align: 'right',
+        },
+        muiTableBodyCellProps: {
+          align: 'right',
+        },
+      },
+    },
     ...options,
   });
   return table;

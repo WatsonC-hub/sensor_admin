@@ -174,18 +174,6 @@ const getOptions = <TData extends MRT_RowData>(
     enableColumnActions: breakpoints.isTouch ? false : true,
     enableTableHead: true,
     enableFilter: false,
-    displayColumnDefOptions: {
-      'mrt-row-actions': {
-        size: 100, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
-        grow: false,
-        muiTableHeadCellProps: {
-          align: 'right',
-        },
-        muiTableBodyCellProps: {
-          align: 'right',
-        },
-      },
-    },
     initialState: {
       showGlobalFilter: true,
       density: 'comfortable',

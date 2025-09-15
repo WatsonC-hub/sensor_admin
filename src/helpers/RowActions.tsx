@@ -1,3 +1,4 @@
+import {Add} from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {Box, IconButton} from '@mui/material';
@@ -5,17 +6,25 @@ import React from 'react';
 
 interface Props {
   disabled?: boolean;
-  handleEdit: () => void;
+  handleEdit?: () => void;
   onDeleteBtnClick?: () => void;
+  handleAdd?: () => void;
   size?: 'small' | 'medium' | 'large';
 }
 
-const RenderActions = ({handleEdit, onDeleteBtnClick, disabled, size}: Props) => {
+const RenderActions = ({handleEdit, onDeleteBtnClick, handleAdd, disabled, size}: Props) => {
   return (
     <Box margin="0 auto" display="flex" justifyContent="flex-end">
-      <IconButton edge="end" onClick={handleEdit} disabled={disabled} size={size ?? 'large'}>
-        <EditIcon />
-      </IconButton>
+      {handleAdd && (
+        <IconButton edge="end" onClick={handleAdd} disabled={disabled} size={size ?? 'large'}>
+          <Add />
+        </IconButton>
+      )}
+      {handleEdit && (
+        <IconButton edge="end" onClick={handleEdit} disabled={disabled} size={size ?? 'large'}>
+          <EditIcon />
+        </IconButton>
+      )}
       {onDeleteBtnClick && (
         <IconButton
           edge="end"
