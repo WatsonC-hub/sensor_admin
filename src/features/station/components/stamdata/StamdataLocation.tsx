@@ -293,7 +293,7 @@ const Locname = (
 };
 
 type BoreholeNoProps = Partial<AutoCompleteFieldProps<Borehole>> & {
-  editing: boolean;
+  editing?: boolean;
 };
 
 const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
