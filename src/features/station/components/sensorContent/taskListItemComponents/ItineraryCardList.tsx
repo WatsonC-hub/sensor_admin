@@ -6,6 +6,7 @@ import {
   Dialog,
   Divider,
   IconButton,
+  Link,
   Typography,
 } from '@mui/material';
 import React from 'react';
@@ -21,6 +22,7 @@ import ItineraryListItemAdvancedCard from './ItineraryListItemAdvancedCard';
 import Button from '~/components/Button';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import {isSimpleTask} from '~/features/tasks/helpers';
+import {useDisplayState} from '~/hooks/ui';
 
 interface ItineraryCardListProps {
   itinerary_id: string;
@@ -29,6 +31,7 @@ interface ItineraryCardListProps {
 const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
   const {loc_id} = useAppContext(['loc_id']);
   const [openDialog, setOpenDialog] = React.useState(false);
+  const setItineraryId = useDisplayState((state) => state.setItineraryId);
   const {tasks} = useTaskState();
 
   const itinerary_tasks = tasks?.filter(
@@ -71,26 +74,33 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
             backgroundColor: 'primary.main',
             color: 'white',
             py: 0.25,
-            px: 2,
+            px: 1,
             minHeight: 32,
           }}
           title={
-            <Box
-              display="flex"
-              flexDirection={'row'}
-              alignItems="center"
-              justifyContent={'space-between'}
-            >
-              <Box display="flex" alignItems={'center'} flexDirection={'row'} gap={1}>
-                <DriveEtaIcon />
-                <Typography variant="caption">{itinerary?.due_date}</Typography>
+            <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
+              <DriveEtaIcon />
+              <Box display={'flex'} flexDirection={'column'}>
+                <Link
+                  sx={{cursor: 'pointer', textDecorationColor: 'rgba(255, 255, 255, 0.5)'}}
+                  variant="caption"
+                  underline="always"
+                  color="inherit"
+                  width={'100%'}
+                  onClick={() => setItineraryId(itinerary_id)}
+                >
+                  <Typography variant="body2">{itinerary?.name}</Typography>
+                </Link>
+                <Typography variant="caption" color="grey.300">
+                  {itinerary?.due_date} {itinerary?.assigned_to ? ' - ' : ''}
+                  {taskUsers?.find((user) => user.id === itinerary?.assigned_to)?.display_name}
+                </Typography>
               </Box>
-              <Typography alignContent={'center'} variant="caption">
-                {taskUsers?.find((user) => user.id === itinerary?.assigned_to)?.display_name}
-              </Typography>
-              <IconButton onClick={() => setOpenDialog(true)}>
-                <CloseIcon sx={{alignSelf: 'center', color: 'white'}} fontSize="small" />
-              </IconButton>
+              <Box flexGrow={1} alignItems={'center'} display={'flex'} justifyContent={'end'}>
+                <IconButton onClick={() => setOpenDialog(true)}>
+                  <CloseIcon sx={{color: 'white'}} fontSize="small" />
+                </IconButton>
+              </Box>
             </Box>
           }
         />
