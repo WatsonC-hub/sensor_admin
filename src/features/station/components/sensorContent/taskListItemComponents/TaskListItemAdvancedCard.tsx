@@ -24,6 +24,7 @@ import NotificationIcon from '~/pages/field/overview/components/NotificationIcon
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useDisplayState} from '~/hooks/ui';
+import {useUser} from '~/features/auth/useUser';
 
 type Props = {
   task: Task;
@@ -32,6 +33,7 @@ type Props = {
 const TaskListItemAdvancedCard = ({task}: Props) => {
   const [showAllComments, setShowAllComments] = useState<boolean>(false);
   const {station} = useNavigationFunctions();
+  const user = useUser();
   const {
     patch: updateTask,
     getUsers: {data: taskUsers},
@@ -147,14 +149,14 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                     {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
                     <Box>{task.name}</Box>
                   </Link>
-                  {task.sla && (
+                  {task.sla && user?.superUser && (
                     <Typography
                       mt={-0.5}
                       fontStyle={'italic'}
                       fontWeight={'bold'}
                       variant={'caption'}
                     >
-                      SLA frist: {task.sla.format('l')}
+                      Løsningsfrist: {task.sla.format('l')}
                     </Typography>
                   )}
                 </Box>

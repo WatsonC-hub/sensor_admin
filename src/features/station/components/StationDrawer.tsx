@@ -155,16 +155,6 @@ const StationDrawer = () => {
           // tooltip: 'På denne side kan du se og redigere målepunkter til din tidsserie.',
         },
         {
-          text: 'Konfiguration',
-          page: stationPages.TIDSSERIEKONFIGURATION,
-          icon: <Settings />,
-          requiredTsId: true,
-          disabled: metadata?.calculated,
-          onHover: () => handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!)),
-          tooltip:
-            'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
-        },
-        {
           text: 'Udstyr',
           page: stationPages.GENERELTUDSTYR,
           icon: <Router />,
@@ -191,6 +181,17 @@ const StationDrawer = () => {
           disabled: !user?.features?.iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id!)),
           tooltip: 'På denne side kan du justere advarsler for din tidsserie.',
+        },
+        {
+          text: 'Konfiguration',
+          page: stationPages.TIDSSERIEKONFIGURATION,
+          icon: <Settings />,
+          requiredTsId: true,
+          disabled: metadata?.calculated,
+          onHover: () =>
+            metadata?.unit_uuid && handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!)),
+          tooltip:
+            'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
         },
       ],
     },

@@ -59,18 +59,12 @@ const SLAConfiguration = () => {
 
   return (
     <FormProvider {...formMethods}>
-      <Box
-        display="flex"
-        flexDirection={isMobile ? 'column' : 'row'}
-        gap={2}
-        mb={-3}
-        alignItems={'center'}
-      >
+      <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} alignItems={'center'}>
         <FormInput
           name="days_to_visitation"
-          label="SLA frist"
+          label="Løsningsfrist"
           type="number"
-          placeholder="Indtast et tal..."
+          placeholder="Indtast antal dage..."
           disabled={
             (values?.isCustomerService && user?.superUser) ||
             (!values?.isCustomerService && !user?.superUser)

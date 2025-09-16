@@ -15,6 +15,7 @@ import ConfigAlert from './ConfigAlert';
 import {z} from 'zod';
 import Button from '~/components/Button';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {APIError} from '~/queryClient';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
@@ -57,7 +58,7 @@ const getOptions = (sampleInterval: number | undefined) => {
 
 const UnitMeasurementConfig = () => {
   const {ts_id} = useAppContext(['ts_id']);
-  const {data, isPending} = useTimeseriesMeasureSampleSend(ts_id);
+  const {data, isLoading, error} = useTimeseriesMeasureSampleSend(ts_id);
   const {mutate} = useTimeseriesMeasureSampleSendMutation(ts_id);
   const [options, setOptions] = useState<React.ReactNode[]>([]);
   const {isMobile} = useBreakpoints();
@@ -82,12 +83,17 @@ const UnitMeasurementConfig = () => {
   useEffect(() => {
     if (data) setOptions(getOptions(data?.savedConfig?.sampleInterval));
   }, [data]);
-  //   const sampleInterval = watch('sampleInterval');
-  //   const sendInterval = watch('sendInterval');
 
-  // Make select options for sendInterval based on sampleInterval with a map
+  if (error)
+    return (
+      <Typography>
+        {(error as APIError).response?.data.detail
+          ? 'Der er ikke tilknyttet en enhed til denne tidsserie'
+          : ''}
+      </Typography>
+    );
 
-  if (isPending) {
+  if (isLoading) {
     return (
       <Box minWidth={isMobile ? '70vw' : 500} height={500}>
         <Typography>Loading</Typography>

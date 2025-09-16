@@ -6,9 +6,10 @@ const Configuration = () => {
   return (
     <>
       <Layout>
-        <Typography variant="h6" gutterBottom>
-          SLA Konfiguration
-        </Typography>
+        <Box width="fit-content" alignItems="center">
+          <Typography variant="h6">Service Level Agreement (SLA)</Typography>
+        </Box>
+
         <SLAConfiguration />
       </Layout>
     </>
