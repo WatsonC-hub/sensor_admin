@@ -1,16 +1,16 @@
 import {Box, Typography} from '@mui/material';
 import React from 'react';
-
-import UnitMeasurementConfig from './UnitMeasurementConfig';
+import SLAConfiguration from './SLAConfiguration';
 
 const Configuration = () => {
   return (
     <>
       <Layout>
-        <Typography variant="h6" gutterBottom>
-          Måle- og sendeforhold
-        </Typography>
-        <UnitMeasurementConfig />
+        <Box width="fit-content" alignItems="center">
+          <Typography variant="h6">Service Level Agreement (SLA)</Typography>
+        </Box>
+
+        <SLAConfiguration />
       </Layout>
     </>
   );
@@ -33,6 +33,7 @@ const Layout = ({children}: LayoutProps) => {
         border: '1px solid',
         borderColor: 'divider',
         borderRadius: 1,
+        minWidth: 500,
       }}
     >
       {children}

@@ -49,7 +49,7 @@ import {stationPages, StationPages} from '~/helpers/EnumHelper';
 import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import {timeseriesConfigurationOptions} from '../api/useTimeseriesConfiguration';
+import {timeseriesMeasureSampleSendOptions} from '../api/useTimeseriesMeasureSampleSend';
 
 const drawerWidth = 200;
 
@@ -155,16 +155,6 @@ const StationDrawer = () => {
           // tooltip: 'På denne side kan du se og redigere målepunkter til din tidsserie.',
         },
         {
-          text: 'Konfiguration',
-          page: stationPages.KONFIGURATION,
-          icon: <Settings />,
-          requiredTsId: true,
-          disabled: metadata?.calculated,
-          onHover: () => handlePrefetch(timeseriesConfigurationOptions(ts_id!)),
-          tooltip:
-            'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
-        },
-        {
           text: 'Udstyr',
           page: stationPages.GENERELTUDSTYR,
           icon: <Router />,
@@ -191,6 +181,17 @@ const StationDrawer = () => {
           disabled: !user?.features?.iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id!)),
           tooltip: 'På denne side kan du justere advarsler for din tidsserie.',
+        },
+        {
+          text: 'Konfiguration',
+          page: stationPages.TIDSSERIEKONFIGURATION,
+          icon: <Settings />,
+          requiredTsId: true,
+          disabled: metadata?.calculated,
+          onHover: () =>
+            metadata?.unit_uuid && handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!)),
+          tooltip:
+            'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
         },
       ],
     },
@@ -237,6 +238,15 @@ const StationDrawer = () => {
           requiredTsId: false,
           disabled: !user?.features.ressources,
           onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
+        },
+        {
+          text: 'Konfiguration',
+          page: stationPages.LOKATIONKONFIGURATION,
+          icon: <Settings />,
+          requiredTsId: false,
+          disabled: !user?.superUser,
+          // tooltip:
+          //   'På denne side kan du konfigurere din lokation, såsom at ændre måleinterval eller sendeinterval.',
         },
       ],
     },

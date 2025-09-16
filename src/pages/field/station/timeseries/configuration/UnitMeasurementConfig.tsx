@@ -6,16 +6,16 @@ import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {
-  useTimeseriesConfiguration,
-  useTimeseriesConfigurationMutation,
-} from '~/features/station/api/useTimeseriesConfiguration';
+  useTimeseriesMeasureSampleSend,
+  useTimeseriesMeasureSampleSendMutation,
+} from '~/features/station/api/useTimeseriesMeasureSampleSend';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
 import ConfigAlert from './ConfigAlert';
 import {z} from 'zod';
 import Button from '~/components/Button';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {APIError} from '~/queryClient';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
@@ -58,8 +58,8 @@ const getOptions = (sampleInterval: number | undefined) => {
 
 const UnitMeasurementConfig = () => {
   const {ts_id} = useAppContext(['ts_id']);
-  const {data, isPending} = useTimeseriesConfiguration(ts_id);
-  const {mutate} = useTimeseriesConfigurationMutation(ts_id);
+  const {data, isLoading, error} = useTimeseriesMeasureSampleSend(ts_id);
+  const {mutate} = useTimeseriesMeasureSampleSendMutation(ts_id);
   const [options, setOptions] = useState<React.ReactNode[]>([]);
   const {isMobile} = useBreakpoints();
   const values = data?.savedConfig ? data.savedConfig : undefined;
@@ -83,15 +83,20 @@ const UnitMeasurementConfig = () => {
   useEffect(() => {
     if (data) setOptions(getOptions(data?.savedConfig?.sampleInterval));
   }, [data]);
-  //   const sampleInterval = watch('sampleInterval');
-  //   const sendInterval = watch('sendInterval');
 
-  // Make select options for sendInterval based on sampleInterval with a map
-
-  if (isPending) {
+  if (error)
     return (
-      <Box minWidth={isMobile ? '70vw' : 800}>
-        <LoadingSkeleton />
+      <Typography>
+        {(error as APIError).response?.data.detail
+          ? 'Der er ikke tilknyttet en enhed til denne tidsserie'
+          : ''}
+      </Typography>
+    );
+
+  if (isLoading) {
+    return (
+      <Box minWidth={isMobile ? '70vw' : 500} height={500}>
+        <Typography>Loading</Typography>
       </Box>
     );
   }
