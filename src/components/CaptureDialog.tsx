@@ -122,7 +122,7 @@ export default function CaptureDialog({handleClose, handleScan, open}: CaptureDi
             // onLoad={() => setShowText(false)}
             // constraints={{facingMode: 'environment', deviceId: 'environment'}}
             constraints={{
-              facingMode: 'video',
+              facingMode: 'environment',
             }}
           />
         )}
