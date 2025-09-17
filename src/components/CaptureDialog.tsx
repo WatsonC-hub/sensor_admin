@@ -5,11 +5,10 @@ import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import Slide from '@mui/material/Slide';
 import Toolbar from '@mui/material/Toolbar';
-import {IDetectedBarcode, Scanner as QrReader, useDevices} from '@yudiel/react-qr-scanner';
+import {IDetectedBarcode, Scanner as QrReader} from '@yudiel/react-qr-scanner';
 import React, {useEffect, useState} from 'react';
 
 import {TransitionProps} from '@mui/material/transitions';
-import {toast} from 'react-toastify';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {children: React.ReactElement<any, any>},
@@ -52,10 +51,6 @@ interface CaptureDialogProps {
 
 export default function CaptureDialog({handleClose, handleScan, open}: CaptureDialogProps) {
   const [hasPermission, setHasPermission] = useState(true);
-  const devices = useDevices();
-  // const kinds = device?.map((device) => device.kind).filter((kind) => kind === 'videoinput');
-  console.log(devices);
-  const deviceIds = devices.map((device) => device.label);
   async function handleScanning(raw_data: IDetectedBarcode[]) {
     if (raw_data !== null && !running) {
       const url = raw_data[0].rawValue;
@@ -88,8 +83,6 @@ export default function CaptureDialog({handleClose, handleScan, open}: CaptureDi
   }, []);
 
   const handleError = (error: unknown) => console.error(error);
-
-  toast.info(deviceIds.join(','), {autoClose: 100000});
 
   return (
     <Dialog fullScreen open={open} onClose={handleClose} slots={{transition: Transition}}>
@@ -128,7 +121,9 @@ export default function CaptureDialog({handleClose, handleScan, open}: CaptureDi
             // onLoad={() => setShowText(false)}
             // constraints={{facingMode: 'environment', deviceId: 'environment'}}
             constraints={{
-              facingMode: 'environment',
+              facingMode: {
+                exact: 'environment',
+              },
             }}
           />
         )}
