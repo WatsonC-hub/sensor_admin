@@ -1,7 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, InputAdornment, MenuItem, Typography, Select} from '@mui/material';
-import React from 'react';
+import {Box, InputAdornment, MenuItem, Typography} from '@mui/material';
+import React, {ChangeEvent} from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -21,12 +21,14 @@ const yearlyControlsSchema = z.object({
     .refine((val) => (val ? Number(val.toFixed(2)) : null))
     .nullable(),
   lead_time: z.number({required_error: 'Forvarselstid er påkrævet'}).nullable(),
+  selectValue: z.number().default(1),
 });
 
 type YearlyControlsForm = {
   controls_per_year: number | null;
   lead_time: number | null;
   isCustomerService: boolean | undefined;
+  selectValue: number;
 };
 
 type ServiceIntervalSubmit = z.infer<typeof yearlyControlsSchema>;
@@ -45,7 +47,6 @@ function intervalFromFrequencyPerYear(timesPerYear: number): string {
 
 const YearlyControlsConfig = () => {
   const {ts_id} = useAppContext(['ts_id']);
-  const [selectValue, setSelectValue] = React.useState<number>(1);
   const user = useUser();
   const {data: values, isPending} = useTimeseriesServiceInterval(ts_id);
   const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
@@ -62,6 +63,7 @@ const YearlyControlsConfig = () => {
       controls_per_year: values?.controlsPerYear ?? null,
       lead_time: values?.leadTime ?? null,
       isCustomerService: values?.isCustomerService,
+      selectValue: 1,
     },
     mode: 'onChange',
   });
@@ -69,12 +71,14 @@ const YearlyControlsConfig = () => {
   const {
     handleSubmit,
     reset,
-    formState: {isSubmitting, isDirty},
+    formState: {isSubmitting, isDirty, dirtyFields},
     setValue,
     watch,
   } = formMethods;
 
+  console.log(dirtyFields);
   const controlsPerYear = watch('controls_per_year');
+  const selectValue = watch('selectValue');
 
   if (isPending) {
     return (
@@ -83,6 +87,21 @@ const YearlyControlsConfig = () => {
       </Box>
     );
   }
+
+  const onSubmit = (data: ServiceIntervalSubmit) => {
+    if (data.selectValue === 2 && data.controls_per_year)
+      data.controls_per_year = Number((12 / data.controls_per_year).toFixed(2));
+
+    mutate(
+      {
+        controls_per_year: data.controls_per_year,
+        lead_time: data.lead_time,
+      },
+      {
+        onSuccess: () => reset(),
+      }
+    );
+  };
 
   return (
     <FormProvider {...formMethods}>
@@ -100,35 +119,48 @@ const YearlyControlsConfig = () => {
             input: {
               endAdornment: (
                 <InputAdornment position="end">
-                  <Select
+                  <FormInput
+                    name="selectValue"
+                    select
                     variant="standard"
-                    disableUnderline
-                    sx={{mb: 0.5, border: 'none'}}
-                    value={selectValue}
-                    onChange={(e) => {
+                    sx={{width: 150}}
+                    defaultValue={1}
+                    slotProps={{
+                      select: {
+                        disableUnderline: true,
+                      },
+                    }}
+                    onChangeCallback={(e) => {
+                      const value = (e as ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)
+                        .target.value;
                       if (controlsPerYear) {
-                        if (e.target.value === 1)
+                        if (Number(value) === 1)
                           setValue('controls_per_year', Number((12 / controlsPerYear).toFixed(2)));
-                        else if (e.target.value === 2)
+                        else if (Number(value) === 2)
                           setValue('controls_per_year', Number((12 / controlsPerYear).toFixed(2)));
                       }
-                      setSelectValue(e.target.value as number);
                     }}
                   >
-                    <MenuItem value={1}>Kontrol/år</MenuItem>
-                    <MenuItem value={2}>Mdr. mellem kontrol</MenuItem>
-                  </Select>
+                    <MenuItem value={1}>kontrol/år</MenuItem>
+                    <MenuItem value={2}>mdr. mellem kontrol</MenuItem>
+                  </FormInput>
                 </InputAdornment>
               ),
             },
           }}
-          // helperText={
-          //   selectValue === 1 && controlsPerYear ? (
-          //     <Typography variant="caption">
-          //       Kontrolmåles hver {intervalFromFrequencyPerYear(controlsPerYear ?? 0)}
-          //     </Typography>
-          //   ) : null
-          // }
+          helperText={
+            controlsPerYear ? (
+              selectValue === 1 ? (
+                <Typography variant="caption">
+                  Kontrolmåles hver {intervalFromFrequencyPerYear(controlsPerYear ?? 0)}
+                </Typography>
+              ) : (
+                <Typography variant="caption">
+                  Kontrolmåles {Number((12 / controlsPerYear).toFixed(2))} gange om året
+                </Typography>
+              )
+            ) : null
+          }
         />
 
         <FormInput
@@ -152,14 +184,16 @@ const YearlyControlsConfig = () => {
         <Button
           bttype="primary"
           disabled={isSubmitting || !isDirty}
-          onClick={handleSubmit((data) => mutate(data))}
+          onClick={handleSubmit(onSubmit, (error) => console.log(error))}
           startIcon={<Save />}
         >
           Gem
         </Button>
         <Button
           bttype="tertiary"
-          onClick={() => reset()}
+          onClick={() => {
+            reset();
+          }}
           disabled={isSubmitting}
           sx={{marginLeft: 1}}
         >
