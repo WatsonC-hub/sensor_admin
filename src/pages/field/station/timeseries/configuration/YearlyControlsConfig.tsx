@@ -63,6 +63,7 @@ const YearlyControlsConfig = () => {
       lead_time: values?.leadTime ?? null,
       isCustomerService: values?.isCustomerService,
     },
+    mode: 'onChange',
   });
 
   const {
@@ -121,13 +122,13 @@ const YearlyControlsConfig = () => {
               ),
             },
           }}
-          helperText={
-            selectValue === 1 && controlsPerYear ? (
-              <Typography variant="caption">
-                Kontrolmåles hver {intervalFromFrequencyPerYear(controlsPerYear ?? 0)}
-              </Typography>
-            ) : null
-          }
+          // helperText={
+          //   selectValue === 1 && controlsPerYear ? (
+          //     <Typography variant="caption">
+          //       Kontrolmåles hver {intervalFromFrequencyPerYear(controlsPerYear ?? 0)}
+          //     </Typography>
+          //   ) : null
+          // }
         />
 
         <FormInput
