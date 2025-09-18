@@ -3,6 +3,9 @@ import {Box, IconButton, SxProps} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import CloseIcon from '@mui/icons-material/Close';
 import useWindowDimensions from '~/hooks/useWindowDimensions';
+import {useSetAtom} from 'jotai';
+import {usedHeightAtom, usedWidthAtom} from '~/state/atoms';
+import {appBarHeight} from '~/consts';
 
 type WindowManagerProps = {
   children: React.ReactElement<WindowProps>[];
@@ -10,8 +13,10 @@ type WindowManagerProps = {
 };
 
 const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
-  const {width} = useWindowDimensions();
+  const {width, height} = useWindowDimensions();
   const {isMobile} = useBreakpoints();
+  const setUsedWidth = useSetAtom(usedWidthAtom);
+  const setUsedHeight = useSetAtom(usedHeightAtom);
 
   const maxColumns = Math.max(Math.floor(width / minColumnWidth), 1);
 
@@ -31,6 +36,16 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
     }
     return a.props.priority - b.props.priority;
   });
+
+  setTimeout(() => {
+    if (arrayedChildren.length == 0) setUsedHeight(0);
+    else
+      setUsedHeight(
+        arrayedChildren[arrayedChildren.length - 1].props.height === '50%'
+          ? (height - parseInt(appBarHeight.split('px')[0])) / 2
+          : 0
+      );
+  }, 0);
 
   if (isMobile && arrayedChildren.length > 0) {
     return (
@@ -96,6 +111,8 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
         child.props.maxSize ? child.props.maxSize * columnWidth : child.props.minSize * columnWidth
       );
 
+      usedWidth += innerwidth;
+
       if (innerWidth == 0) {
         continue;
       }
@@ -114,6 +131,10 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
       usedWidth += innerwidth;
     }
   }
+
+  setTimeout(() => {
+    if (width - usedWidth > 600) setUsedWidth(usedWidth);
+  }, 0);
 
   return (
     // <WindowContext.Provider value={{columnWidth: minColumnWidth}}>

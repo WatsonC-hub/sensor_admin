@@ -21,18 +21,18 @@ type JupiterData = {
 
 interface PlotGraphProps {
   ourData: Array<BoreholeMeasurement>;
-  dynamicMeasurement: Array<string | number> | undefined;
+  dynamicMeasurement: {date: string; measurement: number} | null;
 }
 
 export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps) {
   const {boreholeno, intakeno} = useAppContext(['boreholeno', 'intakeno']);
 
   const {isMobile} = useBreakpoints();
-  const xOurData = ourData?.map((d) => d.timeofmeas);
+  const xOurData = ourData?.map((d) => d.timeofmeas.toISOString());
   const yOurData = ourData?.map((d) => (d.waterlevel ? d.waterlevel : null));
 
-  const [xDynamicMeasurement, setXDynamicMeasurement] = useState<Array<string | number>>([]);
-  const [yDynamicMeasurement, setYDynamicMeasurement] = useState<Array<string | number>>([]);
+  const [xDynamicMeasurement, setXDynamicMeasurement] = useState<Array<string>>([]);
+  const [yDynamicMeasurement, setYDynamicMeasurement] = useState<Array<number>>([]);
 
   const {data: jupiterData} = useQuery({
     queryKey: queryKeys.Borehole.jupiterData(boreholeno, intakeno),
@@ -46,9 +46,9 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
   });
 
   useEffect(() => {
-    if (dynamicMeasurement !== undefined) {
-      setXDynamicMeasurement([dynamicMeasurement[0]]);
-      setYDynamicMeasurement([dynamicMeasurement[1]]);
+    if (dynamicMeasurement !== null) {
+      setXDynamicMeasurement([dynamicMeasurement.date]);
+      setYDynamicMeasurement([dynamicMeasurement.measurement]);
     } else {
       setXDynamicMeasurement([]);
       setYDynamicMeasurement([]);
@@ -83,7 +83,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
   });
 
   const plotOurData: Partial<PlotData> = {
-    x: Array.prototype.map((item) => item.toISOString(), xOurData),
+    x: xOurData,
     y: yOurData,
     name: 'Calypso data',
     type: 'scattergl',

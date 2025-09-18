@@ -51,7 +51,6 @@ interface CaptureDialogProps {
 
 export default function CaptureDialog({handleClose, handleScan, open}: CaptureDialogProps) {
   const [hasPermission, setHasPermission] = useState(true);
-
   async function handleScanning(raw_data: IDetectedBarcode[]) {
     if (raw_data !== null && !running) {
       const url = raw_data[0].rawValue;
@@ -122,7 +121,9 @@ export default function CaptureDialog({handleClose, handleScan, open}: CaptureDi
             // onLoad={() => setShowText(false)}
             // constraints={{facingMode: 'environment', deviceId: 'environment'}}
             constraints={{
-              facingMode: 'video',
+              facingMode: {
+                ideal: 'environment',
+              },
             }}
           />
         )}

@@ -56,6 +56,7 @@ const queryClient = new QueryClient({
       queryClient.invalidateQueries({
         predicate: (query) => {
           if (matchQuery({queryKey: ['map']}, query)) return true;
+          if (matchQuery({queryKey: ['borehole_map']}, query)) return true;
           if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
           if (matchQuery({queryKey: ['tasks']}, query)) return true;
 
@@ -72,7 +73,6 @@ const queryClient = new QueryClient({
         const localError = error as APIError;
         const detail = localError.response?.data.detail;
         if (detail) {
-          console.log('detail', detail);
           if (typeof detail === 'string') {
             toast.error(detail);
             return;
