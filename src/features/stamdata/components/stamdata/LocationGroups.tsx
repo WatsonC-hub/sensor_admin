@@ -109,7 +109,12 @@ const LocationGroups = ({
             <Chip
               variant="outlined"
               label={
-                <Button bttype="link" href={getGroupLink(option.id)} target="_blank">
+                <Button
+                  bttype="link"
+                  href={getGroupLink(option.id)}
+                  disabled={option.id === ''}
+                  target="_blank"
+                >
                   {content}
                 </Button>
               }
