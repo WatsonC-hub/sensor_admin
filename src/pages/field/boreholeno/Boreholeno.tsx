@@ -326,8 +326,6 @@ const Boreholeno = () => {
 
   if (!intakeno) return '';
 
-  console.log('control', control);
-
   return (
     <>
       {pageToShow !== stationPages.BILLEDER && pageToShow !== stationPages.STAMDATA && (
