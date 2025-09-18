@@ -3,9 +3,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Box,
   Select,
   MenuItem,
+  Typography,
 } from '@mui/material';
 import React from 'react';
 import Button from '~/components/Button';
@@ -56,23 +56,29 @@ const AddToTripDialog = ({open, onClose, loc_id}: AddToTripDialogProps) => {
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Tilføj lokation til en tur</DialogTitle>
       <DialogContent>
-        <Box p={2} m={2}>
-          <Select
-            fullWidth
-            sx={{minWidth: 150}}
-            value={itineraryId}
-            onChange={(e) => setItineraryId(e.target.value)}
-            defaultValue=""
-            variant="outlined"
-          >
-            {itineraries?.map((itinerary) => (
-              <MenuItem key={itinerary.id} value={itinerary.id}>
-                {taskUsers?.find((user) => user.id === itinerary.assigned_to)?.display_name} -{' '}
+        <Select
+          fullWidth
+          value={itineraryId}
+          onChange={(e) => setItineraryId(e.target.value)}
+          defaultValue=""
+          variant="outlined"
+        >
+          {itineraries?.map((itinerary) => (
+            <MenuItem
+              key={itinerary.id}
+              value={itinerary.id}
+              sx={{display: 'flex', flexDirection: 'column'}}
+            >
+              <Typography variant="body1" ml={0} mr={'auto'}>
+                {itinerary.name}
+              </Typography>
+              <Typography variant="caption" ml={1} mr={'auto'}>
+                {taskUsers?.find((user) => user.id === itinerary.assigned_to)?.display_name}{' '}
                 {itinerary.due_date}
-              </MenuItem>
-            ))}
-          </Select>
-        </Box>
+              </Typography>
+            </MenuItem>
+          ))}
+        </Select>
       </DialogContent>
       <DialogActions>
         <Button bttype="tertiary" onClick={handleClose}>

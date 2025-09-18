@@ -1,8 +1,15 @@
 import {Call, Email} from '@mui/icons-material';
-import {MenuItem, Grid, InputAdornment, IconButton} from '@mui/material';
+import {
+  MenuItem,
+  Grid,
+  InputAdornment,
+  IconButton,
+  Checkbox,
+  FormControlLabel,
+} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
-import {useFormContext} from 'react-hook-form';
+import {Controller, useFormContext} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
 import FormInput from '~/components/FormInput';
@@ -29,7 +36,7 @@ export default function StationContactInfo({
   isUser,
   tableModal = false,
 }: ModalProps) {
-  const {setValue, getValues, watch} = useFormContext<InferContactInfo>();
+  const {setValue, getValues, watch, control} = useFormContext<InferContactInfo>();
   const regEx = new RegExp(/(?:(?:00|\+)?45)?\d{8}/);
   const {data: contactRoles} = useQuery({
     queryKey: queryKeys.contactRoles(),
@@ -44,7 +51,8 @@ export default function StationContactInfo({
   });
 
   const id = setIsEditing && watch('id');
-  const telefonnummer = watch('telefonnummer');
+  const mobile = watch('mobile');
+  const contact_role = watch('contact_role');
 
   useEffect(() => {
     if (setIsEditing) {
@@ -54,10 +62,10 @@ export default function StationContactInfo({
   }, [id]);
 
   return (
-    <Grid container spacing={1} my={1}>
+    <Grid container spacing={1} my={1} alignItems="center">
       <Grid item xs={12} sm={6}>
         <FormInput
-          name="navn"
+          name="name"
           label="Navn"
           placeholder="Navn på kontakten..."
           required
@@ -90,7 +98,7 @@ export default function StationContactInfo({
       </Grid>
       <Grid item xs={12} sm={6}>
         <FormInput
-          name="telefonnummer"
+          name="mobile"
           label="Tlf. nummer"
           placeholder="Telefonnummer..."
           type={'number'}
@@ -100,9 +108,9 @@ export default function StationContactInfo({
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
-                  disabled={!telefonnummer || !regEx.test(telefonnummer.toString())}
+                  disabled={!mobile || !regEx.test(mobile.toString())}
                   onClick={() => {
-                    window.location.href = `tel:${getValues('telefonnummer')}`;
+                    window.location.href = `tel:${getValues('mobile')}`;
                   }}
                 >
                   {tableModal && <Call />}
@@ -159,6 +167,27 @@ export default function StationContactInfo({
           <MenuItem value={ContactInfoType.Lokation}>Lokation</MenuItem>
           <MenuItem value={ContactInfoType.Projekt}>Projekt</MenuItem>
         </FormInput>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Controller
+          control={control}
+          name="notify_required"
+          rules={{required: false}}
+          render={({field: {onChange, value}}) => (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={value}
+                  disabled={tableModal || contact_role === 1}
+                  onChange={(checked) => onChange(checked)}
+                  name="notify_required"
+                  color="primary"
+                />
+              }
+              label="Kontaktes inden besøg"
+            />
+          )}
+        />
       </Grid>
       <Grid item xs={12} sm={12}>
         <FormInput

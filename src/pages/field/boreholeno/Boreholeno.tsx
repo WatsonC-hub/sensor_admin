@@ -103,7 +103,7 @@ const Boreholeno = () => {
   });
 
   const [control, setcontrol] = useState<Array<BoreholeMeasurement> | undefined>();
-  const [dynamic, setDynamic] = useState<Array<string | number>>([]);
+  const [dynamic, setDynamic] = useState<{date: string; measurement: number} | null>(null);
 
   const {data: measurements} = useQuery<
     Array<BoreholeMeasurementAPI>,
@@ -150,7 +150,7 @@ const Boreholeno = () => {
 
       const dynamicDate = pejlingData.timeofmeas.format('YYYY-MM-DD HH:mm:ss');
       const dynamicMeas: number = elev - pejlingData.disttowatertable_m;
-      setDynamic([dynamicDate, dynamicMeas]);
+      setDynamic({date: dynamicDate, measurement: dynamicMeas});
     }
   }, [pejlingData, watlevmp]);
 
@@ -326,6 +326,8 @@ const Boreholeno = () => {
 
   if (!intakeno) return '';
 
+  console.log('control', control);
+
   return (
     <>
       {pageToShow !== stationPages.BILLEDER && pageToShow !== stationPages.STAMDATA && (
@@ -337,7 +339,7 @@ const Boreholeno = () => {
         >
           <PlotGraph
             ourData={control ?? []}
-            dynamicMeasurement={pageToShow === 'pejling' && showForm ? dynamic : undefined}
+            dynamicMeasurement={pageToShow === 'pejling' && showForm ? dynamic : null}
           />
           <Divider />
         </Box>

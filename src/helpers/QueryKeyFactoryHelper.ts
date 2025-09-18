@@ -11,7 +11,7 @@ export const queryKeys = {
     metadata: (loc_id: number | undefined) => ['location_metadata', 'metadata', loc_id] as const,
     timeseries_status: (loc_id: number | undefined) =>
       ['timeseries_status', 'metadata', 'register', 'tasks', loc_id] as const,
-    contacts: (loc_id: number) => ['contact_info', loc_id] as const,
+    contacts: (loc_id: number) => ['contact_info', 'metadata', loc_id] as const,
     searchContacts: (search: string) => ['search_contact_info', search] as const,
     keys: (loc_id: number) => ['location_access', loc_id] as const,
     searchKeys: (search: string) => ['search_location_access', search] as const,
@@ -50,7 +50,7 @@ export const queryKeys = {
   Borehole: {
     stamdata: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
       ['borehole_stamdata', 'register', boreholeno, intakeno] as const,
-    boreholeSearch: (boreholeno: string | undefined | null) =>
+    findBorehole: (boreholeno: string | undefined | null) =>
       ['search_borehole', 'register', boreholeno] as const,
     intakeList: (boreholeno: string | undefined | null) =>
       ['intake_list', 'register', boreholeno] as const,
@@ -112,7 +112,7 @@ export const queryKeys = {
   dtm: () => ['dtm', 'metadata'] as const,
   locationTypes: () => ['location_types'] as const,
   timeseriesTypes: () => ['timeseries_types'] as const,
-  boreholeMap: () => ['borehole_map', 'metadata'] as const,
+  boreholeMap: () => ['borehole_map', 'register', 'metadata'] as const,
   user: () => ['user'] as const,
   overblik: () => ['overblik'] as const,
   overblikByLocId: (loc_id: number | undefined) => ['tasks', 'overblik', loc_id] as const,

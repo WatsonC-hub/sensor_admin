@@ -23,6 +23,7 @@ const BoreholeLocationEditForm = ({size, loc_id}: Props) => {
       <Grid2 size={size}>
         <StamdataLocation.Boreholeno
           disabled={disabled}
+          editing={true}
           // fieldDescriptionText="Borehole number"
         />
       </Grid2>

@@ -104,7 +104,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
             backgroundColor: isCreated ? 'primary.main' : color,
             color: 'white',
             py: 0.25,
-            px: 2,
+            px: 1,
             minHeight: 32,
           }}
           title={
@@ -149,7 +149,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
               </Box>
               {task.due_date && (
                 <Box display="flex" flexDirection={'row'} gap={1} alignItems={'center'}>
-                  <PendingActionsIcon fontSize="small" />
+                  <PendingActionsIcon />
                   <Typography variant="caption" noWrap>
                     {convertDate(task.due_date)}
                   </Typography>

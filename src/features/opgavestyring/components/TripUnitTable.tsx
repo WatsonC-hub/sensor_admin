@@ -1,122 +1,65 @@
-import {Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
+
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo} from 'react';
 
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {TaskUnits} from '~/types';
+import {sharedTableOptions} from '../shared_options';
 
 type Props = {
   units: Array<TaskUnits> | undefined;
 };
 
-type ReducedUnits = {
-  terminal_type: string;
-  sensorinfo: string;
-};
-
 const TripUnitTable = ({units}: Props) => {
-  const reducedUnits: Record<string, ReducedUnits> | undefined = units?.reduce(
-    (acc: Record<string, ReducedUnits>, unit) => {
-      if (!acc[unit.terminal_type]) {
-        acc[unit.terminal_type] = {
-          terminal_type:
-            units?.filter((u) => u.terminal_type === unit.terminal_type).length +
-            'x ' +
-            unit.terminal_type,
-          sensorinfo: unit.sensorinfo,
-        };
-      }
-      return acc;
-    },
-    {}
-  );
-
-  units?.sort((a, b) => {
-    if (a.name === b.name) {
-      if (a.startdate > b.startdate) return -1;
-      if (a.startdate < b.startdate) return 1;
-    } else if (a.name < b.name) return -1;
-    else if (a.name > b.name) return 1;
-    return 0;
-  });
-
-  const columns = useMemo<MRT_ColumnDef<ReducedUnits>[]>(
+  const columns = useMemo<MRT_ColumnDef<TaskUnits>[]>(
     () => [
-      // {
-      //   header: 'Navn',
-      //   accessorKey: 'name',
-      //   size: 100,
-      // },
-      // {
-      //   header: 'Tidsserie type',
-      //   accessorKey: 'tstype_name',
-      //   size: 100,
-      // },
       {
         header: 'Terminal',
-        accessorKey: 'terminal_type',
-        size: 100,
+        accessorKey: 'terminal_name',
+        size: 20,
+        Cell: ({cell, row}) => (
+          <Typography fontSize="0.85rem" display="block">
+            {row.original.count + 'x ' + cell.getValue<string>()}
+          </Typography>
+        ),
       },
       {
         header: 'Sensor',
-        accessorKey: 'sensorinfo',
-        size: 100,
+        accessorKey: 'sensor_names',
+        Cell: ({cell}) => (
+          <div>
+            {(cell.getValue<string[]>() || []).map((sensor_name, index) => (
+              <div key={index}>
+                <Typography fontSize="0.85rem" display="block">
+                  {sensor_name}
+                </Typography>
+              </div>
+            ))}
+          </div>
+        ),
+        size: 220,
       },
-      // {
-      //   accessorFn: (row) => convertDateWithTimeStamp(row.),
-      //   id: 'startdate',
-      //   header: 'Start dato',
-      //   accessorKey: 'startdate',
-      //   size: 100,
-      // },
-      // {
-      //   accessorFn: (row) => convertDateWithTimeStamp(row.enddate),
-      //   id: 'enddate',
-      //   header: 'Slut dato',
-      //   size: 100,
-      // },
     ],
     []
   );
 
-  const options: Partial<MRT_TableOptions<ReducedUnits>> = useMemo(
+  const options: Partial<MRT_TableOptions<TaskUnits>> = useMemo(
     () => ({
-      enableFullScreenToggle: false,
-      enableGlobalFilter: false,
-      enableColumnActions: false,
-      enableColumnFilters: false,
-      enablePagination: false,
-      enableSorting: false,
-      enableTableFooter: false,
-      enableStickyHeader: false,
-      enableMultiSort: false,
-      enableFilters: false,
-      enableGlobalFilterRankedResults: false,
-      muiTableContainerProps: {},
-      enableGrouping: false,
-      enableTopToolbar: false,
-      enableBottomToolbar: false,
-      muiTableHeadCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-        },
-      },
-      muiTableBodyCellProps: {
-        sx: {
-          m: 0,
-          p: 1,
-          whiteSpace: 'pre-line',
-        },
-      },
+      ...(sharedTableOptions as Partial<MRT_TableOptions<TaskUnits>>),
+      renderTopToolbar: (
+        <Typography variant="body1" pt={1} px={1}>
+          Udstyr
+        </Typography>
+      ),
     }),
     []
   );
 
-  const table = useTable<ReducedUnits>(
+  const table = useTable<TaskUnits>(
     columns,
-    reducedUnits ? Object.values(reducedUnits) : undefined,
+    units,
     options,
     undefined,
     TableTypes.TABLE,

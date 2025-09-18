@@ -281,7 +281,7 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
           <FormControl component="fieldset">
             <TooltipWrapper
               description="Anvendelsen af en pejling er et vigtigt aspekt af at få en korrekt kotesat vandstand. Læs mere på linket hvis du er i tvivl om hvad anvendelserne gør."
-              url="https://www.watsonc.dk/guides/kontrolpejling/#%F0%9F%9B%A0%EF%B8%8F-anvendelsestyper"
+              url="https://www.watsonc.dk/guides/kontrolpejling/#anvendelsestyper"
             >
               <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>{' '}
             </TooltipWrapper>
