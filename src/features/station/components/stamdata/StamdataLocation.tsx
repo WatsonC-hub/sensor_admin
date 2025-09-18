@@ -21,8 +21,6 @@ import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {useAppContext} from '~/state/contexts';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {queryClient} from '~/queryClient';
-import {useLocationData} from '~/hooks/query/useMetadata';
-import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
 import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 
 type Props = {
@@ -493,6 +491,8 @@ const InitialProjectNo = (
     select: (data) => data.find((loc) => loc.loc_id === loc_id),
   }); // Preload location data for better performance when opening projects dialog
 
+  const disable = data?.no_unit == false && data?.inactive == false;
+
   return (
     <Controller
       name="initial_project_no"
@@ -504,7 +504,7 @@ const InitialProjectNo = (
           setValue={onChange}
           onBlur={onBlur}
           error={error}
-          disable={user?.superUser === false || props.disabled || data?.no_unit === false}
+          disable={user?.superUser === false || props.disabled || disable}
         />
       )}
     />
