@@ -153,7 +153,6 @@ const X = (
       type="number"
       required
       placeholder="Indtast X-koordinat"
-      infoText="X-koordinaten er i UTM32 koordinatsystemet. For Danmark er det mellem 400000 og 900000."
       warning={(value) => {
         if (value < 400000 || value > 900000) {
           return 'X-koordinat er uden for Danmark';
