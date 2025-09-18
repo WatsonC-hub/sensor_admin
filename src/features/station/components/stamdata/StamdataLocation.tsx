@@ -19,9 +19,11 @@ import {Borehole} from '../../api/useBorehole';
 import {utm} from '~/features/map/mapConsts';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {useAppContext} from '~/state/contexts';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {queryClient} from '~/queryClient';
+import {useLocationData} from '~/hooks/query/useMetadata';
+import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 
 type Props = {
   children: React.ReactNode;
@@ -486,8 +488,10 @@ const InitialProjectNo = (
   const {control} = useFormContext<
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
-  const {data: metadata} = useTimeseriesData();
-  const unitPresent = metadata?.calculated === true;
+  const {loc_id} = useAppContext(undefined, ['loc_id']);
+  const {data} = useMapOverview({
+    select: (data) => data.find((loc) => loc.loc_id === loc_id),
+  }); // Preload location data for better performance when opening projects dialog
 
   return (
     <Controller
@@ -500,7 +504,7 @@ const InitialProjectNo = (
           setValue={onChange}
           onBlur={onBlur}
           error={error}
-          disable={user?.superUser === false || props.disabled || unitPresent}
+          disable={user?.superUser === false || props.disabled || data?.no_unit === false}
         />
       )}
     />
