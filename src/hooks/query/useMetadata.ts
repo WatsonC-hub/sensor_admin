@@ -32,6 +32,7 @@ type Metadata = {
   unit: string;
   prefix: string | null;
   unit_uuid: string | null;
+  slutdato: string | null;
 };
 
 type LocationMetadata = {

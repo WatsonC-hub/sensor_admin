@@ -16,10 +16,7 @@ import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
 
 const yearlyControlsSchema = z.object({
-  controls_per_year: z
-    .number({required_error: 'Kontrol interval er påkrævet'})
-    .refine((val) => (val ? Number(val.toFixed(2)) : null))
-    .nullable(),
+  controls_per_year: z.number({required_error: 'Kontrol interval er påkrævet'}).nullable(),
   lead_time: z.number({required_error: 'Forvarselstid er påkrævet'}).nullable(),
   selectValue: z.number().default(1),
 });
@@ -60,8 +57,8 @@ const YearlyControlsConfig = () => {
       lead_time: values?.leadTime,
     },
     values: {
-      controls_per_year: values?.controlsPerYear ?? null,
-      lead_time: values?.leadTime ?? null,
+      controls_per_year: values?.controlsPerYear === undefined ? null : values.controlsPerYear,
+      lead_time: values?.leadTime === undefined ? null : values.leadTime,
       isCustomerService: values?.isCustomerService,
       selectValue: 1,
     },

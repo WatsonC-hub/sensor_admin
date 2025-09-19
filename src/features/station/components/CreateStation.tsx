@@ -252,6 +252,7 @@ const CreateStation = () => {
         timeseries: timeseriesData,
       };
     }
+    console.log(form);
     stamdataNewTimeseriesMutation.mutate(form);
   };
 
@@ -506,7 +507,7 @@ const CreateStation = () => {
                   }
                   setAlertTitle('Opret tidsserie');
                   setAlertMessage(
-                    'Du er i gang med at oprette en lokation og tidsserie uden udstyr. Er du sikker på at du vil fortsætte?'
+                    `Du er i gang med at oprette en ${loc_id ? '' : 'lokation og'} tidsserie uden udstyr. Er du sikker på at du vil fortsætte?`
                   );
                   setShowAlert(true);
                 } else if (activeStep === 2 && isUnitDirty) {
