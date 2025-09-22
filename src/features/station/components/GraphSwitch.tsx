@@ -65,7 +65,7 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
       }}
     >
       <Box px={0.5}>
-        <TooltipWrapper description='"test' />
+        <TooltipWrapper description="Valg herunder hvilke elementer der skal vises i grafen" />
       </Box>
 
       {items.map((item) => (
