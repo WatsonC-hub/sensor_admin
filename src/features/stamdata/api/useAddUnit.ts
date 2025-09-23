@@ -21,6 +21,7 @@ export interface Unit {
   channel: string;
   sensortypeid: number;
   sensortypename: string;
+  signal_id: number;
 }
 
 interface TypeUnitPost {

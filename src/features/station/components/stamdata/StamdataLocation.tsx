@@ -19,9 +19,9 @@ import {Borehole} from '../../api/useBorehole';
 import {utm} from '~/features/map/mapConsts';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {useAppContext} from '~/state/contexts';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {queryClient} from '~/queryClient';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 
 type Props = {
   children: React.ReactNode;
@@ -153,7 +153,6 @@ const X = (
       type="number"
       required
       placeholder="Indtast X-koordinat"
-      infoText="X-koordinaten er i UTM32 koordinatsystemet. For Danmark er det mellem 400000 og 900000."
       warning={(value) => {
         if (value < 400000 || value > 900000) {
           return 'X-koordinat er uden for Danmark';
@@ -487,8 +486,12 @@ const InitialProjectNo = (
   const {control} = useFormContext<
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
-  const {data: metadata} = useTimeseriesData();
-  const unitPresent = metadata?.calculated === true;
+  const {loc_id} = useAppContext(undefined, ['loc_id']);
+  const {data} = useMapOverview({
+    select: (data) => data.find((loc) => loc.loc_id === loc_id),
+  }); // Preload location data for better performance when opening projects dialog
+
+  const disable = data?.no_unit == false && data?.inactive == false;
 
   return (
     <Controller
@@ -501,7 +504,7 @@ const InitialProjectNo = (
           setValue={onChange}
           onBlur={onBlur}
           error={error}
-          disable={user?.superUser === false || props.disabled || unitPresent}
+          disable={user?.superUser === false || props.disabled || disable}
         />
       )}
     />

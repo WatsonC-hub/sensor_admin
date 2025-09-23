@@ -175,3 +175,5 @@ export const boreholeIsPumpAtom = atom<boolean>(false);
 export const tempHorizontalAtom = atom<
   Array<Omit<HorizontalLine, 'unit' | 'parameter' | 'tstype_id'>> | undefined
 >([]);
+export const usedWidthAtom = atom<number>(0);
+export const usedHeightAtom = atom<number>(0);
