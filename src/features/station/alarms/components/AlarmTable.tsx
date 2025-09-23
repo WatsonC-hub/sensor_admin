@@ -40,7 +40,6 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
       {
         header: 'Navn',
         accessorKey: 'name',
-        size: 20,
       },
       {
         header: 'Gruppe',
