@@ -18,9 +18,6 @@ const BoreholeTimeseriesForm = ({size}: Props) => {
       <Grid2 size={size}>
         <StamdataTimeseries.SensorDepth />
       </Grid2>
-      <Grid2 size={size} alignContent="center">
-        <StamdataTimeseries.requiredService />
-      </Grid2>
     </>
   );
 };

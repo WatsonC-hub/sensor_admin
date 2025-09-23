@@ -15,7 +15,7 @@ import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
 
 const requiredServiceSchema = z.object({
-  required_service: z.boolean().default(false),
+  required_service: z.boolean().optional().default(false),
 });
 
 type RequiredServiceForm = {
@@ -32,16 +32,19 @@ const RequiredServiceConfig = () => {
   const formMethods = useForm<RequiredServiceForm>({
     resolver: zodResolver(requiredServiceSchema),
     defaultValues: {
-      required_service: values?.required_service ?? false,
+      required_service: values?.required_service,
     },
     mode: 'onTouched',
-    values: {required_service: values?.required_service ?? false},
+    values: {
+      required_service: values?.required_service ?? false,
+    },
   });
 
   const {
     handleSubmit,
     control,
     reset,
+    watch,
     formState: {isSubmitting, isDirty},
   } = formMethods;
 
@@ -76,14 +79,6 @@ const RequiredServiceConfig = () => {
       </Box>
       <Box display="flex" justifyContent="flex-end">
         <Button
-          bttype="primary"
-          disabled={isSubmitting || !isDirty}
-          onClick={handleSubmit(onSubmit, (error) => console.log(error))}
-          startIcon={<Save />}
-        >
-          Gem
-        </Button>
-        <Button
           bttype="tertiary"
           onClick={() => {
             reset();
@@ -92,6 +87,14 @@ const RequiredServiceConfig = () => {
           sx={{marginLeft: 1}}
         >
           Annuller
+        </Button>
+        <Button
+          bttype="primary"
+          disabled={isSubmitting || !isDirty}
+          onClick={handleSubmit(onSubmit, (error) => console.log(error))}
+          startIcon={<Save />}
+        >
+          Gem
         </Button>
       </Box>
     </FormProvider>

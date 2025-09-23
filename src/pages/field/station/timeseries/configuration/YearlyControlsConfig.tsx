@@ -179,14 +179,6 @@ const YearlyControlsConfig = () => {
 
       <Box display="flex" justifyContent="flex-end">
         <Button
-          bttype="primary"
-          disabled={isSubmitting || !isDirty}
-          onClick={handleSubmit(onSubmit, (error) => console.log(error))}
-          startIcon={<Save />}
-        >
-          Gem
-        </Button>
-        <Button
           bttype="tertiary"
           onClick={() => {
             reset();
@@ -195,6 +187,14 @@ const YearlyControlsConfig = () => {
           sx={{marginLeft: 1}}
         >
           Annuller
+        </Button>
+        <Button
+          bttype="primary"
+          disabled={isSubmitting || !isDirty}
+          onClick={handleSubmit(onSubmit, (error) => console.log(error))}
+          startIcon={<Save />}
+        >
+          Gem
         </Button>
       </Box>
     </FormProvider>

@@ -231,20 +231,20 @@ const UnitMeasurementConfig = () => {
 
       <Box display="flex" justifyContent="flex-end">
         <Button
-          bttype="primary"
-          disabled={isSubmitting || !data?.configPossible || !isDirty}
-          onClick={handleSubmit((data) => mutate(data))}
-          startIcon={<Save />}
-        >
-          Gem
-        </Button>
-        <Button
           bttype="tertiary"
           onClick={() => reset()}
           disabled={isSubmitting || !data?.configPossible}
           sx={{marginLeft: 1}}
         >
           Annuller
+        </Button>
+        <Button
+          bttype="primary"
+          disabled={isSubmitting || !data?.configPossible || !isDirty}
+          onClick={handleSubmit((data) => mutate(data))}
+          startIcon={<Save />}
+        >
+          Gem
         </Button>
       </Box>
     </FormProvider>

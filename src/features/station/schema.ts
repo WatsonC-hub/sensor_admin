@@ -52,7 +52,6 @@ const baseAddTimeseriesSchema = baseTimeseriesSchema.extend({
   tstype_id: z.number({required_error: 'Vælg tidsserietype'}).gte(1, {
     message: 'Vælg tidsserietype',
   }),
-  required_service: z.boolean().default(false),
 });
 
 const defaultEditTimeseriesSchema = baseTimeseriesSchema.extend({prefix: z.string().nullish()});

@@ -156,13 +156,17 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
               />
             </TooltipWrapper>
 
-            {user?.superUser && (
+            <TooltipWrapper
+              description="Vis lokationer som er enkeltmålestationer"
+              withIcon={false}
+            >
               <FormToggleSwitch
                 name="sensor.isSingleMeasurement"
                 label="Enkeltmålestationer"
                 onChangeCallback={handleSubmit(submit)}
               />
-            )}
+            </TooltipWrapper>
+
             <TooltipWrapper
               withIcon={false}
               description="Viser kun lokaliteter hvor der er notifikationer eller opgaver"

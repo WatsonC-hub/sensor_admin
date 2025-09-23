@@ -34,6 +34,7 @@ import AlertDialog from '~/components/AlertDialog';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import dayjs from 'dayjs';
+import {useRequiredServiceInsertMutation} from '../api/useRequiredService';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
@@ -43,6 +44,7 @@ const CreateStation = () => {
   const size = isMobile ? 12 : 6;
   const navigate = useNavigate();
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
+  const {mutate} = useRequiredServiceInsertMutation();
   let {state} = useLocation();
   const [activeStep, setActiveStep] = useState(
     state === undefined || state === null ? 0 : state.loc_id ? 1 : 0
@@ -172,11 +174,7 @@ const CreateStation = () => {
       );
       return out;
     },
-    onSuccess: (data) => {
-      toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
-      navigate('/');
-      stationNavigate(data.ts_id);
-    },
+
     meta: {
       invalidates: [['metadata']],
     },
@@ -219,7 +217,7 @@ const CreateStation = () => {
     }
   };
 
-  const handleTimeseriesSubmit = async () => {
+  const handleTimeseriesSubmit = async (required_service?: boolean) => {
     const isLocationValid = await triggerLocation();
     const isTimeseriesValid = await triggerTimeseries();
     if (!isTimeseriesValid || !isLocationValid) {
@@ -252,8 +250,18 @@ const CreateStation = () => {
         timeseries: timeseriesData,
       };
     }
-    console.log(form);
-    stamdataNewTimeseriesMutation.mutate(form);
+    stamdataNewTimeseriesMutation.mutate(form, {
+      onSuccess: (data) => {
+        toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
+        console.log(data);
+        if (required_service) {
+          mutate({ts_id: data.ts_id, required_service});
+        }
+
+        navigate('/');
+        stationNavigate(data.ts_id);
+      },
+    });
   };
 
   const handleStamdataSubmit = async () => {
@@ -491,6 +499,7 @@ const CreateStation = () => {
                   if (!location_valid) {
                     return;
                   }
+
                   setAlertTitle('Opret lokation');
                   setAlertMessage(
                     'Du er i gang med at oprette en lokation uden tidsserie og udstyr. Er du sikker på at du vil fortsætte?'
@@ -507,14 +516,18 @@ const CreateStation = () => {
                   }
                   setAlertTitle('Opret tidsserie');
                   setAlertMessage(
-                    `Du er i gang med at oprette en ${loc_id ? '' : 'lokation og'} tidsserie uden udstyr. Er du sikker på at du vil fortsætte?`
+                    `Du er i gang med at oprette en ${loc_id ? '' : 'lokation og'} tidsserie uden udstyr. Vil du gerne drifte og kontrollere tidsserien?`
                   );
                   setShowAlert(true);
                 } else if (activeStep === 2 && isUnitDirty) {
                   handleStamdataSubmit();
                 }
               }}
-              disabled={loctype_id === -1 || (state?.loc_id && activeStep === 0)}
+              disabled={
+                loctype_id === -1 ||
+                (state?.loc_id && activeStep === 0) ||
+                (activeStep === 2 && !isUnitDirty)
+              }
             >
               Gem & afslut
             </Button>
@@ -526,11 +539,12 @@ const CreateStation = () => {
         setOpen={setShowAlert}
         title={alertTitle}
         message={alertMessage}
-        handleOpret={() => {
+        step={activeStep}
+        handleOpret={(required_service) => {
           if (activeStep === 0) {
             handleLocationSubmit();
           } else if (activeStep === 1 || (activeStep === 2 && !isUnitDirty)) {
-            handleTimeseriesSubmit();
+            handleTimeseriesSubmit(required_service);
           }
         }}
       />

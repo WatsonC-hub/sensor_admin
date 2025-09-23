@@ -1,4 +1,4 @@
-import {MenuItem, InputAdornment, TextField, FormControlLabel, Checkbox} from '@mui/material';
+import {MenuItem, InputAdornment, TextField} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from '~/apiClient';
@@ -12,7 +12,6 @@ import {
 import FormTextField from '~/components/FormTextField';
 import {useAppContext} from '~/state/contexts';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {Controller, useFormContext} from 'react-hook-form';
 
 type Props = {
   children: React.ReactNode;
@@ -208,26 +207,11 @@ const TimeseriesID = () => {
   );
 };
 
-const requiredService = () => {
-  const {control} = useFormContext();
-
-  return (
-    <Controller
-      name="required_service"
-      control={control}
-      render={({field}) => (
-        <FormControlLabel control={<Checkbox {...field} />} label="Skal driftes" />
-      )}
-    />
-  );
-};
-
 StamdataTimeseries.TypeSelect = TypeSelect;
 StamdataTimeseries.TimeriesTypeField = TimeseriesTypeField;
 StamdataTimeseries.Prefix = Prefix;
 StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;
 StamdataTimeseries.TimeseriesID = TimeseriesID;
-StamdataTimeseries.requiredService = requiredService;
 
 export default StamdataTimeseries;

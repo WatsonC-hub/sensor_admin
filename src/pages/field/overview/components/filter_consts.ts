@@ -31,7 +31,7 @@ const defaultMapFilter = (superUser: boolean = false): Required<Filter> => ({
     showInactive: false,
     showCustomerService: !superUser,
     showWatsonCService: superUser,
-    isSingleMeasurement: false,
+    isSingleMeasurement: !superUser,
     hideLocationsWithoutNotifications: false,
     nyOpsætning: false,
   },
