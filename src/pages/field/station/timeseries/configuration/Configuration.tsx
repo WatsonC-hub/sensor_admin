@@ -4,6 +4,7 @@ import React, {useState} from 'react';
 import UnitMeasurementConfig from './UnitMeasurementConfig';
 import YearlyControlsConfig from './YearlyControlsConfig';
 import Synchronization from './Synchronization';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 const Configuration = () => {
   const [canSync, setCanSync] = useState(true);
@@ -16,9 +17,14 @@ const Configuration = () => {
         <UnitMeasurementConfig />
       </Layout>
       <Layout>
-        <Typography variant="h6" gutterBottom>
-          Kontrol interval
-        </Typography>
+        <Box width="fit-content" alignItems="center">
+          <TooltipWrapper
+            color="info"
+            description="Kontrolhyppighed definerer hvor ofte der skal foretages kontrolmålinger. Forvarslingstiden angiver hvor lang tid i forvejen, der skal vises en opgave om at en kontrolmåling skal udføres."
+          >
+            <Typography variant="h6">Kontrolforhold</Typography>
+          </TooltipWrapper>
+        </Box>
         <YearlyControlsConfig />
       </Layout>
       {canSync && (

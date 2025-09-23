@@ -102,6 +102,9 @@ const FormInput = <TFieldValues extends FieldValues>({
                 if (onKeyDown) onKeyDown(e);
               }}
               slotProps={{
+                select: {
+                  ...slotProps?.select,
+                },
                 htmlInput: {
                   ...slotProps?.htmlInput,
                   sx: {

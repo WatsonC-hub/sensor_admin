@@ -13,8 +13,8 @@ export type ServiceConfiguration = {
 };
 
 export type ServiceConfigurationUpdate = {
-  controls_per_year?: number | undefined;
-  lead_time?: number | undefined;
+  controls_per_year?: number | null;
+  lead_time?: number | null;
 };
 
 export const timeseriesServiceIntervalOptions = (ts_id: number) =>
