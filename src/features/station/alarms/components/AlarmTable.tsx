@@ -60,7 +60,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
         },
       },
     ],
-    []
+    [location_data]
   );
 
   const options: Partial<MRT_TableOptions<alarmTable>> = {
