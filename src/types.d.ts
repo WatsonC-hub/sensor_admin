@@ -208,8 +208,9 @@ export type ContactInfo = {
   contact_role: number;
   user_id?: string | null;
   loc_id?: number;
-  org?: str;
+  org?: string;
   contact_type: string;
+  notify_required?: boolean;
 };
 
 export type ContactTable = {
