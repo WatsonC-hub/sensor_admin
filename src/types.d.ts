@@ -201,8 +201,8 @@ export type SimpleItinerary = {
 
 export type ContactInfo = {
   id?: string | null;
-  navn: string;
-  telefonnummer?: string | null;
+  name: string;
+  mobile?: string | null;
   email: string | null;
   comment?: string;
   contact_role: number;
