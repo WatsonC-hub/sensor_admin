@@ -161,7 +161,9 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
                   isEditing={isEditing}
                   setIsEditing={setIsEditing}
                   isUser={
-                    selectedContactInfo && selectedContactInfo.org && selectedContactInfo.org !== ''
+                    selectedContactInfo !== null &&
+                    selectedContactInfo.org !== null &&
+                    selectedContactInfo.org !== ''
                   }
                 />
               </Collapse>
