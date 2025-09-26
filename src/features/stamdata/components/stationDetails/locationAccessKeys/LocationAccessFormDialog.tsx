@@ -76,7 +76,7 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                     <>
                       <ExtendedAutocomplete<ContactInfo>
                         options={data ?? []}
-                        labelKey="navn"
+                        labelKey="name"
                         onChange={(option) => {
                           if (option == null) {
                             onChange(null);
@@ -97,7 +97,7 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                           return (
                             <li {...props} key={option.id + ' - ' + option.loc_id}>
                               <Box display={'flex'} flexDirection={'column'}>
-                                <Typography>{option.navn}</Typography>
+                                <Typography>{option.name}</Typography>
                                 <Typography fontStyle={'italic'} variant="body2">
                                   {option.email}
                                 </Typography>
