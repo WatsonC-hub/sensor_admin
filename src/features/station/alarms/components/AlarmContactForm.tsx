@@ -57,7 +57,7 @@ const AlarmContactForm = ({
                 pb={2}
               >
                 <Typography ml={2}>
-                  {contact_data.find((c) => c.id === field?.contact_id)?.navn ?? 'Ukendt navn'}
+                  {contact_data.find((c) => c.id === field?.contact_id)?.name ?? 'Ukendt navn'}
                 </Typography>
                 <Box display="flex" flexDirection="row" alignItems={'center'} gap={1} mr={1}>
                   <Edit

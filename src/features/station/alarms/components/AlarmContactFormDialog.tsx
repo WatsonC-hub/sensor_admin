@@ -36,7 +36,7 @@ type Props = {
 const transformData = (data: ContactInfo[]) => {
   const alarmContacts = data.map((item) => ({
     contact_id: item.id ?? undefined,
-    name: item.navn,
+    name: item.name,
   }));
 
   return alarmContacts;
@@ -53,7 +53,7 @@ const AlarmContactFormDialog = ({
 }: Props) => {
   const {loc_id} = useAppContext(['loc_id']);
   const [search, setSearch] = useState<string>('');
-  const {data} = useSearchContact(loc_id, '', transformData);
+  const {data} = useSearchContact(loc_id, search, transformData);
   const {isMobile} = useBreakpoints();
   const AlarmContactFormMethods = useForm<AlarmContactFormType>({
     resolver: zodResolver(alarmContactSchema),
@@ -113,7 +113,7 @@ const AlarmContactFormDialog = ({
       }}
       fullWidth
     >
-      <AlarmContactTypedForm formMethods={AlarmContactFormMethods}>
+      <AlarmContactTypedForm useGrid={false} formMethods={AlarmContactFormMethods}>
         <DialogTitle>{mode === 'add' ? 'Tilføj kontakt' : 'Rediger kontakt'}</DialogTitle>
         <DialogContent sx={{width: '100%'}}>
           <Grid2
@@ -126,26 +126,12 @@ const AlarmContactFormDialog = ({
           >
             <AlarmContactTypedForm.Autocomplete<AlarmContactTypeDialog, false>
               options={data ?? []}
-              labelKey="name"
+              labelKey="contact_id"
               name={'contact_id'}
               label={`Kontakt`}
               gridSizes={{xs: 12, sm: 12}}
-              inputValue={search}
-              isOptionEqualToValue={(o) => o.contact_id === currentValues.contact_id}
               getOptionLabel={(o) => {
-                if (!o) return '';
-
-                if (typeof o === 'string') {
-                  return data?.find((item) => item.contact_id === o)?.name ?? '';
-                }
-
-                return o ? (o.name ?? '') : '';
-              }}
-              onChangeCallback={(value) => {
-                if (value && value.contact_id) {
-                  setValue(`contact_id`, value.contact_id, {shouldDirty: true});
-                  trigger(`contact_id`);
-                }
+                return o.name;
               }}
               textFieldsProps={{
                 label: 'Kontakt',

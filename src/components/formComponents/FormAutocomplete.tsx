@@ -18,6 +18,8 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
   gridSizes,
   onChangeCallback,
   // onSelectChange,
+  options,
+  labelKey,
   ...props
 }: FormAutocompleteProps<T, K, M>) => {
   const {
@@ -25,20 +27,40 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
     formState: {errors},
   } = useFormContext<T>();
   const {gridSizes: contextGridSizes} = React.useContext(FormContext);
+
   return (
     <Grid2 size={gridSizes ?? contextGridSizes}>
       <Controller
         name={name}
         control={control}
         render={({field: {value, onChange}}) => {
+          let selectValue = (props.multiple ? ([] as K[]) : null) as M extends true
+            ? K[]
+            : K | null;
+          if (Array.isArray(value)) {
+            selectValue = options.filter((o) => value.includes(o[labelKey])) as M extends true
+              ? K[]
+              : K | null;
+          } else {
+            selectValue = options.find((o) => o[labelKey] === value) as M extends true
+              ? K[]
+              : K | null;
+          }
+
           return (
             <ExtendedAutocomplete<K, M>
-              selectValue={value}
+              selectValue={selectValue}
               error={errors[name]?.message as string | undefined}
               onChange={(value) => {
-                onChange(value);
+                if (Array.isArray(value)) {
+                  onChange((value as K[]).map((v) => v[labelKey]));
+                } else {
+                  onChange(value ? (value as K)[labelKey] : null);
+                }
                 if (onChangeCallback) onChangeCallback(value as M extends true ? K[] : K);
               }}
+              options={options}
+              labelKey={labelKey}
               {...props}
             />
           );

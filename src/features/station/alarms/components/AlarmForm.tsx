@@ -140,14 +140,13 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     }
   };
 
-  console.log(isDirty, dirtyFields);
   return (
     <>
       <Form formMethods={alarmMethods}>
         <Form.Input
           name="name"
-          label="Alarm navn"
-          placeholder="Indtast alarm navn"
+          label="Navn"
+          placeholder="f.eks. Kritiske notifikationer"
           gridSizes={{xs: 12}}
         />
         <AlarmGroup />

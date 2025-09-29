@@ -7,7 +7,6 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
-import FormFieldset from '~/components/formComponents/FormFieldset';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
@@ -101,11 +100,9 @@ const EditTimeseries = () => {
       }}
     >
       <FormProvider {...formMethods}>
-        <FormFieldset label="Stamdata">
-          <StamdataTimeseries boreholeno={metadata?.boreholeno ?? undefined}>
-            <TimeseriesForm size={size} loc_name={metadata?.loc_name} />
-          </StamdataTimeseries>
-        </FormFieldset>
+        <StamdataTimeseries boreholeno={metadata?.boreholeno ?? undefined}>
+          <TimeseriesForm size={size} loc_name={metadata?.loc_name} />
+        </StamdataTimeseries>
 
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
           <Button

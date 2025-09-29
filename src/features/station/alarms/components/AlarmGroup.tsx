@@ -26,9 +26,8 @@ const AlarmGroup = () => {
     <Box display={'flex'} flexDirection={'column'} width={'100%'}>
       <TooltipWrapper
         description={
-          location_data?.groups
-            ? 'Når du tilknytter en alarm til en gruppe, vises den på alle gruppens lokationer, men mister tilknytningen til tidsserien. Fjernes gruppen senere, forsvinder alarmen fra disse lokationer'
-            : 'Ingen grupper tilgængelige på lokationen'
+          'Når du tilknytter en alarm til en gruppe, vises den på alle gruppens lokationer, men mister tilknytningen til tidsserien. Fjernes gruppen senere, forsvinder alarmen fra disse lokationer.' +
+          (location_data?.groups ? ' ' : ' (Ingen grupper tilgængelige)')
         }
       >
         <FormAutocomplete<AlarmsFormValues, AlarmGroupOptions, false>

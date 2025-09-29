@@ -103,6 +103,7 @@ const FormInput = <TFieldValues extends FieldValues>({
               }}
               slotProps={{
                 select: {
+                  displayEmpty: true,
                   ...slotProps?.select,
                 },
                 htmlInput: {
@@ -113,10 +114,6 @@ const FormInput = <TFieldValues extends FieldValues>({
                       borderColor: 'primary.main',
                     },
                   },
-                },
-                select: {
-                  displayEmpty: true,
-                  ...slotProps?.select,
                 },
                 input: {
                   sx: {

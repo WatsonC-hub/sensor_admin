@@ -9,6 +9,7 @@ import {useAppContext} from '~/state/contexts';
 import {Box, Grid2, MenuItem} from '@mui/material';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {useUser} from '~/features/auth/useUser';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 const SyncSchema = z.object({
   sync_dmp: z.boolean().optional(),
@@ -36,8 +37,7 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
   const isWaterCourseOrLake = location_data?.loctype_id === 1 || location_data?.loctype_id === 6;
   const isBorehole = location_data?.loctype_id === 9;
 
-  const canSyncDmp =
-    (isWaterCourseOrLake && isDmpType) || (isBorehole && isDmpType && isJupiterType);
+  const canSyncDmp = isWaterCourseOrLake && isDmpType;
   const canSyncJupiter = isBorehole && isJupiterType;
 
   const {
@@ -116,8 +116,13 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
     <Box display={'flex'} flexDirection="column">
       {(canSyncDmp || canSyncJupiter) && (
         <Form formMethods={syncMethods} gridSizes={12}>
+          {canSyncJupiter && (
+            <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til Jupiter">
+              <Form.Checkbox name="jupiter" label="Jupiter" />
+            </TooltipWrapper>
+          )}
           {canSyncDmp && user?.superUser && (
-            <>
+            <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til DMP">
               <Form.Checkbox name="sync_dmp" label="DMP" disabled={sync_data?.sync_dmp} />
               <Form.Input
                 select
@@ -135,9 +140,8 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
                   </MenuItem>
                 ))}
               </Form.Input>
-            </>
+            </TooltipWrapper>
           )}
-          {canSyncJupiter && <Form.Checkbox name="jupiter" label="Jupiter" />}
 
           <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">
             <Form.Submit submit={submit} />

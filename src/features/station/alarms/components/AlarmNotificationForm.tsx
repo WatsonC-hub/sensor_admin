@@ -11,7 +11,7 @@ import SouthIcon from '@mui/icons-material/South';
 const AlarmNotificationTypedForm = createTypedForm<AlarmsFormValues>();
 
 const AlarmNotificationForm = () => {
-  const {setValue, watch, trigger} = useFormContext<AlarmsFormValues>();
+  const {setValue, watch} = useFormContext<AlarmsFormValues>();
   const Notification_ids = watch('notification_ids');
 
   const {
@@ -104,7 +104,7 @@ const AlarmNotificationForm = () => {
       </Box>
       <AlarmNotificationTypedForm.Autocomplete<NotificationType, true>
         options={data ?? []}
-        labelKey="name"
+        labelKey="gid"
         name="notification_ids"
         multiple={true}
         label={`Notifikationer`}
@@ -116,28 +116,21 @@ const AlarmNotificationForm = () => {
           required: true,
         }}
         getOptionLabel={(o) => {
-          if (!o) return '';
-
-          if (typeof o === 'string') {
-            return data?.find((item) => item.gid === o)?.name ?? '';
-          }
-
-          return o ? (o.name ?? '') : '';
+          return o.name;
         }}
-        onChangeCallback={(value) => {
-          setValue(
-            'notification_ids',
-            value.map((v) => (typeof v === 'number' ? v : v.gid)),
-            {shouldDirty: true}
-          );
-          trigger('notification_ids');
-        }}
+        // onChangeCallback={(value) => {
+        //   setValue(
+        //     'notification_ids',
+        //     value.map((v) => (typeof v === 'number' ? v : v.gid)),
+        //     {shouldDirty: true}
+        //   );
+        //   trigger('notification_ids');
+        // }}
         renderTags={(value, getTagProps) => {
           return value.map((option, index) => {
-            const gid = typeof option === 'number' ? option : option.gid;
             const content = (
               <Typography display="inline" variant="body2">
-                {data?.find((item) => item.gid === gid)?.name}
+                {option.name}
               </Typography>
             );
 
@@ -147,7 +140,7 @@ const AlarmNotificationForm = () => {
                 label={content}
                 sx={{
                   backgroundColor: getColor({
-                    flag: data?.find((item) => item.gid === gid)?.flag ?? 0,
+                    flag: option.flag ?? 0,
                   }),
                   color: 'HighlightText',
                   opacity: 0.8,
@@ -162,7 +155,17 @@ const AlarmNotificationForm = () => {
         renderOption={(props, option) => {
           return (
             <li {...props} key={option.gid}>
-              <Typography display="inline" variant="body2">
+              <Typography
+                display="inline"
+                variant="body2"
+                sx={{
+                  backgroundColor: getColor({
+                    flag: option.flag ?? 0,
+                  }),
+                  color: 'HighlightText',
+                  opacity: 0.8,
+                }}
+              >
                 {option.name}
               </Typography>
             </li>

@@ -11,9 +11,9 @@ import LinkableTooltip from './LinkableTooltip';
 import {merge} from 'lodash';
 
 // notice we add M extends boolean to control multiple
-export type AutoCompleteFieldProps<T, M extends boolean = false> = Omit<
+export type AutoCompleteFieldProps<T extends object, M extends boolean = false> = Omit<
   AutocompleteProps<T, M, false, false>,
-  'renderInput'
+  'renderInput' | 'onChange'
 > & {
   selectValue: M extends true ? T[] : T | null;
   onChange: (value: M extends true ? T[] : T | null) => void;

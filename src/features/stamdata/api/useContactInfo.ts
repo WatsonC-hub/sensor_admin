@@ -82,7 +82,7 @@ export const useSearchContact = <T = ContactInfo[]>(
         const response = await apiClient.get<Array<ContactInfo>>(relevantContactsEndpoint);
         data = response.data;
       } else {
-        const response = await apiClient.get<Array<ContactInfo>>(`${searchEndpoint}`);
+        const response = await apiClient.get<Array<ContactInfo>>(searchEndpoint);
         data = response.data;
       }
 
