@@ -27,7 +27,6 @@ const yearlyControlsSchema = z.object({
 type YearlyControlsForm = {
   controls_per_year: number | null;
   lead_time: number | null;
-  isCustomerService: boolean | undefined;
   selectValue: number;
 };
 
@@ -56,13 +55,11 @@ const YearlyControlsConfig = () => {
     resolver: zodResolver(yearlyControlsSchema),
     defaultValues: {
       controls_per_year: values?.controlsPerYear,
-      isCustomerService: values?.isCustomerService,
       lead_time: values?.leadTime,
     },
     values: {
       controls_per_year: values?.controlsPerYear ?? null,
       lead_time: values?.leadTime ?? null,
-      isCustomerService: values?.isCustomerService,
       selectValue: 1,
     },
     mode: 'onChange',
@@ -71,12 +68,11 @@ const YearlyControlsConfig = () => {
   const {
     handleSubmit,
     reset,
-    formState: {isSubmitting, isDirty, dirtyFields},
+    formState: {isSubmitting, dirtyFields},
     setValue,
     watch,
   } = formMethods;
 
-  console.log(dirtyFields);
   const controlsPerYear = watch('controls_per_year');
   const selectValue = watch('selectValue');
 
@@ -125,6 +121,10 @@ const YearlyControlsConfig = () => {
                     variant="standard"
                     sx={{width: 150}}
                     defaultValue={1}
+                    disabled={
+                      (values?.isCustomerService && user?.superUser) ||
+                      (!values?.isCustomerService && !user?.superUser)
+                    }
                     slotProps={{
                       select: {
                         disableUnderline: true,
@@ -135,9 +135,13 @@ const YearlyControlsConfig = () => {
                         .target.value;
                       if (controlsPerYear) {
                         if (Number(value) === 1)
-                          setValue('controls_per_year', Number((12 / controlsPerYear).toFixed(2)));
+                          setValue('controls_per_year', Number((12 / controlsPerYear).toFixed(2)), {
+                            shouldDirty: false,
+                          });
                         else if (Number(value) === 2)
-                          setValue('controls_per_year', Number((12 / controlsPerYear).toFixed(2)));
+                          setValue('controls_per_year', Number((12 / controlsPerYear).toFixed(2)), {
+                            shouldDirty: false,
+                          });
                       }
                     }}
                   >
@@ -182,22 +186,25 @@ const YearlyControlsConfig = () => {
 
       <Box display="flex" justifyContent="flex-end">
         <Button
-          bttype="primary"
-          disabled={isSubmitting || !isDirty}
-          onClick={handleSubmit(onSubmit, (error) => console.log(error))}
-          startIcon={<Save />}
-        >
-          Gem
-        </Button>
-        <Button
           bttype="tertiary"
           onClick={() => {
             reset();
           }}
           disabled={isSubmitting}
-          sx={{marginLeft: 1}}
         >
           Annuller
+        </Button>
+        <Button
+          bttype="primary"
+          disabled={
+            isSubmitting ||
+            Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0
+          }
+          onClick={handleSubmit(onSubmit, (error) => console.log(error))}
+          startIcon={<Save />}
+          sx={{marginLeft: 1}}
+        >
+          Gem
         </Button>
       </Box>
     </FormProvider>
