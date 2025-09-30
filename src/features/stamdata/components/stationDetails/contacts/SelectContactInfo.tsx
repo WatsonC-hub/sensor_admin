@@ -52,8 +52,8 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   const handleSave: SubmitHandler<InferContactInfo> = async (contact_info) => {
     const kontakt = {
       id: contact_info.id,
-      navn: contact_info.name,
-      telefonnummer: contact_info.mobile ? contact_info.mobile.toString() : '',
+      name: contact_info.name,
+      mobile: contact_info.mobile ? contact_info.mobile.toString() : '',
       email: contact_info.email,
       comment: contact_info.comment,
       contact_role: contact_info.contact_role,
@@ -86,7 +86,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
               <ExtendedAutocomplete<ContactInfo>
                 options={data ?? []}
                 loading={isFetching}
-                labelKey="navn"
+                labelKey="name"
                 onChange={(option) => {
                   if (option == null) {
                     setSelectedContactInfo(null);
@@ -99,8 +99,8 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
                     setCreateNew(true);
                     reset({
                       ...option,
-                      name: option.navn,
-                      mobile: option.telefonnummer ? parseInt(option.telefonnummer) : null,
+                      name: option.name,
+                      mobile: option.mobile ? parseInt(option.mobile) : null,
                       contact_role: -1,
                       comment: '',
                     });
@@ -115,7 +115,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
                   return (
                     <li {...props} key={option.id + ' - ' + option.loc_id}>
                       <Box display={'flex'} flexDirection={'column'}>
-                        <Typography>{option.navn}</Typography>
+                        <Typography>{option.name}</Typography>
                         <Typography fontStyle={'italic'} variant="body2">
                           {option.email}
                         </Typography>
@@ -161,7 +161,9 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
                   isEditing={isEditing}
                   setIsEditing={setIsEditing}
                   isUser={
-                    selectedContactInfo && selectedContactInfo.org && selectedContactInfo.org !== ''
+                    selectedContactInfo !== null &&
+                    selectedContactInfo.org !== null &&
+                    selectedContactInfo.org !== ''
                   }
                 />
               </Collapse>

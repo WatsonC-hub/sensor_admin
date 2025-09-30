@@ -114,7 +114,7 @@ const Intakeno = (
       fullWidth
       {...props}
     >
-      <MenuItem value={-1}>Vælg indtag</MenuItem>
+      <MenuItem value={''}>Vælg indtag</MenuItem>
       {intake_list?.map((item) => (
         <MenuItem value={item.intakeno} key={item.intakeno}>
           {item.intakeno}
