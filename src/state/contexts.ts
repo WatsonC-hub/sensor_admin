@@ -1,6 +1,6 @@
 import {createContext, useContext} from 'react';
 
-type AppContextType = {
+export type AppContextType = {
   loc_id?: number;
   ts_id?: number;
   boreholeno?: string;

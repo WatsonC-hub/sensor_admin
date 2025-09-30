@@ -5,6 +5,7 @@ import {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
+import useJupiterMaalepunkt from '~/features/station/api/useJupiterMaalepunkt';
 import {
   checkEndDateIsUnset,
   convertDateWithTimeStamp,
@@ -16,7 +17,7 @@ import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {Maalepunkt} from '~/types';
+import {Maalepunkt, MaalepunktTableData} from '~/types';
 
 interface Props {
   handleEdit: (maalepunkt: Maalepunkt) => void;
@@ -36,9 +37,19 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
     setDialogOpen(true);
   };
 
+  const {
+    get: {data: jupiterData},
+  } = useJupiterMaalepunkt();
+
+  const merged_data = useMemo(() => {
+    if (!data) return jupiterData || [];
+    if (!jupiterData) return data || [];
+    return [...jupiterData, ...data];
+  }, [data, jupiterData]);
+
   const unit = timeseries?.tstype_id === 1 ? 'Kote [m (DVR90)]' : `Måling [${timeseries?.unit}]`;
 
-  const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
+  const columns = useMemo<MRT_ColumnDef<Maalepunkt | MaalepunktTableData>[]>(
     () => [
       {
         header: 'Dato',
@@ -56,7 +67,7 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
           return (
             <>
               <span style={{display: 'inline-block'}}>{startDate}</span>
-              {' - '}
+              {endDate && ' - '}
               {/* <span style={{display: 'block'}}>-</span> */}
               <span style={{display: 'inline-block'}}> {endDate}</span>
             </>
@@ -65,26 +76,39 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
       },
       {accessorFn: (row) => limitDecimalNumbers(row.elevation), header: unit, id: 'elevation'},
       {header: 'Beskrivelse', accessorKey: 'mp_description'},
-      {header: 'Oprettet af', accessorKey: 'display_name'},
+      {
+        header: 'Oprettet af',
+        id: 'display_name',
+        accessorFn: (row) => row.display_name,
+        Cell: ({row, staticRowIndex}) => (
+          <span>
+            {!row.original.display_name && staticRowIndex === 0
+              ? 'Jupiter'
+              : row.original.display_name}
+          </span>
+        ),
+      },
     ],
-    [unit]
+    [unit, jupiterData]
   );
 
-  const [tableState, reset] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
+  const [tableState, reset] = useStatefullTableAtom<Maalepunkt | MaalepunktTableData>(
+    'MaalepunktTableState'
+  );
 
-  const options: Partial<MRT_TableOptions<Maalepunkt>> = {
+  const options: Partial<MRT_TableOptions<Maalepunkt | MaalepunktTableData>> = {
     localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
     enableFullScreenToggle: false,
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          handleEdit(row.original);
+          handleEdit(row.original as Maalepunkt);
         }}
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        disabled={disabled}
+        disabled={disabled || 'organisationid' in row.original}
       />
     ),
     renderToolbarInternalActions: ({table}) => {
@@ -92,9 +116,9 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
     },
   };
 
-  const table = useTable<Maalepunkt>(
+  const table = useTable<Maalepunkt | MaalepunktTableData>(
     columns,
-    data,
+    merged_data || [],
     options,
     tableState,
     TableTypes.TABLE,

@@ -23,8 +23,11 @@ const BoreholeTimeseriesEditForm = ({size}: Props) => {
       <Grid2 size={size}>
         <StamdataTimeseries.SensorDepth disabled={disabled} />
       </Grid2>
-      <Grid2 size={size} alignContent={'center'}>
+      <Grid2 size={{xs: 12, sm: 2}} alignContent={'center'}>
         <StamdataTimeseries.TimeseriesID />
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: 4}}>
+        <StamdataTimeseries.ScanBoreholeLabel />
       </Grid2>
     </Grid2>
   );

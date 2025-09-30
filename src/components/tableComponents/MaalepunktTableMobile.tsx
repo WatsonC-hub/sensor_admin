@@ -9,6 +9,7 @@ import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle, setTableBoxStyle} from '~/consts';
+import useJupiterMaalepunkt from '~/features/station/api/useJupiterMaalepunkt';
 import {
   convertDate,
   checkEndDateIsUnset,
@@ -20,7 +21,7 @@ import RenderActions from '~/helpers/RowActions';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
-import {Maalepunkt} from '~/types';
+import {Maalepunkt, MaalepunktTableData} from '~/types';
 
 interface Props {
   handleEdit: (maalepunkt: Maalepunkt) => void;
@@ -37,6 +38,16 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
     get: {data},
   } = useMaalepunkt();
 
+  const {
+    get: {data: jupiterData},
+  } = useJupiterMaalepunkt();
+
+  const merged_data = useMemo(() => {
+    if (!data) return jupiterData || [];
+    if (!jupiterData) return data || [];
+    return [...jupiterData, ...data];
+  }, [data, jupiterData]);
+
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
@@ -44,7 +55,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
 
   const unit = timeseries?.tstype_id === 1 ? ' m' : ` [${timeseries?.unit}]`;
 
-  const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
+  const columns = useMemo<MRT_ColumnDef<Maalepunkt | MaalepunktTableData>[]>(
     () => [
       {
         accessorFn: (row) => row,
@@ -73,44 +84,52 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
             </Box>
             <Typography margin={'0 auto'} alignSelf={'center'} variant="caption">
               <b>Start: </b> {convertDate(row.original.startdate)}
-              <br />
-              <b>Slut: </b>
-              {checkEndDateIsUnset(row.original.enddate) ? 'Nu' : convertDate(row.original.enddate)}
+              {row.original.enddate && (
+                <>
+                  <br />
+                  <b>Slut: </b>
+                  {checkEndDateIsUnset(row.original.enddate)
+                    ? 'Nu'
+                    : convertDate(row.original.enddate)}
+                </>
+              )}
             </Typography>
             <Box marginLeft={'auto'}>
               <RenderActions
                 handleEdit={() => {
-                  handleEdit(row.original);
+                  handleEdit(row.original as Maalepunkt);
                 }}
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                disabled={disabled}
+                disabled={disabled || 'organisationid' in row.original}
               />
             </Box>
           </Box>
         ),
       },
     ],
-    [unit, disabled, handleEdit]
+    [unit, disabled, handleEdit, jupiterData]
   );
 
-  const options: Partial<MRT_TableOptions<Maalepunkt>> = {
+  const options: Partial<MRT_TableOptions<Maalepunkt | MaalepunktTableData>> = {
     localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         <Typography>
           <b>Start dato: </b> {convertDateWithTimeStamp(row.original.startdate)}
         </Typography>
-        <Typography>
-          <b>Slut dato: </b>
-          {checkEndDateIsUnset(row.original.enddate)
-            ? 'Nu'
-            : convertDateWithTimeStamp(row.original.enddate)}
-        </Typography>
-        {row.original.display_name && (
+        {row.original.enddate && (
           <Typography>
-            <b>Oprettet af:</b> {row.original.display_name}
+            <b>Slut dato: </b>
+            {checkEndDateIsUnset(row.original.enddate)
+              ? 'Nu'
+              : convertDateWithTimeStamp(row.original.enddate)}
+          </Typography>
+        )}
+        {(row.original.display_name || row.index === 0) && (
+          <Typography>
+            <b>Oprettet af:</b> {row.original.display_name ?? 'Jupiter'}
           </Typography>
         )}
         {row.original.mp_description && (
@@ -122,9 +141,9 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
     ),
   };
 
-  const table = useTable<Maalepunkt>(
+  const table = useTable<Maalepunkt | MaalepunktTableData>(
     columns,
-    data,
+    merged_data,
     options,
     undefined,
     TableTypes.LIST,

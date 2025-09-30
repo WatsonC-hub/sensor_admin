@@ -60,7 +60,7 @@ export const queryKeys = {
       ['search_borehole', 'register', boreholeno] as const,
     intakeList: (boreholeno: string | undefined | null) =>
       ['intake_list', 'register', boreholeno] as const,
-    jupiterData: (boreholeno: string | undefined | null, intakeno: number) =>
+    jupiterData: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
       ['jupiter_waterlevel', 'register', boreholeno, intakeno] as const,
     measurementsWithIntake: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
       ['measurements', 'register', boreholeno, intakeno] as const,

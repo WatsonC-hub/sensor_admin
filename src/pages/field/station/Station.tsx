@@ -34,6 +34,7 @@ import EditLocation from './stamdata/EditLocation';
 import EditTimeseries from './stamdata/EditTimeseries';
 import TimeseriesConfiguration from './timeseries/configuration/Configuration';
 import LocationConfiguration from './location/Configuration';
+import AppContextProvider from '~/helpers/AppContextProvider';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -57,55 +58,60 @@ export default function Station() {
     setShowForm(null);
   }, [ts_id, pageToShow]);
 
+  {
+    /* Makes sure that if the location we are accessing has boreholeno and intakeno, then it adds these to the context so that we later can access them */
+  }
   return (
-    <Layout>
-      {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling />}
-      {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn />}
-      {pageToShow === stationPages.GENERELTUDSTYR && (
-        <>
-          <Box>
-            <GraphManager />
-          </Box>
-          <Divider />
-          <EditUnit />
-        </>
-      )}
-      {pageToShow === stationPages.GENERELTLOKATION && (
-        <StationPageBoxLayout>
-          <EditLocation />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.GENERELTIDSSERIE && (
-        <StationPageBoxLayout>
-          <EditTimeseries />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.TIDSSERIEKONFIGURATION && (
-        <StationPageBoxLayout>
-          <TimeseriesConfiguration />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && <Algorithms />}
-      {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && <QAHistory />}
-      {pageToShow === stationPages.MAALEPUNKT && (
-        <>
-          <Box>
-            <GraphManager />
-          </Box>
-          <Divider />
-          <ReferenceForm />
-        </>
-      )}
-      {pageToShow === stationPages.NØGLER && user?.features.keys && <LocationAccess />}
-      {pageToShow === stationPages.KONTAKTER && user?.features.contacts && <ContactInfo />}
-      {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && <Huskeliste />}
-      {pageToShow === stationPages.BILLEDER && <ImagePage />}
-      {pageToShow === stationPages.LOKATIONKONFIGURATION && user?.superUser && (
-        <StationPageBoxLayout>
-          <LocationConfiguration />
-        </StationPageBoxLayout>
-      )}
-    </Layout>
+    <AppContextProvider values={{boreholeno: metadata?.boreholeno, intakeno: metadata?.intakeno}}>
+      <Layout>
+        {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling />}
+        {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn />}
+        {pageToShow === stationPages.GENERELTUDSTYR && (
+          <>
+            <Box>
+              <GraphManager />
+            </Box>
+            <Divider />
+            <EditUnit />
+          </>
+        )}
+        {pageToShow === stationPages.GENERELTLOKATION && (
+          <StationPageBoxLayout>
+            <EditLocation />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.GENERELTIDSSERIE && (
+          <StationPageBoxLayout>
+            <EditTimeseries />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.TIDSSERIEKONFIGURATION && (
+          <StationPageBoxLayout>
+            <TimeseriesConfiguration />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && <Algorithms />}
+        {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && <QAHistory />}
+        {pageToShow === stationPages.MAALEPUNKT && (
+          <>
+            <Box>
+              <GraphManager />
+            </Box>
+            <Divider />
+            <ReferenceForm />
+          </>
+        )}
+        {pageToShow === stationPages.NØGLER && user?.features.keys && <LocationAccess />}
+        {pageToShow === stationPages.KONTAKTER && user?.features.contacts && <ContactInfo />}
+        {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && <Huskeliste />}
+        {pageToShow === stationPages.BILLEDER && <ImagePage />}
+        {pageToShow === stationPages.LOKATIONKONFIGURATION && user?.superUser && (
+          <StationPageBoxLayout>
+            <LocationConfiguration />
+          </StationPageBoxLayout>
+        )}
+      </Layout>
+    </AppContextProvider>
   );
 }
 

@@ -1,4 +1,5 @@
 import {Box, FormControlLabel, Switch, Typography} from '@mui/material';
+import dayjs from 'dayjs';
 import {useSetAtom} from 'jotai';
 import React from 'react';
 import Button from '~/components/Button';
@@ -19,7 +20,7 @@ type DisableMap = {
 };
 
 const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, boreholeno} = useAppContext(['ts_id'], ['boreholeno']);
   const {data: metadata} = useTimeseriesData(ts_id);
   const {isMobile} = useBreakpoints();
   const setDataToShow = useSetAtom(dataToShowAtom);
@@ -32,6 +33,15 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
   };
 
   const items = Object.entries(dataToShow).map(([key, value]) => {
+    if (
+      key === 'Jupiter' &&
+      (boreholeno === null ||
+        metadata?.tstype_id !== 1 ||
+        metadata?.slutdato !== null ||
+        dayjs(metadata?.slutdato).isAfter(dayjs()))
+    ) {
+      return null;
+    }
     return {
       key: key,
       label: key,
@@ -68,23 +78,25 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
         <TooltipWrapper description="Valg herunder hvilke elementer der skal vises i grafen" />
       </Box>
 
-      {items.map((item) => (
-        <Box key={item.key} mb={1}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={item.checked}
-                onChange={handleChange}
-                name={item.key}
-                disabled={disableMap[item.key as keyof DisableMap]}
-                size={'small'}
-                color="primary"
-              />
-            }
-            label={<Typography variant="caption">{item.label}</Typography>}
-          />
-        </Box>
-      ))}
+      {items
+        .filter((item) => item !== null)
+        .map((item) => (
+          <Box key={item.key} mb={1}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={item.checked}
+                  onChange={handleChange}
+                  name={item.key}
+                  disabled={disableMap[item.key as keyof DisableMap]}
+                  size={'small'}
+                  color="primary"
+                />
+              }
+              label={<Typography variant="caption">{item.label}</Typography>}
+            />
+          </Box>
+        ))}
 
       <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} mt={1}>
         <Button

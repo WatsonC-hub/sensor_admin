@@ -20,7 +20,7 @@ import DefaultUnitForm from './stamdata/stamdataComponents/DefaultUnitForm';
 import useUnitForm from '../api/useUnitForm';
 import Button from '~/components/Button';
 import useWatlevmpForm from '../api/useWatlevmpForm';
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {useLocation, useNavigate} from 'react-router-dom';
 import useTimeseriesForm from '../api/useTimeseriesForm';
@@ -35,12 +35,15 @@ import {useLocationData} from '~/hooks/query/useMetadata';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import dayjs from 'dayjs';
 import {useRequiredServiceInsertMutation} from '../api/useRequiredService';
+import {MaalepunktTableData} from '~/types';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
   const [showAlert, setShowAlert] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
+  const [helperText, setHelperText] = useState('');
   const size = isMobile ? 12 : 6;
   const navigate = useNavigate();
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
@@ -121,6 +124,19 @@ const CreateStation = () => {
   } = timeseriesFormMethods;
 
   const tstype_id = watchTimeseries('tstype_id');
+  const intakeno = watchTimeseries('intakeno');
+
+  const {data: watlevmp} = useQuery({
+    queryKey: queryKeys.Borehole.watlevmpWithIntake(boreholeno, intakeno),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<MaalepunktTableData>>(
+        `/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`
+      );
+      return data;
+    },
+    enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
+    placeholderData: [],
+  });
 
   const unitFormMethods = useUnitForm<AddUnit>({
     mode: 'Add',
@@ -146,6 +162,7 @@ const CreateStation = () => {
     trigger: triggerWatlevmp,
     formState: {errors: watlevmpErrors},
     clearErrors: clearWatlevmpErrors,
+    reset: resetWatlevmp,
   } = watlevmpFormMethods;
 
   const stamdataNewLocationMutation = useMutation({
@@ -334,6 +351,18 @@ const CreateStation = () => {
     clearWatlevmpErrors();
   }, [tstype_id]);
 
+  useEffect(() => {
+    if (intakeno !== -1 && watlevmp && watlevmp.length > 0) {
+      resetWatlevmp({
+        elevation: watlevmp[0].elevation,
+        description: watlevmp[0].mp_description,
+      });
+      setHelperText('Målepuntsværdien er hentet fra Jupiter');
+    } else {
+      setHelperText('');
+    }
+  }, [watlevmp, intakeno, tstype_id]);
+
   return (
     <>
       <NavBar>
@@ -444,7 +473,7 @@ const CreateStation = () => {
                   <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
                     <FormProvider {...watlevmpFormMethods}>
                       <StamdataWatlevmp tstype_id={tstype_id}>
-                        <DefaultWatlevmpForm />
+                        <DefaultWatlevmpForm helperText={helperText} />
                       </StamdataWatlevmp>
                     </FormProvider>
                   </Grid2>
