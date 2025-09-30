@@ -229,7 +229,7 @@ const ScanBoreholeLabel = () => {
           open={openDialog}
           setOpen={setOpenDialog}
           onConfirm={() => {
-            setValue('calypso_id', Number(calypso_id), {
+            setValue('borehole_calypso_id', Number(calypso_id), {
               shouldValidate: true,
               shouldDirty: true,
             });

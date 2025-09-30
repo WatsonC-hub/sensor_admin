@@ -17,10 +17,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 
 const EditTimeseries = () => {
-  const {ts_id, loc_id, boreholeno, intakeno} = useAppContext(
-    ['loc_id', 'ts_id'],
-    ['boreholeno', 'intakeno']
-  );
+  const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData(ts_id);
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
@@ -36,16 +33,6 @@ const EditTimeseries = () => {
     },
     meta: {
       invalidates: [['metadata']],
-    },
-  });
-
-  const changeCalypsoIDMutation = useMutation({
-    mutationFn: async (calypso_id: number | undefined) => {
-      const {data: out} = await apiClient.put(
-        `/sensor_field/stamdata/calypso_id/${boreholeno}/${intakeno}`,
-        {calypso_id}
-      );
-      return out;
     },
   });
 
@@ -100,14 +87,6 @@ const EditTimeseries = () => {
         toast.success('Tidsserie er opdateret');
       },
     });
-
-    if (boreholeno && intakeno && metadata?.loctype_id === 9 && 'borehole_calypso_id' in data) {
-      changeCalypsoIDMutation.mutate(data.borehole_calypso_id, {
-        onSuccess: () => {
-          toast.success('Calypso ID er opdateret');
-        },
-      });
-    }
   };
 
   return (
