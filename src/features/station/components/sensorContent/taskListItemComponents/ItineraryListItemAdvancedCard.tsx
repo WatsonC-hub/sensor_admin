@@ -33,7 +33,7 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
       ts_id: task.ts_id,
       status_id: status_id,
       assigned_to: task.assigned_to,
-      due_date: dayjs(task.due_date).format('YYYY-MM-DD'),
+      due_date: task.due_date ? dayjs(task.due_date).format('YYYY-MM-DD') : null,
     };
     const payload = {
       path: task.id,
