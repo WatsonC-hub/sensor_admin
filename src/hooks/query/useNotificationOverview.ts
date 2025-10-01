@@ -59,18 +59,6 @@ export const useNotificationOverview = (options?: NotificationOverviewOptions) =
   return query;
 };
 
-export const useLocationNotificationOverview = (loc_id: number | undefined) => {
-  return useQuery<Notification[]>({
-    queryKey: queryKeys.overblikByLocId(loc_id),
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_admin/overblik/${loc_id}`);
-      return data;
-    },
-    staleTime: 10,
-    enabled: loc_id !== undefined && loc_id !== -1,
-  });
-};
-
 export interface MapOverview {
   loc_id: number;
   loc_name: string;
