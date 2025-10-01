@@ -18,9 +18,9 @@ import {
 } from '@mui/icons-material';
 import {SelectionCommand} from './features/commandpalette/components/CommandContext';
 import {usePageActions} from './features/commandpalette/hooks/usePageActions';
-import {Notification, useNotificationOverview} from './hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import ReleaseNoticeModal from './components/ReleaseNotice';
+import useCmdPalette, {CommandPalette} from './hooks/query/useCmdPalette';
 
 const Router = () => {
   const user = useUser();
@@ -28,7 +28,9 @@ const Router = () => {
   // redirect component
 
   const {home, location: locationNavigation, station} = useNavigationFunctions();
-  const {data: locationData} = useNotificationOverview({
+  const {
+    get: {data: locationData},
+  } = useCmdPalette({
     select: (data) => {
       // remove duplicate ts_id and ts_name
       const uniqueLocIds = new Set();
@@ -42,7 +44,9 @@ const Router = () => {
       return uniqueData;
     },
   });
-  const {data: calypsoIDData} = useNotificationOverview({
+  const {
+    get: {data: calypsoIDData},
+  } = useCmdPalette({
     select: (data) => {
       // remove duplicate ts_id and ts_name
 
@@ -88,7 +92,7 @@ const Router = () => {
         return value.loc_name.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
       },
       group: 'Generelt',
-    } as SelectionCommand<Notification>,
+    } as SelectionCommand<CommandPalette>,
     {
       id: 'searchCalypsoID',
       name: 'Søg i Calypso ID',
@@ -108,7 +112,7 @@ const Router = () => {
         return value.calypso_id?.toString().includes(search.toLowerCase()) ? 1 : 0;
       },
       group: 'Generelt',
-    } as SelectionCommand<Notification>,
+    } as SelectionCommand<CommandPalette>,
     {
       id: 'openLocation',
       name: 'Åbn lokation via ID',

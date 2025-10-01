@@ -119,4 +119,5 @@ export const queryKeys = {
   notificationTypes: () => ['notification_types'] as const,
   changeReasons: () => ['change_reasons'] as const,
   actions: (unit_uuid: string | undefined) => ['actions', unit_uuid] as const,
+  cmdOptions: () => ['cmd_options'] as const,
 };
