@@ -16,6 +16,8 @@ import {z} from 'zod';
 import Button from '~/components/Button';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {APIError} from '~/queryClient';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {useUser} from '~/features/auth/useUser';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
@@ -57,11 +59,15 @@ const getOptions = (sampleInterval: number | undefined) => {
 };
 
 const UnitMeasurementConfig = () => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const {data, isLoading, error} = useTimeseriesMeasureSampleSend(ts_id);
+  const {data: currentLocation} = useMapOverview({
+    select: (data) => data.find((loc) => loc.loc_id === loc_id),
+  });
   const {mutate} = useTimeseriesMeasureSampleSendMutation(ts_id);
   const [options, setOptions] = useState<React.ReactNode[]>([]);
   const {isMobile} = useBreakpoints();
+  const user = useUser();
   const values = data?.savedConfig ? data.savedConfig : undefined;
 
   const formMethods = useForm<ConfigForm, unknown, ConfigSubmit>({
@@ -86,11 +92,7 @@ const UnitMeasurementConfig = () => {
 
   if (error)
     return (
-      <Typography>
-        {(error as APIError).response?.data.detail
-          ? 'Der er ikke tilknyttet en enhed til denne tidsserie'
-          : ''}
-      </Typography>
+      <Typography>{String((error as APIError).response?.data.detail ?? 'Ukendt fejl')}</Typography>
     );
 
   if (isLoading) {
@@ -193,7 +195,11 @@ const UnitMeasurementConfig = () => {
               formMethods.setValue('sendInterval', undefined);
             }
           }}
-          disabled={!data?.configPossible}
+          disabled={
+            !data?.configPossible ||
+            (currentLocation?.is_customer_service && user?.superUser) ||
+            (!currentLocation?.is_customer_service && !user?.superUser)
+          }
           slotProps={{
             input: {
               startAdornment: <InputAdornment position="start">hvert</InputAdornment>,
@@ -207,7 +213,12 @@ const UnitMeasurementConfig = () => {
           select
           fullWidth
           label="Sendeinterval"
-          disabled={!data?.configPossible || options.length === 0}
+          disabled={
+            !data?.configPossible ||
+            options.length === 0 ||
+            (currentLocation?.is_customer_service && user?.superUser) ||
+            (!currentLocation?.is_customer_service && !user?.superUser)
+          }
           SelectProps={{
             MenuProps: {
               sx: {
@@ -234,7 +245,6 @@ const UnitMeasurementConfig = () => {
           bttype="tertiary"
           onClick={() => reset()}
           disabled={isSubmitting || !data?.configPossible}
-          sx={{marginLeft: 1}}
         >
           Annuller
         </Button>
@@ -243,6 +253,7 @@ const UnitMeasurementConfig = () => {
           disabled={isSubmitting || !data?.configPossible || !isDirty}
           onClick={handleSubmit((data) => mutate(data))}
           startIcon={<Save />}
+          sx={{marginLeft: 1}}
         >
           Gem
         </Button>
