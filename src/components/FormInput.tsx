@@ -131,6 +131,9 @@ const FormInput = <TFieldValues extends FieldValues>({
                   },
                   ...slotProps?.input,
                 },
+                select: {
+                  displayEmpty: true,
+                },
                 formHelperText: {
                   sx: {
                     color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
