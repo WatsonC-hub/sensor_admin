@@ -2,7 +2,6 @@ import {Box, Divider, IconButton, Tooltip, Typography} from '@mui/material';
 import React, {ReactNode, useEffect} from 'react';
 
 import NavBar from '~/components/NavBar';
-import NotificationList from '~/components/NotificationList';
 import {useUser} from '~/features/auth/useUser';
 import QAHistory from '~/features/kvalitetssikring/components/QaHistory';
 import ReferenceForm from '~/features/stamdata/components/stamdata/ReferenceForm';
@@ -153,7 +152,6 @@ const Layout = ({children}: LayoutProps) => {
             </Tooltip>
           )}
           <BatteryStatus />
-          <NotificationList />
           {!isMobile && (
             <IconButton
               onClick={() => {
