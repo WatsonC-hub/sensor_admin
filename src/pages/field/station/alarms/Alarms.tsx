@@ -4,7 +4,6 @@ import FabWrapper from '~/components/FabWrapper';
 import AlarmTable from '~/features/station/alarms/components/AlarmTable';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
-import {AlarmTableType} from '~/features/station/alarms/types';
 import AlarmFormDialog from '~/features/station/alarms/components/AlarmFormDialog';
 import {useAlarm} from '~/features/station/alarms/api/useAlarm';
 

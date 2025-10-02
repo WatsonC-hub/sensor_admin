@@ -2,11 +2,11 @@ import React from 'react';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {AlarmsFormValues} from '../schema';
 import {useFormContext} from 'react-hook-form';
-import useNotificationType, {NotificationType} from '~/hooks/query/useNotificationTypes';
 import {Box, ButtonGroup, Chip, Typography, Button} from '@mui/material';
 import {getColor} from '~/features/notifications/utils';
 import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import SouthIcon from '@mui/icons-material/South';
+import {useNotificationTypes, type NotificationType} from '~/hooks/query/useNotificationOverview';
 
 const AlarmNotificationTypedForm = createTypedForm<AlarmsFormValues>();
 
@@ -14,9 +14,7 @@ const AlarmNotificationForm = () => {
   const {setValue, watch} = useFormContext<AlarmsFormValues>();
   const Notification_ids = watch('notification_ids');
 
-  const {
-    get: {data},
-  } = useNotificationType();
+  const {data} = useNotificationTypes();
 
   return (
     <Box display={'flex'} flexDirection={'column'} width={'100%'} gap={1}>
@@ -164,6 +162,8 @@ const AlarmNotificationForm = () => {
                   }),
                   color: 'HighlightText',
                   opacity: 0.8,
+                  p: 0.5,
+                  borderRadius: 10,
                 }}
               >
                 {option.name}
