@@ -9,12 +9,12 @@ export type RequiredServiceConfiguration = {
 };
 
 export type RequiredServiceConfigurationUpdate = {
-  required_service?: boolean | null;
+  required_service?: boolean;
 };
 
 export type RequiredServiceConfigurationInsert = {
   ts_id: number;
-  required_service?: boolean | null;
+  required_service?: boolean;
 };
 
 export const requiredServiceOptions = (ts_id: number) =>

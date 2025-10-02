@@ -15,11 +15,11 @@ import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
 
 const requiredServiceSchema = z.object({
-  required_service: z.boolean().optional().default(false),
+  required_service: z.boolean().default(false),
 });
 
 type RequiredServiceForm = {
-  required_service: boolean;
+  required_service: boolean | undefined;
 };
 
 const RequiredServiceConfig = () => {
@@ -36,7 +36,7 @@ const RequiredServiceConfig = () => {
     },
     mode: 'onTouched',
     values: {
-      required_service: values?.required_service ?? false,
+      required_service: values?.required_service,
     },
   });
 
@@ -44,7 +44,6 @@ const RequiredServiceConfig = () => {
     handleSubmit,
     control,
     reset,
-    watch,
     formState: {isSubmitting, isDirty},
   } = formMethods;
 
@@ -57,9 +56,7 @@ const RequiredServiceConfig = () => {
   }
 
   const onSubmit = (data: RequiredServiceForm) => {
-    mutate(data, {
-      onSuccess: () => reset(),
-    });
+    mutate(data);
   };
 
   return (
@@ -84,7 +81,6 @@ const RequiredServiceConfig = () => {
             reset();
           }}
           disabled={isSubmitting}
-          sx={{marginLeft: 1}}
         >
           Annuller
         </Button>
@@ -93,6 +89,7 @@ const RequiredServiceConfig = () => {
           disabled={isSubmitting || !isDirty}
           onClick={handleSubmit(onSubmit, (error) => console.log(error))}
           startIcon={<Save />}
+          sx={{marginLeft: 1}}
         >
           Gem
         </Button>
