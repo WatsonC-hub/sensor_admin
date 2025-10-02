@@ -9,16 +9,10 @@ import GuardedHome from './pages/Home';
 import GuardedCreateStation from './features/station/components/CreateStation';
 import {useUser} from './features/auth/useUser';
 import AccessDenied from './accessDenied';
-import {
-  NotListedLocation,
-  QueryStats,
-  LocationOn,
-  Timeline,
-  Home as HomeIcon,
-} from '@mui/icons-material';
+import {QueryStats, LocationOn, Timeline, Home as HomeIcon} from '@mui/icons-material';
 import {SelectionCommand} from './features/commandpalette/components/CommandContext';
 import {usePageActions} from './features/commandpalette/hooks/usePageActions';
-import {Notification, useNotificationOverview} from './hooks/query/useNotificationOverview';
+import {Notification} from './hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import ReleaseNoticeModal from './components/ReleaseNotice';
 
@@ -28,37 +22,6 @@ const Router = () => {
   // redirect component
 
   const {home, location: locationNavigation, station} = useNavigationFunctions();
-  const {data: locationData} = useNotificationOverview({
-    select: (data) => {
-      // remove duplicate ts_id and ts_name
-      const uniqueLocIds = new Set();
-      const uniqueData = data.filter((item) => {
-        if (item.ts_id === -1 || uniqueLocIds.has(item.loc_id)) {
-          return false; // Exclude items with ts_id -1 or duplicates
-        }
-        uniqueLocIds.add(item.loc_id);
-        return true;
-      });
-      return uniqueData;
-    },
-  });
-  const {data: calypsoIDData} = useNotificationOverview({
-    select: (data) => {
-      // remove duplicate ts_id and ts_name
-
-      const uniqueTsIds = new Set();
-      const uniqueData = data
-        .filter((item) => item.active && item.calypso_id != null)
-        .filter((item) => {
-          if (item.ts_id === -1 || uniqueTsIds.has(item.ts_id)) {
-            return false; // Exclude items with ts_id -1 or duplicates
-          }
-          uniqueTsIds.add(item.ts_id);
-          return true;
-        });
-      return uniqueData;
-    },
-  });
 
   usePageActions([
     {
@@ -71,25 +34,6 @@ const Router = () => {
       group: 'Generelt',
     },
     {
-      id: 'searchLocations',
-      name: 'Søg i lokationer',
-      type: 'selection',
-      perform: (inp) => {
-        locationNavigation(inp.loc_id, true);
-      },
-      icon: <NotListedLocation />,
-      shortcut: 'S',
-      options: locationData?.map((item) => ({
-        label: item.loc_name,
-        value: item,
-      })), // This will be populated dynamically
-      filter: (value, search) => {
-        // Filter function to match loc_name with search term
-        return value.loc_name.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
-      },
-      group: 'Generelt',
-    } as SelectionCommand<Notification>,
-    {
       id: 'searchCalypsoID',
       name: 'Søg i Calypso ID',
       type: 'selection',
@@ -99,10 +43,7 @@ const Router = () => {
       },
       icon: <QueryStats />,
       shortcut: 'C',
-      options: calypsoIDData?.map((item) => ({
-        label: `${item.calypso_id} (${item.ts_name})`,
-        value: item,
-      })), // This will be populated dynamically
+      options: [], // This will be populated dynamically
       filter: (value, search) => {
         // Filter function to match calypso_id with search term
         return value.calypso_id?.toString().includes(search.toLowerCase()) ? 1 : 0;
