@@ -37,28 +37,6 @@ export interface Notification {
   calypso_id: number | null;
 }
 
-type NotificationOverviewOptions = Partial<
-  Omit<UseQueryOptions<Notification[]>, 'queryKey' | 'queryFn'>
->;
-
-export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
-  const user = useUser();
-  const query = useQuery<Notification[]>({
-    queryKey: queryKeys.overblik(),
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_admin/overblik`);
-
-      return data;
-    },
-    refetchInterval: 1000 * 60 * 60,
-    refetchOnWindowFocus: false,
-    staleTime: 10 * 1000,
-    enabled: user?.features?.iotAccess,
-    ...options,
-  });
-  return query;
-};
-
 export interface MapOverview {
   loc_id: number;
   loc_name: string;
