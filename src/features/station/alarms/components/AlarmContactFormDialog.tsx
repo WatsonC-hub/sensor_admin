@@ -35,30 +35,26 @@ type Props = {
 
 const transformData = (data: ContactInfo[]) => {
   const alarmContacts = data.map((item) => ({
-    contact_id: item.id ?? undefined,
+    contact_id: item.id,
     name: item.name,
   }));
 
   return alarmContacts;
 };
 
-const AlarmContactFormDialog = ({
-  open,
-  onClose,
-  mode,
-  //   setMode,
-  values,
-  setValues,
-  currentIndex,
-}: Props) => {
+const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, currentIndex}: Props) => {
   const {loc_id} = useAppContext(['loc_id']);
   const [search, setSearch] = useState<string>('');
   const {data} = useSearchContact(loc_id, search, transformData);
   const {isMobile} = useBreakpoints();
-  const AlarmContactFormMethods = useForm<AlarmContactFormType>({
+
+  const currentContact = values && currentIndex !== -1 ? values[currentIndex] : undefined;
+
+  const alarmContactFormMethods = useForm<AlarmContactFormType>({
     resolver: zodResolver(alarmContactSchema),
     defaultValues: {
       contact_id: '',
+      name: '',
       sms: {
         selected: false,
         from: '',
@@ -75,7 +71,7 @@ const AlarmContactFormDialog = ({
         to: '',
       },
     },
-    values: values && currentIndex !== -1 ? values[currentIndex] : undefined,
+    values: currentContact,
     mode: 'onTouched',
   });
 
@@ -102,9 +98,25 @@ const AlarmContactFormDialog = ({
     setValue,
     trigger,
     formState: {isSubmitted},
-  } = AlarmContactFormMethods;
+  } = alarmContactFormMethods;
 
-  const currentValues = watch();
+  // const currentValues = watch();
+  const smsSelected = watch('sms.selected');
+  const emailSelected = watch('email.selected');
+  const callSelected = watch('call.selected');
+
+  const options = [
+    ...(data?.filter((item) => item.contact_id !== currentContact?.contact_id) ?? []),
+    ...(currentContact
+      ? [
+          {
+            contact_id: currentContact.contact_id,
+            name: currentContact.name,
+          },
+        ]
+      : []),
+  ];
+
   return (
     <Dialog
       open={open}
@@ -113,7 +125,7 @@ const AlarmContactFormDialog = ({
       }}
       fullWidth
     >
-      <AlarmContactTypedForm useGrid={false} formMethods={AlarmContactFormMethods}>
+      <AlarmContactTypedForm useGrid={false} formMethods={alarmContactFormMethods}>
         <DialogTitle>{mode === 'add' ? 'Tilføj kontakt' : 'Rediger kontakt'}</DialogTitle>
         <DialogContent sx={{width: '100%'}}>
           <Grid2
@@ -125,11 +137,12 @@ const AlarmContactFormDialog = ({
             spacing={1}
           >
             <AlarmContactTypedForm.Autocomplete<AlarmContactTypeDialog, false>
-              options={data ?? []}
+              options={options}
               labelKey="contact_id"
               name={'contact_id'}
               label={`Kontakt`}
               gridSizes={{xs: 12, sm: 12}}
+              getOptionKey={(o) => o.contact_id}
               getOptionLabel={(o) => {
                 return o.name;
               }}
@@ -143,6 +156,9 @@ const AlarmContactFormDialog = ({
               }}
               onInputChange={(event, value) => {
                 setSearch(value);
+              }}
+              onChangeCallback={(value) => {
+                setValue('name', value?.name ?? '', {shouldDirty: true});
               }}
             />
             <Box
@@ -158,11 +174,8 @@ const AlarmContactFormDialog = ({
                 icon={<SmsIcon color="primary" />}
                 onChangeCallback={(value) => {
                   if (!value) {
-                    setValue(`sms.from`, '', {shouldDirty: true});
-                    setValue(`sms.to`, '', {shouldDirty: true});
-                    trigger(`sms.from`);
-                    trigger(`sms.to`);
-                    // reset(getValues());
+                    setValue(`sms.from`, null, {shouldDirty: true, shouldValidate: true});
+                    setValue(`sms.to`, null, {shouldDirty: true, shouldValidate: true});
                   }
                 }}
                 gridSizes={{sm: 1.5}}
@@ -173,7 +186,7 @@ const AlarmContactFormDialog = ({
                   label="Start interval"
                   type="time"
                   fullWidth
-                  disabled={!currentValues?.sms?.selected}
+                  disabled={!smsSelected}
                   gridSizes={6}
                 />
                 <AlarmContactTypedForm.Input
@@ -181,7 +194,7 @@ const AlarmContactFormDialog = ({
                   label="Slut interval"
                   type="time"
                   fullWidth
-                  disabled={!currentValues?.sms?.selected}
+                  disabled={!smsSelected}
                   gridSizes={6}
                 />
               </Box>
@@ -214,7 +227,7 @@ const AlarmContactFormDialog = ({
                   label="Start interval"
                   type="time"
                   fullWidth
-                  disabled={!currentValues?.email?.selected}
+                  disabled={!emailSelected}
                   gridSizes={6}
                 />
                 <AlarmContactTypedForm.Input
@@ -222,7 +235,7 @@ const AlarmContactFormDialog = ({
                   label="Slut interval"
                   type="time"
                   fullWidth
-                  disabled={!currentValues?.email?.selected}
+                  disabled={!emailSelected}
                   gridSizes={6}
                 />
               </Box>
@@ -255,7 +268,7 @@ const AlarmContactFormDialog = ({
                   label="Start interval"
                   type="time"
                   fullWidth
-                  disabled={!currentValues?.call?.selected}
+                  disabled={!callSelected}
                   gridSizes={6}
                 />
                 <AlarmContactTypedForm.Input
@@ -263,20 +276,17 @@ const AlarmContactFormDialog = ({
                   label="Slut interval"
                   type="time"
                   fullWidth
-                  disabled={!currentValues?.call?.selected}
+                  disabled={!callSelected}
                   gridSizes={6}
                 />
               </Box>
             </Box>
             <Grid2 size={12} display={'flex'} flexDirection={'row'} justifyContent={'center'}>
-              {!currentValues.call?.selected &&
-                !currentValues.sms?.selected &&
-                !currentValues.email?.selected &&
-                isSubmitted && (
-                  <Typography color="error" alignSelf="center">
-                    Mindst én kontaktmetode skal være valgt
-                  </Typography>
-                )}
+              {!callSelected && !smsSelected && !emailSelected && isSubmitted && (
+                <Typography color="error" alignSelf="center">
+                  Mindst én kontaktmetode skal være valgt
+                </Typography>
+              )}
             </Grid2>
           </Grid2>
         </DialogContent>

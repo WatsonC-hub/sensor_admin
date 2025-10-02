@@ -12,7 +12,7 @@ import {merge} from 'lodash';
 
 // notice we add M extends boolean to control multiple
 export type AutoCompleteFieldProps<T extends object, M extends boolean = false> = Omit<
-  AutocompleteProps<T, M, false, false>,
+  AutocompleteProps<T, M, boolean, false>,
   'renderInput' | 'onChange'
 > & {
   selectValue: M extends true ? T[] : T | null;
@@ -35,7 +35,7 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
   ...autocompleteProps
 }: AutoCompleteFieldProps<T, M>): React.ReactElement => {
   return (
-    <Autocomplete<T, M, false, false>
+    <Autocomplete<T, M, boolean, false>
       id="demo"
       value={selectValue}
       options={options}

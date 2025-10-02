@@ -3,7 +3,6 @@ import FormAutocomplete from '~/components/formComponents/FormAutocomplete';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
 import {AlarmsFormValues} from '../schema';
-import {useFormContext} from 'react-hook-form';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {Box} from '@mui/material';
 
@@ -12,9 +11,12 @@ type AlarmGroupOptions = {
   group_name: string;
 };
 
-const AlarmGroup = () => {
+interface AlarmGroupProps {
+  disableClearable?: boolean;
+}
+
+const AlarmGroup = ({disableClearable = false}: AlarmGroupProps) => {
   const {loc_id} = useAppContext(['loc_id']);
-  const {setValue, trigger} = useFormContext<AlarmsFormValues>();
   const {data: location_data} = useLocationData(loc_id);
   const options: AlarmGroupOptions[] =
     location_data?.groups?.map((group) => ({
@@ -31,23 +33,12 @@ const AlarmGroup = () => {
         }
       >
         <FormAutocomplete<AlarmsFormValues, AlarmGroupOptions, false>
-          labelKey="group_name"
+          labelKey="group_id"
           disabled={options === undefined || options.length === 0}
           name="group_id"
           options={options}
-          onChangeCallback={(value) => {
-            if (value && value.group_id) {
-              setValue(`group_id`, value.group_id);
-              trigger(`group_id`);
-            }
-          }}
+          disableClearable={disableClearable}
           getOptionLabel={(o) => {
-            if (!o) return '';
-
-            if (typeof o === 'string') {
-              return location_data?.groups?.find((item) => item.id === o)?.group_name ?? '';
-            }
-
             return o.group_name;
           }}
           label={'Lokationsgrupper'}

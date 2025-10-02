@@ -4,12 +4,15 @@ import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {ContactTable} from '../types';
+import RenderActions from '~/helpers/RowActions';
 
 type AlarmContactTableProps = {
   alarmContacts: Array<ContactTable> | undefined;
+  onEdit?: (index: number) => void;
+  onDelete?: (index: number) => void;
 };
 
-const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
+const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableProps) => {
   const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
     () => [
       {
@@ -24,7 +27,7 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         maxSize: 20,
         Cell: ({cell}) => {
           const {sms} = cell.row.original;
-          const smsString = `${sms.from} - ${sms.to}`;
+          const smsString = `${sms.from?.slice(0, 5)} - ${sms.to?.slice(0, 5)}`;
           return (
             <Box display="flex" flexDirection={'column'} alignItems="center">
               {!sms.selected ? (
@@ -43,7 +46,7 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         maxSize: 20,
         Cell: ({cell}) => {
           const {email} = cell.row.original;
-          const emailString = `${email.from} - ${email.to}`;
+          const emailString = `${email.from?.slice(0, 5)} - ${email.to?.slice(0, 5)}`;
           return (
             <Box display="flex" flexDirection={'column'} alignItems="center">
               {!email.selected ? (
@@ -62,7 +65,7 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         maxSize: 20,
         Cell: ({cell}) => {
           const {call} = cell.row.original;
-          const callString = `${call.from} - ${call.to}`;
+          const callString = `${call.from?.slice(0, 5)} - ${call.to?.slice(0, 5)}`;
           return (
             <Box display="flex" flexDirection={'column'} alignItems="center">
               {!call.selected ? (
@@ -86,6 +89,13 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
     enableGlobalFilter: false,
     enableTopToolbar: false,
     enableBottomToolbar: false,
+    enableRowActions: !!onEdit || !!onDelete,
+    renderRowActions: ({row}) => (
+      <RenderActions
+        handleEdit={() => onEdit?.(row.index)}
+        onDeleteBtnClick={() => onDelete?.(row.index)}
+      />
+    ),
     muiTablePaperProps: {
       sx: {
         width: 'fit-content',

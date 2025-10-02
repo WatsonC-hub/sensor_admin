@@ -8,7 +8,7 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import {useAppContext} from '~/state/contexts';
 import Button from '~/components/Button';
 import AlarmHistoryTable from './AlarmHistoryTable';
-import {alarmTable} from '../types';
+import {AlarmTableType} from '../types';
 import AlarmFormDialog from './AlarmFormDialog';
 import AlarmContactTable from './AlarmContactTable';
 import AlarmNotificationTable from './AlarmNotificationTable';
@@ -17,13 +17,13 @@ import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
 import {useLocationData} from '~/hooks/query/useMetadata';
 type AlarmTableProps = {
-  alarms: Array<alarmTable> | undefined;
+  alarms: Array<AlarmTableType> | undefined;
 };
 
 const AlarmTable = ({alarms}: AlarmTableProps) => {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState<boolean>(false);
   const {ts_id} = useAppContext(['ts_id']);
-  const [selectedId, setSelectedId] = React.useState<string>('');
+  const [selectedAlarm, setSelectedAlarm] = React.useState<AlarmTableType | null>(null);
   const {data: location_data} = useLocationData();
   const {
     getHistory: {data: alarmHistory},
@@ -31,11 +31,11 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
   } = useAlarm();
 
   const handleDelete = async () => {
-    deleteAlarm({path: `${ts_id}/delete/${selectedId}`});
+    deleteAlarm.mutate({path: `${ts_id}/delete/${selectedAlarm?.id}`});
   };
 
   const [alarmHistoryOpen, setAlarmHistoryOpen] = React.useState<boolean>(false);
-  const columns = useMemo<MRT_ColumnDef<alarmTable>[]>(
+  const columns = useMemo<MRT_ColumnDef<AlarmTableType>[]>(
     () => [
       {
         header: 'Navn',
@@ -63,7 +63,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
     [location_data]
   );
 
-  const options: Partial<MRT_TableOptions<alarmTable>> = {
+  const options: Partial<MRT_TableOptions<AlarmTableType>> = {
     enableColumnActions: false,
     enableRowActions: true,
     enableColumnFilters: false,
@@ -137,7 +137,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
           table.setEditingRow(row);
         }}
         onDeleteBtnClick={() => {
-          setSelectedId(row.original.id);
+          setSelectedAlarm(row.original);
           setOpenDeleteDialog(true);
         }}
       />
@@ -159,7 +159,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
     },
   };
 
-  const table = useTable<alarmTable>(
+  const table = useTable<AlarmTableType>(
     columns,
     alarms,
     options,
@@ -213,6 +213,11 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
         dialogOpen={openDeleteDialog}
         setDialogOpen={setOpenDeleteDialog}
         onOkDelete={handleDelete}
+        title={
+          selectedAlarm?.group_id
+            ? `Dette sletter alarmen på en hel gruppe og det har derfor konsekvenser for alle tilknyttede lokationer på gruppen. Vil du fortsætte?`
+            : undefined
+        }
       />
       <MaterialReactTable table={table} />
     </Box>

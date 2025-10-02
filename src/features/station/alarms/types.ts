@@ -40,18 +40,18 @@ export type ContactTable = {
   name: string;
   sms: {
     selected: boolean;
-    to: string | undefined;
-    from: string | undefined;
+    to: string | null;
+    from: string | null;
   };
   email: {
     selected: boolean;
-    to: string | undefined;
-    from: string | undefined;
+    to: string | null;
+    from: string | null;
   };
   call: {
     selected: boolean;
-    to: string | undefined;
-    from: string | undefined;
+    to: string | null;
+    from: string | null;
   };
 };
 
@@ -81,16 +81,16 @@ export type AlarmPost = {
   notification_ids: Array<number> | undefined;
 };
 
-export type alarmTable = {
+export type AlarmTableType = {
   id: string;
   name: string;
-  comment: string | undefined;
-  group_id: string | undefined;
+  comment: string | null;
+  group_id: string | null;
   alarm_notifications: Array<number>;
   alarm_contacts: Array<ContactTable>;
 };
 
 export type AlarmContactTypeDialog = {
-  contact_id: string | undefined;
+  contact_id: string;
   name: string;
 };

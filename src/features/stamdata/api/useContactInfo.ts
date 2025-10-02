@@ -5,13 +5,14 @@ import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {ContactInfo, ContactTable} from '~/types';
+import {InferContactInfo} from '../components/stationDetails/zodSchemas';
 
 interface ContactInfoBase {
   path: string;
 }
 
 interface ContactInfoPost extends ContactInfoBase {
-  data: ContactInfo;
+  data: InferContactInfo;
 }
 
 interface ContactInfoPut extends ContactInfoBase {

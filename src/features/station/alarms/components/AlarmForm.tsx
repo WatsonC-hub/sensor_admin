@@ -6,7 +6,7 @@ import {AlarmsFormValues, alarmsSchema} from '../schema';
 import {Box} from '@mui/material';
 import {ExpandLess, ExpandMore} from '@mui/icons-material';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {AlarmPost, alarmTable} from '../types';
+import {AlarmTableType} from '../types';
 import {useAppContext} from '~/state/contexts';
 import {useAlarm} from '../api/useAlarm';
 import {toast} from 'react-toastify';
@@ -18,7 +18,7 @@ import DeleteAlert from '~/components/DeleteAlert';
 
 type AlarmFormProps = {
   setOpen: (open: boolean) => void;
-  alarm?: alarmTable;
+  alarm?: AlarmTableType;
 };
 
 const Form = createTypedForm<AlarmsFormValues>();
@@ -54,12 +54,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     mode: 'onTouched',
   });
 
-  const {
-    reset,
-    watch,
-    setValue,
-    formState: {dirtyFields, isDirty},
-  } = alarmMethods;
+  const {reset, watch, setValue} = alarmMethods;
 
   const contacts = watch('contacts');
 
@@ -69,34 +64,12 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
   };
 
   const handleSubmit = (data: AlarmsFormValues, forceSubmit?: boolean) => {
-    const contacts =
-      data.contacts?.map((contact) => ({
-        contact_id: contact.contact_id ?? '',
-        sms: contact.sms?.selected ?? false,
-        sms_to: contact.sms?.selected && contact.sms?.to ? contact.sms.to : undefined,
-        sms_from: contact.sms?.from && contact.sms.selected ? contact.sms.from : undefined,
-        email: contact.email?.selected ?? false,
-        email_to: contact.email?.selected && contact.email.to ? contact.email.to : undefined,
-        email_from: contact.email?.selected && contact.email.from ? contact.email.from : undefined,
-        call: contact.call?.selected ?? false,
-        call_to: contact.call?.selected && contact.call?.to ? contact.call.to : undefined,
-        call_from: contact.call?.selected && contact.call?.from ? contact.call.from : undefined,
-      })) ?? [];
-
     if (alarm === undefined) {
-      const alarm_data: AlarmPost = {
-        name: data.name,
-        comment: data.comment,
-        group_id: data.group_id ?? undefined,
-        alarm_contacts: contacts,
-        notification_ids: data.notification_ids,
-      };
-
       const payload = {
         path: `${ts_id}`,
-        data: alarm_data,
+        data: data,
       };
-      postAlarm(payload, {
+      postAlarm.mutate(payload, {
         onSuccess: () => {
           setOpen(false);
           reset();
@@ -104,7 +77,6 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         },
       });
     } else {
-      console.log(alarm, data);
       if (
         forceSubmit !== true &&
         alarm?.group_id !== undefined &&
@@ -118,19 +90,11 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         setDraftAlarm(undefined);
       }
 
-      const alarm_data: AlarmPost = {
-        name: data.name,
-        comment: data.comment,
-        group_id: data.group_id ?? undefined,
-        alarm_contacts: contacts,
-        notification_ids: data.notification_ids,
-      };
-
       const payload = {
         path: `${alarm.id}`,
-        data: alarm_data,
+        data: data,
       };
-      putAlarm(payload, {
+      putAlarm.mutate(payload, {
         onSuccess: () => {
           setOpen(false);
           reset();
@@ -139,6 +103,8 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
       });
     }
   };
+
+  console.log('alarm', alarm);
 
   return (
     <>
@@ -149,7 +115,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
           placeholder="f.eks. Kritiske notifikationer"
           gridSizes={{xs: 12}}
         />
-        <AlarmGroup />
+        <AlarmGroup disableClearable={typeof alarm?.group_id == 'string'} />
         <AlarmNotificationForm />
 
         <FormFieldset
@@ -184,6 +150,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         </Box>
       </Form>
       <AlarmContactFormDialog
+        key={currentIndex} // Force remount to reset form when editing different contact
         open={contactDialogOpen}
         onClose={() => setContactDialogOpen(false)}
         mode={mode}

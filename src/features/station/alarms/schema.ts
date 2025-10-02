@@ -13,13 +13,13 @@ export const alarmContactSchema = z
     contact_id: z
       .string({invalid_type_error: 'Kontakt ID er påkrævet'})
       .min(1, 'Kontakt er påkrævet'),
+    name: z.string(),
     sms: z
       .object({
         selected: z.boolean().default(false),
-        to: z.string().optional(),
-        from: z.string().optional(),
+        to: z.string().nullable(),
+        from: z.string().nullable(),
       })
-      .optional()
       .superRefine((val, ctx) => {
         if (val?.selected) {
           if (!val.from) {
@@ -33,10 +33,9 @@ export const alarmContactSchema = z
     email: z
       .object({
         selected: z.boolean().default(false),
-        to: z.string().optional(),
-        from: z.string().optional(),
+        to: z.string().nullable(),
+        from: z.string().nullable(),
       })
-      .optional()
       .superRefine((val, ctx) => {
         if (val?.selected) {
           if (!val.from) {
@@ -50,10 +49,9 @@ export const alarmContactSchema = z
     call: z
       .object({
         selected: z.boolean().default(false),
-        to: z.string().optional(),
-        from: z.string().optional(),
+        to: z.string().nullable(),
+        from: z.string().nullable(),
       })
-      .optional()
       .superRefine((val, ctx) => {
         if (val?.selected) {
           if (!val.from) {
@@ -84,8 +82,8 @@ const alarmNotificationArray = z.object({
 });
 export const alarmsSchema = z.object({
   name: z.string().min(1, 'Navn er påkrævet'),
-  group_id: z.string().nullish(),
-  comment: z.string().optional(),
+  group_id: z.string().nullable(),
+  comment: z.string().nullable(),
   notification_ids: alarmNotificationArray.shape.notification_ids,
   contacts: contactArray.shape.contacts.optional(),
 });

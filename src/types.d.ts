@@ -200,7 +200,7 @@ export type SimpleItinerary = {
 };
 
 export type ContactInfo = {
-  id?: string | null;
+  id: string;
   name: string;
   mobile?: string | null;
   email: string | null;

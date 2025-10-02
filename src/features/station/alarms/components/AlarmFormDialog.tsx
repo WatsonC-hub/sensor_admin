@@ -1,14 +1,14 @@
 import {Dialog, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
 import AlarmForm from './AlarmForm';
-import {alarmTable} from '../types';
+import {AlarmTableType} from '../types';
 import TooltipWrapper from '~/components/TooltipWrapper';
 
 type AlarmFormDialogProps = {
   open: boolean;
   onClose: () => void;
   setOpen: (open: boolean) => void;
-  alarm?: alarmTable;
+  alarm?: AlarmTableType;
 };
 
 const AlarmFormDialog = ({open, onClose, setOpen, alarm}: AlarmFormDialogProps) => {
