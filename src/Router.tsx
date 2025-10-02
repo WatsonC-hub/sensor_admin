@@ -12,9 +12,9 @@ import AccessDenied from './accessDenied';
 import {QueryStats, LocationOn, Timeline, Home as HomeIcon} from '@mui/icons-material';
 import {SelectionCommand} from './features/commandpalette/components/CommandContext';
 import {usePageActions} from './features/commandpalette/hooks/usePageActions';
-import {Notification} from './hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import ReleaseNoticeModal from './components/ReleaseNotice';
+import useCmdPalette, {CommandPalette} from './hooks/query/useCmdPalette';
 
 const Router = () => {
   const user = useUser();
@@ -22,6 +22,26 @@ const Router = () => {
   // redirect component
 
   const {home, location: locationNavigation, station} = useNavigationFunctions();
+
+  const {
+    get: {data: calypsoIDData},
+  } = useCmdPalette({
+    select: (data) => {
+      // remove duplicate ts_id and ts_name
+
+      const uniqueTsIds = new Set();
+      const uniqueData = data
+        .filter((item) => item.active && item.calypso_id != null)
+        .filter((item) => {
+          if (item.ts_id === -1 || uniqueTsIds.has(item.ts_id)) {
+            return false; // Exclude items with ts_id -1 or duplicates
+          }
+          uniqueTsIds.add(item.ts_id);
+          return true;
+        });
+      return uniqueData;
+    },
+  });
 
   usePageActions([
     {
@@ -43,13 +63,16 @@ const Router = () => {
       },
       icon: <QueryStats />,
       shortcut: 'C',
-      options: [], // This will be populated dynamically
+      options: calypsoIDData?.map((item) => ({
+        label: `${item.calypso_id} (${item.ts_name})`,
+        value: item,
+      })), // This will be populated dynamically
       filter: (value, search) => {
         // Filter function to match calypso_id with search term
         return value.calypso_id?.toString().includes(search.toLowerCase()) ? 1 : 0;
       },
       group: 'Generelt',
-    } as SelectionCommand<Notification>,
+    } as SelectionCommand<CommandPalette>,
     {
       id: 'openLocation',
       name: 'Åbn lokation via ID',

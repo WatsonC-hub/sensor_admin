@@ -7,36 +7,6 @@ import {FlagEnum, NotificationIDEnum} from '~/features/notifications/consts';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {Group} from '~/types';
 
-export interface Notification {
-  loc_name: string;
-  loc_id: number;
-  ts_name: string;
-  ts_id: number;
-  x: number;
-  y: number;
-  longitude: number;
-  latitude: number;
-  terminalid: string;
-  opgave: string | null;
-  dato: string | null;
-  color: string | null;
-  flag: FlagEnum;
-  notification_id: NotificationIDEnum;
-  status: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
-  enddate: string | null;
-  projectno: string | null;
-  is_customer_service: boolean;
-  active: boolean | null;
-  notify_type: 'primary' | 'obs' | 'station' | null;
-  isqa: boolean;
-  groups: Group[];
-  loctype_id: number;
-  calculated: boolean | null;
-  type: 'task' | 'notification' | 'itinerary' | 'none';
-  parking_id: number;
-  calypso_id: number | null;
-}
-
 export interface MapOverview {
   loc_id: number;
   loc_name: string;
