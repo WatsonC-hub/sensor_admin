@@ -10,11 +10,9 @@ import React, {useState} from 'react';
 
 import Button from '~/components/Button';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {apiClient} from '~/apiClient';
 import {loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {queryClient} from '~/queryClient';
 import {userQueryOptions} from '~/features/auth/useUser';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 export default function Login() {
   const [userName, setUserName] = useState('');
@@ -41,13 +39,6 @@ export default function Login() {
           const mutatedData = {...data};
           queryClient.setQueryData(['user'], mutatedData, {
             updatedAt: Date.now(),
-          });
-          queryClient.prefetchQuery({
-            queryKey: queryKeys.overblik(),
-            queryFn: async ({signal}) => {
-              const {data} = await apiClient.get(`/sensor_admin/overblik`, {signal});
-              return data;
-            },
           });
           queryClient.prefetchQuery(userQueryOptions);
           home();

@@ -134,7 +134,6 @@ const Layout = ({children}: LayoutProps) => {
             </Tooltip>
           )}
           <BatteryStatus />
-          {/* <NotificationList /> */}
           {!isMobile && (
             <IconButton
               onClick={() => {
