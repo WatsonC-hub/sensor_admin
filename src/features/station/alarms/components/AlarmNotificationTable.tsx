@@ -2,8 +2,8 @@ import {Box, Typography} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {NotificationType, useNotificationTypes} from '~/hooks/query/useNotificationOverview';
 import {useTable} from '~/hooks/useTable';
-import useNotificationType, {NotificationType} from '~/hooks/query/useNotificationTypes';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 
 type AlarmNotificationTableProps = {
@@ -11,9 +11,7 @@ type AlarmNotificationTableProps = {
 };
 
 const AlarmNotificationTable = ({alarm_notifications}: AlarmNotificationTableProps) => {
-  const {
-    get: {data: notifications},
-  } = useNotificationType();
+  const {data: notifications} = useNotificationTypes();
   const data = notifications
     ?.filter((n) => alarm_notifications?.some((o) => o === n.gid))
     .sort((a, b) => b.flag - a.flag);
