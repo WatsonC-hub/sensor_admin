@@ -2,30 +2,28 @@ import {Box, Typography} from '@mui/material';
 import React from 'react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
-import YRangeModal from '~/pages/admin/kvalitetssikring/modals/YRangeModal';
+import ExcludeModal from '~/pages/admin/kvalitetssikring/modals/ExcludeModal';
 
-interface WizardValueBoundsProps {
+interface WizardDataExcludeProps {
   onClose: () => void;
 }
 
-const WizardValueBounds = ({onClose}: WizardValueBoundsProps) => {
+const DataExclude = ({onClose}: WizardDataExcludeProps) => {
   const {isMobile} = useBreakpoints();
   return (
     <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
       <Typography
-        alignSelf={'center'}
         variant={isMobile ? 'h6' : 'h5'}
         component="h2"
         textAlign={'center'}
         fontWeight={'bold'}
+        mb={0.5}
       >
-        Øvre og nedre værdigrænser
+        Fjern punkter fra tidsserien
       </Typography>
-      <Box alignSelf={'center'}>
-        <YRangeModal onClose={onClose} />
-      </Box>
+      <ExcludeModal onClose={onClose} />
     </Box>
   );
 };
 
-export default WizardValueBounds;
+export default DataExclude;

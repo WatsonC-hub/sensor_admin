@@ -71,10 +71,6 @@ const splitTimeFromDate = (dateString: string) => {
   return time;
 };
 
-const convertToShorthandDate = (date: string | null | undefined) => {
-  return dayjs(date).format('ll');
-};
-
 export {
   convertDate,
   checkEndDateIsUnset,
@@ -82,6 +78,5 @@ export {
   calculatePumpstop,
   limitDecimalNumbers,
   splitTimeFromDate,
-  convertToShorthandDate,
   convertToLocalDate,
 };
