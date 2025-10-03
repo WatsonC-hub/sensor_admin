@@ -38,7 +38,10 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
     getStatus: {data: taskStatus},
   } = useTasks();
 
-  const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
+  const [selectedTask, setSelectedTask] = useDisplayState((state) => [
+    state.selectedTask,
+    state.setSelectedTask,
+  ]);
 
   const patchTaskStatus = (status_id: number) => {
     const data = {
@@ -50,7 +53,12 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
       data: data,
     };
 
-    updateTask.mutate(payload);
+    updateTask.mutate(payload, {
+      onSuccess: () => {
+        if ((status_id === 3 || status_id === 34) && selectedTask === task.id)
+          setSelectedTask(null);
+      },
+    });
   };
 
   const patchTaskAssignedTo = (assigned_to: string | null) => {
