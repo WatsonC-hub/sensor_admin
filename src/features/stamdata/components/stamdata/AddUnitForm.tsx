@@ -51,7 +51,12 @@ export default function AddUnitForm({
     post: addUnit,
   } = useUnit();
 
-  const {trigger, setValue} = useFormContext<AddUnit>();
+  const {
+    trigger,
+    setValue,
+    handleSubmit,
+    formState: {isSubmitting},
+  } = useFormContext<AddUnit>();
 
   const [unitData, setUnitData] = useState({
     calypso_id: '',
@@ -167,7 +172,7 @@ export default function AddUnitForm({
       }
     };
   } else {
-    handleSave = () => {
+    handleSave = async () => {
       setUdstyrDialogOpen(false);
       const unit = availableUnits && availableUnits.find((x) => x.unit_uuid === unitData.uuid);
 
@@ -293,10 +298,16 @@ export default function AddUnitForm({
                 Annuller
               </Button>
               <Button
-                onClick={handleSave}
+                onClick={handleSubmit(
+                  async (e) => {
+                    console.log('submit', e);
+                    await handleSave();
+                  },
+                  (e) => console.log(e)
+                )}
                 bttype="primary"
                 startIcon={mode === 'edit' ? <Save /> : undefined}
-                disabled={unitData.calypso_id === '-1' || unitData.uuid === ''}
+                disabled={isSubmitting || unitData.calypso_id === '-1' || unitData.uuid === ''}
               >
                 {mode === 'edit' ? 'Gem' : 'Tilføj'}
               </Button>
