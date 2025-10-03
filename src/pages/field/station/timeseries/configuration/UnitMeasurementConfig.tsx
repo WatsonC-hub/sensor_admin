@@ -152,7 +152,7 @@ const UnitMeasurementConfig = () => {
         <TooltipWrapper
           color="info"
           description="Ændringer i sendeforhold træder først i kraft når de er gemt og udstyret har opsamlet de
-          nye sendeforhold."
+          nye sendeforhold. OBS. Alle tidsserie med samme terminal vil få samme sendeforhold."
         >
           <Typography variant="body1">Ønsket sendeforhold</Typography>
         </TooltipWrapper>
