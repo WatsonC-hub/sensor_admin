@@ -55,7 +55,7 @@ export default function AddUnitForm({
     trigger,
     setValue,
     handleSubmit,
-    formState: {isSubmitting},
+    formState: {isSubmitting, isSubmitSuccessful, isSubmitted},
   } = useFormContext<AddUnit>();
 
   const [unitData, setUnitData] = useState({
@@ -307,7 +307,13 @@ export default function AddUnitForm({
                 )}
                 bttype="primary"
                 startIcon={mode === 'edit' ? <Save /> : undefined}
-                disabled={isSubmitting || unitData.calypso_id === '-1' || unitData.uuid === ''}
+                disabled={
+                  isSubmitting ||
+                  isSubmitSuccessful ||
+                  isSubmitted ||
+                  unitData.calypso_id === '-1' ||
+                  unitData.uuid === ''
+                }
               >
                 {mode === 'edit' ? 'Gem' : 'Tilføj'}
               </Button>
