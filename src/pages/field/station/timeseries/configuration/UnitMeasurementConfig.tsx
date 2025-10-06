@@ -18,6 +18,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {APIError} from '~/queryClient';
 import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useUser} from '~/features/auth/useUser';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
@@ -61,6 +62,7 @@ const getOptions = (sampleInterval: number | undefined) => {
 const UnitMeasurementConfig = () => {
   const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const {data, isLoading, error} = useTimeseriesMeasureSampleSend(ts_id);
+  const {data: timeseriesData} = useTimeseriesData(ts_id);
   const {data: currentLocation} = useMapOverview({
     select: (data) => data.find((loc) => loc.loc_id === loc_id),
   });
@@ -89,6 +91,14 @@ const UnitMeasurementConfig = () => {
   useEffect(() => {
     if (data) setOptions(getOptions(data?.savedConfig?.sampleInterval));
   }, [data]);
+
+  if (timeseriesData?.calculated) {
+    return (
+      <Alert severity="info">
+        Det er ikke muligt at ændre måle- og sendeforhold på beregnede tidsserier.
+      </Alert>
+    );
+  }
 
   if (error)
     return (
@@ -152,7 +162,7 @@ const UnitMeasurementConfig = () => {
         <TooltipWrapper
           color="info"
           description="Ændringer i sendeforhold træder først i kraft når de er gemt og udstyret har opsamlet de
-          nye sendeforhold."
+          nye sendeforhold. OBS. Alle tidsserie med samme terminal vil få samme sendeforhold."
         >
           <Typography variant="body1">Ønsket sendeforhold</Typography>
         </TooltipWrapper>
