@@ -14,7 +14,7 @@ export type Configuration = {
   currentConfig: MeasureSampleSend | null;
   savedConfig: MeasureSampleSend | null;
   configPossible: boolean;
-  configState: 'inSync' | 'pending' | 'failed' | null;
+  configState: 'inSync' | 'pending' | 'failed' | 'outOfSync' | null;
   estimatedConfigChange: string | null;
 };
 

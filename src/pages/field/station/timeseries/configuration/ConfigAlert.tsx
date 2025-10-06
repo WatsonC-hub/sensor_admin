@@ -27,6 +27,16 @@ const ConfigAlert = ({status, handleResend}: Props) => {
           </Button>
         </Alert>
       );
+    case 'outOfSync':
+      return (
+        <Alert severity="error">
+          Tidsserien er ude af sync med udstyret. Dette kan være fordi enheden er konfigureret andet
+          sted fra. Vil du gensende konfigurationen?
+          <Button bttype="link" onClick={handleResend}>
+            Gensend
+          </Button>
+        </Alert>
+      );
     default:
       return null;
   }

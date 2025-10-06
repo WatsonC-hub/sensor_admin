@@ -187,7 +187,6 @@ const StationDrawer = () => {
           page: stationPages.TIDSSERIEKONFIGURATION,
           icon: <Settings />,
           requiredTsId: true,
-          disabled: metadata?.calculated,
           onHover: () =>
             metadata?.unit_uuid && handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!)),
           tooltip:
