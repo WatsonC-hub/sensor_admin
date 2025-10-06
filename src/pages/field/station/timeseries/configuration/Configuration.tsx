@@ -58,6 +58,7 @@ const Layout = ({children}: LayoutProps) => {
         border: '1px solid',
         borderColor: 'divider',
         borderRadius: 1,
+        maxWidth: 700,
       }}
     >
       {children}
