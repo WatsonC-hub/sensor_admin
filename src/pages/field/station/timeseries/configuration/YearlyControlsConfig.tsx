@@ -48,12 +48,12 @@ const YearlyControlsConfig = () => {
     resolver: zodResolver(yearlyControlsSchema),
     defaultValues: {
       controls_per_year: values?.controlsPerYear,
+      dummy: values ? Number(values.controlsPerYear?.toFixed(3)) : null,
       lead_time: values?.leadTime,
     },
     values: {
       controls_per_year: values?.controlsPerYear ?? null,
       lead_time: values?.leadTime ?? null,
-      dummy: values ? Number(values.controlsPerYear?.toFixed(3)) : undefined,
       selectValue: 1,
     },
     mode: 'onChange',
