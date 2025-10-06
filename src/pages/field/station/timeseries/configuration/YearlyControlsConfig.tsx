@@ -90,7 +90,7 @@ const YearlyControlsConfig = () => {
   const onSubmit = (data: ServiceIntervalSubmit) => {
     mutate(
       {
-        controls_per_year: data.controls_per_year,
+        controls_per_year: data.dummy !== null ? data.controls_per_year : null,
         lead_time: data.lead_time,
       },
       {
