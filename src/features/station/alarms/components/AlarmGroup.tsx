@@ -41,11 +41,11 @@ const AlarmGroup = ({disableClearable = false}: AlarmGroupProps) => {
           getOptionLabel={(o) => {
             return o.group_name;
           }}
-          label={'Lokationsgrupper'}
+          label={'Lokationsgrupper*'}
           fullWidth
           gridSizes={12}
           textFieldsProps={{
-            label: 'Lokationsgrupper',
+            label: 'Lokationsgrupper*',
             placeholder: ' Vælg lokationsgruppe...',
           }}
           selectOnFocus

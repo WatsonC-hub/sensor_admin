@@ -92,7 +92,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
             {alarmNotification.length > 0 && (
               <Box>
                 <Typography variant="body2" fontWeight={'bold'} height={34} alignContent={'center'}>
-                  Alarm notifikationer
+                  Notifikationer
                 </Typography>
                 <AlarmNotificationTable alarm_notifications={alarmNotification} />
               </Box>
@@ -101,9 +101,9 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
               <Box display={'flex'} flexDirection={'column'}>
                 <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
                   <Typography variant="body2" alignContent={'center'} fontWeight={'bold'}>
-                    Alarm Kontakter
+                    Kontakter
                   </Typography>
-                  <Tooltip title="Ingen historik tilgængelig" arrow>
+                  {/* <Tooltip title="Ingen historik tilgængelig" arrow>
                     <Box>
                       <IconButton
                         onClick={() => {
@@ -121,7 +121,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
                         </Typography>
                       </IconButton>
                     </Box>
-                  </Tooltip>
+                  </Tooltip> */}
                 </Box>
                 <AlarmContactTable alarmContacts={alarmContacts} />
               </Box>

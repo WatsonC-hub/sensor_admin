@@ -156,10 +156,11 @@ export const useTimeseriesStatus = (loc_id: number) => {
   });
 };
 
-type NotificationType = {
+export type NotificationType = {
   gid: number;
   name: string;
   flag: FlagEnum;
+  color: string;
 };
 
 export const useNotificationTypes = () => {

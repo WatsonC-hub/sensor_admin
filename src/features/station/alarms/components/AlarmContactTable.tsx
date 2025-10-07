@@ -59,7 +59,7 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
         },
       },
       {
-        header: 'Call',
+        header: 'Opkald',
         accessorKey: 'call',
         size: 20,
         maxSize: 20,
@@ -98,7 +98,7 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
     ),
     muiTablePaperProps: {
       sx: {
-        width: 'fit-content',
+        // width: 'fit-content',
         height: '100%',
       },
     },

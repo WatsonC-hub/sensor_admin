@@ -2,11 +2,12 @@ import React from 'react';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {AlarmsFormValues} from '../schema';
 import {useFormContext} from 'react-hook-form';
-import {Box, ButtonGroup, Chip, Typography, Button} from '@mui/material';
+import {Box, Chip, Typography} from '@mui/material';
 import {getColor} from '~/features/notifications/utils';
 import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import SouthIcon from '@mui/icons-material/South';
 import {useNotificationTypes, type NotificationType} from '~/hooks/query/useNotificationOverview';
+import Button from '~/components/Button';
 
 const AlarmNotificationTypedForm = createTypedForm<AlarmsFormValues>();
 
@@ -18,87 +19,85 @@ const AlarmNotificationForm = () => {
 
   return (
     <Box display={'flex'} flexDirection={'column'} width={'100%'} gap={1}>
-      <Typography>Brug knapperne for hurtigt at tilføje alarmer</Typography>
-      <Box display={'flex'} flexDirection={'row'}>
-        <ButtonGroup variant="outlined" aria-label="Basic button group">
-          <Button
-            sx={{
-              padding: '0 8px',
-              textTransform: 'initial',
-              backgroundColor: sensorColors[FlagEnum.CRITICAL].color,
-              color: 'white',
-              borderRadius: 2.5,
-              borderColor: sensorColors[FlagEnum.CRITICAL].color,
-            }}
-            onClick={() => {
-              setValue(
-                'notification_ids',
-                [
-                  ...new Set([
-                    ...Notification_ids,
-                    ...(data
-                      ?.filter((item) => item.flag === FlagEnum.CRITICAL)
-                      .map((item) => item.gid) ?? []),
-                  ]),
-                ],
-                {shouldDirty: true}
-              );
-            }}
-            endIcon={<SouthIcon sx={{width: '16px'}} />}
-          >
-            Kritisk
-          </Button>
-          <Button
-            sx={{
-              padding: '0 8px',
-              textTransform: 'initial',
-              backgroundColor: sensorColors[FlagEnum.WARNING].color,
-              borderColor: sensorColors[FlagEnum.WARNING].color,
-              color: 'white',
-              borderRadius: 2.5,
-            }}
-            onClick={() => {
-              setValue(
-                'notification_ids',
-                [
-                  ...new Set([
-                    ...Notification_ids,
-                    ...(data
-                      ?.filter((item) => item.flag === FlagEnum.WARNING)
-                      .map((item) => item.gid) ?? []),
-                  ]),
-                ],
-                {shouldDirty: true}
-              );
-            }}
-            endIcon={<SouthIcon sx={{width: '16px'}} />}
-          >
-            Opmærksom
-          </Button>
-          <Button
-            sx={{
-              padding: '0 8px',
-              textTransform: 'initial',
-              backgroundColor: sensorColors[FlagEnum.INFO].color,
-              borderColor: sensorColors[FlagEnum.INFO].color,
-              color: 'white',
-              borderRadius: 2.5,
-            }}
-            onClick={() => {
-              const alarmNotificationArray = [
+      <Box display={'flex'} flexDirection={'row'} gap={1} alignItems="center" flexWrap={'wrap'}>
+        <Button
+          bttype="primary"
+          sx={{
+            padding: '0 8px',
+            textTransform: 'initial',
+            backgroundColor: sensorColors[FlagEnum.CRITICAL].color,
+            color: 'white',
+            borderColor: sensorColors[FlagEnum.CRITICAL].color,
+          }}
+          onClick={() => {
+            setValue(
+              'notification_ids',
+              [
                 ...new Set([
                   ...Notification_ids,
-                  ...(data?.filter((item) => item.flag === FlagEnum.INFO).map((item) => item.gid) ??
-                    []),
+                  ...(data
+                    ?.filter((item) => item.flag === FlagEnum.CRITICAL)
+                    .map((item) => item.gid) ?? []),
                 ]),
-              ];
-              setValue('notification_ids', alarmNotificationArray, {shouldDirty: true});
-            }}
-            endIcon={<SouthIcon sx={{width: '16px'}} />}
-          >
-            Ukritisk
-          </Button>
-        </ButtonGroup>
+              ],
+              {shouldDirty: true}
+            );
+          }}
+          endIcon={<SouthIcon sx={{width: '16px'}} />}
+        >
+          Kritisk
+        </Button>
+        <Button
+          bttype="primary"
+          sx={{
+            padding: '0 8px',
+            textTransform: 'initial',
+            backgroundColor: sensorColors[FlagEnum.WARNING].color,
+            borderColor: sensorColors[FlagEnum.WARNING].color,
+            color: 'white',
+          }}
+          onClick={() => {
+            setValue(
+              'notification_ids',
+              [
+                ...new Set([
+                  ...Notification_ids,
+                  ...(data
+                    ?.filter((item) => item.flag === FlagEnum.WARNING)
+                    .map((item) => item.gid) ?? []),
+                ]),
+              ],
+              {shouldDirty: true}
+            );
+          }}
+          endIcon={<SouthIcon sx={{width: '16px'}} />}
+        >
+          Opmærksom
+        </Button>
+        <Button
+          bttype="primary"
+          sx={{
+            padding: '0 8px',
+            textTransform: 'initial',
+            backgroundColor: sensorColors[FlagEnum.INFO].color,
+            borderColor: sensorColors[FlagEnum.INFO].color,
+            color: 'white',
+          }}
+          onClick={() => {
+            const alarmNotificationArray = [
+              ...new Set([
+                ...Notification_ids,
+                ...(data?.filter((item) => item.flag === FlagEnum.INFO).map((item) => item.gid) ??
+                  []),
+              ]),
+            ];
+            setValue('notification_ids', alarmNotificationArray, {shouldDirty: true});
+          }}
+          endIcon={<SouthIcon sx={{width: '16px'}} />}
+        >
+          Ukritisk
+        </Button>
+        <Typography variant="body2">← tilføj notifikationer</Typography>
       </Box>
       <AlarmNotificationTypedForm.Autocomplete<NotificationType, true>
         options={data ?? []}
