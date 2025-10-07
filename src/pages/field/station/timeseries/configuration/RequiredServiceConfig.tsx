@@ -19,7 +19,7 @@ const requiredServiceSchema = z.object({
 });
 
 type RequiredServiceForm = {
-  required_service: boolean | undefined;
+  required_service: boolean;
 };
 
 const RequiredServiceConfig = () => {
@@ -36,7 +36,7 @@ const RequiredServiceConfig = () => {
     },
     mode: 'onTouched',
     values: {
-      required_service: values?.required_service,
+      required_service: values?.required_service ?? false,
     },
   });
 
@@ -67,9 +67,10 @@ const RequiredServiceConfig = () => {
           name="required_service"
           render={({field}) => (
             <FormControlLabel
-              control={<Checkbox {...field} checked={field.value} />}
+              control={<Checkbox checked={field.value} {...field} />}
               label="Skal driftes"
               disabled={dayjs(timeseries?.slutdato).isAfter(dayjs())}
+              {...field}
             />
           )}
         />
