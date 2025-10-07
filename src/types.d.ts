@@ -415,6 +415,9 @@ export type LocationTasks = {
   count: number;
   name: string;
   blocks_notifications: Array<number>;
+  tstype_name: string;
+  link_name: Array<string>;
+  ts_ids: Array<number>;
 };
 
 export type DataToShow = {
