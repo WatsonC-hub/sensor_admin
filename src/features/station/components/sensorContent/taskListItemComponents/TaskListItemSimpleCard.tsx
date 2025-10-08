@@ -11,6 +11,7 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useDisplayState} from '~/hooks/ui';
 import dayjs from 'dayjs';
 import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import {useUser} from '~/features/auth/useUser';
 
 type Props = {
   task: Task;
@@ -19,7 +20,7 @@ type Props = {
 const TaskListItemSimpleCard = ({task}: Props) => {
   const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
   const {station} = useNavigationFunctions();
-
+  const user = useUser();
   const defaultValues = useMemo(() => {
     if (!task) return;
     return {
@@ -79,22 +80,34 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                   }}
                   noCircle={true}
                 />
-                <Link
-                  onClick={() => station(task.ts_id)}
-                  color="inherit"
-                  variant="caption"
-                  underline="always"
-                  display="flex"
-                  flexWrap="wrap"
-                  gap={0.5}
-                  sx={{
-                    cursor: 'pointer',
-                    textDecorationColor: 'rgba(255, 255, 255, 0.6)',
-                  }}
-                >
-                  {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
-                  <Box>{task.name}</Box>
-                </Link>
+                <Box display="flex" flexDirection={'column'}>
+                  <Link
+                    onClick={() => station(task.ts_id)}
+                    color="inherit"
+                    variant="caption"
+                    underline="always"
+                    display="flex"
+                    flexWrap="wrap"
+                    gap={0.5}
+                    sx={{
+                      cursor: 'pointer',
+                      textDecorationColor: 'rgba(255, 255, 255, 0.6)',
+                    }}
+                  >
+                    {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
+                    <Box>{task.name}</Box>
+                  </Link>
+                  {task.sla && user?.superUser && (
+                    <Typography
+                      mt={-0.5}
+                      fontStyle={'italic'}
+                      fontWeight={'bold'}
+                      variant={'caption'}
+                    >
+                      Løsningsfrist: {task.sla.format('l')}
+                    </Typography>
+                  )}
+                </Box>
               </Box>
               {task.due_date && (
                 <Box display="flex" flexDirection={'row'} gap={1}>

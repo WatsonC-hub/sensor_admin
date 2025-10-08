@@ -3,7 +3,7 @@ import {Box} from '@mui/material';
 import React, {useCallback} from 'react';
 import WindowManager from '~/components/ui/WindowManager';
 import {DragDropProvider} from '@dnd-kit/react';
-import Map from '~/pages/Map';
+import TaskMap from '~/pages/Map';
 import TaskInfo from './TaskInfo';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {AppContext} from '~/state/contexts';
@@ -141,7 +141,7 @@ const Overview = () => {
           backgroundColor: 'primary.main',
         }}
       >
-        <Map key="taskmap" clickCallback={clickCallback} />
+        <TaskMap key="taskmap" clickCallback={clickCallback} />
       </Box>
       <DragDropProvider
         onDragStart={() => {
@@ -312,6 +312,7 @@ const Overview = () => {
           </WindowManager.Window>
         </WindowManager>
       </DragDropProvider>
+      {/* </Box> */}
       <ItineraryHighlighter />
       <LocationHighlighter
         selectedLocId={loc_id ? loc_id : boreholeno ? boreholeno : null}

@@ -50,7 +50,7 @@ type Props = {
   defaultValues?: Partial<FormValues>;
   children?: React.ReactNode;
   disabled?: boolean;
-  schema?: z.ZodObject<any, any, any>;
+  schema?: z.ZodType<any, any, any>;
 };
 
 const TaskFormContext = React.createContext(

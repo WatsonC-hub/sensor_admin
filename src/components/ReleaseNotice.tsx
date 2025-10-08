@@ -13,7 +13,7 @@ import {
 import Button from './Button';
 import {Close} from '@mui/icons-material';
 
-const RELEASE_NOTICE_KEY = 'fieldAppReleaseNotice_v2025_08';
+const RELEASE_NOTICE_KEY = 'fieldAppReleaseNotice_v2025_10';
 
 export default function ReleaseNoticeModal() {
   const [open, setOpen] = useState(false);
@@ -52,36 +52,34 @@ export default function ReleaseNoticeModal() {
       <DialogContent>
         <DialogContentText component="div" color="black">
           <Typography gutterBottom>
-            Vi har lanceret en ny og forbedret version af appen med fokus på{' '}
-            <strong>hurtigere navigation</strong>, <strong>bedre overblik</strong> og{' '}
-            <strong>nye funktioner</strong> til din hverdag – både i felten og på kontoret.
+            Vi har introduceret nye muligheder i appen, der giver dig større fleksibilitet med
+            <strong> konfigurering af sende- og måleforhold</strong> samt
+            <strong> kontrolhyppighed og forvarsling</strong> på tidsserier.
           </Typography>
 
           <Box component="ul" sx={{pl: 2, mt: 1, mb: 2}}>
-            <li>Ny navigation og layout – alt samlet ét sted</li>
-            <li>Flydende vinduer oven på kortet</li>
-            <li>Opdateret kort med bedre ikoner og visuelle forbedringer</li>
-            <li>Forbedret søgning og filtrering</li>
-            <li>Nye visninger: lokationer i kortudsnit</li>
-            <li>Hjælpetekster og links til dokumentation i appen</li>
+            <li>Konfigurer sende- og måleintervaller efter egne behov</li>
+            <li>Se de aktuelle standardindstillinger direkte på udstyret</li>
+            <li>Få vist hvornår terminalen forventes at opsamle nye indstillinger</li>
+            <li>Bestem hvor ofte kontrolmålinger skal udføres</li>
+            <li>Angiv forvarslingstid så kontrolopgaver vises i god tid</li>
           </Box>
 
           <Typography>
             📘{' '}
-            <Link href="https://www.watsonc.dk/guides/oversigt/" target="_blank" rel="noopener">
-              Bliv klogere på den nye app
+            <Link
+              href="https://www.watsonc.dk/guides/konfiguration-af-tidsserie/"
+              target="_blank"
+              rel="noopener"
+            >
+              Læs guiden om konfiguration
             </Link>
           </Typography>
           <Typography>
             📘{' '}
-            <Link href="https://www.watsonc.dk/guides/20-08-2025/" target="_blank" rel="noopener">
-              Læs release notes
+            <Link href="https://www.watsonc.dk/guides/01-10-2025/" target="_blank" rel="noopener">
+              Se release notes
             </Link>
-          </Typography>
-          <br />
-          <Typography>
-            ⚠️ <strong>OBS!</strong> Har du stadig brug for den gamle version? Linket til denne
-            finder du ved at trykke på de 3 prikker oppe i højre hjørne
           </Typography>
         </DialogContentText>
       </DialogContent>

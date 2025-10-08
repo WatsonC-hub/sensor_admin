@@ -79,6 +79,7 @@ export type Task = {
   can_edit: boolean;
   flag: FlagEnum;
   prefix: string | null;
+  sla: Dayjs | null;
 };
 
 export type TaskAPI = Omit<Task, 'due_date'> & {
