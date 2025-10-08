@@ -26,6 +26,7 @@ const Home = () => {
         {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
         {/* </TooltipWrapper> */}
         <Box display={'flex'}>
+          {user?.simpleTaskPermission && <NavBar.OwnTaskList />}
           <NavBar.LocationList />
           {user?.advancedTaskPermission && <NavBar.TripList />}
           <NavBar.Menu

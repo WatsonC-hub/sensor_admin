@@ -9,6 +9,8 @@ import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useDisplayState} from '~/hooks/ui';
+import dayjs from 'dayjs';
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 
 type Props = {
   task: Task;
@@ -96,7 +98,14 @@ const TaskListItemSimpleCard = ({task}: Props) => {
               </Box>
               {task.due_date && (
                 <Box display="flex" flexDirection={'row'} gap={1}>
-                  <PendingActionsIcon fontSize="small" />
+                  <PendingActionsIcon
+                    fontSize="small"
+                    sx={{
+                      color: dayjs(task.due_date).isBefore(dayjs(), 'day')
+                        ? sensorColors[FlagEnum.WARNING].color
+                        : 'white',
+                    }}
+                  />
                   <Typography variant="caption" noWrap>
                     {convertDate(task.due_date)}
                   </Typography>
