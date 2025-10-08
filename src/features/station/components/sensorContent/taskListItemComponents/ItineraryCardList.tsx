@@ -23,6 +23,8 @@ import Button from '~/components/Button';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import {isSimpleTask} from '~/features/tasks/helpers';
 import {useDisplayState} from '~/hooks/ui';
+import dayjs from 'dayjs';
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 
 interface ItineraryCardListProps {
   itinerary_id: string;
@@ -79,7 +81,14 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
           }}
           title={
             <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
-              <DriveEtaIcon />
+              <DriveEtaIcon
+                sx={{
+                  color:
+                    itinerary?.due_date && dayjs(itinerary?.due_date).isBefore(dayjs(), 'day')
+                      ? sensorColors[FlagEnum.WARNING].color
+                      : 'white',
+                }}
+              />
               <Box display={'flex'} flexDirection={'column'}>
                 <Link
                   sx={{cursor: 'pointer', textDecorationColor: 'rgba(255, 255, 255, 0.5)'}}
