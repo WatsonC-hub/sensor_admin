@@ -30,7 +30,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
 
   const [contactsCollapsed, setContactsCollapsed] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [draftAlarm, setDraftAlarm] = useState<AlarmsFormValues | undefined>(undefined);
+  // const [draftAlarm, setDraftAlarm] = useState<AlarmsFormValues | undefined>(undefined);
 
   const {post: postAlarm, put: putAlarm} = useAlarm();
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
@@ -45,6 +45,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
       notification_ids: alarm?.alarm_notifications ?? [],
       contacts: alarm?.alarm_contacts || [],
       comment: alarm?.comment || '',
+      ts_id: ts_id,
     },
     values: alarm && {
       name: alarm.name,
@@ -52,20 +53,21 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
       notification_ids: alarm.alarm_notifications,
       contacts: alarm.alarm_contacts,
       comment: alarm.comment,
+      ts_id: ts_id,
     },
     mode: 'onTouched',
   });
 
-  const {reset, watch, setValue} = alarmMethods;
+  const {reset, watch, setValue, handleSubmit} = alarmMethods;
 
   const contacts = watch('contacts');
 
   const handleDelete = () => {
-    handleSubmit(draftAlarm!, true);
+    handleSubmit(submit);
     setDeleteDialogOpen(false);
   };
 
-  const handleSubmit = (data: AlarmsFormValues, forceSubmit?: boolean) => {
+  const submit = (data: AlarmsFormValues) => {
     if (alarm === undefined) {
       const payload = {
         path: `${ts_id}`,
@@ -79,19 +81,6 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         },
       });
     } else {
-      if (
-        forceSubmit !== true &&
-        alarm?.group_id !== undefined &&
-        alarm?.group_id !== '' &&
-        (data.group_id === undefined || data.group_id === null || data.group_id === '')
-      ) {
-        setDeleteDialogOpen(true);
-        setDraftAlarm(data);
-        return;
-      } else {
-        setDraftAlarm(undefined);
-      }
-
       const payload = {
         path: `${alarm.id}`,
         data: data,
@@ -106,6 +95,19 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     }
   };
 
+  const handleSave = (data: AlarmsFormValues) => {
+    if (
+      alarm?.group_id !== undefined &&
+      alarm?.group_id !== '' &&
+      alarm?.group_id !== null &&
+      data.group_id
+    ) {
+      setDeleteDialogOpen(true);
+      return;
+    }
+    submit(data);
+  };
+
   return (
     <>
       <Form formMethods={alarmMethods}>
@@ -115,25 +117,25 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
           placeholder="f.eks. Kritiske notifikationer"
           gridSizes={{xs: 12}}
         />
-        {!alarm && (
-          <Box display="flex" alignItems="center" gap={2}>
-            <Typography variant="subtitle1">Hvor skal alarmen tilknyttes?</Typography>
-            <ButtonGroup>
-              <Button
-                bttype={onGroup ? 'tertiary' : 'primary'}
-                onClick={() => {
-                  setOnGroup(false);
-                  setValue('group_id', null);
-                }}
-              >
-                Tidsserie
-              </Button>
-              <Button bttype={onGroup ? 'primary' : 'tertiary'} onClick={() => setOnGroup(true)}>
-                Gruppe
-              </Button>
-            </ButtonGroup>
-          </Box>
-        )}
+
+        <Box display="flex" alignItems="center" gap={2}>
+          <Typography variant="subtitle1">Hvor skal alarmen tilknyttes?</Typography>
+          <ButtonGroup>
+            <Button
+              bttype={onGroup ? 'tertiary' : 'primary'}
+              onClick={() => {
+                setOnGroup(false);
+                setValue('group_id', null, {shouldDirty: true});
+              }}
+            >
+              Tidsserie
+            </Button>
+            <Button bttype={onGroup ? 'primary' : 'tertiary'} onClick={() => setOnGroup(true)}>
+              Gruppe
+            </Button>
+          </ButtonGroup>
+        </Box>
+
         {onGroup && <AlarmGroup disableClearable={typeof alarm?.group_id == 'string'} />}
         <AlarmNotificationForm />
 
@@ -165,7 +167,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
               setOpen(false);
             }}
           />
-          <Form.Submit submit={handleSubmit} />
+          <Form.Submit submit={handleSave} />
         </Box>
       </Form>
       <AlarmContactFormDialog
@@ -182,7 +184,6 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         dialogOpen={deleteDialogOpen}
         onCancel={() => {
           setDeleteDialogOpen(false);
-          setDraftAlarm(undefined);
         }}
         setDialogOpen={setDeleteDialogOpen}
         onOkDelete={handleDelete}
