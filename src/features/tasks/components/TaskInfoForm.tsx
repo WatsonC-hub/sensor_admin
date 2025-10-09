@@ -42,7 +42,11 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
       path: `${selectedTask.id}`,
       data: {ts_id: selectedTask.ts_id, ...values},
     };
-    patch.mutate(payload);
+    patch.mutate(payload, {
+      onSuccess: () => {
+        if (values.status_id === 3 || values.status_id === 34) setSelectedTask(null);
+      },
+    });
   };
 
   const handlePatch = async (field_name: keyof FieldValues) => {
@@ -108,7 +112,10 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.StatusSelect onBlurCallback={async () => await handlePatch('status_id')} />
+          <TaskForm.StatusSelect
+            disableClosedStatus={!selectedTask.is_created}
+            onBlurCallback={async () => await handlePatch('status_id')}
+          />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>

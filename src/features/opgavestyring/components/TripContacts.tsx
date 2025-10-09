@@ -63,7 +63,7 @@ const TripContacts = ({contacts}: TripContactsProps) => {
       ...(sharedTableOptions as Partial<MRT_TableOptions<TaskContact>>),
       renderTopToolbar: (
         <Typography variant="body1" pt={1} px={1}>
-          Kontakter
+          Skal kontaktes inden besøg
         </Typography>
       ),
     }),
