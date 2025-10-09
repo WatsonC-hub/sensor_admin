@@ -416,13 +416,14 @@ const ScannerAsTitle = () => {
       handleClose();
     }
   };
-
   return (
     <>
       <IconButton color="inherit" onClick={() => setOpen(true)}>
         <QrCodeScannerIcon />
-        {open && <CaptureDialog open={open} handleClose={handleClose} handleScan={handleScan} />}
       </IconButton>
+      {open && (
+        <CaptureDialog open={open} handleClose={() => setOpen(false)} handleScan={handleScan} />
+      )}
     </>
   );
 };

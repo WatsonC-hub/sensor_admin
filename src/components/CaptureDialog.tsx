@@ -9,6 +9,7 @@ import {IDetectedBarcode, Scanner as QrReader} from '@yudiel/react-qr-scanner';
 import React, {useEffect, useState} from 'react';
 
 import {TransitionProps} from '@mui/material/transitions';
+import NavBar from './NavBar';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {children: React.ReactElement<any, any>},
@@ -86,22 +87,11 @@ export default function CaptureDialog({handleClose, handleScan, open}: CaptureDi
 
   return (
     <Dialog fullScreen open={open} onClose={handleClose} slots={{transition: Transition}}>
-      <AppBar>
-        <Toolbar>
-          <IconButton
-            edge="end"
-            color="inherit"
-            onClick={handleClose}
-            aria-label="close"
-            size="large"
-          >
-            <CloseIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+      <NavBar zIndex={1000}>
+        <NavBar.Close onClick={handleClose} />
+      </NavBar>
       <div
         style={{
-          marginTop: '56px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
