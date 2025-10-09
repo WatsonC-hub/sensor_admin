@@ -18,14 +18,9 @@ const Home = () => {
     <>
       <NavBar zIndex={100}>
         <NavBar.Logo />
-        {/* <TooltipWrapper
-          color="white"
-          url="https://www.watsonc.dk/guides/kortet/"
-          description="Læs mere om hvad du kan på kortet i Field appen"
-        > */}
-        {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
-        {/* </TooltipWrapper> */}
-        <Box display={'flex'}>
+        {!isMobile && <NavBar.Title title="Field" />}
+        <Box alignItems={'center'}>
+          {isMobile && <NavBar.Scanner />}
           {user?.simpleTaskPermission && <NavBar.OwnTaskList />}
           <NavBar.LocationList />
           {user?.advancedTaskPermission && <NavBar.TripList />}
