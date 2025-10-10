@@ -3,6 +3,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {APIError} from '~/queryClient';
 
 export type MeasureSampleSend = {
@@ -31,10 +32,12 @@ export const timeseriesMeasureSampleSendOptions = (ts_id: number) =>
   });
 
 export const useTimeseriesMeasureSampleSend = (ts_id: number) => {
+  const {data: timeseriesData} = useTimeseriesData(ts_id);
   const user = useUser();
   return useQuery({
     ...timeseriesMeasureSampleSendOptions(ts_id),
-    enabled: user?.features?.iotAccess && ts_id !== undefined,
+    enabled:
+      user?.features?.iotAccess && ts_id !== undefined && timeseriesData?.calculated === false,
   });
 };
 
