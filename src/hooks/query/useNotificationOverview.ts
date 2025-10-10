@@ -17,6 +17,7 @@ export interface MapOverview {
   itinerary_id: string | null;
   no_unit: boolean;
   inactive: boolean | null;
+  inactive_new: boolean | null;
   is_customer_service: boolean | null;
   projectno: string | null;
   has_task: boolean;

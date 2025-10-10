@@ -39,7 +39,7 @@ const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string:
  * if keepLocationsWithoutNotifications is false it will hide locations without notifications - inactive locations included.
  */
 const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
-  if (filter.nyOpsætning) return data.no_unit && data.inactive == true /* && !data.has_task*/; // måske skal man kunne have en opgave på nyopsætning?
+  if (filter.nyOpsætning) return data.no_unit && data.inactive_new != true; /* && !data.has_task; */ // måske skal man kunne have en opgave på nyopsætning?
   const customerServiceFilter = filter.showCustomerService == data.is_customer_service;
   const watsoncServiceFilter =
     filter.showWatsonCService == !data.is_customer_service || data.is_customer_service === null;
@@ -48,10 +48,15 @@ const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
     (watsoncServiceFilter && customerServiceFilter) ||
     (filter.showCustomerService && filter.showWatsonCService);
 
-  const activeFilter = data.inactive != true ? true : filter.showInactive || data.has_task;
+  const activeFilter =
+    !data.no_unit && data.inactive_new
+      ? filter.showInactive ||
+        data.has_task ||
+        (data.notification_ids ? data.notification_ids.length > 0 : false)
+      : true;
 
   const shouldHideWithoutUnits =
-    data.no_unit == true && !data.inactive ? filter.isSingleMeasurement : true;
+    data.no_unit && data.inactive_new ? filter.isSingleMeasurement : true;
 
   const keepLocationsWithoutNotifications =
     (!data.has_task || !data.due_date?.isBefore(dayjs().add(1, 'month'))) &&

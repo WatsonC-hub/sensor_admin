@@ -1,6 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, Checkbox, FormControlLabel} from '@mui/material';
+import {Alert, Box, Checkbox, FormControlLabel} from '@mui/material';
+
 import dayjs from 'dayjs';
 import React from 'react';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
@@ -46,6 +47,13 @@ const RequiredServiceConfig = () => {
     reset,
     formState: {isSubmitting, isDirty},
   } = formMethods;
+
+  if (timeseries?.calculated)
+    return (
+      <Alert severity="info">
+        Beregnede tidsserier arver driftforhold fra den tidsserie de er beregnet fra.
+      </Alert>
+    );
 
   if (isPending) {
     return (

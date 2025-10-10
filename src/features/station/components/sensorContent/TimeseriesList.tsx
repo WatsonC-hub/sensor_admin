@@ -117,7 +117,7 @@ const TimeseriesList = () => {
                   notification_id: timeseries.notification_id,
                   flag: timeseries.flag,
                   no_unit: timeseries.no_unit,
-                  inactive: timeseries.inactive,
+                  inactive_new: timeseries.inactive,
                 }}
               />
               <Typography fontSize={'small'} width={'fit-content'}>
