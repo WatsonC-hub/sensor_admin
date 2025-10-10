@@ -149,7 +149,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                     {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
                     <Box>{task.name}</Box>
                   </Link>
-                  {task.sla && user?.superUser && (
+                  {!task.is_created && task.sla && user?.superUser && (
                     <Typography
                       mt={-0.5}
                       fontStyle={'italic'}
