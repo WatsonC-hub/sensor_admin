@@ -9,6 +9,7 @@ import {
   Router,
   Settings,
 } from '@mui/icons-material';
+import AlarmIcon from '@mui/icons-material/Alarm';
 import {
   Drawer,
   Box,
@@ -183,6 +184,14 @@ const StationDrawer = () => {
           tooltip: 'På denne side kan du justere advarsler for din tidsserie.',
         },
         {
+          text: 'Alarmer',
+          page: stationPages.ALARM,
+          icon: <AlarmIcon />,
+          requiredTsId: true,
+          onHover: () => null,
+          disabled: !user?.superUser,
+        },
+        {
           text: 'Konfiguration',
           page: stationPages.TIDSSERIEKONFIGURATION,
           icon: <Settings />,
@@ -308,7 +317,10 @@ const StationDrawer = () => {
             let timer = 0;
 
             const mouseEnter = () => {
-              timer = setTimeout(item.onHover ? item.onHover : () => {}, 100);
+              timer = setTimeout(
+                item.onHover && pageToShow !== item.page ? item.onHover : () => {},
+                100
+              );
             };
 
             const mouseLeave = () => {

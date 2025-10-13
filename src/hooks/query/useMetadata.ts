@@ -4,6 +4,7 @@ import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
+import {Group} from '~/types';
 
 type Metadata = {
   loc_id: number;
@@ -28,7 +29,7 @@ type Metadata = {
   boreholeno: string;
   suffix: string | undefined;
   intakeno: number;
-  groups: string[];
+  groups: Group[];
   unit: string;
   prefix: string | null;
   unit_uuid: string | null;
@@ -36,8 +37,8 @@ type Metadata = {
 
 type LocationMetadata = {
   loc_id: number;
-  loc_name: string;
   boreholeno: string | undefined;
+  loc_name: string;
   suffix: string | undefined;
   mainloc: string;
   subloc: string;
@@ -47,7 +48,7 @@ type LocationMetadata = {
   y: number;
   terrainlevel: number;
   terrainqual: string;
-  groups: string[];
+  groups: Group[];
   projectno: string | undefined;
   unit_uuid: string | undefined | null;
   timeseries: Array<{

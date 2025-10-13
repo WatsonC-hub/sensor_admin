@@ -9,7 +9,6 @@ import {z} from 'zod';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import useLocationForm from '~/features/station/api/useLocationForm';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
 import {BaseLocation} from '~/features/station/schema';
@@ -20,7 +19,6 @@ import {useAppContext} from '~/state/contexts';
 const EditLocation = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const {data: metadata} = useLocationData();
-  const {data: unit_history} = useUnitHistory();
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
@@ -41,12 +39,12 @@ const EditLocation = () => {
   const default_data = {...metadata, initial_project_no: metadata?.projectno} as BaseLocation;
 
   const [formMethods, LocationForm, locationSchema] = useLocationForm({
-    mode: 'Edit',
     defaultValues: default_data,
-    initialLocTypeId: metadata?.loctype_id,
+    mode: 'Edit',
     context: {
-      loc_id: loc_id,
+      loc_id,
     },
+    initialLocTypeId: metadata?.loctype_id,
   });
 
   const {
@@ -59,7 +57,7 @@ const EditLocation = () => {
     if (metadata != undefined) {
       reset(default_data);
     }
-  }, [metadata, unit_history]);
+  }, [metadata]);
 
   const Submit: (data: z.infer<typeof locationSchema>) => void = (data) => {
     const payload = {

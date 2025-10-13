@@ -50,7 +50,6 @@ const getOptions = <TData extends MRT_RowData>(
         flex: '1 1 0',
         display: 'flex',
         flexFlow: 'column',
-        boxShadow: '3',
         zIndex: 0,
         borderRadius: 4,
         borderWidth: 1,
