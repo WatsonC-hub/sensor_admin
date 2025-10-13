@@ -21,7 +21,7 @@ const AlarmNotificationForm = () => {
     <Box display={'flex'} flexDirection={'column'} width={'100%'} gap={1}>
       <Box display={'flex'} flexDirection={'row'} gap={1} alignItems="center" flexWrap={'wrap'}>
         <Button
-          bttype="primary"
+          bttype="tertiary"
           sx={{
             padding: '0 8px',
             textTransform: 'initial',
@@ -48,7 +48,7 @@ const AlarmNotificationForm = () => {
           Kritisk
         </Button>
         <Button
-          bttype="primary"
+          bttype="tertiary"
           sx={{
             padding: '0 8px',
             textTransform: 'initial',
@@ -75,7 +75,7 @@ const AlarmNotificationForm = () => {
           Opmærksom
         </Button>
         <Button
-          bttype="primary"
+          bttype="tertiary"
           sx={{
             padding: '0 8px',
             textTransform: 'initial',
@@ -152,21 +152,18 @@ const AlarmNotificationForm = () => {
         renderOption={(props, option) => {
           return (
             <li {...props} key={option.gid}>
-              <Typography
-                display="inline"
-                variant="body2"
+              <Chip
+                variant="outlined"
+                label={option.name}
                 sx={{
                   backgroundColor: getColor({
                     flag: option.flag ?? 0,
                   }),
                   color: 'HighlightText',
                   opacity: 0.8,
-                  p: 0.5,
-                  borderRadius: 10,
                 }}
-              >
-                {option.name}
-              </Typography>
+                component={'div'}
+              />
             </li>
           );
         }}
