@@ -39,7 +39,7 @@ const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string:
  * if keepLocationsWithoutNotifications is false it will hide locations without notifications - inactive locations included.
  */
 const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
-  if (filter.nyOpsætning) return data.no_unit && data.inactive_new != true; /* && !data.has_task; */ // måske skal man kunne have en opgave på nyopsætning?
+  if (filter.nyOpsætning) return data.no_unit && data.inactive_new == true; /* && !data.has_task; */ // måske skal man kunne have en opgave på nyopsætning?
   const customerServiceFilter = filter.showCustomerService == data.is_customer_service;
   const watsoncServiceFilter =
     filter.showWatsonCService == !data.is_customer_service || data.is_customer_service === null;

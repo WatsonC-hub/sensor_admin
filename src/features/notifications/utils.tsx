@@ -55,7 +55,7 @@ export const getColor = (iconDetails: IconDetails) => {
       return sensorColors[FlagEnum.INFO].color;
     return sensorColors[FlagEnum.OK].color;
   }
-  if (iconDetails?.no_unit == true && iconDetails?.inactive_new == false)
+  if (iconDetails?.no_unit == true && iconDetails?.inactive_new == true)
     return sensorColors[NotificationEnum.NO_UNIT].color; // Nyopsætning
 
   if (iconDetails?.inactive_new == true) return sensorColors[NotificationEnum.INACTIVE].color; // Inaktiv
