@@ -16,8 +16,9 @@ export interface MapOverview {
   parking_id: number | null;
   itinerary_id: string | null;
   no_unit: boolean;
-  inactive: boolean | null;
-  inactive_new: boolean | null;
+  not_serviced: boolean;
+  inactive: boolean;
+  in_service: boolean;
   is_customer_service: boolean | null;
   projectno: string | null;
   has_task: boolean;
@@ -68,7 +69,9 @@ interface TimeseriesStatus {
   has_task: boolean;
   due_date: string | null;
   no_unit: boolean;
+  not_serviced: boolean;
   inactive: boolean | null;
+  in_service: boolean | null;
   projectno: string | null;
   is_customer_service: boolean | null;
 }

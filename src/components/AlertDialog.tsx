@@ -1,31 +1,29 @@
-import {DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
+import {
+  DialogActions,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@mui/material';
 import React from 'react';
-import Button from './Button';
 
 interface AlertProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   title: string;
   message: string;
-  handleOpret: (required_service?: boolean) => void;
-  step?: number;
+  handleOpret: () => void;
 }
 
-export default function AlertDialog({
-  open,
-  setOpen,
-  title,
-  message,
-  handleOpret,
-  step,
-}: AlertProps) {
+export default function AlertDialog({open, setOpen, title, message, handleOpret}: AlertProps) {
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleContinue = (required_service?: boolean) => {
+  const handleContinue = () => {
     setOpen(false);
-    handleOpret(required_service);
+    handleOpret();
   };
 
   return (
@@ -41,23 +39,8 @@ export default function AlertDialog({
           <DialogContentText id="alert-dialog-description">{message}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button bttype="tertiary" onClick={handleClose}>
-            Annuller
-          </Button>
-          {step === 1 ? (
-            <>
-              <Button bttype="tertiary" onClick={() => handleContinue(false)}>
-                Nej
-              </Button>
-              <Button bttype="primary" onClick={() => handleContinue(true)}>
-                Ja
-              </Button>
-            </>
-          ) : (
-            <Button bttype="primary" onClick={() => handleContinue()}>
-              Fortsæt
-            </Button>
-          )}
+          <Button onClick={handleClose}>Annuller</Button>
+          <Button onClick={handleContinue}>Fortsæt</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

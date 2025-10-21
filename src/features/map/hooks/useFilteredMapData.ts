@@ -39,35 +39,44 @@ const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string:
  * if keepLocationsWithoutNotifications is false it will hide locations without notifications - inactive locations included.
  */
 const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
-  if (filter.nyOpsætning) return data.no_unit && data.inactive_new == true; /* && !data.has_task; */ // måske skal man kunne have en opgave på nyopsætning?
-  const customerServiceFilter = filter.showCustomerService == data.is_customer_service;
+  const isNewInstallation = data.not_serviced && data.inactive && !data.in_service;
+
+  const isSingleMeasurement = !data.not_serviced && data.inactive && data.in_service;
+
+  const isInactive = data.inactive && !data.not_serviced && !data.in_service;
+
+  if (filter.nyOpsætning) return isNewInstallation;
+  const customerServiceFilter = filter.showCustomerService === data.is_customer_service;
   const watsoncServiceFilter =
-    filter.showWatsonCService == !data.is_customer_service || data.is_customer_service === null;
+    filter.showWatsonCService === !data.is_customer_service || data.is_customer_service === null;
 
   const serviceFilter =
     (watsoncServiceFilter && customerServiceFilter) ||
     (filter.showCustomerService && filter.showWatsonCService);
 
-  const activeFilter =
-    !data.no_unit && data.inactive_new
-      ? filter.showInactive ||
-        data.has_task ||
-        (data.notification_ids ? data.notification_ids.length > 0 : false)
-      : true;
+  const shouldHideSingleMeasurements =
+    isSingleMeasurement && !isInactive && !isNewInstallation ? filter.isSingleMeasurement : true;
 
-  const shouldHideWithoutUnits =
-    data.no_unit && data.inactive_new ? filter.isSingleMeasurement : true;
+  const activeFilter = isInactive
+    ? filter.showInactive ||
+      data.has_task ||
+      (data.notification_ids ? data.notification_ids.length > 0 : false)
+    : true;
 
   const keepLocationsWithoutNotifications =
     (!data.has_task || !data.due_date?.isBefore(dayjs().add(1, 'month'))) &&
     !data.itinerary_id &&
     data.flag === null &&
-    !data.no_unit
+    !isNewInstallation &&
+    !isSingleMeasurement
       ? !filter.hideLocationsWithoutNotifications
       : true;
 
   return (
-    keepLocationsWithoutNotifications && activeFilter && serviceFilter && shouldHideWithoutUnits
+    keepLocationsWithoutNotifications &&
+    activeFilter &&
+    serviceFilter &&
+    shouldHideSingleMeasurements
   );
 };
 

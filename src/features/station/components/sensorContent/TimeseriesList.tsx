@@ -116,8 +116,9 @@ const TimeseriesList = () => {
                 iconDetails={{
                   notification_id: timeseries.notification_id,
                   flag: timeseries.flag,
-                  no_unit: timeseries.no_unit,
-                  inactive_new: timeseries.inactive,
+                  not_serviced: timeseries.not_serviced,
+                  inactive: timeseries.inactive ?? true,
+                  in_service: timeseries.in_service ?? false,
                 }}
               />
               <Typography fontSize={'small'} width={'fit-content'}>
