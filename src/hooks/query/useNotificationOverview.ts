@@ -18,6 +18,7 @@ export interface MapOverview {
   no_unit: boolean;
   not_serviced: boolean;
   inactive: boolean;
+  inactive_new: boolean;
   in_service: boolean;
   is_customer_service: boolean | null;
   projectno: string | null;

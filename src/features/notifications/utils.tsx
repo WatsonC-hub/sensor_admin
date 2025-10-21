@@ -57,14 +57,14 @@ export const getColor = (iconDetails: IconDetails) => {
   }
   if (
     iconDetails?.not_serviced == true &&
-    iconDetails?.inactive == true &&
+    iconDetails?.inactive_new == true &&
     iconDetails?.in_service == false
   )
     return sensorColors[NotificationEnum.NO_UNIT].color; // Nyopsætning
 
   if (
     iconDetails.not_serviced === false &&
-    iconDetails?.inactive == true &&
+    iconDetails?.inactive_new == true &&
     iconDetails?.in_service == false
   )
     return sensorColors[NotificationEnum.INACTIVE].color; // Inaktiv

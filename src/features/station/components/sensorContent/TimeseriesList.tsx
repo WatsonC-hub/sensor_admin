@@ -117,8 +117,8 @@ const TimeseriesList = () => {
                   notification_id: timeseries.notification_id,
                   flag: timeseries.flag,
                   not_serviced: timeseries.not_serviced,
-                  inactive: timeseries.inactive ?? true,
-                  in_service: timeseries.in_service ?? false,
+                  inactive_new: timeseries.inactive === null ? true : timeseries.inactive,
+                  in_service: timeseries.in_service === null ? false : timeseries.in_service,
                 }}
               />
               <Typography fontSize={'small'} width={'fit-content'}>
