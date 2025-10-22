@@ -73,14 +73,18 @@ const watlevmpAddSchema = z.object({
     .min(3, {message: 'Beskrivelse skal være mindst 3 tegn'}),
 });
 
-const addUnitSchema = z.object({
-  unit_uuid: z.string(),
-  startdate: zodDayjs('Startdato skal udfyldes').optional(),
-});
+const addUnitSchema = z
+  .object({
+    unit_uuid: z.string({required_error: 'Vælg calypso ID'}).min(1, {message: 'Vælg calypso ID'}),
+    startdate: zodDayjs('Startdato skal udfyldes'),
+  })
+  .refine((unit) => unit.startdate !== undefined, {
+    message: 'Startdato skal udfyldes',
+  });
 
 const editUnitSchema = z
   .object({
-    unit_uuid: z.string(),
+    unit_uuid: z.string().min(1, {message: 'Vælg calypso ID'}),
     startdate: zodDayjs('Startdato skal udfyldes'),
     enddate: zodDayjs('Slutdato skal udfyldes'),
   })
