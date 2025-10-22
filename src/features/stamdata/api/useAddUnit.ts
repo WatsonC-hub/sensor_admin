@@ -1,6 +1,5 @@
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {Dayjs} from 'dayjs';
-import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
@@ -94,7 +93,6 @@ export const useUnit = () => {
       queryClient.invalidateQueries({
         queryKey: ['register', ts_id],
       });
-      toast.success('Enhed gemt');
     },
     meta: {
       invalidates: [['metadata']],
