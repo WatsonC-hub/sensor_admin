@@ -80,12 +80,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const {data: edgeDates} = useEdgeDates(ts_id);
   const theme = useTheme();
 
-  const showHistoricalJupiter =
-    boreholeno === null ||
-    timeseries_data?.tstype_id !== 1 ||
-    timeseries_data?.slutdato !== null ||
-    dayjs(timeseries_data?.slutdato).isAfter(dayjs());
-
   const layout: Partial<Layout> = {
     yaxis3: {
       visible: false,
@@ -96,7 +90,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     ...globalDefaultDataToShow,
     ...defaultDataToShow,
     ...dataToShowSelected,
-    ...(showHistoricalJupiter ? {Jupiter: false} : {}),
   };
 
   const {
@@ -221,7 +214,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       boreholeno !== null &&
       intakeno !== null &&
       timeseries_data?.tstype_id === 1 &&
-      (timeseries_data?.slutdato === null || dayjs(timeseries_data?.slutdato).isBefore(dayjs())) &&
       dataToShow.Jupiter,
   });
 

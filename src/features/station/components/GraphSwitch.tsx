@@ -1,5 +1,4 @@
 import {Box, FormControlLabel, Switch, Typography} from '@mui/material';
-import dayjs from 'dayjs';
 import {useSetAtom} from 'jotai';
 import React from 'react';
 import Button from '~/components/Button';
@@ -33,13 +32,7 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
   };
 
   const items = Object.entries(dataToShow).map(([key, value]) => {
-    if (
-      key === 'Jupiter' &&
-      (boreholeno === null ||
-        metadata?.tstype_id !== 1 ||
-        metadata?.slutdato !== null ||
-        dayjs(metadata?.slutdato).isAfter(dayjs()))
-    ) {
+    if ((key === 'Jupiter' && boreholeno === null) || metadata?.tstype_id !== 1) {
       return null;
     }
     return {
