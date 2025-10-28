@@ -128,7 +128,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
                         </Box>
                         <Typography variant="body2">{task.name}</Typography>
                       </Link>
-                      {task.sla && user?.superUser && (
+                      {!task.is_created && task.sla && user?.superUser && (
                         <Typography
                           mt={-0.5}
                           ml={3.5}
