@@ -79,17 +79,26 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const {data: graphData} = useGraphData(ts_id, xRange);
   const {data: edgeDates} = useEdgeDates(ts_id);
   const theme = useTheme();
-
   const layout: Partial<Layout> = {
     yaxis3: {
       visible: false,
     },
   };
 
+  const hideJupiterIfNotRelevant =
+    dataToShowSelected.Jupiter === undefined &&
+    boreholeno !== undefined &&
+    intakeno !== undefined &&
+    intakeno !== -1 &&
+    timeseries_data?.tstype_id === 1
+      ? timeseries_data.slutdato === null || dayjs(timeseries_data?.slutdato).isBefore(dayjs())
+      : !!dataToShowSelected.Jupiter;
+
   const dataToShow: DataToShow = {
     ...globalDefaultDataToShow,
     ...defaultDataToShow,
     ...dataToShowSelected,
+    Jupiter: hideJupiterIfNotRelevant,
   };
 
   const {
@@ -117,11 +126,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
         timeofmeas: dayjs(e.timeofmeas),
         pumpstop: e.pumpstop ? dayjs(e.pumpstop) : null,
       })),
-    enabled:
-      boreholeno !== undefined &&
-      boreholeno !== null &&
-      intakeno !== undefined &&
-      intakeno !== null,
+    enabled: boreholeno !== undefined && intakeno !== undefined && intakeno !== -1,
     placeholderData: [],
   });
 
@@ -133,11 +138,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       );
       return data;
     },
-    enabled:
-      boreholeno !== undefined &&
-      boreholeno !== null &&
-      intakeno !== undefined &&
-      intakeno !== null,
+    enabled: boreholeno !== undefined && intakeno !== undefined,
     placeholderData: [],
   });
 
@@ -211,8 +212,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     },
     enabled:
       boreholeno !== undefined &&
-      boreholeno !== null &&
-      intakeno !== null &&
+      intakeno !== undefined &&
+      intakeno !== -1 &&
       timeseries_data?.tstype_id === 1 &&
       dataToShow.Jupiter,
   });

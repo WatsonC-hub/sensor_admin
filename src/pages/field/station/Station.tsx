@@ -61,7 +61,12 @@ export default function Station() {
     /* Makes sure that if the location we are accessing has boreholeno and intakeno, then it adds these to the context so that we later can access them */
   }
   return (
-    <AppContextProvider values={{boreholeno: metadata?.boreholeno, intakeno: metadata?.intakeno}}>
+    <AppContextProvider
+      values={{
+        boreholeno: metadata?.boreholeno ?? undefined,
+        intakeno: metadata?.intakeno ?? undefined,
+      }}
+    >
       <Layout>
         {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling />}
         {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn />}

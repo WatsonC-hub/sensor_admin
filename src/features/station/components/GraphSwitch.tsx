@@ -32,7 +32,7 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
   };
 
   const items = Object.entries(dataToShow).map(([key, value]) => {
-    if ((key === 'Jupiter' && boreholeno === null) || metadata?.tstype_id !== 1) {
+    if (key === 'Jupiter' && (boreholeno === undefined || metadata?.tstype_id !== 1)) {
       return null;
     }
     return {
