@@ -19,7 +19,6 @@ type Props = {
 };
 
 const LocationListItem = ({itemData, onClick}: Props) => {
-  const user = useUser();
   const {tasks} = useTaskState();
   const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
   const {isMobile} = useBreakpoints();
@@ -28,6 +27,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
     data: {loc_id: itemData.loc_id},
     feedback: 'clone',
   });
+  const user = useUser();
 
   const TripIcon = getIcon(
     {
