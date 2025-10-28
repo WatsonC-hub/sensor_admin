@@ -10,9 +10,9 @@ import useTaskItinerary from '../api/useTaskItinerary';
 import {getIcon} from '~/features/notifications/utils';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
-import {useUser} from '~/features/auth/useUser';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useDisplayState} from '~/hooks/ui';
+import {useUser} from '~/features/auth/useUser';
 type Props = {
   itemData: MapOverview;
   onClick: () => void;
