@@ -9,9 +9,9 @@ import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useDisplayState} from '~/hooks/ui';
+import {useUser} from '~/features/auth/useUser';
 import dayjs from 'dayjs';
 import {FlagEnum, sensorColors} from '~/features/notifications/consts';
-import {useUser} from '~/features/auth/useUser';
 
 type Props = {
   task: Task;
