@@ -50,6 +50,8 @@ interface CaptureDialogProps {
 }
 
 export default function CaptureDialog({handleClose, handleScan, open}: CaptureDialogProps) {
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [hasPermission, setHasPermission] = useState(true);
   async function handleScanning(raw_data: IDetectedBarcode[]) {
     if (raw_data !== null && !running) {
@@ -78,6 +80,18 @@ export default function CaptureDialog({handleClose, handleScan, open}: CaptureDi
         }
       });
     }, 1000);
+
+    navigator.mediaDevices.enumerateDevices().then((deviceInfos) => {
+      const videoDevices = deviceInfos.filter((d) => d.kind === 'videoinput');
+      setDevices(videoDevices);
+
+      const backCam =
+        videoDevices.find((d) => d.label.toLowerCase().includes('back')) ||
+        videoDevices.find((d) => d.label.toLowerCase().includes('rear')) ||
+        videoDevices[videoDevices.length - 1];
+
+      if (backCam) setSelectedDeviceId(backCam.deviceId);
+    });
 
     return () => clearInterval(intervalId);
   }, []);
@@ -120,11 +134,14 @@ export default function CaptureDialog({handleClose, handleScan, open}: CaptureDi
             onScan={handleScanning}
             // onLoad={() => setShowText(false)}
             // constraints={{facingMode: 'environment', deviceId: 'environment'}}
-            constraints={{
-              facingMode: {
-                ideal: 'environment',
-              },
-            }}
+            // constraints={{
+            //   facingMode: {
+            //     ideal: 'environment',
+            //   },
+            // }}
+            constraints={
+              selectedDeviceId ? {deviceId: {exact: selectedDeviceId}} : {facingMode: 'environment'}
+            }
           />
         )}
       </div>

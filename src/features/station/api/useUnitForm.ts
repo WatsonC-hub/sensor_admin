@@ -9,11 +9,11 @@ type UseUnitFormProps<T> = {
   mode?: 'Add' | 'Edit';
 };
 
-const useUnitForm = <T extends Record<string, any>>({
+function useUnitForm<T extends Record<string, any>>({
   defaultValues,
   mode,
   schema,
-}: UseUnitFormProps<T>) => {
+}: UseUnitFormProps<T>) {
   const formMethods = useForm({
     resolver: (...opts) => {
       if (schema) return zodResolver(schema)(...opts);
@@ -29,6 +29,6 @@ const useUnitForm = <T extends Record<string, any>>({
   });
 
   return formMethods;
-};
+}
 
 export default useUnitForm;
