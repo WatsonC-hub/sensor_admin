@@ -39,9 +39,8 @@ const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string:
  * if keepLocationsWithoutNotifications is false it will hide locations without notifications - inactive locations included.
  */
 const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
-  const isNewInstallation = data.not_serviced && data.inactive_new && !data.in_service;
-
-  const isSingleMeasurement = !data.not_serviced && data.inactive_new && data.in_service;
+  const isNewInstallation =
+    data.not_serviced && data.inactive_new && !data.in_service && !data.has_task;
 
   const isInactive = data.inactive_new && !data.not_serviced && !data.in_service;
 
@@ -54,9 +53,6 @@ const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
     (watsoncServiceFilter && customerServiceFilter) ||
     (filter.showCustomerService && filter.showWatsonCService);
 
-  const shouldHideSingleMeasurements =
-    isSingleMeasurement && !isInactive && !isNewInstallation ? filter.isSingleMeasurement : true;
-
   const activeFilter = isInactive
     ? filter.showInactive ||
       data.has_task ||
@@ -66,18 +62,11 @@ const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
   const keepLocationsWithoutNotifications =
     (!data.has_task || !data.due_date?.isBefore(dayjs().add(1, 'month'))) &&
     !data.itinerary_id &&
-    data.flag === null &&
-    !isNewInstallation &&
-    !isSingleMeasurement
+    data.flag === null
       ? !filter.hideLocationsWithoutNotifications
       : true;
 
-  return (
-    keepLocationsWithoutNotifications &&
-    activeFilter &&
-    serviceFilter &&
-    shouldHideSingleMeasurements
-  );
+  return keepLocationsWithoutNotifications && activeFilter && serviceFilter;
 };
 
 const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
