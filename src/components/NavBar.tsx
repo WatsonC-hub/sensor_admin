@@ -332,7 +332,7 @@ const OwnTaskList = () => {
       sx={{
         height: 'fit-content',
         alignSelf: 'center',
-        mr: 1,
+        p: 1,
         cursor: 'pointer',
         '& .MuiBadge-badge': {
           // color: 'grey.800',
@@ -419,19 +419,12 @@ const ScannerAsTitle = () => {
 
   return (
     <>
-      <IconButton
-        sx={{
-          position: 'absolute',
-          left: '50%',
-          transform: 'translateX(-50%)',
-        }}
-        color="inherit"
-        onClick={() => setOpen(true)}
-        size="large"
-      >
+      <IconButton color="inherit" onClick={() => setOpen(true)}>
         <QrCodeScannerIcon />
       </IconButton>
-      {open && <CaptureDialog open={open} handleClose={handleClose} handleScan={handleScan} />}
+      {open && (
+        <CaptureDialog open={open} handleClose={() => setOpen(false)} handleScan={handleScan} />
+      )}
     </>
   );
 };
