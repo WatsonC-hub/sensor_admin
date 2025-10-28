@@ -27,7 +27,6 @@ const LocationListItem = ({itemData, onClick}: Props) => {
     data: {loc_id: itemData.loc_id},
     feedback: 'clone',
   });
-  const user = useUser();
 
   const TripIcon = getIcon(
     {
@@ -39,6 +38,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
   );
 
   const filteredTasks = tasks?.filter((task) => task.loc_id === itemData.loc_id);
+  const user = useUser();
 
   const {
     getItinerary: {data: itinerary},
