@@ -16,6 +16,7 @@ type LocationInfo = {
   ressources: string[];
   location_access: string[] | undefined;
   contact: boolean;
+  sla: number;
 };
 
 export const locationInfoOptions = (loc_id: number) =>
