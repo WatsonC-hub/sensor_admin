@@ -9,6 +9,7 @@ import {Person} from '@mui/icons-material';
 import useTaskItinerary from '../api/useTaskItinerary';
 import {getIcon} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
+import {useUser} from '~/features/auth/useUser';
 type Props = {
   itemData: MapOverview;
   onClick: () => void;
