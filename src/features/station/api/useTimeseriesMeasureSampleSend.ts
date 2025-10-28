@@ -58,5 +58,8 @@ export const useTimeseriesMeasureSampleSendMutation = (ts_id: number) => {
         queryKey: queryKeys.Timeseries.MeasureSampleSend(ts_id),
       });
     },
+    meta: {
+      invalidates: [['register']],
+    },
   });
 };
