@@ -27,6 +27,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
   );
 
   const filteredTasks = tasks?.filter((task) => task.loc_id === itemData.loc_id);
+  const user = useUser();
 
   const {
     getItinerary: {data: itinerary},
@@ -126,7 +127,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
                         </Box>
                         <Typography variant="body2">{task.name}</Typography>
                       </Link>
-                      {task.sla && (
+                      {task.sla && user?.superUser && (
                         <Typography
                           mt={-0.5}
                           ml={3.5}
