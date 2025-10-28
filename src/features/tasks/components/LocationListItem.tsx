@@ -11,15 +11,14 @@ import {getIcon} from '~/features/notifications/utils';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useUser} from '~/features/auth/useUser';
 import {useDisplayState} from '~/hooks/ui';
+import {useUser} from '~/features/auth/useUser';
 type Props = {
   itemData: MapOverview;
   onClick: () => void;
 };
 
 const LocationListItem = ({itemData, onClick}: Props) => {
-  const user = useUser();
   const {tasks} = useTaskState();
   const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
   const {isMobile} = useBreakpoints();
@@ -39,6 +38,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
   );
 
   const filteredTasks = tasks?.filter((task) => task.loc_id === itemData.loc_id);
+  const user = useUser();
 
   const {
     getItinerary: {data: itinerary},
@@ -107,39 +107,54 @@ const LocationListItem = ({itemData, onClick}: Props) => {
               return (
                 <Grid2 key={task.id} container p={1} alignItems={'center'} flexGrow={1}>
                   <Grid2 size={8} alignContent={'center'} flexGrow={1}>
-                    <Link
-                      display={'flex'}
-                      flexDirection={'row'}
-                      gap={1}
-                      underline="hover"
-                      sx={{
-                        width: 'fit-content',
-                        cursor: 'pointer',
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedTask(task.id);
-                      }}
-                    >
-                      <Box
+                    <Box display={'flex'} flexDirection={'column'}>
+                      <Link
                         display={'flex'}
                         flexDirection={'row'}
-                        color={'white'}
                         gap={1}
-                        alignItems={'center'}
+                        underline="hover"
+                        sx={{
+                          width: 'fit-content',
+                          cursor: 'pointer',
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedTask(task.id);
+                        }}
                       >
-                        <NotificationIcon
-                          iconDetails={{
-                            has_task: task.is_created,
-                            notification_id: task.is_created ? null : task.blocks_notifications[0],
-                            flag: task.is_created ? null : task.flag,
-                            itinerary_id: task.itinerary_id,
-                            due_date: task.due_date,
-                          }}
-                        />
-                      </Box>
-                      <Typography variant="body2">{task.name}</Typography>
-                    </Link>
+                        <Box
+                          display={'flex'}
+                          flexDirection={'row'}
+                          color={'white'}
+                          gap={1}
+                          alignItems={'center'}
+                        >
+                          <NotificationIcon
+                            iconDetails={{
+                              has_task: task.is_created,
+                              notification_id: task.is_created
+                                ? null
+                                : task.blocks_notifications[0],
+                              flag: task.is_created ? null : task.flag,
+                              itinerary_id: task.itinerary_id,
+                              due_date: task.due_date,
+                            }}
+                          />
+                        </Box>
+                        <Typography variant="body2">{task.name}</Typography>
+                      </Link>
+                      {!task.is_created && task.sla && user?.superUser && (
+                        <Typography
+                          mt={-0.5}
+                          ml={3.5}
+                          fontStyle={'italic'}
+                          fontWeight={'bold'}
+                          variant={'caption'}
+                        >
+                          SLA: {task.sla.format('l')}
+                        </Typography>
+                      )}
+                    </Box>
                   </Grid2>
                   <Grid2 size={4} display={'flex'} flexDirection={'column'} alignItems={'start'}>
                     {task.assigned_to && (

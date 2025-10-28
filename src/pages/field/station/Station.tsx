@@ -31,6 +31,8 @@ import {Fullscreen, FullscreenExit} from '@mui/icons-material';
 import GraphManager from '~/features/station/components/GraphManager';
 import EditLocation from './stamdata/EditLocation';
 import EditTimeseries from './stamdata/EditTimeseries';
+import TimeseriesConfiguration from './timeseries/configuration/Configuration';
+import LocationConfiguration from './location/Configuration';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -77,6 +79,11 @@ export default function Station() {
           <EditTimeseries />
         </StationPageBoxLayout>
       )}
+      {pageToShow === stationPages.TIDSSERIEKONFIGURATION && (
+        <StationPageBoxLayout>
+          <TimeseriesConfiguration />
+        </StationPageBoxLayout>
+      )}
       {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && <Algorithms />}
       {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && <QAHistory />}
       {pageToShow === stationPages.MAALEPUNKT && (
@@ -92,6 +99,11 @@ export default function Station() {
       {pageToShow === stationPages.KONTAKTER && user?.features.contacts && <ContactInfo />}
       {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && <Huskeliste />}
       {pageToShow === stationPages.BILLEDER && <ImagePage />}
+      {pageToShow === stationPages.LOKATIONKONFIGURATION && user?.superUser && (
+        <StationPageBoxLayout>
+          <LocationConfiguration />
+        </StationPageBoxLayout>
+      )}
     </Layout>
   );
 }
