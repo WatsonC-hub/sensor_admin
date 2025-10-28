@@ -58,8 +58,9 @@ const EditUnit = () => {
     enddate: unit?.slutdato,
   });
 
+  console.log(mode, 'mode');
   const formMethods = useUnitForm<EditUnitType>({
-    mode: mode ? 'Edit' : 'Add',
+    mode: unit?.gid && !openAddUdstyr ? 'Edit' : 'Add',
     defaultValues: defaultValues,
   });
 
