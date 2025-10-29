@@ -100,6 +100,9 @@ export const useContactInfo = (loc_id: number) => {
 
   const post = useMutation({
     ...contactInfoPostOptions,
+    onSuccess: () => {
+      toast.success('Kontakt information tilføjet');
+    },
     meta: {
       invalidates: [['metadata']],
     },

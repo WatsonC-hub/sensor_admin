@@ -157,7 +157,6 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
             resetToDefault(row.original);
             table.setEditingRow(row);
           }}
-          onDeleteBtnClick={() => {}}
         />
       ),
     onEditingRowCancel: ({table}) => {

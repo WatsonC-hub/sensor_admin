@@ -51,7 +51,6 @@ const FormInput = <TFieldValues extends FieldValues>({
       control={control}
       name={name}
       key={name}
-      // defaultvalue={get(defaultValues, name) === undefined ? '' : get(defaultValues, name)}
       rules={rules}
       render={({field: {value, onChange, onBlur, ref, name}}) => {
         if (type === 'datetime-local' && value) {
@@ -80,15 +79,6 @@ const FormInput = <TFieldValues extends FieldValues>({
               ref={ref}
               sx={{
                 pb: 1,
-                // '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-                // '& .MuiOutlinedInput-root': {
-                //   minHeight: '40px',
-                // },
-                // '.MuiFormHelperText-root': {
-                //   color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
-                //   position: 'absolute',
-                //   top: 'calc(100% - 8px)',
-                // },
                 ...sx,
               }}
               className={className ?? ''}

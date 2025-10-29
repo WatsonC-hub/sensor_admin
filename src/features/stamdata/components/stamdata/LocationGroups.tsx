@@ -1,16 +1,16 @@
-import {InputAdornment, Typography} from '@mui/material';
+import {InputAdornment, Link, Typography} from '@mui/material';
 import Autocomplete, {createFilterOptions} from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import {useQuery} from '@tanstack/react-query';
 import {Noop} from 'react-hook-form';
 
-import Button from '~/components/Button';
 import {getGroupLink} from '~/helpers/links';
 import {apiClient} from '~/apiClient';
 import {Group} from '~/types';
 import LinkableTooltip from '~/components/LinkableTooltip';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 const filter = createFilterOptions<Group>({
   ignoreCase: true,
@@ -38,6 +38,7 @@ const LocationGroups = ({
   creatable = true,
   fieldDescriptionText,
 }: LocationGroupsProps) => {
+  const {isMobile} = useBreakpoints();
   const {data: options} = useQuery({
     queryKey: queryKeys.Groups.all(),
     queryFn: async () => {
@@ -109,17 +110,17 @@ const LocationGroups = ({
             <Chip
               variant="outlined"
               label={
-                <Button
-                  bttype="link"
+                <Link
                   href={getGroupLink(option.id)}
-                  disabled={option.id === ''}
-                  target="_blank"
+                  target={!isMobile ? '_blank' : undefined}
+                  rel={!isMobile ? 'noopener' : undefined}
                 >
                   {content}
-                </Button>
+                </Link>
               }
               {...getTagProps({index})}
               key={index}
+              disabled={option.id === ''}
             />
           );
         });

@@ -43,14 +43,14 @@ const Unit = () => {
           {getValues('unit_uuid') === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
         </Button>
         {Object.keys(errors).length > 0 && (
-          <Typography variant="caption" color="error">
-            Vælg udstyr først
+          <Typography variant="caption" color="error" ml={1}>
+            Vælg udstyr først eller sørg for at rette fejl i formularen
           </Typography>
         )}
       </Box>
       <UnitForm mode="normal" />
       <AddUnitForm
-        mode="normal"
+        mode="add"
         udstyrDialogOpen={udstyrDialogOpen}
         setUdstyrDialogOpen={setUdstyrDialogOpen}
         tstype_id={tstype_id}

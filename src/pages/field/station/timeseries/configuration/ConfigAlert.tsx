@@ -15,13 +15,23 @@ const ConfigAlert = ({status, handleResend}: Props) => {
     case 'pending':
       return (
         <Alert severity="warning">
-          Tidsseriens konfiguration afventer at blive opsamlet af udstyret.
+          Seneste gemte konfiguration for denne tidsserie afventer at blive opsamlet af udstyret.
         </Alert>
       );
     case 'failed':
       return (
         <Alert severity="error">
           Tidsseriens konfiguration er ikke opsamlet af udstyret. Vil du gensende konfigurationen?{' '}
+          <Button bttype="link" onClick={handleResend}>
+            Gensend
+          </Button>
+        </Alert>
+      );
+    case 'outOfSync':
+      return (
+        <Alert severity="error">
+          Tidsserien er ude af sync med udstyret. Dette kan være fordi enheden er konfigureret andet
+          sted fra. Vil du gensende konfigurationen?
           <Button bttype="link" onClick={handleResend}>
             Gensend
           </Button>

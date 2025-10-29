@@ -25,6 +25,8 @@ import NotificationIcon from '~/pages/field/overview/components/NotificationIcon
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useDisplayState} from '~/hooks/ui';
 import {useUser} from '~/features/auth/useUser';
+import dayjs from 'dayjs';
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 
 type Props = {
   task: Task;
@@ -40,7 +42,10 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
     getStatus: {data: taskStatus},
   } = useTasks();
 
-  const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
+  const [selectedTask, setSelectedTask] = useDisplayState((state) => [
+    state.selectedTask,
+    state.setSelectedTask,
+  ]);
 
   const patchTaskStatus = (status_id: number) => {
     const data = {
@@ -52,7 +57,12 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
       data: data,
     };
 
-    updateTask.mutate(payload);
+    updateTask.mutate(payload, {
+      onSuccess: () => {
+        if ((status_id === 3 || status_id === 34) && selectedTask === task.id)
+          setSelectedTask(null);
+      },
+    });
   };
 
   const patchTaskAssignedTo = (assigned_to: string | null) => {
@@ -149,7 +159,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                     {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
                     <Box>{task.name}</Box>
                   </Link>
-                  {task.sla && user?.superUser && (
+                  {!task.is_created && task.sla && user?.superUser && (
                     <Typography
                       mt={-0.5}
                       fontStyle={'italic'}
@@ -163,7 +173,14 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
               </Box>
               {task.due_date && (
                 <Box display="flex" flexDirection={'row'} gap={1} alignItems={'center'}>
-                  <PendingActionsIcon />
+                  <PendingActionsIcon
+                    fontSize="small"
+                    sx={{
+                      color: dayjs(task.due_date).isBefore(dayjs(), 'day')
+                        ? sensorColors[FlagEnum.WARNING].color
+                        : 'white',
+                    }}
+                  />
                   <Typography variant="caption" noWrap>
                     {convertDate(task.due_date)}
                   </Typography>

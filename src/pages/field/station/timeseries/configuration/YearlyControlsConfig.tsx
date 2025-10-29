@@ -16,20 +16,12 @@ import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
 
 const yearlyControlsSchema = z.object({
-  controls_per_year: z
-    .number({required_error: 'Kontrol interval er påkrævet'})
-    .refine((val) => (val ? Number(val.toFixed(2)) : null))
-    .nullable(),
+  controls_per_year: z.number({required_error: 'Kontrol interval er påkrævet'}).nullable(),
+  // .refine((val) => (val == null ? null : val), 'Kontrol interval skal være et tal'),
+  dummy: z.number().nullish().optional(),
   lead_time: z.number({required_error: 'Forvarselstid er påkrævet'}).nullable(),
   selectValue: z.number().default(1),
 });
-
-type YearlyControlsForm = {
-  controls_per_year: number | null;
-  lead_time: number | null;
-  isCustomerService: boolean | undefined;
-  selectValue: number;
-};
 
 type ServiceIntervalSubmit = z.infer<typeof yearlyControlsSchema>;
 
@@ -52,17 +44,25 @@ const YearlyControlsConfig = () => {
   const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
   const {isMobile} = useBreakpoints();
 
-  const formMethods = useForm<YearlyControlsForm, unknown, ServiceIntervalSubmit>({
+  const formMethods = useForm<ServiceIntervalSubmit>({
     resolver: zodResolver(yearlyControlsSchema),
     defaultValues: {
       controls_per_year: values?.controlsPerYear,
-      isCustomerService: values?.isCustomerService,
+      dummy: values
+        ? values.controlsPerYear && values.controlsPerYear > 0
+          ? Number(values.controlsPerYear.toFixed(3))
+          : null
+        : null,
       lead_time: values?.leadTime,
     },
     values: {
       controls_per_year: values?.controlsPerYear ?? null,
       lead_time: values?.leadTime ?? null,
-      isCustomerService: values?.isCustomerService,
+      dummy: values
+        ? values.controlsPerYear && values.controlsPerYear > 0
+          ? Number(values.controlsPerYear.toFixed(3))
+          : null
+        : null,
       selectValue: 1,
     },
     mode: 'onChange',
@@ -71,12 +71,11 @@ const YearlyControlsConfig = () => {
   const {
     handleSubmit,
     reset,
-    formState: {isSubmitting, isDirty, dirtyFields},
+    formState: {isSubmitting, dirtyFields},
     setValue,
     watch,
   } = formMethods;
 
-  console.log(dirtyFields);
   const controlsPerYear = watch('controls_per_year');
   const selectValue = watch('selectValue');
 
@@ -89,12 +88,9 @@ const YearlyControlsConfig = () => {
   }
 
   const onSubmit = (data: ServiceIntervalSubmit) => {
-    if (data.selectValue === 2 && data.controls_per_year)
-      data.controls_per_year = Number((12 / data.controls_per_year).toFixed(2));
-
     mutate(
       {
-        controls_per_year: data.controls_per_year,
+        controls_per_year: data.dummy !== null ? data.controls_per_year : null,
         lead_time: data.lead_time,
       },
       {
@@ -107,7 +103,7 @@ const YearlyControlsConfig = () => {
     <FormProvider {...formMethods}>
       <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} alignItems={'center'}>
         <FormInput
-          name="controls_per_year"
+          name="dummy"
           label="Kontrolhyppighed"
           type="number"
           disabled={
@@ -115,6 +111,15 @@ const YearlyControlsConfig = () => {
             (!values?.isCustomerService && !user?.superUser)
           }
           fullWidth
+          onChangeCallback={(e) => {
+            if (typeof e == 'number') {
+              if (selectValue === 1) setValue('controls_per_year', Number(e), {shouldDirty: true});
+              else if (selectValue === 2 && Number(e) !== 0)
+                setValue('controls_per_year', Number((12 / Number(e)).toFixed(3)), {
+                  shouldDirty: true,
+                });
+            }
+          }}
           slotProps={{
             input: {
               endAdornment: (
@@ -125,6 +130,10 @@ const YearlyControlsConfig = () => {
                     variant="standard"
                     sx={{width: 150}}
                     defaultValue={1}
+                    disabled={
+                      (values?.isCustomerService && user?.superUser) ||
+                      (!values?.isCustomerService && !user?.superUser)
+                    }
                     slotProps={{
                       select: {
                         disableUnderline: true,
@@ -135,9 +144,13 @@ const YearlyControlsConfig = () => {
                         .target.value;
                       if (controlsPerYear) {
                         if (Number(value) === 1)
-                          setValue('controls_per_year', Number((12 / controlsPerYear).toFixed(2)));
+                          setValue('dummy', controlsPerYear, {
+                            shouldDirty: false,
+                          });
                         else if (Number(value) === 2)
-                          setValue('controls_per_year', Number((12 / controlsPerYear).toFixed(2)));
+                          setValue('dummy', Number((12 / controlsPerYear).toFixed(3)), {
+                            shouldDirty: false,
+                          });
                       }
                     }}
                   >
@@ -156,7 +169,7 @@ const YearlyControlsConfig = () => {
                 </Typography>
               ) : (
                 <Typography variant="caption">
-                  Kontrolmåles {Number((12 / controlsPerYear).toFixed(2))} gange om året
+                  Kontrolmåles {controlsPerYear} gange om året
                 </Typography>
               )
             ) : null
@@ -182,22 +195,25 @@ const YearlyControlsConfig = () => {
 
       <Box display="flex" justifyContent="flex-end">
         <Button
-          bttype="primary"
-          disabled={isSubmitting || !isDirty}
-          onClick={handleSubmit(onSubmit, (error) => console.log(error))}
-          startIcon={<Save />}
-        >
-          Gem
-        </Button>
-        <Button
           bttype="tertiary"
           onClick={() => {
             reset();
           }}
           disabled={isSubmitting}
-          sx={{marginLeft: 1}}
         >
           Annuller
+        </Button>
+        <Button
+          bttype="primary"
+          disabled={
+            isSubmitting ||
+            Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0
+          }
+          onClick={handleSubmit(onSubmit, (error) => console.log(error))}
+          startIcon={<Save />}
+          sx={{marginLeft: 1}}
+        >
+          Gem
         </Button>
       </Box>
     </FormProvider>

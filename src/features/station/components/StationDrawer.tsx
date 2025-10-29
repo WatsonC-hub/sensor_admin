@@ -196,9 +196,10 @@ const StationDrawer = () => {
           page: stationPages.TIDSSERIEKONFIGURATION,
           icon: <Settings />,
           requiredTsId: true,
-          disabled: metadata?.calculated,
           onHover: () =>
-            metadata?.unit_uuid && handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!)),
+            metadata?.unit_uuid &&
+            metadata?.calculated === false &&
+            handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!)),
           tooltip:
             'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
         },

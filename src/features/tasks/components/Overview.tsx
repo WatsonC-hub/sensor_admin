@@ -27,6 +27,8 @@ import {fullScreenAtom} from '~/state/atoms';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import LocationHighlighter from '~/features/map/components/LocationHighlighter';
 import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
+import OwnTaskList from './OwnTaskList';
+import {useUser} from '~/features/auth/useUser';
 
 const Overview = () => {
   const [, setPageToShow] = useStationPages();
@@ -47,6 +49,8 @@ const Overview = () => {
     setItineraryId,
     selectedTask,
     setSelectedTask,
+    own_task_list,
+    setOwnTaskList,
   ] = useDisplayState((state) => [
     state.loc_id,
     state.setLocId,
@@ -63,6 +67,8 @@ const Overview = () => {
     state.setItineraryId,
     state.selectedTask,
     state.setSelectedTask,
+    state.own_task_list,
+    state.setOwnTaskList,
   ]);
 
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
@@ -70,6 +76,7 @@ const Overview = () => {
   const {data: locationData} = useQuery(locationMetadataQueryOptions(loc_id || undefined));
   const {addLocationToTrip} = useTaskItinerary();
 
+  const user = useUser();
   const {isMobile, isTouch} = useBreakpoints();
   const fullScreen = useAtomValue(fullScreenAtom);
 
@@ -162,16 +169,27 @@ const Overview = () => {
           </WindowManager.Window>
 
           <WindowManager.Window
+            key="owntasklist"
+            priority={2}
+            mobilePriority={2}
+            show={own_task_list && user?.simpleTaskPermission === true}
+            minSize={1}
+            onClose={() => setOwnTaskList(false)}
+            sx={{
+              borderBottomLeftRadius: isMobile ? 0 : 3,
+            }}
+            height={isMobile ? '50%' : '100%'}
+          >
+            <OwnTaskList />
+          </WindowManager.Window>
+
+          <WindowManager.Window
             key="locationlist"
             priority={2}
             mobilePriority={2}
             show={loc_list}
             minSize={1}
-            onClose={() => {
-              // setSelectedData(null);
-              setLocList(false);
-            }}
-            // fullScreen={isMobile}
+            onClose={() => setLocList(false)}
             sx={{
               borderBottomLeftRadius: isMobile ? 0 : 3,
             }}
@@ -188,7 +206,6 @@ const Overview = () => {
             mobilePriority={3}
             height={'100%'}
             onClose={() => {
-              // setSelectedData(null);
               closeLocation();
               setSelectedTask(null);
             }}
@@ -208,7 +225,6 @@ const Overview = () => {
             show={boreholeno !== null}
             minSize={1}
             onClose={() => {
-              // setSelectedData(null);
               setBoreholeNo(null);
             }}
           >

@@ -7,7 +7,8 @@ import {useLocationInfo} from '../../api/useLocationInfo';
 import {useTimeseriesStatus} from '~/hooks/query/useNotificationOverview';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useDisplayState} from '~/hooks/ui';
-import Button from '~/components/Button';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useUser} from '~/features/auth/useUser';
 
 const LocationInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);
@@ -15,12 +16,14 @@ const LocationInfo = () => {
   const {data: location_data} = useLocationInfo(loc_id);
   const {data: timeseriesList} = useTimeseriesStatus(loc_id);
   const [, setPageToShow] = useStationPages();
+  const {isMobile} = useBreakpoints();
+  const user = useUser();
 
   return (
     <Box display={'flex'} flexDirection={'column'} mt={-2}>
       <Typography display={'flex'} flexDirection={'column'} variant={'h6'} fontWeight={'bold'}>
         {location_data?.loc_name}
-        {location_data?.sla && location_data.sla > 0 && (
+        {location_data?.sla && location_data.sla > 0 && user?.superUser && (
           <Typography mt={-1} ml={2} fontStyle={'italic'} fontWeight={'bold'} variant={'caption'}>
             SLA: {location_data?.sla} {location_data.sla > 1 ? 'dage' : 'dag'}
           </Typography>
@@ -48,8 +51,8 @@ const LocationInfo = () => {
             </Typography>
             <Link
               href={`https://www.watsonc.dk/calypso/projekt/?project=${location_data?.projectno}`}
-              target="_blank"
-              rel="noopener"
+              target={!isMobile ? '_blank' : undefined}
+              rel={!isMobile ? 'noopener' : undefined}
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -93,7 +96,12 @@ const LocationInfo = () => {
                     variant="outlined"
                     size="small"
                     label={
-                      <Link href={getGroupLink(group.id)} key={group.id}>
+                      <Link
+                        href={getGroupLink(group.id)}
+                        target={!isMobile ? '_blank' : undefined}
+                        rel={!isMobile ? 'noopener' : undefined}
+                        key={group.id}
+                      >
                         {group.group_name}
                       </Link>
                     }
@@ -167,19 +175,7 @@ const LocationInfo = () => {
                 <Chip
                   variant="outlined"
                   size="small"
-                  label={
-                    <Button
-                      bttype="link"
-                      sx={{
-                        textTransform: 'none',
-                        '&:hover': {
-                          backgroundColor: 'transparent',
-                        },
-                      }}
-                    >
-                      {key}
-                    </Button>
-                  }
+                  label={<Link>{key}</Link>}
                   onClick={() => {
                     setTsId(timeseriesList?.[0].ts_id ?? null);
                     setPageToShow('nøgler');
@@ -206,19 +202,7 @@ const LocationInfo = () => {
             <Chip
               variant="outlined"
               size="small"
-              label={
-                <Button
-                  bttype="link"
-                  sx={{
-                    textTransform: 'none',
-                    '&:hover': {
-                      backgroundColor: 'transparent',
-                    },
-                  }}
-                >
-                  {'Åbn kontakter'}
-                </Button>
-              }
+              label={<Link>{'Åbn kontakter'}</Link>}
               onClick={() => {
                 setTsId(timeseriesList?.[0].ts_id ?? null);
                 setPageToShow('kontakter');
