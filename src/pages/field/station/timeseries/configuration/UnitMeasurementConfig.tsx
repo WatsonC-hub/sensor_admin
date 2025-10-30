@@ -174,6 +174,7 @@ const UnitMeasurementConfig = () => {
       )}
       <ConfigAlert
         status={data?.configState || null}
+        timeseriesStatus={data?.currentPendingTimeseries || null}
         handleResend={handleSubmit((data) => mutate(data))}
       />
       <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} mb={-3}>
