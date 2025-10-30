@@ -6,11 +6,13 @@ import {watlevmpAddSchema} from '../schema';
 type UseWatlevmpFormProps<T> = {
   schema?: ZodType<T>;
   defaultValues?: DefaultValues<T>;
+  context?: Record<string, any>;
 };
 
-const useWatlevmpForm = <T extends Record<string, any>>({
+const useWatlevmpForm = <T extends Record<string, any> | undefined>({
   defaultValues,
   schema,
+  context,
 }: UseWatlevmpFormProps<T>) => {
   const formMethods = useForm({
     resolver: (...opts) => {
@@ -20,6 +22,7 @@ const useWatlevmpForm = <T extends Record<string, any>>({
     },
     defaultValues,
     mode: 'onTouched',
+    context,
   });
 
   return formMethods;

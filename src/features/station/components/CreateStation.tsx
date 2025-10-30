@@ -1,6 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import NavBar from '~/components/NavBar';
-import {Box, Grid2, Step, StepButton, StepLabel, Stepper, Typography} from '@mui/material';
+import {
+  Box,
+  Grid2,
+  IconButton,
+  Step,
+  StepButton,
+  StepLabel,
+  Stepper,
+  Typography,
+} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useLocationForm from '../api/useLocationForm';
 import {
@@ -28,7 +37,7 @@ import StamdataWatlevmp from './stamdata/StamdataWatlevmp';
 import DefaultWatlevmpForm from './stamdata/stamdataComponents/DefaultWatlevmpForm';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {toast} from 'react-toastify';
-import {ArrowBack, Save} from '@mui/icons-material';
+import {Add, ArrowBack, Remove, Save} from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AlertDialog from '~/components/AlertDialog';
 import {useLocationData} from '~/hooks/query/useMetadata';
@@ -38,6 +47,8 @@ import dayjs from 'dayjs';
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
   const [showAlert, setShowAlert] = useState(false);
+  const [addMeasurement, setAddMeasurement] = useState(false);
+  const [addContacts, setAddContacts] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
   const size = isMobile ? 12 : 6;
@@ -137,6 +148,9 @@ const CreateStation = () => {
   const watlevmpFormMethods = useWatlevmpForm<Watlevmp>({
     schema: watlevmpAddSchema,
     defaultValues: {},
+    context: {
+      required: tstype_id === 1 && addMeasurement,
+    },
   });
 
   const {
@@ -432,13 +446,6 @@ const CreateStation = () => {
               <StamdataTimeseries boreholeno={boreholeno}>
                 <Grid2 container size={12} spacing={1}>
                   <TimeseriesForm size={size} loc_name={loc_name} />
-                  <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
-                    <FormProvider {...watlevmpFormMethods}>
-                      <StamdataWatlevmp tstype_id={tstype_id}>
-                        <DefaultWatlevmpForm />
-                      </StamdataWatlevmp>
-                    </FormProvider>
-                  </Grid2>
                 </Grid2>
               </StamdataTimeseries>
             </FormProvider>
@@ -518,6 +525,41 @@ const CreateStation = () => {
               Gem & afslut
             </Button>
           </Grid2>
+          {tstype_id === 1 && (
+            <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
+              <Typography variant="body2" color="textSecondary">
+                Målepunkt
+              </Typography>
+              <IconButton size="small">
+                {!addMeasurement && (
+                  <Add fontSize="small" onClick={() => setAddMeasurement(true)} />
+                )}
+                {addMeasurement && (
+                  <Remove fontSize="small" onClick={() => setAddMeasurement(false)} />
+                )}
+              </IconButton>
+            </Box>
+          )}
+          {addMeasurement && (
+            <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
+              <FormProvider {...watlevmpFormMethods}>
+                <StamdataWatlevmp tstype_id={tstype_id}>
+                  <DefaultWatlevmpForm />
+                </StamdataWatlevmp>
+              </FormProvider>
+            </Grid2>
+          )}
+
+          <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
+            <Typography variant="body2" color="textSecondary">
+              Kontakter
+            </Typography>
+            <IconButton size="small">
+              {!addContacts && <Add fontSize="small" onClick={() => setAddContacts(true)} />}
+              {addContacts && <Remove fontSize="small" onClick={() => setAddContacts(false)} />}
+            </IconButton>
+          </Box>
+          <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}></Grid2>
         </Grid2>
       </Box>
       <AlertDialog
