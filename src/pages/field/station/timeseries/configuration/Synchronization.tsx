@@ -10,6 +10,7 @@ import {Box, Grid2, MenuItem} from '@mui/material';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {useUser} from '~/features/auth/useUser';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import useDmpAllowedMapList from '~/features/station/api/useDmpAllowedMapList';
 
 const SyncSchema = z.object({
   sync_dmp: z.boolean().optional(),
@@ -33,11 +34,9 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
   const user = useUser();
 
   const isJupiterType = [1, 11, 12, 16].includes(metadata?.tstype_id || 0);
-  const isDmpType = [1, 2, 8, 11].includes(metadata?.tstype_id || 0);
-  const isWaterCourseOrLake = location_data?.loctype_id === 1 || location_data?.loctype_id === 6;
   const isBorehole = location_data?.loctype_id === 9;
 
-  const canSyncDmp = isWaterCourseOrLake && isDmpType;
+  const isDmpAllowed = useDmpAllowedMapList(ts_id);
   const canSyncJupiter = isBorehole && isJupiterType;
 
   const {
@@ -108,39 +107,40 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
 
   useEffect(() => {
     if (metadata && location_data && user) {
-      setCanSync(!!((canSyncDmp && user?.superUser) || canSyncJupiter));
+      setCanSync(!!((isDmpAllowed && user?.superUser) || canSyncJupiter));
     }
   }, [metadata, location_data, user]);
 
   return (
     <Box display={'flex'} flexDirection="column">
-      {(canSyncDmp || canSyncJupiter) && (
+      {(isDmpAllowed || canSyncJupiter) && (
         <Form formMethods={syncMethods} gridSizes={12}>
           {canSyncJupiter && (
             <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til Jupiter">
               <Form.Checkbox name="jupiter" label="Jupiter" />
             </TooltipWrapper>
           )}
-          {canSyncDmp && user?.superUser && (
-            <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til DMP">
+          {isDmpAllowed && user?.superUser && (
+            <>
               <Form.Checkbox name="sync_dmp" label="DMP" disabled={sync_data?.sync_dmp} />
-              <Form.Input
-                select
-                name="owner_name"
-                label="Data ejer"
-                disabled={!syncDmp || sync_data?.sync_dmp}
-                gridSizes={6}
-              >
-                <MenuItem value="" disabled>
-                  Vælg data ejer
-                </MenuItem>
-                {owners?.map((owner) => (
-                  <MenuItem key={owner.cvr} value={owner.name}>
-                    {owner.name} ({owner.cvr})
+              <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til DMP">
+                <Form.Input
+                  select
+                  name="owner_name"
+                  label="Data ejer"
+                  disabled={!syncDmp || sync_data?.sync_dmp}
+                >
+                  <MenuItem value="" disabled>
+                    Vælg data ejer
                   </MenuItem>
-                ))}
-              </Form.Input>
-            </TooltipWrapper>
+                  {owners?.map((owner) => (
+                    <MenuItem key={owner.cvr} value={owner.name}>
+                      {owner.name} ({owner.cvr})
+                    </MenuItem>
+                  ))}
+                </Form.Input>
+              </TooltipWrapper>
+            </>
           )}
 
           <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">

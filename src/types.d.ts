@@ -442,3 +442,8 @@ type HorizontalLine = {
   line?: object;
   mode?: string;
 };
+
+export type DmpSyncValidCombination = {
+  loctype_id: number;
+  tstype_id: number;
+};
