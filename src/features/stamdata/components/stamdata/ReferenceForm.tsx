@@ -23,7 +23,7 @@ const schema = z
     gid: z.number().optional(),
     startdate: zodDayjs('Start dato skal være udfyldt'),
     enddate: zodDayjs('Slut dato skal være udfyldt').default(dayjs('2099-01-01')),
-    elevation: z.number().nullable(),
+    elevation: z.number({required_error: 'Pejlepunkt skal være udfyldt'}),
     mp_description: z.string().optional(),
   })
   .superRefine(({enddate, startdate}, ctx) => {

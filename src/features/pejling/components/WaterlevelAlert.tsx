@@ -1,7 +1,9 @@
-import {Grid, Alert, Typography} from '@mui/material';
+import {Grid, Alert, Typography, Link} from '@mui/material';
 import React from 'react';
 
 import {limitDecimalNumbers} from '~/helpers/dateConverter';
+import {stationPages} from '~/helpers/EnumHelper';
+import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 
 type Props = {
   latestMeasurementSeverity: 'warning' | 'info';
@@ -20,6 +22,12 @@ const DisplayWaterlevelAlert = ({
   koteTitle,
   hide,
 }: Props) => {
+  const [, setShowForm] = useShowFormState();
+  const [, setPageToShow] = useStationPages();
+  const openAddMP = async () => {
+    await setShowForm(null);
+    setPageToShow(stationPages.MAALEPUNKT);
+  };
   return (
     <Grid
       item
@@ -65,6 +73,9 @@ const DisplayWaterlevelAlert = ({
             <Typography>Kote: {koteTitle} m</Typography>
           </>
         )}
+        <Link component="button" type="button" variant="body2" color="error" onClick={openAddMP}>
+          Tilføj eller rediger målepunkt
+        </Link>
       </Alert>
     </Grid>
   );
