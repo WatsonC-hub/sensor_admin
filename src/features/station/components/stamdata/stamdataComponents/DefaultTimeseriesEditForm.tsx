@@ -26,6 +26,9 @@ const DefaultTimeseriesEditForm = ({size, loc_name}: Props) => {
         <StamdataTimeseries.SensorDepth disabled={disabled} />
       </Grid2>
       <Grid2 size={size} alignContent={'center'}>
+        <StamdataTimeseries.Hidden />
+      </Grid2>
+      <Grid2 size={size} alignContent={'center'}>
         <StamdataTimeseries.TimeseriesID />
       </Grid2>
     </Grid2>

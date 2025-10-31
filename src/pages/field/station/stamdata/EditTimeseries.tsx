@@ -23,6 +23,7 @@ const EditTimeseries = () => {
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
 
+  console.log(metadata, 'metadata in edit timeseries');
   const metadataEditTimeseriesMutation = useMutation({
     mutationFn: async (data: any) => {
       const {data: out} = await apiClient.put(
@@ -51,6 +52,7 @@ const EditTimeseries = () => {
     prefix: metadata?.prefix,
     sensor_depth_m: metadata?.sensor_depth_m,
     intakeno: metadata?.intakeno,
+    hidden: metadata?.hidden,
   });
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({
@@ -84,11 +86,7 @@ const EditTimeseries = () => {
     const payload = {
       ...data,
     };
-    metadataEditTimeseriesMutation.mutate(payload, {
-      onSuccess: () => {
-        toast.success('Tidsserie er opdateret');
-      },
-    });
+    metadataEditTimeseriesMutation.mutate(payload);
   };
 
   return (

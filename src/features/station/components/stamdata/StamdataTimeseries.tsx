@@ -1,4 +1,4 @@
-import {MenuItem, InputAdornment, TextField} from '@mui/material';
+import {MenuItem, InputAdornment, TextField, FormControlLabel, Checkbox} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from '~/apiClient';
@@ -12,6 +12,7 @@ import {
 import FormTextField from '~/components/FormTextField';
 import {useAppContext} from '~/state/contexts';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {Controller, useFormContext} from 'react-hook-form';
 
 type Props = {
   children: React.ReactNode;
@@ -178,6 +179,22 @@ const SensorDepth = (
   );
 };
 
+const Hidden = () => {
+  const {control} = useFormContext();
+  return (
+    <Controller
+      name="hidden"
+      control={control}
+      render={({field: {onChange, value}}) => (
+        <FormControlLabel
+          control={<Checkbox onChange={onChange} checked={value} />}
+          label="Skjul tidsserien i offentlige visninger"
+        />
+      )}
+    />
+  );
+};
+
 const TimeseriesID = () => {
   const {ts_id} = useAppContext(['ts_id']);
   return (
@@ -215,5 +232,6 @@ StamdataTimeseries.Prefix = Prefix;
 StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;
 StamdataTimeseries.TimeseriesID = TimeseriesID;
+StamdataTimeseries.Hidden = Hidden;
 
 export default StamdataTimeseries;
