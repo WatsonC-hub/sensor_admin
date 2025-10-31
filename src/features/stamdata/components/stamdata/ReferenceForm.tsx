@@ -79,7 +79,7 @@ export default function ReferenceForm() {
   return (
     <>
       <StationPageBoxLayout>
-        {showForm && <WatlevMPForm formMethods={formMethods} />}
+        {showForm === true && <WatlevMPForm formMethods={formMethods} />}
         {isMobile ? (
           <MaalepunktTableMobile
             handleEdit={handleEdit}

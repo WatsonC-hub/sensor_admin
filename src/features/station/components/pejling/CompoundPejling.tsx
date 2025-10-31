@@ -230,23 +230,6 @@ const TimeOfMeas = (
       {...props}
     />
   );
-
-  // return (
-  //   <FormInput
-  //     name="timeofmeas"
-  //     label="Dato"
-  //     fullWidth
-  //     type="datetime-local"
-  //     onChangeCallback={() => {
-  //       if (!service) {
-  //         trigger('pumpstop');
-  //       }
-  //     }}
-  //     required
-  //     sx={{mb: 2}}
-  //     {...props}
-  //   />
-  // );
 };
 
 const Comment = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {

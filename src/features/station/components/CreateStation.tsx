@@ -156,6 +156,7 @@ const CreateStation = () => {
   const {
     getValues: getWatlevmpValues,
     trigger: triggerWatlevmp,
+    // reset: resetWatlevmp,
     formState: {errors: watlevmpErrors},
     clearErrors: clearWatlevmpErrors,
   } = watlevmpFormMethods;
@@ -249,7 +250,7 @@ const CreateStation = () => {
       timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
       watlevmp?: Watlevmp;
     };
-    if (isWaterLevel) {
+    if (isWaterLevel && addMeasurement) {
       const isWatlevmpValid = await triggerWatlevmp();
       if (!isWatlevmpValid) {
         return;
@@ -409,7 +410,7 @@ const CreateStation = () => {
                 <StepLabel
                   error={
                     Object.keys(timeseriesErrors).length > 0 ||
-                    Object.keys(watlevmpErrors).length > 0
+                    (Object.keys(watlevmpErrors).length > 0 && addMeasurement)
                   }
                 >
                   <Typography variant="body2" textTransform={'capitalize'}>
@@ -506,7 +507,8 @@ const CreateStation = () => {
                   const timeseries_valid = await triggerTimeseries();
                   const location_valid = await triggerLocation();
                   const isWaterlevel = tstype_id === 1;
-                  const isWatlevmpValid = isWaterlevel ? await triggerWatlevmp() : true;
+                  const isWatlevmpValid =
+                    isWaterlevel && addMeasurement ? await triggerWatlevmp() : true;
 
                   if (!timeseries_valid || !location_valid || !isWatlevmpValid) {
                     return;
@@ -525,41 +527,63 @@ const CreateStation = () => {
               Gem & afslut
             </Button>
           </Grid2>
-          {tstype_id === 1 && (
-            <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
-              <Typography variant="body2" color="textSecondary">
-                Målepunkt
-              </Typography>
-              <IconButton size="small">
-                {!addMeasurement && (
-                  <Add fontSize="small" onClick={() => setAddMeasurement(true)} />
-                )}
-                {addMeasurement && (
-                  <Remove fontSize="small" onClick={() => setAddMeasurement(false)} />
-                )}
-              </IconButton>
+          {state.loc_id !== null && activeStep !== 0 && (
+            <Box display={'flex'} alignContent={'center'}>
+              <TooltipWrapper description="Emner herunder er valgfri og er kan udfyldes hvis du har disse oplysninger">
+                <Typography variant="body2" color="textSecondary" fontWeight={'bold'}>
+                  Valgfri emner
+                </Typography>
+              </TooltipWrapper>
             </Box>
           )}
-          {addMeasurement && (
-            <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
-              <FormProvider {...watlevmpFormMethods}>
-                <StamdataWatlevmp tstype_id={tstype_id}>
-                  <DefaultWatlevmpForm />
-                </StamdataWatlevmp>
-              </FormProvider>
-            </Grid2>
+          {activeStep === 0 && state.loc_id === null && (
+            <>
+              <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
+                <Typography variant="body2" color="textSecondary">
+                  Kontakter
+                </Typography>
+                <IconButton size="small">
+                  {!addContacts && <Add fontSize="small" onClick={() => setAddContacts(true)} />}
+                  {addContacts && <Remove fontSize="small" onClick={() => setAddContacts(false)} />}
+                </IconButton>
+              </Box>
+              <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
+                {addContacts && <Typography>Kontaktformular kommer her</Typography>}
+              </Grid2>
+            </>
           )}
-
-          <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
-            <Typography variant="body2" color="textSecondary">
-              Kontakter
-            </Typography>
-            <IconButton size="small">
-              {!addContacts && <Add fontSize="small" onClick={() => setAddContacts(true)} />}
-              {addContacts && <Remove fontSize="small" onClick={() => setAddContacts(false)} />}
-            </IconButton>
-          </Box>
-          <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}></Grid2>
+          {tstype_id === 1 && activeStep === 1 && (
+            <>
+              <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
+                <Typography variant="body2" color="textSecondary">
+                  Målepunkt
+                </Typography>
+                <IconButton size="small">
+                  {!addMeasurement && (
+                    <Add fontSize="small" onClick={() => setAddMeasurement(true)} />
+                  )}
+                  {addMeasurement && (
+                    <Remove
+                      fontSize="small"
+                      onClick={() => {
+                        setAddMeasurement(false);
+                        // resetWatlevmp();
+                      }}
+                    />
+                  )}
+                </IconButton>
+              </Box>
+              {addMeasurement && (
+                <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
+                  <FormProvider {...watlevmpFormMethods}>
+                    <StamdataWatlevmp tstype_id={tstype_id}>
+                      <DefaultWatlevmpForm />
+                    </StamdataWatlevmp>
+                  </FormProvider>
+                </Grid2>
+              )}
+            </>
+          )}
         </Grid2>
       </Box>
       <AlertDialog
