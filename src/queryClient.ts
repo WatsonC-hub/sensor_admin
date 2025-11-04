@@ -1,12 +1,17 @@
-import {createSyncStoragePersister} from '@tanstack/query-sync-storage-persister';
+import {createAsyncStoragePersister} from '@tanstack/query-async-storage-persister';
 import {matchQuery, MutationCache, QueryClient, QueryKey} from '@tanstack/react-query';
 import axios, {AxiosError} from 'axios';
 import {toast} from 'react-toastify';
-
+import localforage from 'localforage';
 import {apiClient} from '~/apiClient';
 import {httpStatusDescriptions} from '~/consts';
 import {excludeDelOptions, excludePostOptions, excludePutOptions} from '~/hooks/query/useExclude';
 import {tags, queryKeys} from './helpers/QueryKeyFactoryHelper';
+import {
+  deleteImageMutationOptions,
+  postImageMutationOptions,
+  putImageMutationOptions,
+} from './hooks/query/useImageUpload';
 
 type ErrorDetail = {
   type: string;
@@ -50,6 +55,10 @@ const queryClient = new QueryClient({
         return false;
       },
     },
+    mutations: {
+      retry: 1,
+      networkMode: 'offlineFirst', // ensures they queue
+    },
   },
   mutationCache: new MutationCache({
     onSuccess: (_data, _variables, _context, mutation) => {
@@ -72,6 +81,7 @@ const queryClient = new QueryClient({
       if (axios.isAxiosError(error)) {
         const localError = error as APIError;
         const detail = localError.response?.data.detail;
+
         if (detail) {
           if (typeof detail === 'string') {
             toast.error(detail);
@@ -124,12 +134,20 @@ queryClient.setMutationDefaults(['pejling'], {
   },
 });
 
+const imageTypes = ['station', 'borehole'] as const;
+
+imageTypes.forEach((type) => {
+  queryClient.setMutationDefaults(['image_post', type], postImageMutationOptions(type));
+  queryClient.setMutationDefaults(['image_put', type], putImageMutationOptions(type));
+  queryClient.setMutationDefaults(['image_del', type], deleteImageMutationOptions(type));
+});
+
 queryClient.setMutationDefaults(excludePostOptions.mutationKey, excludePostOptions);
 queryClient.setMutationDefaults(excludePutOptions.mutationKey, excludePutOptions);
 queryClient.setMutationDefaults(excludeDelOptions.mutationKey, excludeDelOptions);
 
-const persister = createSyncStoragePersister({
-  storage: window.localStorage,
+const persister = createAsyncStoragePersister({
+  storage: localforage,
 });
 
 export {persister, queryClient};
