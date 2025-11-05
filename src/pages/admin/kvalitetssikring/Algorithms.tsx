@@ -29,7 +29,7 @@ const Algorithms = () => {
       </Box>
       <Divider />
       <StationPageBoxLayout>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Box display="flex" justifyContent="space-between" alignItems="center" minWidth={800}>
           <TooltipWrapper
             description="På denne side kan du se de algoritmer, der er tilgængelige for tidsserien. Læs mere om algoritmer i guiden."
             url="https://www.watsonc.dk/guides/side-oversigt/#juster-advarsler"

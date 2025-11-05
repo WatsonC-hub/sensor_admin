@@ -19,6 +19,7 @@ export type Features = {
   keys: boolean;
   ressources: boolean;
   routesAndParking: boolean;
+  alarms: boolean;
 };
 
 export const userQueryOptions = queryOptions({
