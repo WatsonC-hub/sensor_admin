@@ -531,7 +531,7 @@ const useMap = <TData extends object>(
         if (zoom < 10) return 60;
         if (zoom < 12) return 50;
         if (zoom < 17) return 30;
-        return 5;
+        return 8;
       },
       zoomToBoundsOnClick: true,
       showCoverageOnHover: false,
