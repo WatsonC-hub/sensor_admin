@@ -107,7 +107,7 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
 
   useEffect(() => {
     if (metadata && location_data && user) {
-      setCanSync(!!((isDmpAllowed && user?.superUser) || canSyncJupiter));
+      setCanSync(!!(isDmpAllowed || canSyncJupiter));
     }
   }, [metadata, location_data, user]);
 
@@ -120,7 +120,7 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
               <Form.Checkbox name="jupiter" label="Jupiter" />
             </TooltipWrapper>
           )}
-          {isDmpAllowed && user?.superUser && (
+          {isDmpAllowed && (
             <>
               <Form.Checkbox name="sync_dmp" label="DMP" disabled={sync_data?.sync_dmp} />
               <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til DMP">

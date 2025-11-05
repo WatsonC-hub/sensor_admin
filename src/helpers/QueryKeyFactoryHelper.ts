@@ -102,7 +102,7 @@ export const queryKeys = {
     all: () => ['borehole_permissions', 'metadata'] as const,
   },
   AvailableUnits: {
-    all: () => ['available_units', 'metadata'] as const,
+    all: () => ['available_units', 'metadata', 'register'] as const,
   },
   LocationProjects: {
     all: () => ['location_projects'] as const,

@@ -1,5 +1,6 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
+import {useUser} from '~/features/auth/useUser';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {queryClient} from '~/queryClient';
@@ -25,12 +26,15 @@ const useDmpAllowedMapList = (ts_id: number) => {
 
   const {data: dmpAllowedMap} = useQuery(getDmpAllowedMapList);
 
+  const user = useUser();
+
+  if (!user?.superUser) return false;
+
   if (!metadata || !dmpAllowedMap) return null;
 
   const isDmpAllowed = dmpAllowedMap.some((combination) => {
     return (
-      combination.loctype_id === metadata.loctype_id &&
-      combination.tstype_id === metadata.tstype_id!
+      combination.loctype_id === metadata.loctype_id && combination.tstype_id === metadata.tstype_id
     );
   });
 
