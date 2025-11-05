@@ -52,6 +52,7 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {timeseriesMeasureSampleSendOptions} from '../api/useTimeseriesMeasureSampleSend';
 import {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
+import {alarmGetOptions} from '../alarms/api/useAlarm';
 
 const drawerWidth = 200;
 
@@ -189,8 +190,8 @@ const StationDrawer = () => {
           page: stationPages.ALARM,
           icon: <AlarmIcon />,
           requiredTsId: true,
-          onHover: () => null,
-          disabled: !user?.superUser,
+          onHover: () => handlePrefetch(alarmGetOptions(ts_id)),
+          disabled: !user?.features?.alarms,
         },
         {
           text: 'Konfiguration',

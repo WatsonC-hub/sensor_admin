@@ -91,7 +91,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       });
       return data;
     },
-    enabled: dataToShow['Algoritmer'] && !timeseries_data?.calculated,
+    enabled: dataToShow['Algoritmer'],
   });
 
   const {data: removed_data} = useQuery({

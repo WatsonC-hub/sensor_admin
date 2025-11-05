@@ -2,7 +2,7 @@ import {apiClient} from '~/apiClient';
 import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {useAppContext} from '~/state/contexts';
 import {AlarmNotificationType, AlarmHistory, AlarmTableType} from '../types';
-import {queryClient} from '~/queryClient';
+import {APIError, queryClient} from '~/queryClient';
 import {AlarmsFormValues} from '../schema';
 
 interface AlarmBase {
@@ -56,65 +56,27 @@ const alarmDelOptions = {
   },
 };
 
-const alarmNotificationGetOptions = (ts_id: number | undefined) => {
-  return {
-    queryKey: ['alarm_notification', ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<AlarmNotificationType>>(
-        `/sensor_field/stamdata/alarms/notification`
-      );
-      return data;
-    },
-    enabled: !!ts_id,
-  };
+const alarmNotificationGetOptions = {
+  queryKey: ['alarm_notification'],
+  queryFn: async () => {
+    const {data} = await apiClient.get<Array<AlarmNotificationType>>(
+      `/sensor_field/stamdata/alarms/notification`
+    );
+    return data;
+  },
 };
 
-const alarmGetOptions = (ts_id: number | undefined) =>
-  queryOptions({
+export const alarmGetOptions = (ts_id: number | undefined) =>
+  queryOptions<Array<AlarmTableType>, APIError>({
     queryKey: ['alarm', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<AlarmTableType>>(
-        `/sensor_field/stamdata/alarms/${ts_id}`
-      );
+      const {data} = await apiClient.get(`/sensor_field/stamdata/alarms/${ts_id}`);
       return data;
     },
     enabled: !!ts_id,
-    // select: (data) => {
-    //   const transformedAlarms: AlarmTableType[] = data.map((alarm) => {
-    //     const transformedAlarm = {
-    //       id: alarm.id,
-    //       name: alarm.name,
-    //       comment: alarm.comment,
-    //       group_id: alarm.group_id ?? '',
-    //       alarm_notifications: alarm.alarm_notifications ?? [],
-    //       alarm_contacts:
-    //         alarm.alarm_contacts?.map((contact) => ({
-    //           contact_id: contact.contact_id,
-    //           name: contact.name,
-    //           sms: {
-    //             selected: contact.sms ?? false,
-    //             to: contact.sms_to?.slice(0, contact.sms_to.lastIndexOf(':')) ?? '',
-    //             from: contact.sms_from?.slice(0, contact.sms_from.lastIndexOf(':')) ?? '',
-    //           },
-    //           email: {
-    //             selected: contact.email ?? false,
-    //             to: contact.email_to?.slice(0, contact.email_to.lastIndexOf(':')) ?? '',
-    //             from: contact.email_from?.slice(0, contact.email_from.lastIndexOf(':')) ?? '',
-    //           },
-    //           call: {
-    //             selected: contact.call ?? false,
-    //             to: contact.call_to?.slice(0, contact.call_to.lastIndexOf(':')) ?? '',
-    //             from: contact.call_from?.slice(0, contact.call_from.lastIndexOf(':')) ?? '',
-    //           },
-    //         })) ?? [],
-    //     } as AlarmTableType;
-    //     return transformedAlarm;
-    //   });
-    //   return transformedAlarms;
-    // },
   });
 
-const AlarmHistoryGetOptions = (ts_id: number | undefined) =>
+const alarmHistoryGetOptions = (ts_id: number | undefined) =>
   queryOptions({
     queryKey: ['alarm_history', ts_id],
     queryFn: async () => {
@@ -133,7 +95,7 @@ export const useAlarm = () => {
     ...alarmGetOptions(ts_id),
   });
 
-  const getHistory = useQuery(AlarmHistoryGetOptions(ts_id));
+  const getHistory = useQuery(alarmHistoryGetOptions(ts_id));
 
   const post = useMutation({
     ...alarmPostOptions,
@@ -161,7 +123,7 @@ export const useAlarm = () => {
   });
 
   const getAlarmNotification = useQuery({
-    ...alarmNotificationGetOptions(ts_id),
+    ...alarmNotificationGetOptions,
   });
 
   return {
