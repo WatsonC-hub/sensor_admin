@@ -51,6 +51,7 @@ import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {timeseriesMeasureSampleSendOptions} from '../api/useTimeseriesMeasureSampleSend';
+import {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
 
 const drawerWidth = 200;
 
@@ -179,7 +180,7 @@ const StationDrawer = () => {
           page: stationPages.ALGORITHMS,
           icon: <FunctionsIcon />,
           requiredTsId: true,
-          disabled: !user?.features?.iotAccess || metadata?.calculated,
+          disabled: !user?.features?.iotAccess,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id!)),
           tooltip: 'På denne side kan du justere advarsler for din tidsserie.',
         },
@@ -196,10 +197,12 @@ const StationDrawer = () => {
           page: stationPages.TIDSSERIEKONFIGURATION,
           icon: <Settings />,
           requiredTsId: true,
-          onHover: () =>
-            metadata?.unit_uuid &&
-            metadata?.calculated === false &&
-            handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!)),
+          onHover: () => {
+            if (metadata?.unit_uuid && metadata?.calculated === false) {
+              handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!));
+            }
+            prefetchDmpAllowedMapList();
+          },
           tooltip:
             'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
         },

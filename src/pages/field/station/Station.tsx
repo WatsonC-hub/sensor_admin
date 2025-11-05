@@ -50,8 +50,7 @@ export default function Station() {
         pageToShow === 'gu' ||
         pageToShow === 'målepunkt' ||
         pageToShow === 'gt' ||
-        pageToShow === 'justeringer' ||
-        pageToShow === 'algoritmer')
+        pageToShow === 'justeringer')
     )
       setPageToShow('pejling');
     setShowForm(null);
