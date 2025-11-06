@@ -113,6 +113,10 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
       return rawIcons[iconDetails.notification_id];
     }
 
+    if (iconDetails.in_service && iconDetails.inactive_new) {
+      return rawIcons['borehole'];
+    }
+
     if (iconDetails.mapicontype === 'task') {
       return rawIcons['task'];
     }
@@ -134,6 +138,11 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
 
     if (iconDetails.notification_id && iconDetails.notification_id in reactIcons) {
       const Component = reactIcons[iconDetails.notification_id];
+      return <Component style={defaultStyling} viewBox="0 0 24 24" />;
+    }
+
+    if (iconDetails.in_service && iconDetails.inactive_new) {
+      const Component = reactIcons['borehole'];
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }
 

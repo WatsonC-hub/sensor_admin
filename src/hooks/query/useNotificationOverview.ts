@@ -71,8 +71,8 @@ interface TimeseriesStatus {
   due_date: string | null;
   no_unit: boolean;
   not_serviced: boolean;
-  inactive: boolean | null;
-  in_service: boolean | null;
+  inactive: boolean;
+  in_service: boolean;
   projectno: string | null;
   is_customer_service: boolean | null;
 }

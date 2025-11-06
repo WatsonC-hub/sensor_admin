@@ -10,10 +10,12 @@ import {useLocationInfo} from '../../api/useLocationInfo';
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {utm} from '~/features/map/mapConsts';
 import DirectionsIcon from '@mui/icons-material/Directions';
+import {useDisplayState} from '~/hooks/ui';
 
 const TimeseriesList = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const {station} = useNavigationFunctions();
+  const setShowLocationRouter = useDisplayState((state) => state.setShowLocationRouter);
 
   const {data, isPending} = useTimeseriesStatus(loc_id);
   const {data: location_data} = useLocationInfo(loc_id);
@@ -107,8 +109,23 @@ const TimeseriesList = () => {
           <DirectionsIcon />
         </IconButton>
       </Box>
-      {/* </TooltipWrapper> */}
+      {data?.length === 0 && (
+        <>
+          <Typography variant={'body2'} height={24} alignContent={'center'}>
+            Ingen tidsserier tilknyttet denne lokation.
+          </Typography>
+          <Typography
+            fontSize={'small'}
+            width={'fit-content'}
+            sx={{cursor: 'pointer', color: 'white'}}
+          >
+            <Link onClick={() => setShowLocationRouter(true)}>Åben lokationssiden</Link>
+          </Typography>
+        </>
+      )}
+
       {data?.map((timeseries, index) => {
+        console.log('timeseries', timeseries);
         return (
           <Box key={index} display="flex" justifyContent={'space-between'} alignItems="center">
             <Box display="flex" gap={1} sx={{cursor: 'pointer', color: 'white'}}>
@@ -117,8 +134,8 @@ const TimeseriesList = () => {
                   notification_id: timeseries.notification_id,
                   flag: timeseries.flag,
                   not_serviced: timeseries.not_serviced,
-                  inactive_new: timeseries.inactive === null ? true : timeseries.inactive,
-                  in_service: timeseries.in_service === null ? false : timeseries.in_service,
+                  inactive_new: timeseries.inactive,
+                  in_service: timeseries.in_service,
                 }}
               />
               <Typography fontSize={'small'} width={'fit-content'}>
