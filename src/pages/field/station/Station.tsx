@@ -31,12 +31,13 @@ import {Fullscreen, FullscreenExit} from '@mui/icons-material';
 import GraphManager from '~/features/station/components/GraphManager';
 import EditLocation from './stamdata/EditLocation';
 import EditTimeseries from './stamdata/EditTimeseries';
+import Alarms from './alarms/Alarms';
 import TimeseriesConfiguration from './timeseries/configuration/Configuration';
 import LocationConfiguration from './location/Configuration';
 import AppContextProvider from '~/helpers/AppContextProvider';
 
 export default function Station() {
-  const {ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData();
   const [, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
@@ -50,8 +51,7 @@ export default function Station() {
         pageToShow === 'gu' ||
         pageToShow === 'målepunkt' ||
         pageToShow === 'gt' ||
-        pageToShow === 'justeringer' ||
-        pageToShow === 'algoritmer')
+        pageToShow === 'justeringer')
     )
       setPageToShow('pejling');
     setShowForm(null);
@@ -68,24 +68,26 @@ export default function Station() {
       }}
     >
       <Layout>
-        {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling />}
-        {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn />}
+        {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling key={ts_id} />}
+        {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn key={ts_id} />}
         {pageToShow === stationPages.GENERELTUDSTYR && (
           <>
-            <Box>
+            <Box key={`graph-${ts_id}`}>
               <GraphManager />
             </Box>
             <Divider />
-            <EditUnit />
+            <StationPageBoxLayout key={`unit-${ts_id}`}>
+              <EditUnit />
+            </StationPageBoxLayout>
           </>
         )}
         {pageToShow === stationPages.GENERELTLOKATION && (
-          <StationPageBoxLayout>
+          <StationPageBoxLayout key={`location-${loc_id}`}>
             <EditLocation />
           </StationPageBoxLayout>
         )}
         {pageToShow === stationPages.GENERELTIDSSERIE && (
-          <StationPageBoxLayout>
+          <StationPageBoxLayout key={`timeseries-${ts_id}`}>
             <EditTimeseries />
           </StationPageBoxLayout>
         )}
@@ -94,21 +96,62 @@ export default function Station() {
             <TimeseriesConfiguration />
           </StationPageBoxLayout>
         )}
-        {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && <Algorithms />}
-        {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && <QAHistory />}
+        {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && (
+          <Algorithms key={`algorithms-${ts_id}`} />
+        )}
+        {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && (
+          <QAHistory key={`justeringer-${ts_id}`} />
+        )}
         {pageToShow === stationPages.MAALEPUNKT && (
           <>
-            <Box>
-              <GraphManager />
+            <Box key={`graph-${ts_id}`}>
+              <GraphManager
+                defaultDataToShow={{
+                  Kontrolmålinger: true,
+                }}
+              />
             </Box>
             <Divider />
-            <ReferenceForm />
+            <StationPageBoxLayout key={`timeseries-${ts_id}`}>
+              <ReferenceForm />
+            </StationPageBoxLayout>
           </>
         )}
-        {pageToShow === stationPages.NØGLER && user?.features.keys && <LocationAccess />}
-        {pageToShow === stationPages.KONTAKTER && user?.features.contacts && <ContactInfo />}
-        {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && <Huskeliste />}
-        {pageToShow === stationPages.BILLEDER && <ImagePage />}
+        {pageToShow === stationPages.ALARM && user?.superUser && (
+          <>
+            <Box key={`graph-${ts_id}`}>
+              <GraphManager
+                defaultDataToShow={{
+                  Kontrolmålinger: true,
+                }}
+              />
+            </Box>
+            <Divider />
+            <StationPageBoxLayout key={`alarm-${ts_id}`}>
+              <Alarms />
+            </StationPageBoxLayout>
+          </>
+        )}
+        {pageToShow === stationPages.NØGLER && user?.features?.keys && (
+          <StationPageBoxLayout key={loc_id}>
+            <LocationAccess />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.KONTAKTER && user?.features?.contacts && (
+          <StationPageBoxLayout key={loc_id}>
+            <ContactInfo />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.HUSKELISTE && user?.features?.ressources && (
+          <StationPageBoxLayout key={loc_id}>
+            <Huskeliste />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.BILLEDER && (
+          <StationPageBoxLayout key={loc_id}>
+            <ImagePage />
+          </StationPageBoxLayout>
+        )}
         {pageToShow === stationPages.LOKATIONKONFIGURATION && user?.superUser && (
           <StationPageBoxLayout>
             <LocationConfiguration />

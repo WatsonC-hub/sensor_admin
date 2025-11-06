@@ -8,6 +8,7 @@ import {useTimeseriesStatus} from '~/hooks/query/useNotificationOverview';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useUser} from '~/features/auth/useUser';
 
 const LocationInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);
@@ -16,6 +17,7 @@ const LocationInfo = () => {
   const {data: timeseriesList} = useTimeseriesStatus(loc_id);
   const [, setPageToShow] = useStationPages();
   const {isMobile} = useBreakpoints();
+  const user = useUser();
 
   const isDGU = location_data?.loctype_name === 'DGU boring';
   return (
@@ -37,7 +39,7 @@ const LocationInfo = () => {
         ) : (
           location_data?.loc_name
         )}
-        {location_data?.sla !== undefined && location_data.sla > 0 && (
+        {location_data?.sla !== undefined && location_data.sla > 0 && user?.superUser && (
           <Typography mt={-1} ml={2} fontStyle={'italic'} fontWeight={'bold'} variant={'caption'}>
             SLA: {location_data?.sla} {location_data.sla > 1 ? 'dage' : 'dag'}
           </Typography>

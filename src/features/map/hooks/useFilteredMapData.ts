@@ -8,7 +8,8 @@ import {assignedToAtom} from '~/state/atoms';
 import {useAtomValue} from 'jotai';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {isEmptyObject} from '~/helpers/guardHelper';
-import dayjs from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
+import {Task} from '~/features/tasks/types';
 
 const searchValue = (value: any, search_string: string): boolean => {
   if (typeof value === 'string') {
@@ -126,6 +127,14 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
   return filteredData;
 };
 
+function getMinDate(dates: (Dayjs | null)[]): Dayjs | null {
+  const validDates = dates.filter((d) => d !== null && !isNaN(d.valueOf()));
+
+  if (validDates === undefined || validDates.length === 0) return null;
+
+  return dayjs(Math.min(...validDates.filter((d) => d !== null).map((d) => d.valueOf())));
+}
+
 const mapSelect = (data: MapOverview[]) =>
   data.map((item) => ({
     ...item,
@@ -181,39 +190,17 @@ export const useFilteredMapData = () => {
 
     filteredList.sort((a, b) => {
       if ('loc_id' in a && 'loc_id' in b) {
-        // tasks that are in locIds should be at the top of the list
-        if (locIds.includes(a.loc_id) && !locIds.includes(b.loc_id)) return -1;
-
-        if (!locIds.includes(a.loc_id) && locIds.includes(b.loc_id)) return 1;
-
         const aList = tasks?.filter((task) => task.loc_id === a.loc_id);
         const bList = tasks?.filter((task) => task.loc_id === b.loc_id);
+
+        if (aList?.length === 0) return -1;
+        if (bList?.length === 0) return -1;
+
         if (aList && bList) {
-          const aDate = aList.sort((a, b) => {
-            if (!a.due_date) return 1;
-            if (!b.due_date) return 1;
-            if (a.due_date && b.due_date) {
-              return a.due_date.diff(b.due_date);
-            }
-            return 0;
-          });
-          const bDate = bList.sort((a, b) => {
-            if (!a.due_date) return 1;
-            if (!b.due_date) return 1;
-            if (a.due_date && b.due_date) {
-              return a.due_date.diff(b.due_date);
-            }
-            return 0;
-          });
+          const aDate = getMinDate(aList.map((task) => task.due_date));
+          const bDate = getMinDate(bList.map((task) => task.due_date));
 
-          if (aDate.length > 0 && aDate[0].due_date && bDate.length > 0 && !bDate[0].due_date)
-            return 1;
-
-          if (aDate.length > 0 && !aDate[0].due_date && bDate.length > 0 && bDate[0].due_date)
-            return 1;
-
-          if (aDate.length > 0 && bDate.length > 0 && aDate[0].due_date && bDate[0].due_date)
-            return aDate[0].due_date.diff(bDate[0].due_date);
+          if (aDate && bDate) return bDate.diff(aDate);
         }
         return -1;
       }

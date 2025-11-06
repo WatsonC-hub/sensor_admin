@@ -200,7 +200,7 @@ export type SimpleItinerary = {
 };
 
 export type ContactInfo = {
-  id?: string | null;
+  id: string;
   name: string;
   mobile?: string | null;
   email: string | null;
@@ -431,6 +431,7 @@ export type DataToShow = {
   'Fjernet data': boolean;
   Rådata: boolean;
   Jupiter: boolean;
+  'Alarm linjer': boolean;
 };
 
 type HorizontalLine = {
@@ -441,4 +442,9 @@ type HorizontalLine = {
   tstype_id: number;
   line?: object;
   mode?: string;
+};
+
+export type DmpSyncValidCombination = {
+  loctype_id: number;
+  tstype_id: number;
 };

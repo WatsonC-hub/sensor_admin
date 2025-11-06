@@ -28,6 +28,7 @@ import {
   initiateSelectAtom,
   levelCorrectionAtom,
   qaSelection,
+  tempHorizontalAtom,
 } from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
 import {
@@ -69,7 +70,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const initiateConfirmTimeseries = useAtomValue(initiateConfirmTimeseriesAtom);
   const [control, setcontrol] = useState<Array<BoreholeMeasurement> | undefined>();
 
-  const [pagetoShow] = useStationPages();
+  const tempLines = useAtomValue(tempHorizontalAtom);
+  const [pageToShow] = useStationPages();
   const {data: timeseries_data} = useTimeseriesData();
   const loc_name = timeseries_data?.loc_name;
   const ts_name = timeseries_data?.ts_name;
@@ -152,7 +154,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       });
       return data;
     },
-    enabled: dataToShow['Algoritmer'] && !timeseries_data?.calculated,
+    enabled: dataToShow['Algoritmer'],
   });
 
   const {data: removed_data} = useQuery({
@@ -263,6 +265,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const yControl = controlData?.map((d) => d.referenced_measurement);
   const textControl = controlData?.map((d) => correction_map[d.useforcorrection]);
 
+  // console.log('templines', tempLines);
   const [shapes, annotations] = useMemo(() => {
     const [qaShapes, qaAnnotate] = transformQAData(qaData ?? []);
     let shapes: Array<object> = [];
@@ -271,6 +274,39 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     Object.entries(dataToShow).forEach((entry) => {
       if (entry[1] == false) return;
       switch (entry[0]) {
+        case 'Alarm linjer':
+          shapes = [
+            ...shapes,
+            ...(tempLines?.map((elem) => {
+              return {
+                x0: 0,
+                x1: 0.97,
+                y0: elem.level,
+                y1: elem.level,
+                name: elem.name,
+                type: 'scatter',
+                xref: 'paper',
+                line: elem.line ?? {width: 1, dash: 'dash'},
+                mode: elem.mode ?? 'lines',
+              };
+            }) ?? []),
+          ];
+          annotations = [
+            ...annotations,
+            ...(tempLines?.map((elem) => {
+              return {
+                xref: 'paper',
+                yref: 'y',
+                x: 0,
+                xanchor: 'left',
+                yanchor: 'bottom',
+                showarrow: false,
+                text: elem.name,
+                y: elem.level,
+              };
+            }) ?? []),
+          ];
+          break;
         case 'Godkendt':
           shapes = [
             ...shapes,
@@ -464,7 +500,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     });
 
     return [shapes, annotations];
-  }, [dataToShow, adjustmentData, certifedData, qaData]);
+  }, [dataToShow, adjustmentData, certifedData, qaData, tempLines]);
 
   const data = [
     {
@@ -578,7 +614,31 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     }
   }, [watlevmp, measurements !== undefined]);
 
-  if (pagetoShow === 'justeringer') {
+  useEffect(() => {
+    let ctrls = [];
+    if (measurements !== undefined) {
+      if (watlevmp && watlevmp.length > 0) {
+        ctrls = measurements?.map((e) => {
+          const elev = watlevmp.filter((e2) => {
+            return (
+              e.timeofmeas.isSameOrAfter(e2.startdate) && e.timeofmeas.isSameOrBefore(e2.enddate)
+            );
+          })[0].elevation;
+
+          return {
+            ...e,
+            waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
+          };
+        });
+      } else {
+        ctrls = measurements?.map((elem) => {
+          return {...elem, waterlevel: elem.disttowatertable_m};
+        });
+      }
+      setcontrol(ctrls);
+    }
+  }, [watlevmp, measurements !== undefined]);
+
     const handlePlotlySelected = (eventData: any) => {
       if (eventData === undefined) {
         return;

@@ -8,27 +8,16 @@ import {CalendarIcon} from '@mui/x-date-pickers';
 import {Person} from '@mui/icons-material';
 import useTaskItinerary from '../api/useTaskItinerary';
 import {getIcon} from '~/features/notifications/utils';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import {useDraggable} from '@dnd-kit/react';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useUser} from '~/features/auth/useUser';
 import {useDisplayState} from '~/hooks/ui';
+import {useUser} from '~/features/auth/useUser';
 type Props = {
   itemData: MapOverview;
   onClick: () => void;
 };
 
 const LocationListItem = ({itemData, onClick}: Props) => {
-  const user = useUser();
   const {tasks} = useTaskState();
   const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
-  const {isMobile} = useBreakpoints();
-  const {handleRef, ref} = useDraggable({
-    id: itemData.loc_id,
-    data: {loc_id: itemData.loc_id},
-    feedback: 'clone',
-  });
-
   const TripIcon = getIcon(
     {
       has_task: true,
@@ -39,6 +28,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
   );
 
   const filteredTasks = tasks?.filter((task) => task.loc_id === itemData.loc_id);
+  const user = useUser();
 
   const {
     getItinerary: {data: itinerary},
@@ -49,7 +39,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
       display={'flex'}
       flexDirection={'row'}
       alignItems={'center'}
-      ref={ref}
+      key={itemData.loc_id}
       width={'100%'}
       sx={{
         ':hover': {
@@ -57,11 +47,6 @@ const LocationListItem = ({itemData, onClick}: Props) => {
         },
       }}
     >
-      {!isMobile && user?.advancedTaskPermission && (
-        <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>
-          <DragIndicatorIcon ref={handleRef} sx={{cursor: 'grab'}} fontSize="small" />
-        </Box>
-      )}
       <Box
         display={'flex'}
         flexDirection={'column'}
@@ -143,7 +128,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
                         </Box>
                         <Typography variant="body2">{task.name}</Typography>
                       </Link>
-                      {task.sla && (
+                      {!task.is_created && task.sla && user?.superUser && (
                         <Typography
                           mt={-0.5}
                           ml={3.5}

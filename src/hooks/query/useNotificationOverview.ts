@@ -97,10 +97,11 @@ export const useTimeseriesStatus = (loc_id: number) => {
   });
 };
 
-type NotificationType = {
+export type NotificationType = {
   gid: number;
   name: string;
   flag: FlagEnum;
+  color: string;
 };
 
 export const useNotificationTypes = () => {
@@ -111,5 +112,12 @@ export const useNotificationTypes = () => {
       return data;
     },
     staleTime: 1000 * 60 * 60,
+    select: (data) =>
+      data.sort((a, b) => {
+        if (a.flag === b.flag) {
+          return a.name.localeCompare(b.name);
+        }
+        return b.flag - a.flag;
+      }),
   });
 };

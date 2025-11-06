@@ -35,6 +35,10 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
       borderRadius: 9999,
       backgroundColor: '#ffffff',
       borderColor: '#cacaca',
+      '&:hover': {
+        filter: 'brightness(90%)',
+        transition: '0.3s',
+      },
     };
   }
 

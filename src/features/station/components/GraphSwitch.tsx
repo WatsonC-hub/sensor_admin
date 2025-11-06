@@ -45,7 +45,6 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
   const disableMap: Partial<DisableMap> = {
     Rådata: !!metadata?.calculated,
     'Fjernet data': !!metadata?.calculated,
-    Algoritmer: !!metadata?.calculated,
     'Korrigerede spring': !!metadata?.calculated,
     'Valide værdier': !!metadata?.calculated,
     Godkendt: !!metadata?.calculated,

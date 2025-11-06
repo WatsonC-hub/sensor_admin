@@ -12,6 +12,7 @@ interface DisplayState {
   trip_list: boolean;
   itinerary_id: string | null;
   showLocationRouter: boolean;
+  own_task_list: boolean;
 
   setTsId: (id: number | null) => void;
   setLocId: (id: number | null) => void;
@@ -23,6 +24,7 @@ interface DisplayState {
   setTripList: (trip_list: boolean) => void;
   setItineraryId: (itinerary_id: string | null) => void;
   setShowLocationRouter: (showLocationRouter: boolean) => void;
+  setOwnTaskList: (own_task_list: boolean) => void;
   reset: () => void;
 }
 
@@ -37,6 +39,7 @@ export const displayStore = create<DisplayState>((set) => ({
   trip_list: false,
   itinerary_id: null,
   showLocationRouter: false,
+  own_task_list: false,
 
   setTsId: (ts_id) => set({ts_id}),
   setLocId: (loc_id) =>
@@ -61,6 +64,7 @@ export const displayStore = create<DisplayState>((set) => ({
   setTripList: (trip_list) => set({trip_list}),
   setItineraryId: (itinerary_id) => set({itinerary_id}),
   setShowLocationRouter: (showLocationRouter) => set({showLocationRouter}),
+  setOwnTaskList: (own_task_list) => set({own_task_list}),
   reset: () =>
     set(() => ({
       ts_id: null,
@@ -72,6 +76,7 @@ export const displayStore = create<DisplayState>((set) => ({
       trip_list: false,
       itinerary_id: null,
       showLocationRouter: false,
+      own_task_list: false,
     })),
 }));
 

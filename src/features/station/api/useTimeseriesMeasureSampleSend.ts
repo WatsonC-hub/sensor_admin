@@ -17,6 +17,7 @@ export type Configuration = {
   configPossible: boolean;
   configState: 'inSync' | 'pending' | 'failed' | 'outOfSync' | null;
   estimatedConfigChange: string | null;
+  currentPendingTimeseries: string | null;
 };
 
 export const timeseriesMeasureSampleSendOptions = (ts_id: number) =>
@@ -57,6 +58,9 @@ export const useTimeseriesMeasureSampleSendMutation = (ts_id: number) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.Timeseries.MeasureSampleSend(ts_id),
       });
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 };
