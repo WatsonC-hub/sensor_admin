@@ -639,6 +639,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     }
   }, [watlevmp, measurements !== undefined]);
 
+  if (pageToShow === 'justeringer') {
     const handlePlotlySelected = (eventData: any) => {
       if (eventData === undefined) {
         return;
