@@ -9,7 +9,6 @@ import {useAtomValue} from 'jotai';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {isEmptyObject} from '~/helpers/guardHelper';
 import dayjs, {Dayjs} from 'dayjs';
-import {Task} from '~/features/tasks/types';
 
 const searchValue = (value: any, search_string: string): boolean => {
   if (typeof value === 'string') {
@@ -54,6 +53,9 @@ const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
     (watsoncServiceFilter && customerServiceFilter) ||
     (filter.showCustomerService && filter.showWatsonCService);
 
+  const hideSingleMeasurementsFilter =
+    data.in_service && data.inactive_new ? !filter.hideSingleMeasurements : true;
+
   const activeFilter = isInactive
     ? filter.showInactive ||
       data.has_task ||
@@ -63,11 +65,18 @@ const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
   const keepLocationsWithoutNotifications =
     (!data.has_task || !data.due_date?.isBefore(dayjs().add(1, 'month'))) &&
     !data.itinerary_id &&
-    data.flag === null
+    data.flag === null &&
+    !data.not_serviced &&
+    !data.inactive_new
       ? !filter.hideLocationsWithoutNotifications
       : true;
 
-  return keepLocationsWithoutNotifications && activeFilter && serviceFilter;
+  return (
+    keepLocationsWithoutNotifications &&
+    activeFilter &&
+    serviceFilter &&
+    hideSingleMeasurementsFilter
+  );
 };
 
 const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
