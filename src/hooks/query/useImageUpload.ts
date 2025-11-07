@@ -1,4 +1,4 @@
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, MutationOptions} from '@tanstack/react-query';
 import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
@@ -45,8 +45,11 @@ export const dataURLtoFile = (dataurl: string | ArrayBuffer | null, filename?: s
   return new File([u8arr], filename ?? '', {type: mime});
 };
 
-export const postImageMutationOptions = (endpoint: string) => ({
-  mutationKey: ['image_post', endpoint],
+export const postImageMutationOptions = (
+  endpoint: string,
+  id?: string | number
+): MutationOptions<{endpoint: string; id: string | number}, unknown, ImagePayload> => ({
+  mutationKey: ['image_post', endpoint, id],
   mutationFn: async (mutation_data: ImagePayload) => {
     const {path, data} = mutation_data;
     const file = dataURLtoFile(data.uri);
@@ -66,10 +69,11 @@ export const postImageMutationOptions = (endpoint: string) => ({
     );
     return res;
   },
+  retryDelay: (attemptIndex: number) => Math.min(10000 * 2 ** attemptIndex, 30000),
 });
 
-export const putImageMutationOptions = (endpoint: string) => ({
-  mutationKey: ['image_put', endpoint],
+export const putImageMutationOptions = (endpoint: string, id?: string | number) => ({
+  mutationKey: ['image_put', endpoint, id],
   mutationFn: async (mutation_data: ImagePayloadEdit) => {
     const {path, data} = mutation_data;
     const {data: res} = await apiClient.put(`/sensor_field/${endpoint}/image/${path}`, data);
@@ -80,8 +84,8 @@ export const putImageMutationOptions = (endpoint: string) => ({
   },
 });
 
-export const deleteImageMutationOptions = (endpoint: string) => ({
-  mutationKey: ['image_del', endpoint],
+export const deleteImageMutationOptions = (endpoint: string, id?: string | number) => ({
+  mutationKey: ['image_del', endpoint, id],
   mutationFn: async (mutation_data: ImagePayload) => {
     const {path} = mutation_data;
     const {data: res} = await apiClient.delete(`/sensor_field/${endpoint}/image/${path}`);
@@ -89,23 +93,23 @@ export const deleteImageMutationOptions = (endpoint: string) => ({
   },
 });
 
-export const useImageUpload = (endpoint: string) => {
+export const useImageUpload = (endpoint: string, id: string | number) => {
   const post = useMutation({
-    ...postImageMutationOptions(endpoint),
+    ...postImageMutationOptions(endpoint, id),
     meta: {
       invalidates: [['register']],
     },
   });
 
   const put = useMutation({
-    ...putImageMutationOptions(endpoint),
+    ...putImageMutationOptions(endpoint, id),
     meta: {
       invalidates: [['register']],
     },
   });
 
   const del = useMutation({
-    ...deleteImageMutationOptions(endpoint),
+    ...deleteImageMutationOptions(endpoint, id),
     meta: {
       invalidates: [['register']],
     },

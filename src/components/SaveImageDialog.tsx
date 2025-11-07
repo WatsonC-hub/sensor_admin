@@ -46,7 +46,7 @@ function SaveImageDialog({
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const imageUrl = `/static/images/${activeImage.imageurl}`;
 
-  const {post: uploadImage, put: editImage} = useImageUpload(type);
+  const {post: uploadImage, put: editImage} = useImageUpload(type, id);
 
   function saveImage() {
     if (activeImage.gid === -1) {
