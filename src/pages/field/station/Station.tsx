@@ -228,14 +228,7 @@ const Layout = ({children}: LayoutProps) => {
         }}
       >
         <StationDrawer />
-        <Box
-          display="flex"
-          flexGrow={1}
-          minWidth={0}
-          gap={1}
-          flexDirection={'column'}
-          overflow="auto"
-        >
+        <Box display="flex" flexGrow={1} minWidth={0} flexDirection={'column'} overflow="auto">
           {children}
         </Box>
       </Box>

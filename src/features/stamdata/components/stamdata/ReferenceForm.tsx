@@ -10,13 +10,16 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import WatlevMPForm from '~/features/station/components/watlevmp/WatlevMPForm';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useShowFormState} from '~/hooks/useQueryStateParameters';
+import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 import {initialWatlevmpData} from './const';
-import {Maalepunkt} from '~/types';
-import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import {Maalepunkt, MaalepunktTableData} from '~/types';
 import {zodDayjs} from '~/helpers/schemas';
 import dayjs from 'dayjs';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import LastJupiterMP from '~/pages/field/boreholeno/components/LastJupiterMP';
+import {useEffect} from 'react';
+import {stationPages} from '~/helpers/EnumHelper';
 
 const schema = z
   .object({
@@ -49,8 +52,13 @@ export type WatlevMPFormValues = z.infer<typeof schema>;
 
 export default function ReferenceForm() {
   const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
+  const [, setPageToShow] = useStationPages();
   const {isMobile} = useBreakpoints();
   const [showForm, setShowForm] = useShowFormState();
+  const {data: metadata} = useTimeseriesData(ts_id);
+  const {
+    get: {data: ourMP},
+  } = useMaalepunkt();
 
   const formMethods = useForm<WatlevMPFormValues>({
     resolver: zodResolver(schema),
@@ -79,24 +87,36 @@ export default function ReferenceForm() {
     setShowForm(true);
   };
 
+  useEffect(() => {
+    // Close the form when ts_id changes
+    if (metadata?.tstype_id !== 1) {
+      setPageToShow(stationPages.PEJLING);
+      setShowForm(null);
+    }
+  }, [ts_id]);
+
   return (
     <>
-      <StationPageBoxLayout>
-        {showForm === true && <WatlevMPForm formMethods={formMethods} />}
-        {isMobile ? (
-          <MaalepunktTableMobile
-            handleEdit={handleEdit}
-            handleDelete={handleDeleteMaalepunkt}
-            disabled={disabled}
-          />
-        ) : (
-          <MaalepunktTableDesktop
-            handleEdit={handleEdit}
-            handleDelete={handleDeleteMaalepunkt}
-            disabled={disabled}
-          />
-        )}
-      </StationPageBoxLayout>
+      {metadata?.loctype_id === 9 && (
+        <LastJupiterMP
+          lastOurMP={ourMP?.[0] as MaalepunktTableData | undefined}
+          setAddMPOpen={setShowForm}
+        />
+      )}
+      {showForm === true && <WatlevMPForm formMethods={formMethods} />}
+      {isMobile ? (
+        <MaalepunktTableMobile
+          handleEdit={handleEdit}
+          handleDelete={handleDeleteMaalepunkt}
+          disabled={disabled}
+        />
+      ) : (
+        <MaalepunktTableDesktop
+          handleEdit={handleEdit}
+          handleDelete={handleDeleteMaalepunkt}
+          disabled={disabled}
+        />
+      )}
       <FabWrapper
         icon={<AddCircle />}
         text="Tilføj målepunkt"

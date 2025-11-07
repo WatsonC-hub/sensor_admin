@@ -9,7 +9,6 @@ import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle, setTableBoxStyle} from '~/consts';
-import useJupiterMaalepunkt from '~/features/station/api/useJupiterMaalepunkt';
 import {
   convertDate,
   checkEndDateIsUnset,
@@ -37,16 +36,6 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
   const {
     get: {data},
   } = useMaalepunkt();
-
-  const {
-    get: {data: jupiterData},
-  } = useJupiterMaalepunkt();
-
-  const merged_data = useMemo(() => {
-    if (!data) return jupiterData || [];
-    if (!jupiterData) return data || [];
-    return [...jupiterData, ...data];
-  }, [data, jupiterData]);
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -109,7 +98,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
         ),
       },
     ],
-    [unit, disabled, handleEdit, jupiterData]
+    [unit, disabled, handleEdit]
   );
 
   const options: Partial<MRT_TableOptions<Maalepunkt | MaalepunktTableData>> = {
@@ -143,7 +132,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
 
   const table = useTable<Maalepunkt | MaalepunktTableData>(
     columns,
-    merged_data,
+    data,
     options,
     undefined,
     TableTypes.LIST,

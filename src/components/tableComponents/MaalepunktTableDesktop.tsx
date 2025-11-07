@@ -5,7 +5,6 @@ import {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
-import useJupiterMaalepunkt from '~/features/station/api/useJupiterMaalepunkt';
 import {
   checkEndDateIsUnset,
   convertDateWithTimeStamp,
@@ -37,15 +36,15 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
     setDialogOpen(true);
   };
 
-  const {
-    get: {data: jupiterData},
-  } = useJupiterMaalepunkt();
+  // const {
+  //   get: {data: jupiterData},
+  // } = useJupiterMaalepunkt();
 
-  const merged_data = useMemo(() => {
-    if (!data) return jupiterData || [];
-    if (!jupiterData) return data || [];
-    return [...jupiterData, ...data];
-  }, [data, jupiterData]);
+  // const merged_data = useMemo(() => {
+  //   if (!data) return jupiterData || [];
+  //   if (!jupiterData) return data || [];
+  //   return [...jupiterData, ...data];
+  // }, [data, jupiterData]);
 
   const unit = timeseries?.tstype_id === 1 ? 'Kote [m (DVR90)]' : `Måling [${timeseries?.unit}]`;
 
@@ -89,7 +88,7 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
         ),
       },
     ],
-    [unit, jupiterData]
+    [unit]
   );
 
   const [tableState, reset] = useStatefullTableAtom<Maalepunkt | MaalepunktTableData>(
@@ -118,7 +117,7 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
 
   const table = useTable<Maalepunkt | MaalepunktTableData>(
     columns,
-    merged_data || [],
+    data || [],
     options,
     tableState,
     TableTypes.TABLE,
