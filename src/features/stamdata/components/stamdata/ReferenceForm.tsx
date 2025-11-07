@@ -23,7 +23,12 @@ const schema = z
     gid: z.number().optional(),
     startdate: zodDayjs('Start dato skal være udfyldt'),
     enddate: zodDayjs('Slut dato skal være udfyldt').default(dayjs('2099-01-01')),
-    elevation: z.number().nullable(),
+    elevation: z
+      .number({required_error: 'Pejlepunkt skal være udfyldt'})
+      .optional()
+      .refine((val) => val !== null && val !== undefined, {
+        message: 'Pejlepunkt skal være udfyldt',
+      }),
     mp_description: z.string().optional(),
   })
   .superRefine(({enddate, startdate}, ctx) => {
@@ -47,11 +52,9 @@ export default function ReferenceForm() {
   const {isMobile} = useBreakpoints();
   const [showForm, setShowForm] = useShowFormState();
 
-  const {data: safeParsedData} = schema.safeParse(initialWatlevmpData());
-
   const formMethods = useForm<WatlevMPFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: safeParsedData,
+    defaultValues: initialWatlevmpData(),
     mode: 'onTouched',
   });
 
@@ -79,7 +82,7 @@ export default function ReferenceForm() {
   return (
     <>
       <StationPageBoxLayout>
-        {showForm && <WatlevMPForm formMethods={formMethods} />}
+        {showForm === true && <WatlevMPForm formMethods={formMethods} />}
         {isMobile ? (
           <MaalepunktTableMobile
             handleEdit={handleEdit}
