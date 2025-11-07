@@ -144,8 +144,8 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
           )}
 
           <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">
-            <Form.Submit submit={submit} />
             <Form.Cancel cancel={() => resetSync()} />
+            <Form.Submit submit={submit} />
           </Grid2>
         </Form>
       )}
