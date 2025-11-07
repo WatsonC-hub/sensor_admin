@@ -6,9 +6,9 @@ import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 
 export type ServiceConfiguration = {
-  controlsPerYear: number | undefined;
-  isCustomerService: boolean | undefined;
-  leadTime: number | undefined;
+  controlsPerYear: number | null;
+  isCustomerService: boolean | null;
+  leadTime: number | null;
   // forvarselstid
 };
 

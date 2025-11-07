@@ -10,6 +10,7 @@ const StationPageBoxLayout = ({children}: StationPageBoxLayoutProps) => {
   const {isTouch} = useBreakpoints();
   return (
     <Box
+      key={'station-page-box-layout'}
       sx={{
         display: 'flex',
         flexDirection: 'column',

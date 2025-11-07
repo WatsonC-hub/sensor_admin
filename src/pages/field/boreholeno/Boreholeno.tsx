@@ -472,6 +472,7 @@ const Boreholeno = () => {
       )}
       <input
         type="file"
+        accept="image/*"
         ref={fileInputRef}
         style={{display: 'none'}}
         onChange={handleFileRead}

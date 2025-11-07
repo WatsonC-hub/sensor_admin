@@ -1,11 +1,13 @@
 import {Box, Typography} from '@mui/material';
-import React from 'react';
+import React, {useState} from 'react';
 
 import UnitMeasurementConfig from './UnitMeasurementConfig';
 import YearlyControlsConfig from './YearlyControlsConfig';
+import Synchronization from './Synchronization';
 import TooltipWrapper from '~/components/TooltipWrapper';
 
 const Configuration = () => {
+  const [canSync, setCanSync] = useState(true);
   return (
     <>
       <Layout>
@@ -25,6 +27,14 @@ const Configuration = () => {
         </Box>
         <YearlyControlsConfig />
       </Layout>
+      {canSync && (
+        <Layout>
+          <Typography variant="h6" gutterBottom>
+            Synkronisering
+          </Typography>
+          <Synchronization setCanSync={setCanSync} />
+        </Layout>
+      )}
     </>
   );
 };

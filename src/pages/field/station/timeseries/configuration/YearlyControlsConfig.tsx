@@ -5,7 +5,6 @@ import React, {ChangeEvent} from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
 import {
   useTimeseriesServiceInterval,
@@ -40,29 +39,21 @@ function intervalFromFrequencyPerYear(timesPerYear: number): string {
 const YearlyControlsConfig = () => {
   const {ts_id} = useAppContext(['ts_id']);
   const user = useUser();
-  const {data: values, isPending} = useTimeseriesServiceInterval(ts_id);
+  const {data: values} = useTimeseriesServiceInterval(ts_id);
   const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
   const {isMobile} = useBreakpoints();
 
   const formMethods = useForm<ServiceIntervalSubmit>({
     resolver: zodResolver(yearlyControlsSchema),
     defaultValues: {
-      controls_per_year: values?.controlsPerYear,
-      dummy: values
-        ? values.controlsPerYear && values.controlsPerYear > 0
-          ? Number(values.controlsPerYear.toFixed(3))
-          : null
-        : null,
-      lead_time: values?.leadTime,
+      controls_per_year: null,
+      dummy: null,
+      lead_time: null,
     },
-    values: {
-      controls_per_year: values?.controlsPerYear ?? null,
-      lead_time: values?.leadTime ?? null,
-      dummy: values
-        ? values.controlsPerYear && values.controlsPerYear > 0
-          ? Number(values.controlsPerYear.toFixed(3))
-          : null
-        : null,
+    values: values && {
+      controls_per_year: values.controlsPerYear,
+      lead_time: values.leadTime ?? null,
+      dummy: values.controlsPerYear ? Number(values.controlsPerYear.toFixed(3)) : null,
       selectValue: 1,
     },
     mode: 'onChange',
@@ -78,14 +69,6 @@ const YearlyControlsConfig = () => {
 
   const controlsPerYear = watch('controls_per_year');
   const selectValue = watch('selectValue');
-
-  if (isPending) {
-    return (
-      <Box minWidth={isMobile ? '70vw' : 800}>
-        <LoadingSkeleton />
-      </Box>
-    );
-  }
 
   const onSubmit = (data: ServiceIntervalSubmit) => {
     mutate(

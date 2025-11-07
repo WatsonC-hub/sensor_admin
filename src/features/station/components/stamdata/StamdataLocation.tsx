@@ -54,7 +54,7 @@ const StamdataLocation = ({children}: Props) => {
     queryKey: queryKeys.dtm(),
     queryFn: () => getDTMQuota(x, y),
     refetchOnWindowFocus: false,
-    enabled: x !== undefined && y !== undefined,
+    enabled: x !== undefined && y !== undefined && terrainqual === 'DTM',
   });
 
   useEffect(() => {

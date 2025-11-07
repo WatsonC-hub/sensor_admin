@@ -1,7 +1,7 @@
 import {Box, Typography} from '@mui/material';
 import React from 'react';
 import {UseFormReturn} from 'react-hook-form';
-import {createTypedForm} from '~/components/Form';
+import {createTypedForm} from '~/components/formComponents/Form';
 import {initialWatlevmpData} from '~/features/stamdata/components/stamdata/const';
 import {WatlevMPFormValues} from '~/features/stamdata/components/stamdata/ReferenceForm';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
@@ -19,14 +19,13 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
   const [, setShowForm] = useShowFormState();
   const {
     reset,
-    getValues,
     formState: {defaultValues},
   } = formMethods;
 
   const {post: postWatlevmp, put: putWatlevmp} = useMaalepunkt();
 
-  const handleMaalepunktSubmit = () => {
-    const mpData = getValues();
+  const handleMaalepunktSubmit = (values: WatlevMPFormValues) => {
+    console.log('Submitting WatlevMPForm with values:', values);
     const mutationOptions = {
       onSuccess: () => {
         reset(initialWatlevmpData());
@@ -35,10 +34,10 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
     };
 
     const data = {
-      ...mpData,
+      ...values,
     };
 
-    if (mpData.gid === undefined) {
+    if (values.gid === undefined) {
       const payload = {
         data: data,
         path: `${ts_id}`,
@@ -47,7 +46,7 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
     } else {
       const payload = {
         data: data,
-        path: `${ts_id}/${mpData.gid}`,
+        path: `${ts_id}/${values.gid}`,
       };
       putWatlevmp.mutate(payload, mutationOptions);
     }
@@ -59,9 +58,10 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
         formMethods={formMethods}
         label={defaultValues?.gid ? 'Rediger målepunkt' : 'Indberet målepunkt'}
       >
-        <Form.FormInput
+        <Form.Input
           name="elevation"
           label="Pejlepunkt [m]"
+          required
           type="number"
           gridSizes={defaultValues?.gid !== undefined ? 12 : undefined}
           slotProps={{
@@ -70,13 +70,13 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
             },
           }}
         />
-        <Form.FormDateTime
+        <Form.DateTime
           name="startdate"
           label={defaultValues?.gid !== undefined ? 'Start dato' : 'Dato'}
         />
-        {defaultValues?.gid !== undefined && <Form.FormDateTime name="enddate" label="Slut dato" />}
+        {defaultValues?.gid !== undefined && <Form.DateTime name="enddate" label="Slut dato" />}
 
-        <Form.FormInput
+        <Form.Input
           name="mp_description"
           label="Kommentar"
           placeholder="F.eks.Pejl top rør"

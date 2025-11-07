@@ -50,20 +50,20 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   };
 
   const handleSave: SubmitHandler<InferContactInfo> = async (contact_info) => {
-    const kontakt = {
-      id: contact_info.id,
-      name: contact_info.name,
-      mobile: contact_info.mobile ? contact_info.mobile.toString() : '',
-      email: contact_info.email,
-      comment: contact_info.comment,
-      contact_role: contact_info.contact_role,
-      user_id: contact_info.user_id ?? null,
-      contact_type: contact_info.contact_type,
-      notify_required: contact_info.notify_required ?? false,
-    };
+    // const kontakt = {
+    //   id: contact_info.id,
+    //   name: contact_info.name,
+    //   mobile: contact_info.mobile ? contact_info.mobile.toString() : '',
+    //   email: contact_info.email,
+    //   comment: contact_info.comment,
+    //   contact_role: contact_info.contact_role,
+    //   user_id: contact_info.user_id ?? null,
+    //   contact_type: contact_info.contact_type,
+    //   notify_required: contact_info.notify_required ?? false,
+    // };
     const payload = {
       path: `${loc_id}`,
-      data: kontakt,
+      data: contact_info,
     };
     postContact.mutate(payload, {
       onSuccess: () => {

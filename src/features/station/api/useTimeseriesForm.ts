@@ -6,16 +6,15 @@ import {
   defaultEditTimeseriesSchema,
 } from '../schema';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {DefaultValues, useForm} from 'react-hook-form';
+import {FieldValues, useForm, UseFormProps} from 'react-hook-form';
 import DefaultTimeseriesForm from '../components/stamdata/stamdataComponents/DefaultTimeseriesForm';
 import BoreholeTimeseriesForm from '../components/stamdata/stamdataComponents/BoreholeTimeseriesForm';
 import DefaultTimeseriesEditForm from '../components/stamdata/stamdataComponents/DefaultTimeseriesEditForm';
 import BoreholeTimeseriesEditForm from '../components/stamdata/stamdataComponents/BoreholeTimeseriesEditForm';
 
-type useTimeseriesFormProps<T> = {
-  defaultValues?: DefaultValues<T>;
+type useTimeseriesFormProps<T extends FieldValues> = {
+  formProps: UseFormProps<T, {loctype_id: number | undefined}>;
   mode: 'Add' | 'Edit';
-  context: {loctype_id: number | undefined};
 };
 
 const getSchemaAndForm = (loctype_id: number | undefined, mode: 'Add' | 'Edit') => {
@@ -45,11 +44,10 @@ const getSchemaAndForm = (loctype_id: number | undefined, mode: 'Add' | 'Edit') 
 };
 
 const useTimeseriesForm = <T extends Record<string, any>>({
-  defaultValues,
-  context,
+  formProps,
   mode,
 }: useTimeseriesFormProps<T>) => {
-  const loctype_id = context.loctype_id;
+  const loctype_id = formProps.context?.loctype_id;
 
   if (mode === undefined) {
     throw new Error('mode is required');
@@ -59,9 +57,8 @@ const useTimeseriesForm = <T extends Record<string, any>>({
 
   const formMethods = useForm<T, {loctype_id: number | undefined}>({
     resolver: zodResolver(schema),
-    defaultValues,
+    ...formProps,
     mode: 'onTouched',
-    context: context,
   });
 
   return [formMethods, form] as const;

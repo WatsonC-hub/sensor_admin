@@ -5,13 +5,14 @@ import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {ContactInfo, ContactTable} from '~/types';
+import {InferContactInfo} from '../components/stationDetails/zodSchemas';
 
 interface ContactInfoBase {
   path: string;
 }
 
 interface ContactInfoPost extends ContactInfoBase {
-  data: ContactInfo;
+  data: InferContactInfo;
 }
 
 interface ContactInfoPut extends ContactInfoBase {
@@ -66,26 +67,30 @@ export const ContactInfoGetOptions = (loc_id: number) =>
     enabled: loc_id !== undefined && loc_id !== null,
   });
 
-export const useSearchContact = (loc_id: number | undefined, searchString: string) => {
+export const useSearchContact = <T = ContactInfo[]>(
+  loc_id: number | undefined,
+  searchString: string,
+  select?: (data: ContactInfo[]) => T
+) => {
+  const searchEndpoint = `/sensor_field/stamdata/contact/search_contact_info/${searchString}`;
+  const relevantContactsEndpoint = `/sensor_field/stamdata/contact/relevant_contacts/${loc_id}`;
+
   const searched_contacts = useQuery({
     queryKey: queryKeys.Location.searchContacts(searchString),
     queryFn: async () => {
       let data;
       if (searchString == '') {
-        const response = await apiClient.get<Array<ContactInfo>>(
-          `/sensor_field/stamdata/contact/relevant_contacts/${loc_id}`
-        );
+        const response = await apiClient.get<Array<ContactInfo>>(relevantContactsEndpoint);
         data = response.data;
       } else {
-        const response = await apiClient.get<Array<ContactInfo>>(
-          `/sensor_field/stamdata/contact/search_contact_info/${searchString}`
-        );
+        const response = await apiClient.get<Array<ContactInfo>>(searchEndpoint);
         data = response.data;
       }
 
       return data;
     },
     staleTime: 10 * 1000,
+    select,
   });
   return searched_contacts;
 };

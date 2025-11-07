@@ -150,7 +150,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           justifyContent: 'space-between',
           borderRadius: 4,
           height: '96%',
-          minWidth: 200,
+          minWidth: 350,
           m: 1,
         }}
       >

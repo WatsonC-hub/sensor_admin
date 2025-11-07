@@ -112,4 +112,5 @@ export const defaultDataToShow: DataToShow = {
   'Valide værdier': false,
   'Fjernet data': false,
   Rådata: false,
+  'Alarm linjer': false,
 };

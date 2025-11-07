@@ -36,7 +36,12 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
 
   const requiredUnitEndSchema = z.object({
     enddate: zodDayjs('slutdato er påkrævet'),
-    change_reason: z.number({required_error: 'Vælg årsag'}).default(-1),
+    change_reason: z
+      .number({required_error: 'Vælg årsag'})
+      .default(-1)
+      .refine((val) => val !== -1, {
+        message: 'Årsag er påkrævet',
+      }),
     action: z.string({required_error: 'Vælg handling'}).default('-1'),
     comment: z.string().optional(),
   });
@@ -109,7 +114,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       toast.success('Udstyret er hjemtaget');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['register'], ['metadata']],
     },
   });
 

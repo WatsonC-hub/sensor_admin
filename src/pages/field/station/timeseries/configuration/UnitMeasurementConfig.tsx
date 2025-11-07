@@ -107,7 +107,7 @@ const UnitMeasurementConfig = () => {
 
   if (isLoading) {
     return (
-      <Box minWidth={isMobile ? '70vw' : 500} height={500}>
+      <Box minWidth={isMobile ? '70vw' : 500} height={400}>
         <Typography>Loading</Typography>
       </Box>
     );

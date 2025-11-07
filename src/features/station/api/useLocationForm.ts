@@ -1,5 +1,4 @@
 import {
-  BaseLocation,
   baseLocationSchema,
   boreholeAddLocationSchema,
   boreholeEditLocationSchema,
@@ -72,7 +71,7 @@ const getSchemaAndForm = <T extends FieldValues>(
   return [selectedSchema as ZodObject<T>, selectedForm] as const;
 };
 
-const useLocationForm = <T extends BaseLocation>({
+const useLocationForm = <T extends Record<string, any>>({
   defaultValues,
   mode,
   context,
@@ -92,7 +91,6 @@ const useLocationForm = <T extends BaseLocation>({
     resolver: zodResolver(schema),
     defaultValues: success ? defaultValuesData : defaultValues,
     mode: 'onTouched',
-    context: context,
   });
 
   const {watch} = formMethods;
