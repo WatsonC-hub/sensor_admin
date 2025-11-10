@@ -63,19 +63,25 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
 
   const syncMethods = useForm<SyncFormValues>({
     defaultValues: {
-      jupiter: sync_data?.jupiter ?? false,
-      sync_dmp: sync_data?.owner_cvr ? true : false,
-      owner_name: owner?.name ?? '',
-      owner_cvr: owner?.cvr ? parseInt(owner.cvr) : undefined,
+      jupiter: undefined,
+      sync_dmp: undefined,
+      owner_name: undefined,
+      owner_cvr: undefined,
     },
     resolver: zodResolver(SyncSchema),
     mode: 'onTouched',
-    values: sync_data,
+    values: sync_data && {
+      jupiter: sync_data.jupiter ?? undefined,
+      sync_dmp: sync_data.owner_cvr ? true : false,
+      owner_name: owner?.name ?? undefined,
+      owner_cvr: owner?.cvr ? parseInt(owner.cvr) : undefined,
+    },
   });
 
   const {
     reset: resetSync,
     watch,
+    setValue,
     formState: {dirtyFields},
   } = syncMethods;
 
@@ -83,7 +89,6 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
 
   const submit = (data: SyncFormValues) => {
     const cvr = owners?.find((owner) => owner.name === data.owner_name)?.cvr;
-
     const syncPayload = {
       path: `${ts_id}`,
       data: {
@@ -106,10 +111,10 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
   };
 
   useEffect(() => {
-    if (metadata && location_data && user) {
+    if (metadata && location_data && user && isDmpAllowed !== null) {
       setCanSync(!!(isDmpAllowed || canSyncJupiter));
     }
-  }, [metadata, location_data, user]);
+  }, [isDmpAllowed, canSyncJupiter, metadata, location_data, user, setCanSync]);
 
   return (
     <Box display={'flex'} flexDirection="column">
@@ -129,6 +134,15 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
                   name="owner_name"
                   label="Data ejer"
                   disabled={!syncDmp || sync_data?.sync_dmp}
+                  onChangeCallback={(value) => {
+                    const owner_name = (
+                      value as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+                    ).target.value;
+                    const cvr = owners?.find((owner) => owner.name === owner_name)?.cvr;
+                    if (cvr) {
+                      setValue('owner_cvr', parseInt(cvr));
+                    }
+                  }}
                 >
                   <MenuItem value="" disabled>
                     Vælg data ejer
@@ -144,8 +158,8 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
           )}
 
           <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">
-            <Form.Submit submit={submit} />
             <Form.Cancel cancel={() => resetSync()} />
+            <Form.Submit submit={submit} />
           </Grid2>
         </Form>
       )}

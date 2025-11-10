@@ -20,7 +20,7 @@ const IngenMPAlert = ({openAddMP}: Props) => {
             height: alertHeight,
           }}
         >
-          <Link component="button" variant="body2" color="error" onClick={openAddMP}>
+          <Link component="button" type="button" variant="body2" color="error" onClick={openAddMP}>
             Tilføj venligst et målepunkt først
           </Link>
         </Alert>
