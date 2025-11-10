@@ -43,7 +43,6 @@ export default function Station() {
   const user = useUser();
 
   useEffect(() => {
-    setPageToShow(pageToShow);
     if (
       metadata?.calculated &&
       (pageToShow == 'tilsyn' ||
