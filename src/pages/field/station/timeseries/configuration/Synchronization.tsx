@@ -12,12 +12,25 @@ import {useUser} from '~/features/auth/useUser';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import useDmpAllowedMapList from '~/features/station/api/useDmpAllowedMapList';
 
-const SyncSchema = z.object({
-  sync_dmp: z.boolean().optional(),
-  owner_cvr: z.number().optional(),
-  owner_name: z.union([z.string(), z.literal('')]).optional(),
-  jupiter: z.boolean().optional(),
-});
+const SyncSchema = z
+  .object({
+    sync_dmp: z.boolean().optional(),
+    owner_cvr: z.number().optional(),
+    owner_name: z.union([z.string(), z.literal('')]).optional(),
+    jupiter: z.boolean().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.sync_dmp) {
+        return data.owner_name !== undefined && data.owner_name !== null && data.owner_name !== '';
+      }
+      return true;
+    },
+    {
+      message: 'Data ejer skal være udfyldt, når DMP synkronisering er aktiveret',
+      path: ['owner_name'],
+    }
+  );
 
 type SyncFormValues = z.infer<typeof SyncSchema>;
 
@@ -82,6 +95,7 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
     reset: resetSync,
     watch,
     setValue,
+    trigger,
     formState: {dirtyFields},
   } = syncMethods;
 
@@ -127,7 +141,14 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
           )}
           {isDmpAllowed && (
             <>
-              <Form.Checkbox name="sync_dmp" label="DMP" disabled={sync_data?.sync_dmp} />
+              <Form.Checkbox
+                name="sync_dmp"
+                label="DMP"
+                disabled={sync_data?.sync_dmp}
+                onChangeCallback={(value) => {
+                  if (!value) trigger('owner_name');
+                }}
+              />
               <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til DMP">
                 <Form.Input
                   select
