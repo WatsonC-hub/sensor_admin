@@ -20,6 +20,7 @@ import RenderActions from '~/helpers/RowActions';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
+import {useAppContext} from '~/state/contexts';
 import {Maalepunkt, MaalepunktTableData} from '~/types';
 
 interface Props {
@@ -29,13 +30,14 @@ interface Props {
 }
 
 export default function MaalepunktTableMobile({handleEdit, handleDelete, disabled}: Props) {
+  const {ts_id} = useAppContext(['ts_id']);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
   const {data: timeseries} = useTimeseriesData();
 
   const {
     get: {data},
-  } = useMaalepunkt();
+  } = useMaalepunkt(ts_id);
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);

@@ -16,6 +16,7 @@ interface JupiterMPProps {
   lastOurMP: MaalepunktTableData | undefined;
   watlevmpMutate?: UseMutationResult<void, Error, MaalepunktPost, unknown>;
   setAddMPOpen: (open: boolean | null) => void;
+  ts_id?: number;
 }
 
 type LastJupiterMPData = {
@@ -30,9 +31,9 @@ type LastJupiterMPAPI = {
   startdate: string;
 };
 
-const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps) => {
-  const {boreholeno, intakeno, ts_id} = useAppContext(['boreholeno', 'intakeno'], ['ts_id']);
-  const {post: addWatlevmp} = useMaalepunkt();
+const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: JupiterMPProps) => {
+  const {boreholeno, intakeno} = useAppContext(['boreholeno', 'intakeno']);
+  const {post: addWatlevmp} = useMaalepunkt(ts_id);
   const {data, isLoading, isError, isSuccess} = useQuery({
     queryKey: queryKeys.Borehole.lastMP(boreholeno, intakeno),
     queryFn: async () => {
@@ -131,7 +132,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps
             border: '1px solid',
             borderColor: 'white',
             borderRadius: 2,
-            p: 1,
+            px: 1,
             display: 'flex',
             flexDirection: 'column',
             gap: 0.5,
@@ -161,11 +162,10 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps
           )}
         </Box>
       </Stack>
-
       {showQuickAdd && (
         <>
           <Divider sx={{my: 1}} />
-          <Button bttype="tertiary" sx={{ml: 'auto'}} onClick={handleQuickAdd}>
+          <Button bttype="tertiary" onClick={handleQuickAdd}>
             Tilføj Jupiter målepunkt
           </Button>
         </>

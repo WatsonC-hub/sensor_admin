@@ -58,7 +58,8 @@ export default function ReferenceForm() {
   const {data: metadata} = useTimeseriesData(ts_id);
   const {
     get: {data: ourMP},
-  } = useMaalepunkt();
+    del: deleteWatlevmp,
+  } = useMaalepunkt(ts_id);
 
   const formMethods = useForm<WatlevMPFormValues>({
     resolver: zodResolver(schema),
@@ -74,8 +75,6 @@ export default function ReferenceForm() {
   } = usePermissions(loc_id);
 
   const disabled = permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit';
-
-  const {del: deleteWatlevmp} = useMaalepunkt();
 
   const handleDeleteMaalepunkt = (gid: number | undefined) => {
     deleteWatlevmp.mutate({path: `${ts_id}/${gid}`});
@@ -101,6 +100,7 @@ export default function ReferenceForm() {
         <LastJupiterMP
           lastOurMP={ourMP?.[0] as MaalepunktTableData | undefined}
           setAddMPOpen={setShowForm}
+          ts_id={ts_id}
         />
       )}
       {showForm === true && <WatlevMPForm formMethods={formMethods} />}
