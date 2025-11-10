@@ -14,9 +14,9 @@ import useDmpAllowedMapList from '~/features/station/api/useDmpAllowedMapList';
 
 const SyncSchema = z.object({
   sync_dmp: z.boolean().optional(),
-  owner_cvr: z.number().optional(),
-  owner_name: z.union([z.string(), z.literal('')]).optional(),
-  jupiter: z.boolean().optional(),
+  owner_cvr: z.number().nullish(),
+  owner_name: z.union([z.string(), z.literal('')]).nullish(),
+  jupiter: z.boolean().nullish(),
 });
 
 type SyncFormValues = z.infer<typeof SyncSchema>;
@@ -76,6 +76,7 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
   const {
     reset: resetSync,
     watch,
+    setValue,
     formState: {dirtyFields},
   } = syncMethods;
 
@@ -83,7 +84,6 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
 
   const submit = (data: SyncFormValues) => {
     const cvr = owners?.find((owner) => owner.name === data.owner_name)?.cvr;
-
     const syncPayload = {
       path: `${ts_id}`,
       data: {
@@ -129,6 +129,15 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
                   name="owner_name"
                   label="Data ejer"
                   disabled={!syncDmp || sync_data?.sync_dmp}
+                  onChangeCallback={(value) => {
+                    const owner_name = (
+                      value as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+                    ).target.value;
+                    const cvr = owners?.find((owner) => owner.name === owner_name)?.cvr;
+                    if (cvr) {
+                      setValue('owner_cvr', parseInt(cvr));
+                    }
+                  }}
                 >
                   <MenuItem value="" disabled>
                     Vælg data ejer
