@@ -14,9 +14,9 @@ import useDmpAllowedMapList from '~/features/station/api/useDmpAllowedMapList';
 
 const SyncSchema = z.object({
   sync_dmp: z.boolean().optional(),
-  owner_cvr: z.number().nullish(),
-  owner_name: z.union([z.string(), z.literal('')]).nullish(),
-  jupiter: z.boolean().nullish(),
+  owner_cvr: z.number().optional(),
+  owner_name: z.union([z.string(), z.literal('')]).optional(),
+  jupiter: z.boolean().optional(),
 });
 
 type SyncFormValues = z.infer<typeof SyncSchema>;
@@ -63,14 +63,19 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
 
   const syncMethods = useForm<SyncFormValues>({
     defaultValues: {
-      jupiter: sync_data?.jupiter ?? false,
-      sync_dmp: sync_data?.owner_cvr ? true : false,
-      owner_name: owner?.name ?? '',
-      owner_cvr: owner?.cvr ? parseInt(owner.cvr) : undefined,
+      jupiter: undefined,
+      sync_dmp: undefined,
+      owner_name: undefined,
+      owner_cvr: undefined,
     },
     resolver: zodResolver(SyncSchema),
     mode: 'onTouched',
-    values: sync_data,
+    values: sync_data && {
+      jupiter: sync_data.jupiter ?? undefined,
+      sync_dmp: sync_data.owner_cvr ? true : false,
+      owner_name: owner?.name ?? undefined,
+      owner_cvr: owner?.cvr ? parseInt(owner.cvr) : undefined,
+    },
   });
 
   const {
@@ -106,10 +111,10 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
   };
 
   useEffect(() => {
-    if (metadata && location_data && user) {
+    if (metadata && location_data && user && isDmpAllowed !== null) {
       setCanSync(!!(isDmpAllowed || canSyncJupiter));
     }
-  }, [metadata, location_data, user]);
+  }, [isDmpAllowed, canSyncJupiter, metadata, location_data, user, setCanSync]);
 
   return (
     <Box display={'flex'} flexDirection="column">

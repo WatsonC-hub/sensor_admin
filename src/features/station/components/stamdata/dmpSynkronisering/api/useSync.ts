@@ -11,9 +11,9 @@ interface SyncBase {
 
 type Sync = {
   sync_dmp?: boolean;
-  owner_cvr?: number | null;
-  owner_name?: string | null;
-  jupiter?: boolean | null;
+  owner_cvr?: number;
+  owner_name?: string;
+  jupiter?: boolean;
 };
 
 interface SyncPost extends SyncBase {
