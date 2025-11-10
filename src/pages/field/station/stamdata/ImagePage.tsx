@@ -98,7 +98,13 @@ const ImagePage = () => {
           setShowForm(null);
         }}
       />
-      <input type="file" ref={fileInputRef} style={{display: 'none'}} onChange={handleFileRead} />
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        style={{display: 'none'}}
+        onChange={handleFileRead}
+      />
     </>
   );
 };

@@ -9,6 +9,7 @@ import {
   Router,
   Settings,
 } from '@mui/icons-material';
+import AlarmIcon from '@mui/icons-material/Alarm';
 import {
   Drawer,
   Box,
@@ -50,6 +51,8 @@ import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {timeseriesMeasureSampleSendOptions} from '../api/useTimeseriesMeasureSampleSend';
+import {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
+import {alarmGetOptions} from '../alarms/api/useAlarm';
 
 const drawerWidth = 200;
 
@@ -178,19 +181,29 @@ const StationDrawer = () => {
           page: stationPages.ALGORITHMS,
           icon: <FunctionsIcon />,
           requiredTsId: true,
-          disabled: !user?.features?.iotAccess || metadata?.calculated,
+          disabled: !user?.features?.iotAccess,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id!)),
           tooltip: 'På denne side kan du justere advarsler for din tidsserie.',
+        },
+        {
+          text: 'Alarmer',
+          page: stationPages.ALARM,
+          icon: <AlarmIcon />,
+          requiredTsId: true,
+          onHover: () => handlePrefetch(alarmGetOptions(ts_id)),
+          disabled: !user?.features?.alarms,
         },
         {
           text: 'Konfiguration',
           page: stationPages.TIDSSERIEKONFIGURATION,
           icon: <Settings />,
           requiredTsId: true,
-          onHover: () =>
-            metadata?.unit_uuid &&
-            metadata?.calculated === false &&
-            handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!)),
+          onHover: () => {
+            if (metadata?.unit_uuid && metadata?.calculated === false) {
+              handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!));
+            }
+            prefetchDmpAllowedMapList();
+          },
           tooltip:
             'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
         },
@@ -308,7 +321,10 @@ const StationDrawer = () => {
             let timer = 0;
 
             const mouseEnter = () => {
-              timer = setTimeout(item.onHover ? item.onHover : () => {}, 100);
+              timer = setTimeout(
+                item.onHover && pageToShow !== item.page ? item.onHover : () => {},
+                100
+              );
             };
 
             const mouseLeave = () => {
