@@ -103,7 +103,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
             border: '1px solid',
             borderColor: 'white',
             borderRadius: 2,
-            p: 1,
+            px: 1,
             display: 'flex',
             flexDirection: 'column',
             gap: 0.5,
