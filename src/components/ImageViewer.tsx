@@ -1,10 +1,12 @@
 import {Box, CircularProgress, Grid2, Skeleton, Typography} from '@mui/material';
-import {useMutationState} from '@tanstack/react-query';
+import {MutationState, useMutationState} from '@tanstack/react-query';
 import React from 'react';
 
 import ImageCard from '~/components/ImageCard';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {Image} from '~/types';
+import Button from './Button';
+import {ImagePayload} from '~/hooks/query/useImageUpload';
 
 type ImageViewerProps = {
   images: Array<Image>;
@@ -14,9 +16,39 @@ type ImageViewerProps = {
   id: string | number;
 };
 
+function downloadDataUri(dataUri: string, filename: string) {
+  // Convert base64/URLEncoded data component to raw binary data held in a string
+  const byteString = atob(dataUri.split(',')[1]);
+  const mimeString = dataUri.split(',')[0].split(':')[1].split(';')[0];
+  const imageFormat = mimeString.split('/')[1];
+
+  // Write the bytes of the string to an ArrayBuffer
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+
+  const blob = new Blob([ab], {type: mimeString});
+  const url = URL.createObjectURL(blob);
+
+  // --- Desktop browsers (Chrome, Edge, Firefox, etc.) ---
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${filename.replace(/\.[^/.]+$/, '')}.${imageFormat}`;
+  document.body.appendChild(link);
+
+  // Safari (iOS) ignores .click() on hidden links unless in user gesture
+
+  link.click();
+
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewerProps) {
   const {isTouch, isMobile} = useBreakpoints();
-  const image_cache = useMutationState({
+  const image_cache = useMutationState<MutationState<unknown, unknown, ImagePayload>>({
     filters: {exact: true, mutationKey: ['image_post', type, id]},
   }).filter((m) => m.status === 'error' || m.status === 'pending');
 
@@ -78,6 +110,18 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
                     Upload afventer at blive genoptaget...
                   </Typography>
                 )}
+                <Button
+                  bttype="primary"
+                  onClick={async () => {
+                    try {
+                      downloadDataUri(m.variables?.data.uri as string, 'image');
+                    } catch (err) {
+                      console.error('Failed to download image:', err);
+                    }
+                  }}
+                >
+                  Gem billede lokalt
+                </Button>
               </Box>
             </Box>
           </Grid2>
