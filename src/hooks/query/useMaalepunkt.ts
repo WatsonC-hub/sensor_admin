@@ -69,7 +69,7 @@ export const getMaalepunktOptions = (ts_id: number | undefined) =>
       return data;
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
-    enabled: ts_id !== null || ts_id !== undefined,
+    enabled: ts_id !== null && ts_id !== undefined,
   });
 
 export const useMaalepunkt = (ts_id: number | undefined) => {
