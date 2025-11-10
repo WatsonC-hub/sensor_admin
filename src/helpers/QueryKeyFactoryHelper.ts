@@ -102,7 +102,7 @@ export const queryKeys = {
     all: () => ['borehole_permissions', 'metadata'] as const,
   },
   AvailableUnits: {
-    all: () => ['available_units', 'metadata'] as const,
+    all: () => ['available_units', 'metadata', 'register'] as const,
   },
   LocationProjects: {
     all: () => ['location_projects'] as const,
@@ -118,8 +118,11 @@ export const queryKeys = {
   timeseriesTypes: () => ['timeseries_types'] as const,
   boreholeMap: () => ['borehole_map', 'register', 'metadata'] as const,
   user: () => ['user'] as const,
+  overblik: () => ['overblik'] as const,
+  overblikByLocId: (loc_id: number | undefined) => ['tasks', 'overblik', loc_id] as const,
   notificationTypes: () => ['notification_types'] as const,
   changeReasons: () => ['change_reasons'] as const,
   actions: (unit_uuid: string | undefined) => ['actions', unit_uuid] as const,
   cmdOptions: () => ['cmd_options'] as const,
+  dmpAllowedMapList: () => ['dmp_allowed_map_list'] as const,
 };

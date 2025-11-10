@@ -4,7 +4,6 @@ import {useMutation} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
-import {z} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
@@ -19,6 +18,7 @@ import {useAppContext} from '~/state/contexts';
 const EditTimeseries = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData(ts_id);
+
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
@@ -56,25 +56,22 @@ const EditTimeseries = () => {
   });
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({
-    defaultValues: defaultValues,
-    mode: 'Edit',
-    context: {
-      loctype_id: metadata?.loctype_id,
+    formProps: {
+      // defaultValues: defaultValues,
+      context: {
+        loctype_id: metadata?.loctype_id,
+      },
+      values: defaultValues,
     },
+    mode: 'Edit',
   });
 
   const {
     formState: {isDirty, isValid},
     reset,
-    handleSubmit,
+    getValues: getTimeseriesValues,
     trigger,
   } = formMethods;
-
-  useEffect(() => {
-    if (metadata != undefined) {
-      reset(defaultValues);
-    }
-  }, [metadata]);
 
   useEffect(() => {
     if (error) {
@@ -82,16 +79,22 @@ const EditTimeseries = () => {
     }
   }, []);
 
-  const Submit = async (data: z.infer<typeof schema>) => {
-    const payload = {
-      ...data,
-    };
-    metadataEditTimeseriesMutation.mutate(payload);
+  const Submit = () => {
+    if (isValid && isDirty) {
+      const data = getTimeseriesValues();
+      const payload = {
+        ...data,
+      };
+      metadataEditTimeseriesMutation.mutate(payload);
+    }
   };
 
   return (
     <Box
       maxWidth={1080}
+      display={'flex'}
+      flexDirection="column"
+      gap={2}
       sx={{
         borderRadius: 4,
         boxShadow: 3,
@@ -102,10 +105,13 @@ const EditTimeseries = () => {
         <StamdataTimeseries boreholeno={metadata?.boreholeno ?? undefined}>
           <TimeseriesForm size={size} loc_name={metadata?.loc_name} />
         </StamdataTimeseries>
+
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
           <Button
             bttype="tertiary"
-            onClick={() => reset(defaultValues)}
+            onClick={() => {
+              reset(defaultValues);
+            }}
             disabled={location_permissions !== 'edit'}
           >
             Annuller
@@ -114,7 +120,7 @@ const EditTimeseries = () => {
           <Button
             bttype="primary"
             disabled={!isDirty || !isValid || location_permissions !== 'edit'}
-            onClick={handleSubmit(Submit)}
+            onClick={Submit}
             startIcon={<SaveIcon />}
             sx={{marginRight: 1}}
           >
