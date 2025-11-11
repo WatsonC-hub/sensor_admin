@@ -23,7 +23,6 @@ const EditTimeseries = () => {
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
 
-  console.log(metadata, 'metadata in edit timeseries');
   const metadataEditTimeseriesMutation = useMutation({
     mutationFn: async (data: any) => {
       const {data: out} = await apiClient.put(
@@ -52,7 +51,8 @@ const EditTimeseries = () => {
     prefix: metadata?.prefix,
     sensor_depth_m: metadata?.sensor_depth_m,
     intakeno: metadata?.intakeno,
-    hidden: metadata?.hidden,
+    requires_auth: metadata?.requires_auth,
+    hide_public: metadata?.hide_public,
   });
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({

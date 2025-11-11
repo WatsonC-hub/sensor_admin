@@ -24,10 +24,11 @@ const BoreholeTimeseriesEditForm = ({size}: Props) => {
         <StamdataTimeseries.SensorDepth disabled={disabled} />
       </Grid2>
       <Grid2 size={size} alignContent={'center'}>
-        <StamdataTimeseries.Hidden />
-      </Grid2>
-      <Grid2 size={size} alignContent={'center'}>
         <StamdataTimeseries.TimeseriesID />
+      </Grid2>
+      <Grid2 size={size} display={'flex'} flexDirection={'column'} alignContent={'center'} gap={1}>
+        <StamdataTimeseries.RequiresAuth />
+        <StamdataTimeseries.HidePublic />
       </Grid2>
     </Grid2>
   );

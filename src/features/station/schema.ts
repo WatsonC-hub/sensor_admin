@@ -46,7 +46,8 @@ const boreholeEditLocationSchema = boreholeAddLocationSchema.extend({
 
 const baseTimeseriesSchema = z.object({
   sensor_depth_m: z.number().nullish(),
-  hidden: z.boolean().default(false),
+  requires_auth: z.boolean().default(false),
+  hide_public: z.boolean().default(false),
 });
 
 const baseAddTimeseriesSchema = baseTimeseriesSchema.extend({

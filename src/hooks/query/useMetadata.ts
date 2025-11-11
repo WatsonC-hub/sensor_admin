@@ -33,7 +33,8 @@ type Metadata = {
   unit: string;
   prefix: string | null;
   unit_uuid: string | null;
-  hidden: boolean;
+  requires_auth: boolean;
+  hide_public: boolean;
 };
 
 type LocationMetadata = {

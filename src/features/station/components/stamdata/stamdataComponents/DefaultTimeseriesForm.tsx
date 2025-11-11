@@ -19,8 +19,9 @@ const DefaultTimeseriesForm = ({size, loc_name}: Props) => {
       <Grid2 size={size}>
         <StamdataTimeseries.SensorDepth />
       </Grid2>
-      <Grid2 size={size} alignContent={'center'}>
-        <StamdataTimeseries.Hidden />
+      <Grid2 size={size} display="flex" flexDirection={'column'} justifyContent={'center'} gap={1}>
+        <StamdataTimeseries.RequiresAuth />
+        <StamdataTimeseries.HidePublic />
       </Grid2>
     </>
   );

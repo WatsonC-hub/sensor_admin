@@ -179,16 +179,32 @@ const SensorDepth = (
   );
 };
 
-const Hidden = () => {
+const RequiresAuth = () => {
   const {control} = useFormContext();
   return (
     <Controller
-      name="hidden"
+      name="requires_auth"
       control={control}
       render={({field: {onChange, value}}) => (
         <FormControlLabel
-          control={<Checkbox onChange={onChange} checked={value} />}
-          label="Skjul tidsserien i offentlige visninger"
+          control={<Checkbox sx={{p: 0, ml: 1}} onChange={onChange} checked={value} />}
+          label="Kræver rettigheder for at tilgå tidsserien"
+        />
+      )}
+    />
+  );
+};
+
+const HidePublic = () => {
+  const {control} = useFormContext();
+  return (
+    <Controller
+      name="hide_public"
+      control={control}
+      render={({field: {onChange, value}}) => (
+        <FormControlLabel
+          control={<Checkbox sx={{p: 0, ml: 1}} onChange={onChange} checked={value} />}
+          label="Skjul i offentlige visninger"
         />
       )}
     />
@@ -232,6 +248,7 @@ StamdataTimeseries.Prefix = Prefix;
 StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;
 StamdataTimeseries.TimeseriesID = TimeseriesID;
-StamdataTimeseries.Hidden = Hidden;
+StamdataTimeseries.RequiresAuth = RequiresAuth;
+StamdataTimeseries.HidePublic = HidePublic;
 
 export default StamdataTimeseries;
