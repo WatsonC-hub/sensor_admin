@@ -47,7 +47,7 @@ const BatteryIndicator = ({percentage, isPowered, ...svgProps}: BatteryIndicator
         {isPowered ? (
           <path
             d="M30 20 L36 20 L32 32 L38 32 L28 46 L30 34 L24 34 Z"
-            fill="#a8d600"
+            fill="white"
             stroke="white"
             strokeWidth="1"
           />
