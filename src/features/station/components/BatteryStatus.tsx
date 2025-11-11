@@ -9,6 +9,30 @@ import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 import {BatteryStatusType} from '~/types';
 
+const estimatedText = (years: number, months: number, days: number) => {
+  let text = '';
+  if (years !== 0) {
+    text += years + ' år';
+  }
+  let monthText = 'måned';
+  if (months > 1) monthText = 'måneder';
+
+  if (months !== 0 && days === 0) {
+    text += ' og ' + months + ' ' + monthText;
+  } else if (months !== 0) {
+    text += ' ' + months + ' ' + monthText;
+  }
+
+  let dayText = 'dag';
+  if (days > 1) dayText = 'dage';
+
+  if (days !== 0 && years === 0) {
+    text += ' og ' + days + ' ' + dayText;
+  }
+
+  return text;
+};
+
 const BatteryStatus = () => {
   const {ts_id} = useAppContext([], ['ts_id']);
   const {data: battery_status} = useQuery({
@@ -20,13 +44,15 @@ const BatteryStatus = () => {
       return data;
     },
     enabled: ts_id !== undefined && ts_id !== null,
-    staleTime: 1000 * 60 * 60 * 4, // 4 hours
+    staleTime: 1000 * 60 * 60,
   });
 
-  let tooltipText = '';
+  if (!battery_status) {
+    return null;
+  }
 
   const currentDate = moment();
-  const estimatedDate = moment(battery_status?.estimated_no_battery);
+  const estimatedDate = moment(battery_status.estimated_no_battery);
 
   const years = estimatedDate.diff(currentDate, 'years');
   currentDate.add(years, 'years');
@@ -34,38 +60,25 @@ const BatteryStatus = () => {
   currentDate.add(months, 'months');
   const days = estimatedDate.diff(currentDate, 'days');
 
-  if (
-    battery_status &&
-    (battery_status.battery_percentage == null ||
-      moment(battery_status.estimated_no_battery).toISOString() < moment().toISOString() ||
-      moment(battery_status.enddate).toISOString() <= moment().toISOString())
-  ) {
-    tooltipText = 'Batteri status er ikke tilgængeligt';
-  }
+  const text = estimatedText(years, months, days);
+  const timeText =
+    battery_status.current_bat !== null ? 'Estimeret levetid' : 'Tid til batteriskift';
 
-  let text = '';
-  if (years !== 0) {
-    text += years + ' år';
-  }
-
-  let monthText = 'måned';
-  if (months > 1) monthText = 'måneder';
-  if (months !== 0 && days === 0) {
-    text += ' og ' + months + ' måneder';
-  } else if (months !== 0) {
-    text += ' ' + months + ' ' + monthText;
-  }
-
-  if (battery_status?.battery_percentage != null) {
-    tooltipText = `Procent: ${(battery_status?.battery_percentage * 100).toFixed()} %\nEstimeret levetid: ${text}`;
-  }
+  const tooltipText = battery_status.is_powered
+    ? 'Enhed sidder til faststrøm'
+    : battery_status.current_bat !== null
+      ? `Procent: ${(battery_status?.battery_percentage * 100).toFixed()} %\n${timeText}: ${text}`
+      : `${timeText}: ${text}`;
 
   return (
     <>
       {battery_status && (
         <Tooltip arrow title={<Box whiteSpace="pre-line">{tooltipText}</Box>} enterTouchDelay={0}>
           <Box height="24px" onClick={() => {}}>
-            <BatteryIndicator percentage={(battery_status.battery_percentage ?? 0) * 100} />
+            <BatteryIndicator
+              isPowered={battery_status.is_powered}
+              percentage={(battery_status.battery_percentage ?? 0) * 100}
+            />
           </Box>
         </Tooltip>
       )}

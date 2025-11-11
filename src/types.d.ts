@@ -250,12 +250,11 @@ export type AccessTable = {
 };
 
 export type BatteryStatusType = {
-  current_bat: number;
-  usage_pr_day: number;
-  battery_percentage: number | null;
+  current_bat: number | null;
+  usage_pr_day: number | null;
+  battery_percentage: number;
   estimated_no_battery: string;
-  startdate: string;
-  enddate: string;
+  is_powered: boolean;
 };
 
 export type LatestMeasurement = {
