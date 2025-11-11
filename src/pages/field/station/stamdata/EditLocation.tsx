@@ -1,3 +1,4 @@
+import {Warning} from '@mui/icons-material';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
@@ -8,8 +9,11 @@ import {z} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
+import TooltipWrapper from '~/components/TooltipWrapper';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import useDeleteLocation from '~/features/station/api/useDeleteLocation';
 import useLocationForm from '~/features/station/api/useLocationForm';
+import DeleteLocationDialog from '~/features/station/components/DeleteLocationDialog';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
 import {BaseLocation} from '~/features/station/schema';
 import {useLocationData} from '~/hooks/query/useMetadata';
@@ -18,6 +22,8 @@ import {useAppContext} from '~/state/contexts';
 
 const EditLocation = () => {
   const {loc_id} = useAppContext(['loc_id']);
+  const [assertDeletion, setAssertDeletion] = React.useState(false);
+  const del = useDeleteLocation();
   const {data: metadata} = useLocationData();
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
@@ -84,6 +90,14 @@ const EditLocation = () => {
           <LocationForm size={size} loc_id={loc_id} />
         </StamdataLocation>
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+          <TooltipWrapper
+            description="Slet lokationen kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen"
+            withIcon={false}
+          >
+            <Button bttype="danger" startIcon={<Warning />} onClick={() => setAssertDeletion(true)}>
+              Slet lokation
+            </Button>
+          </TooltipWrapper>
           <Button
             bttype="tertiary"
             onClick={() => reset(default_data)}
@@ -103,6 +117,21 @@ const EditLocation = () => {
           </Button>
         </Box>
       </FormProvider>
+      <DeleteLocationDialog
+        open={assertDeletion}
+        onClose={() => setAssertDeletion(false)}
+        onDelete={() => {
+          const payload = {path: loc_id};
+          del.mutate(payload, {
+            onSuccess: () => {
+              setAssertDeletion(false);
+            },
+            onError: () => {
+              setAssertDeletion(false);
+            },
+          });
+        }}
+      />
     </Box>
   );
 };

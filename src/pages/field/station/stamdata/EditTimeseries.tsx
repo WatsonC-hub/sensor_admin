@@ -1,3 +1,4 @@
+import {Warning} from '@mui/icons-material';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
@@ -7,8 +8,11 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
+import TooltipWrapper from '~/components/TooltipWrapper';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import useDeleteTimeseries from '~/features/station/api/useDeleteTimeseries';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
+import DeleteTimeseriesDialog from '~/features/station/components/DeleteTimeseriesDialog';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
 import {boreholeEditTimeseriesSchema, defaultEditTimeseriesSchema} from '~/features/station/schema';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
@@ -18,6 +22,8 @@ import {useAppContext} from '~/state/contexts';
 const EditTimeseries = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData(ts_id);
+  const del = useDeleteTimeseries();
+  const [assertDeletion, setAssertDeletion] = React.useState(false);
 
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
@@ -105,6 +111,14 @@ const EditTimeseries = () => {
         </StamdataTimeseries>
 
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+          <TooltipWrapper
+            description="Slet tidsserien kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen"
+            withIcon={false}
+          >
+            <Button bttype="danger" startIcon={<Warning />} onClick={() => setAssertDeletion(true)}>
+              Slet tidsserie
+            </Button>
+          </TooltipWrapper>
           <Button
             bttype="tertiary"
             onClick={() => {
@@ -126,6 +140,23 @@ const EditTimeseries = () => {
           </Button>
         </Box>
       </FormProvider>
+      <DeleteTimeseriesDialog
+        open={assertDeletion}
+        onClose={() => setAssertDeletion(false)}
+        onDelete={() => {
+          const payload = {
+            path: ts_id.toString(),
+          };
+          del.mutate(payload, {
+            onSuccess: () => {
+              setAssertDeletion(false);
+            },
+            onError: () => {
+              setAssertDeletion(false);
+            },
+          });
+        }}
+      />
     </Box>
   );
 };

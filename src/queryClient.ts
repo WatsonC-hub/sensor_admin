@@ -1,5 +1,11 @@
 import {createSyncStoragePersister} from '@tanstack/query-sync-storage-persister';
-import {matchQuery, MutationCache, QueryClient, QueryKey} from '@tanstack/react-query';
+import {
+  matchQuery,
+  MutationCache,
+  QueryClient,
+  QueryKey,
+  UseMutationOptions,
+} from '@tanstack/react-query';
 import axios, {AxiosError} from 'axios';
 import {toast} from 'react-toastify';
 
@@ -28,6 +34,17 @@ declare module '@tanstack/react-query' {
 }
 
 export type APIError = AxiosError<ErrorResponse>;
+
+type AppMutationOptions<TData, TVariables> = Omit<
+  UseMutationOptions<TData, APIError, TVariables>,
+  'mutationFn'
+> & {
+  mutationFn: (variables: TVariables) => Promise<TData>;
+};
+
+export const makeAppMutationOptions = <TData, TVariables>(
+  options: AppMutationOptions<TData, TVariables>
+) => options;
 
 const queryClient = new QueryClient({
   defaultOptions: {
