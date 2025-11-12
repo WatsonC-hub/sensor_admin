@@ -9,28 +9,19 @@ import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 import {BatteryStatusType} from '~/types';
 
-const estimatedText = (years: number, months: number, days: number) => {
-  let text = '';
-  if (years !== 0) {
-    text += years + ' år';
-  }
-  let monthText = 'måned';
-  if (months > 1) monthText = 'måneder';
+const estimatedText = (years: number, months: number, days: number): string => {
+  const parts: string[] = [];
 
-  if (months !== 0 && days === 0) {
-    text += ' og ' + months + ' ' + monthText;
-  } else if (months !== 0) {
-    text += ' ' + months + ' ' + monthText;
-  }
+  if (years) parts.push(`${years} år`);
+  if (months) parts.push(`${months} ${months > 1 ? 'måneder' : 'måned'}`);
+  if (days) parts.push(`${days} ${days > 1 ? 'dage' : 'dag'}`);
 
-  let dayText = 'dag';
-  if (days > 1) dayText = 'dage';
+  if (parts.length === 0) return '0 dage'; // fallback if all are zero
+  if (parts.length === 1) return parts[0];
+  if (parts.length === 2) return parts.join(' og ');
 
-  if (days !== 0 && years === 0) {
-    text += ' og ' + days + ' ' + dayText;
-  }
-
-  return text;
+  // more than two → join with commas, 'og' before last
+  return parts.slice(0, -1).join(', ') + ' og ' + parts.at(-1);
 };
 
 const BatteryStatus = () => {

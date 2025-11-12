@@ -80,7 +80,7 @@ const ContactInfo = () => {
         text="Tilføj kontakt"
         disabled={!user?.features?.contacts || location_permissions !== 'edit'}
         onClick={() => {
-          reset();
+          reset(initialContactData);
           setOpenContactInfoDialog(true);
         }}
         sx={{visibility: openContactInfoDialog ? 'hidden' : 'visible'}}
