@@ -70,10 +70,10 @@ export const initialContactData = {
   navn: '',
   telefonnummer: null,
   email: '',
-  contact_role: -1,
+  contact_role: undefined,
   comment: '',
   user_id: null,
-  contact_type: '-1',
+  contact_type: undefined,
   notify_required: false,
 };
 

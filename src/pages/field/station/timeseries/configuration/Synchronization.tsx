@@ -12,12 +12,25 @@ import {useUser} from '~/features/auth/useUser';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import useDmpAllowedMapList from '~/features/station/api/useDmpAllowedMapList';
 
-const SyncSchema = z.object({
-  sync_dmp: z.boolean().optional(),
-  owner_cvr: z.number().optional(),
-  owner_name: z.union([z.string(), z.literal('')]).optional(),
-  jupiter: z.boolean().optional(),
-});
+const SyncSchema = z
+  .object({
+    sync_dmp: z.boolean().optional(),
+    owner_cvr: z.number().optional(),
+    owner_name: z.union([z.string(), z.literal('')]).optional(),
+    jupiter: z.boolean().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.sync_dmp) {
+        return data.owner_name !== undefined && data.owner_name !== null && data.owner_name !== '';
+      }
+      return true;
+    },
+    {
+      message: 'Data ejer skal være udfyldt, når DMP synkronisering er aktiveret',
+      path: ['owner_name'],
+    }
+  );
 
 type SyncFormValues = z.infer<typeof SyncSchema>;
 
@@ -63,19 +76,26 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
 
   const syncMethods = useForm<SyncFormValues>({
     defaultValues: {
-      jupiter: sync_data?.jupiter ?? false,
-      sync_dmp: sync_data?.owner_cvr ? true : false,
-      owner_name: owner?.name ?? '',
-      owner_cvr: owner?.cvr ? parseInt(owner.cvr) : undefined,
+      jupiter: undefined,
+      sync_dmp: undefined,
+      owner_name: undefined,
+      owner_cvr: undefined,
     },
     resolver: zodResolver(SyncSchema),
     mode: 'onTouched',
-    values: sync_data,
+    values: sync_data && {
+      jupiter: sync_data.jupiter ?? undefined,
+      sync_dmp: sync_data.owner_cvr ? true : false,
+      owner_name: owner?.name ?? undefined,
+      owner_cvr: owner?.cvr ? parseInt(owner.cvr) : undefined,
+    },
   });
 
   const {
     reset: resetSync,
     watch,
+    setValue,
+    trigger,
     formState: {dirtyFields},
   } = syncMethods;
 
@@ -83,7 +103,6 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
 
   const submit = (data: SyncFormValues) => {
     const cvr = owners?.find((owner) => owner.name === data.owner_name)?.cvr;
-
     const syncPayload = {
       path: `${ts_id}`,
       data: {
@@ -106,10 +125,10 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
   };
 
   useEffect(() => {
-    if (metadata && location_data && user) {
+    if (metadata && location_data && user && isDmpAllowed !== null) {
       setCanSync(!!(isDmpAllowed || canSyncJupiter));
     }
-  }, [metadata, location_data, user]);
+  }, [isDmpAllowed, canSyncJupiter, metadata, location_data, user, setCanSync]);
 
   return (
     <Box display={'flex'} flexDirection="column">
@@ -122,13 +141,29 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
           )}
           {isDmpAllowed && (
             <>
-              <Form.Checkbox name="sync_dmp" label="DMP" disabled={sync_data?.sync_dmp} />
+              <Form.Checkbox
+                name="sync_dmp"
+                label="DMP"
+                disabled={sync_data?.sync_dmp}
+                onChangeCallback={(value) => {
+                  if (!value) trigger('owner_name');
+                }}
+              />
               <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til DMP">
                 <Form.Input
                   select
                   name="owner_name"
                   label="Data ejer"
                   disabled={!syncDmp || sync_data?.sync_dmp}
+                  onChangeCallback={(value) => {
+                    const owner_name = (
+                      value as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+                    ).target.value;
+                    const cvr = owners?.find((owner) => owner.name === owner_name)?.cvr;
+                    if (cvr) {
+                      setValue('owner_cvr', parseInt(cvr));
+                    }
+                  }}
                 >
                   <MenuItem value="" disabled>
                     Vælg data ejer
@@ -144,8 +179,8 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
           )}
 
           <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">
-            <Form.Submit submit={submit} />
             <Form.Cancel cancel={() => resetSync()} />
+            <Form.Submit submit={submit} />
           </Grid2>
         </Form>
       )}
