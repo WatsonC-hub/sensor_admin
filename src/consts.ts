@@ -80,7 +80,7 @@ export const initialContactData = {
 export const initialLocationAccessData = {
   id: -1,
   navn: '',
-  type: '-1',
+  type: undefined,
   contact_id: undefined,
   placering: '',
   koden: '',
