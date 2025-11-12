@@ -13,13 +13,13 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 import {initialWatlevmpData} from './const';
-import {Maalepunkt, MaalepunktTableData} from '~/types';
+import {Maalepunkt} from '~/types';
 import {zodDayjs} from '~/helpers/schemas';
 import dayjs from 'dayjs';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import LastJupiterMP from '~/pages/field/boreholeno/components/LastJupiterMP';
 import {useEffect} from 'react';
 import {stationPages} from '~/helpers/EnumHelper';
+import JupiterMPTable from './JupiterMPTable';
 
 const schema = z
   .object({
@@ -56,10 +56,7 @@ export default function ReferenceForm() {
   const {isMobile} = useBreakpoints();
   const [showForm, setShowForm] = useShowFormState();
   const {data: metadata} = useTimeseriesData(ts_id);
-  const {
-    get: {data: ourMP},
-    del: deleteWatlevmp,
-  } = useMaalepunkt(ts_id);
+  const {del: deleteWatlevmp} = useMaalepunkt(ts_id);
 
   const formMethods = useForm<WatlevMPFormValues>({
     resolver: zodResolver(schema),
@@ -96,13 +93,7 @@ export default function ReferenceForm() {
 
   return (
     <>
-      {metadata?.loctype_id === 9 && (
-        <LastJupiterMP
-          lastOurMP={ourMP?.[0] as MaalepunktTableData | undefined}
-          setAddMPOpen={setShowForm}
-          ts_id={ts_id}
-        />
-      )}
+      {metadata?.loctype_id === 9 && <JupiterMPTable />}
       {showForm === true && <WatlevMPForm formMethods={formMethods} />}
       {isMobile ? (
         <MaalepunktTableMobile
