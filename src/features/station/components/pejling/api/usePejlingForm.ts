@@ -16,6 +16,7 @@ import PejlingBoreholeTableMobile from '../components/tables/PejlingBoreholeTabl
 import PejlingBoreholeTableDesktop from '../components/tables/PejlingBoreholeTableDesktop';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {zodResolver} from '@hookform/resolvers/zod';
+import {useAppContext} from '~/state/contexts';
 
 type PejlingFormProps = {
   loctype_id: number | undefined;
@@ -52,10 +53,11 @@ const getSchemaAndForm = (loctype_id: number = -1, tstype_id: number = -1) => {
 
 const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
   const [schema, form, table] = getSchemaAndForm(loctype_id, tstype_id);
+  const {ts_id} = useAppContext(['ts_id']);
 
   const {
     get: {data: mpData},
-  } = useMaalepunkt();
+  } = useMaalepunkt(ts_id);
 
   const getInitialData = () => {
     return loctype_id === 9 ? boreholeInitialData() : initialData();

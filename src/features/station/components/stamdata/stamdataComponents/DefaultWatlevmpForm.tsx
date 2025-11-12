@@ -2,11 +2,16 @@ import React from 'react';
 import StamdataWatlevmp from '../StamdataWatlevmp';
 import {Grid2} from '@mui/material';
 
-const DefaultWatlevmpForm = () => {
+type DefaultWatlevmpFormProps = {
+  helperText?: string;
+};
+
+const DefaultWatlevmpForm = ({helperText}: DefaultWatlevmpFormProps) => {
+  console.log(helperText);
   return (
     <>
       <Grid2 size={4}>
-        <StamdataWatlevmp.Elevation />
+        <StamdataWatlevmp.Elevation helperText={helperText} />
       </Grid2>
       <Grid2 size={8}>
         <StamdataWatlevmp.Description />

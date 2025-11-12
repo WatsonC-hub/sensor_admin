@@ -49,6 +49,7 @@ const Overview = () => {
     setItineraryId,
     selectedTask,
     setSelectedTask,
+    showLocationRouter,
     own_task_list,
     setOwnTaskList,
   ] = useDisplayState((state) => [
@@ -67,13 +68,13 @@ const Overview = () => {
     state.setItineraryId,
     state.selectedTask,
     state.setSelectedTask,
+    state.showLocationRouter,
     state.own_task_list,
     state.setOwnTaskList,
   ]);
 
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
-  const {data: locationData} = useQuery(locationMetadataQueryOptions(loc_id || undefined));
   const {addLocationToTrip} = useTaskItinerary();
 
   const user = useUser();
@@ -297,7 +298,7 @@ const Overview = () => {
 
           <WindowManager.Window
             key="locationstation"
-            show={loc_id !== null && locationData?.timeseries.length === 0}
+            show={showLocationRouter}
             priority={9}
             mobilePriority={8}
             minSize={2}

@@ -20,7 +20,7 @@ const Configuration = () => {
         <Box width="fit-content" alignItems="center">
           <TooltipWrapper
             color="info"
-            description="Kontrolhyppighed definerer hvor ofte der skal foretages kontrolmålinger. Forvarslingstiden angiver hvor lang tid i forvejen, der skal vises en opgave om at en kontrolmåling skal udføres."
+            description="Kontrolhyppighed definerer hvor ofte der skal foretages kontrolmålinger. Forvarslingstiden angiver hvor lang tid i forvejen, der skal vises en opgave om at en kontrolmåling skal udføres"
           >
             <Typography variant="h6">Kontrolforhold</Typography>
           </TooltipWrapper>

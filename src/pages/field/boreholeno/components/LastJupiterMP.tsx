@@ -1,20 +1,22 @@
-import {Box, Button, CircularProgress, Typography} from '@mui/material';
+import {Box, CircularProgress, Typography, Stack, Divider} from '@mui/material';
 import {UseMutationResult, useQuery} from '@tanstack/react-query';
 import dayjs, {Dayjs} from 'dayjs';
 import React from 'react';
 import {toast} from 'react-toastify';
-
 import {apiClient} from '~/apiClient';
+import Button from '~/components/Button';
 import {convertDate} from '~/helpers/dateConverter';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import LastMPCard from '~/pages/field/boreholeno/components/LastMPCard';
 import {useAppContext} from '~/state/contexts';
 import {MaalepunktPost, MaalepunktTableData} from '~/types';
 
 interface JupiterMPProps {
   lastOurMP: MaalepunktTableData | undefined;
-  watlevmpMutate: UseMutationResult<void, Error, MaalepunktPost, unknown>;
+  watlevmpMutate?: UseMutationResult<void, Error, MaalepunktPost, unknown>;
   setAddMPOpen: (open: boolean | null) => void;
+  ts_id?: number;
 }
 
 type LastJupiterMPData = {
@@ -29,114 +31,146 @@ type LastJupiterMPAPI = {
   startdate: string;
 };
 
-const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps) => {
+const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: JupiterMPProps) => {
   const {boreholeno, intakeno} = useAppContext(['boreholeno', 'intakeno']);
+  const {post: addWatlevmp} = useMaalepunkt(ts_id);
   const {data, isLoading, isError, isSuccess} = useQuery({
     queryKey: queryKeys.Borehole.lastMP(boreholeno, intakeno),
     queryFn: async () => {
       const {data} = await apiClient.get<LastJupiterMPAPI>(
         `/sensor_field/borehole/last_mp/${boreholeno}/${intakeno}`
       );
-      return data;
-    },
-    select: (data) =>
-      ({
+      return {
         descriptio: data.descriptio,
         elevation: data.elevation,
         startdate: dayjs(data.startdate),
-      }) as LastJupiterMPData,
-    enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
+      } as LastJupiterMPData;
+    },
+    enabled: !!boreholeno && !!intakeno,
   });
 
   const showQuickAdd = data
     ? lastOurMP
-      ? data?.startdate.isAfter(lastOurMP?.startdate)
+      ? data.startdate.isAfter(lastOurMP.startdate)
       : true
     : false;
 
   const handleQuickAdd = () => {
-    if (data) {
+    if (!data) return;
+
+    if (!watlevmpMutate) {
+      const payload = {
+        path: `${ts_id}`,
+        data: {
+          gid: -1,
+          startdate: data.startdate,
+          enddate: dayjs('2099-01-01'),
+          elevation: data.elevation,
+          mp_description: data.descriptio ?? '',
+        },
+      };
+      addWatlevmp.mutate(payload, {
+        onSuccess: () => {
+          toast.success('Målepunkt gemt');
+          setAddMPOpen(null);
+        },
+        onError: () => toast.error('Der skete en fejl'),
+      });
+    } else {
       const payload: MaalepunktPost = {
         gid: -1,
         startdate: data.startdate,
         enddate: dayjs('2099-01-01'),
         elevation: data.elevation,
-        mp_description: data.descriptio,
+        mp_description: data.descriptio ?? '',
       };
-
       watlevmpMutate.mutate(payload, {
         onSuccess: () => {
           toast.success('Målepunkt gemt');
           setAddMPOpen(null);
         },
-        onError: () => {
-          toast.error('Der skete en fejl');
-        },
+        onError: () => toast.error('Der skete en fejl'),
       });
     }
   };
 
   return (
-    <>
-      <LastMPCard title="Gældende målepunkt">
-        <Typography>I app</Typography>
+    <LastMPCard title="">
+      <Stack direction={'row'} spacing={2} justifyContent="space-between">
         <Box
           sx={{
+            flex: 1,
+            border: '1px solid',
+            borderColor: 'white',
+            borderRadius: 2,
+            px: 1,
             display: 'flex',
-            flexDirection: 'row',
-            ml: 1,
+            flexDirection: 'column',
+            gap: 0.5,
           }}
         >
-          {lastOurMP && <Typography>Kote: {lastOurMP.elevation + ' m'}</Typography>}
-          {!lastOurMP && (
-            <Typography color="secondary.light">Registreret venligst målepunkt i app</Typography>
-          )}
-          {lastOurMP && (
-            <Typography color="grey.400" ml={1}>
-              {convertDate(lastOurMP.startdate)}
-            </Typography>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="subtitle2">I app</Typography>
+          </Stack>
+
+          {lastOurMP ? (
+            <>
+              <Typography>Kote: {lastOurMP.elevation} m</Typography>
+              <Typography variant="body2" color="white">
+                {convertDate(lastOurMP.startdate)}
+              </Typography>
+              <Typography variant="body2">Placering: {lastOurMP.mp_description}</Typography>
+            </>
+          ) : (
+            <Typography color="white">Ingen målepunkt registreret i appen.</Typography>
           )}
         </Box>
-        {lastOurMP && (
-          <Typography ml={1} pb={0.5}>
-            Placering: {lastOurMP?.mp_description}
-          </Typography>
-        )}
-        <Typography>Jupiter</Typography>
+
         <Box
           sx={{
+            flex: 1,
+            border: '1px solid',
+            borderColor: 'white',
+            borderRadius: 2,
+            px: 1,
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: 'column',
+            gap: 0.5,
           }}
         >
-          {(isLoading || isSuccess) && (
-            <Typography ml={1}>
-              Kote: {isLoading && <CircularProgress size={12} />}
-              {isSuccess && data?.elevation + ' m'}
-            </Typography>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="subtitle2">Jupiter</Typography>
+          </Stack>
+
+          {isLoading && (
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <CircularProgress size={16} />
+              <Typography variant="body2">Indlæser data...</Typography>
+            </Stack>
           )}
 
-          {isError && (
-            <Typography ml={1} color="secondary.light">
-              Ingen data i Jupiter
-            </Typography>
-          )}
+          {isError && <Typography color="white">Ingen data i Jupiter.</Typography>}
 
           {isSuccess && (
-            <Typography color="grey.400" ml={1}>
-              {data.startdate.format('L')}
-            </Typography>
+            <>
+              <Typography>Kote: {data.elevation} m</Typography>
+              <Typography variant="body2" color="white">
+                {data.startdate.format('L')}
+              </Typography>
+              <Typography variant="body2">Placering: {data.descriptio}</Typography>
+            </>
           )}
         </Box>
-        {isSuccess && <Typography ml={1}>Placering: {data?.descriptio}</Typography>}
-
-        {showQuickAdd && (
-          <Button variant="contained" color="secondary" onClick={handleQuickAdd}>
+      </Stack>
+      {showQuickAdd && (
+        <>
+          <Divider sx={{my: 1}} />
+          <Button bttype="tertiary" onClick={handleQuickAdd}>
             Tilføj Jupiter målepunkt
           </Button>
-        )}
-      </LastMPCard>
-    </>
+        </>
+      )}
+    </LastMPCard>
   );
 };
 

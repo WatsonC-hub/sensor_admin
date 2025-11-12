@@ -45,10 +45,7 @@ const defaultStyling = {
 
 export const getColor = (iconDetails: IconDetails) => {
   if (iconDetails?.flag) return sensorColors[iconDetails?.flag].color;
-  if (
-    // !iconDetails?.itinerary_id &&
-    iconDetails?.has_task
-  ) {
+  if (iconDetails?.has_task) {
     if (iconDetails.due_date?.add(1, 'day').isBefore(dayjs()))
       return sensorColors[FlagEnum.WARNING].color;
     else if (
@@ -57,13 +54,20 @@ export const getColor = (iconDetails: IconDetails) => {
     )
       return sensorColors[FlagEnum.INFO].color;
     return sensorColors[FlagEnum.OK].color;
-  } // Overdue}
-  if (iconDetails?.no_unit == true && iconDetails?.loctype_id !== 12)
+  }
+  if (
+    iconDetails?.not_serviced == true &&
+    iconDetails?.inactive_new == true &&
+    iconDetails?.in_service == false
+  )
     return sensorColors[NotificationEnum.NO_UNIT].color; // Nyopsætning
-  if (iconDetails?.loctype_id === 12)
-    return sensorColors[NotificationEnum.SINGLE_MEASUREMENT].color; // Enkeltmålinger
 
-  if (iconDetails?.inactive == true) return sensorColors[NotificationEnum.INACTIVE].color; // Inaktiv
+  if (
+    iconDetails.not_serviced === false &&
+    iconDetails?.inactive_new == true &&
+    iconDetails?.in_service == false
+  )
+    return sensorColors[NotificationEnum.INACTIVE].color; // Inaktiv
 
   if (iconDetails?.color) return iconDetails.color;
   return sensorColors[FlagEnum.OK].color;
@@ -109,6 +113,10 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
       return rawIcons[iconDetails.notification_id];
     }
 
+    if (iconDetails.in_service && iconDetails.inactive_new) {
+      return rawIcons['borehole'];
+    }
+
     if (iconDetails.mapicontype === 'task') {
       return rawIcons['task'];
     }
@@ -130,6 +138,11 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
 
     if (iconDetails.notification_id && iconDetails.notification_id in reactIcons) {
       const Component = reactIcons[iconDetails.notification_id];
+      return <Component style={defaultStyling} viewBox="0 0 24 24" />;
+    }
+
+    if (iconDetails.in_service && iconDetails.inactive_new) {
+      const Component = reactIcons['borehole'];
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }
 

@@ -429,6 +429,7 @@ export type DataToShow = {
   'Valide værdier': boolean;
   'Fjernet data': boolean;
   Rådata: boolean;
+  Jupiter: boolean;
   'Alarm linjer': boolean;
 };
 
