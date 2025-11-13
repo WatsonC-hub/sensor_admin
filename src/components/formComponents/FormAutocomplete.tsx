@@ -10,14 +10,12 @@ type FormAutocompleteProps<T extends FieldValues, K extends object, M extends bo
   gridSizes?: GridBaseProps['size'];
   icon?: React.ReactNode;
   onChangeCallback?: (value: M extends true ? K[] : K) => void;
-  // onSelectChange: (value: M extends true ? Array<K> : K) => M extends true ? K[] : K | null;
 } & Omit<AutoCompleteFieldProps<K, M>, 'selectValue' | 'onChange'>;
 
 const FormAutocomplete = <T extends FieldValues, K extends object, M extends boolean = false>({
   name,
   gridSizes,
   onChangeCallback,
-  // onSelectChange,
   options,
   labelKey,
   ...props
@@ -42,7 +40,7 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
               ? K[]
               : K | null;
           } else {
-            selectValue = options.find((o) => o[labelKey] === value) as M extends true
+            selectValue = (options.find((o) => o[labelKey] === value) ?? '') as M extends true
               ? K[]
               : K | null;
           }

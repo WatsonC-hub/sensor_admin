@@ -54,7 +54,7 @@ export default function AddUnitForm({
     handleSubmit,
     reset,
     trigger,
-    formState: {isSubmitting, errors},
+    formState: {isSubmitting},
   } = useFormContext<AddUnit>();
 
   const [unitData, setUnitData] = useState({

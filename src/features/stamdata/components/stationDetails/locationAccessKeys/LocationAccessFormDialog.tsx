@@ -19,42 +19,49 @@ type Props = {
 
 const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: Props) => {
   const [selectedContactInfo, setSelectedContactInfo] = useState<ContactInfo | null>(null);
-  const {control, watch, reset, setValue, getValues} = useFormContext<Access>();
+  const {control, watch, reset, setValue} = useFormContext<Access>();
   const [search, setSearch] = useState<string>('');
-  const values = getValues();
   const {data} = useSearchContact(loc_id, search);
 
-  const merged_data = useMemo(() => {
-    if (!data) return data;
-
-    const existing = data.find((c) => c.id === values.contact_id);
-    if (existing || !values.contact_id) return data;
-    const contact: ContactInfo = {
-      id: values.contact_id,
-      name: values.contact_name ?? '',
-      email: values.email ?? '',
-      org: values.org_name ?? '',
-      loc_id: loc_id ?? -1,
-      contact_role: -1,
-      mobile: '',
-      contact_type: '',
-    };
-
-    const newData = [...data, contact].sort((a, b) =>
-      a.name.localeCompare(b.name, 'da', {sensitivity: 'base'})
-    );
-    return newData;
-  }, [data, values]);
-
+  const contact_id = watch('contact_id');
+  const contact_name = watch('contact_name');
+  const email = watch('email');
+  const org_name = watch('org_name');
   const navnLabel = watch('type');
   const location_access_id = watch('id');
 
-  useEffect(() => {
-    if (merged_data?.find((c) => c.id === values.contact_id)) {
-      const contact = merged_data?.find((c) => c.id === values.contact_id) ?? null;
-      setSelectedContactInfo(contact);
+  const merged_data = useMemo(() => {
+    let merged_data = [...(data ?? [])];
+    const existing = data?.find((c) => c.id === contact_id);
+    if (!existing) {
+      const contact: ContactInfo = {
+        id: contact_id ?? '',
+        name: contact_name ?? '',
+        email: email ?? '',
+        org: org_name ?? '',
+        loc_id: loc_id ?? -1,
+        contact_role: -1,
+        mobile: '',
+        contact_type: '',
+      };
+
+      merged_data = [...merged_data, contact].sort((a, b) =>
+        a.name.localeCompare(b.name, 'da', {sensitivity: 'base'})
+      );
     }
-  }, [merged_data, location_access_id]);
+    return merged_data;
+  }, [data, location_access_id]);
+
+  useEffect(() => {
+    if (
+      merged_data?.find((c) => c.id === contact_id) ||
+      selectedContactInfo == null ||
+      selectedContactInfo.id !== contact_id
+    ) {
+      const contact = merged_data?.find((c) => c.id === contact_id) ?? null;
+      setSearch(contact ? contact.name : '');
+    }
+  }, [merged_data]);
 
   return (
     <Box>

@@ -30,7 +30,6 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
 
   const [contactsCollapsed, setContactsCollapsed] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  // const [draftAlarm, setDraftAlarm] = useState<AlarmsFormValues | undefined>(undefined);
 
   const {post: postAlarm, put: putAlarm} = useAlarm();
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
