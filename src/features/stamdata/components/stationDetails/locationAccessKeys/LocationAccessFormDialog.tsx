@@ -95,7 +95,7 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                   slotProps={{
                     select: {
                       renderValue: (selected) => {
-                        if (selected === undefined) return 'Vælg en type';
+                        if (selected === '') return 'Vælg en type';
                         return selected as string;
                       },
                     },
