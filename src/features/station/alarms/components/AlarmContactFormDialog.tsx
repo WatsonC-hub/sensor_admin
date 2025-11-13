@@ -75,6 +75,13 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
     mode: 'onTouched',
   });
 
+  const {
+    watch,
+    setValue,
+    trigger,
+    formState: {isSubmitted},
+  } = alarmContactFormMethods;
+
   const handleSubmit = (data: AlarmContactFormType) => {
     if (!data.call?.selected && !data.sms?.selected && !data.email?.selected) {
       return;
@@ -91,16 +98,10 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
     }
 
     onClose();
+    setSearch('');
+    setValue('contact_id', '', {shouldDirty: true});
   };
 
-  const {
-    watch,
-    setValue,
-    trigger,
-    formState: {isSubmitted},
-  } = alarmContactFormMethods;
-
-  // const currentValues = watch();
   const smsSelected = watch('sms.selected');
   const emailSelected = watch('email.selected');
   const callSelected = watch('call.selected');
@@ -122,6 +123,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
       open={open}
       onClose={() => {
         onClose();
+        setSearch('');
       }}
       fullWidth
     >
@@ -144,7 +146,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
               gridSizes={{xs: 12, sm: 12}}
               getOptionKey={(o) => o.contact_id}
               getOptionLabel={(o) => {
-                return o.name;
+                return o.name || '';
               }}
               textFieldsProps={{
                 label: 'Kontakt',
@@ -154,6 +156,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
               sx={{
                 pb: 0.5,
               }}
+              inputValue={search}
               onInputChange={(event, value) => {
                 setSearch(value);
               }}
@@ -257,7 +260,6 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                     setValue(`call.to`, '', {shouldDirty: true});
                     trigger(`call.from`);
                     trigger(`call.to`);
-                    // reset(getValues());
                   }
                 }}
                 gridSizes={{sm: 1.5}}
@@ -291,7 +293,12 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
           </Grid2>
         </DialogContent>
         <DialogActions>
-          <AlarmContactTypedForm.Cancel cancel={onClose} />
+          <AlarmContactTypedForm.Cancel
+            cancel={() => {
+              onClose();
+              setSearch('');
+            }}
+          />
           <AlarmContactTypedForm.Submit submit={handleSubmit} />
         </DialogActions>
       </AlarmContactTypedForm>

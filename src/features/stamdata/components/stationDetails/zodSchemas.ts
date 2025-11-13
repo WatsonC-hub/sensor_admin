@@ -36,7 +36,9 @@ const adgangsforhold = z
     id: z.number().nullish(),
     type: z
       .string({required_error: 'En type skal vælges ud fra listen'})
-      .min(3, 'En type skal vælges ud fra listen'),
+      .refine((val) => val !== '', {
+        message: 'En type skal vælges ud fra listen',
+      }),
     navn: z.string({required_error: 'Feltet skal udfyldes'}).min(1, 'Feltet skal udfyldes'),
     contact_id: z.string().min(1, 'Feltet skal udfyldes').nullish(),
     placering: z.string().optional().nullish(),
