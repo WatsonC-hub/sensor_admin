@@ -114,7 +114,10 @@ const JupiterMPTable = () => {
   const options: Partial<MRT_TableOptions<LastJupiterMPData>> = {
     localization: {
       ...MRT_Localization_DA,
-      noRecordsToDisplay: 'Kan ikke finde et målepunkt i Jupiter',
+      noRecordsToDisplay:
+        intakeno === undefined
+          ? 'Det var ikke muligt at søge efter et målepunkt, da tidsserien ikke har et indtagsnummer'
+          : 'Kan ikke finde et målepunkt i Jupiter',
     },
     enableFullScreenToggle: false,
     positionExpandColumn: 'last',
