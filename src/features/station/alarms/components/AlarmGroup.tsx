@@ -39,7 +39,7 @@ const AlarmGroup = ({disableClearable = false}: AlarmGroupProps) => {
           options={options}
           disableClearable={disableClearable}
           getOptionLabel={(o) => {
-            return o.group_name;
+            return o.group_name || '';
           }}
           label={'Lokationsgrupper*'}
           fullWidth

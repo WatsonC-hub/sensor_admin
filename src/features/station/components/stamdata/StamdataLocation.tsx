@@ -324,7 +324,7 @@ const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
           : null
       );
     } else if (editing === false) {
-      setSelectedBorehole(boreholeno ? {boreholeno, latitude: x, longitude: y} : null);
+      setSelectedBorehole(boreholeno ? {boreholeno, latitude: y, longitude: x} : null);
     }
   }, [boreholeno]);
 

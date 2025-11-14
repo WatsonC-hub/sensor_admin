@@ -35,19 +35,21 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
   let unitEndSchema;
 
   const requiredUnitEndSchema = z.object({
-    enddate: zodDayjs('slutdato er påkrævet'),
-    change_reason: z
-      .number({required_error: 'Vælg årsag'})
-      .default(-1)
-      .refine((val) => val !== -1, {
-        message: 'Årsag er påkrævet',
-      }),
-    action: z.string({required_error: 'Vælg handling'}).default('-1'),
+    enddate: zodDayjs('slutdato er påkrævet').refine((date) => date.isAfter(unit?.startdato), {
+      message: 'Slutdato skal være efter startdato',
+    }),
+    change_reason: z.number({required_error: 'Vælg årsag'}).optional(),
+    action: z.string({required_error: 'Vælg handling'}).optional(),
     comment: z.string().optional(),
   });
-  type UnitEndFormValues = z.infer<typeof requiredUnitEndSchema>;
-
   unitEndSchema = requiredUnitEndSchema;
+
+  type UnitEndFormValues = z.infer<typeof unitEndSchema>;
+
+  const {data: parsed} = unitEndSchema.safeParse({
+    ...unit,
+    enddate: dayjs(),
+  });
 
   if (!user?.superUser) {
     unitEndSchema = unitEndSchema.omit({
@@ -56,20 +58,15 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
     });
   }
 
-  unitEndSchema = unitEndSchema.refine(
-    (data) => {
-      // Ensure enddate is after unit start date
-      return data.enddate.isAfter(unit?.startdato);
-    },
-    {
-      message: 'Enddato skal være efter startdato',
-    }
-  );
-
-  const {data: parsed} = unitEndSchema.safeParse({
-    ...unit,
-    enddate: dayjs(),
-  });
+  if (user?.superUser) {
+    unitEndSchema = unitEndSchema.refine(
+      (data) => 'change_reason' in data && data.change_reason !== undefined,
+      {
+        path: ['change_reason'],
+        message: 'Vælg årsag',
+      }
+    );
+  }
 
   const formMethods = useForm<UnitEndFormValues>({
     resolver: zodResolver(unitEndSchema),
@@ -123,7 +120,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
   };
 
   return (
-    <Dialog open={openDialog}>
+    <Dialog open={openDialog} onClose={handleClose}>
       <DialogTitle>Angiv information</DialogTitle>
       <DialogContent sx={{width: 300, display: 'flex', flexDirection: 'column', gap: 1}}>
         <FormProvider {...formMethods}>
@@ -138,7 +135,14 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                 label="Årsag"
                 slotProps={{
                   select: {
-                    displayEmpty: true,
+                    renderValue: (value: any) => {
+                      if (value === undefined) {
+                        return 'Vælg årsag';
+                      }
+                      return (
+                        changeReasons?.find((reason) => reason.id === value)?.reason ?? 'Vælg årsag'
+                      );
+                    },
                   },
                 }}
                 placeholder="Vælg årsag"
@@ -159,9 +163,6 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                   }
                 }}
               >
-                <MenuItem value={-1} disabled>
-                  <em>Vælg årsag</em>
-                </MenuItem>
                 {changeReasons?.map((reason) => (
                   <MenuItem key={reason.id} value={reason.id}>
                     {reason.reason}
@@ -175,16 +176,17 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                 select
                 label="Handling"
                 placeholder="Handling"
-                // disabled={formMethods.watch('change_reason') !== 1}
                 slotProps={{
                   select: {
-                    displayEmpty: true,
+                    renderValue: (value: any) => {
+                      if (value === undefined) {
+                        return 'Vælg handling';
+                      }
+                      return actions?.find((action) => action.action === value)?.label ?? '';
+                    },
                   },
                 }}
               >
-                <MenuItem value={'-1'} disabled>
-                  <em>Vælg handling</em>
-                </MenuItem>
                 {actions?.map((action) => (
                   <MenuItem key={action.action} value={action.action}>
                     {action.label}
