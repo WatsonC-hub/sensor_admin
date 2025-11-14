@@ -163,7 +163,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
               if ((e.target as HTMLElement).innerText && !disabled) {
                 reset({
                   ...row.original,
-                  mobile: row.original.mobile ? parseInt(row.original.mobile) : null,
+                  mobile: row.original.mobile ? row.original.mobile : null,
                 });
                 table.setEditingRow(row);
               }
@@ -185,7 +185,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         handleEdit={() => {
           reset({
             ...row.original,
-            mobile: row.original.mobile ? parseInt(row.original.mobile) : null,
+            mobile: row.original.mobile ? row.original.mobile : null,
           });
           setIsUser(row.original.org !== '');
           setOpenContactInfoDialog(true);

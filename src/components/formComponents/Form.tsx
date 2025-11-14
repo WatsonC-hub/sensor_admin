@@ -37,7 +37,6 @@ export function createTypedForm<T extends FieldValues>() {
   ) => <FormAutocomplete<T, K, M> {...props} />;
   AutocompleteComponent.displayName = 'TypedForm.Autocomplete';
 
-  // Form.Submit = (props: React.ComponentProps<typeof Submit<T>>) => <Submit<T> {...props} />;
   const SubmitComponent = (props: React.ComponentProps<typeof Submit<T>>) => (
     <Submit<T> {...props} />
   );

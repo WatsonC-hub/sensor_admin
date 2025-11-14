@@ -50,6 +50,7 @@ export const queryKeys = {
       ['graphData', ts_id, xRange] as const,
     MeasureSampleSend: (ts_id: number) => ['measure_sample_send', 'register', ts_id] as const,
     ServiceInterval: (ts_id: number) => ['service_interval', 'register', ts_id] as const,
+    SyncData: (ts_id: number) => ['sync', 'register', ts_id] as const,
   },
   Borehole: {
     stamdata: (boreholeno: string | undefined | null, intakeno: number | undefined) =>

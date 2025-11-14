@@ -30,6 +30,7 @@ const FormCheckbox = <T extends FieldValues>({
   gridProps,
   onChangeCallback,
   warning,
+  disabled,
   ...props
 }: FormCheckboxProps<T>) => {
   const {control, watch} = useFormContext<T>();
@@ -37,13 +38,14 @@ const FormCheckbox = <T extends FieldValues>({
   const watchValue = watch(name);
   return (
     <Grid2 {...gridProps} size={gridSizes ?? contextGridSizes}>
-      <FormControlLabel
-        control={
-          <Controller
-            name={name}
-            control={control}
-            render={({field: {value, onChange}}) => {
-              return (
+      <Controller
+        name={name}
+        control={control}
+        render={({field: {value, onChange}}) => {
+          return (
+            <FormControlLabel
+              disabled={disabled}
+              control={
                 <Checkbox
                   checked={!!value}
                   sx={{
@@ -55,17 +57,18 @@ const FormCheckbox = <T extends FieldValues>({
                   }}
                   {...props}
                 />
-              );
-            }}
-          />
-        }
-        label={
-          <Box sx={{display: 'flex', alignItems: 'center', width: 'fit-content'}}>
-            {icon}
-            {label}
-          </Box>
-        }
+              }
+              label={
+                <Box sx={{display: 'flex', alignItems: 'center', width: 'fit-content'}}>
+                  {icon}
+                  {label}
+                </Box>
+              }
+            />
+          );
+        }}
       />
+
       {warning && <FormHelperText sx={{color: 'orange'}}>{warning(watchValue)}</FormHelperText>}
     </Grid2>
   );
