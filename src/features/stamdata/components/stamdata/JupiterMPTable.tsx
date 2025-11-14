@@ -28,7 +28,7 @@ type LastJupiterMPAPI = {
 };
 
 const JupiterMPTable = () => {
-  const {boreholeno, intakeno, ts_id} = useAppContext(['boreholeno', 'intakeno', 'ts_id']);
+  const {boreholeno, intakeno, ts_id} = useAppContext(['boreholeno', 'ts_id'], ['intakeno']);
   const {
     get: {data: ourMP},
     post: addWatlevmp,
