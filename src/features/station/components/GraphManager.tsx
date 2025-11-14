@@ -527,6 +527,17 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
           },
         ]
       : []),
+    ...(dataToShow?.Jupiter ? borehole_data : []),
+    {
+      x: dynamicMeasurement ? [dynamicMeasurement?.[0]] : [],
+      y: dynamicMeasurement ? [dynamicMeasurement?.[1]] : [],
+      name: '',
+      uid: 'dynamic',
+      type: 'scatter',
+      mode: 'markers',
+      showlegend: true,
+      marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
+    },
     ...(dataToShow?.Kontrolmålinger
       ? [
           {
@@ -567,17 +578,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
           },
         ]
       : []),
-    ...(dataToShow?.Jupiter ? borehole_data : []),
-    {
-      x: dynamicMeasurement ? [dynamicMeasurement?.[0]] : [],
-      y: dynamicMeasurement ? [dynamicMeasurement?.[1]] : [],
-      name: '',
-      uid: 'dynamic',
-      type: 'scatter',
-      mode: 'markers',
-      showlegend: false,
-      marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
-    },
   ];
 
   useEffect(() => {
