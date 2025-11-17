@@ -34,14 +34,18 @@ import AlertDialog from '~/components/AlertDialog';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import dayjs from 'dayjs';
-import {MaalepunktTableData} from '~/types';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {
   LastJupiterMPAPI,
   LastJupiterMPData,
 } from '~/pages/field/boreholeno/components/LastJupiterMP';
+import {useDisplayState} from '~/hooks/ui';
 
 const CreateStation = () => {
+  const {showLocationRouter, setShowLocationRouter} = useDisplayState((state) => [
+    state.showLocationRouter,
+    state.setShowLocationRouter,
+  ]);
   const {isMobile} = useBreakpoints();
   const [showAlert, setShowAlert] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
@@ -201,7 +205,6 @@ const CreateStation = () => {
       );
       return out;
     },
-
     meta: {
       invalidates: [['metadata']],
     },
@@ -225,7 +228,9 @@ const CreateStation = () => {
         loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
       );
       navigate('/');
+      locationNavigate(data.loc_id);
       stationNavigate(data.ts_id);
+      if (showLocationRouter) setShowLocationRouter(false);
     },
     meta: {
       invalidates: [['metadata']],
@@ -282,7 +287,9 @@ const CreateStation = () => {
         toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
 
         navigate('/');
+        locationNavigate(data.loc_id);
         stationNavigate(data.ts_id);
+        if (showLocationRouter) setShowLocationRouter(false);
       },
     });
   };
