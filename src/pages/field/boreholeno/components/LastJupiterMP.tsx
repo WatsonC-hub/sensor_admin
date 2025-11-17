@@ -19,13 +19,13 @@ interface JupiterMPProps {
   ts_id?: number;
 }
 
-type LastJupiterMPData = {
+export type LastJupiterMPData = {
   descriptio: string | undefined;
   elevation: number | null;
   startdate: Dayjs;
 };
 
-type LastJupiterMPAPI = {
+export type LastJupiterMPAPI = {
   descriptio: string | undefined;
   elevation: number | null;
   startdate: string;
