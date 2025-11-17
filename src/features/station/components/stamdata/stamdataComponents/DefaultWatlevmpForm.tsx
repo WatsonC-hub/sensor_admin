@@ -7,7 +7,6 @@ type DefaultWatlevmpFormProps = {
 };
 
 const DefaultWatlevmpForm = ({helperText}: DefaultWatlevmpFormProps) => {
-  console.log(helperText);
   return (
     <>
       <Grid2 size={4}>

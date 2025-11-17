@@ -36,6 +36,10 @@ import TooltipWrapper from '~/components/TooltipWrapper';
 import dayjs from 'dayjs';
 import {MaalepunktTableData} from '~/types';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {
+  LastJupiterMPAPI,
+  LastJupiterMPData,
+} from '~/pages/field/boreholeno/components/LastJupiterMP';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
@@ -127,15 +131,18 @@ const CreateStation = () => {
   const intakeno = watchTimeseries('intakeno');
 
   const {data: watlevmp} = useQuery({
-    queryKey: queryKeys.Borehole.watlevmpWithIntake(boreholeno, intakeno),
+    queryKey: queryKeys.Borehole.lastMP(boreholeno, intakeno),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<MaalepunktTableData>>(
-        `/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`
+      const {data} = await apiClient.get<LastJupiterMPAPI>(
+        `/sensor_field/borehole/last_mp/${boreholeno}/${intakeno}`
       );
-      return data;
+      return {
+        descriptio: data.descriptio,
+        elevation: data.elevation,
+        startdate: dayjs(data.startdate),
+      } as LastJupiterMPData;
     },
-    enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
-    placeholderData: [],
+    enabled: !!boreholeno && !!intakeno && intakeno !== -1,
   });
 
   const unitFormMethods = useUnitForm<AddUnit>({
@@ -163,7 +170,10 @@ const CreateStation = () => {
     formState: {errors: watlevmpErrors},
     clearErrors: clearWatlevmpErrors,
     reset: resetWatlevmp,
+    watch: watchWatlevmp,
   } = watlevmpFormMethods;
+
+  const elevation = watchWatlevmp('elevation');
 
   const stamdataNewLocationMutation = useMutation({
     mutationFn: async (location: DefaultAddLocation | BoreholeAddLocation) => {
@@ -348,16 +358,22 @@ const CreateStation = () => {
   }, [tstype_id]);
 
   useEffect(() => {
-    if (intakeno !== -1 && watlevmp && watlevmp.length > 0) {
+    if (intakeno !== -1 && watlevmp !== undefined) {
       resetWatlevmp({
-        elevation: watlevmp[0].elevation,
-        description: watlevmp[0].mp_description,
+        elevation: watlevmp.elevation,
+        description: watlevmp.descriptio,
       });
       setHelperText('Målepuntsværdien er hentet fra Jupiter');
     } else {
       setHelperText('');
     }
-  }, [watlevmp, intakeno, tstype_id]);
+  }, [watlevmp, intakeno, tstype_id, boreholeno]);
+
+  useEffect(() => {
+    if (!!watlevmp && watlevmp.elevation !== elevation) {
+      setHelperText('');
+    }
+  }, [elevation]);
 
   return (
     <>
