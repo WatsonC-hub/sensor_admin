@@ -5,12 +5,22 @@ import {AccessType} from '~/helpers/EnumHelper';
 const contact_info = z.object({
   id: z.string().nullish(),
   name: z.string({required_error: 'Navn på kontakten skal udfyldes'}),
-  mobile: z.number().nullish(),
+  mobile: z.string().nullish(),
   email: z.union([z.string().email('Det skal være en valid email'), z.literal('')]).nullable(),
   comment: z.string().optional(),
-  contact_role: z.number().gt(-1, 'Der skal vælges en værdi fra listen'),
+  contact_role: z
+    .number()
+    .optional()
+    .refine((val) => val !== undefined && val !== -1, {
+      message: 'Der skal vælges en værdi fra listen',
+    }),
   user_id: z.string().nullish(),
-  contact_type: z.string(),
+  contact_type: z
+    .string()
+    .optional()
+    .refine((val) => val !== undefined && val !== '', {
+      message: 'Der skal vælges en værdi fra listen',
+    }),
   notify_required: z.boolean().optional().default(false),
 });
 
@@ -26,7 +36,9 @@ const adgangsforhold = z
     id: z.number().nullish(),
     type: z
       .string({required_error: 'En type skal vælges ud fra listen'})
-      .min(3, 'En type skal vælges ud fra listen'),
+      .refine((val) => val !== '', {
+        message: 'En type skal vælges ud fra listen',
+      }),
     navn: z.string({required_error: 'Feltet skal udfyldes'}).min(1, 'Feltet skal udfyldes'),
     contact_id: z.string().min(1, 'Feltet skal udfyldes').nullish(),
     placering: z.string().optional().nullish(),

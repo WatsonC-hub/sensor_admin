@@ -32,6 +32,8 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
   error,
   textFieldsProps,
   fieldDescriptionText,
+  onInputChange,
+  inputValue,
   ...autocompleteProps
 }: AutoCompleteFieldProps<T, M>): React.ReactElement => {
   return (
@@ -51,6 +53,23 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
       }}
       getOptionLabel={(option) => {
         return option[labelKey] ? `${option[labelKey]}` : '';
+      }}
+      filterSelectedOptions={true}
+      inputValue={inputValue}
+      onInputChange={(event, newInputValue, reason) => {
+        if (onInputChange && (reason === 'input' || reason === 'selectOption')) {
+          onInputChange(event, newInputValue, reason);
+        }
+        if (onInputChange && reason === 'clear') {
+          onChange(null as M extends true ? T[] : T | null);
+          onInputChange(event, '', reason);
+        }
+
+        if (onInputChange && reason === 'reset' && inputValue === '') {
+          onInputChange(event, newInputValue, reason);
+        }
+
+        if (onInputChange && reason === 'blur') onInputChange(event, newInputValue, reason);
       }}
       renderInput={(params) => {
         const {InputProps} = params;
