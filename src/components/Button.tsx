@@ -67,6 +67,9 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
       '&:hover': {
         backgroundColor: '#d32f2f',
       },
+      '&:disabled': {
+        backgroundColor: 'grey.200',
+      },
     };
   }
 

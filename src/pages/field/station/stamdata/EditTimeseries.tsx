@@ -16,10 +16,12 @@ import DeleteTimeseriesDialog from '~/features/station/components/DeleteTimeseri
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
 import {boreholeEditTimeseriesSchema, defaultEditTimeseriesSchema} from '~/features/station/schema';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 
 const EditTimeseries = () => {
+  const setTsId = useDisplayState((state) => state.setTsId);
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData(ts_id);
   const del = useDeleteTimeseries();
@@ -150,6 +152,7 @@ const EditTimeseries = () => {
           del.mutate(payload, {
             onSuccess: () => {
               setAssertDeletion(false);
+              setTsId(null);
             },
             onError: () => {
               setAssertDeletion(false);

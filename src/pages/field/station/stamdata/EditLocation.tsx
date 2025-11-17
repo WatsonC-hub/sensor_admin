@@ -17,10 +17,12 @@ import DeleteLocationDialog from '~/features/station/components/DeleteLocationDi
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
 import {BaseLocation} from '~/features/station/schema';
 import {useLocationData} from '~/hooks/query/useMetadata';
+import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 
 const EditLocation = () => {
+  const setLocId = useDisplayState((state) => state.setLocId);
   const {loc_id} = useAppContext(['loc_id']);
   const [assertDeletion, setAssertDeletion] = React.useState(false);
   const del = useDeleteLocation();
@@ -125,6 +127,7 @@ const EditLocation = () => {
           del.mutate(payload, {
             onSuccess: () => {
               setAssertDeletion(false);
+              setLocId(null);
             },
             onError: () => {
               setAssertDeletion(false);
