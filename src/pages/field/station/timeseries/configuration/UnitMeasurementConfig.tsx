@@ -104,7 +104,7 @@ const UnitMeasurementConfig = () => {
   if (dayjs(timeseriesData?.slutdato).isBefore(dayjs())) {
     return (
       <Alert severity="info">
-        Det er ikke muligt at ændre måle- og sendeforhold på tidsserier med hjemtaget udstyr.
+        Det er ikke muligt at ændre måle- og sendeforhold på inaktive tidsserier.
       </Alert>
     );
   }
