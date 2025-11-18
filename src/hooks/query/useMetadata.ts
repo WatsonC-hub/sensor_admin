@@ -33,8 +33,8 @@ type Metadata = {
   unit: string;
   prefix: string | null;
   unit_uuid: string | null;
-  borehole_calypso_id: number | null;
   slutdato: string | null;
+  borehole_calypso_id: number | null;
 };
 
 type LocationMetadata = {
