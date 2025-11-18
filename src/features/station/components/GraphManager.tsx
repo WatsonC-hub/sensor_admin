@@ -93,7 +93,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     intakeno !== undefined &&
     intakeno !== -1 &&
     timeseries_data?.tstype_id === 1
-      ? timeseries_data.slutdato === null || dayjs(timeseries_data?.slutdato).isBefore(dayjs())
+      ? timeseries_data.unit_uuid === null
       : !!dataToShowSelected.Jupiter;
 
   const dataToShow: DataToShow = {
