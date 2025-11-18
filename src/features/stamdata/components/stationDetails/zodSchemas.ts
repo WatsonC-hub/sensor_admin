@@ -40,7 +40,7 @@ const adgangsforhold = z
         message: 'En type skal vælges ud fra listen',
       }),
     navn: z.string({required_error: 'Feltet skal udfyldes'}).min(1, 'Feltet skal udfyldes'),
-    contact_id: z.string().min(1, 'Feltet skal udfyldes').nullish(),
+    contact_id: z.string().nullish(),
     placering: z.string().optional().nullish(),
     koden: z.string().optional().nullish(),
     kommentar: z
