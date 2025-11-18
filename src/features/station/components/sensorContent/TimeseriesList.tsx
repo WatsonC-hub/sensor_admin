@@ -125,7 +125,6 @@ const TimeseriesList = () => {
       )}
 
       {data?.map((timeseries, index) => {
-        console.log('timeseries', timeseries);
         return (
           <Box key={index} display="flex" justifyContent={'space-between'} alignItems="center">
             <Box display="flex" gap={1} sx={{cursor: 'pointer', color: 'white'}}>
