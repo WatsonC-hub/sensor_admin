@@ -65,6 +65,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const layout: Partial<Layout> = {
     yaxis3: {
       visible: false,
+      overlaying: 'y',
+      side: 'right',
     },
   };
 
@@ -137,7 +139,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       }
       return data;
     },
-    enabled: dataToShow.Rådata && !timeseries_data?.calculated,
+    enabled:
+      dataToShow.Rådata && timeseries_data?.unit_uuid !== null && !timeseries_data?.calculated,
     placeholderData: [],
   });
 
@@ -391,6 +394,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       line: {width: 2},
       mode: 'lines+markers',
       marker: {symbol: '100', size: '3', color: '#177FC1'},
+      uid: 'data',
     },
 
     ...(dataToShow?.Rådata && !timeseries_data?.calculated
@@ -402,8 +406,9 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
             type: 'scattergl',
             yaxis: 'y3',
             line: {width: 2},
-            mode: 'lines',
+            mode: 'lines+markers',
             marker: {symbol: '100', size: 3},
+            uid: 'rawData',
           },
         ]
       : []),
@@ -416,6 +421,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
             type: 'scattergl',
             mode: 'markers',
             text: textControl,
+            uid: 'controlData',
             marker: {
               symbol: '200',
               size: '8',
@@ -436,6 +442,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
             line: {width: 2},
             mode: 'markers',
             marker: {symbol: '100', size: '3', color: theme.palette.error.main},
+            uid: 'removedData',
           },
         ]
       : []),
@@ -444,6 +451,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
           {
             ...precipitation_data,
             yaxis: 'y2',
+            uid: 'precipitationData',
           },
         ]
       : []),
