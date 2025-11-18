@@ -50,18 +50,14 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
       );
     }
     return merged_data;
-  }, [data, location_access_id]);
+  }, [data, location_access_id, createNew]);
 
   useEffect(() => {
-    if (
-      merged_data?.find((c) => c.id === contact_id) ||
-      selectedContactInfo == null ||
-      selectedContactInfo.id !== contact_id
-    ) {
+    if (selectedContactInfo == null || selectedContactInfo.id !== contact_id) {
       const contact = merged_data?.find((c) => c.id === contact_id) ?? null;
       setSearch(contact ? contact.name : '');
     }
-  }, [merged_data]);
+  }, [contact_id, createNew]);
 
   return (
     <Box>
@@ -74,7 +70,8 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                 if (createNew) {
                   reset(initialLocationAccessData);
                   setValue('id', -1);
-                }
+                } else setSelectedContactInfo(null);
+
                 if (setCreateNew) setCreateNew(!createNew);
               }}
             >
