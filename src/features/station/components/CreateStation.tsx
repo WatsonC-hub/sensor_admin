@@ -42,7 +42,7 @@ import {
 import {useDisplayState} from '~/hooks/ui';
 
 const CreateStation = () => {
-  const {showLocationRouter, setShowLocationRouter} = useDisplayState((state) => [
+  const [showLocationRouter, setShowLocationRouter] = useDisplayState((state) => [
     state.showLocationRouter,
     state.setShowLocationRouter,
   ]);
