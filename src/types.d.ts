@@ -236,6 +236,9 @@ export type Access = {
   koden?: string;
   contact_id?: string | null;
   kommentar?: string;
+  contact_name?: string;
+  email?: string;
+  org_name?: string;
 };
 
 export type AccessTable = {

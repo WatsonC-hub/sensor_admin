@@ -101,21 +101,23 @@ export default function Station() {
         {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && (
           <QAHistory key={`justeringer-${ts_id}`} />
         )}
-        {pageToShow === stationPages.MAALEPUNKT && (
-          <>
-            <Box key={`graph-${ts_id}`}>
-              <GraphManager
-                defaultDataToShow={{
-                  Kontrolmålinger: true,
-                }}
-              />
-            </Box>
-            <Divider />
-            <StationPageBoxLayout key={`timeseries-${ts_id}`}>
-              <ReferenceForm />
-            </StationPageBoxLayout>
-          </>
-        )}
+        {pageToShow === stationPages.MAALEPUNKT &&
+          metadata?.tstype_id === 1 &&
+          metadata.calculated === false && (
+            <>
+              <Box key={`graph-${ts_id}`}>
+                <GraphManager
+                  defaultDataToShow={{
+                    Kontrolmålinger: true,
+                  }}
+                />
+              </Box>
+              <Divider />
+              <StationPageBoxLayout key={`timeseries-${ts_id}`}>
+                <ReferenceForm />
+              </StationPageBoxLayout>
+            </>
+          )}
         {pageToShow === stationPages.ALARM && user?.superUser && (
           <>
             <Box key={`graph-${ts_id}`}>
