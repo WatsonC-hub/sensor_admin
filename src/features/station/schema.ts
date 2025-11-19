@@ -46,6 +46,7 @@ const boreholeEditLocationSchema = boreholeAddLocationSchema.extend({
 
 const baseTimeseriesSchema = z.object({
   sensor_depth_m: z.number().nullish(),
+  calypso_id: z.number().optional(),
 });
 
 const baseAddTimeseriesSchema = baseTimeseriesSchema.extend({
@@ -60,7 +61,6 @@ const defaultAddTimeseriesSchema = baseAddTimeseriesSchema.extend({prefix: z.str
 
 const boreholeEditTimeseriesSchema = baseTimeseriesSchema.extend({
   intakeno: z.number().nullish(),
-  borehole_calypso_id: z.number().optional(),
 });
 
 const boreholeAddTimeseriesSchema = baseAddTimeseriesSchema.extend({
