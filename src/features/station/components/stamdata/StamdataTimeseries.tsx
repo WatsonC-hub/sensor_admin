@@ -1,7 +1,8 @@
-import {MenuItem, InputAdornment, TextField, FormControlLabel, Checkbox} from '@mui/material';
+import {MenuItem, InputAdornment, TextField, FormControlLabel, Checkbox, Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from '~/apiClient';
+import {PhotoCameraRounded} from '@mui/icons-material';
 import FormInput, {FormInputProps} from '~/components/FormInput';
 import {
   BoreholeAddTimeseries,
@@ -13,6 +14,11 @@ import FormTextField from '~/components/FormTextField';
 import {useAppContext} from '~/state/contexts';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {Controller, useFormContext} from 'react-hook-form';
+import Button from '~/components/Button';
+
+import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
+import CaptureDialog from '~/components/CaptureDialog';
+import {toast} from 'react-toastify';
 
 type Props = {
   children: React.ReactNode;
@@ -211,6 +217,65 @@ const HidePublic = () => {
   );
 };
 
+const ScanBoreholeLabel = () => {
+  const [openCamera, setOpenCamera] = React.useState(false);
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [calypso_id, setCalypso_id] = React.useState<number | null>(null);
+  const {setValue, watch} = useFormContext();
+  const calypso_id_watch = watch('borehole_calypso_id');
+
+  const handleScan = async (data: any, calypso_id: number | null) => {
+    if (calypso_id) {
+      setCalypso_id(calypso_id);
+      setOpenCamera(false);
+      setOpenDialog(true);
+    } else {
+      toast.error('QR-koden er ikke gyldig', {autoClose: 2000});
+    }
+  };
+
+  return (
+    <Box
+      display="flex"
+      gap={1}
+      flexDirection="row"
+      alignItems="center"
+      justifyContent="space-between"
+    >
+      <FormInput label="Calypso ID" name="borehole_calypso_id" disabled fullWidth />
+      <Button
+        sx={{width: '80%', textTransform: 'initial', borderRadius: 15}}
+        bttype="primary"
+        color="primary"
+        startIcon={<PhotoCameraRounded />}
+        onClick={() => setOpenCamera(true)}
+      >
+        {calypso_id_watch ? 'Skift ID' : 'Tilføj ID'}
+      </Button>
+      {openCamera && (
+        <CaptureDialog
+          open={openCamera}
+          handleClose={() => setOpenCamera(false)}
+          handleScan={handleScan}
+        />
+      )}
+      {openDialog && (
+        <ConfirmCalypsoIDDialog
+          open={openDialog}
+          setOpen={setOpenDialog}
+          onConfirm={() => {
+            setValue('borehole_calypso_id', Number(calypso_id), {
+              shouldValidate: true,
+              shouldDirty: true,
+            });
+          }}
+          calypso_id={calypso_id}
+        />
+      )}
+    </Box>
+  );
+};
+
 const TimeseriesID = () => {
   const {ts_id} = useAppContext(['ts_id']);
   return (
@@ -222,6 +287,7 @@ const TimeseriesID = () => {
           shrink: true,
         },
       }}
+      fullWidth
       label="Tidsserie ID"
       sx={{
         pb: 0.6,
@@ -247,6 +313,7 @@ StamdataTimeseries.TimeriesTypeField = TimeseriesTypeField;
 StamdataTimeseries.Prefix = Prefix;
 StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;
+StamdataTimeseries.ScanBoreholeLabel = ScanBoreholeLabel;
 StamdataTimeseries.TimeseriesID = TimeseriesID;
 StamdataTimeseries.RequiresAuth = RequiresAuth;
 StamdataTimeseries.HidePublic = HidePublic;

@@ -61,7 +61,8 @@ const defaultEditTimeseriesSchema = baseTimeseriesSchema.extend({prefix: z.strin
 const defaultAddTimeseriesSchema = baseAddTimeseriesSchema.extend({prefix: z.string().nullish()});
 
 const boreholeEditTimeseriesSchema = baseTimeseriesSchema.extend({
-  intakeno: z.number().optional(),
+  intakeno: z.number().nullish(),
+  borehole_calypso_id: z.number().optional(),
 });
 
 const boreholeAddTimeseriesSchema = baseAddTimeseriesSchema.extend({
