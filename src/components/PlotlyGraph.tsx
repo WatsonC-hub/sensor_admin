@@ -250,7 +250,7 @@ export default function PlotlyGraph({
             Alt
           </Button>
         </Box>
-        {boreholeno === undefined && (
+        {((boreholeno !== null && ts_id !== undefined) || boreholeno === null) && (
           <Box display={'flex'} flexDirection={'row'} pr={1} gap={isTouch ? 0 : 1}>
             <Tooltip title={'Genberegn tidsserie data'} arrow placement="top">
               <Button

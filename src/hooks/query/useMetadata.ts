@@ -34,6 +34,7 @@ type Metadata = {
   prefix: string | null;
   unit_uuid: string | null;
   slutdato: string | null;
+  borehole_calypso_id: number | null;
 };
 
 type LocationMetadata = {
@@ -60,6 +61,7 @@ type LocationMetadata = {
     prefix: string | null;
     tstype_name: string;
     intakeno: number;
+    borehole_calypso_id?: number | null;
   }>;
 };
 
@@ -115,6 +117,7 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
               prefix: data.prefix,
               tstype_name: data.tstype_name,
               intakeno: data.intakeno,
+              borehole_calypso_id: data.borehole_calypso_id,
             };
           }),
       };

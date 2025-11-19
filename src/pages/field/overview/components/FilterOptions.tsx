@@ -156,13 +156,18 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
               />
             </TooltipWrapper>
 
-            {user?.superUser && (
+            <TooltipWrapper
+              description="Skjuler lokationer som ikke har udstyr tilknyttet"
+              withIcon={false}
+            >
               <FormToggleSwitch
-                name="sensor.isSingleMeasurement"
-                label="Enkeltmålestationer"
+                name="sensor.hideSingleMeasurements"
+                label="Skjul lokationer uden udstyr"
+                sx={{mr: 0}}
                 onChangeCallback={handleSubmit(submit)}
               />
-            )}
+            </TooltipWrapper>
+
             <TooltipWrapper
               withIcon={false}
               description="Viser kun lokaliteter hvor der er notifikationer eller opgaver"

@@ -491,7 +491,7 @@ const InitialProjectNo = (
     select: (data) => data.find((loc) => loc.loc_id === loc_id),
   }); // Preload location data for better performance when opening projects dialog
 
-  const disable = data?.no_unit == false && data?.inactive == false;
+  const disable = data?.no_unit === false;
 
   return (
     <Controller

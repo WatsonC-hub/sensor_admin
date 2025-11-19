@@ -20,7 +20,8 @@ import RenderActions from '~/helpers/RowActions';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
-import {Maalepunkt} from '~/types';
+import {useAppContext} from '~/state/contexts';
+import {Maalepunkt, MaalepunktTableData} from '~/types';
 
 interface Props {
   handleEdit: (maalepunkt: Maalepunkt) => void;
@@ -29,13 +30,14 @@ interface Props {
 }
 
 export default function MaalepunktTableMobile({handleEdit, handleDelete, disabled}: Props) {
+  const {ts_id} = useAppContext(['ts_id']);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
   const {data: timeseries} = useTimeseriesData();
 
   const {
     get: {data},
-  } = useMaalepunkt();
+  } = useMaalepunkt(ts_id);
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -44,7 +46,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
 
   const unit = timeseries?.tstype_id === 1 ? ' m' : ` [${timeseries?.unit}]`;
 
-  const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
+  const columns = useMemo<MRT_ColumnDef<Maalepunkt | MaalepunktTableData>[]>(
     () => [
       {
         accessorFn: (row) => row,
@@ -73,19 +75,25 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
             </Box>
             <Typography margin={'0 auto'} alignSelf={'center'} variant="caption">
               <b>Start: </b> {convertDate(row.original.startdate)}
-              <br />
-              <b>Slut: </b>
-              {checkEndDateIsUnset(row.original.enddate) ? 'Nu' : convertDate(row.original.enddate)}
+              {row.original.enddate && (
+                <>
+                  <br />
+                  <b>Slut: </b>
+                  {checkEndDateIsUnset(row.original.enddate)
+                    ? 'Nu'
+                    : convertDate(row.original.enddate)}
+                </>
+              )}
             </Typography>
             <Box marginLeft={'auto'}>
               <RenderActions
                 handleEdit={() => {
-                  handleEdit(row.original);
+                  handleEdit(row.original as Maalepunkt);
                 }}
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                disabled={disabled}
+                disabled={disabled || 'organisationid' in row.original}
               />
             </Box>
           </Box>
@@ -95,22 +103,24 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
     [unit, disabled, handleEdit]
   );
 
-  const options: Partial<MRT_TableOptions<Maalepunkt>> = {
+  const options: Partial<MRT_TableOptions<Maalepunkt | MaalepunktTableData>> = {
     localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         <Typography>
           <b>Start dato: </b> {convertDateWithTimeStamp(row.original.startdate)}
         </Typography>
-        <Typography>
-          <b>Slut dato: </b>
-          {checkEndDateIsUnset(row.original.enddate)
-            ? 'Nu'
-            : convertDateWithTimeStamp(row.original.enddate)}
-        </Typography>
-        {row.original.display_name && (
+        {row.original.enddate && (
           <Typography>
-            <b>Oprettet af:</b> {row.original.display_name}
+            <b>Slut dato: </b>
+            {checkEndDateIsUnset(row.original.enddate)
+              ? 'Nu'
+              : convertDateWithTimeStamp(row.original.enddate)}
+          </Typography>
+        )}
+        {(row.original.display_name || row.index === 0) && (
+          <Typography>
+            <b>Oprettet af:</b> {row.original.display_name ?? 'Jupiter'}
           </Typography>
         )}
         {row.original.mp_description && (
@@ -122,7 +132,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
     ),
   };
 
-  const table = useTable<Maalepunkt>(
+  const table = useTable<Maalepunkt | MaalepunktTableData>(
     columns,
     data,
     options,
