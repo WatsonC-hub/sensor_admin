@@ -12,7 +12,7 @@ import Station from '~/pages/field/station/Station';
 import {BoreholeMapData} from '~/types';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
 import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
-import {locationMetadataQueryOptions, metadataQueryOptions} from '~/hooks/query/useMetadata';
+import {metadataQueryOptions} from '~/hooks/query/useMetadata';
 import {useQuery} from '@tanstack/react-query';
 import {displayStore, useDisplayState} from '~/hooks/ui';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
