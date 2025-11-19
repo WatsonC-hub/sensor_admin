@@ -93,7 +93,7 @@ interface LayoutProps {
 const Layout = ({children}: LayoutProps) => {
   const {data: metadata} = useLocationData();
   const {isMobile} = useBreakpoints();
-  const setLocId = useDisplayState((state) => state.setLocId);
+  const setShowLocationRouter = useDisplayState((state) => state.setShowLocationRouter);
   const [pageToShow, setPageToShow] = useStationPages();
   const [fullscreen, setFullscreen] = useAtom(fullScreenAtom);
 
@@ -138,7 +138,7 @@ const Layout = ({children}: LayoutProps) => {
           <NavBar.Close
             onClick={() => {
               if (pageToShow) setPageToShow(null);
-              setLocId(null);
+              setShowLocationRouter(false);
             }}
           />
         </Box>
