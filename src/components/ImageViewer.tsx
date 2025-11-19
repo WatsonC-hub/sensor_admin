@@ -131,7 +131,7 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
           <Grid2
             key={elem.gid}
             display={'flex'}
-            size={isTouch ? 12 : 6}
+            size={isTouch || images?.length + image_cache.length === 1 ? 12 : 6}
             justifyContent={
               isTouch ? 'center' : (index + image_cache.length) % 2 === 0 ? 'end' : 'start'
             }
