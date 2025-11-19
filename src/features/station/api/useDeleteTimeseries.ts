@@ -13,6 +13,9 @@ const deleteTimeseriesMutationOptions = makeAppMutationOptions({
     const res = await apiClient.delete(`/sensor_field/timeseries/${ts_id}`);
     return res.data;
   },
+  meta: {
+    invalidates: [['register'], ['metadata']],
+  },
 });
 
 const useDeleteTimeseries = () => {

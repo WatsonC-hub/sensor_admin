@@ -17,13 +17,15 @@ import {boreholeEditTimeseriesSchema, defaultEditTimeseriesSchema} from '~/featu
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 
 const EditTimeseries = () => {
   const setTsId = useDisplayState((state) => state.setTsId);
+  const [, setPage] = useStationPages();
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData(ts_id);
-  const del = useDeleteTimeseries();
+  const mutation = useDeleteTimeseries();
   const [assertDeletion, setAssertDeletion] = React.useState(false);
 
   const {location_permissions} = usePermissions(loc_id);
@@ -143,14 +145,16 @@ const EditTimeseries = () => {
         open={assertDeletion}
         description="Dette vil slette alle kontrolmålinger, opgaver, målepunkter og konfigurationer knyttet til denne tidsserie. Denne handling kan ikke fortrydes."
         onClose={() => setAssertDeletion(false)}
+        isPending={mutation.isPending}
         onDelete={() => {
           const payload = {
             path: ts_id.toString(),
           };
-          del.mutate(payload, {
+          mutation.mutate(payload, {
             onSuccess: () => {
               setAssertDeletion(false);
               setTsId(null);
+              setPage(null);
             },
             onError: () => {
               setAssertDeletion(false);

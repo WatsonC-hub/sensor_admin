@@ -8,6 +8,7 @@ import {
   Edit,
   Router,
   Settings,
+  DoNotDisturb,
 } from '@mui/icons-material';
 import AlarmIcon from '@mui/icons-material/Alarm';
 import {
@@ -132,11 +133,21 @@ const StationDrawer = () => {
         },
       ],
       items: [
+        ...(ts_id == undefined
+          ? [
+              {
+                text: 'Ingen tidsserier',
+                page: stationPages.PEJLING,
+                icon: <DoNotDisturb />,
+                requiredTsId: false,
+              },
+            ]
+          : []),
         {
           text: 'Kontrol',
           page: stationPages.PEJLING,
           icon: <AddCircle />,
-          requiredTsId: false,
+          requiredTsId: true,
           onHover: () => handlePrefetch(pejlingGetOptions(ts_id)),
         },
         {

@@ -1,3 +1,4 @@
+import {Delete} from '@mui/icons-material';
 import {
   DialogActions,
   Dialog,
@@ -6,6 +7,7 @@ import {
   Typography,
   TextField,
   Box,
+  CircularProgress,
 } from '@mui/material';
 
 import React from 'react';
@@ -14,11 +16,18 @@ import Button from '~/components/Button';
 type DeleteTimeseriesProps = {
   open: boolean;
   description: string;
+  isPending?: boolean;
   onDelete: () => void;
   onClose: () => void;
 };
 
-const ConfirmDeleteDialog = ({open, description, onDelete, onClose}: DeleteTimeseriesProps) => {
+const ConfirmDeleteDialog = ({
+  open,
+  description,
+  isPending = false,
+  onDelete,
+  onClose,
+}: DeleteTimeseriesProps) => {
   const [confirmationText, setConfirmationText] = React.useState('');
 
   const handleClose = () => {
@@ -47,7 +56,12 @@ const ConfirmDeleteDialog = ({open, description, onDelete, onClose}: DeleteTimes
         <Button bttype="tertiary" onClick={handleClose}>
           Annuller
         </Button>
-        <Button bttype="danger" onClick={onDelete} disabled={confirmationText !== 'bekræft'}>
+        <Button
+          bttype="danger"
+          onClick={onDelete}
+          startIcon={isPending ? <CircularProgress size="1rem" color="inherit" /> : <Delete />}
+          disabled={confirmationText !== 'bekræft' || isPending}
+        >
           Slet
         </Button>
       </DialogActions>

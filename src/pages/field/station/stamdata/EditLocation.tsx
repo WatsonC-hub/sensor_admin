@@ -19,10 +19,12 @@ import {BaseLocation} from '~/features/station/schema';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 
 const EditLocation = () => {
   const setLocId = useDisplayState((state) => state.setLocId);
+  const [, setPage] = useStationPages();
   const {loc_id} = useAppContext(['loc_id']);
   const [assertDeletion, setAssertDeletion] = React.useState(false);
   const del = useDeleteLocation();
@@ -129,6 +131,7 @@ const EditLocation = () => {
             onSuccess: () => {
               setAssertDeletion(false);
               setLocId(null);
+              setPage(null);
             },
             onError: () => {
               setAssertDeletion(false);
