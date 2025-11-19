@@ -188,7 +188,7 @@ const RequiresAuth = () => {
       render={({field: {onChange, value}}) => (
         <FormControlLabel
           control={<Checkbox sx={{p: 0, ml: 1}} onChange={onChange} checked={value} />}
-          label="Kræver rettigheder for at tilgå tidsserien"
+          label="Kræver rettigheder for at se tidsserien"
         />
       )}
     />

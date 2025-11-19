@@ -4,6 +4,7 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import {useAppContext} from '~/state/contexts';
 import StamdataTimeseries from '../StamdataTimeseries';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import FormFieldset from '~/components/formComponents/FormFieldset';
 
 type Props = {
   size: number;
@@ -29,8 +30,10 @@ const DefaultTimeseriesEditForm = ({size, loc_name}: Props) => {
         <StamdataTimeseries.TimeseriesID />
       </Grid2>
       <Grid2 size={size} display={'flex'} flexDirection={'column'} alignContent={'center'} gap={1}>
-        <StamdataTimeseries.RequiresAuth />
-        <StamdataTimeseries.HidePublic />
+        <FormFieldset label="Tilgængelighed">
+          <StamdataTimeseries.RequiresAuth />
+          <StamdataTimeseries.HidePublic />
+        </FormFieldset>
       </Grid2>
     </Grid2>
   );
