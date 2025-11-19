@@ -11,7 +11,7 @@ type User = {
   features: Features;
 };
 
-export type Features = {
+type Features = {
   iotAccess: boolean;
   boreholeAccess: boolean;
   tasks: TaskPermission;
@@ -48,7 +48,7 @@ export const useUser = () => {
     : null;
 };
 
-export type UserAccessControl = User & {
+type UserAccessControl = User & {
   superUser: boolean;
   advancedTaskPermission: boolean;
   simpleTaskPermission: boolean;

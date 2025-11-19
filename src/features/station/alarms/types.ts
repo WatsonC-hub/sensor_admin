@@ -2,13 +2,7 @@ export type AlarmNotificationType = {
   id: number;
 };
 
-export type AlarmNotificationTable = {
-  gid: number;
-  notification_gid: number;
-  name: string;
-};
-
-export type AlarmContact = {
+type AlarmContact = {
   contact_id: string;
   name: string;
   sms: boolean;
@@ -22,7 +16,7 @@ export type AlarmContact = {
   call_from: string | undefined;
 };
 
-export type AlarmContactPost = {
+type AlarmContactPost = {
   contact_id: string | undefined;
   sms: boolean;
   sms_to: string | undefined;
@@ -62,23 +56,6 @@ export type AlarmHistory = {
   alarm_low: boolean;
   name: string;
   signal_warning: boolean;
-};
-
-export type AlarmResponse = {
-  id: string;
-  name: string;
-  comment?: string;
-  group_id: string | undefined;
-  alarm_notifications: Array<number> | undefined;
-  alarm_contacts: Array<AlarmContact> | undefined;
-};
-
-export type AlarmPost = {
-  name: string;
-  comment?: string;
-  group_id: string | undefined;
-  alarm_contacts: Array<AlarmContactPost>;
-  notification_ids: Array<number> | undefined;
 };
 
 export type AlarmTableType = {
