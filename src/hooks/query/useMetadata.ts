@@ -34,7 +34,7 @@ type Metadata = {
   prefix: string | null;
   unit_uuid: string | null;
   slutdato: string | null;
-  borehole_calypso_id: number | null;
+  timeseries_calypso_id: number | null;
   requires_auth: boolean;
   hide_public: boolean;
 };
@@ -63,7 +63,7 @@ type LocationMetadata = {
     prefix: string | null;
     tstype_name: string;
     intakeno: number;
-    borehole_calypso_id?: number | null;
+    timeseries_calypso_id?: number | null;
   }>;
 };
 
@@ -80,7 +80,7 @@ export const metadataQueryOptions = (ts_id?: number) => {
   });
 };
 
-export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
+const locationMetadataQueryOptions = (loc_id: number | undefined) => {
   const {ts_id} = useAppContext([], ['ts_id']);
   return queryOptions({
     queryKey: queryKeys.Location.metadata(loc_id),
@@ -119,7 +119,7 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
               prefix: data.prefix,
               tstype_name: data.tstype_name,
               intakeno: data.intakeno,
-              borehole_calypso_id: data.borehole_calypso_id,
+              timeseries_calypso_id: data.timeseries_calypso_id,
             };
           }),
       };

@@ -3,6 +3,7 @@ import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
+import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
@@ -38,6 +39,9 @@ const EditTimeseries = () => {
     meta: {
       invalidates: [['metadata']],
     },
+    onSuccess: () => {
+      toast.success('metadata gemt');
+    },
   });
 
   let schema;
@@ -54,7 +58,7 @@ const EditTimeseries = () => {
     intakeno: metadata?.intakeno,
     requires_auth: metadata?.requires_auth ?? false,
     hide_public: metadata?.hide_public ?? false,
-    borehole_calypso_id: metadata?.borehole_calypso_id ?? undefined,
+    calypso_id: metadata?.timeseries_calypso_id ?? undefined,
   });
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({

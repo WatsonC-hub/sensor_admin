@@ -28,7 +28,7 @@ const BoreholeTimeseriesEditForm = ({size}: Props) => {
         <StamdataTimeseries.TimeseriesID />
       </Grid2>
       <Grid2 size={{xs: 12, sm: 4}}>
-        <StamdataTimeseries.ScanBoreholeLabel />
+        <StamdataTimeseries.ScanCalypsoLabel />
       </Grid2>
       <Grid2 size={size} display={'flex'} flexDirection={'column'} alignContent={'center'} gap={1}>
         <FormFieldset label="Tilgængelighed">
