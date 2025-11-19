@@ -101,7 +101,6 @@ export default function StationContactInfo({
           name="mobile"
           label="Tlf. nummer"
           placeholder="Telefonnummer..."
-          type={'number'}
           fullWidth
           disabled={(!isEditing && isUser) || (isUser && isEditing)}
           InputProps={{
@@ -126,6 +125,17 @@ export default function StationContactInfo({
           label="Rolle"
           placeholder="Hvilken rolle har kontakten..."
           disabled={tableModal}
+          slotProps={{
+            select: {
+              renderValue: (selected) => {
+                if (!selected) {
+                  return 'Vælg rolle';
+                }
+                return contactRoles?.find((role) => role.id === (selected as number))?.name;
+              },
+            },
+          }}
+          required
           select
           fullWidth
           onChangeCallback={(value) => {
@@ -134,16 +144,18 @@ export default function StationContactInfo({
               (role) =>
                 role.id === Number((value as React.ChangeEvent<HTMLInputElement>).target.value)
             );
+
+            if (role?.id === 1 && getValues('notify_required') === true)
+              setValue('notify_required', false);
+
             if (role) {
-              setValue('contact_type', role.default_type ?? '-1');
+              if (role.default_type !== null)
+                setValue('contact_type', role.default_type ?? undefined);
             } else {
-              setValue('contact_type', '-1');
+              setValue('contact_type', undefined);
             }
           }}
         >
-          <MenuItem value={-1} key={-1}>
-            Vælg rolle
-          </MenuItem>
           {contactRoles?.map((role) => (
             <MenuItem key={role.id} value={role.id}>
               {role.name}
@@ -158,12 +170,19 @@ export default function StationContactInfo({
           placeholder="Tilknyt..."
           disabled={tableModal}
           select
+          slotProps={{
+            select: {
+              renderValue: (selected) => {
+                if (!selected) {
+                  return 'Vælg type';
+                }
+                return selected as string;
+              },
+            },
+          }}
           required
           fullWidth
         >
-          <MenuItem value={'-1'} key={'-1'}>
-            Vælg type
-          </MenuItem>
           <MenuItem value={ContactInfoType.Lokation}>Lokation</MenuItem>
           <MenuItem value={ContactInfoType.Projekt}>Projekt</MenuItem>
         </FormInput>

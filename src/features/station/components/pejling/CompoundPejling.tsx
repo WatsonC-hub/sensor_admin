@@ -26,6 +26,7 @@ import {get} from 'lodash';
 import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
+import {useAppContext} from '~/state/contexts';
 
 interface PejlingProps {
   submit: (values: PejlingSchemaType | PejlingBoreholeSchemaType) => void;
@@ -70,6 +71,7 @@ const CompoundPejling = ({
   latestMeasurement,
 }: PejlingProps) => {
   const {watch, getValues} = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
+  const {ts_id} = useAppContext(['ts_id']);
   const timeofmeas = watch('timeofmeas');
   const measurement = watch('measurement');
   const [notPossible, setNotPossible] = useState<boolean>(!!getValues('extrema'));
@@ -83,7 +85,7 @@ const CompoundPejling = ({
   const tstype_id = timeseries?.tstype_id;
   const {
     get: {data: mpData},
-  } = useMaalepunkt();
+  } = useMaalepunkt(ts_id);
 
   useEffect(() => {
     let latestmeas: number | undefined = undefined;

@@ -31,7 +31,7 @@ export const queryKeys = {
     allPejling: () => ['measurements', 'register'] as const,
     pejling: (ts_id: number | undefined) => ['measurements', 'register', ts_id] as const,
     tilsyn: (ts_id: number) => ['service', 'register', ts_id] as const,
-    maalepunkt: (ts_id: number) => ['watlevmp', 'register', ts_id] as const,
+    maalepunkt: (ts_id: number | undefined) => ['watlevmp', 'register', ts_id] as const,
     unitHistory: (ts_id: number | undefined) => ['udstyr', 'metadata', ts_id] as const,
     algorithms: (ts_id: number) => ['algorithms', 'register', ts_id] as const,
     certifyQa: (ts_id: number) => ['certifyQa', 'register', ts_id] as const,
@@ -50,6 +50,7 @@ export const queryKeys = {
       ['graphData', ts_id, xRange] as const,
     MeasureSampleSend: (ts_id: number) => ['measure_sample_send', 'register', ts_id] as const,
     ServiceInterval: (ts_id: number) => ['service_interval', 'register', ts_id] as const,
+    SyncData: (ts_id: number) => ['sync', 'register', ts_id] as const,
   },
   Borehole: {
     stamdata: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
@@ -58,7 +59,7 @@ export const queryKeys = {
       ['search_borehole', 'register', boreholeno] as const,
     intakeList: (boreholeno: string | undefined | null) =>
       ['intake_list', 'register', boreholeno] as const,
-    jupiterData: (boreholeno: string | undefined | null, intakeno: number) =>
+    jupiterData: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
       ['jupiter_waterlevel', 'register', boreholeno, intakeno] as const,
     measurementsWithIntake: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
       ['measurements', 'register', boreholeno, intakeno] as const,

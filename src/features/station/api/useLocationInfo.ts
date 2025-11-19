@@ -17,6 +17,7 @@ type LocationInfo = {
   location_access: string[] | undefined;
   contact: boolean;
   sla: number;
+  boreholeno: string | undefined;
 };
 
 export const locationInfoOptions = (loc_id: number) =>
