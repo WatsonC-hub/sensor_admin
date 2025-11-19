@@ -184,12 +184,12 @@ const SensorDepth = (
   );
 };
 
-const ScanBoreholeLabel = () => {
+const ScanCalypsoLabel = () => {
   const [openCamera, setOpenCamera] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [calypso_id, setCalypso_id] = React.useState<number | null>(null);
   const {setValue, watch} = useFormContext();
-  const calypso_id_watch = watch('borehole_calypso_id');
+  const calypso_id_watch = watch('calypso_id');
 
   const handleScan = async (data: any, calypso_id: number | null) => {
     if (calypso_id) {
@@ -209,7 +209,7 @@ const ScanBoreholeLabel = () => {
       alignItems="center"
       justifyContent="space-between"
     >
-      <FormInput label="Calypso ID" name="borehole_calypso_id" disabled fullWidth />
+      <FormInput label="Calypso ID" name="calypso_id" disabled fullWidth />
       <Button
         sx={{width: '80%', textTransform: 'initial', borderRadius: 15}}
         bttype="primary"
@@ -231,7 +231,7 @@ const ScanBoreholeLabel = () => {
           open={openDialog}
           setOpen={setOpenDialog}
           onConfirm={() => {
-            setValue('borehole_calypso_id', Number(calypso_id), {
+            setValue('calypso_id', Number(calypso_id), {
               shouldValidate: true,
               shouldDirty: true,
             });
@@ -280,7 +280,7 @@ StamdataTimeseries.TimeriesTypeField = TimeseriesTypeField;
 StamdataTimeseries.Prefix = Prefix;
 StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;
-StamdataTimeseries.ScanBoreholeLabel = ScanBoreholeLabel;
+StamdataTimeseries.ScanCalypsoLabel = ScanCalypsoLabel;
 StamdataTimeseries.TimeseriesID = TimeseriesID;
 
 export default StamdataTimeseries;

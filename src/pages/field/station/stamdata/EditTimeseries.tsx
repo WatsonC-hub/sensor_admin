@@ -4,6 +4,7 @@ import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
+import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
@@ -43,6 +44,9 @@ const EditTimeseries = () => {
     meta: {
       invalidates: [['metadata']],
     },
+    onSuccess: () => {
+      toast.success('metadata gemt');
+    },
   });
 
   let schema;
@@ -57,7 +61,7 @@ const EditTimeseries = () => {
     prefix: metadata?.prefix,
     sensor_depth_m: metadata?.sensor_depth_m,
     intakeno: metadata?.intakeno,
-    borehole_calypso_id: metadata?.borehole_calypso_id ?? undefined,
+    calypso_id: metadata?.timeseries_calypso_id ?? undefined,
   });
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({
