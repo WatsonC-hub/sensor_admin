@@ -78,6 +78,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
       line: {width: 2},
       mode: 'lines+markers',
       marker: {symbol: '100', size: 8},
+      uid: `jupiter-situation-${situation}`,
     };
     return trace;
   });
@@ -89,6 +90,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
     type: 'scattergl',
     mode: 'markers',
     marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
+    uid: 'calypso-data',
   };
 
   const dynamicMeas: Partial<PlotData> = {
@@ -99,6 +101,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
     mode: 'markers',
     showlegend: false,
     marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
+    uid: 'dynamic-measurement',
   };
 
   const data: Array<Partial<PlotData>> = [...jupiterTraces, plotOurData, dynamicMeas];

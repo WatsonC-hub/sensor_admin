@@ -33,6 +33,7 @@ type Metadata = {
   unit: string;
   prefix: string | null;
   unit_uuid: string | null;
+  slutdato: string | null;
   requires_auth: boolean;
   hide_public: boolean;
 };
