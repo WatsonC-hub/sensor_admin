@@ -6,7 +6,7 @@ import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {APIError} from '~/queryClient';
 
-export type MeasureSampleSend = {
+type MeasureSampleSend = {
   sampleInterval: number;
   sendInterval: number;
 };

@@ -5,16 +5,16 @@ import {useUser} from '~/features/auth/useUser';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 
-export type SLAConfiguration = {
+type SLAConfiguration = {
   daysToVisitation?: number | undefined;
   isCustomerService?: boolean | undefined;
 };
 
-export type SLAConfigurationUpdate = {
+type SLAConfigurationUpdate = {
   days_to_visitation?: number | undefined;
 };
 
-export const locationSLAConfigurationOptions = (loc_id: number) =>
+const locationSLAConfigurationOptions = (loc_id: number) =>
   queryOptions<SLAConfiguration, APIError>({
     queryKey: queryKeys.Location.SLAConfiguration(loc_id!),
     queryFn: async () => {
