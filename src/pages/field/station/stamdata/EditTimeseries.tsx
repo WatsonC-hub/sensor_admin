@@ -12,7 +12,7 @@ import TooltipWrapper from '~/components/TooltipWrapper';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import useDeleteTimeseries from '~/features/station/api/useDeleteTimeseries';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
-import DeleteTimeseriesDialog from '~/features/station/components/DeleteTimeseriesDialog';
+import ConfirmDeleteDialog from '~/features/station/components/ConfirmDeleteDialog';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
 import {boreholeEditTimeseriesSchema, defaultEditTimeseriesSchema} from '~/features/station/schema';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
@@ -142,8 +142,9 @@ const EditTimeseries = () => {
           </Button>
         </Box>
       </FormProvider>
-      <DeleteTimeseriesDialog
+      <ConfirmDeleteDialog
         open={assertDeletion}
+        description="Dette vil slette alle kontrolmålinger, opgaver, målepunkter og konfigurationer knyttet til denne tidsserie. Denne handling kan ikke fortrydes."
         onClose={() => setAssertDeletion(false)}
         onDelete={() => {
           const payload = {

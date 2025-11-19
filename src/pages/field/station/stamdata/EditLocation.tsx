@@ -13,7 +13,7 @@ import TooltipWrapper from '~/components/TooltipWrapper';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import useDeleteLocation from '~/features/station/api/useDeleteLocation';
 import useLocationForm from '~/features/station/api/useLocationForm';
-import DeleteLocationDialog from '~/features/station/components/DeleteLocationDialog';
+import ConfirmDeleteDialog from '~/features/station/components/ConfirmDeleteDialog';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
 import {BaseLocation} from '~/features/station/schema';
 import {useLocationData} from '~/hooks/query/useMetadata';
@@ -119,8 +119,9 @@ const EditLocation = () => {
           </Button>
         </Box>
       </FormProvider>
-      <DeleteLocationDialog
+      <ConfirmDeleteDialog
         open={assertDeletion}
+        description="Sletter du lokationen, vil alle tilknyttede nøgler, kontakter, huskeliste og billeder også blive slettet. Denne handling kan ikke fortrydes."
         onClose={() => setAssertDeletion(false)}
         onDelete={() => {
           const payload = {path: loc_id};
