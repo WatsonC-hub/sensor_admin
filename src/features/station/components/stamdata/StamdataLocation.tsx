@@ -108,26 +108,24 @@ const LoctypeSelect = (
 
   return (
     <>
-      {data && (
-        <FormInput
-          name="loctype_id"
-          label="Lokationstype"
-          placeholder="Vælg type"
-          select
-          required
-          infoText="Lokationstypen kan betyde hvilke muligheder der er for at tilføje data til lokationen. F.eks. kan DGU boringer oprettes smartere og synkroniseres til GEUS."
-          {...props}
-        >
-          <MenuItem value={-1} key={-1}>
-            Vælg type
+      <FormInput
+        name="loctype_id"
+        label="Lokationstype"
+        placeholder="Vælg type"
+        select
+        required
+        infoText="Lokationstypen kan betyde hvilke muligheder der er for at tilføje data til lokationen. F.eks. kan DGU boringer oprettes smartere og synkroniseres til GEUS."
+        {...props}
+      >
+        <MenuItem value={-1} key={-1}>
+          Vælg type
+        </MenuItem>
+        {data?.map((item: locationType) => (
+          <MenuItem value={item.loctype_id} key={item.loctype_id}>
+            {item.loctypename}
           </MenuItem>
-          {data?.map((item: locationType) => (
-            <MenuItem value={item.loctype_id} key={item.loctype_id}>
-              {item.loctypename}
-            </MenuItem>
-          ))}
-        </FormInput>
-      )}
+        ))}
+      </FormInput>
     </>
   );
 };

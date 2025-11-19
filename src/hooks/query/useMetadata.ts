@@ -35,6 +35,8 @@ type Metadata = {
   unit_uuid: string | null;
   slutdato: string | null;
   borehole_calypso_id: number | null;
+  requires_auth: boolean;
+  hide_public: boolean;
 };
 
 type LocationMetadata = {

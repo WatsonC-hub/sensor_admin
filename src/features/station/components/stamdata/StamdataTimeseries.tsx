@@ -1,4 +1,4 @@
-import {MenuItem, InputAdornment, TextField, Box} from '@mui/material';
+import {MenuItem, InputAdornment, TextField, FormControlLabel, Checkbox, Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from '~/apiClient';
@@ -13,8 +13,9 @@ import {
 import FormTextField from '~/components/FormTextField';
 import {useAppContext} from '~/state/contexts';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {Controller, useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
-import {useFormContext} from 'react-hook-form';
+
 import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
 import CaptureDialog from '~/components/CaptureDialog';
 import {toast} from 'react-toastify';
@@ -184,6 +185,38 @@ const SensorDepth = (
   );
 };
 
+const RequiresAuth = () => {
+  const {control} = useFormContext();
+  return (
+    <Controller
+      name="requires_auth"
+      control={control}
+      render={({field: {onChange, value}}) => (
+        <FormControlLabel
+          control={<Checkbox sx={{p: 0, ml: 1}} onChange={onChange} checked={value} />}
+          label="Kræver rettigheder for at se tidsserien"
+        />
+      )}
+    />
+  );
+};
+
+const HidePublic = () => {
+  const {control} = useFormContext();
+  return (
+    <Controller
+      name="hide_public"
+      control={control}
+      render={({field: {onChange, value}}) => (
+        <FormControlLabel
+          control={<Checkbox sx={{p: 0, ml: 1}} onChange={onChange} checked={value} />}
+          label="Skjul i offentlige visninger"
+        />
+      )}
+    />
+  );
+};
+
 const ScanBoreholeLabel = () => {
   const [openCamera, setOpenCamera] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -282,5 +315,7 @@ StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;
 StamdataTimeseries.ScanBoreholeLabel = ScanBoreholeLabel;
 StamdataTimeseries.TimeseriesID = TimeseriesID;
+StamdataTimeseries.RequiresAuth = RequiresAuth;
+StamdataTimeseries.HidePublic = HidePublic;
 
 export default StamdataTimeseries;
