@@ -52,8 +52,8 @@ const EditTimeseries = () => {
     prefix: metadata?.prefix,
     sensor_depth_m: metadata?.sensor_depth_m,
     intakeno: metadata?.intakeno,
-    requires_auth: metadata?.requires_auth,
-    hide_public: metadata?.hide_public,
+    requires_auth: metadata?.requires_auth ?? false,
+    hide_public: metadata?.hide_public ?? false,
     borehole_calypso_id: metadata?.borehole_calypso_id ?? undefined,
   });
 
