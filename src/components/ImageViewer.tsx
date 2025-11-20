@@ -3,7 +3,6 @@ import {MutationState, useMutationState} from '@tanstack/react-query';
 import React from 'react';
 
 import ImageCard from '~/components/ImageCard';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {Image} from '~/types';
 import Button from './Button';
 import {ImagePayload} from '~/hooks/query/useImageUpload';
@@ -47,7 +46,12 @@ function downloadDataUri(dataUri: string, filename: string) {
 }
 
 function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewerProps) {
-  const {isTouch, isMobile} = useBreakpoints();
+  const boxLayout = document.getElementById('main_content');
+  const widthRatio = boxLayout ? boxLayout.clientWidth / 2 : 0;
+  const mobileSize = widthRatio < 480 ? 300 : 480;
+
+  console.log(widthRatio);
+
   const image_cache = useMutationState<MutationState<unknown, unknown, ImagePayload>>({
     filters: {exact: true, mutationKey: ['image_post', type, id]},
   }).filter((m) => m.status === 'error' || m.status === 'pending');
@@ -63,16 +67,16 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
         {image_cache.map((m, index) => (
           <Grid2
             key={`pending-${index}`}
-            size={isTouch ? 12 : 6}
+            size={mobileSize === 300 ? 12 : 6}
             display={'flex'}
-            justifyContent={isTouch ? 'center' : index % 2 === 0 ? 'end' : 'start'}
+            justifyContent={mobileSize === 300 ? 'center' : index % 2 === 0 ? 'end' : 'start'}
           >
             <Box
               display={'flex'}
               sx={{
                 position: 'relative',
-                width: isMobile ? '300px' : '480px',
-                height: isMobile ? '300px' : '480px',
+                width: mobileSize,
+                height: mobileSize,
                 borderRadius: 2,
               }}
             >
@@ -131,9 +135,14 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
           <Grid2
             key={elem.gid}
             display={'flex'}
-            size={isTouch || images?.length + image_cache.length === 1 ? 12 : 6}
+            flexWrap={'wrap'}
+            size={mobileSize === 300 ? 12 : 6}
             justifyContent={
-              isTouch ? 'center' : (index + image_cache.length) % 2 === 0 ? 'end' : 'start'
+              mobileSize === 300
+                ? 'center'
+                : (index + image_cache.length) % 2 === 0
+                  ? 'end'
+                  : 'start'
             }
           >
             <ImageCard image={elem} deleteMutation={deleteMutation} handleEdit={handleEdit} />

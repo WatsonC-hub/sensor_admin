@@ -266,10 +266,10 @@ const Overview = () => {
             show={boreholeno !== null && intakeno !== null}
             minSize={2}
             maxSize={4}
-            fullScreen={isMobile || fullScreen}
+            fullScreen={isTouch || fullScreen}
             height="100%"
             sx={{
-              borderRadius: isMobile ? 0 : 3,
+              borderRadius: isTouch ? 0 : 3,
             }}
           >
             <AppContext.Provider value={{boreholeno: boreholeno!, intakeno: intakeno!}}>
@@ -285,9 +285,9 @@ const Overview = () => {
             show={ts_id !== null}
             minSize={2}
             maxSize={4}
-            fullScreen={isMobile || fullScreen}
+            fullScreen={isTouch || fullScreen}
             sx={{
-              borderRadius: isMobile ? 0 : 3,
+              borderRadius: isTouch ? 0 : 3,
             }}
             height="100%"
           >
@@ -304,7 +304,10 @@ const Overview = () => {
             minSize={2}
             maxSize={4}
             onClose={() => setSelectedTask(null)}
-            fullScreen={isMobile || fullScreen}
+            fullScreen={isTouch || fullScreen}
+            sx={{
+              borderRadius: isTouch ? 0 : 3,
+            }}
             height="100%"
           >
             <AppContext.Provider value={{loc_id: loc_id ?? undefined}}>
