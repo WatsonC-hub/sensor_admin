@@ -22,13 +22,11 @@ type ImageCardProps = {
   image: Image;
   deleteMutation: UseMutationResult;
   handleEdit: (image: Image) => void;
+  mobileSize: number;
 };
 
-function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
+function ImageCard({image, deleteMutation, handleEdit, mobileSize}: ImageCardProps) {
   const {loc_id, boreholeno} = useAppContext([], ['loc_id', 'boreholeno']);
-  const boxLayout = document.getElementById('station-page-box-layout');
-  const widthRatio = boxLayout ? boxLayout.clientWidth / 2.2 : 0;
-  const mobileSize = widthRatio < 480 ? 300 : 480;
   const {
     location_permissions,
     borehole_permission_query: {data: permissions},
@@ -59,11 +57,10 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
     <GenericCard
       sx={{
         display: 'flex',
-        justifyContent: 'center',
         flexDirection: 'column ',
         borderRadius: 5,
         minWidth: 0,
-        maxWidth: mobileSize ? '300px' : '480px',
+        maxWidth: mobileSize,
       }}
       key={image.gid.toString()}
     >
@@ -76,8 +73,8 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
       <CardMedia
         sx={{
           margin: 'auto',
-          maxWidth: mobileSize ? '300px' : '480px',
-          maxHeight: mobileSize ? '300px' : '480px',
+          maxWidth: mobileSize,
+          maxHeight: mobileSize,
         }}
       >
         <div
