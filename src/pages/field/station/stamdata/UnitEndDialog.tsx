@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
-import {Dialog, DialogTitle, DialogContent, MenuItem, DialogActions} from '@mui/material';
+import {Dialog, DialogTitle, DialogContent, DialogActions} from '@mui/material';
 import {useQuery, useMutation} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import moment from 'moment';
@@ -133,18 +133,8 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                 fullWidth
                 select
                 label="Årsag"
-                slotProps={{
-                  select: {
-                    renderValue: (value: any) => {
-                      if (value === undefined) {
-                        return 'Vælg årsag';
-                      }
-                      return (
-                        changeReasons?.find((reason) => reason.id === value)?.reason ?? 'Vælg årsag'
-                      );
-                    },
-                  },
-                }}
+                options={changeReasons?.map((reason) => ({[reason.id]: reason.reason}))}
+                keyType="number"
                 placeholder="Vælg årsag"
                 onChangeCallback={(e) => {
                   const reason = changeReasons?.find(
@@ -162,13 +152,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                     }
                   }
                 }}
-              >
-                {changeReasons?.map((reason) => (
-                  <MenuItem key={reason.id} value={reason.id}>
-                    {reason.reason}
-                  </MenuItem>
-                ))}
-              </FormInput>
+              />
 
               <FormInput
                 name="action"
@@ -176,23 +160,8 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                 select
                 label="Handling"
                 placeholder="Handling"
-                slotProps={{
-                  select: {
-                    renderValue: (value: any) => {
-                      if (value === undefined) {
-                        return 'Vælg handling';
-                      }
-                      return actions?.find((action) => action.action === value)?.label ?? '';
-                    },
-                  },
-                }}
-              >
-                {actions?.map((action) => (
-                  <MenuItem key={action.action} value={action.action}>
-                    {action.label}
-                  </MenuItem>
-                ))}
-              </FormInput>
+                options={actions?.map((action) => ({[action.action]: action.label}))}
+              />
 
               <FormInput
                 name="comment"

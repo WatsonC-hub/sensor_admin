@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, InputAdornment, MenuItem, Typography} from '@mui/material';
+import {Box, InputAdornment, Typography} from '@mui/material';
 import React, {ChangeEvent} from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
@@ -122,6 +122,8 @@ const YearlyControlsConfig = () => {
                         disableUnderline: true,
                       },
                     }}
+                    options={[{1: 'kontrol/år'}, {2: 'mdr. mellem kontrol'}]}
+                    keyType="number"
                     onChangeCallback={(e) => {
                       const value = (e as ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)
                         .target.value;
@@ -136,10 +138,7 @@ const YearlyControlsConfig = () => {
                           });
                       }
                     }}
-                  >
-                    <MenuItem value={1}>kontrol/år</MenuItem>
-                    <MenuItem value={2}>mdr. mellem kontrol</MenuItem>
-                  </FormInput>
+                  />
                 </InputAdornment>
               ),
             },
