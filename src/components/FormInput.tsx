@@ -183,16 +183,20 @@ const FormInput = <TFieldValues extends FieldValues>({
               error={!!errorMessage}
               helperText={errorMessage || warningMessage || (helperText ?? '')}
             >
-              {options?.map((option) => {
-                const key =
-                  keyType === 'number' ? Number(Object.keys(option)[0]) : Object.keys(option)[0];
-                const value = option[key];
-                return (
-                  <MenuItem key={key} value={key}>
-                    {value as string}
-                  </MenuItem>
-                );
-              })}
+              {options !== undefined && options !== null && options.length > 0 ? (
+                options?.map((option) => {
+                  const key =
+                    keyType === 'number' ? Number(Object.keys(option)[0]) : Object.keys(option)[0];
+                  const value = option[key];
+                  return (
+                    <MenuItem key={key} value={key}>
+                      {value as string}
+                    </MenuItem>
+                  );
+                })
+              ) : (
+                <div></div>
+              )}
             </TextField>
           </Wrapper>
         );
