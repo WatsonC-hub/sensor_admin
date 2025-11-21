@@ -41,7 +41,10 @@ export default function Station() {
   const {data: metadata} = useTimeseriesData();
   const [, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
-  const user = useUser();
+  const {
+    features: {iotAccess, contacts, keys: accessKeys, ressources},
+    superUser,
+  } = useUser();
 
   useEffect(() => {
     if (
@@ -95,10 +98,10 @@ export default function Station() {
             <TimeseriesConfiguration />
           </StationPageBoxLayout>
         )}
-        {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && (
+        {pageToShow === stationPages.ALGORITHMS && iotAccess && (
           <Algorithms key={`algorithms-${ts_id}`} />
         )}
-        {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && (
+        {pageToShow === stationPages.JUSTERINGER && iotAccess && (
           <QAHistory key={`justeringer-${ts_id}`} />
         )}
         {pageToShow === stationPages.MAALEPUNKT &&
@@ -118,7 +121,7 @@ export default function Station() {
               </StationPageBoxLayout>
             </>
           )}
-        {pageToShow === stationPages.ALARM && user?.superUser && (
+        {pageToShow === stationPages.ALARM && superUser && (
           <>
             <Box key={`graph-${ts_id}`}>
               <GraphManager
@@ -133,17 +136,17 @@ export default function Station() {
             </StationPageBoxLayout>
           </>
         )}
-        {pageToShow === stationPages.NØGLER && user?.features?.keys && (
+        {pageToShow === stationPages.NØGLER && accessKeys && (
           <StationPageBoxLayout key={loc_id}>
             <LocationAccess />
           </StationPageBoxLayout>
         )}
-        {pageToShow === stationPages.KONTAKTER && user?.features?.contacts && (
+        {pageToShow === stationPages.KONTAKTER && contacts && (
           <StationPageBoxLayout key={loc_id}>
             <ContactInfo />
           </StationPageBoxLayout>
         )}
-        {pageToShow === stationPages.HUSKELISTE && user?.features?.ressources && (
+        {pageToShow === stationPages.HUSKELISTE && ressources && (
           <StationPageBoxLayout key={loc_id}>
             <Huskeliste />
           </StationPageBoxLayout>
@@ -153,7 +156,7 @@ export default function Station() {
             <ImagePage />
           </StationPageBoxLayout>
         )}
-        {pageToShow === stationPages.LOKATIONKONFIGURATION && user?.superUser && (
+        {pageToShow === stationPages.LOKATIONKONFIGURATION && superUser && (
           <StationPageBoxLayout>
             <LocationConfiguration />
           </StationPageBoxLayout>

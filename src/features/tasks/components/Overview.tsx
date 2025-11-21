@@ -77,7 +77,7 @@ const Overview = () => {
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
   const {addLocationToTrip} = useTaskItinerary();
 
-  const user = useUser();
+  const {simpleTaskPermission} = useUser();
   const {isMobile, isTouch} = useBreakpoints();
   const fullScreen = useAtomValue(fullScreenAtom);
 
@@ -173,7 +173,7 @@ const Overview = () => {
             key="owntasklist"
             priority={2}
             mobilePriority={2}
-            show={own_task_list && user?.simpleTaskPermission === true}
+            show={own_task_list && simpleTaskPermission === true}
             minSize={1}
             onClose={() => setOwnTaskList(false)}
             sx={{

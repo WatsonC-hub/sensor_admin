@@ -34,9 +34,11 @@ export const locationInfoOptions = (loc_id: number) =>
   });
 
 export const useLocationInfo = (loc_id: number) => {
-  const user = useUser();
+  const {
+    features: {iotAccess},
+  } = useUser();
   return useQuery({
     ...locationInfoOptions(loc_id),
-    enabled: user?.features?.iotAccess && loc_id !== undefined,
+    enabled: iotAccess && loc_id !== undefined,
   });
 };

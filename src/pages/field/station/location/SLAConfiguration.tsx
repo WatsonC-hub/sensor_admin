@@ -28,7 +28,7 @@ type SLASubmit = z.infer<typeof SLASchema>;
 
 const SLAConfiguration = () => {
   const {loc_id} = useAppContext(['loc_id']);
-  const user = useUser();
+  const {superUser} = useUser();
   const {data: values, isPending} = useLocationSLAConfiguration(loc_id);
   const {mutate} = useLocationSLAConfigurationMutation(loc_id);
   const {isMobile} = useBreakpoints();
@@ -66,8 +66,7 @@ const SLAConfiguration = () => {
           type="number"
           placeholder="Indtast antal dage..."
           disabled={
-            (values?.isCustomerService && user?.superUser) ||
-            (!values?.isCustomerService && !user?.superUser)
+            (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser)
           }
           slotProps={{
             input: {

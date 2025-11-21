@@ -66,7 +66,7 @@ const UnitMeasurementConfig = () => {
   const {mutate} = useTimeseriesMeasureSampleSendMutation(ts_id);
   const [options, setOptions] = useState<Array<Record<number, string>>>([]);
   const {isMobile} = useBreakpoints();
-  const user = useUser();
+  const {superUser} = useUser();
   const values = data?.savedConfig ? data.savedConfig : undefined;
 
   const formMethods = useForm<ConfigForm, unknown, ConfigSubmit>({
@@ -213,8 +213,8 @@ const UnitMeasurementConfig = () => {
           }}
           disabled={
             !data?.configPossible ||
-            (currentLocation?.is_customer_service && user?.superUser) ||
-            (!currentLocation?.is_customer_service && !user?.superUser)
+            (currentLocation?.is_customer_service && superUser) ||
+            (!currentLocation?.is_customer_service && !superUser)
           }
           slotProps={{
             input: {
@@ -232,8 +232,8 @@ const UnitMeasurementConfig = () => {
           disabled={
             !data?.configPossible ||
             options.length === 0 ||
-            (currentLocation?.is_customer_service && user?.superUser) ||
-            (!currentLocation?.is_customer_service && !user?.superUser)
+            (currentLocation?.is_customer_service && superUser) ||
+            (!currentLocation?.is_customer_service && !superUser)
           }
           options={options}
           keyType="number"

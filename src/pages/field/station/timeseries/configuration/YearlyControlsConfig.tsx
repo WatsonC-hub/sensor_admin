@@ -38,7 +38,7 @@ function intervalFromFrequencyPerYear(timesPerYear: number): string {
 
 const YearlyControlsConfig = () => {
   const {ts_id} = useAppContext(['ts_id']);
-  const user = useUser();
+  const {superUser} = useUser();
   const {data: values} = useTimeseriesServiceInterval(ts_id);
   const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
   const {isMobile} = useBreakpoints();
@@ -90,8 +90,7 @@ const YearlyControlsConfig = () => {
           label="Kontrolhyppighed"
           type="number"
           disabled={
-            (values?.isCustomerService && user?.superUser) ||
-            (!values?.isCustomerService && !user?.superUser)
+            (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser)
           }
           fullWidth
           onChangeCallback={(e) => {
@@ -114,8 +113,8 @@ const YearlyControlsConfig = () => {
                     sx={{width: 150}}
                     defaultValue={1}
                     disabled={
-                      (values?.isCustomerService && user?.superUser) ||
-                      (!values?.isCustomerService && !user?.superUser)
+                      (values?.isCustomerService && superUser) ||
+                      (!values?.isCustomerService && !superUser)
                     }
                     slotProps={{
                       select: {
@@ -163,8 +162,7 @@ const YearlyControlsConfig = () => {
           label="Forsvarsling"
           type="number"
           disabled={
-            (values?.isCustomerService && user?.superUser) ||
-            (!values?.isCustomerService && !user?.superUser)
+            (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser)
           }
           fullWidth
           slotProps={{

@@ -27,10 +27,12 @@ const locationSLAConfigurationOptions = (loc_id: number) =>
   });
 
 export const useLocationSLAConfiguration = (loc_id: number) => {
-  const user = useUser();
+  const {
+    features: {iotAccess},
+  } = useUser();
   return useQuery({
     ...locationSLAConfigurationOptions(loc_id),
-    enabled: user?.features?.iotAccess && loc_id !== undefined,
+    enabled: iotAccess && loc_id !== undefined,
   });
 };
 

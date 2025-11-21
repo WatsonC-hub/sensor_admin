@@ -30,7 +30,7 @@ type Action = {action: string; label: string};
 
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogProps) => {
   const {ts_id} = useAppContext(['ts_id']);
-  const user = useUser();
+  const {superUser} = useUser();
 
   let unitEndSchema;
 
@@ -51,14 +51,14 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
     enddate: dayjs(),
   });
 
-  if (!user?.superUser) {
+  if (!superUser) {
     unitEndSchema = unitEndSchema.omit({
       change_reason: true,
       action: true,
     });
   }
 
-  if (user?.superUser) {
+  if (superUser) {
     unitEndSchema = unitEndSchema.refine(
       (data) => 'change_reason' in data && data.change_reason !== undefined,
       {
@@ -84,7 +84,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       const {data} = await apiClient.get(`/sensor_field/stamdata/change-reasons`);
       return data;
     },
-    enabled: user?.superUser,
+    enabled: superUser,
     staleTime: 1000 * 60 * 60,
   });
 
@@ -94,7 +94,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       const {data} = await apiClient.get(`/sensor_field/stamdata/unit-actions/${unit?.uuid}`);
       return data;
     },
-    enabled: user?.superUser && !!unit?.uuid,
+    enabled: superUser && !!unit?.uuid,
     staleTime: 1000 * 60 * 60,
   });
 
@@ -126,7 +126,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
         <FormProvider {...formMethods}>
           <FormDateTime name="enddate" label="Fra" required minDate={dayjs(unit?.startdato)} />
 
-          {user?.superUser && (
+          {superUser && (
             <>
               <FormInput
                 name="change_reason"
