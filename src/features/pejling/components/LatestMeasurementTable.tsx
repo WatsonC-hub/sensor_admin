@@ -28,10 +28,7 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
     () => [
       {
         header: 'Dato',
-        id: 'timeofmeas',
-        accessorFn: (row) => {
-          splitTimeFromDate(row.timeofmeas);
-        },
+        accessorKey: 'timeofmeas',
         sortingFn: (a, b) => (a.original.timeofmeas > b.original.timeofmeas ? 1 : -1),
         size: 80,
         Cell: ({row}) => {
@@ -47,7 +44,7 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
       },
       {
         header: 'Rå værdi',
-        id: 'rawMeasurement',
+        accessorKey: 'rawMeasurement',
         Cell: ({row}) => {
           return (
             <>
@@ -66,7 +63,7 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
       },
       {
         header: 'Værdi',
-        id: 'measurement',
+        accessorKey: 'measurement',
         size: 90,
         Cell: ({row}) => {
           return (
@@ -95,9 +92,10 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
     enableColumnActions: false,
     enableColumnFilters: false,
     enablePagination: false,
-    enableSorting: true,
+    enableSorting: false,
     enableTableFooter: false,
     enableStickyHeader: false,
+
     enableGlobalFilterRankedResults: false,
     muiTableContainerProps: {},
     muiTableHeadCellProps: {sx: {m: 0, py: 0}},

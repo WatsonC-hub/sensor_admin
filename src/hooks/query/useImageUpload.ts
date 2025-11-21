@@ -1,4 +1,4 @@
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, MutationOptions} from '@tanstack/react-query';
 import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
@@ -18,7 +18,7 @@ type EditImageData = {
   imageurl?: string; // Assuming this property exists
 };
 
-type ImagePayload = {
+export type ImagePayload = {
   path: string | number;
   data: ImageData;
 };
@@ -28,7 +28,7 @@ type ImagePayloadEdit = {
   data: EditImageData;
 };
 
-const dataURLtoFile = (dataurl: string | ArrayBuffer | null, filename?: string) => {
+export const dataURLtoFile = (dataurl: string | ArrayBuffer | null, filename?: string) => {
   if (typeof dataurl !== 'string') {
     throw new Error('Invalid dataurl: must be a non-null string');
   }
@@ -45,55 +45,71 @@ const dataURLtoFile = (dataurl: string | ArrayBuffer | null, filename?: string) 
   return new File([u8arr], filename ?? '', {type: mime});
 };
 
-export const useImageUpload = (endpoint: string) => {
-  const post = useMutation({
-    mutationKey: ['image_post'],
-    mutationFn: async (mutation_data: ImagePayload) => {
-      const {path, data} = mutation_data;
-      const file = dataURLtoFile(data.uri);
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('comment', data.comment);
-      formData.append('public', data.public);
-      formData.append('date', data.date.toISOString());
-      const config = {
-        headers: {'Content-Type': 'multipart/form-data'},
-      };
+export const postImageMutationOptions = (
+  endpoint: string,
+  id?: string | number
+): MutationOptions<{endpoint: string; id: string | number}, unknown, ImagePayload> => ({
+  mutationKey: ['image_post', endpoint, id],
+  mutationFn: async (mutation_data: ImagePayload) => {
+    const {path, data} = mutation_data;
+    const file = dataURLtoFile(data.uri);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('comment', data.comment);
+    formData.append('public', data.public);
+    formData.append('date', JSON.parse(JSON.stringify(data.date)));
+    const config = {
+      headers: {'Content-Type': 'multipart/form-data'},
+    };
 
-      const {data: res} = await apiClient.post(
-        `/sensor_field/${endpoint}/image/${path}`,
-        formData,
-        config
-      );
-      return res;
-    },
+    const {data: res} = await apiClient.post(
+      `/sensor_field/${endpoint}/image/${path}`,
+      formData,
+      config
+    );
+    return res;
+  },
+  retryDelay: (attemptIndex: number) => Math.min(10000 * 2 ** attemptIndex, 30000),
+});
+
+export const putImageMutationOptions = (endpoint: string, id?: string | number) => ({
+  mutationKey: ['image_put', endpoint, id],
+  mutationFn: async (mutation_data: ImagePayloadEdit) => {
+    const {path, data} = mutation_data;
+    const {data: res} = await apiClient.put(`/sensor_field/${endpoint}/image/${path}`, data);
+    return res;
+  },
+  onSuccess: () => {
+    toast.success('Ændringerne er blevet gemt');
+  },
+});
+
+export const deleteImageMutationOptions = (endpoint: string, id?: string | number) => ({
+  mutationKey: ['image_del', endpoint, id],
+  mutationFn: async (mutation_data: ImagePayload) => {
+    const {path} = mutation_data;
+    const {data: res} = await apiClient.delete(`/sensor_field/${endpoint}/image/${path}`);
+    return res;
+  },
+});
+
+export const useImageUpload = (endpoint: string, id: string | number) => {
+  const post = useMutation({
+    ...postImageMutationOptions(endpoint, id),
     meta: {
       invalidates: [['register']],
     },
   });
 
   const put = useMutation({
-    mutationKey: ['image_put'],
-    mutationFn: async (mutation_data: ImagePayloadEdit) => {
-      const {path, data} = mutation_data;
-      const {data: res} = await apiClient.put(`/sensor_field/${endpoint}/image/${path}`, data);
-      return res;
-    },
-    onSuccess: () => {
-      toast.success('Ændringerne er blevet gemt');
-    },
+    ...putImageMutationOptions(endpoint, id),
     meta: {
       invalidates: [['register']],
     },
   });
 
   const del = useMutation({
-    mutationKey: ['image_del'],
-    mutationFn: async (mutation_data: ImagePayload) => {
-      const {path} = mutation_data;
-      const {data: res} = await apiClient.delete(`/sensor_field/${endpoint}/image/${path}`);
-      return res;
-    },
+    ...deleteImageMutationOptions(endpoint, id),
     meta: {
       invalidates: [['register']],
     },

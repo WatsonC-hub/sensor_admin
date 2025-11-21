@@ -5,24 +5,12 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
-import {useAppContext} from '~/state/contexts';
 import {Maalepunkt} from '~/types';
 
 interface MaalepunktBase {
   path: string;
   data?: any;
 }
-
-// type APIMaalepunkt = {
-//   startdate: string;
-//   enddate: string;
-//   elevation: number;
-//   mp_description: string;
-//   gid: number;
-//   ts_id: number;
-//   userid: string;
-//   display_name?: string;
-// };
 
 interface MaalepunktPost extends MaalepunktBase {
   data: {
@@ -70,7 +58,7 @@ const maalepunktDelOptions = {
   },
 };
 
-export const getMaalepunktOptions = (ts_id: number) =>
+export const getMaalepunktOptions = (ts_id: number | undefined) =>
   queryOptions<Array<Maalepunkt>, APIError>({
     queryKey: queryKeys.Timeseries.maalepunkt(ts_id),
     queryFn: async () => {
@@ -81,12 +69,10 @@ export const getMaalepunktOptions = (ts_id: number) =>
       return data;
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
-    enabled: ts_id !== null || ts_id !== undefined,
+    enabled: ts_id !== null && ts_id !== undefined,
   });
 
-export const useMaalepunkt = () => {
-  const {ts_id} = useAppContext(['ts_id']);
-
+export const useMaalepunkt = (ts_id: number | undefined) => {
   const get = useQuery(getMaalepunktOptions(ts_id));
 
   const post = useMutation({

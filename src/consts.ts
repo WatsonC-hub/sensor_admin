@@ -112,5 +112,6 @@ export const defaultDataToShow: DataToShow = {
   'Valide værdier': false,
   'Fjernet data': false,
   Rådata: false,
+  Jupiter: true,
   'Alarm linjer': false,
 };

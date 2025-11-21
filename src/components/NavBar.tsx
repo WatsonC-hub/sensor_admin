@@ -18,10 +18,9 @@ import {
   Typography,
 } from '@mui/material';
 
-import {matchQuery, useQueryClient} from '@tanstack/react-query';
+import {useQueryClient} from '@tanstack/react-query';
 import {useAtom} from 'jotai';
 import {useState, ReactNode, MouseEventHandler} from 'react';
-// import {useNavigate} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
@@ -34,11 +33,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import Button from './Button';
 import {useDisplayState} from '~/hooks/ui';
 import {useNavigate} from 'react-router-dom';
-import {userQueryOptions, useUser} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 import {toast} from 'react-toastify';
 import CaptureDialog from './CaptureDialog';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();
@@ -46,10 +46,8 @@ const LogOut = ({children}: {children?: ReactNode}) => {
 
   const handleLogout = async () => {
     await apiClient.get('/auth/logout/secure');
-    queryClient.removeQueries({
-      predicate: (query) => !matchQuery({queryKey: userQueryOptions.queryKey}, query),
-    });
-    await queryClient.invalidateQueries({queryKey: userQueryOptions.queryKey});
+    queryClient.setQueryData(queryKeys.user(), null);
+    queryClient.clear();
     home();
   };
 
@@ -321,7 +319,7 @@ const OwnTaskList = () => {
   } = useTasks();
 
   const task_list = tasks?.filter(
-    (task) => task.assigned_to === user?.user_id.toString() && task.status_id !== 2
+    (task) => task.assigned_to === user.user_id.toString() && task.status_id !== 2
   );
 
   return (

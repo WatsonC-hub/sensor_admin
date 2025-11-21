@@ -9,7 +9,6 @@ import {useAtomValue} from 'jotai';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {isEmptyObject} from '~/helpers/guardHelper';
 import dayjs, {Dayjs} from 'dayjs';
-import {Task} from '~/features/tasks/types';
 
 const searchValue = (value: any, search_string: string): boolean => {
   if (typeof value === 'string') {
@@ -40,30 +39,43 @@ const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string:
  * if keepLocationsWithoutNotifications is false it will hide locations without notifications - inactive locations included.
  */
 const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
-  if (data.loctype_id === 12) return filter.isSingleMeasurement;
-  if (filter.nyOpsætning) return data.no_unit && !data.inactive && !data.has_task;
+  const isNewInstallation =
+    data.not_serviced && data.inactive_new && !data.in_service && !data.has_task;
 
-  const customerServiceFilter = filter.showCustomerService == data.is_customer_service;
+  const isInactive = data.inactive_new && !data.not_serviced && !data.in_service;
+
+  if (filter.nyOpsætning) return isNewInstallation;
+  const customerServiceFilter = filter.showCustomerService === data.is_customer_service;
   const watsoncServiceFilter =
-    filter.showWatsonCService == !data.is_customer_service || data.is_customer_service === null;
+    filter.showWatsonCService === !data.is_customer_service || data.is_customer_service === null;
 
   const serviceFilter =
     (watsoncServiceFilter && customerServiceFilter) ||
     (filter.showCustomerService && filter.showWatsonCService);
 
-  const activeFilter = data.inactive != true ? true : filter.showInactive || data.has_task;
+  const hideSingleMeasurementsFilter =
+    data.in_service && data.inactive_new ? !filter.hideSingleMeasurements : true;
+
+  const activeFilter = isInactive
+    ? filter.showInactive ||
+      data.has_task ||
+      (data.notification_ids ? data.notification_ids.length > 0 : false)
+    : true;
+
   const keepLocationsWithoutNotifications =
     (!data.has_task || !data.due_date?.isBefore(dayjs().add(1, 'month'))) &&
     !data.itinerary_id &&
     data.flag === null &&
-    !data.no_unit
+    !data.not_serviced &&
+    !data.inactive_new
       ? !filter.hideLocationsWithoutNotifications
       : true;
+
   return (
     keepLocationsWithoutNotifications &&
     activeFilter &&
     serviceFilter &&
-    !filter.isSingleMeasurement
+    hideSingleMeasurementsFilter
   );
 };
 

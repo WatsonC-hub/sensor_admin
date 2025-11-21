@@ -31,11 +31,11 @@ const EditTimeseries = () => {
       );
       return out;
     },
-    onSuccess: () => {
-      toast.success('Tidsserie er opdateret');
-    },
     meta: {
       invalidates: [['metadata']],
+    },
+    onSuccess: () => {
+      toast.success('metadata gemt');
     },
   });
 
@@ -51,6 +51,7 @@ const EditTimeseries = () => {
     prefix: metadata?.prefix,
     sensor_depth_m: metadata?.sensor_depth_m,
     intakeno: metadata?.intakeno,
+    calypso_id: metadata?.timeseries_calypso_id ?? undefined,
   });
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({

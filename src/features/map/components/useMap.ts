@@ -73,7 +73,9 @@ const useMap = <TData extends object>(
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
   const {loc_id: selectedLocId} = useDisplayState((state) => state);
   const [type, setType] = useState<string>('parkering');
-  const user = useUser();
+  const {
+    features: {routesAndParking},
+  } = useUser();
   const [deleteTitle, setDeleteTitle] = useState<string>(
     'Er du sikker du vil slette denne parkering?'
   );
@@ -351,7 +353,7 @@ const useMap = <TData extends object>(
               const geo = L.geoJSON(route.geo_route, {
                 onEachFeature: function onEachFeature(feature, layer) {
                   layer.bindContextMenu({
-                    contextmenu: user?.features?.routesAndParking,
+                    contextmenu: routesAndParking,
                     contextmenuInheritItems: false,
                     contextmenuItems: [
                       {
@@ -420,7 +422,7 @@ const useMap = <TData extends object>(
           const coords = utm.convertUtmToLatLng(parking.x, parking.y, 32, 'N');
           if (typeof coords != 'object') return;
 
-          const parkingMenu = user?.features?.routesAndParking
+          const parkingMenu = routesAndParking
             ? [
                 {
                   text: 'Slet parkering',
@@ -463,7 +465,7 @@ const useMap = <TData extends object>(
           });
 
           parkingMarker.bindContextMenu({
-            contextmenu: user?.features?.routesAndParking,
+            contextmenu: routesAndParking,
             contextmenuInheritItems: false,
             contextmenuItems: [
               ...parkingMenu,

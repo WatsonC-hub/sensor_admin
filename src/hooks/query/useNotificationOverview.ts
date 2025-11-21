@@ -16,7 +16,10 @@ export interface MapOverview {
   parking_id: number | null;
   itinerary_id: string | null;
   no_unit: boolean;
-  inactive: boolean | null;
+  not_serviced: boolean;
+  inactive: boolean;
+  inactive_new: boolean;
+  in_service: boolean;
   is_customer_service: boolean | null;
   projectno: string | null;
   has_task: boolean;
@@ -45,13 +48,15 @@ type MapOverviewOptions<T> = Partial<
 >;
 
 export const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T>) => {
-  const user = useUser();
+  const {
+    features: {iotAccess},
+  } = useUser();
 
   return useQuery({
     ...mapOverviewOptions,
     ...options,
     select: options?.select as (data: MapOverview[]) => T,
-    enabled: user?.features?.iotAccess,
+    enabled: iotAccess,
   });
 };
 
@@ -67,7 +72,9 @@ interface TimeseriesStatus {
   has_task: boolean;
   due_date: string | null;
   no_unit: boolean;
-  inactive: boolean | null;
+  not_serviced: boolean;
+  inactive: boolean;
+  in_service: boolean;
   projectno: string | null;
   is_customer_service: boolean | null;
 }
@@ -85,10 +92,12 @@ export const timeseriesStatusOptions = (loc_id: number) =>
   });
 
 export const useTimeseriesStatus = (loc_id: number) => {
-  const user = useUser();
+  const {
+    features: {iotAccess},
+  } = useUser();
   return useQuery({
     ...timeseriesStatusOptions(loc_id),
-    enabled: user?.features?.iotAccess,
+    enabled: iotAccess,
   });
 };
 

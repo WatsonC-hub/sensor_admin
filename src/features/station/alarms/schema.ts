@@ -90,7 +90,4 @@ export const alarmsSchema = z.object({
 });
 
 export type AlarmsFormValues = z.infer<typeof alarmsSchema>;
-export type AlarmContactArrayFormValues = z.infer<typeof contactArray>;
-export type AlarmContactFormTypeArray = z.infer<typeof contactArray.shape.contacts>;
 export type AlarmContactFormType = z.infer<typeof alarmContactSchema>;
-export type AlarmNotificationArrayFormValues = z.infer<typeof alarmNotificationArray>;

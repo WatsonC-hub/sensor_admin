@@ -40,7 +40,7 @@ const getSchemaAndForm = <T extends FieldValues>(
   let selectedForm = DefaultLocationForm;
 
   switch (true) {
-    case loctype_id === -1:
+    case loctype_id === undefined:
       selectedSchema = baseLocationSchema;
       selectedForm = BaseLocationForm;
       break;
@@ -77,10 +77,10 @@ const useLocationForm = <T extends Record<string, any>>({
   context,
   initialLocTypeId = -1,
 }: useLocationFormProps<T>) => {
-  const user = useUser();
+  const {superUser} = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user?.superUser, context.loc_id);
+  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, superUser, context.loc_id);
 
   const {data, success} = schema.safeParse({
     ...defaultValues,

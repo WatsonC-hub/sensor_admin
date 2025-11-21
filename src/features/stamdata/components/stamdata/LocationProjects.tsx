@@ -26,7 +26,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
     get: {data: options},
   } = useLocationProject();
 
-  const user = useUser();
+  const {superUser} = useUser();
 
   const selectedValue = options?.find((option) => option.project_no == value) ?? null;
 
@@ -81,8 +81,8 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
                 },
               }}
               variant="outlined"
-              error={Boolean(error) && user?.superUser}
-              helperText={Boolean(error) && user?.superUser && error?.message}
+              error={Boolean(error) && superUser}
+              helperText={Boolean(error) && superUser && error?.message}
               label="Projektnummer"
               placeholder="Vælg projektnummer..."
               sx={{

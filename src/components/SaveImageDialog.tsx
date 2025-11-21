@@ -44,10 +44,9 @@ function SaveImageDialog({
 }: SaveImageDialogProps) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-
   const imageUrl = `/static/images/${activeImage.imageurl}`;
 
-  const {post: uploadImage, put: editImage} = useImageUpload(type);
+  const {post: uploadImage, put: editImage} = useImageUpload(type, id);
 
   function saveImage() {
     if (activeImage.gid === -1) {
@@ -61,15 +60,10 @@ function SaveImageDialog({
         },
       };
 
-      toast.promise(() => uploadImage.mutateAsync(payload), {
-        pending: 'Gemmer billede',
-        success: {
-          render() {
-            handleCloseSave();
-            return 'Billede gemt';
-          },
+      uploadImage.mutate(payload, {
+        onSuccess: () => {
+          toast.success('Billedet er uploadet');
         },
-        error: 'Der skete en fejl',
       });
     } else {
       const payload = {
@@ -83,10 +77,11 @@ function SaveImageDialog({
 
       editImage.mutateAsync(payload, {
         onSuccess: () => {
-          handleCloseSave();
+          toast.success('Billedet er opdateret');
         },
       });
     }
+    handleCloseSave();
   }
 
   return (

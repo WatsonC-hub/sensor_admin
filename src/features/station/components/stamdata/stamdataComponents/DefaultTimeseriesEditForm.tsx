@@ -28,6 +28,9 @@ const DefaultTimeseriesEditForm = ({size, loc_name}: Props) => {
       <Grid2 size={size} alignContent={'center'}>
         <StamdataTimeseries.TimeseriesID />
       </Grid2>
+      <Grid2 size={size}>
+        <StamdataTimeseries.ScanCalypsoLabel />
+      </Grid2>
     </Grid2>
   );
 };

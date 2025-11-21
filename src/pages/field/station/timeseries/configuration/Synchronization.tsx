@@ -6,7 +6,7 @@ import {z} from 'zod';
 import useSync from '~/features/station/components/stamdata/dmpSynkronisering/api/useSync';
 import {useTimeseriesData, useLocationData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
-import {Box, Grid2, MenuItem} from '@mui/material';
+import {Box, Grid2} from '@mui/material';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {useUser} from '~/features/auth/useUser';
 import TooltipWrapper from '~/components/TooltipWrapper';
@@ -146,34 +146,28 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
                 label="DMP"
                 disabled={sync_data?.sync_dmp}
                 onChangeCallback={(value) => {
-                  if (!value) trigger('owner_name');
+                  if (!value) trigger('owner_cvr');
                 }}
               />
               <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til DMP">
                 <Form.Input
                   select
-                  name="owner_name"
+                  name="owner_cvr"
                   label="Data ejer"
                   disabled={!syncDmp || sync_data?.sync_dmp}
+                  placeholder="Vælg data ejer"
+                  options={owners?.map((owner) => ({[owner.cvr]: owner.name + ` (${owner.cvr})`}))}
                   onChangeCallback={(value) => {
-                    const owner_name = (
+                    const owner_cvr = (
                       value as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
                     ).target.value;
-                    const cvr = owners?.find((owner) => owner.name === owner_name)?.cvr;
-                    if (cvr) {
-                      setValue('owner_cvr', parseInt(cvr));
+                    const owner = owners?.find((owner) => owner.cvr === owner_cvr);
+                    if (owner) {
+                      setValue('owner_cvr', parseInt(owner.cvr));
+                      setValue('owner_name', owner.name);
                     }
                   }}
-                >
-                  <MenuItem value="" disabled>
-                    Vælg data ejer
-                  </MenuItem>
-                  {owners?.map((owner) => (
-                    <MenuItem key={owner.cvr} value={owner.name}>
-                      {owner.name} ({owner.cvr})
-                    </MenuItem>
-                  ))}
-                </Form.Input>
+                />
               </TooltipWrapper>
             </>
           )}

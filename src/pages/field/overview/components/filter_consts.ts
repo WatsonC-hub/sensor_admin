@@ -11,8 +11,8 @@ interface Filter {
     showInactive: boolean;
     showCustomerService: boolean;
     showWatsonCService: boolean;
-    isSingleMeasurement: boolean;
     hideLocationsWithoutNotifications: boolean;
+    hideSingleMeasurements?: boolean;
     nyOpsætning: boolean;
   };
   notificationTypes: number[];
@@ -31,8 +31,8 @@ const defaultMapFilter = (superUser: boolean = false): Required<Filter> => ({
     showInactive: false,
     showCustomerService: !superUser,
     showWatsonCService: superUser,
-    isSingleMeasurement: false,
     hideLocationsWithoutNotifications: false,
+    hideSingleMeasurements: superUser,
     nyOpsætning: false,
   },
   notificationTypes: [],

@@ -11,6 +11,7 @@ const StationPageBoxLayout = ({children}: StationPageBoxLayoutProps) => {
   return (
     <Box
       key={'station-page-box-layout'}
+      id="station-page-box-layout"
       sx={{
         display: 'flex',
         flexDirection: 'column',

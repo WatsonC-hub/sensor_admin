@@ -5,19 +5,19 @@ import {useUser} from '~/features/auth/useUser';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 
-export type ServiceConfiguration = {
+type ServiceConfiguration = {
   controlsPerYear: number | null;
   isCustomerService: boolean | null;
   leadTime: number | null;
   // forvarselstid
 };
 
-export type ServiceConfigurationUpdate = {
+type ServiceConfigurationUpdate = {
   controls_per_year?: number | null;
   lead_time?: number | null;
 };
 
-export const timeseriesServiceIntervalOptions = (ts_id: number) =>
+const timeseriesServiceIntervalOptions = (ts_id: number) =>
   queryOptions<ServiceConfiguration, APIError>({
     queryKey: queryKeys.Timeseries.ServiceInterval(ts_id!),
     queryFn: async () => {
@@ -30,10 +30,12 @@ export const timeseriesServiceIntervalOptions = (ts_id: number) =>
   });
 
 export const useTimeseriesServiceInterval = (ts_id: number) => {
-  const user = useUser();
+  const {
+    features: {iotAccess},
+  } = useUser();
   return useQuery({
     ...timeseriesServiceIntervalOptions(ts_id),
-    enabled: user?.features?.iotAccess && ts_id !== undefined,
+    enabled: iotAccess && ts_id !== undefined,
   });
 };
 

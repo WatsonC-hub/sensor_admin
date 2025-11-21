@@ -11,7 +11,7 @@ const OwnTaskList = () => {
   const parentRef = useRef<HTMLDivElement>(null);
   const insertionDirection = useRef<'forward' | 'backward'>('forward');
   const getScrollElement = useCallback(() => parentRef.current, []);
-  const user = useUser();
+  const {user_id} = useUser();
   const {
     get: {data: tasks},
   } = useTasks();
@@ -22,11 +22,8 @@ const OwnTaskList = () => {
   );
 
   const own_task_list = useMemo(
-    () =>
-      tasks?.filter(
-        (task) => task.assigned_to === user?.user_id.toString() && task.status_id !== 2
-      ),
-    [tasks, user]
+    () => tasks?.filter((task) => task.assigned_to === user_id.toString() && task.status_id !== 2),
+    [tasks, user_id]
   );
 
   const virtualizer = useVirtualizer({

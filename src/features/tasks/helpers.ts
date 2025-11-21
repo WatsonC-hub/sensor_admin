@@ -9,10 +9,6 @@ export const isSimpleTask = (task: Task) => {
   );
 };
 
-export function easeInOutQuint(t: number) {
-  return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
-}
-
 export const createSmoothScrollToFn = (
   getScrollElement: () => HTMLElement | null,
   duration: number = 1000

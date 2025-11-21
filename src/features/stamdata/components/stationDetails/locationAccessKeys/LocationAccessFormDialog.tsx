@@ -1,4 +1,4 @@
-import {Box, Collapse, Grid, MenuItem, Typography} from '@mui/material';
+import {Box, Collapse, Grid, Typography} from '@mui/material';
 import React, {useEffect, useMemo, useState} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 
@@ -50,18 +50,14 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
       );
     }
     return merged_data;
-  }, [data, location_access_id]);
+  }, [data, location_access_id, createNew]);
 
   useEffect(() => {
-    if (
-      merged_data?.find((c) => c.id === contact_id) ||
-      selectedContactInfo == null ||
-      selectedContactInfo.id !== contact_id
-    ) {
+    if (selectedContactInfo == null || selectedContactInfo.id !== contact_id) {
       const contact = merged_data?.find((c) => c.id === contact_id) ?? null;
       setSearch(contact ? contact.name : '');
     }
-  }, [merged_data]);
+  }, [contact_id, createNew]);
 
   return (
     <Box>
@@ -74,7 +70,8 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                 if (createNew) {
                   reset(initialLocationAccessData);
                   setValue('id', -1);
-                }
+                } else setSelectedContactInfo(null);
+
                 if (setCreateNew) setCreateNew(!createNew);
               }}
             >
@@ -91,21 +88,11 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                   label="Type"
                   placeholder="Vælg en type..."
                   select
+                  options={[{Kode: AccessType.Code}, {Nøgle: AccessType.Key}]}
                   required
-                  slotProps={{
-                    select: {
-                      renderValue: (selected) => {
-                        if (selected === '') return 'Vælg en type';
-                        return selected as string;
-                      },
-                    },
-                  }}
                   fullWidth
                   disabled={location_access_id !== -1 && editMode !== false}
-                >
-                  <MenuItem value={AccessType.Code}>Kode</MenuItem>
-                  <MenuItem value={AccessType.Key}>Nøgle</MenuItem>
-                </FormInput>
+                />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Controller

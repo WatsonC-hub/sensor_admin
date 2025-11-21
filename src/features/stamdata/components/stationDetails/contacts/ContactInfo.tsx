@@ -21,7 +21,9 @@ const ContactInfo = () => {
   const {del: deleteContact, put: editContact} = useContactInfo(loc_id);
   const {location_permissions} = usePermissions(loc_id);
 
-  const user = useUser();
+  const {
+    features: {contacts},
+  } = useUser();
 
   const formMethods = useForm({
     resolver: zodResolver(contact_info),
@@ -78,7 +80,7 @@ const ContactInfo = () => {
       <FabWrapper
         icon={<PersonAddIcon />}
         text="Tilføj kontakt"
-        disabled={!user?.features?.contacts || location_permissions !== 'edit'}
+        disabled={!contacts || location_permissions !== 'edit'}
         onClick={() => {
           reset(initialContactData);
           setOpenContactInfoDialog(true);

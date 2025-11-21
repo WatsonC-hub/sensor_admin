@@ -17,16 +17,14 @@ export const findBorehole = async (boreholeno: string | undefined | null) => {
 };
 
 const boreholeSearchOptions = (boreholeno: string | undefined | null) => {
-  const user = useUser();
+  const {
+    features: {boreholeAccess},
+  } = useUser();
   return queryOptions({
     queryKey: queryKeys.Borehole.findBorehole(boreholeno),
     queryFn: () => findBorehole(boreholeno),
     staleTime: 10 * 1000,
-    enabled:
-      boreholeno !== undefined &&
-      boreholeno !== null &&
-      boreholeno !== '' &&
-      user?.features?.boreholeAccess,
+    enabled: boreholeno !== undefined && boreholeno !== null && boreholeno !== '' && boreholeAccess,
   });
 };
 

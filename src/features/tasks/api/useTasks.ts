@@ -128,7 +128,10 @@ export const useTasks = () => {
   const queryClient = useQueryClient();
 
   const [setSelectedTask] = useDisplayState((state) => [state.setSelectedTask]);
-  const user = useUser();
+  const {
+    features: {iotAccess},
+    simpleTaskPermission,
+  } = useUser();
 
   const get = useQuery<Array<TaskAPI>, APIError, Task[]>({
     queryKey: queryKeys.Tasks.all(),
@@ -225,7 +228,7 @@ export const useTasks = () => {
       return data;
     },
     staleTime: 1000 * 60 * 60,
-    enabled: user?.simpleTaskPermission && user?.features.iotAccess,
+    enabled: simpleTaskPermission && iotAccess,
   });
 
   const getStatus = useQuery<TaskStatus[], APIError>({
@@ -236,7 +239,7 @@ export const useTasks = () => {
       return data;
     },
     staleTime: 1000 * 60 * 60,
-    enabled: user?.simpleTaskPermission && user?.features.iotAccess,
+    enabled: simpleTaskPermission && iotAccess,
   });
 
   const deleteTaskFromItinerary = useMutation({

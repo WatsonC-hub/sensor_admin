@@ -65,13 +65,15 @@ const Map = ({clickCallback}: MapProps) => {
   // const {hiddenTasks, shownTasks} = useTaskStore();
   // const selectedStyle = useAtomValue<TaskStyling>(taskStyleAtom);
 
-  const user = useUser();
+  const {
+    features: {iotAccess, routesAndParking},
+  } = useUser();
 
   const {data, mapFilteredData: filteredData, setExtraData} = useFilteredMapData();
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
-  if (user?.features?.iotAccess)
+  if (iotAccess)
     contextmenuItems.push(
       {
         text: 'Opret ny lokation',
@@ -169,7 +171,7 @@ const Map = ({clickCallback}: MapProps) => {
       },
     ];
 
-    if (user?.features.routesAndParking) {
+    if (routesAndParking) {
       locationMenu = [
         ...locationMenu,
         {

@@ -6,7 +6,7 @@ import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {APIError} from '~/queryClient';
 
-export type MeasureSampleSend = {
+type MeasureSampleSend = {
   sampleInterval: number;
   sendInterval: number;
 };
@@ -34,11 +34,12 @@ export const timeseriesMeasureSampleSendOptions = (ts_id: number) =>
 
 export const useTimeseriesMeasureSampleSend = (ts_id: number) => {
   const {data: timeseriesData} = useTimeseriesData(ts_id);
-  const user = useUser();
+  const {
+    features: {iotAccess},
+  } = useUser();
   return useQuery({
     ...timeseriesMeasureSampleSendOptions(ts_id),
-    enabled:
-      user?.features?.iotAccess && ts_id !== undefined && timeseriesData?.calculated === false,
+    enabled: iotAccess && ts_id !== undefined && timeseriesData?.calculated === false,
   });
 };
 

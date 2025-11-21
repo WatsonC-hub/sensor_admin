@@ -35,7 +35,7 @@ type Props = {
 const TaskListItemAdvancedCard = ({task}: Props) => {
   const [showAllComments, setShowAllComments] = useState<boolean>(false);
   const {station} = useNavigationFunctions();
-  const user = useUser();
+  const {superUser} = useUser();
   const {
     patch: updateTask,
     getUsers: {data: taskUsers},
@@ -159,7 +159,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                     {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
                     <Box>{task.name}</Box>
                   </Link>
-                  {!task.is_created && task.sla && user?.superUser && (
+                  {!task.is_created && task.sla && superUser && (
                     <Typography
                       mt={-0.5}
                       fontStyle={'italic'}

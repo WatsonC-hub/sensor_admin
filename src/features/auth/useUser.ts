@@ -3,6 +3,7 @@ import {useQuery, queryOptions} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {TaskPermission} from '../tasks/types';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 type User = {
   user_id: number;
@@ -11,7 +12,7 @@ type User = {
   features: Features;
 };
 
-export type Features = {
+type Features = {
   iotAccess: boolean;
   boreholeAccess: boolean;
   tasks: TaskPermission;
@@ -20,6 +21,24 @@ export type Features = {
   ressources: boolean;
   routesAndParking: boolean;
   alarms: boolean;
+};
+
+const defaultUser: UserAccessControl = {
+  user_id: -1,
+  org_id: null,
+  superUser: false,
+  features: {
+    iotAccess: false,
+    boreholeAccess: false,
+    tasks: TaskPermission.none,
+    contacts: false,
+    keys: false,
+    ressources: false,
+    routesAndParking: false,
+    alarms: false,
+  },
+  advancedTaskPermission: false,
+  simpleTaskPermission: false,
 };
 
 export const userQueryOptions = queryOptions({
@@ -35,20 +54,21 @@ export const userQueryOptions = queryOptions({
 });
 
 export const useUser = () => {
-  const {data, isError} = useQuery(userQueryOptions);
+  const {data} = useQuery(userQueryOptions);
+  useNavigationFunctions();
 
-  return data && !isError
-    ? ({
-        ...data,
-        advancedTaskPermission: data?.features?.tasks === TaskPermission.advanced,
-        simpleTaskPermission:
-          data?.features?.tasks === TaskPermission.simple ||
-          data?.features?.tasks === TaskPermission.advanced,
-      } as UserAccessControl)
-    : null;
+  if (!data) return defaultUser;
+
+  return {
+    ...data,
+    advancedTaskPermission: data?.features?.tasks === TaskPermission.advanced,
+    simpleTaskPermission:
+      data?.features?.tasks === TaskPermission.simple ||
+      data?.features?.tasks === TaskPermission.advanced,
+  } as UserAccessControl;
 };
 
-export type UserAccessControl = User & {
+type UserAccessControl = User & {
   superUser: boolean;
   advancedTaskPermission: boolean;
   simpleTaskPermission: boolean;

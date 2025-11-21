@@ -18,7 +18,7 @@ function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props)
   } = useImages(typeId, imageType, type);
 
   const endpoint = type === 'borehole' ? 'borehole' : 'station';
-  const {del: deleteImage} = useImageUpload(endpoint);
+  const {del: deleteImage} = useImageUpload(endpoint, typeId);
 
   if (error) {
     return;
@@ -30,7 +30,15 @@ function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props)
     setShowForm(true);
   };
 
-  return <ImageViewer deleteMutation={deleteImage} handleEdit={handleEdit} images={images} />;
+  return (
+    <ImageViewer
+      deleteMutation={deleteImage}
+      handleEdit={handleEdit}
+      images={images}
+      type={endpoint}
+      id={typeId}
+    />
+  );
 }
 
 export default Images;

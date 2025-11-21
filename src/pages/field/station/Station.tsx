@@ -34,13 +34,17 @@ import EditTimeseries from './stamdata/EditTimeseries';
 import Alarms from './alarms/Alarms';
 import TimeseriesConfiguration from './timeseries/configuration/Configuration';
 import LocationConfiguration from './location/Configuration';
+import AppContextProvider from '~/helpers/AppContextProvider';
 
 export default function Station() {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData();
   const [, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
-  const user = useUser();
+  const {
+    features: {iotAccess, contacts, keys: accessKeys, ressources},
+    superUser,
+  } = useUser();
 
   useEffect(() => {
     if (
@@ -55,45 +59,69 @@ export default function Station() {
     setShowForm(null);
   }, [ts_id, pageToShow]);
 
+  {
+    /* Makes sure that if the location we are accessing has boreholeno and intakeno, then it adds these to the context so that we later can access them */
+  }
   return (
-    <Layout>
-      {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling key={ts_id} />}
-      {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn key={ts_id} />}
-      {pageToShow === stationPages.GENERELTUDSTYR && (
-        <>
-          <Box key={`graph-${ts_id}`}>
-            <GraphManager />
-          </Box>
-          <Divider />
-          <StationPageBoxLayout key={`unit-${ts_id}`}>
-            <EditUnit />
+    <AppContextProvider
+      values={{
+        boreholeno: metadata?.boreholeno ?? undefined,
+        intakeno: metadata?.intakeno ?? undefined,
+      }}
+    >
+      <Layout>
+        {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling key={ts_id} />}
+        {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn key={ts_id} />}
+        {pageToShow === stationPages.GENERELTUDSTYR && (
+          <>
+            <Box key={`graph-${ts_id}`}>
+              <GraphManager />
+            </Box>
+            <Divider />
+            <StationPageBoxLayout key={`unit-${ts_id}`}>
+              <EditUnit />
+            </StationPageBoxLayout>
+          </>
+        )}
+        {pageToShow === stationPages.GENERELTLOKATION && (
+          <StationPageBoxLayout key={`location-${loc_id}`}>
+            <EditLocation />
           </StationPageBoxLayout>
-        </>
-      )}
-      {pageToShow === stationPages.GENERELTLOKATION && (
-        <StationPageBoxLayout key={`location-${loc_id}`}>
-          <EditLocation />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.GENERELTIDSSERIE && (
-        <StationPageBoxLayout key={`timeseries-${ts_id}`}>
-          <EditTimeseries />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.TIDSSERIEKONFIGURATION && (
-        <StationPageBoxLayout>
-          <TimeseriesConfiguration />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && (
-        <Algorithms key={`algorithms-${ts_id}`} />
-      )}
-      {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && (
-        <QAHistory key={`justeringer-${ts_id}`} />
-      )}
-      {pageToShow === stationPages.MAALEPUNKT &&
-        metadata?.tstype_id === 1 &&
-        metadata.calculated === false && (
+        )}
+        {pageToShow === stationPages.GENERELTIDSSERIE && (
+          <StationPageBoxLayout key={`timeseries-${ts_id}`}>
+            <EditTimeseries />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.TIDSSERIEKONFIGURATION && (
+          <StationPageBoxLayout>
+            <TimeseriesConfiguration />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.ALGORITHMS && iotAccess && (
+          <Algorithms key={`algorithms-${ts_id}`} />
+        )}
+        {pageToShow === stationPages.JUSTERINGER && iotAccess && (
+          <QAHistory key={`justeringer-${ts_id}`} />
+        )}
+        {pageToShow === stationPages.MAALEPUNKT &&
+          metadata?.tstype_id === 1 &&
+          metadata.calculated === false && (
+            <>
+              <Box key={`graph-${ts_id}`}>
+                <GraphManager
+                  defaultDataToShow={{
+                    Kontrolmålinger: true,
+                  }}
+                />
+              </Box>
+              <Divider />
+              <StationPageBoxLayout key={`timeseries-${ts_id}`}>
+                <ReferenceForm />
+              </StationPageBoxLayout>
+            </>
+          )}
+        {pageToShow === stationPages.ALARM && superUser && (
           <>
             <Box key={`graph-${ts_id}`}>
               <GraphManager
@@ -103,52 +131,38 @@ export default function Station() {
               />
             </Box>
             <Divider />
-            <StationPageBoxLayout key={`timeseries-${ts_id}`}>
-              <ReferenceForm />
+            <StationPageBoxLayout key={`alarm-${ts_id}`}>
+              <Alarms />
             </StationPageBoxLayout>
           </>
         )}
-      {pageToShow === stationPages.ALARM && user?.superUser && (
-        <>
-          <Box key={`graph-${ts_id}`}>
-            <GraphManager
-              defaultDataToShow={{
-                Kontrolmålinger: true,
-              }}
-            />
-          </Box>
-          <Divider />
-          <StationPageBoxLayout key={`alarm-${ts_id}`}>
-            <Alarms />
+        {pageToShow === stationPages.NØGLER && accessKeys && (
+          <StationPageBoxLayout key={loc_id}>
+            <LocationAccess />
           </StationPageBoxLayout>
-        </>
-      )}
-      {pageToShow === stationPages.NØGLER && user?.features?.keys && (
-        <StationPageBoxLayout key={loc_id}>
-          <LocationAccess />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.KONTAKTER && user?.features?.contacts && (
-        <StationPageBoxLayout key={loc_id}>
-          <ContactInfo />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.HUSKELISTE && user?.features?.ressources && (
-        <StationPageBoxLayout key={loc_id}>
-          <Huskeliste />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.BILLEDER && (
-        <StationPageBoxLayout key={loc_id}>
-          <ImagePage />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.LOKATIONKONFIGURATION && user?.superUser && (
-        <StationPageBoxLayout>
-          <LocationConfiguration />
-        </StationPageBoxLayout>
-      )}
-    </Layout>
+        )}
+        {pageToShow === stationPages.KONTAKTER && contacts && (
+          <StationPageBoxLayout key={loc_id}>
+            <ContactInfo />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.HUSKELISTE && ressources && (
+          <StationPageBoxLayout key={loc_id}>
+            <Huskeliste />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.BILLEDER && (
+          <StationPageBoxLayout key={loc_id}>
+            <ImagePage />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.LOKATIONKONFIGURATION && superUser && (
+          <StationPageBoxLayout>
+            <LocationConfiguration />
+          </StationPageBoxLayout>
+        )}
+      </Layout>
+    </AppContextProvider>
   );
 }
 
@@ -220,10 +234,11 @@ const Layout = ({children}: LayoutProps) => {
       >
         <StationDrawer />
         <Box
+          key={'main_content'}
+          id={'main_content'}
           display="flex"
           flexGrow={1}
           minWidth={0}
-          gap={1}
           flexDirection={'column'}
           overflow="auto"
         >

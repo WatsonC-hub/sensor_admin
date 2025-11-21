@@ -78,11 +78,11 @@ function Droppable({id, children, color}: {id: string; children: ReactNode; colo
 const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
-  const user = useUser();
+  const {user_id} = useUser();
   const {
     get: {data},
   } = useTaskItinerary(undefined, {
-    select: (itineraries) => selectData(itineraries, user?.user_id),
+    select: (itineraries) => selectData(itineraries, user_id),
   });
 
   const [openItineraryDialog, setOpenItineraryDialog] = useState<string | undefined>(undefined);

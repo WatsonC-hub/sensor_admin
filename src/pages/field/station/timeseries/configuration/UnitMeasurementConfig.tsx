@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, Typography, TextField, InputAdornment, Alert, MenuItem} from '@mui/material';
+import {Box, Typography, TextField, InputAdornment, Alert} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
@@ -19,6 +19,7 @@ import {APIError} from '~/queryClient';
 import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useUser} from '~/features/auth/useUser';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import dayjs from 'dayjs';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
@@ -51,11 +52,7 @@ const getOptions = (sampleInterval: number | undefined) => {
 
     const label = convertMinutesToTime(interval) + ` (${value} målinger)`;
 
-    return (
-      <MenuItem key={interval} value={interval}>
-        {label}
-      </MenuItem>
-    );
+    return {[interval]: label};
   });
 };
 
@@ -67,9 +64,9 @@ const UnitMeasurementConfig = () => {
     select: (data) => data.find((loc) => loc.loc_id === loc_id),
   });
   const {mutate} = useTimeseriesMeasureSampleSendMutation(ts_id);
-  const [options, setOptions] = useState<React.ReactNode[]>([]);
+  const [options, setOptions] = useState<Array<Record<number, string>>>([]);
   const {isMobile} = useBreakpoints();
-  const user = useUser();
+  const {superUser} = useUser();
   const values = data?.savedConfig ? data.savedConfig : undefined;
 
   const formMethods = useForm<ConfigForm, unknown, ConfigSubmit>({
@@ -96,6 +93,14 @@ const UnitMeasurementConfig = () => {
     return (
       <Alert severity="info">
         Det er ikke muligt at ændre måle- og sendeforhold på beregnede tidsserier.
+      </Alert>
+    );
+  }
+
+  if (dayjs(timeseriesData?.slutdato).isBefore(dayjs())) {
+    return (
+      <Alert severity="info">
+        Det er ikke muligt at ændre måle- og sendeforhold på inaktive tidsserier.
       </Alert>
     );
   }
@@ -208,8 +213,8 @@ const UnitMeasurementConfig = () => {
           }}
           disabled={
             !data?.configPossible ||
-            (currentLocation?.is_customer_service && user?.superUser) ||
-            (!currentLocation?.is_customer_service && !user?.superUser)
+            (currentLocation?.is_customer_service && superUser) ||
+            (!currentLocation?.is_customer_service && !superUser)
           }
           slotProps={{
             input: {
@@ -227,9 +232,11 @@ const UnitMeasurementConfig = () => {
           disabled={
             !data?.configPossible ||
             options.length === 0 ||
-            (currentLocation?.is_customer_service && user?.superUser) ||
-            (!currentLocation?.is_customer_service && !user?.superUser)
+            (currentLocation?.is_customer_service && superUser) ||
+            (!currentLocation?.is_customer_service && !superUser)
           }
+          options={options}
+          keyType="number"
           SelectProps={{
             MenuProps: {
               sx: {
@@ -242,9 +249,7 @@ const UnitMeasurementConfig = () => {
               startAdornment: <InputAdornment position="start">hver</InputAdornment>,
             },
           }}
-        >
-          {options}
-        </FormInput>
+        />
       </Box>
 
       <Typography variant="body2" color="textSecondary" sx={{mt: 1, mb: 2}}>

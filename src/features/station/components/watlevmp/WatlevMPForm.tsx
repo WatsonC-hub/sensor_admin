@@ -22,7 +22,7 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
     formState: {defaultValues},
   } = formMethods;
 
-  const {post: postWatlevmp, put: putWatlevmp} = useMaalepunkt();
+  const {post: postWatlevmp, put: putWatlevmp} = useMaalepunkt(ts_id);
 
   const handleMaalepunktSubmit = (values: WatlevMPFormValues) => {
     console.log('Submitting WatlevMPForm with values:', values);
