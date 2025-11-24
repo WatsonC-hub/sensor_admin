@@ -15,6 +15,7 @@ import {
 } from '~/consts';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
 import {usePejling} from '~/features/pejling/api/usePejling';
+import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
@@ -88,6 +89,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       side: 'right',
     },
   };
+
+  const {data: unitHistory} = useUnitHistory();
 
   const hideJupiterIfNotRelevant =
     dataToShowSelected.Jupiter === undefined &&
@@ -210,8 +213,16 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const {data: jupiterData} = useQuery({
     queryKey: queryKeys.Borehole.jupiterData(boreholeno, intakeno),
     queryFn: async () => {
+      const params = {
+        startdato:
+          unitHistory && unitHistory.length > 1
+            ? unitHistory[unitHistory.length - 1].startdato
+            : timeseries_data?.startdato,
+      };
+
       const {data} = await apiClient.get<JupiterData>(
-        `/sensor_field/borehole/jupiter/measurements/${boreholeno}/${intakeno}`
+        `/sensor_field/borehole/jupiter/measurements/${boreholeno}/${intakeno}`,
+        {params}
       );
       return data;
     },
@@ -246,6 +257,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       line: {width: 2},
       mode: 'lines+markers',
       marker: {symbol: '100', size: 8},
+      uid: `jupiter-situation-${situation}`,
     };
     return trace;
   });
@@ -260,6 +272,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     type: 'scattergl',
     mode: 'markers',
     marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
+    uid: 'calypso-data',
   };
 
   const borehole_data: Array<Partial<PlotData>> = [...jupiterTraces, plotOurData];
