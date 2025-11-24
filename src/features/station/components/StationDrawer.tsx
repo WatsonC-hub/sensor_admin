@@ -92,7 +92,10 @@ const StationDrawer = () => {
   const {isTouch} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
   const {data: locationdata} = useLocationData();
-  const user = useUser();
+  const {
+    superUser,
+    features: {iotAccess, alarms, contacts, keys: accessKeys, ressources},
+  } = useUser();
   const {createStamdata} = useNavigationFunctions();
 
   const handlePrefetch = <TData extends object, TError extends Error>(
@@ -182,7 +185,7 @@ const StationDrawer = () => {
           page: stationPages.JUSTERINGER,
           icon: <QueryStatsIcon />,
           requiredTsId: true,
-          disabled: !user?.features?.iotAccess || metadata?.calculated,
+          disabled: !iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getQAHistoryOptions(ts_id!)),
           tooltip:
             'På denne side kan du kvalitetssikre din tidsserie ved blandt andet at justere data, fjerne data og se historik for ændringer.',
@@ -192,7 +195,7 @@ const StationDrawer = () => {
           page: stationPages.ALGORITHMS,
           icon: <FunctionsIcon />,
           requiredTsId: true,
-          disabled: !user?.features?.iotAccess,
+          disabled: !iotAccess,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id!)),
           tooltip: 'På denne side kan du justere advarsler for din tidsserie.',
         },
@@ -202,7 +205,7 @@ const StationDrawer = () => {
           icon: <AlarmIcon />,
           requiredTsId: true,
           onHover: () => handlePrefetch(alarmGetOptions(ts_id)),
-          disabled: !user?.features?.alarms,
+          disabled: !alarms,
         },
         {
           text: 'Konfiguration',
@@ -245,7 +248,7 @@ const StationDrawer = () => {
           page: stationPages.KONTAKTER,
           icon: <PersonIcon />,
           requiredTsId: false,
-          disabled: !user?.features.contacts,
+          disabled: !contacts,
           onHover: () => handlePrefetch(ContactInfoGetOptions(loc_id)),
         },
         {
@@ -253,7 +256,7 @@ const StationDrawer = () => {
           page: stationPages.NØGLER,
           icon: <KeyIcon />,
           requiredTsId: false,
-          disabled: !user?.features.keys,
+          disabled: !accessKeys,
           onHover: () => handlePrefetch(LocationAccessGetOptions(loc_id)),
         },
         {
@@ -261,7 +264,7 @@ const StationDrawer = () => {
           page: stationPages.HUSKELISTE,
           icon: <BackpackIcon />,
           requiredTsId: false,
-          disabled: !user?.features.ressources,
+          disabled: !ressources,
           onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
         },
         {
@@ -269,7 +272,7 @@ const StationDrawer = () => {
           page: stationPages.LOKATIONKONFIGURATION,
           icon: <Settings />,
           requiredTsId: false,
-          disabled: !user?.superUser,
+          disabled: !superUser,
           // tooltip:
           //   'På denne side kan du konfigurere din lokation, såsom at ændre måleinterval eller sendeinterval.',
         },

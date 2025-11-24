@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, Typography, TextField, InputAdornment, Alert, MenuItem} from '@mui/material';
+import {Box, Typography, TextField, InputAdornment, Alert} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
@@ -52,11 +52,7 @@ const getOptions = (sampleInterval: number | undefined) => {
 
     const label = convertMinutesToTime(interval) + ` (${value} målinger)`;
 
-    return (
-      <MenuItem key={interval} value={interval}>
-        {label}
-      </MenuItem>
-    );
+    return {[interval]: label};
   });
 };
 
@@ -68,9 +64,9 @@ const UnitMeasurementConfig = () => {
     select: (data) => data.find((loc) => loc.loc_id === loc_id),
   });
   const {mutate} = useTimeseriesMeasureSampleSendMutation(ts_id);
-  const [options, setOptions] = useState<React.ReactNode[]>([]);
+  const [options, setOptions] = useState<Array<Record<number, string>>>([]);
   const {isMobile} = useBreakpoints();
-  const user = useUser();
+  const {superUser} = useUser();
   const values = data?.savedConfig ? data.savedConfig : undefined;
 
   const formMethods = useForm<ConfigForm, unknown, ConfigSubmit>({
@@ -217,8 +213,8 @@ const UnitMeasurementConfig = () => {
           }}
           disabled={
             !data?.configPossible ||
-            (currentLocation?.is_customer_service && user?.superUser) ||
-            (!currentLocation?.is_customer_service && !user?.superUser)
+            (currentLocation?.is_customer_service && superUser) ||
+            (!currentLocation?.is_customer_service && !superUser)
           }
           slotProps={{
             input: {
@@ -236,9 +232,11 @@ const UnitMeasurementConfig = () => {
           disabled={
             !data?.configPossible ||
             options.length === 0 ||
-            (currentLocation?.is_customer_service && user?.superUser) ||
-            (!currentLocation?.is_customer_service && !user?.superUser)
+            (currentLocation?.is_customer_service && superUser) ||
+            (!currentLocation?.is_customer_service && !superUser)
           }
+          options={options}
+          keyType="number"
           SelectProps={{
             MenuProps: {
               sx: {
@@ -251,9 +249,7 @@ const UnitMeasurementConfig = () => {
               startAdornment: <InputAdornment position="start">hver</InputAdornment>,
             },
           }}
-        >
-          {options}
-        </FormInput>
+        />
       </Box>
 
       <Typography variant="body2" color="textSecondary" sx={{mt: 1, mb: 2}}>

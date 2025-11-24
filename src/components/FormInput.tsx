@@ -1,4 +1,4 @@
-import {Box, TextField, TextFieldProps} from '@mui/material';
+import {Box, MenuItem, TextField, TextFieldProps} from '@mui/material';
 import moment from 'moment';
 import {ChangeEvent, FocusEvent} from 'react';
 import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-form';
@@ -13,12 +13,13 @@ export type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & 
   onBlurCallback?: (value: FocusEvent<HTMLInputElement | HTMLTextAreaElement> | number) => void;
   type?: string;
   infoText?: string;
+  options?: Array<Record<string | number, string | number>>;
+  keyType?: 'string' | 'number';
 };
 
 const FormInput = <TFieldValues extends FieldValues>({
   name,
   warning,
-  children,
   rules,
   transform,
   onChangeCallback,
@@ -33,6 +34,8 @@ const FormInput = <TFieldValues extends FieldValues>({
   helperText,
   infoText,
   fullWidth = true,
+  options,
+  keyType = 'string',
   ...otherProps
 }: FormInputProps<TFieldValues>) => {
   const {
@@ -95,6 +98,24 @@ const FormInput = <TFieldValues extends FieldValues>({
                 select: {
                   displayEmpty: true,
                   ...slotProps?.select,
+                  renderValue: (selected) => {
+                    if (
+                      selected === '' ||
+                      selected === null ||
+                      selected === undefined ||
+                      selected === -1
+                    ) {
+                      return otherProps.placeholder ?? 'Vælg...';
+                    }
+                    if (selected === 'false' && name === 'block_on_location') return 'tidsserie';
+                    if (selected === 'true' && name === 'block_on_location') return 'lokation';
+
+                    const option = options?.find((option) => {
+                      const key = Object.keys(option)[0];
+                      return key == selected;
+                    });
+                    return option?.[selected as string | number];
+                  },
                 },
                 htmlInput: {
                   ...slotProps?.htmlInput,
@@ -162,7 +183,20 @@ const FormInput = <TFieldValues extends FieldValues>({
               error={!!errorMessage}
               helperText={errorMessage || warningMessage || (helperText ?? '')}
             >
-              {children}
+              {options !== undefined && options !== null && options.length > 0 ? (
+                options?.map((option) => {
+                  const key =
+                    keyType === 'number' ? Number(Object.keys(option)[0]) : Object.keys(option)[0];
+                  const value = option[key];
+                  return (
+                    <MenuItem key={key} value={key}>
+                      {value as string}
+                    </MenuItem>
+                  );
+                })
+              ) : (
+                <div></div>
+              )}
             </TextField>
           </Wrapper>
         );

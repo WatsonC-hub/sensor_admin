@@ -64,7 +64,6 @@ export default function PlotlyGraph({
   const unit = metadata?.unit;
   const plot = document.getElementById('graph');
   if (plot) Plotly.Plots.resize(plot);
-  // console.log('plot', Plotly.rezi);
   const [isOpen, setIsOpen] = useState(false);
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
   const [traceVisibility, setTraceVisibility] = useState<Record<string, boolean | 'legendonly'>>(
@@ -153,10 +152,10 @@ export default function PlotlyGraph({
   };
 
   const graphLayout = (type: string) => {
-    const flatArray = data
-      .filter((data) => data.yaxis != 'y2')
+    const flatArray = stableData
+      .filter((data) => data.yaxis != 'y2' || !(data.uid! in traceVisibility))
       .flatMap((array) => {
-        if (array.x == undefined) {
+        if (array.x == undefined || array.visible === false || array.visible === 'legendonly') {
           return [];
         }
         return array.x.length > 0 ? [array.x[0], array.x[array.x.length - 1]] : [];

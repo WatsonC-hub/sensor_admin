@@ -25,7 +25,7 @@ interface Props {
 export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const user = useUser();
+  const {org_id} = useUser();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -55,9 +55,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         accessorKey: 'organisationname',
         header: 'Organisation',
         Cell: ({row, renderedCellValue}) => (
-          <Typography>
-            {row.original.organisationid == user?.org_id ? renderedCellValue : '-'}
-          </Typography>
+          <Typography>{row.original.organisationid == org_id ? renderedCellValue : '-'}</Typography>
         ),
       },
       {
@@ -87,7 +85,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        disabled={disabled || row.original.organisationid != user?.org_id}
+        disabled={disabled || row.original.organisationid != org_id}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

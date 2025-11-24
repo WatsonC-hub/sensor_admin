@@ -1,9 +1,8 @@
 import {Box, CircularProgress, Grid2, Skeleton, Typography} from '@mui/material';
 import {MutationState, useMutationState} from '@tanstack/react-query';
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import ImageCard from '~/components/ImageCard';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {Image} from '~/types';
 import Button from './Button';
 import {ImagePayload} from '~/hooks/query/useImageUpload';
@@ -47,10 +46,31 @@ function downloadDataUri(dataUri: string, filename: string) {
 }
 
 function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewerProps) {
-  const {isTouch, isMobile} = useBreakpoints();
+  const [columns, setColumns] = React.useState(2);
+  const [size, setSize] = React.useState(480);
+  const [mobileRatio, setMobileRatio] = React.useState(false);
+  const boxLayout = document.getElementById('main_content');
+
   const image_cache = useMutationState<MutationState<unknown, unknown, ImagePayload>>({
     filters: {exact: true, mutationKey: ['image_post', type, id]},
   }).filter((m) => m.status === 'error' || m.status === 'pending');
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver((event) => {
+      const mobileRatio = event[0].contentRect.width < 650;
+      const size = mobileRatio ? 300 : 480;
+      setSize(size);
+      setMobileRatio(mobileRatio);
+
+      if (!mobileRatio && boxLayout && images.length > 2) {
+        setColumns(12 / Math.floor(boxLayout.clientWidth / size));
+      }
+    });
+
+    resizeObserver.observe(document.getElementById('main_content')!);
+
+    return () => resizeObserver.disconnect();
+  }, []);
 
   return (
     <Box
@@ -63,16 +83,16 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
         {image_cache.map((m, index) => (
           <Grid2
             key={`pending-${index}`}
-            size={isTouch ? 12 : 6}
+            size={mobileRatio ? 12 : columns}
             display={'flex'}
-            justifyContent={isTouch ? 'center' : index % 2 === 0 ? 'end' : 'start'}
+            justifyContent={'center'}
           >
             <Box
               display={'flex'}
               sx={{
                 position: 'relative',
-                width: isMobile ? '300px' : '480px',
-                height: isMobile ? '300px' : '480px',
+                width: size,
+                height: size,
                 borderRadius: 2,
               }}
             >
@@ -127,16 +147,20 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
           </Grid2>
         ))}
 
-        {images?.map((elem, index) => (
+        {images?.map((elem) => (
           <Grid2
             key={elem.gid}
             display={'flex'}
-            size={isTouch ? 12 : 6}
-            justifyContent={
-              isTouch ? 'center' : (index + image_cache.length) % 2 === 0 ? 'end' : 'start'
-            }
+            flexWrap={'wrap'}
+            size={mobileRatio || images.length + image_cache.length === 1 ? 12 : columns}
+            justifyContent={'center'}
           >
-            <ImageCard image={elem} deleteMutation={deleteMutation} handleEdit={handleEdit} />
+            <ImageCard
+              image={elem}
+              deleteMutation={deleteMutation}
+              handleEdit={handleEdit}
+              mobileSize={size}
+            />
           </Grid2>
         ))}
       </Grid2>

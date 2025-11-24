@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, FormControlLabel, MenuItem, Switch, TextFieldProps, Typography} from '@mui/material';
+import {Box, FormControlLabel, Switch, TextFieldProps, Typography} from '@mui/material';
 import React, {useEffect} from 'react';
 import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
@@ -160,20 +160,14 @@ const StatusSelect = ({disableClosedStatus = false, ...props}: StatusSelectProps
       select
       size="small"
       placeholder="Vælg status..."
+      options={task_status
+        ?.filter((item) => !(disableClosedStatus && item.category == 'closed'))
+        ?.map((status) => ({[status.id]: status.name}))}
+      keyType="number"
       fullWidth
       {...props}
       disabled={disabled || props.disabled}
-    >
-      {task_status
-        ?.filter((item) => !(disableClosedStatus && item.category == 'closed'))
-        .map((status) => {
-          return (
-            <MenuItem key={status.id} value={status.id}>
-              {status.name}
-            </MenuItem>
-          );
-        })}
-    </FormInput>
+    />
   );
 };
 
@@ -254,18 +248,11 @@ const AssignedToSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       select
       size="small"
       placeholder="Vælg ansvarlig..."
+      options={taskUsers?.map((user) => ({[user.id]: user.display_name}))}
       fullWidth
       {...props}
       disabled={disabled || props.disabled}
-    >
-      {taskUsers?.map((user) => {
-        return (
-          <MenuItem key={user.id} value={user.id}>
-            {user.display_name}
-          </MenuItem>
-        );
-      })}
-    </FormInput>
+    />
   );
 };
 
@@ -336,16 +323,10 @@ const BlockOnLocation = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       select
       size="small"
       placeholder="Vælg..."
+      options={[{false: 'tidsserie'}, {true: 'lokation'}]}
       {...props}
       disabled={disabled || props.disabled}
-    >
-      <MenuItem key={'bloker'} value={'false'}>
-        tidsserie
-      </MenuItem>
-      <MenuItem key={'bloker_alle'} value={'true'}>
-        lokation
-      </MenuItem>
-    </FormInput>
+    />
   );
 };
 
@@ -358,17 +339,19 @@ const BlockAll = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       name="block_all"
       select
       placeholder="Vælg..."
+      options={[
+        {
+          false:
+            !selectedTask || selectedTask?.blocks_notifications.length === 0
+              ? 'ingen'
+              : selectedTask?.name,
+        },
+        {true: 'alle'},
+      ]}
       size="small"
       {...props}
       disabled={disabled || props.disabled}
-    >
-      <MenuItem key={'bloker'} value={'false'}>
-        {selectedTask?.blocks_notifications.length === 0 ? 'ingen' : selectedTask?.name}
-      </MenuItem>
-      <MenuItem key={'bloker_alle'} value={'true'}>
-        alle
-      </MenuItem>
-    </FormInput>
+    />
   );
 };
 
@@ -383,17 +366,14 @@ const SelectTimeseries = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       size="small"
       placeholder="Vælg..."
       fullWidth
+      options={metadata?.timeseries.map((timeseries) => ({
+        [timeseries.ts_id]:
+          (timeseries.prefix ? timeseries.prefix + ' - ' : '') + ' ' + timeseries.tstype_name,
+      }))}
+      keyType="number"
       {...props}
       disabled={disabled || props.disabled}
-    >
-      {metadata?.timeseries?.map((timeseries) => {
-        return (
-          <MenuItem key={timeseries.ts_id} value={timeseries.ts_id}>
-            {(timeseries.prefix ? timeseries.prefix + ' - ' : '') + ' ' + timeseries.tstype_name}
-          </MenuItem>
-        );
-      })}
-    </FormInput>
+    />
   );
 };
 

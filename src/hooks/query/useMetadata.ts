@@ -33,6 +33,7 @@ type Metadata = {
   unit: string;
   prefix: string | null;
   unit_uuid: string | null;
+  startdato: string | null;
   slutdato: string | null;
   timeseries_calypso_id: number | null;
 };

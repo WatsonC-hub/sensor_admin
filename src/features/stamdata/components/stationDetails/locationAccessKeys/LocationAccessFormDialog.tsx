@@ -1,4 +1,4 @@
-import {Box, Collapse, Grid, MenuItem, Typography} from '@mui/material';
+import {Box, Collapse, Grid, Typography} from '@mui/material';
 import React, {useEffect, useMemo, useState} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 
@@ -88,21 +88,11 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                   label="Type"
                   placeholder="Vælg en type..."
                   select
+                  options={[{Kode: AccessType.Code}, {Nøgle: AccessType.Key}]}
                   required
-                  slotProps={{
-                    select: {
-                      renderValue: (selected) => {
-                        if (selected === '') return 'Vælg en type';
-                        return selected as string;
-                      },
-                    },
-                  }}
                   fullWidth
                   disabled={location_access_id !== -1 && editMode !== false}
-                >
-                  <MenuItem value={AccessType.Code}>Kode</MenuItem>
-                  <MenuItem value={AccessType.Key}>Nøgle</MenuItem>
-                </FormInput>
+                />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Controller
