@@ -28,7 +28,7 @@ const EditLocation = () => {
   const [, setPage] = useStationPages();
   const {loc_id} = useAppContext(['loc_id']);
   const [assertDeletion, setAssertDeletion] = React.useState(false);
-  const del = useDeleteLocation();
+  const mutation = useDeleteLocation();
   const {data: metadata} = useLocationData();
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
@@ -133,9 +133,10 @@ const EditLocation = () => {
         open={assertDeletion}
         description="Sletter du lokationen, vil alle tilknyttede nøgler, kontakter, huskeliste og billeder også blive slettet. Denne handling kan ikke fortrydes."
         onClose={() => setAssertDeletion(false)}
+        isPending={mutation.isPending}
         onDelete={() => {
           const payload = {path: loc_id};
-          del.mutate(payload, {
+          mutation.mutate(payload, {
             onSuccess: () => {
               setAssertDeletion(false);
               setLocId(null);
