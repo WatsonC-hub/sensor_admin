@@ -61,6 +61,11 @@ export const queryKeys = {
       ['intake_list', 'register', boreholeno] as const,
     jupiterData: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
       ['jupiter_waterlevel', 'register', boreholeno, intakeno] as const,
+    jupiterDataWithStartDate: (
+      boreholeno: string | undefined | null,
+      intakeno: number | undefined,
+      startdato: string | null
+    ) => ['jupiter_waterlevel', 'register', boreholeno, intakeno, startdato] as const,
     measurementsWithIntake: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
       ['measurements', 'register', boreholeno, intakeno] as const,
     measurements: (boreholeno: string | undefined | null) =>
