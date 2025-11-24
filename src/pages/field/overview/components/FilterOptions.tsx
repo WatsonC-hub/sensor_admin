@@ -19,7 +19,11 @@ interface FilterOptionsProps {
 }
 
 const FilterOptions = ({onClose}: FilterOptionsProps) => {
-  const user = useUser();
+  const {
+    superUser,
+    advancedTaskPermission,
+    features: {boreholeAccess, iotAccess},
+  } = useUser();
   const [filters, setMapFilter, setLocIds] = useMapFilterStore((state) => [
     state.filters,
     state.setFilters,
@@ -37,11 +41,11 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
 
   const resetFilters = () => {
     const mapFilter: Filter = {
-      ...defaultMapFilter(user?.superUser),
+      ...defaultMapFilter(superUser),
       sensor: {
-        ...defaultMapFilter(user?.superUser).sensor,
-        showCustomerService: user?.superUser ? false : true,
-        showWatsonCService: user?.superUser ? true : false,
+        ...defaultMapFilter(superUser).sensor,
+        showCustomerService: superUser ? false : true,
+        showWatsonCService: superUser ? true : false,
       },
     };
 
@@ -65,10 +69,10 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       /> */}
       {/* <Divider /> */}
       <Grid container spacing={0}>
-        {user?.features?.boreholeAccess && (
+        {boreholeAccess && (
           <Grid
             item
-            sm={user?.features?.iotAccess ? 6 : 12}
+            sm={iotAccess ? 6 : 12}
             display="flex"
             flexDirection="column"
             flexGrow={1}
@@ -105,10 +109,10 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             </TooltipWrapper>
           </Grid>
         )}
-        {user?.features?.iotAccess && (
+        {iotAccess && (
           <Grid
             item
-            sm={user?.features?.boreholeAccess ? 6 : 12}
+            sm={boreholeAccess ? 6 : 12}
             display="flex"
             flexDirection="column"
             flexGrow={1}
@@ -234,7 +238,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
         />
         {/* </TooltipWrapper> */}
       </Grid>
-      {user?.advancedTaskPermission && (
+      {advancedTaskPermission && (
         <Grid item xs={12}>
           <Controller
             name="itineraries"
@@ -252,7 +256,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
           />
         </Grid>
       )}
-      {user?.superUser && (
+      {superUser && (
         <Grid item xs={12}>
           <Controller
             name="projects"

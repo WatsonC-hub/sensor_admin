@@ -1,4 +1,4 @@
-import {MenuItem, InputAdornment, TextField, Box} from '@mui/material';
+import {InputAdornment, TextField, Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from '~/apiClient';
@@ -51,21 +51,20 @@ const TypeSelect = (
     refetchInterval: 1000 * 60 * 60 * 24, // Refetch every 24 hours
   });
 
-  const menuItems = timeseries_types
-    ?.filter((i) => i.tstype_id !== 0)
-    ?.map((item) => (
-      <MenuItem value={item.tstype_id} key={item.tstype_id}>
-        {item.tstype_name}
-      </MenuItem>
-    ));
-
   return (
-    <FormInput name="tstype_id" label="Tidsserietype" select required fullWidth {...props}>
-      <MenuItem disabled value={-1}>
-        Vælg type
-      </MenuItem>
-      {menuItems}
-    </FormInput>
+    <FormInput
+      name="tstype_id"
+      label="Tidsserietype"
+      select
+      placeholder="Vælg type"
+      options={timeseries_types
+        ?.filter((type) => type.tstype_id !== 0)
+        .map((type) => ({[type.tstype_id]: type.tstype_name}))}
+      keyType="number"
+      required
+      fullWidth
+      {...props}
+    />
   );
 };
 
@@ -116,19 +115,14 @@ const Intakeno = (
       label="Indtag"
       select
       required
-      disabled={props.disabled}
+      infoText="Vælg først et DGU nummer først"
+      disabled={props.disabled || !boreholeno}
+      placeholder="Vælg indtag"
+      options={intake_list?.map((item) => ({[item.intakeno]: item.intakeno}))}
+      keyType="number"
       fullWidth
       {...props}
-    >
-      <MenuItem disabled value={''}>
-        Vælg indtag
-      </MenuItem>
-      {intake_list?.map((item) => (
-        <MenuItem value={item.intakeno} key={item.intakeno}>
-          {item.intakeno}
-        </MenuItem>
-      ))}
-    </FormInput>
+    />
   );
 };
 

@@ -7,7 +7,6 @@ import {
   CardHeader,
   Checkbox,
   FormControlLabel,
-  MenuItem,
   Typography,
 } from '@mui/material';
 import React, {useEffect, useMemo, useState} from 'react';
@@ -222,14 +221,9 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
                       fullWidth
                       select
                       label={option.label}
+                      options={option.options?.map((opt) => ({[opt.value]: opt.label}))}
                       name={`parameters.${option.name}`}
-                    >
-                      {option.options?.map((opt) => (
-                        <MenuItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </MenuItem>
-                      ))}
-                    </FormInput>
+                    />
                   )}
                 </div>
               );

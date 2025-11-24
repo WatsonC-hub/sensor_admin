@@ -20,7 +20,7 @@ type Props = {
 const TaskListItemSimpleCard = ({task}: Props) => {
   const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
   const {station} = useNavigationFunctions();
-  const user = useUser();
+  const {superUser} = useUser();
   const defaultValues = useMemo(() => {
     if (!task) return;
     return {
@@ -97,7 +97,7 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                     {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
                     <Box>{task.name}</Box>
                   </Link>
-                  {task.sla && user?.superUser && (
+                  {task.sla && superUser && (
                     <Typography
                       mt={-0.5}
                       fontStyle={'italic'}

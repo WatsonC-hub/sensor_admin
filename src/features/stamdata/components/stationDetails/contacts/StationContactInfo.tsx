@@ -1,12 +1,5 @@
 import {Call, Email} from '@mui/icons-material';
-import {
-  MenuItem,
-  Grid,
-  InputAdornment,
-  IconButton,
-  Checkbox,
-  FormControlLabel,
-} from '@mui/material';
+import {Grid, InputAdornment, IconButton, Checkbox, FormControlLabel} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
@@ -123,20 +116,12 @@ export default function StationContactInfo({
         <FormInput
           name="contact_role"
           label="Rolle"
-          placeholder="Hvilken rolle har kontakten..."
+          placeholder="Vælg rolle..."
           disabled={tableModal}
-          slotProps={{
-            select: {
-              renderValue: (selected) => {
-                if (!selected) {
-                  return 'Vælg rolle';
-                }
-                return contactRoles?.find((role) => role.id === (selected as number))?.name;
-              },
-            },
-          }}
           required
           select
+          options={contactRoles?.map((role) => ({[role.id]: role.name}))}
+          keyType="number"
           fullWidth
           onChangeCallback={(value) => {
             if (typeof value == 'number') return;
@@ -155,13 +140,7 @@ export default function StationContactInfo({
               setValue('contact_type', undefined);
             }
           }}
-        >
-          {contactRoles?.map((role) => (
-            <MenuItem key={role.id} value={role.id}>
-              {role.name}
-            </MenuItem>
-          ))}
-        </FormInput>
+        />
       </Grid>
       <Grid item xs={12} sm={6}>
         <FormInput
@@ -170,22 +149,10 @@ export default function StationContactInfo({
           placeholder="Tilknyt..."
           disabled={tableModal}
           select
-          slotProps={{
-            select: {
-              renderValue: (selected) => {
-                if (!selected) {
-                  return 'Vælg type';
-                }
-                return selected as string;
-              },
-            },
-          }}
+          options={[{Lokation: ContactInfoType.Lokation}, {Projekt: ContactInfoType.Projekt}]}
           required
           fullWidth
-        >
-          <MenuItem value={ContactInfoType.Lokation}>Lokation</MenuItem>
-          <MenuItem value={ContactInfoType.Projekt}>Projekt</MenuItem>
-        </FormInput>
+        />
       </Grid>
       <Grid item xs={12} sm={6}>
         <Controller

@@ -2,33 +2,6 @@ export type AlarmNotificationType = {
   id: number;
 };
 
-type AlarmContact = {
-  contact_id: string;
-  name: string;
-  sms: boolean;
-  sms_to: string | undefined;
-  sms_from: string | undefined;
-  email: boolean;
-  email_to: string | undefined;
-  email_from: string | undefined;
-  call: boolean;
-  call_to: string | undefined;
-  call_from: string | undefined;
-};
-
-type AlarmContactPost = {
-  contact_id: string | undefined;
-  sms: boolean;
-  sms_to: string | undefined;
-  sms_from: string | undefined;
-  email: boolean;
-  email_to: string | undefined;
-  email_from: string | undefined;
-  call: boolean;
-  call_to: string | undefined;
-  call_from: string | undefined;
-};
-
 export type ContactTable = {
   contact_id: string;
   name: string;

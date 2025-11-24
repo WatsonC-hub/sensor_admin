@@ -12,7 +12,6 @@ import {toast} from 'react-toastify';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {Image} from '~/types';
 
 import GenericCard from './GenericCard';
@@ -23,16 +22,16 @@ type ImageCardProps = {
   image: Image;
   deleteMutation: UseMutationResult;
   handleEdit: (image: Image) => void;
+  mobileSize: number;
 };
 
-function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
+function ImageCard({image, deleteMutation, handleEdit, mobileSize}: ImageCardProps) {
   const {loc_id, boreholeno} = useAppContext([], ['loc_id', 'boreholeno']);
   const {
     location_permissions,
     borehole_permission_query: {data: permissions},
   } = usePermissions(loc_id);
-  const {isMobile} = useBreakpoints();
-  const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 480}&height=${isMobile ? 300 : 480}`;
+  const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${mobileSize}&height=${mobileSize}`;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -58,11 +57,10 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
     <GenericCard
       sx={{
         display: 'flex',
-        justifyContent: 'center',
         flexDirection: 'column ',
         borderRadius: 5,
         minWidth: 0,
-        width: isMobile ? '300px' : '480px',
+        maxWidth: mobileSize,
       }}
       key={image.gid.toString()}
     >
@@ -75,8 +73,8 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
       <CardMedia
         sx={{
           margin: 'auto',
-          height: isMobile ? '300px' : '480px',
-          width: isMobile ? '300px' : '480px',
+          maxWidth: mobileSize,
+          maxHeight: mobileSize,
         }}
       >
         <div
