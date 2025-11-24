@@ -9,7 +9,9 @@ import {BoreholeMapData} from '~/types';
 export const useBoreholeMap = <TData = BoreholeMapData[]>(
   select?: (data: BoreholeMapData[]) => TData
 ) => {
-  const user = useUser();
+  const {
+    features: {boreholeAccess},
+  } = useUser();
 
   const query = useQuery({
     queryKey: queryKeys.boreholeMap(),
@@ -18,7 +20,7 @@ export const useBoreholeMap = <TData = BoreholeMapData[]>(
       return data;
     },
     staleTime: 10 * 1000,
-    enabled: user?.features?.boreholeAccess,
+    enabled: boreholeAccess,
     select,
   });
   return query;

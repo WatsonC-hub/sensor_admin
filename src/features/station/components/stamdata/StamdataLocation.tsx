@@ -1,4 +1,4 @@
-import {MenuItem, Typography, InputAdornment, TextField} from '@mui/material';
+import {Typography, InputAdornment, TextField} from '@mui/material';
 import {RefetchOptions, useQuery} from '@tanstack/react-query';
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
@@ -100,7 +100,9 @@ const LoctypeSelect = (
   const {data} = useQuery({
     queryKey: queryKeys.locationTypes(),
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/stamdata/location_types`);
+      const {data} = await apiClient.get<Array<locationType>>(
+        `/sensor_field/stamdata/location_types`
+      );
       return data;
     },
     refetchOnWindowFocus: false,
@@ -108,24 +110,19 @@ const LoctypeSelect = (
 
   return (
     <>
-      <FormInput
-        name="loctype_id"
-        label="Lokationstype"
-        placeholder="Vælg type"
-        select
-        required
-        infoText="Lokationstypen kan betyde hvilke muligheder der er for at tilføje data til lokationen. F.eks. kan DGU boringer oprettes smartere og synkroniseres til GEUS."
-        {...props}
-      >
-        <MenuItem value={-1} key={-1}>
-          Vælg type
-        </MenuItem>
-        {data?.map((item: locationType) => (
-          <MenuItem value={item.loctype_id} key={item.loctype_id}>
-            {item.loctypename}
-          </MenuItem>
-        ))}
-      </FormInput>
+      {data && (
+        <FormInput
+          name="loctype_id"
+          label="Lokationstype"
+          placeholder="Vælg type"
+          select
+          options={data.map((item) => ({[item.loctype_id]: item.loctypename}))}
+          keyType="number"
+          required
+          infoText="Lokationstypen kan betyde hvilke muligheder der er for at tilføje data til lokationen. F.eks. kan DGU boringer oprettes smartere og synkroniseres til GEUS."
+          {...props}
+        />
+      )}
     </>
   );
 };
@@ -247,25 +244,16 @@ const TerrainQuality = (
       label="Type af terrænkote"
       select
       fullWidth
-      slotProps={{
-        select: {
-          displayEmpty: true,
-        },
-      }}
+      placeholder="Vælg type"
+      options={[{DTM: 'DTM'}, {dGPS: 'dGPS'}]}
+      keyType="string"
       onChangeCallback={(e) => {
         if ((e as ChangeEvent<HTMLTextAreaElement>).target.value === 'DTM') {
           refetchDTM();
         }
       }}
       {...props}
-    >
-      <MenuItem value="dGPS" key="dGPS">
-        dGPS
-      </MenuItem>
-      <MenuItem value="DTM" key="DTM">
-        DTM
-      </MenuItem>
-    </FormInput>
+    />
   );
 };
 
@@ -480,7 +468,7 @@ const InitialProjectNo = (
     'name'
   >
 ) => {
-  const user = useUser();
+  const {superUser} = useUser();
   const {control} = useFormContext<
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
@@ -502,7 +490,7 @@ const InitialProjectNo = (
           setValue={onChange}
           onBlur={onBlur}
           error={error}
-          disable={user?.superUser === false || props.disabled || disable}
+          disable={superUser === false || props.disabled || disable}
         />
       )}
     />

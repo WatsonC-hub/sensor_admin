@@ -30,10 +30,12 @@ const timeseriesServiceIntervalOptions = (ts_id: number) =>
   });
 
 export const useTimeseriesServiceInterval = (ts_id: number) => {
-  const user = useUser();
+  const {
+    features: {iotAccess},
+  } = useUser();
   return useQuery({
     ...timeseriesServiceIntervalOptions(ts_id),
-    enabled: user?.features?.iotAccess && ts_id !== undefined,
+    enabled: iotAccess && ts_id !== undefined,
   });
 };
 

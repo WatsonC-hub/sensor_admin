@@ -49,7 +49,9 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
   const {isMobile} = useBreakpoints();
-  const user = useUser();
+  const {
+    features: {keys: accessKeys},
+  } = useUser();
 
   const {get} = useLocationAccess(loc_id);
 
@@ -189,7 +191,7 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.id, setDialogOpen, setLocationAccessID);
         }}
-        disabled={!user?.features?.keys || disabled}
+        disabled={!accessKeys || disabled}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

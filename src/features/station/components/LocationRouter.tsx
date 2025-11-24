@@ -35,7 +35,9 @@ export default function LocationRouter() {
   const {createStamdata} = useNavigationFunctions();
   const [pageToShow] = useStationPages();
   const {data: metadata} = useLocationData();
-  const user = useUser();
+  const {
+    features: {contacts, keys: accessKeys, ressources},
+  } = useUser();
   if (metadata != undefined && metadata.timeseries.length > 0)
     metadata.timeseries.forEach((item) => {
       queryClient.prefetchQuery(metadataQueryOptions(item.ts_id));
@@ -79,9 +81,9 @@ export default function LocationRouter() {
           <EditLocation />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.KONTAKTER && user?.features?.contacts && <ContactInfo />}
-      {pageToShow === stationPages.HUSKELISTE && user?.features?.ressources && <Huskeliste />}
-      {pageToShow === stationPages.NØGLER && user?.features?.keys && <LocationAccess />}
+      {pageToShow === stationPages.KONTAKTER && contacts && <ContactInfo />}
+      {pageToShow === stationPages.HUSKELISTE && ressources && <Huskeliste />}
+      {pageToShow === stationPages.NØGLER && accessKeys && <LocationAccess />}
     </Layout>
   );
 }

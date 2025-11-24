@@ -11,7 +11,11 @@ import Overview from '~/features/tasks/components/Overview';
 
 const Home = () => {
   const {isMobile} = useBreakpoints();
-  const user = useUser();
+  const {
+    simpleTaskPermission,
+    advancedTaskPermission,
+    features: {iotAccess},
+  } = useUser();
   const {createStamdata} = useNavigationFunctions();
 
   return (
@@ -21,13 +25,14 @@ const Home = () => {
         {!isMobile && <NavBar.Title title="Field" />}
         <Box alignItems={'center'}>
           {isMobile && <NavBar.Scanner />}
-          {user?.simpleTaskPermission && <NavBar.OwnTaskList />}
+          {/* </TooltipWrapper> */}
+          {simpleTaskPermission && <NavBar.OwnTaskList />}
           <NavBar.LocationList />
-          {user?.advancedTaskPermission && <NavBar.TripList />}
+          {advancedTaskPermission && <NavBar.TripList />}
           <NavBar.Menu
             disableProfile={false}
             items={[
-              ...(user?.features?.iotAccess
+              ...(iotAccess
                 ? [
                     {
                       title: 'Opret lokation',

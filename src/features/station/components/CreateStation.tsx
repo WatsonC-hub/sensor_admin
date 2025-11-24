@@ -74,7 +74,7 @@ const CreateStation = () => {
 
   const defaultValues = {
     ...data,
-    loctype_id: 'loctype_id' in state ? state.loctype_id : -1,
+    loctype_id: 'loctype_id' in state ? state.loctype_id : undefined,
     initial_project_no: metadata?.projectno,
   } as Partial<DefaultAddLocation | BoreholeAddLocation>;
 
@@ -86,7 +86,7 @@ const CreateStation = () => {
     context: {
       loc_id: loc_id,
     },
-    initialLocTypeId: defaultValues.loctype_id ? defaultValues.loctype_id : -1,
+    initialLocTypeId: defaultValues.loctype_id ? defaultValues.loctype_id : undefined,
   });
 
   const {
@@ -101,14 +101,14 @@ const CreateStation = () => {
   const loctype_id = watchLocation('loctype_id');
   const boreholeno = watchLocation('boreholeno');
 
-  let timeseriesValues: {tstype_id: number; intakeno?: number} = {
-    tstype_id: -1,
+  let timeseriesValues: {tstype_id: number | undefined; intakeno?: number} = {
+    tstype_id: undefined,
   };
 
   if (loctype_id === 9) {
     timeseriesValues = {
       ...timeseriesValues,
-      intakeno: -1,
+      intakeno: undefined,
     };
   }
 
@@ -146,7 +146,7 @@ const CreateStation = () => {
         startdate: dayjs(data.startdate),
       } as LastJupiterMPData;
     },
-    enabled: !!boreholeno && !!intakeno && intakeno !== -1,
+    enabled: !!boreholeno && !!intakeno && intakeno !== undefined,
   });
 
   const unitFormMethods = useUnitForm<AddUnit>({
