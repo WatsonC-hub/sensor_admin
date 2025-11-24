@@ -9,6 +9,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import useDeleteTimeseries from '~/features/station/api/useDeleteTimeseries';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
@@ -28,6 +29,7 @@ const EditTimeseries = () => {
   const {data: metadata} = useTimeseriesData(ts_id);
   const mutation = useDeleteTimeseries();
   const [assertDeletion, setAssertDeletion] = React.useState(false);
+  const {superUser} = useUser();
 
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
@@ -116,14 +118,20 @@ const EditTimeseries = () => {
         </StamdataTimeseries>
 
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-          <TooltipWrapper
-            description="Slet tidsserien kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen"
-            withIcon={false}
-          >
-            <Button bttype="danger" startIcon={<Warning />} onClick={() => setAssertDeletion(true)}>
-              Slet tidsserie
-            </Button>
-          </TooltipWrapper>
+          {superUser && (
+            <TooltipWrapper
+              description="Slet tidsserien kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen"
+              withIcon={false}
+            >
+              <Button
+                bttype="danger"
+                startIcon={<Warning />}
+                onClick={() => setAssertDeletion(true)}
+              >
+                Slet tidsserie
+              </Button>
+            </TooltipWrapper>
+          )}
           <Button
             bttype="tertiary"
             onClick={() => {
