@@ -1,0 +1,135 @@
+import React, {useState} from 'react';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import useCreateStationContext from '../api/useCreateStationContext';
+import {ArrowBack, Save} from '@mui/icons-material';
+import {Grid2, Box} from '@mui/material';
+import Button from '~/components/Button';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useMutation} from '@tanstack/react-query';
+import {toast} from 'react-toastify';
+import {apiClient} from '~/apiClient';
+import {
+  DefaultAddLocation,
+  BoreholeAddLocation,
+  DefaultAddTimeseries,
+  BoreholeAddTimeseries,
+  AddUnit,
+  Watlevmp,
+} from '../../schema';
+import {useNavigate} from 'react-router-dom';
+import {useDisplayState} from '~/hooks/ui';
+import AlertDialog from '~/components/AlertDialog';
+
+type Props = {
+  onFormIsValid: () => Promise<boolean>;
+};
+
+const FormStepButtons = ({onFormIsValid}: Props) => {
+  const [showAlert, setShowAlert] = useState(false);
+  const [showLocationRouter, setShowLocationRouter] = useDisplayState((state) => [
+    state.showLocationRouter,
+    state.setShowLocationRouter,
+  ]);
+  const navigate = useNavigate();
+  const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
+
+  const {activeStep, setActiveStep, meta, formState, formErrors} = useCreateStationContext();
+  const {isMobile} = useBreakpoints();
+
+  const stamdataNewMutation = useMutation({
+    mutationFn: async (data: {
+      location: DefaultAddLocation | BoreholeAddLocation;
+      timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
+      unit: AddUnit;
+      watlevmp?: Watlevmp;
+    }) => {
+      const {data: out} = await apiClient.post(
+        `/sensor_field/stamdata/create_station/${meta?.loc_id ?? -1}`,
+        data
+      );
+      return out;
+    },
+    onSuccess: (data) => {
+      toast.success(
+        data.loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
+      );
+      navigate('/');
+      locationNavigate(data.loc_id);
+      stationNavigate(data.ts_id);
+      if (showLocationRouter) setShowLocationRouter(false);
+    },
+    meta: {
+      invalidates: [['metadata']],
+    },
+  });
+
+  return (
+    <Grid2 size={12} sx={{display: 'flex', justifyContent: 'end'}} gap={0.5} pr={0.5}>
+      <Box sx={{flex: '1 1 auto'}} />
+      <Button
+        bttype="primary"
+        color="inherit"
+        startIcon={!isMobile && <ArrowBack />}
+        disabled={activeStep === 0}
+        onClick={async () => {
+          const formValid = await onFormIsValid();
+          if (formValid) {
+            setActiveStep(activeStep - 1);
+          }
+        }}
+        sx={{mr: 1}}
+      >
+        {isMobile && <ArrowBack />}
+        {!isMobile && 'Tilbage'}
+      </Button>
+      <Button
+        bttype="primary"
+        disabled={activeStep === 2}
+        endIcon={!isMobile && <ArrowForwardIcon fontSize="small" />}
+        onClick={async () => {
+          const formValid = await onFormIsValid();
+          console.log('Form valid:', formValid);
+          if (formValid) {
+            setActiveStep(activeStep + 1);
+          }
+        }}
+        sx={{mr: 1}}
+      >
+        {isMobile && <ArrowForwardIcon fontSize="small" />}
+        {!isMobile && 'Næste'}
+      </Button>
+      <Button
+        bttype="primary"
+        startIcon={<Save />}
+        onClick={async () => {
+          const isStepValid = await onFormIsValid();
+          const formValid = Object.values(formErrors).every((error) => error !== true);
+          if (formValid && isStepValid) {
+            setShowAlert(true);
+          }
+        }}
+        disabled={meta?.loctype_id === -1 || (meta?.loc_id !== undefined && activeStep === 0)}
+      >
+        Gem & afslut
+      </Button>
+      <AlertDialog
+        open={showAlert}
+        setOpen={setShowAlert}
+        title="Færdiggør oprettelse"
+        message={
+          activeStep === 0
+            ? `Du er i gang med at oprette en lokation uden tidsserie og udstyr. Er du sikker på at du vil fortsætte?`
+            : activeStep === 1
+              ? `Du er i gang med at oprette en ${meta?.loc_id ? '' : 'lokation og'} tidsserie uden udstyr. Er du sikker på at du vil fortsætte?`
+              : `Du er i gang med at oprette udstyr. Er du sikker på at du vil fortsætte?`
+        }
+        handleOpret={() => {
+          stamdataNewMutation.mutate(formState);
+        }}
+      />
+    </Grid2>
+  );
+};
+
+export default FormStepButtons;

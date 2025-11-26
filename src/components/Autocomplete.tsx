@@ -17,6 +17,7 @@ export type AutoCompleteFieldProps<T extends object, M extends boolean = false> 
 > & {
   selectValue: M extends true ? T[] : T | null;
   onChange: (value: M extends true ? T[] : T | null) => void;
+  onChangeCallback?: (value: M extends true ? T[] : T | null) => void;
   labelKey: keyof T;
   options: T[];
   error?: string | undefined;
@@ -33,6 +34,7 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
   textFieldsProps,
   fieldDescriptionText,
   onInputChange,
+  onChangeCallback,
   inputValue,
   ...autocompleteProps
 }: AutoCompleteFieldProps<T, M>): React.ReactElement => {
@@ -43,6 +45,10 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
       options={options}
       onChange={(event, newValue) => {
         onChange(newValue);
+
+        if (onChangeCallback) {
+          onChangeCallback(newValue);
+        }
       }}
       fullWidth
       selectOnFocus

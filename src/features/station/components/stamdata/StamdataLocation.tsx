@@ -323,7 +323,6 @@ const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
           <>
             {loctype_id === 9 && (
               <ExtendedAutocomplete<Borehole>
-                {...props}
                 options={filteredOptions ?? []}
                 labelKey="boreholeno"
                 onChange={async (option) => {
@@ -400,6 +399,7 @@ const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
 
                   return searchValue;
                 }}
+                {...props}
               />
             )}
           </>
