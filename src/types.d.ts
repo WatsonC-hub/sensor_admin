@@ -433,7 +433,7 @@ export type DataToShow = {
   'Fjernet data': boolean;
   Rådata: boolean;
   Jupiter: boolean;
-  'Alarm linjer': boolean;
+  'Alarm niveauer': boolean;
 };
 
 type HorizontalLine = {
