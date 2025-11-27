@@ -12,10 +12,11 @@ import FormDateTime from '~/components/FormDateTime';
 
 interface UnitFormProps {
   mode: string;
+  tstype_id?: number;
 }
 
-export default function UnitForm({mode}: UnitFormProps) {
-  const {watch} = useFormContext();
+export default function UnitForm({mode, tstype_id}: UnitFormProps) {
+  const {watch, reset} = useFormContext();
   const editMode = mode === 'edit';
 
   const {loc_id} = useAppContext([], ['loc_id']);
@@ -35,6 +36,10 @@ export default function UnitForm({mode}: UnitFormProps) {
     unit = history?.find((u) => u.uuid === unit_uuid);
   } else {
     unit = availableUnits?.find((u) => u.unit_uuid === unit_uuid);
+  }
+
+  if (unit && 'sensortypeid' in unit && tstype_id && unit.sensortypeid !== tstype_id) {
+    reset();
   }
 
   return (

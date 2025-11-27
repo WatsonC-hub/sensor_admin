@@ -35,7 +35,6 @@ const UnitStep = () => {
               let isValid = true;
               await handleSubmit(
                 (data) => {
-                  console.log(data);
                   onValidate('unit', data);
                 },
                 (e) => {

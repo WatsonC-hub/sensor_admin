@@ -15,6 +15,13 @@ type MetaType = {
   intakeno?: number;
 };
 
+type FormState = {
+  location?: any;
+  timeseries?: any;
+  watlevmp?: any;
+  unit?: any;
+};
+
 type CreateStationContextType = {
   meta: MetaType | null;
   setMeta: React.Dispatch<React.SetStateAction<MetaType | null>>;
@@ -64,13 +71,30 @@ const CreateStationContextProvider = ({children}: Props) => {
   };
 
   const [meta, setMeta] = React.useState<MetaType | null>(defaultMeta);
-  const [formState, setFormState] = React.useState(defaultFormState);
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [formState, setFormState] = React.useState<FormState>(defaultFormState);
+  const [activeStep, setActiveStep] = React.useState(loc_id ? 1 : 0);
   const [formErrors, setFormErrors] = React.useState<Record<string, any>>({});
 
-  const onValidate = (key: 'location' | 'timeseries' | 'watlevmp' | 'unit', data: any) => {
+  const onValidate = (
+    key: 'location' | 'timeseries' | 'watlevmp' | 'unit',
+    data: FormState[keyof FormState]
+  ) => {
     if (data) {
-      setFormState((prev: any) => ({...prev, [key]: data}));
+      if (key === 'timeseries' && data.tstype_id !== 1) {
+        setFormState((prev: FormState) => {
+          delete prev['watlevmp'];
+          return {...prev};
+        });
+      }
+
+      if (key === 'timeseries' && data.tstype_id !== formState.timeseries?.tstype_id) {
+        setFormState((prev: FormState) => {
+          delete prev['unit'];
+          return {...prev};
+        });
+      }
+
+      setFormState((prev: FormState) => ({...prev, [key]: data}));
     }
   };
 

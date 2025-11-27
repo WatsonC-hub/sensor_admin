@@ -34,7 +34,7 @@ const Unit = () => {
     <>
       <Box sx={{display: 'flex', alignItems: 'baseline', justifyContent: 'start'}}>
         <Button
-          disabled={tstype_id === -1}
+          disabled={tstype_id === undefined}
           bttype="primary"
           size="small"
           sx={{ml: 1}}
@@ -48,7 +48,7 @@ const Unit = () => {
           </Typography>
         )}
       </Box>
-      <UnitForm mode="normal" />
+      <UnitForm mode="normal" tstype_id={tstype_id} />
       <AddUnitForm
         mode="add"
         udstyrDialogOpen={udstyrDialogOpen}

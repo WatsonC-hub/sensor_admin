@@ -168,7 +168,7 @@ export default function AddUnitForm({
     setValue('startdate', dayjs(unitData.fra), {shouldDirty: true, shouldValidate: true});
 
     const isValid = await trigger();
-    console.log('isValid', isValid);
+    if (!isValid) return;
     setUdstyrDialogOpen(false);
     toast.success('Udstyr tilføjet til formularen');
   };

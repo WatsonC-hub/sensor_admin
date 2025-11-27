@@ -73,10 +73,8 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
         startIcon={!isMobile && <ArrowBack />}
         disabled={activeStep === 0}
         onClick={async () => {
-          const formValid = await onFormIsValid();
-          if (formValid) {
-            setActiveStep(activeStep - 1);
-          }
+          await onFormIsValid();
+          setActiveStep(activeStep - 1);
         }}
         sx={{mr: 1}}
       >
@@ -88,11 +86,8 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
         disabled={activeStep === 2}
         endIcon={!isMobile && <ArrowForwardIcon fontSize="small" />}
         onClick={async () => {
-          const formValid = await onFormIsValid();
-          console.log('Form valid:', formValid);
-          if (formValid) {
-            setActiveStep(activeStep + 1);
-          }
+          await onFormIsValid();
+          setActiveStep(activeStep + 1);
         }}
         sx={{mr: 1}}
       >
@@ -109,7 +104,11 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
             setShowAlert(true);
           }
         }}
-        disabled={meta?.loctype_id === -1 || (meta?.loc_id !== undefined && activeStep === 0)}
+        disabled={
+          meta?.loctype_id === -1 ||
+          (meta?.loc_id !== undefined && activeStep === 0) ||
+          Object.values(formErrors).some((error) => error === true)
+        }
       >
         Gem & afslut
       </Button>

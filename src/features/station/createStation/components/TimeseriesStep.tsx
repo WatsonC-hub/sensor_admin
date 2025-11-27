@@ -1,4 +1,4 @@
-import {Grid2} from '@mui/material';
+import {Box, Grid2, IconButton, Typography} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {FormProvider} from 'react-hook-form';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -18,8 +18,10 @@ import {
   LastJupiterMPAPI,
   LastJupiterMPData,
 } from '~/pages/field/boreholeno/components/LastJupiterMP';
+import {Add, Remove} from '@mui/icons-material';
 
 const TimeseriesStep = () => {
+  const [addMeasurement, setAddMeasurement] = useState(false);
   const [helperText, setHelperText] = useState('');
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
@@ -111,13 +113,6 @@ const TimeseriesStep = () => {
                     },
                   }}
                 />
-                <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
-                  <FormProvider {...watlevmpFormMethods}>
-                    <StamdataWatlevmp key={meta?.tstype_id} tstype_id={meta?.tstype_id}>
-                      <DefaultWatlevmpForm key={meta?.tstype_id} helperText={helperText} />
-                    </StamdataWatlevmp>
-                  </FormProvider>
-                </Grid2>
               </Grid2>
             </StamdataTimeseries>
           </FormProvider>
@@ -130,7 +125,6 @@ const TimeseriesStep = () => {
                     onValidate('watlevmp', data);
                   },
                   (e) => {
-                    console.log(e);
                     onValidate('watlevmp', null);
                     setFormErrors((prev) => ({
                       ...prev,
@@ -146,7 +140,6 @@ const TimeseriesStep = () => {
                   onValidate('timeseries', data);
                 },
                 (e) => {
-                  console.log(e);
                   onValidate('timeseries', null);
                   setFormErrors({
                     timeseries: Object.keys(e).length > 0,
@@ -159,6 +152,38 @@ const TimeseriesStep = () => {
               return isValid;
             }}
           />
+          {meta?.tstype_id === 1 && activeStep === 1 && (
+            <>
+              <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
+                <Typography variant="body2" color="textSecondary">
+                  Målepunkt
+                </Typography>
+                <IconButton size="small">
+                  {!addMeasurement && (
+                    <Add fontSize="small" onClick={() => setAddMeasurement(true)} />
+                  )}
+                  {addMeasurement && (
+                    <Remove
+                      fontSize="small"
+                      onClick={() => {
+                        setAddMeasurement(false);
+                        // resetWatlevmp();
+                      }}
+                    />
+                  )}
+                </IconButton>
+              </Box>
+              {addMeasurement && (
+                <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
+                  <FormProvider {...watlevmpFormMethods}>
+                    <StamdataWatlevmp tstype_id={meta?.tstype_id}>
+                      <DefaultWatlevmpForm helperText={helperText} />
+                    </StamdataWatlevmp>
+                  </FormProvider>
+                </Grid2>
+              )}
+            </>
+          )}
         </>
       )}
     </>
