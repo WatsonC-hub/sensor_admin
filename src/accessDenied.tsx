@@ -3,8 +3,8 @@ import React from 'react';
 import Button from './components/Button';
 import {apiClient} from './apiClient';
 import {queryClient} from './queryClient';
-import {userQueryOptions} from './features/auth/useUser';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
+import {queryKeys} from './helpers/QueryKeyFactoryHelper';
 
 type Props = {
   message: string;
@@ -30,8 +30,8 @@ const AccessDenied = (props: Props) => {
           bttype="tertiary"
           onClick={() => {
             apiClient.get('/auth/logout/secure');
+            queryClient.setQueryData(queryKeys.user(), null);
             queryClient.clear();
-            queryClient.fetchQuery(userQueryOptions);
             home();
           }}
         >

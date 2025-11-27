@@ -105,7 +105,9 @@ const Router = () => {
   ]);
 
   if (!user.features.iotAccess && !user.features.boreholeAccess) {
-    return <AccessDenied message="Der er manglende rettigheder til at tilgå denne side." />;
+    return (
+      <AccessDenied message="Du har hverken IoT-adgang eller adgang til pejleboringer. Kontakt venligst WatsonC, hvis du ønsker opsætning af IoT-stationer eller pejleboringer, eller hvis du mener, dette er en fejl" />
+    );
   }
 
   return (
