@@ -8,6 +8,7 @@ import {
   Edit,
   Router,
   Settings,
+  PriorityHigh,
 } from '@mui/icons-material';
 import AlarmIcon from '@mui/icons-material/Alarm';
 import {
@@ -53,6 +54,8 @@ import TooltipWrapper from '~/components/TooltipWrapper';
 import {timeseriesMeasureSampleSendOptions} from '../api/useTimeseriesMeasureSampleSend';
 import {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
 import {alarmGetOptions} from '../alarms/api/useAlarm';
+import ProgressLabel from './ProgressLabel';
+import {useProgress} from '~/hooks/query/stationProgress';
 
 const drawerWidth = 200;
 
@@ -65,6 +68,8 @@ type Item = {
   requiredTsId: boolean;
   disabled?: boolean;
   tooltip?: string;
+  progress?: number;
+  maxProgress?: number;
 };
 
 type DrawerItems = {
@@ -91,6 +96,8 @@ const StationDrawer = () => {
   const {isTouch} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
   const {data: locationdata} = useLocationData();
+  const {data: progress} = useProgress(ts_id);
+
   const {
     superUser,
     features: {iotAccess, alarms, contacts, keys: accessKeys, ressources},
@@ -158,6 +165,7 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.tstype_id != 1 || metadata?.calculated,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id!)),
+          progress: 0,
           // tooltip: 'På denne side kan du se og redigere målepunkter til din tidsserie.',
         },
         {
@@ -207,6 +215,8 @@ const StationDrawer = () => {
             }
             prefetchDmpAllowedMapList();
           },
+          progress: 0,
+          maxProgress: 2,
           tooltip:
             'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
         },
@@ -230,6 +240,7 @@ const StationDrawer = () => {
           icon: <PhotoLibraryRounded />,
           requiredTsId: false,
           onHover: () => handlePrefetch(getImageOptions(loc_id, 'images', 'station')),
+          progress: progress?.images == false ? 0 : undefined,
         },
 
         {
@@ -247,6 +258,7 @@ const StationDrawer = () => {
           requiredTsId: false,
           disabled: !accessKeys,
           onHover: () => handlePrefetch(LocationAccessGetOptions(loc_id)),
+          progress: progress?.adgangsforhold == false ? 0 : undefined,
         },
         {
           text: 'Huskeliste',
@@ -352,6 +364,8 @@ const StationDrawer = () => {
                     borderRadius: '9999px',
                     color: navIconStyle(pageToShow === item.page),
                     py: 0,
+                    pr: 0,
+                    justifyContent: 'space-between',
                   }}
                   onClick={() => {
                     setPageToShow(item.page);
@@ -368,6 +382,23 @@ const StationDrawer = () => {
                       {item.text}
                     </Wrapper>
                   </ListItemText>
+                  {item.progress != undefined && item.maxProgress != undefined && (
+                    <ProgressLabel value={item.progress} max={item.maxProgress} />
+                  )}
+                  {item.progress != undefined && !item.maxProgress && (
+                    <PriorityHigh color="secondary" />
+                  )}
+                  {/* <ListItemIcon
+                    sx={{
+                      color: navIconStyle(pageToShow === item.page),
+                      width: 24,
+                      py: 0,
+                      pr: 1,
+                      justifyContent: 'end',
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon> */}
                 </ListItemButton>
               </ListItem>
             );

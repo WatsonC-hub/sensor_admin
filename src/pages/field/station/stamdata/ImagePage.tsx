@@ -7,11 +7,12 @@ import Images from '~/components/Images';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 
 const ImagePage = () => {
-  const {loc_id} = useAppContext(['loc_id']);
+  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const fileInputRef = createRef<HTMLInputElement>();
   const [, setShowForm] = useShowFormState();
   const [dataUri, setdataUri] = useState<string | ArrayBuffer | null>('');
@@ -74,6 +75,7 @@ const ImagePage = () => {
           setShowForm={setShowForm}
         />
       </StationPageBoxLayout>
+      <UpdateProgressButton progressKey={'images'} ts_id={ts_id} />
       <FabWrapper
         icon={<AddAPhotoRounded />}
         text={'Tilføj billeder'}

@@ -131,4 +131,6 @@ export const queryKeys = {
   actions: (unit_uuid: string | undefined) => ['actions', unit_uuid] as const,
   cmdOptions: () => ['cmd_options'] as const,
   dmpAllowedMapList: () => ['dmp_allowed_map_list'] as const,
+  metadataProgress: (ts_id: number | undefined) =>
+    ['metadata_progress', 'register', 'metadata', ts_id] as const,
 };
