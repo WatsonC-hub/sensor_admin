@@ -60,11 +60,6 @@ const Map = ({clickCallback}: MapProps) => {
     state.setEditParkingLayer,
   ]);
 
-  // const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
-  // const user_id = authStore().user_id;
-  // const {hiddenTasks, shownTasks} = useTaskStore();
-  // const selectedStyle = useAtomValue<TaskStyling>(taskStyleAtom);
-
   const {
     features: {iotAccess, routesAndParking},
   } = useUser();
@@ -219,20 +214,6 @@ const Map = ({clickCallback}: MapProps) => {
       contextmenuInheritItems: false,
       contextmenuItems: [...locationMenu],
     });
-
-    // if (element.obsNotifications.length > 0) {
-    //   const smallMarker = L.circleMarker(point, {
-    //     ...defaultCircleMarkerStyle,
-    //     radius: defaultRadius + 4,
-    //     interactive: false,
-    //     fillOpacity: 1,
-    //     opacity: 1,
-    //     fillColor: getColor(element.obsNotifications[0]),
-    //   });
-    //   if (markerLayer) {
-    //     smallMarker.addTo(markerLayer);
-    //   }
-    // }
 
     return marker;
   };

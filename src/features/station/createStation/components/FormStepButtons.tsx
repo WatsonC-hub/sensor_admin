@@ -17,9 +17,10 @@ import {
   AddUnit,
   Watlevmp,
 } from '../../schema';
-import {useNavigate} from 'react-router-dom';
 import {useDisplayState} from '~/hooks/ui';
 import AlertDialog from '~/components/AlertDialog';
+import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
+import {ControlSettingsFormValues} from '~/features/configuration/api/useControlSettingsForm';
 
 type Props = {
   onFormIsValid: () => Promise<boolean>;
@@ -31,7 +32,6 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
     state.showLocationRouter,
     state.setShowLocationRouter,
   ]);
-  const navigate = useNavigate();
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
 
   const {activeStep, setActiveStep, meta, formState, formErrors} = useCreateStationContext();
@@ -40,9 +40,11 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
   const stamdataNewMutation = useMutation({
     mutationFn: async (data: {
       location: DefaultAddLocation | BoreholeAddLocation;
-      timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
-      unit: AddUnit;
+      timeseries?: DefaultAddTimeseries | BoreholeAddTimeseries;
+      unit?: AddUnit;
       watlevmp?: Watlevmp;
+      sync?: SyncFormValues;
+      controlSettings?: ControlSettingsFormValues;
     }) => {
       const {data: out} = await apiClient.post(
         `/sensor_field/stamdata/create_station/${meta?.loc_id ?? -1}`,
@@ -51,11 +53,8 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
       return out;
     },
     onSuccess: (data) => {
-      toast.success(
-        data.loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
-      );
-      navigate('/');
-      locationNavigate(data.loc_id);
+      toast.success('Station oprettet succesfuldt!');
+      locationNavigate(data.loc_id, true);
       stationNavigate(data.ts_id);
       if (showLocationRouter) setShowLocationRouter(false);
     },

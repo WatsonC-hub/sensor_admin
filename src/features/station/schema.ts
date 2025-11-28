@@ -68,10 +68,8 @@ const boreholeAddTimeseriesSchema = baseAddTimeseriesSchema.extend({
 });
 
 const watlevmpAddSchema = z.object({
-  elevation: z.number({required_error: 'Målepunkt skal udfyldes'}).nullable(),
-  description: z
-    .string({required_error: 'Beskrivelse skal udfyldes'})
-    .min(3, {message: 'Beskrivelse skal være mindst 3 tegn'}),
+  elevation: z.number({required_error: 'Målepunkt skal udfyldes'}).nullish(),
+  description: z.string({required_error: 'Beskrivelse skal udfyldes'}).optional(),
 });
 
 const addUnitSchema = z
@@ -103,6 +101,10 @@ const editUnitSchema = z
       });
     }
   });
+
+// const createStationSchema = z.object({
+//   location:
+// })
 
 export {
   baseLocationSchema,

@@ -21,6 +21,11 @@ export const prefetchDmpAllowedMapList = async () => {
   await queryClient.ensureQueryData(getDmpAllowedMapList);
 };
 
+export const fetchDmpAllowedMapList = () => {
+  const data = useQuery(getDmpAllowedMapList);
+  return data;
+};
+
 const useDmpAllowedMapList = (ts_id: number) => {
   const {data: metadata} = useTimeseriesData(ts_id);
 

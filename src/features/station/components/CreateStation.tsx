@@ -13,7 +13,6 @@ import UnitStep from '../createStation/components/UnitStep';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
-  // const [showAlert, setShowAlert] = useState(false);
   const size = isMobile ? 12 : 6;
 
   return (
@@ -52,19 +51,6 @@ const CreateStation = () => {
           <UnitStep />
         </Grid2>
       </Box>
-      {/* <AlertDialog
-        open={showAlert}
-        setOpen={setShowAlert}
-        title={alertTitle}
-        message={alertMessage}
-        handleOpret={() => {
-          if (activeStep === 0) {
-            handleLocationSubmit();
-          } else if (activeStep === 1 || (activeStep === 2 && !isUnitDirty)) {
-            handleTimeseriesSubmit();
-          }
-        }}
-      /> */}
     </CreateStationContextProvider>
   );
 };

@@ -1,4 +1,4 @@
-import React, {createContext} from 'react';
+import React, {createContext, useState} from 'react';
 import {useLocation} from 'react-router';
 import {useLocationData} from '~/hooks/query/useMetadata';
 
@@ -31,7 +31,19 @@ type CreateStationContextType = {
   setFormErrors: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   activeStep: number;
   setActiveStep: React.Dispatch<React.SetStateAction<number>>;
-  onValidate: (key: 'location' | 'timeseries' | 'watlevmp' | 'unit', data: any) => void;
+  onValidate: (
+    key: 'location' | 'timeseries' | 'watlevmp' | 'unit' | 'controlSettings' | 'sync',
+    data: any
+  ) => void;
+  activatedSections: Record<string, boolean>;
+  setActivatedSections: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+};
+
+const sections: Record<string, boolean> = {
+  watlevmp: false,
+  controlSettings: false,
+  unitMeasurement: false,
+  synchronization: false,
 };
 
 export const CreateStationContext = createContext<CreateStationContextType | null>(null);
@@ -70,13 +82,14 @@ const CreateStationContextProvider = ({children}: Props) => {
     location: defaultValues,
   };
 
-  const [meta, setMeta] = React.useState<MetaType | null>(defaultMeta);
-  const [formState, setFormState] = React.useState<FormState>(defaultFormState);
-  const [activeStep, setActiveStep] = React.useState(loc_id ? 1 : 0);
-  const [formErrors, setFormErrors] = React.useState<Record<string, any>>({});
+  const [meta, setMeta] = useState<MetaType | null>(defaultMeta);
+  const [formState, setFormState] = useState<FormState>(defaultFormState);
+  const [activeStep, setActiveStep] = useState(loc_id ? 1 : 0);
+  const [formErrors, setFormErrors] = useState<Record<string, any>>({});
+  const [activatedSections, setActivatedSections] = useState<Record<string, boolean>>(sections);
 
   const onValidate = (
-    key: 'location' | 'timeseries' | 'watlevmp' | 'unit',
+    key: 'location' | 'timeseries' | 'watlevmp' | 'unit' | 'controlSettings' | 'sync',
     data: FormState[keyof FormState]
   ) => {
     if (data) {
@@ -87,7 +100,11 @@ const CreateStationContextProvider = ({children}: Props) => {
         });
       }
 
-      if (key === 'timeseries' && data.tstype_id !== formState.timeseries?.tstype_id) {
+      if (
+        key === 'timeseries' &&
+        formState.unit !== undefined &&
+        data.tstype_id !== formState.timeseries?.tstype_id
+      ) {
         setFormState((prev: FormState) => {
           delete prev['unit'];
           return {...prev};
@@ -109,6 +126,8 @@ const CreateStationContextProvider = ({children}: Props) => {
         formErrors,
         setFormErrors,
         onValidate,
+        activatedSections,
+        setActivatedSections,
       }}
     >
       {children}

@@ -9,6 +9,7 @@ type Props = {
   loc_name: string | undefined;
   slotProps?: {
     TypeSelect?: Omit<FormInputProps<DefaultAddTimeseries>, 'name'>;
+    intakeno?: Omit<FormInputProps<DefaultAddTimeseries>, 'name'>;
   };
 };
 

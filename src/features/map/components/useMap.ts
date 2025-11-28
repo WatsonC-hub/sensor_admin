@@ -266,16 +266,9 @@ const useMap = <TData extends object>(
     setPan(map.getCenter());
 
     const layer = markerLayerRef.current;
-    // if (!layer) return;
-
     const parkingLayer = parkingLayerRef.current;
-    // if (!parkingLayer) return;
-
     const geoJsonLayer = geoJsonRef.current;
-    // if (!geoJsonLayer) return;
-
     const tooltipLayer = tooltipRef.current;
-    // if (!tooltipLayer) return;
 
     if (geoJsonLayer) {
       if (zoom > zoomThresholdForParking && leafletMapRoutes && leafletMapRoutes.length > 0) {

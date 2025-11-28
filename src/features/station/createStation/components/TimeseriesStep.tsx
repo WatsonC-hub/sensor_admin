@@ -1,4 +1,4 @@
-import {Box, Grid2, IconButton, Typography} from '@mui/material';
+import {Box, Grid2, Typography} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {FormProvider} from 'react-hook-form';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -18,14 +18,19 @@ import {
   LastJupiterMPAPI,
   LastJupiterMPData,
 } from '~/pages/field/boreholeno/components/LastJupiterMP';
-import {Add, Remove} from '@mui/icons-material';
+import ControlSettings from '~/features/configuration/components/ControlSettings';
+import useControlSettingsForm, {
+  ControlSettingsFormValues,
+} from '~/features/configuration/api/useControlSettingsForm';
+import CreateControlSettings from '../../../configuration/components/CreateControlSettings';
+import JupiterDmpSync from '~/features/synchronization/components/JupiterDmpSync';
 
 const TimeseriesStep = () => {
-  const [addMeasurement, setAddMeasurement] = useState(false);
   const [helperText, setHelperText] = useState('');
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
   const {meta, setMeta, onValidate, setFormErrors, activeStep} = useCreateStationContext();
+
   const [timeseriesFormMethods, TimeseriesForm] = useTimeseriesForm({
     formProps: {
       context: {
@@ -62,10 +67,25 @@ const TimeseriesStep = () => {
     handleSubmit: handleWatlevmpSubmit,
     reset: resetWatlevmp,
     formState: watlevmpFormState,
+    watch,
   } = watlevmpFormMethods;
 
+  const elevation = watch('elevation');
+
+  const controlSettingsFormMethods = useControlSettingsForm<ControlSettingsFormValues>({
+    defaultValues: {
+      controls_per_year: null,
+      selectValue: 1,
+      dummy: null,
+      lead_time: null,
+    },
+    mode: 'add',
+  });
+
+  const {handleSubmit: handleControlsSubmit} = controlSettingsFormMethods;
+
   useEffect(() => {
-    if (meta?.intakeno !== -1 && watlevmp !== undefined) {
+    if (meta?.intakeno !== undefined && watlevmp !== undefined) {
       resetWatlevmp({
         elevation: watlevmp.elevation,
         description: watlevmp.descriptio,
@@ -75,6 +95,12 @@ const TimeseriesStep = () => {
       setHelperText('');
     }
   }, [watlevmp, meta?.intakeno, meta?.tstype_id, meta?.boreholeno]);
+
+  useEffect(() => {
+    if (meta?.tstype_id !== 1 || elevation !== watlevmp?.elevation) {
+      setHelperText('');
+    }
+  }, [meta?.tstype_id, elevation]);
 
   useEffect(() => {
     const timeseriesInvalid = Object.keys(timeseriesFormState.errors).length > 0;
@@ -111,6 +137,17 @@ const TimeseriesStep = () => {
                         setMeta((prev) => ({...prev, tstype_id: parseInt(value)}));
                       },
                     },
+                    intakeno: {
+                      onChangeCallback: (event) => {
+                        const value = (
+                          event as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+                        ).target.value;
+                        setMeta((prev) => ({
+                          ...prev,
+                          intakeno: value === '' ? undefined : parseInt(value),
+                        }));
+                      },
+                    },
                   }}
                 />
               </Grid2>
@@ -122,7 +159,11 @@ const TimeseriesStep = () => {
               if (meta?.tstype_id === 1) {
                 await handleWatlevmpSubmit(
                   (data) => {
-                    onValidate('watlevmp', data);
+                    if (
+                      Object.values(data).some((value) => value !== null && value !== undefined)
+                    ) {
+                      onValidate('watlevmp', data);
+                    }
                   },
                   (e) => {
                     onValidate('watlevmp', null);
@@ -134,16 +175,45 @@ const TimeseriesStep = () => {
                     isValid = Object.keys(e).length === 0;
                   }
                 )();
+              } else {
+                onValidate('watlevmp', null);
+                setFormErrors((prev) => ({
+                  ...prev,
+                  timeseries: Object.keys(timeseriesFormState.errors).length > 0,
+                }));
               }
               await handleTimeseriesSubmit(
                 (data) => {
-                  onValidate('timeseries', data);
+                  if (Object.values(data).some((value) => value !== null && value !== undefined)) {
+                    onValidate('timeseries', data);
+                  }
                 },
                 (e) => {
                   onValidate('timeseries', null);
-                  setFormErrors({
-                    timeseries: Object.keys(e).length > 0,
-                  });
+                  setFormErrors((prev) => ({
+                    ...prev,
+                    timeseries: Object.keys(e).length > 0 || isValid === false,
+                  }));
+
+                  isValid = Object.keys(e).length === 0;
+                }
+              )();
+
+              await handleControlsSubmit(
+                (data) => {
+                  if (Object.values(data).some((value) => value !== null && value !== undefined)) {
+                    onValidate('controlSettings', {
+                      controls_per_year: data.controls_per_year,
+                      lead_time: data.lead_time,
+                    });
+                  }
+                },
+                (e) => {
+                  onValidate('controlSettings', null);
+                  setFormErrors((prev) => ({
+                    ...prev,
+                    controlSettings: Object.keys(e).length > 0,
+                  }));
 
                   isValid = Object.keys(e).length === 0;
                 }
@@ -152,38 +222,48 @@ const TimeseriesStep = () => {
               return isValid;
             }}
           />
-          {meta?.tstype_id === 1 && activeStep === 1 && (
-            <>
-              <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
-                <Typography variant="body2" color="textSecondary">
+          <Box display={'flex'} flexDirection={'column'} gap={1.5}>
+            <Typography variant="h6" marginTop={2} fontWeight={'bold'} marginBottom={1}>
+              Valgfri felter
+            </Typography>
+
+            {meta?.tstype_id === 1 && activeStep === 1 && (
+              <Box>
+                <Typography variant="subtitle1" marginBottom={1}>
                   Målepunkt
                 </Typography>
-                <IconButton size="small">
-                  {!addMeasurement && (
-                    <Add fontSize="small" onClick={() => setAddMeasurement(true)} />
-                  )}
-                  {addMeasurement && (
-                    <Remove
-                      fontSize="small"
-                      onClick={() => {
-                        setAddMeasurement(false);
-                        // resetWatlevmp();
-                      }}
-                    />
-                  )}
-                </IconButton>
-              </Box>
-              {addMeasurement && (
-                <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
+                <Grid2 container size={size} spacing={1} marginBottom={2}>
                   <FormProvider {...watlevmpFormMethods}>
                     <StamdataWatlevmp tstype_id={meta?.tstype_id}>
                       <DefaultWatlevmpForm helperText={helperText} />
                     </StamdataWatlevmp>
                   </FormProvider>
                 </Grid2>
-              )}
-            </>
-          )}
+              </Box>
+            )}
+
+            <Box>
+              <Typography variant="subtitle1" marginBottom={1}>
+                Kontrolhyppighed
+              </Typography>
+              <FormProvider {...controlSettingsFormMethods}>
+                <ControlSettings>
+                  <CreateControlSettings />
+                </ControlSettings>
+              </FormProvider>
+            </Box>
+
+            {meta?.loctype_id !== undefined && meta?.tstype_id !== undefined && (
+              <Box>
+                <JupiterDmpSync
+                  loctype_id={meta.loctype_id}
+                  tstype_id={meta.tstype_id}
+                  mode="add"
+                  onValidate={onValidate}
+                />
+              </Box>
+            )}
+          </Box>
         </>
       )}
     </>

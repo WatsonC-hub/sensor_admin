@@ -8,6 +8,7 @@ type Props = {
   size: number;
   slotProps?: {
     TypeSelect?: Omit<FormInputProps<BoreholeAddTimeseries>, 'name'>;
+    intakeno?: Omit<FormInputProps<BoreholeAddTimeseries>, 'name'>;
   };
 };
 
@@ -15,7 +16,7 @@ const BoreholeTimeseriesForm = ({size, slotProps}: Props) => {
   return (
     <>
       <Grid2 size={size}>
-        <StamdataTimeseries.Intakeno />
+        <StamdataTimeseries.Intakeno {...slotProps?.intakeno} />
       </Grid2>
       <Grid2 size={size}>
         <StamdataTimeseries.TypeSelect {...slotProps?.TypeSelect} />
