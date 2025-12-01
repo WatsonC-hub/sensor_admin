@@ -46,10 +46,9 @@ function downloadDataUri(dataUri: string, filename: string) {
 }
 
 function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewerProps) {
-  const [columns, setColumns] = React.useState(2);
+  const [columns, setColumns] = React.useState(6);
   const [size, setSize] = React.useState(480);
   const [mobileRatio, setMobileRatio] = React.useState(false);
-  const boxLayout = document.getElementById('main_content');
 
   const image_cache = useMutationState<MutationState<unknown, unknown, ImagePayload>>({
     filters: {exact: true, mutationKey: ['image_post', type, id]},
@@ -57,20 +56,21 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver((event) => {
-      const mobileRatio = event[0].contentRect.width < 650;
+      const width = event[0].contentRect.width;
+      const mobileRatio = width < 800;
       const size = mobileRatio ? 300 : 480;
       setSize(size);
       setMobileRatio(mobileRatio);
-
-      if (!mobileRatio && boxLayout && images.length > 2) {
-        setColumns(12 / Math.floor(boxLayout.clientWidth / size));
+      if (!mobileRatio && images && images.length > 2) {
+        const calculatedColumns = Math.floor(12 / Math.floor(width / size));
+        setColumns(calculatedColumns);
       }
     });
 
     resizeObserver.observe(document.getElementById('main_content')!);
 
     return () => resizeObserver.disconnect();
-  }, []);
+  }, [images]);
 
   return (
     <Box
