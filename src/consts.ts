@@ -113,5 +113,5 @@ export const defaultDataToShow: DataToShow = {
   'Fjernet data': false,
   Rådata: false,
   Jupiter: true,
-  'Alarm linjer': false,
+  'Alarm niveauer': false,
 };
