@@ -66,8 +66,8 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
         setColumns(calculatedColumns);
       }
     });
-
-    resizeObserver.observe(document.getElementById('main_content')!);
+    const main_content = document.getElementById('main_content');
+    if (resizeObserver && main_content !== null) resizeObserver.observe(main_content);
 
     return () => resizeObserver.disconnect();
   }, [images]);
