@@ -18,21 +18,21 @@ import Button from '~/components/Button';
 import {initialContactData} from '~/consts';
 import {useContactInfo, useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
-import {InferContactInfo} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
-import {useAppContext} from '~/state/contexts';
 import {ContactInfo} from '~/types';
+import {InferContactInfo} from './api/useContactForm';
 
 interface SelectContactInfoProps {
   open: boolean;
   setOpen: (open: boolean) => void;
+  loc_id?: number;
+  onValidate?: (data: InferContactInfo) => void;
 }
 
-const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
+const SelectContactInfo = ({open, setOpen, loc_id, onValidate}: SelectContactInfoProps) => {
   const [selectedContactInfo, setSelectedContactInfo] = useState<ContactInfo | null>(null);
   const [search, setSearch] = useState<string>('');
   const deboundedSearch = useDebouncedValue(search, 500);
-  const {loc_id} = useAppContext(['loc_id']);
 
   const {reset, handleSubmit} = useFormContext<InferContactInfo>();
   const [createNew, setCreateNew] = useState<boolean>(false);
@@ -50,17 +50,23 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   };
 
   const handleSave: SubmitHandler<InferContactInfo> = async (contact_info) => {
-    const payload = {
-      path: `${loc_id}`,
-      data: contact_info,
-    };
-    postContact.mutate(payload, {
-      onSuccess: () => {
-        reset();
-        setSelectedContactInfo(null);
-        setCreateNew(false);
-      },
-    });
+    if (loc_id) {
+      const payload = {
+        path: `${loc_id}`,
+        data: contact_info,
+      };
+      postContact.mutate(payload, {
+        onSuccess: () => {
+          reset();
+          setSelectedContactInfo(null);
+          setCreateNew(false);
+        },
+      });
+    } else {
+      if (onValidate) {
+        onValidate(contact_info);
+      }
+    }
 
     setOpen(false);
   };

@@ -32,7 +32,7 @@ type CreateStationContextType = {
   activeStep: number;
   setActiveStep: React.Dispatch<React.SetStateAction<number>>;
   onValidate: (
-    key: 'location' | 'timeseries' | 'watlevmp' | 'unit' | 'controlSettings' | 'sync',
+    key: 'location' | 'timeseries' | 'watlevmp' | 'unit' | 'controlSettings' | 'sync' | 'contacts',
     data: any
   ) => void;
   activatedSections: Record<string, boolean>;
@@ -89,7 +89,7 @@ const CreateStationContextProvider = ({children}: Props) => {
   const [activatedSections, setActivatedSections] = useState<Record<string, boolean>>(sections);
 
   const onValidate = (
-    key: 'location' | 'timeseries' | 'watlevmp' | 'unit' | 'controlSettings' | 'sync',
+    key: 'location' | 'timeseries' | 'watlevmp' | 'unit' | 'controlSettings' | 'sync' | 'contacts',
     data: FormState[keyof FormState]
   ) => {
     if (data) {

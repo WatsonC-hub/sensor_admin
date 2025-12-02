@@ -1,5 +1,5 @@
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
-import {startCase} from 'lodash';
+import {lowerCase, startCase} from 'lodash';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
@@ -8,22 +8,27 @@ import {SubmitHandler, useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
+import {initialContactData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
-import {InferContactInfoTable} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {ContactInfoType, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-import {useQueryTable} from '~/hooks/useTable';
-import {useAppContext} from '~/state/contexts';
+import {useTable} from '~/hooks/useTable';
 import {ContactTable} from '~/types';
+import {setRoleName} from './const';
 
 type Props = {
-  delContact: (relation_id: number) => void;
-  editContact: (ContactInfo: ContactTable) => void;
+  mode: 'add' | 'edit' | 'mass_edit';
+  loc_id?: number;
+  contacts?: Array<ContactTable>;
+  removeContact?: (index: number) => void;
+  alterContact?: (index: number, data?: ContactTable) => void;
+  currentIndex?: number;
+  setCurrentIndex?: (index: number) => void;
 };
 
 const onDeleteBtnClick = (
@@ -35,25 +40,74 @@ const onDeleteBtnClick = (
   setDialogOpen(true);
 };
 
-const ContactInfoTable = ({delContact, editContact}: Props) => {
-  const {loc_id} = useAppContext(['loc_id']);
+const ContactInfoTable = ({
+  loc_id,
+  contacts,
+  mode,
+  removeContact,
+  alterContact,
+  currentIndex,
+  setCurrentIndex,
+}: Props) => {
   const {
-    features: {contacts},
+    features: {contacts: contactsFeature},
   } = useUser();
-  const [contactID, setContactID] = useState<number>(-1);
+  const [removeId, setRemoveId] = useState<number>(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const {
     reset,
     handleSubmit,
     formState: {dirtyFields},
-  } = useFormContext<InferContactInfoTable>();
+  } = useFormContext<ContactTable>();
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const [isUser, setIsUser] = useState<boolean>(false);
   const {isMobile} = useBreakpoints();
 
-  const {get} = useContactInfo(loc_id);
+  const {
+    get: {data},
+    del: deleteContact,
+    put: editContact,
+  } = useContactInfo(loc_id);
   const {location_permissions} = usePermissions(loc_id);
-  const disabled = location_permissions !== 'edit';
+  const disabled = location_permissions !== 'edit' || (mode === 'add' && loc_id !== undefined);
+
+  const handleDelete = (relation_id: number) => {
+    if (mode === 'edit') {
+      const payload = {
+        path: `${relation_id}`,
+      };
+
+      deleteContact.mutate(payload);
+    } else if (mode === 'add' && removeContact) {
+      removeContact(removeId);
+    }
+  };
+
+  const handleEdit = (contactInfo: ContactTable) => {
+    const email = contactInfo.email !== '' ? contactInfo.email : null;
+    const payload = {
+      path: `${loc_id}`,
+      data: {
+        id: contactInfo.id,
+        name: contactInfo.name,
+        mobile: contactInfo.mobile,
+        email: email,
+        contact_role: contactInfo.contact_role,
+        comment: contactInfo.comment,
+        org: contactInfo.org,
+        user_id: contactInfo.user_id ?? null,
+        relation_id: contactInfo.relation_id,
+        contact_type: contactInfo.contact_type,
+        notify_required: contactInfo.notify_required ?? false,
+      },
+    };
+
+    editContact.mutate(payload, {
+      onSuccess: () => {
+        reset(initialContactData);
+      },
+    });
+  };
 
   const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
     () => [
@@ -67,7 +121,9 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         header: 'Rolle',
         id: 'contact_role_name',
         enableColumnActions: false,
-        accessorFn: (row) => row.contact_role_name,
+        accessorFn: (row) => {
+          return row.contact_role_name;
+        },
         size: 20,
       },
       {
@@ -162,13 +218,16 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         ? {}
         : {
             onClick: (e) => {
-              if ((e.target as HTMLElement).innerText && !disabled) {
+              if ((e.target as HTMLElement).innerText && !disabled && mode === 'edit') {
                 reset({
                   ...row.original,
                   mobile: row.original.mobile ? row.original.mobile : null,
                 });
-                table.setEditingRow(row);
+              } else if (mode === 'add') {
+                if (setCurrentIndex) setCurrentIndex(row.index);
+                reset(row.original);
               }
+              table.setEditingRow(row);
             },
           };
     },
@@ -185,17 +244,28 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          reset({
-            ...row.original,
-            mobile: row.original.mobile ? row.original.mobile : null,
-          });
+          if (mode === 'edit') {
+            reset({
+              ...row.original,
+              mobile: row.original.mobile ? row.original.mobile : null,
+            });
+          } else if (mode === 'add') {
+            if (setCurrentIndex) setCurrentIndex(row.index);
+            reset({
+              ...row.original,
+              contact_type: startCase(row.original.contact_type || ''),
+            });
+          }
+
           setIsUser(row.original.org !== '');
           setOpenContactInfoDialog(true);
         }}
         onDeleteBtnClick={() => {
-          onDeleteBtnClick(row.original.relation_id, setDialogOpen, setContactID);
+          if (mode === 'edit')
+            onDeleteBtnClick(row.original.relation_id, setDialogOpen, setRemoveId);
+          else if (mode === 'add') onDeleteBtnClick(row.index, setDialogOpen, setRemoveId);
         }}
-        disabled={!contacts || disabled}
+        disabled={!contactsFeature || disabled}
       />
     ),
     renderToolbarInternalActions: ({table}) => {
@@ -222,9 +292,9 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
     },
   };
 
-  const table = useQueryTable<ContactTable>(
+  const table = useTable<ContactTable>(
     isMobile ? mobileColumns : columns,
-    get,
+    data ?? (contacts || []),
     options,
     tableState,
     TableTypes.TABLE,
@@ -237,12 +307,18 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
     setIsUser(false);
   };
 
-  const handleSave: SubmitHandler<InferContactInfoTable> = async (details) => {
-    editContact({
-      ...details,
-      email: details.email ?? '',
-      mobile: details.mobile ? details.mobile.toString() : null,
-    });
+  const handleSave: SubmitHandler<ContactTable> = async (details) => {
+    if (mode === 'edit') {
+      handleEdit({
+        ...details,
+        email: details.email ?? '',
+        mobile: details.mobile ? details.mobile.toString() : null,
+      });
+    } else if (mode === 'add' && alterContact && currentIndex !== undefined) {
+      details.contact_type = lowerCase(details.contact_type || '');
+      details.contact_role_name = setRoleName(details.contact_role || 0);
+      alterContact(currentIndex, details);
+    }
     setOpenContactInfoDialog(false);
     setIsUser(false);
   };
@@ -253,7 +329,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={() => {
-          delContact(contactID);
+          handleDelete(removeId);
         }}
       />
 

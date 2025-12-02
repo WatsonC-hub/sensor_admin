@@ -2,35 +2,6 @@ import {z} from 'zod';
 
 import {AccessType} from '~/helpers/EnumHelper';
 
-const contact_info = z.object({
-  id: z.string().nullish(),
-  name: z.string({required_error: 'Navn på kontakten skal udfyldes'}),
-  mobile: z.string().nullish(),
-  email: z.union([z.string().email('Det skal være en valid email'), z.literal('')]).nullable(),
-  comment: z.string().optional(),
-  contact_role: z
-    .number()
-    .optional()
-    .refine((val) => val !== undefined && val !== -1, {
-      message: 'Der skal vælges en værdi fra listen',
-    }),
-  user_id: z.string().nullish(),
-  contact_type: z
-    .string()
-    .optional()
-    .refine((val) => val !== undefined && val !== '', {
-      message: 'Der skal vælges en værdi fra listen',
-    }),
-  notify_required: z.boolean().optional().default(false),
-});
-
-const contact_info_table = contact_info.extend({
-  id: z.string(),
-  relation_id: z.number(),
-  org: z.string(),
-  contact_role_name: z.string(),
-});
-
 const adgangsforhold = z
   .object({
     id: z.number().nullish(),
@@ -111,8 +82,6 @@ const ressourcer = z
 
 type AdgangsForhold = z.infer<typeof adgangsforhold>;
 type AdgangsforholdTable = z.infer<typeof adgangsforhold_table>;
-type InferContactInfo = z.infer<typeof contact_info>;
-type InferContactInfoTable = z.infer<typeof contact_info_table>;
 
-export {contact_info, adgangsforhold, ressourcer};
-export type {AdgangsForhold, AdgangsforholdTable, InferContactInfo, InferContactInfoTable};
+export {adgangsforhold, ressourcer};
+export type {AdgangsForhold, AdgangsforholdTable};

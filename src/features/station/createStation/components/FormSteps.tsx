@@ -6,7 +6,7 @@ const FormSteps = () => {
   const {activeStep, setActiveStep, formErrors} = useCreateStationContext();
   return (
     <Stepper nonLinear activeStep={activeStep} alternativeLabel>
-      <Step key={'lokation'} completed={!formErrors.location && activeStep !== 0}>
+      <Step key={'lokation'} completed={!formErrors.location && activeStep > 0}>
         <StepButton
           onClick={async () => {
             if (
@@ -29,7 +29,7 @@ const FormSteps = () => {
       </Step>
       <Step
         key={'tidsserie'}
-        completed={!formErrors.timeseries && !formErrors.watlevmp && activeStep !== 1}
+        completed={!formErrors.timeseries && !formErrors.watlevmp && activeStep > 1}
       >
         <StepButton
           onClick={async () => {
@@ -51,7 +51,7 @@ const FormSteps = () => {
           </StepLabel>
         </StepButton>
       </Step>
-      <Step key={'udstyr'} completed={activeStep !== 2}>
+      <Step key={'udstyr'}>
         <StepButton
           onClick={async () => {
             if (activeStep !== 2) {

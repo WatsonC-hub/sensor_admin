@@ -5,6 +5,7 @@ import {FormProvider} from 'react-hook-form';
 import StamdataLocation from '../../components/stamdata/StamdataLocation';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import FormStepButtons from './FormStepButtons';
+import ContactForm from '~/features/stamdata/components/stationDetails/contacts/ContactForm';
 
 const LocationStep = () => {
   const {isMobile} = useBreakpoints();
@@ -89,6 +90,8 @@ const LocationStep = () => {
               return isValid;
             }}
           />
+
+          <ContactForm loc_id={meta?.loc_id} mode={'add'} defaultContacts={formState.contacts} />
         </>
       )}
     </>

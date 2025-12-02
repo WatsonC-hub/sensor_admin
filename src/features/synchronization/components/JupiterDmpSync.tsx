@@ -70,9 +70,13 @@ const JupiterDmpSync = ({
                 <Form.Checkbox
                   name="sync_dmp"
                   label="DMP"
-                  disabled={sync_dmp}
+                  disabled={sync_dmp && mode === 'edit'}
                   onChangeCallback={(value) => {
-                    if (!value) trigger('owner_cvr');
+                    if (!value) {
+                      trigger('owner_cvr');
+                      setValue('owner_cvr', undefined);
+                      setValue('owner_name', undefined);
+                    }
                     if (onValidate)
                       onValidate('sync', {
                         ...getValues(),
@@ -85,7 +89,7 @@ const JupiterDmpSync = ({
                     select
                     name="owner_cvr"
                     label="Data ejer"
-                    disabled={!sync_dmp || values?.sync_dmp}
+                    disabled={(!sync_dmp || values?.sync_dmp) && mode === 'edit'}
                     placeholder="Vælg data ejer"
                     options={owners?.map((owner) => ({
                       [owner.cvr]: owner.name + ` (${owner.cvr})`,

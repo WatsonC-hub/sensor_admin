@@ -32,7 +32,6 @@ const Elevation = (props: Omit<FormInputProps<Watlevmp>, 'name'>) => {
       type="number"
       label="Målepunktskote"
       name="elevation"
-      required
       disabled={props.disabled}
       fullWidth
       InputProps={{
@@ -55,7 +54,6 @@ const Description = (props: Omit<FormInputProps<Watlevmp>, 'name'>) => {
       label="Målepunkt placering"
       name="description"
       disabled={props.disabled}
-      required
       fullWidth
       placeholder="f.eks. top af rør"
     />

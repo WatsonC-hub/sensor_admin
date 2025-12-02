@@ -29,7 +29,8 @@ const TimeseriesStep = () => {
   const [helperText, setHelperText] = useState('');
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
-  const {meta, setMeta, onValidate, setFormErrors, activeStep} = useCreateStationContext();
+  const {meta, setMeta, onValidate, setFormErrors, activeStep, formState} =
+    useCreateStationContext();
 
   const [timeseriesFormMethods, TimeseriesForm] = useTimeseriesForm({
     formProps: {
@@ -260,6 +261,7 @@ const TimeseriesStep = () => {
                   tstype_id={meta.tstype_id}
                   mode="add"
                   onValidate={onValidate}
+                  values={formState.sync}
                 />
               </Box>
             )}
