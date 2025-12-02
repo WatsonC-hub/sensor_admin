@@ -91,6 +91,7 @@ export const useSearchContact = <T = ContactInfo[]>(
     },
     staleTime: 10 * 1000,
     select,
+    enabled: loc_id !== undefined || searchString !== '',
   });
   return searched_contacts;
 };

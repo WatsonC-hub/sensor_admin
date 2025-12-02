@@ -251,10 +251,7 @@ const ContactInfoTable = ({
             });
           } else if (mode === 'add') {
             if (setCurrentIndex) setCurrentIndex(row.index);
-            reset({
-              ...row.original,
-              contact_type: startCase(row.original.contact_type || ''),
-            });
+            reset(row.original);
           }
 
           setIsUser(row.original.org !== '');

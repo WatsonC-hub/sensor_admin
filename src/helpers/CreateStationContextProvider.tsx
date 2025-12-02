@@ -1,6 +1,7 @@
-import React, {createContext, useState} from 'react';
+import React, {createContext, useMemo, useState} from 'react';
 import {useLocation} from 'react-router';
 import {useLocationData} from '~/hooks/query/useMetadata';
+import {ContactTable} from '~/types';
 
 type Props = {
   children?: React.ReactNode;
@@ -15,17 +16,34 @@ type MetaType = {
   intakeno?: number;
 };
 
-type FormState = {
-  location?: any;
+type LocationData = {
+  loc_id?: number;
+  loc_name?: string;
+  loctype_id?: number;
+  terrainqual?: string;
+  terrainlevel?: number;
+  boreholeno?: string;
+  suffix?: string;
+  x?: number;
+  y?: number;
+  initial_project_no?: string;
+  description?: string;
+  groups?: Array<any>;
+};
+
+export type FormState = {
+  location?: LocationData;
   timeseries?: any;
   watlevmp?: any;
   unit?: any;
+  sync?: any;
+  contacts?: Array<ContactTable>;
 };
 
 type CreateStationContextType = {
   meta: MetaType | null;
   setMeta: React.Dispatch<React.SetStateAction<MetaType | null>>;
-  formState?: any;
+  formState?: FormState;
   //   setFormState?: React.Dispatch<React.SetStateAction<any>>;
   formErrors: Record<string, boolean>;
   setFormErrors: React.Dispatch<React.SetStateAction<Record<string, any>>>;
@@ -56,17 +74,28 @@ const CreateStationContextProvider = ({children}: Props) => {
 
   const {data: metadata} = useLocationData(loc_id);
 
-  const data = {
-    ...state,
-    terrainqual: 'DTM',
-    ...metadata,
-  };
+  const defaultLocationData = useMemo<LocationData>(() => {
+    if (metadata === undefined)
+      return {
+        ...state,
+        terrainqual: 'DTM',
+      };
 
-  const defaultValues = {
-    ...data,
-    loctype_id: 'loctype_id' in state ? state.loctype_id : undefined,
-    initial_project_no: metadata?.projectno,
-  };
+    return {
+      loc_id: metadata.loc_id,
+      loc_name: metadata.loc_name,
+      loctype_id: metadata.loctype_id,
+      terrainqual: metadata.terrainqual,
+      terrainlevel: metadata.terrainlevel,
+      boreholeno: metadata.boreholeno,
+      suffix: metadata.suffix,
+      x: metadata.x,
+      y: metadata.y,
+      initial_project_no: metadata.projectno,
+      description: metadata.description,
+      groups: metadata.groups,
+    };
+  }, [metadata]);
 
   let defaultMeta = null;
   let defaultFormState = null;
@@ -79,7 +108,7 @@ const CreateStationContextProvider = ({children}: Props) => {
   };
 
   defaultFormState = {
-    location: defaultValues,
+    location: defaultLocationData,
   };
 
   const [meta, setMeta] = useState<MetaType | null>(defaultMeta);

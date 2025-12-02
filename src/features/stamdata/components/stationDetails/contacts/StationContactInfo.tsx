@@ -133,11 +133,11 @@ export default function StationContactInfo({
             if (role?.id === 1 && getValues('notify_required') === true)
               setValue('notify_required', false);
 
-            if (role) {
-              if (role.default_type !== null)
-                setValue('contact_type', role.default_type ?? undefined);
+            if (role && role.default_type !== null) {
+              setValue('contact_type', role.default_type);
             } else {
-              setValue('contact_type', undefined);
+              const contact_type = getValues('contact_type');
+              if (contact_type === undefined) setValue('contact_type', 'lokation');
             }
           }}
         />
@@ -149,7 +149,7 @@ export default function StationContactInfo({
           placeholder="Tilknyt..."
           disabled={tableModal}
           select
-          options={[{Lokation: ContactInfoType.Lokation}, {Projekt: ContactInfoType.Projekt}]}
+          options={[{lokation: ContactInfoType.Lokation}, {projekt: ContactInfoType.Projekt}]}
           required
           fullWidth
         />
@@ -163,7 +163,7 @@ export default function StationContactInfo({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={value}
+                  checked={value ?? false}
                   disabled={tableModal || contact_role === 1}
                   onChange={(checked) => onChange(checked)}
                   name="notify_required"

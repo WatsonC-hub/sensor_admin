@@ -91,7 +91,7 @@ const LocationStep = () => {
             }}
           />
 
-          <ContactForm loc_id={meta?.loc_id} mode={'add'} defaultContacts={formState.contacts} />
+          <ContactForm loc_id={meta?.loc_id} mode={'add'} defaultContacts={formState?.contacts} />
         </>
       )}
     </>

@@ -9,18 +9,9 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useMutation} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
-import {
-  DefaultAddLocation,
-  BoreholeAddLocation,
-  DefaultAddTimeseries,
-  BoreholeAddTimeseries,
-  AddUnit,
-  Watlevmp,
-} from '../../schema';
 import {useDisplayState} from '~/hooks/ui';
 import AlertDialog from '~/components/AlertDialog';
-import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
-import {ControlSettingsFormValues} from '~/features/configuration/api/useControlSettingsForm';
+import {FormState} from '~/helpers/CreateStationContextProvider';
 
 type Props = {
   onFormIsValid: () => Promise<boolean>;
@@ -38,14 +29,7 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
   const {isMobile} = useBreakpoints();
 
   const stamdataNewMutation = useMutation({
-    mutationFn: async (data: {
-      location: DefaultAddLocation | BoreholeAddLocation;
-      timeseries?: DefaultAddTimeseries | BoreholeAddTimeseries;
-      unit?: AddUnit;
-      watlevmp?: Watlevmp;
-      sync?: SyncFormValues;
-      controlSettings?: ControlSettingsFormValues;
-    }) => {
+    mutationFn: async (data: FormState) => {
       const {data: out} = await apiClient.post(
         `/sensor_field/stamdata/create_station/${meta?.loc_id ?? -1}`,
         data
@@ -123,6 +107,7 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
               : `Du er i gang med at oprette udstyr. Er du sikker på at du vil fortsætte?`
         }
         handleOpret={() => {
+          if (!formState) return;
           stamdataNewMutation.mutate(formState);
         }}
       />

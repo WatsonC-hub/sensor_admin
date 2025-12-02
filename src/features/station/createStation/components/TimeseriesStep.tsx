@@ -261,7 +261,7 @@ const TimeseriesStep = () => {
                   tstype_id={meta.tstype_id}
                   mode="add"
                   onValidate={onValidate}
-                  values={formState.sync}
+                  values={formState?.sync}
                 />
               </Box>
             )}
