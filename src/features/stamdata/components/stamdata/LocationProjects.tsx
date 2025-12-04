@@ -53,7 +53,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
               {...params}
               fullWidth
               onBlur={onBlur}
-              required={true}
+              required
               slotProps={{
                 inputLabel: {
                   shrink: true,
@@ -103,6 +103,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
       {disable == true && (
         <TextField
           fullWidth
+          required
           slotProps={{
             inputLabel: {
               shrink: true,

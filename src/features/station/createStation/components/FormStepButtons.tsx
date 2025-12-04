@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useCreateStationContext from '../api/useCreateStationContext';
 import {ArrowBack, Save} from '@mui/icons-material';
-import {Grid2, Box} from '@mui/material';
+import {Grid2, Box, Typography} from '@mui/material';
 import Button from '~/components/Button';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -49,6 +49,9 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
 
   return (
     <Grid2 size={12} sx={{display: 'flex', justifyContent: 'end'}} gap={0.5} pr={0.5}>
+      <Typography variant="caption" alignContent={'center'}>
+        Felter markeret med en stjerne (*) er obligatoriske.
+      </Typography>
       <Box sx={{flex: '1 1 auto'}} />
       <Button
         bttype="primary"
@@ -77,24 +80,24 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
         {isMobile && <ArrowForwardIcon fontSize="small" />}
         {!isMobile && 'Næste'}
       </Button>
-      <Button
-        bttype="primary"
-        startIcon={<Save />}
-        onClick={async () => {
-          const isStepValid = await onFormIsValid();
-          const formValid = Object.values(formErrors).every((error) => error !== true);
-          if (formValid && isStepValid) {
-            setShowAlert(true);
+      {activeStep === 3 && (
+        <Button
+          bttype="primary"
+          startIcon={<Save />}
+          onClick={async () => {
+            const isStepValid = await onFormIsValid();
+            const formValid = Object.values(formErrors).every((error) => error !== true);
+            if (formValid && isStepValid) {
+              setShowAlert(true);
+            }
+          }}
+          disabled={
+            meta?.loctype_id === -1 || Object.values(formErrors).some((error) => error === true)
           }
-        }}
-        disabled={
-          meta?.loctype_id === -1 ||
-          (meta?.loc_id !== undefined && activeStep === 0) ||
-          Object.values(formErrors).some((error) => error === true)
-        }
-      >
-        Gem & afslut
-      </Button>
+        >
+          Gem & afslut
+        </Button>
+      )}
       <AlertDialog
         open={showAlert}
         setOpen={setShowAlert}

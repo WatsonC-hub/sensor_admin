@@ -31,6 +31,7 @@ const UnitStep = () => {
             </StamdataUnit>
           </FormProvider>
           <FormStepButtons
+            key={'unit'}
             onFormIsValid={async () => {
               let isValid = true;
               await handleSubmit(

@@ -17,6 +17,7 @@ export const getImageOptions = (typeId: string | number, imageType: string, type
         date: image.date ? dayjs(image.date) : null, // Ensure date is a Date object
       }));
     },
+    enabled: !!typeId,
   });
 
 const useImages = (typeId: string | number, imageType: string, type: string) => {

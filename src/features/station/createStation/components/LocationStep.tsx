@@ -5,16 +5,23 @@ import {FormProvider} from 'react-hook-form';
 import StamdataLocation from '../../components/stamdata/StamdataLocation';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import FormStepButtons from './FormStepButtons';
-import ContactForm from '~/features/stamdata/components/stationDetails/contacts/ContactForm';
+import OptionalLocationForm from '../../components/stamdata/stamdataComponents/OptionalLocationForm';
 
 const LocationStep = () => {
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
-  const {meta, setMeta, onValidate, formState, formErrors, setFormErrors, activeStep} =
-    useCreateStationContext();
+  const {
+    meta,
+    setMeta,
+    onValidate,
+    formState: {location},
+    formErrors,
+    setFormErrors,
+    activeStep,
+  } = useCreateStationContext();
 
   const [locationFormMethods, LocationForm] = useLocationForm({
-    defaultValues: formState?.location,
+    defaultValues: location,
     mode: 'Add',
     context: {
       loc_id: meta?.loc_id,
@@ -68,9 +75,11 @@ const LocationStep = () => {
                   },
                 }}
               />
+              <OptionalLocationForm size={size} loc_id={meta?.loc_id} />
             </StamdataLocation>
           </FormProvider>
           <FormStepButtons
+            key={'location'}
             onFormIsValid={async () => {
               let isValid = true;
               await handleSubmit(
@@ -90,8 +99,6 @@ const LocationStep = () => {
               return isValid;
             }}
           />
-
-          <ContactForm loc_id={meta?.loc_id} mode={'add'} defaultContacts={formState?.contacts} />
         </>
       )}
     </>

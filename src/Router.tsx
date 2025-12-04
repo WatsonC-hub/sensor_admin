@@ -15,6 +15,7 @@ import {usePageActions} from './features/commandpalette/hooks/usePageActions';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import ReleaseNoticeModal from './components/ReleaseNotice';
 import useCmdPalette, {CommandPalette} from './hooks/query/useCmdPalette';
+import CreateStationContextProvider from './helpers/CreateStationContextProvider';
 
 const Router = () => {
   const user = useUser();
@@ -127,7 +128,9 @@ const Router = () => {
           path="stamdata"
           element={
             <AppContext.Provider value={{}}>
-              <GuardedCreateStation />
+              <CreateStationContextProvider>
+                <GuardedCreateStation />
+              </CreateStationContextProvider>
             </AppContext.Provider>
           }
         />

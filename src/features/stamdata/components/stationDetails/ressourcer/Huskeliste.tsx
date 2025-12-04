@@ -6,11 +6,33 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
 import Autocomplete from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/Autocomplete';
 import TransferList from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/TransferList';
-import {ressourcer} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 import {Ressourcer} from './multiselect/types';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import {z} from 'zod';
+
+const ressourcer = z
+  .array(
+    z.object({
+      id: z.number(),
+      navn: z.string(),
+      kategori: z.string(),
+      tstype_id: z
+        .number()
+        .array()
+        .nullable()
+        .transform((array) => array ?? []),
+      loctype_id: z
+        .number()
+        .array()
+        .nullable()
+        .transform((array) => array ?? []),
+      forudvalgt: z.boolean(),
+    })
+  )
+  .nullish()
+  .transform((ressourcer) => ressourcer ?? []);
 
 const Huskeliste = () => {
   const {isMobile} = useBreakpoints();

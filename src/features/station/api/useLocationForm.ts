@@ -82,15 +82,20 @@ const useLocationForm = <T extends Record<string, any>>({
 
   const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, superUser, context.loc_id);
 
-  const {data, success} = schema.safeParse({
-    ...defaultValues,
-  });
-  const defaultValuesData = data as unknown as DefaultValues<T>;
+  let parsed_data = undefined;
+
+  if (context.loc_id !== undefined) {
+    const {data} = schema.safeParse({
+      ...defaultValues,
+    });
+    parsed_data = data as unknown as DefaultValues<T>;
+  }
 
   const formMethods = useForm<T>({
     resolver: zodResolver(schema),
-    defaultValues: success ? defaultValuesData : defaultValues,
+    defaultValues: parsed_data !== undefined ? parsed_data : defaultValues,
     mode: 'onTouched',
+    values: parsed_data as T | undefined,
   });
 
   const {watch} = formMethods;

@@ -51,7 +51,7 @@ const locationAccessDelOptions = {
   },
 };
 
-export const LocationAccessGetOptions = (loc_id: number) =>
+export const LocationAccessGetOptions = (loc_id: number | undefined) =>
   queryOptions<Array<AccessTable>, APIError>({
     queryKey: queryKeys.Location.keys(loc_id),
     queryFn: async () => {
@@ -59,9 +59,10 @@ export const LocationAccessGetOptions = (loc_id: number) =>
 
       return data;
     },
+    enabled: loc_id !== undefined,
   });
 
-export const useSearchLocationAccess = (loc_id: number, searchString: string) => {
+export const useSearchLocationAccess = (loc_id: number | undefined, searchString: string) => {
   const searched_location_access = useQuery({
     queryKey: queryKeys.Location.searchKeys(searchString),
     queryFn: async () => {
@@ -73,19 +74,20 @@ export const useSearchLocationAccess = (loc_id: number, searchString: string) =>
         data = response.data;
       } else {
         const response = await apiClient.get<Array<Access>>(
-          `/sensor_field/stamdata/location_access/search_location_access/${loc_id}/${searchString}`
+          `/sensor_field/stamdata/location_access/search_location_access/${searchString}`,
+          {params: {loc_id}}
         );
         data = response.data;
       }
       return data;
     },
     staleTime: 10 * 1000,
-    enabled: loc_id !== undefined,
+    enabled: loc_id !== undefined || searchString !== '',
   });
   return searched_location_access;
 };
 
-export const useLocationAccess = (loc_id: number) => {
+export const useLocationAccess = (loc_id: number | undefined) => {
   const queryClient = useQueryClient();
   const get = useQuery(LocationAccessGetOptions(loc_id));
 

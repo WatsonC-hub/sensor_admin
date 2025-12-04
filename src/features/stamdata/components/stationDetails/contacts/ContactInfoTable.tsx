@@ -109,6 +109,22 @@ const ContactInfoTable = ({
     });
   };
 
+  const handleSave: SubmitHandler<ContactTable> = async (details) => {
+    if (mode === 'edit') {
+      handleEdit({
+        ...details,
+        email: details.email ?? '',
+        mobile: details.mobile ? details.mobile.toString() : null,
+      });
+    } else if (mode === 'add' && alterContact && currentIndex !== undefined) {
+      details.contact_type = lowerCase(details.contact_type || '');
+      details.contact_role_name = setRoleName(details.contact_role || 0);
+      alterContact(currentIndex, details);
+    }
+    setOpenContactInfoDialog(false);
+    setIsUser(false);
+  };
+
   const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
     () => [
       {
@@ -213,6 +229,7 @@ const ContactInfoTable = ({
     enableColumnPinning: true,
     enableEditing: true,
     editDisplayMode: 'modal',
+    enableBottomToolbar: false,
     muiTableBodyRowProps: ({row, table}) => {
       return !isMobile
         ? {}
@@ -301,22 +318,6 @@ const ContactInfoTable = ({
   const handleClose = () => {
     setOpenContactInfoDialog(false);
     reset();
-    setIsUser(false);
-  };
-
-  const handleSave: SubmitHandler<ContactTable> = async (details) => {
-    if (mode === 'edit') {
-      handleEdit({
-        ...details,
-        email: details.email ?? '',
-        mobile: details.mobile ? details.mobile.toString() : null,
-      });
-    } else if (mode === 'add' && alterContact && currentIndex !== undefined) {
-      details.contact_type = lowerCase(details.contact_type || '');
-      details.contact_role_name = setRoleName(details.contact_role || 0);
-      alterContact(currentIndex, details);
-    }
-    setOpenContactInfoDialog(false);
     setIsUser(false);
   };
 

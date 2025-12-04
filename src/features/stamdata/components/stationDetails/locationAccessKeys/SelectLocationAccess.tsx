@@ -9,7 +9,7 @@ import useDebouncedValue from '~/hooks/useDebouncedValue';
 import {Access} from '~/types';
 
 type Props = {
-  loc_id: number;
+  loc_id: number | undefined;
   createNew: boolean;
   setCreateNew: (createNew: boolean) => void;
 };

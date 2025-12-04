@@ -27,41 +27,29 @@ const BoreholeLocationForm = ({size, loc_id, slotProps}: Props) => {
       <Grid2 size={size}>
         <StamdataLocation.LoctypeSelect disabled={disabled} {...slotProps?.loctypeSelect} />
       </Grid2>
-      {superUser && <Grid2 size={size}></Grid2>}
       <Grid2 size={size}>
-        <StamdataLocation.Boreholeno
-          disabled={disabled}
-          {...slotProps?.boreholeno}
-          //  fieldDescriptionText="Borehole number"
-        />
-      </Grid2>
-      <Grid2 size={size}>
-        <StamdataLocation.BoreholeSuffix disabled={disabled} />
-      </Grid2>
-      <Grid2 size={size}>
-        <StamdataLocation.Groups disabled={disabled} />
+        <StamdataLocation.Boreholeno disabled={disabled} {...slotProps?.boreholeno} />
       </Grid2>
       {superUser && (
         <Grid2 size={size}>
           <StamdataLocation.InitialProjectNo disabled={disabled} />
         </Grid2>
       )}
-      <Grid2 size={size}>
-        <StamdataLocation.X disabled={disabled} />
-      </Grid2>
-      <Grid2 size={size}>
-        <StamdataLocation.Y disabled={disabled} />
+      <Grid2 display={'flex'} flexDirection={'row'} size={size} gap={2}>
+        <Grid2 size={6}>
+          <StamdataLocation.X disabled={disabled} />
+        </Grid2>
+        <Grid2 size={6}>
+          <StamdataLocation.Y disabled={disabled} />
+        </Grid2>
       </Grid2>
       <Grid2 display={'flex'} flexDirection={'row'} size={size} gap={2}>
-        <Grid2 size={9}>
+        <Grid2 size={8}>
           <StamdataLocation.TerrainQuote disabled={disabled} />
         </Grid2>
-        <Grid2 size={3}>
+        <Grid2 size={4}>
           <StamdataLocation.TerrainQuality disabled={disabled} />
         </Grid2>
-      </Grid2>
-      <Grid2 size={size}>
-        <StamdataLocation.Description disabled={disabled} />
       </Grid2>
     </Grid2>
   );

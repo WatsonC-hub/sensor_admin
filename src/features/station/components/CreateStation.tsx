@@ -5,18 +5,20 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 
 import TooltipWrapper from '~/components/TooltipWrapper';
 
-import CreateStationContextProvider from '~/helpers/CreateStationContextProvider';
 import LocationStep from '../createStation/components/LocationStep';
 import FormSteps from '../createStation/components/FormSteps';
 import TimeseriesStep from '../createStation/components/TimeseriesStep';
 import UnitStep from '../createStation/components/UnitStep';
+import useCreateStationContext from '../createStation/api/useCreateStationContext';
+import AdditionalStep from '../createStation/components/AdditionalStep';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
+  const {meta} = useCreateStationContext();
   const size = isMobile ? 12 : 6;
 
   return (
-    <CreateStationContextProvider>
+    <>
       <NavBar>
         <NavBar.GoBack />
         <NavBar.Logo />
@@ -46,12 +48,13 @@ const CreateStation = () => {
             </TooltipWrapper>
           </Box>
           <FormSteps />
-          <LocationStep />
+          {meta?.loc_id === undefined && <LocationStep />}
           <TimeseriesStep />
           <UnitStep />
+          <AdditionalStep />
         </Grid2>
       </Box>
-    </CreateStationContextProvider>
+    </>
   );
 };
 

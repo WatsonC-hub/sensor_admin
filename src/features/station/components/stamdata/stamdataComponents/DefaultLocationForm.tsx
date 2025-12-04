@@ -28,38 +28,29 @@ const DefaultLocationForm = ({size, loc_id, slotProps}: Props) => {
       <Grid2 size={size}>
         <StamdataLocation.LoctypeSelect disabled={disabled} {...slotProps?.loctypeSelect} />
       </Grid2>
-      <Grid2 size={size}></Grid2>
       <Grid2 size={size}>
         <StamdataLocation.Locname disabled={disabled} {...slotProps?.loc_name} />
-      </Grid2>
-      {superUser && <Grid2 size={size}></Grid2>}
-      <Grid2 size={size}>
-        <StamdataLocation.Groups
-          disabled={disabled}
-          // fieldDescriptionText="En gruppe er et linkbart navn på en kollektion af lokationer som f.eks. kan sorteres på i kortet. Under stamdata på en lokation kan du klikke på gruppenavnet for at blive viderestillet til en side med et overblik over alle lokationer i gruppen."
-        />
       </Grid2>
       {superUser && (
         <Grid2 size={size}>
           <StamdataLocation.InitialProjectNo disabled={disabled} />
         </Grid2>
       )}
-      <Grid2 size={size}>
-        <StamdataLocation.X disabled={disabled} />
-      </Grid2>
-      <Grid2 size={size}>
-        <StamdataLocation.Y disabled={disabled} />
+      <Grid2 display={'flex'} flexDirection={'row'} size={size} gap={2}>
+        <Grid2 size={6}>
+          <StamdataLocation.X disabled={disabled} />
+        </Grid2>
+        <Grid2 size={6}>
+          <StamdataLocation.Y disabled={disabled} />
+        </Grid2>
       </Grid2>
       <Grid2 display={'flex'} flexDirection={'row'} size={size} gap={2}>
-        <Grid2 size={9}>
+        <Grid2 size={8}>
           <StamdataLocation.TerrainQuote disabled={disabled} />
         </Grid2>
-        <Grid2 size={3}>
+        <Grid2 size={4}>
           <StamdataLocation.TerrainQuality disabled={disabled} />
         </Grid2>
-      </Grid2>
-      <Grid2 size={size}>
-        <StamdataLocation.Description disabled={disabled} />
       </Grid2>
     </Grid2>
   );

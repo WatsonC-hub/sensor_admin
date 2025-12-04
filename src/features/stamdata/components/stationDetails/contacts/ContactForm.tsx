@@ -31,15 +31,17 @@ const ContactForm = ({loc_id, mode, defaultContacts}: ContactInfoProps) => {
     if (data) {
       onValidate(
         'contacts',
-        formState.contacts.map((contact: ContactTable, i: number) => (i === index ? data : contact))
+        formState.contacts?.map((contact: ContactTable, i: number) =>
+          i === index ? data : contact
+        )
       );
     }
   };
 
   const removeContact = (index: number) => {
-    return onValidate(
+    onValidate(
       'contacts',
-      formState.contacts.filter((_: ContactTable, i: number) => i !== index)
+      formState.contacts?.filter((_: ContactTable, i: number) => i !== index)
     );
   };
 

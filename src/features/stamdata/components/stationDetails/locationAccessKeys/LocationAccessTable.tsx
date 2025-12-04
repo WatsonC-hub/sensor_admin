@@ -12,18 +12,21 @@ import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
 import LocationAccessFormDialog from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
-import {AdgangsforholdTable} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {AccessType, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-import {useQueryTable} from '~/hooks/useTable';
-import {useAppContext} from '~/state/contexts';
+import {useTable} from '~/hooks/useTable';
 import {AccessTable} from '~/types';
 
-type Props = {
-  delLocationAccess: (location_access_id: number | undefined) => void;
-  editLocationAccess: (LocationAccess: AccessTable) => void;
+type LocationAccessTableProps = {
+  mode?: 'add' | 'edit' | 'mass_edit';
+  loc_id?: number;
+  location_access?: Array<AccessTable> | undefined;
+  removeLocationAccess?: (index: number) => void;
+  alterLocationAccess?: (index: number, data?: AccessTable) => void;
+  currentIndex?: number;
+  setCurrentIndex?: (index: number) => void;
 };
 
 const onDeleteBtnClick = (
@@ -35,17 +38,24 @@ const onDeleteBtnClick = (
   setDialogOpen(true);
 };
 
-const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => {
-  const [locationAccessID, setLocationAccessID] = useState<number>();
+const LocationAccessTable = ({
+  mode,
+  loc_id,
+  location_access,
+  removeLocationAccess,
+  alterLocationAccess,
+  currentIndex,
+  setCurrentIndex,
+}: LocationAccessTableProps) => {
+  const [removeId, setRemoveId] = useState<number>(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const {
     watch,
     reset,
     handleSubmit,
     formState: {dirtyFields},
-  } = useFormContext<AdgangsforholdTable>();
-  const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
-  const {loc_id} = useAppContext(['loc_id']);
+  } = useFormContext<AccessTable>();
+  const [openLocationAccessDialog, setOpenLocationAccessDialog] = useState<boolean>(false);
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
   const {isMobile} = useBreakpoints();
@@ -53,7 +63,11 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
     features: {keys: accessKeys},
   } = useUser();
 
-  const {get} = useLocationAccess(loc_id);
+  const {
+    get: {data},
+    put: editLocationAccess,
+    del: delLocationAccess,
+  } = useLocationAccess(loc_id);
 
   const navnLabel = watch('type');
   const columns = useMemo<MRT_ColumnDef<AccessTable>[]>(
@@ -155,27 +169,32 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
     muiTableContainerProps: {},
     enableEditing: true,
     editDisplayMode: 'modal',
+    enableBottomToolbar: false,
     muiTableBodyRowProps: ({row, table}) => {
       return !isMobile
-        ? {
-            // onDoubleClick: () => {
-            //   setValue('adgangsforhold', row.original);
-            //   table.setEditingRow(row);
-            // },
-          }
+        ? {}
         : {
             onClick: (e) => {
-              if ((e.target as HTMLElement).innerText && !disabled) {
+              if ((e.target as HTMLElement).innerText && !disabled && mode === 'edit') {
                 reset(row.original);
-                table.setEditingRow(row);
+              } else if (mode === 'add') {
+                if (setCurrentIndex) setCurrentIndex(row.index);
+                reset(row.original);
               }
+              table.setEditingRow(row);
             },
           };
     },
     renderEditRowDialogContent: () => {
       return (
         <Box py={4} px={2} boxShadow={6}>
-          <LocationAccessFormDialog loc_id={loc_id} editMode={true} />
+          <LocationAccessFormDialog
+            loc_id={loc_id}
+            editMode={true}
+            setOpenDialog={setOpenLocationAccessDialog}
+            openDialog={openLocationAccessDialog}
+            handleSave={handleSave}
+          />
         </Box>
       );
     },
@@ -185,11 +204,18 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          reset(row.original);
-          setOpenContactInfoDialog(true);
+          if (mode === 'edit') reset(row.original);
+          else if (mode === 'add') {
+            if (setCurrentIndex) setCurrentIndex(row.index);
+            reset(row.original);
+          }
+          setOpenLocationAccessDialog(true);
         }}
         onDeleteBtnClick={() => {
-          onDeleteBtnClick(row.original.id, setDialogOpen, setLocationAccessID);
+          if (mode === 'edit') onDeleteBtnClick(row.original.id, setDialogOpen, setRemoveId);
+          else if (mode === 'add') {
+            onDeleteBtnClick(row.index, setDialogOpen, setRemoveId);
+          }
         }}
         disabled={!accessKeys || disabled}
       />
@@ -212,9 +238,9 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
     },
   };
 
-  const table = useQueryTable<AccessTable>(
+  const table = useTable<AccessTable>(
     isMobile ? mobileColumns : columns,
-    get,
+    data ?? location_access ?? [],
     options,
     tableState,
     TableTypes.TABLE,
@@ -223,14 +249,50 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
 
   const handleClose = () => {
     reset(initialLocationAccessData);
-    setOpenContactInfoDialog(false);
+    setOpenLocationAccessDialog(false);
   };
 
-  const handleSave: SubmitHandler<AdgangsforholdTable> = async (details) => {
-    editLocationAccess(details);
+  const handleSave: SubmitHandler<AccessTable> = async (details) => {
+    if (mode === 'edit') {
+      handleEdit(details);
+    } else if (mode === 'add' && alterLocationAccess) {
+      alterLocationAccess(currentIndex ?? 0, details);
+    }
+    setOpenLocationAccessDialog(false);
+    // reset(initialLocationAccessData);
+  };
 
-    setOpenContactInfoDialog(false);
-    reset(initialLocationAccessData);
+  const handleEdit = async (locationAccess: AccessTable) => {
+    const payload = {
+      path: `${locationAccess.id}`,
+      data: {
+        id: locationAccess.id ?? -1,
+        navn: locationAccess.navn,
+        type: locationAccess.type,
+        contact_id: locationAccess.contact_id,
+        kommentar: locationAccess.kommentar,
+        placering: locationAccess.placering ?? null,
+        koden: locationAccess.koden ?? null,
+      },
+    };
+
+    editLocationAccess.mutate(payload, {
+      onSuccess: () => {
+        reset();
+      },
+    });
+  };
+
+  const handleDelete = (location_access_id: number | undefined) => {
+    if (mode === 'edit') {
+      const payload = {
+        path: `${loc_id}/${location_access_id}`,
+      };
+
+      delLocationAccess.mutate(payload);
+    } else if (mode === 'add' && removeLocationAccess) {
+      removeLocationAccess(removeId);
+    }
   };
 
   return (
@@ -238,18 +300,24 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={() => delLocationAccess(locationAccessID)}
+        onOkDelete={() => handleDelete(removeId)}
       />
 
       <Dialog
-        open={openContactInfoDialog}
+        open={openLocationAccessDialog}
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
         fullWidth
       >
         <DialogTitle id="form-dialog-title">Ændre adgangsinformation</DialogTitle>
         <DialogContent>
-          <LocationAccessFormDialog loc_id={loc_id} editMode={false} />
+          <LocationAccessFormDialog
+            loc_id={loc_id}
+            editMode={false}
+            openDialog={openLocationAccessDialog}
+            setOpenDialog={setOpenLocationAccessDialog}
+            handleSave={handleSave}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} bttype="tertiary">
