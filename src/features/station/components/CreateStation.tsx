@@ -43,7 +43,9 @@ const CreateStation = () => {
               url="https://www.watsonc.dk/guides/opret-ny-lokation-tidsserie/"
             >
               <Typography variant="h5" textAlign={'center'} fontWeight={'bold'}>
-                Opret ny station
+                {meta?.loc_id === undefined
+                  ? 'Opret ny station'
+                  : `Tilføj til station: ${meta.loc_name}`}
               </Typography>
             </TooltipWrapper>
           </Box>

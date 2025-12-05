@@ -7,9 +7,7 @@ import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
 import Autocomplete from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/Autocomplete';
 import TransferList from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/TransferList';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useAppContext} from '~/state/contexts';
 import {Ressourcer} from './multiselect/types';
-import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {z} from 'zod';
 
 const ressourcer = z
@@ -34,13 +32,17 @@ const ressourcer = z
   .nullish()
   .transform((ressourcer) => ressourcer ?? []);
 
-const Huskeliste = () => {
+type HuskelisteProps = {
+  loc_id?: number;
+  onValidate?: (ressourcer: Ressourcer[]) => void;
+};
+
+const Huskeliste = ({loc_id, onValidate}: HuskelisteProps) => {
   const {isMobile} = useBreakpoints();
   const {
     relation: {data: related},
   } = useRessourcer();
 
-  const {loc_id} = useAppContext(['loc_id']);
   const {location_permissions} = usePermissions(loc_id);
 
   const schema = ressourcer;
@@ -56,25 +58,31 @@ const Huskeliste = () => {
   const {control} = formMethods;
 
   return (
-    <StationPageBoxLayout>
-      <FormProvider {...formMethods}>
-        <Controller
-          key={'ressourcer'}
-          name="ressourcer"
-          control={control}
-          disabled={location_permissions !== 'edit'}
-          render={
-            !isMobile
-              ? ({field: {onChange, value}}) => (
-                  <TransferList value={value ?? []} setValue={onChange} />
-                )
-              : ({field: {onChange, value}}) => (
-                  <Autocomplete value={value ?? []} setValue={onChange} />
-                )
-          }
-        />
-      </FormProvider>
-    </StationPageBoxLayout>
+    <FormProvider {...formMethods}>
+      <Controller
+        key={'ressourcer'}
+        name="ressourcer"
+        control={control}
+        disabled={location_permissions !== 'edit'}
+        render={
+          !isMobile
+            ? ({field: {onChange, value}}) => (
+                <TransferList
+                  loc_id={loc_id}
+                  value={value ?? []}
+                  setValue={loc_id === undefined && onValidate ? onValidate : onChange}
+                />
+              )
+            : ({field: {onChange, value}}) => (
+                <Autocomplete
+                  loc_id={loc_id}
+                  value={value ?? []}
+                  setValue={loc_id === undefined && onValidate ? onValidate : onChange}
+                />
+              )
+        }
+      />
+    </FormProvider>
   );
 };
 

@@ -5,7 +5,6 @@ import {apiClient} from '~/apiClient';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
-import {useAppContext} from '~/state/contexts';
 
 interface RessourcerBase {
   path: string;
@@ -51,7 +50,7 @@ const ressourcerDelOptions = {
   },
 };
 
-export const getRessourcerOptions = (loc_id: number) =>
+export const getRessourcerOptions = (loc_id?: number) =>
   queryOptions<Array<Ressourcer>, APIError>({
     queryKey: queryKeys.Location.locationRessources(loc_id),
     queryFn: async () => {
@@ -59,10 +58,10 @@ export const getRessourcerOptions = (loc_id: number) =>
 
       return data;
     },
+    enabled: loc_id !== undefined,
   });
 
-export const useRessourcer = () => {
-  const {loc_id} = useAppContext(['loc_id']);
+export const useRessourcer = (loc_id?: number) => {
   const queryClient = useQueryClient();
   const get = useQuery({
     queryKey: queryKeys.Location.ressources(),
@@ -72,7 +71,6 @@ export const useRessourcer = () => {
       return data;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
-    enabled: loc_id !== undefined,
   });
 
   const relation = useQuery(getRessourcerOptions(loc_id));

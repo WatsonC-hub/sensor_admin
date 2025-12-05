@@ -15,6 +15,7 @@ const TimeseriesStep = () => {
     formProps: {
       context: {
         loctype_id: meta?.loctype_id,
+        loc_id: meta?.loc_id,
       },
     },
     mode: 'Add',
@@ -48,6 +49,7 @@ const TimeseriesStep = () => {
                 <TimeseriesForm
                   size={size}
                   loc_name={meta?.loc_name}
+                  required={meta?.loc_id !== undefined}
                   slotProps={{
                     TypeSelect: {
                       onChangeCallback: (event) => {

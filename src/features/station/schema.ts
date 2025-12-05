@@ -74,7 +74,7 @@ const watlevmpAddSchema = z.object({
 
 const addUnitSchema = z
   .object({
-    unit_uuid: z.string({required_error: 'Vælg calypso ID'}).min(1, {message: 'Vælg calypso ID'}),
+    unit_uuid: z.string().optional(),
     startdate: zodDayjs('Startdato skal udfyldes'),
   })
   .refine((unit) => unit.startdate !== undefined, {

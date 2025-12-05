@@ -148,7 +148,7 @@ export default function Station() {
         )}
         {pageToShow === stationPages.HUSKELISTE && ressources && (
           <StationPageBoxLayout key={loc_id}>
-            <Huskeliste />
+            <Huskeliste loc_id={loc_id} />
           </StationPageBoxLayout>
         )}
         {pageToShow === stationPages.BILLEDER && (

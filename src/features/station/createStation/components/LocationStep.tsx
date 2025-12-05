@@ -75,7 +75,7 @@ const LocationStep = () => {
                   },
                 }}
               />
-              <OptionalLocationForm size={size} loc_id={meta?.loc_id} />
+              {meta?.loctype_id && <OptionalLocationForm size={size} loc_id={meta?.loc_id} />}
             </StamdataLocation>
           </FormProvider>
           <FormStepButtons

@@ -49,15 +49,17 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
 
   return (
     <Grid2 size={12} sx={{display: 'flex', justifyContent: 'end'}} gap={0.5} pr={0.5}>
-      <Typography variant="caption" alignContent={'center'}>
-        Felter markeret med en stjerne (*) er obligatoriske.
-      </Typography>
+      {(activeStep === 0 || activeStep === 1) && (
+        <Typography variant="caption" alignContent={'center'}>
+          Felter markeret med en stjerne (*) er obligatoriske.
+        </Typography>
+      )}
       <Box sx={{flex: '1 1 auto'}} />
       <Button
         bttype="primary"
         color="inherit"
         startIcon={!isMobile && <ArrowBack />}
-        disabled={activeStep === 0}
+        disabled={activeStep === 0 || (meta?.loc_id !== undefined && activeStep === 1)}
         onClick={async () => {
           await onFormIsValid();
           setActiveStep(activeStep - 1);
@@ -69,10 +71,11 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
       </Button>
       <Button
         bttype="primary"
-        disabled={activeStep === 2}
+        disabled={activeStep === 3}
         endIcon={!isMobile && <ArrowForwardIcon fontSize="small" />}
         onClick={async () => {
-          await onFormIsValid();
+          const valid = await onFormIsValid();
+          if (!valid) return;
           setActiveStep(activeStep + 1);
         }}
         sx={{mr: 1}}
@@ -80,7 +83,7 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
         {isMobile && <ArrowForwardIcon fontSize="small" />}
         {!isMobile && 'Næste'}
       </Button>
-      {activeStep === 3 && (
+      {activeStep === 3 ? (
         <Button
           bttype="primary"
           startIcon={<Save />}
@@ -96,6 +99,16 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
           }
         >
           Gem & afslut
+        </Button>
+      ) : (
+        <Button
+          bttype="primary"
+          startIcon={<Save fontSize="small" />}
+          onClick={async () => {
+            await onFormIsValid();
+          }}
+        >
+          {!isMobile && `Gem`}
         </Button>
       )}
       <AlertDialog

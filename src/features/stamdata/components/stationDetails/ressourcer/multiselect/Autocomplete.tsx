@@ -13,15 +13,14 @@ import type {
   MultiSelectProps,
   Ressourcer,
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
-import {useAppContext} from '~/state/contexts';
 
 interface CheckboxesTagsProps extends MultiSelectProps {
+  loc_id: number | undefined;
   value: Array<Ressourcer>;
   setValue: (value: Array<Ressourcer>) => void;
 }
 
-export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
-  const {loc_id} = useAppContext(['loc_id']);
+export default function CheckboxesTags({loc_id, value, setValue}: CheckboxesTagsProps) {
   const {
     get: {data: options},
     post: postRessourcer,

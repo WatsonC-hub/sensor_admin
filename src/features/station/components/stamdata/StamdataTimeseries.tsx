@@ -114,7 +114,6 @@ const Intakeno = (
       name="intakeno"
       label="Indtag"
       select
-      required
       infoText="Vælg først et DGU nummer først"
       disabled={props.disabled || !boreholeno}
       placeholder="Vælg indtag"

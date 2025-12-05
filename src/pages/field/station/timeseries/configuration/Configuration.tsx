@@ -27,9 +27,6 @@ const Configuration = () => {
         <YearlyControlsConfig />
       </Layout>
       <Layout>
-        {/* <Typography variant="h6" gutterBottom>
-            Synkronisering
-          </Typography> */}
         <Synchronization />
       </Layout>
     </>

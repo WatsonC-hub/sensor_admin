@@ -16,7 +16,7 @@ export const queryKeys = {
     keys: (loc_id: number | undefined) => ['location_access', loc_id] as const,
     searchKeys: (search: string) => ['search_location_access', search] as const,
     ressources: () => ['ressourcer'] as const,
-    locationRessources: (loc_id: number) => ['ressourcer', loc_id] as const,
+    locationRessources: (loc_id: number | undefined) => ['ressourcer', loc_id] as const,
     permissions: (loc_id: number | undefined) =>
       ['location_permissions', 'metadata', loc_id] as const,
     minimalSelectList: (loc_id: number | undefined) =>

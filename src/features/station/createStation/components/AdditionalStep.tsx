@@ -24,6 +24,7 @@ import DefaultWatlevmpForm from '../../components/stamdata/stamdataComponents/De
 import StamdataWatlevmp from '../../components/stamdata/StamdataWatlevmp';
 import {Watlevmp, watlevmpAddSchema} from '../../schema';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
 
 const AdditionalStep = () => {
   const [helperText, setHelperText] = useState('');
@@ -110,23 +111,27 @@ const AdditionalStep = () => {
     <>
       {activeStep === 3 && (
         <Box display={'flex'} flexDirection={'column'} gap={1.5}>
-          <Typography variant="h6" marginTop={2} fontWeight={'bold'} marginBottom={1}>
-            Valgfri felter
-          </Typography>
+          {meta?.loc_id === undefined && (
+            <>
+              <Typography variant="subtitle1" fontWeight={'bold'}>
+                Kontakter
+              </Typography>
+              <ContactForm mode={'add'} defaultContacts={contacts} />
+              <Typography variant="subtitle1" fontWeight={'bold'}>
+                Adgangsnøgler
+              </Typography>
+              <LocationAccessForm mode={'add'} defaultLocationAccess={location_access} />
+              <Typography variant="subtitle1" fontWeight={'bold'}>
+                Ressourcer
+              </Typography>
+              <Huskeliste
+                onValidate={(ressourcer) => {
+                  onValidate('ressources', ressourcer);
+                }}
+              />
+            </>
+          )}
 
-          <Typography variant="subtitle1" fontWeight={'bold'}>
-            Kontakter
-          </Typography>
-          <ContactForm loc_id={meta?.loc_id} mode={'add'} defaultContacts={contacts} />
-
-          <Typography variant="subtitle1" fontWeight={'bold'}>
-            Adgangsnøgler
-          </Typography>
-          <LocationAccessForm
-            loc_id={meta?.loc_id}
-            mode={'add'}
-            defaultLocationAccess={location_access}
-          />
           {meta?.tstype_id === 1 && (
             <Box>
               <Typography variant="subtitle1" marginBottom={1}>

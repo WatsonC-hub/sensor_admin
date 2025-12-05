@@ -1,6 +1,7 @@
 import {Dayjs} from 'dayjs';
 import React, {createContext, useEffect, useState} from 'react';
 import {useLocation} from 'react-router';
+import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 import {Watlevmp} from '~/features/station/schema';
 import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
 import {useLocationData} from '~/hooks/query/useMetadata';
@@ -54,6 +55,7 @@ export type FormState = {
   sync?: SyncFormValues;
   contacts?: Array<ContactTable>;
   location_access?: Array<AccessTable>;
+  ressources?: Array<Ressourcer>;
 };
 
 type CreateStationContextType = {
@@ -73,7 +75,8 @@ type CreateStationContextType = {
       | 'control_settings'
       | 'sync'
       | 'contacts'
-      | 'location_access',
+      | 'location_access'
+      | 'ressources',
     data: any
   ) => void;
 };
@@ -92,7 +95,7 @@ const CreateStationContextProvider = ({children}: Props) => {
   };
 
   const [meta, setMeta] = useState<MetaType | null>({loc_id: loc_id});
-  const [formState, setFormState] = useState<FormState>(defaultData);
+  const [formState, setFormState] = useState<FormState>(loc_id === undefined ? defaultData : {});
   const [activeStep, setActiveStep] = useState(loc_id ? 1 : 0);
   const [formErrors, setFormErrors] = useState<Record<string, any>>({});
 
@@ -105,7 +108,8 @@ const CreateStationContextProvider = ({children}: Props) => {
       | 'control_settings'
       | 'sync'
       | 'contacts'
-      | 'location_access',
+      | 'location_access'
+      | 'ressources',
     data: FormState[keyof FormState]
   ) => {
     if (data) {
@@ -134,24 +138,6 @@ const CreateStationContextProvider = ({children}: Props) => {
   useEffect(() => {
     if (metadata === undefined) return;
     else {
-      setFormState((prev) => ({
-        ...prev,
-        location: {
-          loc_id: metadata.loc_id,
-          loc_name: metadata.loc_name,
-          loctype_id: metadata.loctype_id,
-          terrainqual: metadata.terrainqual,
-          terrainlevel: metadata.terrainlevel,
-          boreholeno: metadata.boreholeno,
-          suffix: metadata.suffix,
-          x: metadata.x,
-          y: metadata.y,
-          initial_project_no: metadata.projectno,
-          description: metadata.description,
-          groups: metadata.groups,
-        },
-      }));
-
       setMeta((prev) => ({
         ...prev,
         loc_name: metadata.loc_name,

@@ -31,7 +31,7 @@ import {useDisplayState} from '~/hooks/ui';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();
-  useAppContext(['loc_id']);
+  const {loc_id} = useAppContext(['loc_id']);
   const {createStamdata} = useNavigationFunctions();
   const [pageToShow] = useStationPages();
   const {data: metadata} = useLocationData();
@@ -82,7 +82,11 @@ export default function LocationRouter() {
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.KONTAKTER && contacts && <ContactInfo />}
-      {pageToShow === stationPages.HUSKELISTE && ressources && <Huskeliste />}
+      {pageToShow === stationPages.HUSKELISTE && ressources && (
+        <StationPageBoxLayout>
+          <Huskeliste loc_id={loc_id} />
+        </StationPageBoxLayout>
+      )}
       {pageToShow === stationPages.NØGLER && accessKeys && <LocationAccess />}
     </Layout>
   );
