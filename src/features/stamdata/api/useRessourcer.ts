@@ -83,6 +83,9 @@ export const useRessourcer = (loc_id?: number) => {
       });
       toast.success('Huskeliste gemt');
     },
+    meta: {
+      invalidates: [['metadata'], ['register']],
+    },
   });
 
   const put = useMutation({
@@ -93,6 +96,9 @@ export const useRessourcer = (loc_id?: number) => {
       });
       toast.success('Huskeliste ændret');
     },
+    meta: {
+      invalidates: [['metadata'], ['register']],
+    },
   });
 
   const del = useMutation({
@@ -102,6 +108,9 @@ export const useRessourcer = (loc_id?: number) => {
         queryKey: queryKeys.Location.locationRessources(loc_id),
       });
       toast.success('Huskeliste slettet');
+    },
+    meta: {
+      invalidates: [['metadata'], ['register']],
     },
   });
 
