@@ -50,7 +50,7 @@ const EditTimeseries = () => {
 
   const {data: defaultValues, error} = schema.safeParse({
     prefix: metadata?.prefix,
-    sensor_depth_m: metadata?.sensor_depth_m,
+    ...(metadata?.calculated ? {} : {sensor_depth_m: metadata?.sensor_depth_m}),
     intakeno: metadata?.intakeno,
     requires_auth: metadata?.requires_auth ?? false,
     hide_public: metadata?.hide_public ?? false,
@@ -59,7 +59,6 @@ const EditTimeseries = () => {
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({
     formProps: {
-      // defaultValues: defaultValues,
       context: {
         loctype_id: metadata?.loctype_id,
       },
