@@ -42,7 +42,7 @@ export default function AddUnitForm({
   mode,
 }: AddUnitFormProps) {
   const {ts_id} = useAppContext([], ['ts_id']);
-  const user = useUser();
+  const {superUser} = useUser();
 
   const {
     get: {data: availableUnits, isLoading},
@@ -145,7 +145,7 @@ export default function AddUnitForm({
       },
     };
 
-    if (user?.superUser) {
+    if (superUser) {
       const {data} = await apiClient.get(
         `/sensor_field/stamdata/check-unit-invoice/${ts_id}/${unit.unit_uuid}`
       );

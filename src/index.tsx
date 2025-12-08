@@ -31,7 +31,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import minMax from 'dayjs/plugin/minMax';
-
+import {onlineManager} from '@tanstack/react-query';
 dayjs.extend(localizedFormat);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -56,6 +56,11 @@ if ('serviceWorker' in navigator) {
   registerSW({immediate: true});
 }
 
+onlineManager.setOnline(navigator.onLine);
+
+window.addEventListener('online', () => onlineManager.setOnline(true));
+window.addEventListener('offline', () => onlineManager.setOnline(false));
+
 const container = document.getElementById('root');
 if (!container) {
   throw new Error('No root element found');
@@ -69,8 +74,21 @@ root.render(
         <ThemeProvider theme={theme}>
           <PersistQueryClientProvider
             client={queryClient}
-            persistOptions={{persister}}
+            persistOptions={{
+              persister,
+              dehydrateOptions: {
+                shouldDehydrateMutation: () => true,
+              },
+            }}
             onSuccess={() => {
+              queryClient
+                .getMutationCache()
+                .getAll()
+                .forEach((mutation) => {
+                  if (mutation.state.status === 'pending' && mutation.state.isPaused === false) {
+                    mutation.state.isPaused = true;
+                  }
+                });
               queryClient.resumePausedMutations().then(() => {
                 queryClient.resetQueries();
               });

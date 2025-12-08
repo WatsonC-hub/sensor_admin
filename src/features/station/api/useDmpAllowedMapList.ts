@@ -26,9 +26,9 @@ const useDmpAllowedMapList = (ts_id: number) => {
 
   const {data: dmpAllowedMap} = useQuery(getDmpAllowedMapList);
 
-  const user = useUser();
+  const {superUser} = useUser();
 
-  if (!user?.superUser) return false;
+  if (!superUser) return false;
 
   if (!metadata || !dmpAllowedMap) return null;
 

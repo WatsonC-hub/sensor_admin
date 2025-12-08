@@ -26,7 +26,9 @@ const LocationAccess = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [createNew, setCreateNew] = useState<boolean>(false);
-  const user = useUser();
+  const {
+    features: {keys: accessKeys},
+  } = useUser();
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
   const {
@@ -147,7 +149,7 @@ const LocationAccess = () => {
       <FabWrapper
         icon={<KeyIcon />}
         text="Tilføj nøgle eller kode"
-        disabled={!user?.features?.keys || disabled}
+        disabled={!accessKeys || disabled}
         onClick={() => setOpenDialog(true)}
         sx={{visibility: openDialog ? 'hidden' : 'visible'}}
       />

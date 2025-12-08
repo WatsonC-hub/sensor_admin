@@ -10,7 +10,7 @@ type Props = {
 };
 
 const DefaultLocationEditForm = ({size, loc_id}: Props) => {
-  const user = useUser();
+  const {superUser} = useUser();
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
 
@@ -19,14 +19,14 @@ const DefaultLocationEditForm = ({size, loc_id}: Props) => {
       <Grid2 size={size}>
         <StamdataLocation.LoctypeSelect disabled={disabled} />
       </Grid2>
-      {!user?.superUser && <Grid2 size={size}></Grid2>}
+      {!superUser && <Grid2 size={size}></Grid2>}
       <Grid2 size={size}>
         <StamdataLocation.Locname disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
         <StamdataLocation.Groups disabled={disabled} />
       </Grid2>
-      {user?.superUser && (
+      {superUser && (
         <Grid2 size={size}>
           <StamdataLocation.InitialProjectNo disabled={disabled} />
         </Grid2>

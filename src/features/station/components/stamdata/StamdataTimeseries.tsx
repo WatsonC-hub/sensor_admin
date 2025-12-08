@@ -1,4 +1,4 @@
-import {MenuItem, InputAdornment, TextField, FormControlLabel, Checkbox, Box} from '@mui/material';
+import {InputAdornment, TextField, FormControlLabel, Checkbox, Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from '~/apiClient';
@@ -52,21 +52,20 @@ const TypeSelect = (
     refetchInterval: 1000 * 60 * 60 * 24, // Refetch every 24 hours
   });
 
-  const menuItems = timeseries_types
-    ?.filter((i) => i.tstype_id !== 0)
-    ?.map((item) => (
-      <MenuItem value={item.tstype_id} key={item.tstype_id}>
-        {item.tstype_name}
-      </MenuItem>
-    ));
-
   return (
-    <FormInput name="tstype_id" label="Tidsserietype" select required fullWidth {...props}>
-      <MenuItem disabled value={-1}>
-        Vælg type
-      </MenuItem>
-      {menuItems}
-    </FormInput>
+    <FormInput
+      name="tstype_id"
+      label="Tidsserietype"
+      select
+      placeholder="Vælg type"
+      options={timeseries_types
+        ?.filter((type) => type.tstype_id !== 0)
+        .map((type) => ({[type.tstype_id]: type.tstype_name}))}
+      keyType="number"
+      required
+      fullWidth
+      {...props}
+    />
   );
 };
 
@@ -117,19 +116,14 @@ const Intakeno = (
       label="Indtag"
       select
       required
-      disabled={props.disabled}
+      infoText="Vælg først et DGU nummer først"
+      disabled={props.disabled || !boreholeno}
+      placeholder="Vælg indtag"
+      options={intake_list?.map((item) => ({[item.intakeno]: item.intakeno}))}
+      keyType="number"
       fullWidth
       {...props}
-    >
-      <MenuItem disabled value={''}>
-        Vælg indtag
-      </MenuItem>
-      {intake_list?.map((item) => (
-        <MenuItem value={item.intakeno} key={item.intakeno}>
-          {item.intakeno}
-        </MenuItem>
-      ))}
-    </FormInput>
+    />
   );
 };
 
@@ -217,12 +211,12 @@ const HidePublic = () => {
   );
 };
 
-const ScanBoreholeLabel = () => {
+const ScanCalypsoLabel = () => {
   const [openCamera, setOpenCamera] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [calypso_id, setCalypso_id] = React.useState<number | null>(null);
   const {setValue, watch} = useFormContext();
-  const calypso_id_watch = watch('borehole_calypso_id');
+  const calypso_id_watch = watch('calypso_id');
 
   const handleScan = async (data: any, calypso_id: number | null) => {
     if (calypso_id) {
@@ -242,7 +236,7 @@ const ScanBoreholeLabel = () => {
       alignItems="center"
       justifyContent="space-between"
     >
-      <FormInput label="Calypso ID" name="borehole_calypso_id" disabled fullWidth />
+      <FormInput label="Calypso ID" name="calypso_id" disabled fullWidth />
       <Button
         sx={{width: '80%', textTransform: 'initial', borderRadius: 15}}
         bttype="primary"
@@ -264,7 +258,7 @@ const ScanBoreholeLabel = () => {
           open={openDialog}
           setOpen={setOpenDialog}
           onConfirm={() => {
-            setValue('borehole_calypso_id', Number(calypso_id), {
+            setValue('calypso_id', Number(calypso_id), {
               shouldValidate: true,
               shouldDirty: true,
             });
@@ -313,7 +307,7 @@ StamdataTimeseries.TimeriesTypeField = TimeseriesTypeField;
 StamdataTimeseries.Prefix = Prefix;
 StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;
-StamdataTimeseries.ScanBoreholeLabel = ScanBoreholeLabel;
+StamdataTimeseries.ScanCalypsoLabel = ScanCalypsoLabel;
 StamdataTimeseries.TimeseriesID = TimeseriesID;
 StamdataTimeseries.RequiresAuth = RequiresAuth;
 StamdataTimeseries.HidePublic = HidePublic;

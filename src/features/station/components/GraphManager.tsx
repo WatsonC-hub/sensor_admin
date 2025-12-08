@@ -13,8 +13,10 @@ import {
   setGraphHeight,
   defaultDataToShow as globalDefaultDataToShow,
 } from '~/consts';
+import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
 import {usePejling} from '~/features/pejling/api/usePejling';
+import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
@@ -88,6 +90,12 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       side: 'right',
     },
   };
+
+  const {data: unitHistory} = useUnitHistory();
+
+  const {
+    get: {data: algorithms},
+  } = useAlgorithms();
 
   const hideJupiterIfNotRelevant =
     dataToShowSelected.Jupiter === undefined &&
@@ -210,8 +218,16 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const {data: jupiterData} = useQuery({
     queryKey: queryKeys.Borehole.jupiterData(boreholeno, intakeno),
     queryFn: async () => {
+      const params = {
+        startdato:
+          unitHistory && unitHistory.length > 1
+            ? unitHistory[unitHistory.length - 1].startdato
+            : timeseries_data?.startdato,
+      };
+
       const {data} = await apiClient.get<JupiterData>(
-        `/sensor_field/borehole/jupiter/measurements/${boreholeno}/${intakeno}`
+        `/sensor_field/borehole/jupiter/measurements/${boreholeno}/${intakeno}`,
+        {params}
       );
       return data;
     },
@@ -246,6 +262,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       line: {width: 2},
       mode: 'lines+markers',
       marker: {symbol: '100', size: 8},
+      uid: `jupiter-situation-${situation}`,
     };
     return trace;
   });
@@ -260,6 +277,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     type: 'scattergl',
     mode: 'markers',
     marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
+    uid: 'calypso-data',
   };
 
   const borehole_data: Array<Partial<PlotData>> = [...jupiterTraces, plotOurData];
@@ -268,19 +286,38 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const yControl = controlData?.map((d) => d.referenced_measurement);
   const textControl = controlData?.map((d) => correction_map[d.useforcorrection]);
 
-  // console.log('templines', tempLines);
   const [shapes, annotations] = useMemo(() => {
     const [qaShapes, qaAnnotate] = transformQAData(qaData ?? []);
     let shapes: Array<object> = [];
     let annotations: Array<object> = [];
 
+    let alarm_lines: Array<{name: string; level: number}> = [];
+    if (
+      algorithms?.find(
+        (algorithm) => algorithm.algorithm === 'ThresholdAlarm' && algorithm.disabled === false
+      ) !== undefined
+    ) {
+      const algorithm = algorithms.find(
+        (algorithm) => algorithm.algorithm === 'ThresholdAlarm' && algorithm.disabled === false
+      );
+      alarm_lines = Object.entries(algorithm?.parameter_values ?? {})
+        .filter((value) => value[0] !== 'aggregation_option' && value[1] !== null)
+        ?.map((elem) => {
+          const parameter = algorithm?.parameters.find((param) => param.name == elem[0]);
+          return {
+            name: parameter?.label ?? '',
+            level: elem[1],
+          };
+        });
+    }
+
     Object.entries(dataToShow).forEach((entry) => {
       if (entry[1] == false) return;
       switch (entry[0]) {
-        case 'Alarm linjer':
+        case 'Alarm niveauer':
           shapes = [
             ...shapes,
-            ...(tempLines?.map((elem) => {
+            ...(alarm_lines?.map((elem) => {
               return {
                 x0: 0,
                 x1: 0.97,
@@ -289,14 +326,14 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
                 name: elem.name,
                 type: 'scatter',
                 xref: 'paper',
-                line: elem.line ?? {width: 1, dash: 'dash'},
-                mode: elem.mode ?? 'lines',
+                line: {width: 1, dash: 'dash'},
+                mode: 'lines',
               };
             }) ?? []),
           ];
           annotations = [
             ...annotations,
-            ...(tempLines?.map((elem) => {
+            ...(alarm_lines?.map((elem) => {
               return {
                 xref: 'paper',
                 yref: 'y',

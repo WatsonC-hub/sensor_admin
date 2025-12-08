@@ -48,13 +48,15 @@ type MapOverviewOptions<T> = Partial<
 >;
 
 export const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T>) => {
-  const user = useUser();
+  const {
+    features: {iotAccess},
+  } = useUser();
 
   return useQuery({
     ...mapOverviewOptions,
     ...options,
     select: options?.select as (data: MapOverview[]) => T,
-    enabled: user?.features?.iotAccess,
+    enabled: iotAccess,
   });
 };
 
@@ -90,10 +92,12 @@ export const timeseriesStatusOptions = (loc_id: number) =>
   });
 
 export const useTimeseriesStatus = (loc_id: number) => {
-  const user = useUser();
+  const {
+    features: {iotAccess},
+  } = useUser();
   return useQuery({
     ...timeseriesStatusOptions(loc_id),
-    enabled: user?.features?.iotAccess,
+    enabled: iotAccess,
   });
 };
 

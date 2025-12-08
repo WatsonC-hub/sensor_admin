@@ -30,13 +30,12 @@ interface TaskListProps {
 const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
   const {loc_id} = useAppContext(['loc_id']);
   const {tasks} = useTaskState();
-  const user = useUser();
+  const {advancedTaskPermission, simpleTaskPermission} = useUser();
   const {data: location_data} = useLocationData(loc_id);
 
   const location_tasks = tasks
     ?.filter(
-      (task) =>
-        task.loc_id === loc_id && (task.itinerary_id === null || !user?.advancedTaskPermission)
+      (task) => task.loc_id === loc_id && (task.itinerary_id === null || !advancedTaskPermission)
     )
     .sort(sortTasks);
 
@@ -57,7 +56,7 @@ const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
           </Typography>
         </TooltipWrapper>
         <>
-          {user?.simpleTaskPermission && (
+          {simpleTaskPermission && (
             <Tooltip
               title={
                 location_data?.timeseries.length === 0
@@ -81,7 +80,7 @@ const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
       {location_tasks?.map((task) => {
         return (
           <Box key={task.id}>
-            {user?.simpleTaskPermission === true ? (
+            {simpleTaskPermission === true ? (
               isSimpleTask(task) ? (
                 <TaskListItemSimpleCard task={task} />
               ) : (

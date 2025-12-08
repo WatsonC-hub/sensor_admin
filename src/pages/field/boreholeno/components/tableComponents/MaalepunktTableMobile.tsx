@@ -33,7 +33,7 @@ interface Props {
 export default function MaalepunktTableMobile({data, handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
-  const user = useUser();
+  const {org_id} = useUser();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -87,7 +87,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, d
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                disabled={disabled || row.original.organisationid != user?.org_id}
+                disabled={disabled || row.original.organisationid != org_id}
               />
             </Box>
           </Box>

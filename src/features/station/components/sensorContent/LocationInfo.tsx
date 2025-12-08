@@ -17,7 +17,7 @@ const LocationInfo = () => {
   const {data: timeseriesList} = useTimeseriesStatus(loc_id);
   const [, setPageToShow] = useStationPages();
   const {isMobile} = useBreakpoints();
-  const user = useUser();
+  const {superUser} = useUser();
 
   const isDGU = location_data?.loctype_name === 'DGU boring';
   return (
@@ -39,7 +39,7 @@ const LocationInfo = () => {
         ) : (
           location_data?.loc_name
         )}
-        {location_data?.sla !== undefined && location_data.sla > 0 && user?.superUser && (
+        {location_data?.sla !== undefined && location_data.sla > 0 && superUser && (
           <Typography mt={-1} ml={2} fontStyle={'italic'} fontWeight={'bold'} variant={'caption'}>
             SLA: {location_data?.sla} {location_data.sla > 1 ? 'dage' : 'dag'}
           </Typography>
