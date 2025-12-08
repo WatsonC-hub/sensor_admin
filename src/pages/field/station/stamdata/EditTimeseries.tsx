@@ -120,12 +120,17 @@ const EditTimeseries = () => {
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
           {superUser && (
             <TooltipWrapper
-              description="Slet tidsserien kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen"
+              description={
+                metadata?.calculated
+                  ? 'Det er ikke muligt at slette en beregnet tidsserie'
+                  : 'Slet tidsserien kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen'
+              }
               withIcon={false}
             >
               <Button
                 bttype="danger"
                 startIcon={<Warning />}
+                disabled={metadata?.calculated}
                 onClick={() => setAssertDeletion(true)}
               >
                 Slet tidsserie
