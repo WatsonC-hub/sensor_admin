@@ -5,6 +5,7 @@ import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 export type ProgressStatus = {
   images: boolean;
   adgangsforhold: boolean;
+  ressourcer: boolean;
 };
 
 export const getQueryOptions = (ts_id: number | undefined) =>
@@ -36,18 +37,21 @@ const useProgress = <T = ProgressStatus>(
   return query;
 };
 
-const useUpdateProgress = (ts_id: number) => {
+const useUpdateProgress = (ts_id: number | undefined) => {
   const mutation = useMutation({
     mutationFn: async (data: any) => {
       const {data: res} = await apiClient.put(`/sensor_field/stamdata/progress/${ts_id}`, data);
       return res;
+    },
+    meta: {
+      invalidates: [['register']],
     },
   });
 
   return mutation;
 };
 
-const useStationProgress = (ts_id: number, progressKey: keyof ProgressStatus) => {
+const useStationProgress = (ts_id: number | undefined, progressKey: keyof ProgressStatus) => {
   const {data: progress} = useProgress(ts_id, {
     select: (data) => data[progressKey],
   });
@@ -61,7 +65,7 @@ const useStationProgress = (ts_id: number, progressKey: keyof ProgressStatus) =>
   };
 
   return {
-    needsProgres: progress == false ? true : false,
+    needsProgress: progress == false ? true : false,
     hasAssessed,
   };
 };

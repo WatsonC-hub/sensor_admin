@@ -165,7 +165,6 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.tstype_id != 1 || metadata?.calculated,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id!)),
-          progress: 0,
           // tooltip: 'På denne side kan du se og redigere målepunkter til din tidsserie.',
         },
         {
@@ -215,8 +214,6 @@ const StationDrawer = () => {
             }
             prefetchDmpAllowedMapList();
           },
-          progress: 0,
-          maxProgress: 2,
           tooltip:
             'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
         },
@@ -267,6 +264,7 @@ const StationDrawer = () => {
           requiredTsId: false,
           disabled: !ressources,
           onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
+          progress: progress?.ressourcer == false ? 0 : undefined,
         },
         {
           text: 'Konfiguration',

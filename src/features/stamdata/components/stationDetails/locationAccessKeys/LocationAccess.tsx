@@ -19,8 +19,7 @@ import {
   AdgangsForhold,
 } from '~/features/stamdata/components/stationDetails/zodSchemas';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {useProgress} from '~/hooks/query/stationProgress';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 import {useAppContext} from '~/state/contexts';
 import {Access, AccessTable} from '~/types';
 
@@ -28,9 +27,8 @@ const LocationAccess = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [createNew, setCreateNew] = useState<boolean>(false);
-  const {data: progress} = useProgress(ts_id, {
-    select: (data) => data.adgangsforhold,
-  });
+
+  const {hasAssessed, needsProgress} = useStationProgress(ts_id, 'adgangsforhold');
   const {
     features: {keys: accessKeys},
   } = useUser();
@@ -151,7 +149,11 @@ const LocationAccess = () => {
           )}
         </FormProvider>
       </StationPageBoxLayout>
-      <UpdateProgressButton progressKey={'adgangsforhold'} ts_id={ts_id} />
+      {needsProgress && (
+        <Button bttype="primary" onClick={hasAssessed}>
+          Opdater
+        </Button>
+      )}
       <FabWrapper
         icon={<KeyIcon />}
         text="Tilføj nøgle eller kode"
