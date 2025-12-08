@@ -123,13 +123,9 @@ const EditTimeseries = () => {
         </StamdataTimeseries>
 
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-          {superUser && (
+          {superUser && !metadata?.calculated && (
             <TooltipWrapper
-              description={
-                metadata?.calculated
-                  ? 'Det er ikke muligt at slette en beregnet tidsserie'
-                  : 'Slet tidsserien kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen'
-              }
+              description="Slet tidsserien kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen"
               withIcon={false}
             >
               <Button
