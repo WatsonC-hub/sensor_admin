@@ -131,7 +131,7 @@ const StationDrawer = () => {
           icon: <Edit />,
           page: stationPages.GENERELTIDSSERIE,
           requiredTsId: true,
-          disabled: metadata?.calculated || !metadata?.ts_id,
+          disabled: !metadata?.ts_id,
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
         },
       ],

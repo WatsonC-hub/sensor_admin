@@ -21,15 +21,20 @@ const BoreholeTimeseriesEditForm = ({size}: Props) => {
       <Grid2 size={size}>
         <StamdataTimeseries.TimeriesTypeField tstype_id={metadata?.tstype_id} />
       </Grid2>
-      <Grid2 size={size}>
-        <StamdataTimeseries.SensorDepth disabled={disabled} />
-      </Grid2>
+      {!metadata?.calculated && (
+        <Grid2 size={size}>
+          <StamdataTimeseries.SensorDepth disabled={disabled} />
+        </Grid2>
+      )}
       <Grid2 size={{xs: 12, sm: 2}} alignContent={'center'}>
         <StamdataTimeseries.TimeseriesID />
       </Grid2>
-      <Grid2 size={{xs: 12, sm: 4}}>
-        <StamdataTimeseries.ScanCalypsoLabel />
-      </Grid2>
+      {!metadata?.calculated && (
+        <Grid2 size={{xs: 12, sm: 4}}>
+          <StamdataTimeseries.ScanCalypsoLabel />
+        </Grid2>
+      )}
+      {metadata?.calculated && <Grid2 size={size}></Grid2>}
       <Grid2 size={size} display={'flex'} flexDirection={'column'} alignContent={'center'} gap={1}>
         <FormFieldset label="Tilgængelighed">
           <StamdataTimeseries.RequiresAuth />
