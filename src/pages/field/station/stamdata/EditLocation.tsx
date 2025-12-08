@@ -10,6 +10,7 @@ import {z} from 'zod';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import useDeleteLocation from '~/features/station/api/useDeleteLocation';
 import useLocationForm from '~/features/station/api/useLocationForm';
@@ -27,11 +28,12 @@ const EditLocation = () => {
   const [, setPage] = useStationPages();
   const {loc_id} = useAppContext(['loc_id']);
   const [assertDeletion, setAssertDeletion] = React.useState(false);
-  const del = useDeleteLocation();
+  const mutation = useDeleteLocation();
   const {data: metadata} = useLocationData();
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
+  const {superUser} = useUser();
 
   const metadataEditLocationMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -94,14 +96,20 @@ const EditLocation = () => {
           <LocationForm size={size} loc_id={loc_id} />
         </StamdataLocation>
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-          <TooltipWrapper
-            description="Slet lokationen kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen"
-            withIcon={false}
-          >
-            <Button bttype="danger" startIcon={<Warning />} onClick={() => setAssertDeletion(true)}>
-              Slet lokation
-            </Button>
-          </TooltipWrapper>
+          {superUser && (
+            <TooltipWrapper
+              description="Slet lokationen kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen"
+              withIcon={false}
+            >
+              <Button
+                bttype="danger"
+                startIcon={<Warning />}
+                onClick={() => setAssertDeletion(true)}
+              >
+                Slet lokation
+              </Button>
+            </TooltipWrapper>
+          )}
           <Button
             bttype="tertiary"
             onClick={() => reset(default_data)}
@@ -125,9 +133,10 @@ const EditLocation = () => {
         open={assertDeletion}
         description="Sletter du lokationen, vil alle tilknyttede nøgler, kontakter, huskeliste og billeder også blive slettet. Denne handling kan ikke fortrydes."
         onClose={() => setAssertDeletion(false)}
+        isPending={mutation.isPending}
         onDelete={() => {
           const payload = {path: loc_id};
-          del.mutate(payload, {
+          mutation.mutate(payload, {
             onSuccess: () => {
               setAssertDeletion(false);
               setLocId(null);
