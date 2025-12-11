@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useCreateStationContext from '../api/useCreateStationContext';
 import {ArrowBack, Save} from '@mui/icons-material';
-import {Grid2, Box, Typography} from '@mui/material';
+import {Grid2, Typography} from '@mui/material';
 import Button from '~/components/Button';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -48,49 +48,49 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
   });
 
   return (
-    <Grid2 size={12} sx={{display: 'flex', justifyContent: 'end'}} gap={0.5} pr={0.5}>
-      {(activeStep === 0 || activeStep === 1) && (
-        <Typography variant="caption" alignContent={'center'}>
-          Felter markeret med en stjerne (*) er obligatoriske.
-        </Typography>
-      )}
-      <Box sx={{flex: '1 1 auto'}} />
-      <Button
-        bttype="primary"
-        color="inherit"
-        startIcon={!isMobile && <ArrowBack />}
-        disabled={activeStep === 0 || (meta?.loc_id !== undefined && activeStep === 1)}
-        onClick={async () => {
-          await onFormIsValid();
-          setActiveStep(activeStep - 1);
-        }}
-        sx={{mr: 1}}
-      >
-        {isMobile && <ArrowBack />}
-        {!isMobile && 'Tilbage'}
-      </Button>
-      <Button
-        bttype="primary"
-        disabled={activeStep === 3}
-        endIcon={!isMobile && <ArrowForwardIcon fontSize="small" />}
-        onClick={async () => {
-          const valid = await onFormIsValid();
-          if (!valid) return;
-          setActiveStep(activeStep + 1);
-        }}
-        sx={{mr: 1}}
-      >
-        {isMobile && <ArrowForwardIcon fontSize="small" />}
-        {!isMobile && 'Næste'}
-      </Button>
-      {activeStep === 3 ? (
+    <Grid2 size={12} gap={0.5} pr={0.5}>
+      <Grid2 size={isMobile ? 12 : 'auto'} sx={{alignItems: 'center', display: 'flex'}}>
+        {(activeStep === 0 || activeStep === 1) && (
+          <Typography variant="caption" alignContent={'center'}>
+            Felter markeret med en stjerne (*) er obligatoriske.
+          </Typography>
+        )}
+      </Grid2>
+      <Grid2 size={isMobile ? 12 : 'auto'} sx={{display: 'flex', justifyContent: 'flex-end'}}>
         <Button
           bttype="primary"
-          startIcon={<Save />}
+          color="inherit"
+          startIcon={!isMobile && <ArrowBack />}
+          disabled={activeStep === 0 || (meta?.loc_id !== undefined && activeStep === 1)}
+          onClick={async () => {
+            await onFormIsValid();
+            setActiveStep(activeStep - 1);
+          }}
+          sx={{mr: 1}}
+        >
+          {isMobile && <ArrowBack />}
+          {!isMobile && 'Tilbage'}
+        </Button>
+        <Button
+          bttype="primary"
+          disabled={activeStep === 2}
+          endIcon={!isMobile && <ArrowForwardIcon fontSize="small" />}
+          onClick={async () => {
+            await onFormIsValid();
+            setActiveStep(activeStep + 1);
+          }}
+          sx={{mr: 1}}
+        >
+          {isMobile && <ArrowForwardIcon fontSize="small" />}
+          {!isMobile && 'Næste'}
+        </Button>
+        <Button
+          bttype="primary"
+          startIcon={!isMobile && <Save fontSize="small" />}
           onClick={async () => {
             const isStepValid = await onFormIsValid();
             const formValid = Object.values(formErrors).every((error) => error !== true);
-            if (formValid && isStepValid) {
+            if (formValid && isStepValid && activeStep === 2) {
               setShowAlert(true);
             }
           }}
@@ -98,19 +98,9 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
             meta?.loctype_id === -1 || Object.values(formErrors).some((error) => error === true)
           }
         >
-          Gem & afslut
+          {!isMobile ? activeStep === 3 ? `Gem & afslut` : 'Gem' : <Save fontSize="small" />}
         </Button>
-      ) : (
-        <Button
-          bttype="primary"
-          startIcon={<Save fontSize="small" />}
-          onClick={async () => {
-            await onFormIsValid();
-          }}
-        >
-          {!isMobile && `Gem`}
-        </Button>
-      )}
+      </Grid2>
       <AlertDialog
         open={showAlert}
         setOpen={setShowAlert}
@@ -124,6 +114,7 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
         }
         handleOpret={() => {
           if (!formState) return;
+          console.log('triggering twice');
           stamdataNewMutation.mutate(formState);
         }}
       />

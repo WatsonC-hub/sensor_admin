@@ -26,6 +26,8 @@ export default function UnitForm({mode, tstype_id}: UnitFormProps) {
   const startdato = watch('startdate');
   const unit_uuid: string = watch('unit_uuid');
 
+  console.log(unit_uuid);
+
   const {
     get: {data: availableUnits},
   } = useUnit();

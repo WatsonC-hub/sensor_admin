@@ -15,7 +15,7 @@ const LocationStep = () => {
     setMeta,
     onValidate,
     formState: {location},
-    formErrors,
+    formErrors: {location: locErrors},
     setFormErrors,
     activeStep,
   } = useCreateStationContext();
@@ -32,15 +32,20 @@ const LocationStep = () => {
   const {
     handleSubmit,
     formState: {errors},
+    trigger,
   } = locationFormMethods;
 
   useEffect(() => {
-    if (formErrors.location)
+    if (locErrors)
       setFormErrors((prev) => ({
         ...prev,
         location: Object.keys(errors).length > 0,
       }));
   }, [errors]);
+
+  useEffect(() => {
+    if (locErrors === true && Object.keys(errors).length === 0) trigger();
+  }, [locErrors]);
 
   return (
     <>
@@ -85,12 +90,18 @@ const LocationStep = () => {
               await handleSubmit(
                 (data) => {
                   onValidate('location', data);
+
+                  setFormErrors((prev) => ({
+                    ...prev,
+                    location: false,
+                  }));
                 },
                 (e) => {
                   onValidate('location', null);
-                  setFormErrors({
+                  setFormErrors((prev) => ({
+                    ...prev,
                     location: Object.keys(e).length > 0,
-                  });
+                  }));
 
                   isValid = false;
                 }

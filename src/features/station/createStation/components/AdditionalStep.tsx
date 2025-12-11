@@ -38,20 +38,20 @@ const AdditionalStep = () => {
     onValidate,
   } = useCreateStationContext();
 
-  const {data: watlevmp} = useQuery({
-    queryKey: queryKeys.Borehole.lastMP(meta?.boreholeno, meta?.intakeno),
-    queryFn: async () => {
-      const {data} = await apiClient.get<LastJupiterMPAPI>(
-        `/sensor_field/borehole/last_mp/${meta?.boreholeno}/${meta?.intakeno}`
-      );
-      return {
-        descriptio: data.descriptio,
-        elevation: data.elevation,
-        startdate: dayjs(data.startdate),
-      } as LastJupiterMPData;
-    },
-    enabled: !!meta?.boreholeno && !!meta?.intakeno && meta?.intakeno !== undefined,
-  });
+  // const {data: watlevmp} = useQuery({
+  //   queryKey: queryKeys.Borehole.lastMP(meta?.boreholeno, meta?.intakeno),
+  //   queryFn: async () => {
+  //     const {data} = await apiClient.get<LastJupiterMPAPI>(
+  //       `/sensor_field/borehole/last_mp/${meta?.boreholeno}/${meta?.intakeno}`
+  //     );
+  //     return {
+  //       descriptio: data.descriptio,
+  //       elevation: data.elevation,
+  //       startdate: dayjs(data.startdate),
+  //     } as LastJupiterMPData;
+  //   },
+  //   enabled: !!meta?.boreholeno && !!meta?.intakeno && meta?.intakeno !== undefined,
+  // });
 
   const watlevmpFormMethods = useWatlevmpForm<Watlevmp>({
     schema: watlevmpAddSchema,
@@ -80,21 +80,21 @@ const AdditionalStep = () => {
   const {handleSubmit: handleControlsSubmit} = controlSettingsFormMethods;
 
   useEffect(() => {
-    if (meta?.intakeno !== undefined && watlevmp !== undefined) {
-      resetWatlevmp({
-        elevation: watlevmp.elevation,
-        description: watlevmp.descriptio,
-      });
+    if (meta?.intakeno !== undefined) {
+      // resetWatlevmp({
+      //   elevation: watlevmp.elevation,
+      //   description: watlevmp.descriptio,
+      // });
       setHelperText('Målepuntsværdien er hentet fra Jupiter');
     } else {
       setHelperText('');
     }
-  }, [watlevmp, meta?.intakeno, meta?.tstype_id, meta?.boreholeno]);
+  }, [meta?.intakeno, meta?.tstype_id, meta?.boreholeno]);
 
   useEffect(() => {
-    if (meta?.tstype_id !== 1 || elevation !== watlevmp?.elevation) {
-      setHelperText('');
-    }
+    // if (meta?.tstype_id !== 1 || elevation !== watlevmp?.elevation) {
+    setHelperText('');
+    // }
   }, [meta?.tstype_id, elevation]);
 
   useEffect(() => {
@@ -109,37 +109,16 @@ const AdditionalStep = () => {
 
   return (
     <>
-      {activeStep === 3 && (
+      {activeStep === 2 && (
         <Box display={'flex'} flexDirection={'column'} gap={1.5}>
-          {meta?.loc_id === undefined && (
-            <>
-              <Typography variant="subtitle1" fontWeight={'bold'}>
-                Kontakter
-              </Typography>
-              <ContactForm mode={'add'} defaultContacts={contacts} />
-              <Typography variant="subtitle1" fontWeight={'bold'}>
-                Adgangsnøgler
-              </Typography>
-              <LocationAccessForm mode={'add'} defaultLocationAccess={location_access} />
-              <Typography variant="subtitle1" fontWeight={'bold'}>
-                Ressourcer
-              </Typography>
-              <Huskeliste
-                onValidate={(ressourcer) => {
-                  onValidate('ressources', ressourcer);
-                }}
-              />
-            </>
-          )}
-
-          {meta?.tstype_id === 1 && (
+          {meta?.tstype_id?.includes(1) && (
             <Box>
               <Typography variant="subtitle1" marginBottom={1}>
                 Målepunkt
               </Typography>
               <Grid2 container size={size} spacing={1} marginBottom={2}>
                 <FormProvider {...watlevmpFormMethods}>
-                  <StamdataWatlevmp tstype_id={meta?.tstype_id}>
+                  <StamdataWatlevmp tstype_id={meta?.tstype_id?.[0]}>
                     <DefaultWatlevmpForm helperText={helperText} />
                   </StamdataWatlevmp>
                 </FormProvider>
@@ -170,8 +149,29 @@ const AdditionalStep = () => {
             </Box>
           )}
 
+          {meta?.loc_id === undefined && (
+            <>
+              <Typography variant="subtitle1" fontWeight={'bold'}>
+                Kontakter
+              </Typography>
+              <ContactForm mode={'add'} defaultContacts={contacts} />
+              <Typography variant="subtitle1" fontWeight={'bold'}>
+                Adgangsnøgler
+              </Typography>
+              <LocationAccessForm mode={'add'} defaultLocationAccess={location_access} />
+              <Typography variant="subtitle1" fontWeight={'bold'}>
+                Ressourcer
+              </Typography>
+              <Huskeliste
+                onValidate={(ressourcer) => {
+                  onValidate('ressources', ressourcer);
+                }}
+              />
+            </>
+          )}
+
           <FormStepButtons
-            key={'timeseries'}
+            key={'additional'}
             onFormIsValid={async () => {
               let isValid = true;
               if (meta?.tstype_id === 1) {

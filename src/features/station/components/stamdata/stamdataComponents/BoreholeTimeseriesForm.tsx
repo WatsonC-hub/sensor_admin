@@ -7,24 +7,29 @@ import {BoreholeAddTimeseries} from '~/features/station/schema';
 type Props = {
   size: number;
   required?: boolean;
+  formPrefix?: string;
   slotProps?: {
     TypeSelect?: Omit<FormInputProps<BoreholeAddTimeseries>, 'name'>;
     intakeno?: Omit<FormInputProps<BoreholeAddTimeseries>, 'name'>;
   };
 };
 
-const BoreholeTimeseriesForm = ({size, required, slotProps}: Props) => {
+const BoreholeTimeseriesForm = ({size, required, slotProps, formPrefix}: Props) => {
   return (
     <>
       <Grid2 size={size}>
-        <StamdataTimeseries.Intakeno {...slotProps?.intakeno} />
+        <StamdataTimeseries.Intakeno {...slotProps?.intakeno} formPrefix={formPrefix} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataTimeseries.TypeSelect required={required} {...slotProps?.TypeSelect} />
+        <StamdataTimeseries.TypeSelect
+          required={required}
+          {...slotProps?.TypeSelect}
+          formPrefix={formPrefix}
+        />
       </Grid2>
-      <Grid2 size={size}>
+      {/* <Grid2 size={size}>
         <StamdataTimeseries.SensorDepth />
-      </Grid2>
+      </Grid2> */}
     </>
   );
 };

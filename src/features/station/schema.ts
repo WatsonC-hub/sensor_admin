@@ -53,6 +53,8 @@ const baseAddTimeseriesSchema = baseTimeseriesSchema.extend({
   tstype_id: z.number({required_error: 'Vælg tidsserietype'}).gte(1, {
     message: 'Vælg tidsserietype',
   }),
+  unit_uuid: z.string().optional(),
+  sensor_id: z.string().optional(),
 });
 
 const defaultEditTimeseriesSchema = baseTimeseriesSchema.extend({prefix: z.string().nullish()});
@@ -72,7 +74,13 @@ const watlevmpAddSchema = z.object({
   description: z.string({required_error: 'Beskrivelse skal udfyldes'}).optional(),
 });
 
-const addUnitSchema = z
+const addUnitSchema = z.object({
+  calypso_id: z.string().optional(),
+  unit_uuid: z.string().optional(),
+  startdate: zodDayjs('Startdato skal udfyldes'),
+});
+
+const editAddUnitSchema = z
   .object({
     unit_uuid: z.string().optional(),
     startdate: zodDayjs('Startdato skal udfyldes'),
@@ -102,13 +110,10 @@ const editUnitSchema = z
     }
   });
 
-// const createStationSchema = z.object({
-//   location:
-// })
-
 export {
   baseLocationSchema,
   addUnitSchema,
+  editAddUnitSchema,
   editUnitSchema,
   baseTimeseriesSchema,
   defaultAddLocationSchema,
@@ -132,6 +137,7 @@ type BoreholeAddTimeseries = z.infer<typeof boreholeAddTimeseriesSchema>;
 type BoreholeEditTimeseries = z.infer<typeof boreholeEditTimeseriesSchema>;
 type BaseLocation = z.infer<typeof baseLocationSchema>;
 type AddUnit = z.infer<typeof addUnitSchema>;
+type EditAddUnit = z.infer<typeof editAddUnitSchema>;
 type EditUnit = z.infer<typeof editUnitSchema>;
 type Watlevmp = z.infer<typeof watlevmpAddSchema>;
 
@@ -146,6 +152,7 @@ export type {
   BaseLocation,
   DefaultEditTimeseries,
   AddUnit,
+  EditAddUnit,
   EditUnit,
   Watlevmp,
 };

@@ -36,9 +36,14 @@ const StamdataTimeseries = ({children, boreholeno}: Props) => {
   return <TimeseriesContext.Provider value={{boreholeno}}>{children}</TimeseriesContext.Provider>;
 };
 
-const TypeSelect = (
-  props: Omit<FormInputProps<DefaultAddTimeseries | BoreholeAddTimeseries>, 'name'>
-) => {
+type TypeSelectProps = Omit<
+  FormInputProps<DefaultAddTimeseries | BoreholeAddTimeseries>,
+  'name'
+> & {
+  formPrefix?: string;
+};
+
+const TypeSelect = ({formPrefix, ...props}: TypeSelectProps) => {
   const {data: timeseries_types} = useQuery({
     queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
@@ -53,7 +58,7 @@ const TypeSelect = (
 
   return (
     <FormInput
-      name="tstype_id"
+      name={`${formPrefix}tstype_id`}
       label="Tidsserietype"
       select
       placeholder="Vælg type"
@@ -61,7 +66,6 @@ const TypeSelect = (
         ?.filter((type) => type.tstype_id !== 0)
         .map((type) => ({[type.tstype_id]: type.tstype_name}))}
       keyType="number"
-      required
       fullWidth
       {...props}
     />
@@ -92,9 +96,14 @@ const TimeseriesTypeField = ({tstype_id}: {tstype_id: number | undefined}) => {
   );
 };
 
-const Intakeno = (
-  props: Omit<FormInputProps<BoreholeAddTimeseries | BoreholeEditTimeseries>, 'name'>
-) => {
+type IntakenoProps = Omit<
+  FormInputProps<BoreholeAddTimeseries | BoreholeEditTimeseries>,
+  'name'
+> & {
+  formPrefix?: string;
+};
+
+const Intakeno = ({formPrefix, ...props}: IntakenoProps) => {
   const {boreholeno} = React.useContext(TimeseriesContext);
 
   const {data: intake_list} = useQuery({
@@ -110,11 +119,11 @@ const Intakeno = (
   });
 
   return (
-    <FormInput<BoreholeAddTimeseries | BoreholeEditTimeseries>
-      name="intakeno"
+    <FormInput
+      name={`${formPrefix}intakeno`}
       label="Indtag"
       select
-      infoText="Vælg først et DGU nummer først"
+      infoText="Vælg først et DGU nummer for at hente indtag"
       disabled={props.disabled || !boreholeno}
       placeholder="Vælg indtag"
       options={intake_list?.map((item) => ({[item.intakeno]: item.intakeno}))}
@@ -125,16 +134,15 @@ const Intakeno = (
   );
 };
 
-const Prefix = (
-  props: Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'> & {
-    loc_name: string | undefined;
-  }
-) => {
-  // const {loc_name} = React.useContext(TimeseriesContext);
-  const loc_name = props.loc_name;
+type PrefixProps = Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'> & {
+  loc_name: string | undefined;
+  formPrefix?: string;
+};
+
+const Prefix = ({loc_name, formPrefix, ...props}: PrefixProps) => {
   return (
     <FormInput
-      name="prefix"
+      name={`${formPrefix}prefix`}
       label="Navn"
       slotProps={{
         input: {
@@ -145,7 +153,7 @@ const Prefix = (
           ),
         },
       }}
-      placeholder="f.eks. indtag 1"
+      placeholder="Et genkendeligt navn for tidsserien..."
       fullWidth
       {...props}
     />

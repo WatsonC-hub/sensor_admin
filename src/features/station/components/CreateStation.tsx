@@ -8,7 +8,6 @@ import TooltipWrapper from '~/components/TooltipWrapper';
 import LocationStep from '../createStation/components/LocationStep';
 import FormSteps from '../createStation/components/FormSteps';
 import TimeseriesStep from '../createStation/components/TimeseriesStep';
-import UnitStep from '../createStation/components/UnitStep';
 import useCreateStationContext from '../createStation/api/useCreateStationContext';
 import AdditionalStep from '../createStation/components/AdditionalStep';
 
@@ -52,7 +51,6 @@ const CreateStation = () => {
           <FormSteps />
           {meta?.loc_id === undefined && <LocationStep />}
           <TimeseriesStep />
-          <UnitStep />
           <AdditionalStep />
         </Grid2>
       </Box>

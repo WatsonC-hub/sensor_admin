@@ -12,7 +12,7 @@ type Props = {
 };
 
 type MetaType = {
-  tstype_id?: number;
+  tstype_id?: Array<number>;
   loctype_id?: number;
   loc_id?: number;
   loc_name?: string;
@@ -41,16 +41,19 @@ type UnitData = {
 };
 
 type TimeseriesData = {
-  tstype_id: number;
+  tstype_id: number | null | undefined;
   prefix?: string | null | undefined;
   sensor_depth_m?: number | null | undefined;
   calypso_id?: number | undefined;
+  intakeno?: number | null | undefined;
+  sensor_id?: string;
+  unit_uuid?: string;
 };
 
 export type FormState = {
   location?: LocationData;
-  timeseries?: TimeseriesData;
-  watlevmp?: Watlevmp;
+  timeseries?: Array<TimeseriesData>;
+  watlevmp?: Array<Watlevmp>;
   unit?: UnitData;
   sync?: SyncFormValues;
   contacts?: Array<ContactTable>;
@@ -113,7 +116,11 @@ const CreateStationContextProvider = ({children}: Props) => {
     data: FormState[keyof FormState]
   ) => {
     if (data) {
-      if (key === 'timeseries' && (data as TimeseriesData).tstype_id !== 1) {
+      if (
+        key === 'timeseries' &&
+        (data as Array<TimeseriesData>).find((ts) => ts.tstype_id !== 1) === undefined &&
+        formState.watlevmp !== undefined
+      ) {
         setFormState((prev: FormState) => {
           delete prev['watlevmp'];
           return {...prev};
@@ -123,7 +130,9 @@ const CreateStationContextProvider = ({children}: Props) => {
       if (
         key === 'timeseries' &&
         formState.unit !== undefined &&
-        (data as TimeseriesData).tstype_id !== formState.timeseries?.tstype_id
+        (data as Array<TimeseriesData>).find((ts) =>
+          formState.timeseries?.map((t) => t.tstype_id).includes(ts.tstype_id)
+        ) === undefined
       ) {
         setFormState((prev: FormState) => {
           delete prev['unit'];

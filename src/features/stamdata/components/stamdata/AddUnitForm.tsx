@@ -26,21 +26,24 @@ import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {useAppContext} from '~/state/contexts';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
-import {AddUnit} from '~/features/station/schema';
+import AddSensorDialog from './AddSensorDialog';
 
 interface AddUnitFormProps {
   udstyrDialogOpen: boolean;
   setUdstyrDialogOpen: (open: boolean) => void;
   tstype_id?: number;
   mode: 'add' | 'edit';
+  onValidate?: (sensortypeList: Array<number>) => void;
 }
 
 export default function AddUnitForm({
   udstyrDialogOpen,
   setUdstyrDialogOpen,
-  tstype_id,
   mode,
+  onValidate,
 }: AddUnitFormProps) {
+  const [addSensors, setAddSensors] = useState(false);
+  const [disableMatchingParameters, setDisableMatchingParameters] = useState(true);
   const {ts_id} = useAppContext([], ['ts_id']);
   const {superUser} = useUser();
 
@@ -54,8 +57,8 @@ export default function AddUnitForm({
     handleSubmit,
     reset,
     trigger,
-    formState: {isSubmitting},
-  } = useFormContext<AddUnit>();
+    formState: {isSubmitting, errors},
+  } = useFormContext();
 
   const [unitData, setUnitData] = useState({
     calypso_id: '',
@@ -73,17 +76,15 @@ export default function AddUnitForm({
 
   const uniqueCalypsoIds = [
     ...new Set(
-      availableUnits
-        ?.filter((unit) => unit.sensortypeid === tstype_id)
-        ?.map((x) => (x.calypso_id === 0 ? x.terminal_id.toString() : x.calypso_id.toString()))
+      availableUnits?.map((x) =>
+        x.calypso_id === 0 ? x.terminal_id.toString() : x.calypso_id.toString()
+      )
     ),
   ].sort();
 
   const sensorsForCalyspoId = (id: string | number) =>
     availableUnits?.filter(
-      (unit) =>
-        (unit.calypso_id.toString() === id.toString() || unit.terminal_id === id) &&
-        unit.sensortypeid === tstype_id
+      (unit) => unit.calypso_id.toString() === id.toString() || unit.terminal_id === id
     );
 
   const handleCalypsoIdChange = (
@@ -98,6 +99,7 @@ export default function AddUnitForm({
     setUnitData((prev) => ({...prev, calypso_id: value, uuid: ''}));
 
     const sensors = sensorsForCalyspoId(value);
+    console.log(sensors);
     if (sensors && sensors.length === 1) {
       setUnitData((prev) => ({...prev, uuid: sensors[0].unit_uuid}));
       if (mode === 'edit') {
@@ -161,16 +163,32 @@ export default function AddUnitForm({
   };
 
   const handleSaveOnAdd = async () => {
-    const unit = availableUnits?.find((x) => x.unit_uuid === unitData.uuid);
-    if (!unit) return;
+    const units = availableUnits?.filter(
+      (x) =>
+        x.calypso_id.toString() === unitData.calypso_id || x.terminal_id === unitData.calypso_id
+    );
 
-    setValue('unit_uuid', unit.unit_uuid, {shouldDirty: true, shouldValidate: true});
-    setValue('startdate', dayjs(unitData.fra), {shouldDirty: true, shouldValidate: true});
+    if (!units || units.length === 0) return;
 
-    const isValid = await trigger();
-    if (!isValid) return;
-    setUdstyrDialogOpen(false);
-    toast.success('Udstyr tilføjet til formularen');
+    const unit = units.find((u) => u.unit_uuid === unitData.uuid);
+    if (units.length === 1) {
+      setUnitData((prev) => ({...prev, uuid: units[0].unit_uuid}));
+      if (mode === 'add' && onValidate) {
+        onValidate([units[0].sensortypeid]);
+      }
+      setValue('unit_uuid', units[0].unit_uuid, {shouldDirty: true, shouldValidate: true});
+      setValue('startdate', dayjs(unitData.fra), {shouldDirty: true, shouldValidate: true});
+
+      const isValid = await trigger();
+      if (!isValid) return;
+      setUdstyrDialogOpen(false);
+      toast.success('Udstyr tilføjet til formularen');
+    } else if (units.length > 1) {
+      setDisableMatchingParameters(
+        units.filter((u) => u.sensor_id === unit?.sensor_id).length === 1
+      );
+      setAddSensors(true);
+    }
   };
 
   const handleClose = () => {
@@ -178,6 +196,39 @@ export default function AddUnitForm({
     setUnitData({calypso_id: '', uuid: '', fra: dayjs()});
     trigger();
     reset();
+  };
+
+  const handleSensorDialogClose = async (matchingParameters?: boolean) => {
+    setAddSensors(false);
+
+    const sensortypeList = sensorsForCalyspoId(unitData.calypso_id);
+    const unit = sensortypeList?.find((u) => u.unit_uuid === unitData.uuid);
+    if (matchingParameters) {
+      if (mode === 'add' && onValidate) {
+        onValidate(
+          sensortypeList
+            ?.filter((u) => u.sensor_id === unit?.sensor_id)
+            .map((unit) => unit.sensortypeid) || []
+        );
+      }
+    } else if (matchingParameters === false) {
+      if (mode === 'add' && onValidate) {
+        onValidate(sensortypeList?.map((unit) => unit.sensortypeid) || []);
+      }
+    } else if (matchingParameters === undefined) {
+      if (mode === 'add' && onValidate && unit) {
+        onValidate([unit.sensortypeid]);
+      }
+    }
+
+    setValue('unit_uuid', unit?.unit_uuid, {shouldDirty: true, shouldValidate: true});
+    setValue('startdate', dayjs(unitData.fra), {shouldDirty: true, shouldValidate: true});
+
+    const isValid = await trigger();
+    console.log(errors);
+    if (!isValid) return;
+    setUdstyrDialogOpen(false);
+    toast.success('Udstyr tilføjet til formularen');
   };
 
   useEffect(() => {
@@ -203,11 +254,25 @@ export default function AddUnitForm({
               return;
             }
 
+            if (mode !== 'edit') {
+              setUnitData((prev) => ({...prev, calypso_id: calypso_id.toString()}));
+              handleSaveOnAdd();
+              setOpenCaptureDialog(false);
+              return;
+            }
+
             handleCalypsoIdChange({value: calypso_id.toString(), label: calypso_id.toString()});
             setOpenCaptureDialog(false);
           }}
         />
       )}
+
+      <AddSensorDialog
+        open={addSensors}
+        onClose={handleSensorDialogClose}
+        isDisassembling={mode !== 'add'}
+        disableMatchingParameters={disableMatchingParameters}
+      />
 
       <Dialog open={udstyrDialogOpen} onClose={handleClose}>
         {isLoading ? (

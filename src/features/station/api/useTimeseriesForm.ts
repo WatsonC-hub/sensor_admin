@@ -18,11 +18,7 @@ type useTimeseriesFormProps<T extends FieldValues> = {
   mode: 'Add' | 'Edit';
 };
 
-const getSchemaAndForm = (
-  loctype_id: number | undefined,
-  mode: 'Add' | 'Edit',
-  loc_id?: number | undefined
-) => {
+const getSchemaAndForm = (loctype_id: number | undefined, mode: 'Add' | 'Edit') => {
   let selectedSchema = baseTimeseriesSchema;
   let selectedForm = DefaultTimeseriesForm;
 
@@ -45,12 +41,6 @@ const getSchemaAndForm = (
       break;
   }
 
-  if (loc_id === undefined) {
-    selectedSchema = selectedSchema.extend({
-      tstype_id: z.number().optional(),
-    });
-  }
-
   return [selectedSchema, selectedForm] as const;
 };
 
@@ -59,15 +49,16 @@ const useTimeseriesForm = <T extends Record<string, any>>({
   mode,
 }: useTimeseriesFormProps<T>) => {
   const loctype_id = formProps.context?.loctype_id;
-  const loc_id = formProps.context?.loc_id;
   if (mode === undefined) {
     throw new Error('mode is required');
   }
 
-  const [schema, form] = getSchemaAndForm(loctype_id, mode, loc_id);
+  const [schema, form] = getSchemaAndForm(loctype_id, mode);
+
+  const arraySchema = z.object({timeseries: z.array(schema.optional())});
 
   const formMethods = useForm<T, {loctype_id: number | undefined}>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(mode === 'Add' ? arraySchema : schema),
     ...formProps,
     mode: 'onTouched',
   });

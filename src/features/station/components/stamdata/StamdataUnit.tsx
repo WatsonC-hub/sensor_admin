@@ -4,7 +4,7 @@ import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
-import {AddUnit} from '../../schema';
+import {EditAddUnit} from '../../schema';
 
 type StamdataUnitProps = {
   children: React.ReactNode;
@@ -23,24 +23,29 @@ const StamdataUnit = ({children, tstype_id}: StamdataUnitProps) => {
   return <UnitContext.Provider value={{tstype_id}}>{children}</UnitContext.Provider>;
 };
 
-const Unit = () => {
+type UnitProps = {
+  onValidate?: (sensortypeList: Array<number>) => void;
+};
+
+const Unit = ({onValidate}: UnitProps) => {
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const {
     getValues,
     formState: {errors},
-  } = useFormContext<AddUnit>();
+  } = useFormContext<EditAddUnit>();
   const {tstype_id} = React.useContext(UnitContext);
   return (
     <>
       <Box sx={{display: 'flex', alignItems: 'baseline', justifyContent: 'start'}}>
         <Button
-          disabled={tstype_id === undefined}
           bttype="primary"
           size="small"
           sx={{ml: 1}}
           onClick={() => setUdstyrDialogOpen(true)}
         >
-          {getValues('unit_uuid') === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
+          {getValues('unit_uuid') === '' || getValues('unit_uuid')?.length === 0
+            ? 'Tilføj Udstyr'
+            : 'Ændre udstyr'}
         </Button>
         {Object.keys(errors).length > 0 && (
           <Typography variant="caption" color="error" ml={1}>
@@ -54,6 +59,7 @@ const Unit = () => {
         udstyrDialogOpen={udstyrDialogOpen}
         setUdstyrDialogOpen={setUdstyrDialogOpen}
         tstype_id={tstype_id}
+        onValidate={onValidate}
       />
     </>
   );
