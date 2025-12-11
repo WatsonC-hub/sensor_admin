@@ -47,17 +47,6 @@ export default function Station() {
   } = useUser();
 
   useEffect(() => {
-    const has_unit = metadata?.unit_uuid !== null;
-    const isValidType = metadata?.tstype_id === 1 && !metadata?.calculated;
-
-    if (has_unit && pageToShow === stationPages.MAALEPUNKT) {
-      setPageToShow(stationPages.TILSYN);
-    } else if (!has_unit && pageToShow === stationPages.TILSYN) {
-      setPageToShow(stationPages.MAALEPUNKT);
-    } else if (!isValidType && pageToShow === stationPages.MAALEPUNKT) {
-      setPageToShow(stationPages.PEJLING);
-    }
-
     if (
       metadata?.calculated &&
       (pageToShow == 'tilsyn' ||
