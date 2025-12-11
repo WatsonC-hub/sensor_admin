@@ -59,9 +59,7 @@ export default function Station() {
     setShowForm(null);
   }, [ts_id, pageToShow]);
 
-  {
-    /* Makes sure that if the location we are accessing has boreholeno and intakeno, then it adds these to the context so that we later can access them */
-  }
+  /* Makes sure that if the location we are accessing has boreholeno and intakeno, then it adds these to the context so that we later can access them */
   return (
     <AppContextProvider
       values={{
@@ -71,7 +69,9 @@ export default function Station() {
     >
       <Layout>
         {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling key={ts_id} />}
-        {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn key={ts_id} />}
+        {pageToShow === stationPages.TILSYN &&
+          !metadata?.calculated &&
+          metadata?.unit_uuid !== null && <Tilsyn key={ts_id} />}
         {pageToShow === stationPages.GENERELTUDSTYR && (
           <>
             <Box key={`graph-${ts_id}`}>

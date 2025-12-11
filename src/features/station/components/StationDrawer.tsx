@@ -147,9 +147,8 @@ const StationDrawer = () => {
           page: stationPages.TILSYN,
           icon: <PlaylistAddCheck />,
           requiredTsId: true,
-          disabled: metadata?.calculated,
+          disabled: metadata?.calculated || metadata?.unit_uuid === null,
           onHover: () => handlePrefetch(tilsynGetOptions(ts_id)),
-          // tooltip: 'På denne side kan du se og redigere tilsyn for din tidsserie.',
         },
         {
           text: 'Målepunkt',
@@ -158,7 +157,6 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.tstype_id != 1 || metadata?.calculated,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id!)),
-          // tooltip: 'På denne side kan du se og redigere målepunkter til din tidsserie.',
         },
         {
           text: 'Udstyr',
@@ -167,14 +165,13 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.calculated,
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-          // tooltip: 'På denne side kan du se og redigere udstyr til din tidsserie.',
         },
         {
           text: 'Juster data',
           page: stationPages.JUSTERINGER,
           icon: <QueryStatsIcon />,
           requiredTsId: true,
-          disabled: !iotAccess || metadata?.calculated,
+          disabled: !iotAccess || metadata?.calculated || metadata?.unit_uuid === null,
           onHover: () => handlePrefetch(getQAHistoryOptions(ts_id!)),
           tooltip:
             'På denne side kan du kvalitetssikre din tidsserie ved blandt andet at justere data, fjerne data og se historik for ændringer.',
@@ -262,8 +259,6 @@ const StationDrawer = () => {
           icon: <Settings />,
           requiredTsId: false,
           disabled: !superUser,
-          // tooltip:
-          //   'På denne side kan du konfigurere din lokation, såsom at ændre måleinterval eller sendeinterval.',
         },
       ],
     },
@@ -390,17 +385,6 @@ const StationDrawer = () => {
       <List>{drawerItems}</List>
     </Layout>
   );
-
-  // return (
-  //   <Layout variant="permanent">
-  //     <Toolbar disableGutters sx={{justifyContent: 'center'}} onClick={() => toggleDrawer(!open)}>
-  //       <IconButton sx={{color: 'white'}}>
-  //         <Menu />
-  //       </IconButton>
-  //     </Toolbar>
-  //     <List>{drawerItems}</List>
-  //   </Layout>
-  // );
 };
 
 type LayoutProps = {
@@ -431,14 +415,12 @@ const Layout = ({children, variant}: LayoutProps) => {
       }}
     >
       <Box pt={2} px={1}>
-        {/* <TooltipWrapper description="" color="white"> */}
         {!isTouch && <MinimalSelect />}
         {isTouch && (
           <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
             {locationdata?.loc_name}
           </Typography>
         )}
-        {/* </TooltipWrapper> */}
       </Box>
       <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
         <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
