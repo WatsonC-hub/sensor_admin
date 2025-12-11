@@ -149,14 +149,16 @@ const Pejling = () => {
       </Box>
       <Divider />
       <StationPageBoxLayout>
-        <LatestMeasurementTable
-          latestMeasurement={latestMeasurement}
-          errorMessage={
-            isError && typeof error?.response?.data.detail == 'string'
-              ? error?.response?.data.detail
-              : undefined
-          }
-        />
+        {timeseries_data?.unit_uuid && (
+          <LatestMeasurementTable
+            latestMeasurement={latestMeasurement}
+            errorMessage={
+              isError && typeof error?.response?.data.detail == 'string'
+                ? error?.response?.data.detail
+                : undefined
+            }
+          />
+        )}
         <FormProvider {...formMethods}>
           {showForm === true && (
             <Card
