@@ -1,4 +1,5 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
+import {Box} from '@mui/material';
 import dayjs from 'dayjs';
 import React, {ChangeEvent, createRef, useState} from 'react';
 
@@ -75,7 +76,6 @@ const ImagePage = () => {
           setShowForm={setShowForm}
         />
       </StationPageBoxLayout>
-      <UpdateProgressButton progressKey={'images'} ts_id={ts_id} />
       <FabWrapper
         icon={<AddAPhotoRounded />}
         text={'Tilføj billeder'}

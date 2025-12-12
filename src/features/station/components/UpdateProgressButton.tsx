@@ -1,17 +1,23 @@
 import React from 'react';
 import Button from '~/components/Button';
-import {ProgressStatus, useProgress} from '~/hooks/query/stationProgress';
+import {ProgressStatus, useStationProgress} from '~/hooks/query/stationProgress';
 
 type Props = {
   progressKey: keyof ProgressStatus;
-  ts_id: number | undefined;
+  loc_id: number | undefined;
+  ts_id?: number;
 };
 
-const UpdateProgressButton = ({progressKey, ts_id}: Props) => {
-  const {data: progress} = useProgress(ts_id, {
-    select: (data) => data[progressKey],
-  });
-
-  return <>{progress ? null : <Button bttype="primary">Test</Button>}</>;
+const UpdateProgressButton = ({progressKey, loc_id, ts_id}: Props) => {
+  const {needsProgress, hasAssessed} = useStationProgress(loc_id, progressKey, ts_id);
+  return (
+    <>
+      {needsProgress ? (
+        <Button bttype="primary" onClick={hasAssessed}>
+          Godkend
+        </Button>
+      ) : null}
+    </>
+  );
 };
 export default UpdateProgressButton;

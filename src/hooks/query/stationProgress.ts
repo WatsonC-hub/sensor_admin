@@ -6,18 +6,20 @@ export type ProgressStatus = {
   images: boolean;
   adgangsforhold: boolean;
   ressourcer: boolean;
+  kontakter: boolean;
 };
 
-export const getQueryOptions = (ts_id: number | undefined) =>
+export const getQueryOptions = (loc_id: number | undefined, ts_id?: number) =>
   queryOptions<ProgressStatus>({
-    queryKey: queryKeys.metadataProgress(ts_id),
+    queryKey: queryKeys.metadataProgress(loc_id, ts_id),
     queryFn: async () => {
+      const tsParam = ts_id ?? -1;
       const {data} = await apiClient.get<ProgressStatus>(
-        `/sensor_field/stamdata/progress/${ts_id}`
+        `/sensor_field/stamdata/progress/${loc_id}/${tsParam}`
       );
       return data;
     },
-    enabled: ts_id != undefined,
+    enabled: loc_id != undefined,
   });
 
 type ProgressStatusOptions<T> = Partial<
@@ -25,11 +27,12 @@ type ProgressStatusOptions<T> = Partial<
 >;
 
 const useProgress = <T = ProgressStatus>(
-  ts_id: number | undefined,
+  loc_id: number | undefined,
+  ts_id?: number,
   options?: ProgressStatusOptions<T>
 ) => {
   const query = useQuery({
-    ...getQueryOptions(ts_id),
+    ...getQueryOptions(loc_id, ts_id),
     ...options,
     select: options?.select as (data: ProgressStatus) => T,
   });
@@ -37,10 +40,13 @@ const useProgress = <T = ProgressStatus>(
   return query;
 };
 
-const useUpdateProgress = (ts_id: number | undefined) => {
+const useUpdateProgress = (loc_id: number | undefined, ts_id?: number) => {
   const mutation = useMutation({
-    mutationFn: async (data: any) => {
-      const {data: res} = await apiClient.put(`/sensor_field/stamdata/progress/${ts_id}`, data);
+    mutationFn: async (data: Partial<ProgressStatus>) => {
+      const {data: res} = await apiClient.put(
+        `/sensor_field/stamdata/progress/${loc_id}/${ts_id}`,
+        data
+      );
       return res;
     },
     meta: {
@@ -51,13 +57,16 @@ const useUpdateProgress = (ts_id: number | undefined) => {
   return mutation;
 };
 
-const useStationProgress = (ts_id: number | undefined, progressKey: keyof ProgressStatus) => {
-  const {data: progress} = useProgress(ts_id, {
+const useStationProgress = (
+  loc_id: number | undefined,
+  progressKey: keyof ProgressStatus,
+  ts_id?: number
+) => {
+  const {data: progress} = useProgress(loc_id, ts_id, {
     select: (data) => data[progressKey],
   });
 
-  const mutation = useUpdateProgress(ts_id);
-
+  const mutation = useUpdateProgress(loc_id, ts_id);
   const hasAssessed = async () => {
     mutation.mutate({
       [progressKey]: true,

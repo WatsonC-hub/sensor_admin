@@ -1,7 +1,9 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import {Box} from '@mui/material';
 import React, {useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
+import Button from '~/components/Button';
 
 import FabWrapper from '~/components/FabWrapper';
 import {initialContactData} from '~/consts';
@@ -12,6 +14,7 @@ import ContactInfoTable from '~/features/stamdata/components/stationDetails/cont
 import SelectContactInfo from '~/features/stamdata/components/stationDetails/contacts/SelectContactInfo';
 import {contact_info} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 import {useAppContext} from '~/state/contexts';
 import {ContactTable} from '~/types';
 
@@ -20,6 +23,7 @@ const ContactInfo = () => {
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const {del: deleteContact, put: editContact} = useContactInfo(loc_id);
   const {location_permissions} = usePermissions(loc_id);
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'kontakter');
 
   const {
     features: {contacts},
@@ -77,16 +81,23 @@ const ContactInfo = () => {
           <ContactInfoTable delContact={handleDelete} editContact={handleEdit} />
         </FormProvider>
       </StationPageBoxLayout>
-      <FabWrapper
-        icon={<PersonAddIcon />}
-        text="Tilføj kontakt"
-        disabled={!contacts || location_permissions !== 'edit'}
-        onClick={() => {
-          reset(initialContactData);
-          setOpenContactInfoDialog(true);
-        }}
-        sx={{visibility: openContactInfoDialog ? 'hidden' : 'visible'}}
-      />
+      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={2} mt={2}>
+        {needsProgress && (
+          <Button bttype="primary" onClick={hasAssessed}>
+            Håndteret
+          </Button>
+        )}
+        <FabWrapper
+          icon={<PersonAddIcon />}
+          text="Tilføj kontakt"
+          disabled={!contacts || location_permissions !== 'edit'}
+          onClick={() => {
+            reset(initialContactData);
+            setOpenContactInfoDialog(true);
+          }}
+          sx={{visibility: openContactInfoDialog ? 'hidden' : 'visible', ml: 1}}
+        />
+      </Box>
     </>
   );
 };

@@ -96,7 +96,7 @@ const StationDrawer = () => {
   const {isTouch} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
   const {data: locationdata} = useLocationData();
-  const {data: progress} = useProgress(ts_id);
+  const {data: progress} = useProgress(loc_id, ts_id);
 
   const {
     superUser,
@@ -244,6 +244,7 @@ const StationDrawer = () => {
           requiredTsId: false,
           disabled: !contacts,
           onHover: () => handlePrefetch(ContactInfoGetOptions(loc_id)),
+          progress: progress?.kontakter == false ? 0 : undefined,
         },
         {
           text: 'Nøgler',

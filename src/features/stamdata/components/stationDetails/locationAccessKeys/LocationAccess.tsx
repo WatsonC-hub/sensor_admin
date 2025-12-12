@@ -1,7 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import KeyIcon from '@mui/icons-material/Key';
-import {Dialog, DialogActions, DialogContent, DialogTitle, Divider} from '@mui/material';
+import {Box, Dialog, DialogActions, DialogContent, DialogTitle, Divider} from '@mui/material';
 import React, {useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 
@@ -24,11 +24,11 @@ import {useAppContext} from '~/state/contexts';
 import {Access, AccessTable} from '~/types';
 
 const LocationAccess = () => {
-  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {loc_id} = useAppContext(['loc_id']);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [createNew, setCreateNew] = useState<boolean>(false);
 
-  const {hasAssessed, needsProgress} = useStationProgress(ts_id, 'adgangsforhold');
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'adgangsforhold');
   const {
     features: {keys: accessKeys},
   } = useUser();
@@ -149,18 +149,20 @@ const LocationAccess = () => {
           )}
         </FormProvider>
       </StationPageBoxLayout>
-      {needsProgress && (
-        <Button bttype="primary" onClick={hasAssessed}>
-          Opdater
-        </Button>
-      )}
-      <FabWrapper
-        icon={<KeyIcon />}
-        text="Tilføj nøgle eller kode"
-        disabled={!accessKeys || disabled}
-        onClick={() => setOpenDialog(true)}
-        sx={{visibility: openDialog ? 'hidden' : 'visible'}}
-      />
+      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={2} mt={2}>
+        {needsProgress && (
+          <Button bttype="primary" onClick={hasAssessed}>
+            Håndteret
+          </Button>
+        )}
+        <FabWrapper
+          icon={<KeyIcon />}
+          text="Tilføj nøgle eller kode"
+          disabled={!accessKeys || disabled}
+          onClick={() => setOpenDialog(true)}
+          sx={{visibility: openDialog ? 'hidden' : 'visible', ml: 1}}
+        />
+      </Box>
     </>
   );
 };

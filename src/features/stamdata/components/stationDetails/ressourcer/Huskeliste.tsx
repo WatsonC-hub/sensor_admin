@@ -11,6 +11,8 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 import {Ressourcer} from './multiselect/types';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import Button from '~/components/Button';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 
 const Huskeliste = () => {
   const {isMobile} = useBreakpoints();
@@ -21,6 +23,8 @@ const Huskeliste = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const {location_permissions} = usePermissions(loc_id);
 
+  const {needsProgress, hasAssessed} = useStationProgress(loc_id, 'ressourcer');
+
   const schema = ressourcer;
   const result = schema.safeParse(related);
   const formMethods = useForm<{ressourcer: Ressourcer[]}>({
@@ -28,6 +32,7 @@ const Huskeliste = () => {
     defaultValues: {
       ressourcer: result.success ? result.data : [],
     },
+    values: {ressourcer: result.data ?? []},
     mode: 'onSubmit',
   });
 
@@ -52,6 +57,11 @@ const Huskeliste = () => {
           }
         />
       </FormProvider>
+      {needsProgress && (
+        <Button bttype="primary" onClick={hasAssessed}>
+          Håndteret
+        </Button>
+      )}
     </StationPageBoxLayout>
   );
 };
