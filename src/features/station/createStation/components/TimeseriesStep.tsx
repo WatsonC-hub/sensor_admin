@@ -11,16 +11,18 @@ import {Delete} from '@mui/icons-material';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import UnitDialog from './UnitDialog';
 import WatlevmpForm from './WatlevmpForm';
+import dayjs from 'dayjs';
 const TimeseriesStep = () => {
   const {isMobile} = useBreakpoints();
   const [unitDialog, setUnitDialog] = useState(false);
+  const [watlevmpIndex, setWatlevmpIndex] = useState<Array<number>>([]);
   const size = isMobile ? 12 : 5.5;
   const {
     meta,
     setMeta,
     onValidate,
     setFormErrors,
-    formState: {timeseries},
+    formState: {timeseries, watlevmp},
     activeStep,
   } = useCreateStationContext();
 
@@ -51,13 +53,6 @@ const TimeseriesStep = () => {
       ...prev,
       timeseries: timeseriesInvalid,
     }));
-
-    if (meta?.tstype_id?.includes(1)) {
-      setFormErrors((prev) => ({
-        ...prev,
-        timeseries: timeseriesInvalid,
-      }));
-    }
   }, [timeseriesFormState.errors]);
 
   return (
@@ -84,14 +79,13 @@ const TimeseriesStep = () => {
               </Button>
             </Box>
             {fields?.map((field, index) => {
-              console.log('Rendering timeseries field:', field, index);
               return (
                 <FormFieldset
                   key={field.id}
                   label={'tidsserie - ' + (field.sensor_id ? field.sensor_id : index + 1)}
                   sx={{width: '100%'}}
                 >
-                  <StamdataTimeseries key={field.id} boreholeno={meta?.boreholeno}>
+                  <StamdataTimeseries boreholeno={meta?.boreholeno}>
                     <Grid2 container size={12} spacing={1}>
                       <TimeseriesForm
                         size={size}
@@ -114,10 +108,36 @@ const TimeseriesStep = () => {
                               } else {
                                 existingTstypeIds.push(parseInt(value));
                               }
+
+                              update(index, {
+                                ...field,
+                                tstype_id: parseInt(value),
+                              });
+
                               setMeta((prev) => ({
                                 ...prev,
                                 tstype_id: existingTstypeIds,
                               }));
+
+                              if (
+                                value == '1' &&
+                                watlevmp?.[index] === undefined &&
+                                !watlevmpIndex.includes(index)
+                              ) {
+                                setWatlevmpIndex((prev) => [...prev, index]);
+                              }
+
+                              if (value != '1' && watlevmpIndex.includes(index)) {
+                                const indexToRemove = watlevmpIndex.find((i) => i === index);
+                                const updatedWatlevmpIndex = watlevmpIndex.filter(
+                                  (i) => i !== index
+                                );
+                                setWatlevmpIndex(updatedWatlevmpIndex);
+                                onValidate(
+                                  'watlevmp',
+                                  (watlevmp || []).filter((_, i) => i !== indexToRemove)
+                                );
+                              }
                             },
                           },
                           intakeno: {
@@ -126,12 +146,10 @@ const TimeseriesStep = () => {
                                 event as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
                               ).target.value;
                               // find the timeseries in the timeseries array and update its intakeno
-                              const existingTimeseries = [...(timeseries || [])];
-                              if (existingTimeseries[index]) {
-                                existingTimeseries[index].intakeno = parseInt(value);
-                                update(index, existingTimeseries[index]);
-                                onValidate('timeseries', existingTimeseries);
-                              }
+                              update(index, {
+                                ...field,
+                                intakeno: parseInt(value),
+                              });
                             },
                           },
                         }}
@@ -157,6 +175,12 @@ const TimeseriesStep = () => {
                               'timeseries',
                               timeseries?.filter((_, i) => i !== index)
                             );
+                            const indexInWatlevmp = watlevmpIndex.find((i) => i === index);
+                            setWatlevmpIndex((prev) => prev.filter((i) => i !== index));
+                            onValidate(
+                              'watlevmp',
+                              (watlevmp || []).filter((_, i) => i !== indexInWatlevmp)
+                            );
                           }}
                         >
                           {!isMobile ? <Delete /> : 'Fjern tidsserie'}
@@ -166,8 +190,10 @@ const TimeseriesStep = () => {
                   </StamdataTimeseries>
                   {field.tstype_id === 1 && (
                     <WatlevmpForm
+                      index={watlevmpIndex.find((i) => i === index) ?? -1}
                       tstype_id={field.tstype_id}
                       intakeno={field.intakeno ?? undefined}
+                      onValidate={onValidate}
                     />
                   )}
                 </FormFieldset>
@@ -208,10 +234,18 @@ const TimeseriesStep = () => {
                 unit_uuid: unit.unit_uuid,
                 sensor_id: unit.sensor_id,
               }));
-
-              // append(unit_timeseries);
-
-              onValidate('timeseries', [...(timeseries || []), ...unit_timeseries]);
+              const updated_timeseries = [...(timeseries || []), ...unit_timeseries];
+              onValidate('timeseries', updated_timeseries);
+              setWatlevmpIndex((prev) => [
+                ...prev,
+                ...updated_timeseries
+                  .map((ts, i) => (ts.tstype_id === 1 ? i : -1))
+                  .filter((i) => i !== -1),
+              ]);
+              onValidate(
+                'unit',
+                units.map((unit) => ({startdate: dayjs(), unit_uuid: unit.unit_uuid}))
+              );
               setUnitDialog(false);
             }}
           />

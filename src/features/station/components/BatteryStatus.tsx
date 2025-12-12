@@ -6,6 +6,7 @@ import React from 'react';
 import {apiClient} from '~/apiClient';
 import BatteryIndicator from '~/components/BatteryIndicator';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
 import {BatteryStatusType} from '~/types';
 
@@ -26,6 +27,7 @@ const estimatedText = (years: number, months: number, days: number): string => {
 
 const BatteryStatus = () => {
   const {ts_id} = useAppContext([], ['ts_id']);
+  const {data: metadata} = useTimeseriesData();
   const {data: battery_status} = useQuery({
     queryKey: queryKeys.Timeseries.batteryStatus(ts_id),
     queryFn: async () => {
@@ -34,7 +36,7 @@ const BatteryStatus = () => {
       );
       return data;
     },
-    enabled: ts_id !== undefined && ts_id !== null,
+    enabled: !!ts_id && !!metadata?.unit_uuid,
     staleTime: 1000 * 60 * 60,
   });
 

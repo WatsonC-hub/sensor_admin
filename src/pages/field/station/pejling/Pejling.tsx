@@ -69,7 +69,7 @@ const Pejling = () => {
       return data;
     },
     staleTime: 1000 * 60 * 2,
-    enabled: ts_id !== undefined && ts_id !== null && ts_id !== -1,
+    enabled: !!ts_id && !!timeseries_data?.unit_uuid,
   });
 
   useEffect(() => {

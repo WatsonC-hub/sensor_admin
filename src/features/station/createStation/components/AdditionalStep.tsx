@@ -1,71 +1,26 @@
-import {Box, Grid2, Typography} from '@mui/material';
-import React, {useEffect, useState} from 'react';
+import {Box, Typography} from '@mui/material';
+import React from 'react';
 import ContactForm from '~/features/stamdata/components/stationDetails/contacts/ContactForm';
 import LocationAccessForm from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessForm';
 import useCreateStationContext from '../api/useCreateStationContext';
 import FormStepButtons from './FormStepButtons';
-import {useQuery} from '@tanstack/react-query';
-import dayjs from 'dayjs';
 import {FormProvider} from 'react-hook-form';
-import {apiClient} from '~/apiClient';
 import useControlSettingsForm, {
   ControlSettingsFormValues,
 } from '~/features/configuration/api/useControlSettingsForm';
 import ControlSettings from '~/features/configuration/components/ControlSettings';
 import CreateControlSettings from '~/features/configuration/components/CreateControlSettings';
-import JupiterDmpSync from '~/features/synchronization/components/JupiterDmpSync';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {
-  LastJupiterMPAPI,
-  LastJupiterMPData,
-} from '~/pages/field/boreholeno/components/LastJupiterMP';
-import useWatlevmpForm from '../../api/useWatlevmpForm';
-import DefaultWatlevmpForm from '../../components/stamdata/stamdataComponents/DefaultWatlevmpForm';
-import StamdataWatlevmp from '../../components/stamdata/StamdataWatlevmp';
-import {Watlevmp, watlevmpAddSchema} from '../../schema';
-import useBreakpoints from '~/hooks/useBreakpoints';
+
 import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
 
 const AdditionalStep = () => {
-  const [helperText, setHelperText] = useState('');
-  const {isMobile} = useBreakpoints();
-  const size = isMobile ? 12 : 6;
   const {
     meta,
-    formState: {contacts, location_access, sync},
+    formState: {contacts, location_access},
     activeStep,
     setFormErrors,
     onValidate,
   } = useCreateStationContext();
-
-  // const {data: watlevmp} = useQuery({
-  //   queryKey: queryKeys.Borehole.lastMP(meta?.boreholeno, meta?.intakeno),
-  //   queryFn: async () => {
-  //     const {data} = await apiClient.get<LastJupiterMPAPI>(
-  //       `/sensor_field/borehole/last_mp/${meta?.boreholeno}/${meta?.intakeno}`
-  //     );
-  //     return {
-  //       descriptio: data.descriptio,
-  //       elevation: data.elevation,
-  //       startdate: dayjs(data.startdate),
-  //     } as LastJupiterMPData;
-  //   },
-  //   enabled: !!meta?.boreholeno && !!meta?.intakeno && meta?.intakeno !== undefined,
-  // });
-
-  const watlevmpFormMethods = useWatlevmpForm<Watlevmp>({
-    schema: watlevmpAddSchema,
-    defaultValues: {},
-  });
-
-  const {
-    handleSubmit: handleWatlevmpSubmit,
-    reset: resetWatlevmp,
-    formState: watlevmpFormState,
-    watch,
-  } = watlevmpFormMethods;
-
-  const elevation = watch('elevation');
 
   const controlSettingsFormMethods = useControlSettingsForm<ControlSettingsFormValues>({
     defaultValues: {
@@ -79,53 +34,10 @@ const AdditionalStep = () => {
 
   const {handleSubmit: handleControlsSubmit} = controlSettingsFormMethods;
 
-  useEffect(() => {
-    if (meta?.intakeno !== undefined) {
-      // resetWatlevmp({
-      //   elevation: watlevmp.elevation,
-      //   description: watlevmp.descriptio,
-      // });
-      setHelperText('Målepuntsværdien er hentet fra Jupiter');
-    } else {
-      setHelperText('');
-    }
-  }, [meta?.intakeno, meta?.tstype_id, meta?.boreholeno]);
-
-  useEffect(() => {
-    // if (meta?.tstype_id !== 1 || elevation !== watlevmp?.elevation) {
-    setHelperText('');
-    // }
-  }, [meta?.tstype_id, elevation]);
-
-  useEffect(() => {
-    if (meta?.tstype_id === 1) {
-      const watlevmpInvalid = Object.keys(watlevmpFormState.errors).length > 0;
-      setFormErrors((prev) => ({
-        ...prev,
-        timeseries: watlevmpInvalid,
-      }));
-    }
-  }, [watlevmpFormState.errors]);
-
   return (
     <>
       {activeStep === 2 && (
         <Box display={'flex'} flexDirection={'column'} gap={1.5}>
-          {meta?.tstype_id?.includes(1) && (
-            <Box>
-              <Typography variant="subtitle1" marginBottom={1}>
-                Målepunkt
-              </Typography>
-              <Grid2 container size={size} spacing={1} marginBottom={2}>
-                <FormProvider {...watlevmpFormMethods}>
-                  <StamdataWatlevmp tstype_id={meta?.tstype_id?.[0]}>
-                    <DefaultWatlevmpForm helperText={helperText} />
-                  </StamdataWatlevmp>
-                </FormProvider>
-              </Grid2>
-            </Box>
-          )}
-
           <Box>
             <Typography variant="subtitle1" marginBottom={1}>
               Kontrolhyppighed
@@ -137,7 +49,7 @@ const AdditionalStep = () => {
             </FormProvider>
           </Box>
 
-          {meta?.loctype_id !== undefined && meta?.tstype_id !== undefined && (
+          {/* {meta?.loctype_id !== undefined && meta?.tstype_id !== undefined && (
             <Box>
               <JupiterDmpSync
                 loctype_id={meta.loctype_id}
@@ -147,7 +59,7 @@ const AdditionalStep = () => {
                 values={sync}
               />
             </Box>
-          )}
+          )} */}
 
           {meta?.loc_id === undefined && (
             <>
@@ -174,33 +86,6 @@ const AdditionalStep = () => {
             key={'additional'}
             onFormIsValid={async () => {
               let isValid = true;
-              if (meta?.tstype_id === 1) {
-                await handleWatlevmpSubmit(
-                  (data) => {
-                    if (
-                      Object.values(data).some((value) => value !== null && value !== undefined)
-                    ) {
-                      onValidate('watlevmp', data);
-                    }
-                  },
-                  (e) => {
-                    onValidate('watlevmp', null);
-                    setFormErrors((prev) => ({
-                      ...prev,
-                      timeseries: Object.keys(e).length > 0,
-                    }));
-
-                    isValid = Object.keys(e).length === 0;
-                  }
-                )();
-              } else {
-                onValidate('watlevmp', null);
-                setFormErrors((prev) => ({
-                  ...prev,
-                  watlevmp: Object.keys(watlevmpFormState.errors).length > 0,
-                }));
-              }
-
               await handleControlsSubmit(
                 (data) => {
                   if (Object.values(data).some((value) => value !== null && value !== undefined)) {

@@ -1,7 +1,7 @@
 import {Grid2} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import React, {useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {FormProvider} from 'react-hook-form';
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
@@ -14,17 +14,24 @@ import DefaultWatlevmpForm from '../../components/stamdata/stamdataComponents/De
 import StamdataWatlevmp from '../../components/stamdata/StamdataWatlevmp';
 import useCreateStationContext from '../api/useCreateStationContext';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {Watlevmp} from '../../schema';
 
 type WatlevmpFormProps = {
+  index: number;
   tstype_id: number;
   intakeno?: number;
+  onValidate: (key: 'watlevmp', data: Array<Watlevmp>) => void;
 };
 
-const WatlevmpForm = ({tstype_id, intakeno}: WatlevmpFormProps) => {
+const WatlevmpForm = ({index, tstype_id, intakeno, onValidate}: WatlevmpFormProps) => {
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 5.5;
   const [helperText, setHelperText] = useState('');
-  const {meta, setFormErrors} = useCreateStationContext();
+  const {
+    meta,
+    setFormErrors,
+    formState: {watlevmp: watlevContext},
+  } = useCreateStationContext();
 
   const {data: watlevmp} = useQuery({
     queryKey: queryKeys.Borehole.lastMP(meta?.boreholeno, intakeno),
@@ -42,21 +49,17 @@ const WatlevmpForm = ({tstype_id, intakeno}: WatlevmpFormProps) => {
   });
 
   const watlevmpFormMethods = useWatlevmpForm({
-    defaultValues: undefined,
+    defaultValues: watlevContext?.[index],
+    values: watlevmp,
   });
 
-  const {
-    // handleSubmit: handleWatlevmpSubmit,
-    // reset: resetWatlevmp,
-    formState: watlevmpFormState,
-    watch,
-  } = watlevmpFormMethods;
+  const {formState: watlevmpFormState, watch} = watlevmpFormMethods;
 
   const elevation = watch('elevation');
 
   useEffect(() => {
-    if (elevation !== watlevmp?.elevation) {
-      setHelperText('');
+    if (elevation === watlevmp?.elevation && watlevmp?.elevation !== undefined) {
+      setHelperText(`${watlevmp.startdate.isValid() ? 'Målepunkt' : 'Terrænkote'} fra Jupiter`);
     }
   }, [elevation, intakeno]);
 
@@ -79,13 +82,24 @@ const WatlevmpForm = ({tstype_id, intakeno}: WatlevmpFormProps) => {
                 onChangeCallback: (value) => {
                   if (watlevmp?.elevation !== undefined) {
                     if (value !== watlevmp.elevation) {
-                      setHelperText(
-                        `Advarsel: Elevationen afviger fra den sidste målte grundvandsstand på ${watlevmp.elevation} m.u.h.`
-                      );
-                    } else {
                       setHelperText('');
+                    } else {
+                      setHelperText('Målepuntsværdi eller terrænkote er hentet fra Jupiter');
                     }
                   }
+                  const updatedWatlevmp = [...(watlevContext || [])];
+                  updatedWatlevmp[index] = {...updatedWatlevmp[index], elevation: value as number};
+                  onValidate('watlevmp', updatedWatlevmp);
+                },
+              },
+              description: {
+                onChangeCallback: (value) => {
+                  const updatedWatlevmp = [...(watlevContext || [])];
+                  updatedWatlevmp[index] = {
+                    ...updatedWatlevmp[index],
+                    description: (value as ChangeEvent<HTMLInputElement>).target.value,
+                  };
+                  onValidate('watlevmp', updatedWatlevmp);
                 },
               },
             }}

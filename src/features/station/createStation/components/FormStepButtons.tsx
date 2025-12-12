@@ -114,7 +114,6 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
         }
         handleOpret={() => {
           if (!formState) return;
-          console.log('triggering twice');
           stamdataNewMutation.mutate(formState);
         }}
       />

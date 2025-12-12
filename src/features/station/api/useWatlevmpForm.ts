@@ -4,15 +4,18 @@ import {watlevmpAddSchema} from '../schema';
 
 type UseWatlevmpFormProps<T> = {
   defaultValues?: DefaultValues<T>;
+  values: T | undefined;
 };
 
 const useWatlevmpForm = <T extends Record<string, any>>({
   defaultValues,
+  values,
 }: UseWatlevmpFormProps<T>) => {
   const formMethods = useForm({
     resolver: zodResolver(watlevmpAddSchema),
     defaultValues,
     mode: 'onTouched',
+    values: values,
   });
 
   return formMethods;

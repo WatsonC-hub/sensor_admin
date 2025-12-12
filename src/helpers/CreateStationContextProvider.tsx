@@ -54,7 +54,7 @@ export type FormState = {
   location?: LocationData;
   timeseries?: Array<TimeseriesData>;
   watlevmp?: Array<Watlevmp>;
-  unit?: UnitData;
+  unit?: Array<UnitData>;
   sync?: SyncFormValues;
   contacts?: Array<ContactTable>;
   location_access?: Array<AccessTable>;
@@ -116,30 +116,6 @@ const CreateStationContextProvider = ({children}: Props) => {
     data: FormState[keyof FormState]
   ) => {
     if (data) {
-      if (
-        key === 'timeseries' &&
-        (data as Array<TimeseriesData>).find((ts) => ts.tstype_id !== 1) === undefined &&
-        formState.watlevmp !== undefined
-      ) {
-        setFormState((prev: FormState) => {
-          delete prev['watlevmp'];
-          return {...prev};
-        });
-      }
-
-      if (
-        key === 'timeseries' &&
-        formState.unit !== undefined &&
-        (data as Array<TimeseriesData>).find((ts) =>
-          formState.timeseries?.map((t) => t.tstype_id).includes(ts.tstype_id)
-        ) === undefined
-      ) {
-        setFormState((prev: FormState) => {
-          delete prev['unit'];
-          return {...prev};
-        });
-      }
-
       setFormState((prev: FormState) => ({...prev, [key]: data}));
     }
   };

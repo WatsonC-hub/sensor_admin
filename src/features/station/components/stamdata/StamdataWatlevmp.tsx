@@ -56,6 +56,7 @@ const Description = (props: Omit<FormInputProps<Watlevmp>, 'name'>) => {
       disabled={props.disabled}
       fullWidth
       placeholder="f.eks. top af rør"
+      {...props}
     />
   );
 };
