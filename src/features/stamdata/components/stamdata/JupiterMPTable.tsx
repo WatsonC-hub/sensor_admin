@@ -78,7 +78,9 @@ const JupiterMPTable = () => {
         accessorKey: 'startdate',
         size: 80,
         Cell: ({row}) => {
-          const dateArray: Array<string> = splitTimeFromDate(row.original.startdate.toString());
+          const dateArray: Array<string> = row.original.startdate.isValid()
+            ? splitTimeFromDate(row.original.startdate.toString())
+            : ['', ''];
 
           return (
             <>
@@ -104,7 +106,8 @@ const JupiterMPTable = () => {
       },
       {
         header: 'Beskrivelse',
-        accessorKey: 'description',
+        id: 'description',
+        accessorFn: (row) => row.description || 'Terræn',
         size: 90,
       },
     ],
@@ -150,7 +153,7 @@ const JupiterMPTable = () => {
       ),
     renderTopToolbar: (
       <Typography variant="body1" p={1}>
-        Målepunkt i Jupiter
+        Målepunkt eller terrænkote i Jupiter
       </Typography>
     ),
     renderBottomToolbar: false,

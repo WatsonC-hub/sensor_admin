@@ -68,7 +68,7 @@ const CustomBottomNavigation = <T extends string>({
             if (
               item.isCalculated !== undefined &&
               item.isCalculated &&
-              item.value === stationPages.TILSYN
+              (item.value === stationPages.TILSYN || item.value === stationPages.MAALEPUNKT)
             ) {
               return;
             }
