@@ -192,7 +192,7 @@ const StationDrawer = () => {
           page: stationPages.ALGORITHMS,
           icon: <FunctionsIcon />,
           requiredTsId: true,
-          disabled: !iotAccess,
+          disabled: !iotAccess || metadata?.unit_uuid === null,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id!)),
           tooltip: 'På denne side kan du justere advarsler for din tidsserie.',
         },
