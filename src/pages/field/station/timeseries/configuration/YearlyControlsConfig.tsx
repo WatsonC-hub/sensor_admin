@@ -13,6 +13,7 @@ import {
 import {z} from 'zod';
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 
 const yearlyControlsSchema = z.object({
   controls_per_year: z.number({required_error: 'Kontrol interval er påkrævet'}).nullable(),
@@ -37,9 +38,10 @@ function intervalFromFrequencyPerYear(timesPerYear: number): string {
 }
 
 const YearlyControlsConfig = () => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
   const {superUser} = useUser();
   const {data: values} = useTimeseriesServiceInterval(ts_id);
+
   const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
   const {isMobile} = useBreakpoints();
 
@@ -53,7 +55,7 @@ const YearlyControlsConfig = () => {
     values: values && {
       controls_per_year: values.controlsPerYear,
       lead_time: values.leadTime ?? null,
-      dummy: values.controlsPerYear ? Number(values.controlsPerYear.toFixed(3)) : null,
+      dummy: values.controlsPerYear !== null ? Number(values.controlsPerYear.toFixed(3)) : null,
       selectValue: 1,
     },
     mode: 'onChange',
@@ -173,7 +175,8 @@ const YearlyControlsConfig = () => {
         />
       </Box>
 
-      <Box display="flex" justifyContent="flex-end">
+      <Box display="flex" justifyContent="flex-end" gap={1}>
+        <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="kontrolhyppighed" />
         <Button
           bttype="tertiary"
           onClick={() => {
@@ -191,7 +194,6 @@ const YearlyControlsConfig = () => {
           }
           onClick={handleSubmit(onSubmit, (error) => console.log(error))}
           startIcon={<Save />}
-          sx={{marginLeft: 1}}
         >
           Gem
         </Button>

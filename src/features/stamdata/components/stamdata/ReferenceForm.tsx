@@ -20,6 +20,9 @@ import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useEffect} from 'react';
 import {stationPages} from '~/helpers/EnumHelper';
 import JupiterMPTable from './JupiterMPTable';
+import {Box} from '@mui/material';
+import {useStationProgress} from '~/hooks/query/stationProgress';
+import Button from '~/components/Button';
 
 const schema = z
   .object({
@@ -57,6 +60,7 @@ export default function ReferenceForm() {
   const [showForm, setShowForm] = useShowFormState();
   const {data: metadata} = useTimeseriesData(ts_id);
   const {del: deleteWatlevmp} = useMaalepunkt(ts_id);
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'watlevmp');
 
   const formMethods = useForm<WatlevMPFormValues>({
     resolver: zodResolver(schema),
@@ -108,15 +112,22 @@ export default function ReferenceForm() {
           disabled={disabled}
         />
       )}
-      <FabWrapper
-        icon={<AddCircle />}
-        text="Tilføj målepunkt"
-        disabled={disabled}
-        onClick={() => {
-          setShowForm(true);
-        }}
-        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-      />
+      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={2} mt={2}>
+        {/* {needsProgress && (
+          <Button bttype="primary" onClick={hasAssessed}>
+            Håndteret
+          </Button>
+        )} */}
+        <FabWrapper
+          icon={<AddCircle />}
+          text="Tilføj målepunkt"
+          disabled={disabled}
+          onClick={() => {
+            setShowForm(true);
+          }}
+          sx={{visibility: showForm === null ? 'visible' : 'hidden', ml: 0}}
+        />
+      </Box>
     </>
   );
 }

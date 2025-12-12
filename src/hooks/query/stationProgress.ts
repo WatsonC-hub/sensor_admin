@@ -7,6 +7,9 @@ export type ProgressStatus = {
   adgangsforhold: boolean;
   ressourcer: boolean;
   kontakter: boolean;
+  watlevmp: boolean;
+  sync: boolean;
+  kontrolhyppighed: boolean;
 };
 
 export const getQueryOptions = (loc_id: number | undefined, ts_id?: number) =>
@@ -19,7 +22,7 @@ export const getQueryOptions = (loc_id: number | undefined, ts_id?: number) =>
       );
       return data;
     },
-    enabled: loc_id != undefined,
+    enabled: loc_id != undefined || ts_id != undefined,
   });
 
 type ProgressStatusOptions<T> = Partial<
@@ -72,6 +75,8 @@ const useStationProgress = (
       [progressKey]: true,
     });
   };
+
+  console.log(progress);
 
   return {
     needsProgress: progress == false ? true : false,

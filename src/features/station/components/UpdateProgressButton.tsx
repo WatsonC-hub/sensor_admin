@@ -14,7 +14,7 @@ const UpdateProgressButton = ({progressKey, loc_id, ts_id}: Props) => {
     <>
       {needsProgress ? (
         <Button bttype="primary" onClick={hasAssessed}>
-          Godkend
+          Markér håndteret
         </Button>
       ) : null}
     </>

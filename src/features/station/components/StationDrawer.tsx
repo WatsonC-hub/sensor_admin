@@ -52,7 +52,7 @@ import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {timeseriesMeasureSampleSendOptions} from '../api/useTimeseriesMeasureSampleSend';
-import {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
+import useDmpAllowedMapList, {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
 import {alarmGetOptions} from '../alarms/api/useAlarm';
 import ProgressLabel from './ProgressLabel';
 import {useProgress} from '~/hooks/query/stationProgress';
@@ -97,6 +97,19 @@ const StationDrawer = () => {
   const {data: metadata} = useTimeseriesData();
   const {data: locationdata} = useLocationData();
   const {data: progress} = useProgress(loc_id, ts_id);
+
+  const isDmpAllowed = useDmpAllowedMapList(ts_id);
+
+  const configurationProgress = progress
+    ? (progress.kontrolhyppighed === false ? 0 : 1) +
+      ((!isDmpAllowed && metadata?.loctype_id !== 9) || progress.sync === false ? 0 : 1)
+    : undefined;
+
+  const maxConfigurationProgress =
+    isDmpAllowed ||
+    (metadata?.loctype_id === 9 && [1, 11, 12, 16].includes(metadata?.tstype_id || 0))
+      ? 2
+      : 1;
 
   const {
     superUser,
@@ -164,6 +177,7 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.tstype_id != 1 || metadata?.calculated,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id!)),
+          progress: progress?.watlevmp == false ? 0 : undefined,
         },
         {
           text: 'Udstyr',
@@ -213,6 +227,10 @@ const StationDrawer = () => {
           },
           tooltip:
             'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
+          // progress = kontrolhyppighed = true + sync = true = 2
+          progress:
+            configurationProgress === maxConfigurationProgress ? undefined : configurationProgress,
+          maxProgress: maxConfigurationProgress,
         },
       ],
     },
