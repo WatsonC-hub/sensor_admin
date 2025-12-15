@@ -11,6 +11,7 @@ import {createTypedForm} from '~/components/formComponents/Form';
 import {useUser} from '~/features/auth/useUser';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import useDmpAllowedMapList from '~/features/station/api/useDmpAllowedMapList';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 
 const SyncSchema = z
   .object({
@@ -173,6 +174,7 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
           )}
 
           <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">
+            <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="sync" />
             <Form.Cancel cancel={() => resetSync()} />
             <Form.Submit submit={submit} />
           </Grid2>

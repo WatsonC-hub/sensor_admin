@@ -51,7 +51,10 @@ import {stationPages, StationPages} from '~/helpers/EnumHelper';
 import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import {timeseriesMeasureSampleSendOptions} from '../api/useTimeseriesMeasureSampleSend';
+import {
+  timeseriesMeasureSampleSendOptions,
+  useTimeseriesMeasureSampleSend,
+} from '../api/useTimeseriesMeasureSampleSend';
 import useDmpAllowedMapList, {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
 import {alarmGetOptions} from '../alarms/api/useAlarm';
 import ProgressLabel from './ProgressLabel';
@@ -97,19 +100,28 @@ const StationDrawer = () => {
   const {data: metadata} = useTimeseriesData();
   const {data: locationdata} = useLocationData();
   const {data: progress} = useProgress(loc_id, ts_id);
+  const {data, error} = useTimeseriesMeasureSampleSend(ts_id);
 
   const isDmpAllowed = useDmpAllowedMapList(ts_id);
 
   const configurationProgress = progress
     ? (progress.kontrolhyppighed === false ? 0 : 1) +
-      ((!isDmpAllowed && metadata?.loctype_id !== 9) || progress.sync === false ? 0 : 1)
+      ((!isDmpAllowed && metadata?.loctype_id !== 9) || progress.sync === false ? 0 : 1) +
+      (progress.samplesend === false ? 0 : 1)
     : undefined;
 
-  const maxConfigurationProgress =
+  let maxConfigurationProgress = 1;
+
+  maxConfigurationProgress =
     isDmpAllowed ||
     (metadata?.loctype_id === 9 && [1, 11, 12, 16].includes(metadata?.tstype_id || 0))
-      ? 2
-      : 1;
+      ? maxConfigurationProgress + 1
+      : maxConfigurationProgress;
+
+  maxConfigurationProgress =
+    !metadata?.calculated && metadata?.unit_uuid && !error && data !== undefined
+      ? maxConfigurationProgress + 1
+      : maxConfigurationProgress;
 
   const {
     superUser,
@@ -161,6 +173,7 @@ const StationDrawer = () => {
           icon: <AddCircle />,
           requiredTsId: false,
           onHover: () => handlePrefetch(pejlingGetOptions(ts_id)),
+          progress: progress?.kontrol == false ? 0 : undefined,
         },
         {
           text: 'Tilsyn',
@@ -213,6 +226,7 @@ const StationDrawer = () => {
           requiredTsId: true,
           onHover: () => handlePrefetch(alarmGetOptions(ts_id)),
           disabled: !alarms,
+          progress: progress?.alarm == false ? 0 : undefined,
         },
         {
           text: 'Konfiguration',

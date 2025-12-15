@@ -48,7 +48,8 @@ export const queryKeys = {
     edgeDates: (ts_id: number | undefined) => ['all_range', ts_id] as const,
     graphData: (ts_id: number | undefined, xRange: Array<Dayjs>) =>
       ['graphData', ts_id, xRange] as const,
-    MeasureSampleSend: (ts_id: number) => ['measure_sample_send', 'register', ts_id] as const,
+    MeasureSampleSend: (ts_id: number | undefined) =>
+      ['measure_sample_send', 'register', ts_id] as const,
     ServiceInterval: (ts_id: number) => ['service_interval', 'register', ts_id] as const,
     SyncData: (ts_id: number) => ['sync', 'register', ts_id] as const,
   },

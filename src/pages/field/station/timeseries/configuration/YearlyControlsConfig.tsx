@@ -45,6 +45,9 @@ const YearlyControlsConfig = () => {
   const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
   const {isMobile} = useBreakpoints();
 
+  const disabled =
+    (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser);
+
   const formMethods = useForm<ServiceIntervalSubmit>({
     resolver: zodResolver(yearlyControlsSchema),
     defaultValues: {
@@ -91,9 +94,7 @@ const YearlyControlsConfig = () => {
           name="dummy"
           label="Kontrolhyppighed"
           type="number"
-          disabled={
-            (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser)
-          }
+          disabled={disabled}
           fullWidth
           onChangeCallback={(e) => {
             if (typeof e == 'number') {
@@ -114,10 +115,7 @@ const YearlyControlsConfig = () => {
                     variant="standard"
                     sx={{width: 150}}
                     defaultValue={1}
-                    disabled={
-                      (values?.isCustomerService && superUser) ||
-                      (!values?.isCustomerService && !superUser)
-                    }
+                    disabled={disabled}
                     slotProps={{
                       select: {
                         disableUnderline: true,
@@ -163,9 +161,7 @@ const YearlyControlsConfig = () => {
           name="lead_time"
           label="Forsvarsling"
           type="number"
-          disabled={
-            (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser)
-          }
+          disabled={disabled}
           fullWidth
           slotProps={{
             input: {
@@ -176,13 +172,18 @@ const YearlyControlsConfig = () => {
       </Box>
 
       <Box display="flex" justifyContent="flex-end" gap={1}>
-        <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="kontrolhyppighed" />
+        <UpdateProgressButton
+          loc_id={loc_id}
+          ts_id={ts_id}
+          progressKey="kontrolhyppighed"
+          disabled={disabled}
+        />
         <Button
           bttype="tertiary"
           onClick={() => {
             reset();
           }}
-          disabled={isSubmitting}
+          disabled={isSubmitting || disabled}
         >
           Annuller
         </Button>

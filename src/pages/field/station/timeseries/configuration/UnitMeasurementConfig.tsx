@@ -20,6 +20,7 @@ import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useUser} from '~/features/auth/useUser';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import dayjs from 'dayjs';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
@@ -77,6 +78,11 @@ const UnitMeasurementConfig = () => {
     },
     values: values,
   });
+
+  const disabled =
+    !data?.configPossible ||
+    (currentLocation?.is_customer_service && superUser) ||
+    (!currentLocation?.is_customer_service && !superUser);
 
   const {
     handleSubmit,
@@ -211,11 +217,7 @@ const UnitMeasurementConfig = () => {
               formMethods.setValue('sendInterval', undefined);
             }
           }}
-          disabled={
-            !data?.configPossible ||
-            (currentLocation?.is_customer_service && superUser) ||
-            (!currentLocation?.is_customer_service && !superUser)
-          }
+          disabled={disabled}
           slotProps={{
             input: {
               startAdornment: <InputAdornment position="start">hvert</InputAdornment>,
@@ -256,12 +258,14 @@ const UnitMeasurementConfig = () => {
         Forventet tidspunkt for omkonfigurering {configChange ? configChange : 'ukendt'}
       </Typography>
 
-      <Box display="flex" justifyContent="flex-end">
-        <Button
-          bttype="tertiary"
-          onClick={() => reset()}
-          disabled={isSubmitting || !data?.configPossible}
-        >
+      <Box display="flex" justifyContent="flex-end" gap={1}>
+        <UpdateProgressButton
+          loc_id={loc_id}
+          ts_id={ts_id}
+          progressKey="samplesend"
+          disabled={disabled}
+        />
+        <Button bttype="tertiary" onClick={() => reset()} disabled={isSubmitting || disabled}>
           Annuller
         </Button>
         <Button
@@ -269,7 +273,6 @@ const UnitMeasurementConfig = () => {
           disabled={isSubmitting || !data?.configPossible || !isDirty}
           onClick={handleSubmit((data) => mutate(data))}
           startIcon={<Save />}
-          sx={{marginLeft: 1}}
         >
           Gem
         </Button>

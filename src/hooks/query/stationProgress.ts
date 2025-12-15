@@ -10,6 +10,9 @@ export type ProgressStatus = {
   watlevmp: boolean;
   sync: boolean;
   kontrolhyppighed: boolean;
+  alarm: boolean;
+  kontrol: boolean;
+  samplesend: boolean;
 };
 
 export const getQueryOptions = (loc_id: number | undefined, ts_id?: number) =>
@@ -76,7 +79,7 @@ const useStationProgress = (
     });
   };
 
-  console.log(progress);
+  console.log(progressKey, progress);
 
   return {
     needsProgress: progress == false ? true : false,
