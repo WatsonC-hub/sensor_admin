@@ -182,6 +182,7 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.calculated || metadata?.unit_uuid === null,
           onHover: () => handlePrefetch(tilsynGetOptions(ts_id)),
+          progress: progress?.service == false ? 0 : undefined,
         },
         {
           text: 'Målepunkt',

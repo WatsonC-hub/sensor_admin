@@ -10,6 +10,7 @@ import FabWrapper from '~/components/FabWrapper';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import GraphManager from '~/features/station/components/GraphManager';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
@@ -133,16 +134,19 @@ export default function Tilsyn() {
             disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           />
         </Box>
+        <Box display="flex" justifyContent={'flex-end'} gap={1}>
+          <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="service" />
+          <FabWrapper
+            icon={<PlaylistAddRounded />}
+            text={'Tilføj ' + stationPages.TILSYN}
+            onClick={() => {
+              setShowForm(true);
+            }}
+            disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+            sx={{visibility: showForm === null ? 'visible' : 'hidden', ml: 0}}
+          />
+        </Box>
       </StationPageBoxLayout>
-      <FabWrapper
-        icon={<PlaylistAddRounded />}
-        text={'Tilføj ' + stationPages.TILSYN}
-        onClick={() => {
-          setShowForm(true);
-        }}
-        disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
-        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-      />
     </>
   );
 }
