@@ -199,6 +199,7 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.calculated,
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+          progress: progress?.unit == false ? 0 : undefined,
         },
         {
           text: 'Juster data',

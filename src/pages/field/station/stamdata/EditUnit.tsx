@@ -20,6 +20,7 @@ import useUnitForm from '~/features/station/api/useUnitForm';
 import {EditUnit as EditUnitType, editUnitSchema} from '~/features/station/schema';
 
 import UnitHistoryTable from './UnitHistoryTable';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 
 const EditUnit = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
@@ -99,14 +100,22 @@ const EditUnit = () => {
           </FormProvider>
         </Box>
       </StationPageBoxLayout>
-      <FabWrapper
-        icon={<BuildRounded />}
-        text={fabText}
-        disabled={disabled}
-        onClick={() => (mode ? setOpenDialog(true) : setOpenAddUdstyr(true))}
-        sx={{visibility: openAddUdstyr || openDialog ? 'hidden' : 'visible'}}
-        showText={true}
-      />
+      <Box display="flex" justifyContent={'flex-end'} gap={1}>
+        <UpdateProgressButton
+          loc_id={loc_id}
+          ts_id={ts_id}
+          progressKey="unit"
+          disabled={disabled}
+        />
+        <FabWrapper
+          icon={<BuildRounded />}
+          text={fabText}
+          disabled={disabled}
+          onClick={() => (mode ? setOpenDialog(true) : setOpenAddUdstyr(true))}
+          sx={{visibility: openAddUdstyr || openDialog ? 'hidden' : 'visible', ml: 0}}
+          showText={true}
+        />
+      </Box>
     </>
   );
 };

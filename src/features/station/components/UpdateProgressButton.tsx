@@ -12,7 +12,6 @@ type Props = {
 const UpdateProgressButton = ({progressKey, loc_id, ts_id, disabled}: Props) => {
   const {needsProgress, hasAssessed} = useStationProgress(loc_id, progressKey, ts_id);
 
-  console.log({needsProgress, progressKey, loc_id, ts_id});
   return (
     <>
       {needsProgress ? (
