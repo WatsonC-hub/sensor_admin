@@ -9,6 +9,7 @@ import {
   Router,
   Settings,
   PriorityHigh,
+  DoNotDisturb,
 } from '@mui/icons-material';
 import AlarmIcon from '@mui/icons-material/Alarm';
 import {
@@ -162,16 +163,26 @@ const StationDrawer = () => {
           icon: <Edit />,
           page: stationPages.GENERELTIDSSERIE,
           requiredTsId: true,
-          disabled: metadata?.calculated || !metadata?.ts_id,
+          disabled: !metadata?.ts_id,
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
         },
       ],
       items: [
+        ...(ts_id == undefined
+          ? [
+              {
+                text: 'Ingen tidsserier',
+                page: stationPages.PEJLING,
+                icon: <DoNotDisturb />,
+                requiredTsId: false,
+              },
+            ]
+          : []),
         {
           text: 'Kontrol',
           page: stationPages.PEJLING,
           icon: <AddCircle />,
-          requiredTsId: false,
+          requiredTsId: true,
           onHover: () => handlePrefetch(pejlingGetOptions(ts_id)),
           progress: progress?.kontrol == false ? 0 : undefined,
         },

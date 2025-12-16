@@ -13,6 +13,7 @@ interface DisplayState {
   itinerary_id: string | null;
   showLocationRouter: boolean;
   own_task_list: boolean;
+  showContentOnMobile: boolean;
 
   setTsId: (id: number | null) => void;
   setLocId: (id: number | null) => void;
@@ -25,6 +26,7 @@ interface DisplayState {
   setItineraryId: (itinerary_id: string | null) => void;
   setShowLocationRouter: (showLocationRouter: boolean) => void;
   setOwnTaskList: (own_task_list: boolean) => void;
+  setShowContentOnMobile: (showContentOnMobile: boolean) => void;
   reset: () => void;
 }
 
@@ -40,6 +42,7 @@ export const displayStore = create<DisplayState>((set) => ({
   itinerary_id: null,
   showLocationRouter: false,
   own_task_list: false,
+  showContentOnMobile: true,
 
   setTsId: (ts_id) => set({ts_id}),
   setLocId: (loc_id) =>
@@ -50,6 +53,7 @@ export const displayStore = create<DisplayState>((set) => ({
       boreholeno: null,
       intakeno: null,
     })),
+  setShowContentOnMobile: (showContentOnMobile) => set({showContentOnMobile}),
   closeLocation: () => set({loc_id: null, showLocationRouter: false}),
   setBoreholeNo: (boreholeno) =>
     set(() => ({
@@ -77,6 +81,7 @@ export const displayStore = create<DisplayState>((set) => ({
       itinerary_id: null,
       showLocationRouter: false,
       own_task_list: false,
+      showContentOnMobile: true,
     })),
 }));
 

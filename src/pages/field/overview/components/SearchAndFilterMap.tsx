@@ -122,6 +122,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         freeSolo={true}
         forcePopupIcon={false}
         options={locItems}
+        autoHighlight
         getOptionLabel={(option) => (typeof option == 'object' ? option.name : option)}
         groupBy={(option) => option.group}
         inputValue={typeAhead}
@@ -163,7 +164,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         onInputChange={elasticSearch}
       />
       <Menu
-        id="simple-menu"
+        id="filter-menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}

@@ -1,5 +1,11 @@
 import {createAsyncStoragePersister} from '@tanstack/query-async-storage-persister';
-import {matchQuery, MutationCache, QueryClient, QueryKey} from '@tanstack/react-query';
+import {
+  matchQuery,
+  MutationCache,
+  QueryClient,
+  QueryKey,
+  UseMutationOptions,
+} from '@tanstack/react-query';
 import axios, {AxiosError} from 'axios';
 import {toast} from 'react-toastify';
 import localforage from 'localforage';
@@ -34,6 +40,17 @@ declare module '@tanstack/react-query' {
 
 export type APIError = AxiosError<ErrorResponse>;
 
+type AppMutationOptions<TData, TVariables> = Omit<
+  UseMutationOptions<TData, APIError, TVariables>,
+  'mutationFn'
+> & {
+  mutationFn: (variables: TVariables) => Promise<TData>;
+};
+
+export const makeAppMutationOptions = <TData, TVariables>(
+  options: AppMutationOptions<TData, TVariables>
+) => options;
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -56,7 +73,7 @@ const queryClient = new QueryClient({
       },
     },
     mutations: {
-      retry: 1,
+      retry: 0,
       networkMode: 'offlineFirst', // ensures they queue
     },
   },
@@ -64,16 +81,21 @@ const queryClient = new QueryClient({
     onSuccess: (_data, _variables, _context, mutation) => {
       queryClient.invalidateQueries({
         predicate: (query) => {
-          if (matchQuery({queryKey: ['map']}, query)) return true;
-          if (matchQuery({queryKey: ['borehole_map']}, query)) return true;
-          if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
-          if (matchQuery({queryKey: ['tasks']}, query)) return true;
-
           return (
             mutation.meta?.invalidates?.some((queryKey) => {
               return queryKey.every((key) => query.queryKey.includes(key));
             }) ?? false
           );
+        },
+      });
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          if (matchQuery({queryKey: ['map']}, query)) return true;
+          if (matchQuery({queryKey: ['borehole_map']}, query)) return true;
+          if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
+          if (matchQuery({queryKey: ['all_tasks']}, query)) return true;
+
+          return false;
         },
       });
     },
