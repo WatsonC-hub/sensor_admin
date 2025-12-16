@@ -13,12 +13,12 @@ import {
   qaSelection,
 } from '~/state/atoms';
 
-import WizardConfirmTimeseries from './WizardConfirmTimeseries';
-import WizardDataExclude from './WizardExcludeData';
-import WizardLevelCorrection from './WizardLevelCorrection';
-import WizardValueBounds from './WizardValueBounds';
+import ConfirmTimeseries from './ConfirmTimeseries';
+import DataExclude from './ExcludeData';
+import LevelCorrection from './LevelCorrection';
+import ValueBounds from './ValueBounds';
 
-const StepWizard = () => {
+const AdjustmentChooser = () => {
   const [dataAdjustment] = useQueryState('adjust', parseAsStringLiteral(qaAdjustmentLiteral));
   const [selection, setSelection] = useAtom(qaSelection);
   const {isMobile} = useBreakpoints();
@@ -74,14 +74,14 @@ const StepWizard = () => {
           <CardContent sx={{height: '100%'}}>
             <Box>
               {dataAdjustment === 'confirm' && (
-                <WizardConfirmTimeseries
+                <ConfirmTimeseries
                   initiateConfirmTimeseries={initiateConfirmTimeseries}
                   onClose={handleOnClose}
                 />
               )}
-              {dataAdjustment === 'remove' && <WizardDataExclude onClose={handleOnClose} />}
-              {dataAdjustment === 'bounds' && <WizardValueBounds onClose={handleOnClose} />}
-              {dataAdjustment === 'correction' && <WizardLevelCorrection onClose={handleOnClose} />}
+              {dataAdjustment === 'remove' && <DataExclude onClose={handleOnClose} />}
+              {dataAdjustment === 'bounds' && <ValueBounds onClose={handleOnClose} />}
+              {dataAdjustment === 'correction' && <LevelCorrection onClose={handleOnClose} />}
             </Box>
           </CardContent>
         </Card>
@@ -90,4 +90,4 @@ const StepWizard = () => {
   );
 };
 
-export default StepWizard;
+export default AdjustmentChooser;

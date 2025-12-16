@@ -164,7 +164,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         onInputChange={elasticSearch}
       />
       <Menu
-        id="simple-menu"
+        id="filter-menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}

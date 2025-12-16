@@ -8,7 +8,7 @@ interface WizardLevelCorrectionProps {
   onClose: () => void;
 }
 
-const WizardLevelCorrection = ({onClose}: WizardLevelCorrectionProps) => {
+const LevelCorrection = ({onClose}: WizardLevelCorrectionProps) => {
   const {isMobile} = useBreakpoints();
 
   return (
@@ -28,4 +28,4 @@ const WizardLevelCorrection = ({onClose}: WizardLevelCorrectionProps) => {
   );
 };
 
-export default WizardLevelCorrection;
+export default LevelCorrection;

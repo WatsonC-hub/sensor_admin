@@ -85,7 +85,7 @@ export const useAlgorithms = () => {
       toast.success('Ændringer gemt');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['algorithms']],
     },
   });
   const del = useMutation({
@@ -94,7 +94,7 @@ export const useAlgorithms = () => {
       toast.success('Algorithms slettet');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['algorithms']],
     },
   });
 
@@ -104,7 +104,7 @@ export const useAlgorithms = () => {
       toast.success('Algoritme nulstillet');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['algorithms']],
     },
   });
 
