@@ -13,6 +13,7 @@ import {
   type Task,
   type Taskitinerary,
   TaskPermission,
+  MergeItinerary,
 } from '../types';
 import {useUser} from '~/features/auth/useUser';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
@@ -48,6 +49,18 @@ const addLocationToItineraryOptions = {
   mutationFn: async (mutation_data: AddLocationToItinerary) => {
     const {path, data} = mutation_data;
     const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}`, data);
+    return result;
+  },
+};
+
+const mergeTripsOptions = {
+  mutationKey: ['taskItinerary_merge'],
+  mutationFn: async (mutation_data: MergeItinerary) => {
+    const {path, data} = mutation_data;
+    const {data: result} = await apiClient.post(
+      `/sensor_admin/tasks/itineraries/${path}/merge`,
+      data
+    );
     return result;
   },
 };
@@ -130,6 +143,16 @@ const useTaskItinerary = <T = Taskitinerary[]>(
     },
   });
 
+  const mergeTrips = useMutation({
+    ...mergeTripsOptions,
+    onSuccess: () => {
+      toast.success('Lokationer flyttet til tur');
+    },
+    meta: {
+      invalidates: [['itineraries']],
+    },
+  });
+
   const addLocationToTrip = useMutation({
     ...addLocationToItineraryOptions,
     onSuccess: () => {
@@ -148,6 +171,7 @@ const useTaskItinerary = <T = Taskitinerary[]>(
     getItineraryTasks,
     complete,
     addLocationToTrip,
+    mergeTrips,
   };
 };
 
