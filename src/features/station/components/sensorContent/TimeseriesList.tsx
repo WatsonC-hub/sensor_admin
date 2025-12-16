@@ -94,7 +94,7 @@ const TimeseriesList = () => {
                   setShowContentOnMobile(false);
                   window.dispatchEvent(
                     new CustomEvent('leaflet-pan', {
-                      detail: {lat: coords.lat, lng: coords.lng, zoom: 12},
+                      detail: {lat: coords.lat, lng: coords.lng, zoom: 13},
                     })
                   );
                 }

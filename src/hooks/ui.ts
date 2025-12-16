@@ -52,6 +52,7 @@ export const displayStore = create<DisplayState>((set) => ({
       ts_id: null, // Reset dependent states
       boreholeno: null,
       intakeno: null,
+      showContentOnMobile: true,
     })),
   setShowContentOnMobile: (showContentOnMobile) => set({showContentOnMobile}),
   closeLocation: () => set({loc_id: null, showLocationRouter: false}),
