@@ -1,6 +1,5 @@
-import {Box, Typography} from '@mui/material';
-import React from 'react';
-import {UseFormReturn} from 'react-hook-form';
+import {Autocomplete, Box, Grid2, TextField, Typography} from '@mui/material';
+import {Controller, UseFormReturn} from 'react-hook-form';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {initialWatlevmpData} from '~/features/stamdata/components/stamdata/const';
 import {WatlevMPFormValues} from '~/features/stamdata/components/stamdata/ReferenceForm';
@@ -14,6 +13,15 @@ interface WatlevMPFormProps {
 
 const Form = createTypedForm<WatlevMPFormValues>();
 
+const options = [
+  {label: 'Top rør'},
+  {label: 'Top WatsonC-prop'},
+  {label: 'Pejlestuds'},
+  {label: 'Bund af v-overløb'},
+  {label: 'Overløbskant'},
+  {label: 'Skal indmåles'},
+];
+
 const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
   const {ts_id} = useAppContext(['ts_id']);
   const [, setShowForm] = useShowFormState();
@@ -25,7 +33,6 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
   const {post: postWatlevmp, put: putWatlevmp} = useMaalepunkt(ts_id);
 
   const handleMaalepunktSubmit = (values: WatlevMPFormValues) => {
-    console.log('Submitting WatlevMPForm with values:', values);
     const mutationOptions = {
       onSuccess: () => {
         reset(initialWatlevmpData());
@@ -60,7 +67,7 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
       >
         <Form.Input
           name="elevation"
-          label="Pejlepunkt [m]"
+          label="Målepunkt [m DVR90]"
           required
           type="number"
           gridSizes={defaultValues?.gid !== undefined ? 12 : undefined}
@@ -76,14 +83,52 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
         />
         {defaultValues?.gid !== undefined && <Form.DateTime name="enddate" label="Slut dato" />}
 
-        <Form.Input
-          name="mp_description"
-          label="Kommentar"
-          placeholder="F.eks.Pejl top rør"
-          multiline
-          rows={3}
-          gridSizes={12}
-        />
+        <Grid2 size={12}>
+          <Controller
+            name="mp_description"
+            control={formMethods.control}
+            render={({field: {value, onChange, onBlur, ref}}) => {
+              return (
+                <Autocomplete
+                  disablePortal
+                  freeSolo
+                  disableClearable
+                  slotProps={{}}
+                  options={options}
+                  inputValue={value}
+                  value={value}
+                  ref={ref}
+                  fullWidth
+                  onBlur={onBlur}
+                  onInputChange={(e, value) => onChange(value)}
+                  onChange={(e, value) => onChange(typeof value == 'string' ? value : value.label)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      placeholder="F.eks. Top rør"
+                      multiline
+                      slotProps={{
+                        inputLabel: {
+                          shrink: true,
+
+                          sx: {
+                            '& .Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'},
+                            color: 'primary.main',
+                            zIndex: 0,
+                          },
+                        },
+                      }}
+                      rows={3}
+                      label="Beskrivelse"
+                    />
+                  )}
+                />
+              );
+            }}
+          />
+        </Grid2>
+
         <Box
           display={'flex'}
           gap={1}

@@ -136,6 +136,13 @@ const JupiterMPTable = () => {
     muiTableContainerProps: {},
     muiTableHeadCellProps: {sx: {m: 0, py: 0}},
     muiTableBodyCellProps: {sx: {m: 0, py: 0, whiteSpace: 'pre-line'}},
+    renderEmptyRowsFallback: () => (
+      <Typography variant="body1" sx={{textAlign: 'center', fontStyle: 'italic', opacity: 0.6}}>
+        {intakeno === undefined
+          ? 'Det var ikke muligt at søge efter et målepunkt, da tidsserien ikke har et indtagsnummer'
+          : 'Kan ikke finde et målepunkt i Jupiter'}
+      </Typography>
+    ),
     renderRowActions: () =>
       showQuickAdd && (
         <TooltipWrapper description="Tilføj målepunkt fra Jupiter" withIcon={false}>
