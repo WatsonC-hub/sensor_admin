@@ -38,6 +38,7 @@ type Metadata = {
   timeseries_calypso_id: number | null;
   requires_auth: boolean;
   hide_public: boolean;
+  is_customer_service: boolean;
 };
 
 type LocationMetadata = {

@@ -184,7 +184,6 @@ const StationDrawer = () => {
           icon: <AddCircle />,
           requiredTsId: true,
           onHover: () => handlePrefetch(pejlingGetOptions(ts_id)),
-          progress: progress?.kontrol == false ? 0 : undefined,
         },
         {
           text: 'Tilsyn',
@@ -193,7 +192,6 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.calculated || metadata?.unit_uuid === null,
           onHover: () => handlePrefetch(tilsynGetOptions(ts_id)),
-          progress: progress?.service == false ? 0 : undefined,
         },
         {
           text: 'Målepunkt',

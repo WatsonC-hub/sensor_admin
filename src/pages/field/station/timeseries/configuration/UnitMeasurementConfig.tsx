@@ -258,25 +258,27 @@ const UnitMeasurementConfig = () => {
         Forventet tidspunkt for omkonfigurering {configChange ? configChange : 'ukendt'}
       </Typography>
 
-      <Box display="flex" justifyContent="flex-end" gap={1}>
-        <UpdateProgressButton
-          loc_id={loc_id}
-          ts_id={ts_id}
-          progressKey="samplesend"
-          disabled={disabled}
-        />
-        <Button bttype="tertiary" onClick={() => reset()} disabled={isSubmitting || disabled}>
-          Annuller
-        </Button>
-        <Button
-          bttype="primary"
-          disabled={isSubmitting || !data?.configPossible || !isDirty}
-          onClick={handleSubmit((data) => mutate(data))}
-          startIcon={<Save />}
-        >
-          Gem
-        </Button>
-      </Box>
+      {!disabled && (
+        <Box display="flex" justifyContent="flex-end" gap={1}>
+          <UpdateProgressButton
+            loc_id={loc_id}
+            ts_id={ts_id}
+            progressKey="samplesend"
+            disabled={disabled}
+          />
+          <Button bttype="tertiary" onClick={() => reset()} disabled={isSubmitting || disabled}>
+            Annuller
+          </Button>
+          <Button
+            bttype="primary"
+            disabled={isSubmitting || !data?.configPossible || !isDirty}
+            onClick={handleSubmit((data) => mutate(data))}
+            startIcon={<Save />}
+          >
+            Gem
+          </Button>
+        </Box>
+      )}
     </FormProvider>
   );
 };

@@ -53,6 +53,10 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
   const isDmpAllowed = useDmpAllowedMapList(ts_id);
   const canSyncJupiter = isBorehole && isJupiterType;
 
+  const disabled =
+    (user.superUser && metadata?.is_customer_service) ||
+    (!user.superUser && !metadata?.is_customer_service);
+
   const {
     get: {data: sync_data},
     post: postSync,
@@ -173,11 +177,19 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
             </>
           )}
 
-          <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">
-            <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="sync" />
-            <Form.Cancel cancel={() => resetSync()} />
-            <Form.Submit submit={submit} />
-          </Grid2>
+          {!disabled && (
+            <Grid2
+              size={12}
+              sx={{alignSelf: 'end'}}
+              display="flex"
+              gap={1}
+              justifyContent="flex-end"
+            >
+              <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="sync" />
+              <Form.Cancel cancel={() => resetSync()} />
+              <Form.Submit submit={submit} />
+            </Grid2>
+          )}
         </Form>
       )}
     </Box>

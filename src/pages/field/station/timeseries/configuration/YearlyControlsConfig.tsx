@@ -171,34 +171,36 @@ const YearlyControlsConfig = () => {
         />
       </Box>
 
-      <Box display="flex" justifyContent="flex-end" gap={1}>
-        <UpdateProgressButton
-          loc_id={loc_id}
-          ts_id={ts_id}
-          progressKey="kontrolhyppighed"
-          disabled={disabled}
-        />
-        <Button
-          bttype="tertiary"
-          onClick={() => {
-            reset();
-          }}
-          disabled={isSubmitting || disabled}
-        >
-          Annuller
-        </Button>
-        <Button
-          bttype="primary"
-          disabled={
-            isSubmitting ||
-            Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0
-          }
-          onClick={handleSubmit(onSubmit, (error) => console.log(error))}
-          startIcon={<Save />}
-        >
-          Gem
-        </Button>
-      </Box>
+      {!disabled && (
+        <Box display="flex" justifyContent="flex-end" gap={1}>
+          <UpdateProgressButton
+            loc_id={loc_id}
+            ts_id={ts_id}
+            progressKey="kontrolhyppighed"
+            disabled={disabled}
+          />
+          <Button
+            bttype="tertiary"
+            onClick={() => {
+              reset();
+            }}
+            disabled={isSubmitting || disabled}
+          >
+            Annuller
+          </Button>
+          <Button
+            bttype="primary"
+            disabled={
+              isSubmitting ||
+              Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0
+            }
+            onClick={handleSubmit(onSubmit, (error) => console.log(error))}
+            startIcon={<Save />}
+          >
+            Gem
+          </Button>
+        </Box>
+      )}
     </FormProvider>
   );
 };
