@@ -34,7 +34,7 @@ type Props = {
 
 const TaskListItemAdvancedCard = ({task}: Props) => {
   const [showAllComments, setShowAllComments] = useState<boolean>(false);
-  const {station} = useNavigationFunctions();
+  const {location} = useNavigationFunctions();
   const {superUser} = useUser();
   const {
     patch: updateTask,
@@ -143,22 +143,28 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                   noCircle={true}
                 />
                 <Box display="flex" flexDirection={'column'}>
-                  <Link
-                    onClick={() => station(task.ts_id)}
-                    color="inherit"
-                    variant="caption"
-                    underline="always"
-                    display="flex"
-                    flexWrap="wrap"
-                    gap={0.5}
-                    sx={{
-                      cursor: 'pointer',
-                      textDecorationColor: 'rgba(255, 255, 255, 0.6)',
-                    }}
-                  >
-                    {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
-                    <Box>{task.name}</Box>
-                  </Link>
+                  <Box display="flex" flexDirection={'row'} alignItems="center" gap={0.5}>
+                    <Link
+                      onClick={() => location(task.loc_id)}
+                      color="inherit"
+                      variant="caption"
+                      underline="always"
+                      display="flex"
+                      flexWrap="wrap"
+                      gap={0.5}
+                      sx={{
+                        cursor: 'pointer',
+                        textDecorationColor: 'rgba(255, 255, 255, 0.6)',
+                      }}
+                    >
+                      <Box>{task.location_name}</Box>
+                    </Link>
+                    <Box>
+                      <Typography variant="caption">
+                        {task.tstype_name} - {task.name}
+                      </Typography>
+                    </Box>
+                  </Box>
                   {!task.is_created && task.sla && superUser && (
                     <Typography
                       mt={-0.5}

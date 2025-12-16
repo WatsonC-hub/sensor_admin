@@ -122,6 +122,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         freeSolo={true}
         forcePopupIcon={false}
         options={locItems}
+        autoHighlight
         getOptionLabel={(option) => (typeof option == 'object' ? option.name : option)}
         groupBy={(option) => option.group}
         inputValue={typeAhead}
