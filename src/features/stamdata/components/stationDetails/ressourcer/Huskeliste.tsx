@@ -11,8 +11,8 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 import {Ressourcer} from './multiselect/types';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import Button from '~/components/Button';
-import {useStationProgress} from '~/hooks/query/stationProgress';
+import {Box} from '@mui/material';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 
 const Huskeliste = () => {
   const {isMobile} = useBreakpoints();
@@ -20,10 +20,8 @@ const Huskeliste = () => {
     relation: {data: related},
   } = useRessourcer();
 
-  const {loc_id} = useAppContext(['loc_id']);
+  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {location_permissions} = usePermissions(loc_id);
-
-  const {needsProgress, hasAssessed} = useStationProgress(loc_id, 'ressourcer');
 
   const schema = ressourcer;
   const result = schema.safeParse(related);
@@ -57,11 +55,9 @@ const Huskeliste = () => {
           }
         />
       </FormProvider>
-      {needsProgress && (
-        <Button bttype="primary" onClick={hasAssessed}>
-          Håndteret
-        </Button>
-      )}
+      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+        <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="ressourcer" />
+      </Box>
     </StationPageBoxLayout>
   );
 };

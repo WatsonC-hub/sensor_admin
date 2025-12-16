@@ -81,8 +81,6 @@ const useStationProgress = (
     });
   };
 
-  console.log(progressKey, progress);
-
   return {
     needsProgress: progress == false ? true : false,
     hasAssessed,
