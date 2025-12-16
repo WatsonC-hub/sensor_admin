@@ -13,7 +13,7 @@ interface DisplayState {
   itinerary_id: string | null;
   showLocationRouter: boolean;
   own_task_list: boolean;
-  showContentOnMobile: boolean;
+  hideSensorContent: boolean;
 
   setTsId: (id: number | null) => void;
   setLocId: (id: number | null) => void;
@@ -26,7 +26,7 @@ interface DisplayState {
   setItineraryId: (itinerary_id: string | null) => void;
   setShowLocationRouter: (showLocationRouter: boolean) => void;
   setOwnTaskList: (own_task_list: boolean) => void;
-  setShowContentOnMobile: (showContentOnMobile: boolean) => void;
+  setHideSensorContent: (hideSensorContent: boolean) => void;
   reset: () => void;
 }
 
@@ -42,7 +42,7 @@ export const displayStore = create<DisplayState>((set) => ({
   itinerary_id: null,
   showLocationRouter: false,
   own_task_list: false,
-  showContentOnMobile: true,
+  hideSensorContent: false,
 
   setTsId: (ts_id) => set({ts_id}),
   setLocId: (loc_id) =>
@@ -52,9 +52,9 @@ export const displayStore = create<DisplayState>((set) => ({
       ts_id: null, // Reset dependent states
       boreholeno: null,
       intakeno: null,
-      showContentOnMobile: true,
+      hideSensorContent: false,
     })),
-  setShowContentOnMobile: (showContentOnMobile) => set({showContentOnMobile}),
+  setHideSensorContent: (hideSensorContent) => set({hideSensorContent}),
   closeLocation: () => set({loc_id: null, showLocationRouter: false}),
   setBoreholeNo: (boreholeno) =>
     set(() => ({
@@ -82,7 +82,7 @@ export const displayStore = create<DisplayState>((set) => ({
       itinerary_id: null,
       showLocationRouter: false,
       own_task_list: false,
-      showContentOnMobile: true,
+      hideSensorContent: false,
     })),
 }));
 
