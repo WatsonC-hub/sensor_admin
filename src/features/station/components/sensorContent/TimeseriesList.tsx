@@ -12,13 +12,15 @@ import {utm} from '~/features/map/mapConsts';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import {useDisplayState} from '~/hooks/ui';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
+import useBreakpoints from '~/hooks/useBreakpoints';
 const TimeseriesList = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const {station} = useNavigationFunctions();
-  const [setShowLocationRouter, setShowContentOnMobile] = useDisplayState((state) => [
+  const [setShowLocationRouter, setHideSensorContent] = useDisplayState((state) => [
     state.setShowLocationRouter,
-    state.setShowContentOnMobile,
+    state.setHideSensorContent,
   ]);
+  const {isMobile} = useBreakpoints();
   const {data, isPending} = useTimeseriesStatus(loc_id);
   const {data: location_data} = useLocationInfo(loc_id);
   const {
@@ -91,10 +93,10 @@ const TimeseriesList = () => {
                 const coords = utm.convertUtmToLatLng(location_data.x, location_data.y, 32, 'Z');
 
                 if (typeof coords === 'object') {
-                  setShowContentOnMobile(false);
+                  if (isMobile) setHideSensorContent(true);
                   window.dispatchEvent(
                     new CustomEvent('leaflet-pan', {
-                      detail: {lat: coords.lat, lng: coords.lng, zoom: 12},
+                      detail: {lat: coords.lat, lng: coords.lng, zoom: 13},
                     })
                   );
                 }
