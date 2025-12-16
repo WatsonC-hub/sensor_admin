@@ -98,7 +98,7 @@ interface LayoutProps {
 
 const Layout = ({children}: LayoutProps) => {
   const {data: metadata} = useLocationData();
-  const {isMobile} = useBreakpoints();
+  const {isTouch, isMobile} = useBreakpoints();
   const setShowLocationRouter = useDisplayState((state) => state.setShowLocationRouter);
   const [pageToShow, setPageToShow] = useStationPages();
   const [fullscreen, setFullscreen] = useAtom(fullScreenAtom);
@@ -107,14 +107,14 @@ const Layout = ({children}: LayoutProps) => {
     <>
       <CssBaseline />
       <NavBar>
-        {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
+        {isTouch && <NavBar.StationDrawerMenu />}
         <Box display="block" flexGrow={1} overflow="hidden">
-          {!isMobile && (
+          {!isTouch && (
             <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
               {metadata?.loc_name}
             </Typography>
           )}
-          {isMobile && <MinimalSelect />}
+          {isTouch && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           {metadata?.projectno && (
