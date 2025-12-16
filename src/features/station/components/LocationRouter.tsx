@@ -75,7 +75,11 @@ export default function LocationRouter() {
             </StationPageBoxLayout>
           </Box>
         )}
-      {pageToShow === stationPages.BILLEDER && <ImagePage />}
+      {pageToShow === stationPages.BILLEDER && (
+        <StationPageBoxLayout>
+          <ImagePage />
+        </StationPageBoxLayout>
+      )}
       {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout>
           <EditLocation />
@@ -146,9 +150,26 @@ const Layout = ({children}: LayoutProps) => {
         </Box>
       </NavBar>
 
-      <Box component="main" sx={{flexGrow: 1, display: 'flex', flexDirection: 'row'}}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'row',
+          overflow: 'hidden',
+        }}
+      >
         <StationDrawer />
-        <Box display="flex" width={'100%'} flexGrow={1} gap={1} flexDirection={'column'}>
+        <Box
+          key={'main_content'}
+          id={'main_content'}
+          display="flex"
+          width={'100%'}
+          flexGrow={1}
+          gap={1}
+          flexDirection={'column'}
+          overflow="auto"
+        >
           {children}
           {isMobile && <ActionArea />}
         </Box>

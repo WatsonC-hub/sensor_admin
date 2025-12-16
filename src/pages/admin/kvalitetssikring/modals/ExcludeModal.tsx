@@ -115,12 +115,18 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
             label={'Start interval'}
             type="number"
             disabled={radio !== 'selected'}
+            onChangeCallback={(value) => {
+              setValue('startValue', value.toString());
+            }}
           />
           <FormInput<ExcludeModalValues>
             name="endValue"
             label={'Slut interval'}
             type="number"
             disabled={radio !== 'selected'}
+            onChangeCallback={(value) => {
+              setValue('endValue', value.toString());
+            }}
           />
         </Box>
         <FormInput<ExcludeModalValues> name="comment" label="Kommentar" multiline rows={3} />
