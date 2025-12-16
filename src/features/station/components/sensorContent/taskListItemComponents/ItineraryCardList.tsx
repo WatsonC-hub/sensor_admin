@@ -101,7 +101,8 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
                   <Typography variant="body2">{itinerary?.name}</Typography>
                 </Link>
                 <Typography variant="caption" color="grey.300">
-                  {itinerary?.due_date} {itinerary?.assigned_to ? ' - ' : ''}
+                  {itinerary?.due_date}{' '}
+                  {taskUsers?.find((user) => user.id === itinerary?.assigned_to) ? ' - ' : ''}
                   {taskUsers?.find((user) => user.id === itinerary?.assigned_to)?.display_name}
                 </Typography>
               </Box>
