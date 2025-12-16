@@ -382,23 +382,11 @@ type TaskLocationAccess = {
   loc_names: Array<string>;
 };
 
-type TaskNotifications = {
-  loc_id: number;
-  ts_id: number;
-  tstype_name: string;
-  ts_name: string;
-  notification_id: number;
-  opgave: string;
-  color: string;
-  flag: number;
-};
-
 export type TaskCollection = {
   contacts: Array<TaskContact>;
   location_access: Array<TaskLocationAccess>;
   ressourcer: Array<TaskRessources>;
   units: Array<TaskUnits>;
-  notifications: Array<TaskNotifications>;
   tasks: Array<LocationTasks>;
 };
 

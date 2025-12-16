@@ -73,7 +73,7 @@ const queryClient = new QueryClient({
       },
     },
     mutations: {
-      retry: 1,
+      retry: 0,
       networkMode: 'offlineFirst', // ensures they queue
     },
   },
@@ -81,16 +81,21 @@ const queryClient = new QueryClient({
     onSuccess: (_data, _variables, _context, mutation) => {
       queryClient.invalidateQueries({
         predicate: (query) => {
-          if (matchQuery({queryKey: ['map']}, query)) return true;
-          if (matchQuery({queryKey: ['borehole_map']}, query)) return true;
-          if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
-          if (matchQuery({queryKey: ['tasks']}, query)) return true;
-
           return (
             mutation.meta?.invalidates?.some((queryKey) => {
               return queryKey.every((key) => query.queryKey.includes(key));
             }) ?? false
           );
+        },
+      });
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          if (matchQuery({queryKey: ['map']}, query)) return true;
+          if (matchQuery({queryKey: ['borehole_map']}, query)) return true;
+          if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
+          if (matchQuery({queryKey: ['all_tasks']}, query)) return true;
+
+          return false;
         },
       });
     },

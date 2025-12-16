@@ -27,7 +27,7 @@ import {
   initiateSelectAtom,
   levelCorrectionAtom,
 } from '~/state/atoms';
-import StepWizard from '../wizard/StepWizard';
+import AdjustmentChooser from '../adjustments/AdjustmentChooser';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import useQAHistory from '../api/useQAHistory';
 import Button from '~/components/Button';
@@ -202,7 +202,7 @@ export default function QAHistory() {
       <Divider />
       <StationPageBoxLayout>
         <Box>
-          <StepWizard />
+          <AdjustmentChooser />
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <TooltipWrapper
               description="På denne side kan du se historikken for justeringer af tidsserien. Læs mere om justeringer i guiden."

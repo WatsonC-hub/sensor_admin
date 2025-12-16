@@ -34,7 +34,6 @@ const schema = z
   })
   .refine(
     ({date, startDate}) => {
-      console.log(date, startDate);
       return (!startDate && !date) || (startDate && startDate.isBefore(date));
     },
     {path: ['date'], message: 'Dato må ikke være tidligere end sidst godkendt'}
@@ -42,10 +41,7 @@ const schema = z
 
 type CertifyQaValues = z.infer<typeof schema>;
 
-const WizardConfirmTimeseries = ({
-  initiateConfirmTimeseries,
-  onClose,
-}: WizardConfirmTimeseriesProps) => {
+const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTimeseriesProps) => {
   const {ts_id} = useAppContext(['ts_id']);
   // const [qaStamp, setQaStamp] = useState<number | undefined>(undefined);
   const {isMobile} = useBreakpoints();
@@ -60,12 +56,11 @@ const WizardConfirmTimeseries = ({
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
   const x = dayjs(selection?.points?.[0].x);
-  const {data: parsedData, error} = schema.safeParse({
+  const {data: parsedData} = schema.safeParse({
     startDate: qaData?.[0]?.date,
     date: x,
     level: 1,
   });
-  console.log(parsedData, error);
 
   const formMethods = useForm<CertifyQaValues>({
     resolver: zodResolver(schema),
@@ -168,4 +163,4 @@ const WizardConfirmTimeseries = ({
   );
 };
 
-export default WizardConfirmTimeseries;
+export default ConfirmTimeseries;
