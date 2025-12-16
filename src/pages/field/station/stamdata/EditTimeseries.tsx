@@ -10,7 +10,12 @@ import Button from '~/components/Button';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
-import {boreholeEditTimeseriesSchema, defaultEditTimeseriesSchema} from '~/features/station/schema';
+import {
+  BoreholeEditTimeseries,
+  boreholeEditTimeseriesSchema,
+  DefaultEditTimeseries,
+  defaultEditTimeseriesSchema,
+} from '~/features/station/schema';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
@@ -49,14 +54,15 @@ const EditTimeseries = () => {
 
   const {data: defaultValues, error} = schema.safeParse({
     prefix: metadata?.prefix,
-    sensor_depth_m: metadata?.sensor_depth_m,
+    ...(metadata?.calculated ? {} : {sensor_depth_m: metadata?.sensor_depth_m}),
     intakeno: metadata?.intakeno,
+    requires_auth: metadata?.requires_auth ?? false,
+    hide_public: metadata?.hide_public ?? false,
     calypso_id: metadata?.timeseries_calypso_id ?? undefined,
   });
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({
     formProps: {
-      // defaultValues: defaultValues,
       context: {
         loctype_id: metadata?.loctype_id,
       },
@@ -68,8 +74,8 @@ const EditTimeseries = () => {
   const {
     formState: {isDirty, isValid},
     reset,
-    getValues: getTimeseriesValues,
     trigger,
+    handleSubmit,
   } = formMethods;
 
   useEffect(() => {
@@ -78,9 +84,8 @@ const EditTimeseries = () => {
     }
   }, []);
 
-  const Submit = () => {
+  const Submit = (data: BoreholeEditTimeseries | DefaultEditTimeseries) => {
     if (isValid && isDirty) {
-      const data = getTimeseriesValues();
       const payload = {
         ...data,
       };
@@ -119,7 +124,7 @@ const EditTimeseries = () => {
           <Button
             bttype="primary"
             disabled={!isDirty || !isValid || location_permissions !== 'edit'}
-            onClick={Submit}
+            onClick={handleSubmit(Submit)}
             startIcon={<SaveIcon />}
             sx={{marginRight: 1}}
           >

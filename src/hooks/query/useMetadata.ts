@@ -36,6 +36,8 @@ type Metadata = {
   startdato: string | null;
   slutdato: string | null;
   timeseries_calypso_id: number | null;
+  requires_auth: boolean;
+  hide_public: boolean;
 };
 
 type LocationMetadata = {
