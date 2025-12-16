@@ -52,6 +52,8 @@ const Overview = () => {
     showLocationRouter,
     own_task_list,
     setOwnTaskList,
+    showContentOnMobile,
+    setShowContentOnMobile,
   ] = useDisplayState((state) => [
     state.loc_id,
     state.setLocId,
@@ -71,6 +73,8 @@ const Overview = () => {
     state.showLocationRouter,
     state.own_task_list,
     state.setOwnTaskList,
+    state.showContentOnMobile,
+    state.setShowContentOnMobile,
   ]);
 
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
@@ -104,6 +108,7 @@ const Overview = () => {
         setSelectedTask(null);
         setBoreholeNo(null);
         setPageToShow(null);
+        setShowContentOnMobile(true);
         document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
           svg.classList.remove('selected-marker');
         });
@@ -201,7 +206,7 @@ const Overview = () => {
 
           <WindowManager.Window
             key="location"
-            show={loc_id !== null}
+            show={loc_id !== null && showContentOnMobile}
             minSize={1}
             priority={3}
             mobilePriority={3}
