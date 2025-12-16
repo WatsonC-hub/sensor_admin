@@ -35,7 +35,9 @@ export default function LocationRouter() {
   const {createStamdata} = useNavigationFunctions();
   const [pageToShow] = useStationPages();
   const {data: metadata} = useLocationData();
-  const user = useUser();
+  const {
+    features: {contacts, keys: accessKeys, ressources},
+  } = useUser();
   if (metadata != undefined && metadata.timeseries.length > 0)
     metadata.timeseries.forEach((item) => {
       queryClient.prefetchQuery(metadataQueryOptions(item.ts_id));
@@ -73,15 +75,19 @@ export default function LocationRouter() {
             </StationPageBoxLayout>
           </Box>
         )}
-      {pageToShow === stationPages.BILLEDER && <ImagePage />}
+      {pageToShow === stationPages.BILLEDER && (
+        <StationPageBoxLayout>
+          <ImagePage />
+        </StationPageBoxLayout>
+      )}
       {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout>
           <EditLocation />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.KONTAKTER && user?.features?.contacts && <ContactInfo />}
-      {pageToShow === stationPages.HUSKELISTE && user?.features?.ressources && <Huskeliste />}
-      {pageToShow === stationPages.NØGLER && user?.features?.keys && <LocationAccess />}
+      {pageToShow === stationPages.KONTAKTER && contacts && <ContactInfo />}
+      {pageToShow === stationPages.HUSKELISTE && ressources && <Huskeliste />}
+      {pageToShow === stationPages.NØGLER && accessKeys && <LocationAccess />}
     </Layout>
   );
 }
@@ -92,8 +98,8 @@ interface LayoutProps {
 
 const Layout = ({children}: LayoutProps) => {
   const {data: metadata} = useLocationData();
-  const {isMobile} = useBreakpoints();
-  const setLocId = useDisplayState((state) => state.setLocId);
+  const {isTouch, isMobile} = useBreakpoints();
+  const setShowLocationRouter = useDisplayState((state) => state.setShowLocationRouter);
   const [pageToShow, setPageToShow] = useStationPages();
   const [fullscreen, setFullscreen] = useAtom(fullScreenAtom);
 
@@ -101,14 +107,14 @@ const Layout = ({children}: LayoutProps) => {
     <>
       <CssBaseline />
       <NavBar>
-        {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
+        {isTouch && <NavBar.StationDrawerMenu />}
         <Box display="block" flexGrow={1} overflow="hidden">
-          {!isMobile && (
+          {!isTouch && (
             <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
               {metadata?.loc_name}
             </Typography>
           )}
-          {isMobile && <MinimalSelect />}
+          {isTouch && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           {metadata?.projectno && (
@@ -138,15 +144,32 @@ const Layout = ({children}: LayoutProps) => {
           <NavBar.Close
             onClick={() => {
               if (pageToShow) setPageToShow(null);
-              setLocId(null);
+              setShowLocationRouter(false);
             }}
           />
         </Box>
       </NavBar>
 
-      <Box component="main" sx={{flexGrow: 1, display: 'flex', flexDirection: 'row'}}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'row',
+          overflow: 'hidden',
+        }}
+      >
         <StationDrawer />
-        <Box display="flex" width={'100%'} flexGrow={1} gap={1} flexDirection={'column'}>
+        <Box
+          key={'main_content'}
+          id={'main_content'}
+          display="flex"
+          width={'100%'}
+          flexGrow={1}
+          gap={1}
+          flexDirection={'column'}
+          overflow="auto"
+        >
           {children}
           {isMobile && <ActionArea />}
         </Box>

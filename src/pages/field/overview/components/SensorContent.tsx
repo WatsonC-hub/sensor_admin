@@ -23,7 +23,7 @@ const SensorContent = () => {
   const {isMobile} = useBreakpoints();
   const [createTaskDialog, setCreateTaskDialog] = useState(false);
   const [openTripDialog, setOpenTripDialog] = useState(false);
-  const user = useUser();
+  const {advancedTaskPermission, simpleTaskPermission} = useUser();
   const {tasks} = useTaskState();
   const {data: location} = useMapOverview({
     select: (data) => {
@@ -47,11 +47,11 @@ const SensorContent = () => {
       <LocationInfo />
       <TimeseriesList />
       <TaskList setCreateTaskDialog={setCreateTaskDialog} />
-      {location?.itinerary_id && user?.advancedTaskPermission && (
+      {location?.itinerary_id && advancedTaskPermission && (
         <ItineraryCardList itinerary_id={location.itinerary_id} />
       )}
 
-      {user?.advancedTaskPermission && (
+      {advancedTaskPermission && (
         <Box display="flex" gap={2} flexDirection={'row'} alignSelf={'center'}>
           <Tooltip
             title={
@@ -93,15 +93,15 @@ const SensorContent = () => {
         </Box>
       )}
 
-      {user?.simpleTaskPermission && <TaskHistoryList />}
+      {simpleTaskPermission && <TaskHistoryList />}
 
-      {user?.simpleTaskPermission && (
+      {simpleTaskPermission && (
         <CreateManuelTaskModal
           open={createTaskDialog}
           closeModal={() => setCreateTaskDialog(false)}
         />
       )}
-      {user?.advancedTaskPermission && (
+      {advancedTaskPermission && (
         <AddToTripDialog
           open={openTripDialog}
           onClose={() => setOpenTripDialog(false)}

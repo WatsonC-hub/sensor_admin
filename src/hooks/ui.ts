@@ -11,6 +11,8 @@ interface DisplayState {
   loc_list: boolean;
   trip_list: boolean;
   itinerary_id: string | null;
+  showLocationRouter: boolean;
+  own_task_list: boolean;
 
   setTsId: (id: number | null) => void;
   setLocId: (id: number | null) => void;
@@ -21,6 +23,8 @@ interface DisplayState {
   setLocList: (loc_list: boolean) => void;
   setTripList: (trip_list: boolean) => void;
   setItineraryId: (itinerary_id: string | null) => void;
+  setShowLocationRouter: (showLocationRouter: boolean) => void;
+  setOwnTaskList: (own_task_list: boolean) => void;
   reset: () => void;
 }
 
@@ -34,16 +38,19 @@ export const displayStore = create<DisplayState>((set) => ({
   loc_list: false,
   trip_list: false,
   itinerary_id: null,
+  showLocationRouter: false,
+  own_task_list: false,
 
   setTsId: (ts_id) => set({ts_id}),
   setLocId: (loc_id) =>
     set(() => ({
       loc_id,
+      showLocationRouter: false,
       ts_id: null, // Reset dependent states
       boreholeno: null,
       intakeno: null,
     })),
-  closeLocation: () => set({loc_id: null}),
+  closeLocation: () => set({loc_id: null, showLocationRouter: false}),
   setBoreholeNo: (boreholeno) =>
     set(() => ({
       boreholeno,
@@ -56,6 +63,8 @@ export const displayStore = create<DisplayState>((set) => ({
   setLocList: (loc_list) => set({loc_list}),
   setTripList: (trip_list) => set({trip_list}),
   setItineraryId: (itinerary_id) => set({itinerary_id}),
+  setShowLocationRouter: (showLocationRouter) => set({showLocationRouter}),
+  setOwnTaskList: (own_task_list) => set({own_task_list}),
   reset: () =>
     set(() => ({
       ts_id: null,
@@ -66,6 +75,8 @@ export const displayStore = create<DisplayState>((set) => ({
       loc_list: false,
       trip_list: false,
       itinerary_id: null,
+      showLocationRouter: false,
+      own_task_list: false,
     })),
 }));
 

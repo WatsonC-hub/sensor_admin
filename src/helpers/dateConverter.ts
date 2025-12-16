@@ -11,17 +11,20 @@ const convertDate = (date: string | Dayjs) => {
   return dayjs(date).locale('da').format('L');
 };
 
-const convertDateWithTimeStamp = (dateString: string | Dayjs | Date | null | undefined) => {
-  if (dateString === null) {
+const convertDateWithTimeStamp = (dateInput: string | Dayjs | Date | null | undefined) => {
+  if (dateInput === null || dateInput === undefined) {
     return '';
   }
 
-  if (dayjs.isDayjs(dateString)) {
-    return dateString.format('L LT');
+  if (dayjs.isDayjs(dateInput)) {
+    return dateInput.format('L LT');
   }
 
-  const date = dayjs(dateString).format('L LT');
-  return date;
+  const date = dayjs(dateInput);
+  if (date.isValid()) {
+    return date.format('L LT');
+  }
+  return '';
 };
 
 const convertToLocalDate = (date: dayjs.Dayjs | undefined) => {

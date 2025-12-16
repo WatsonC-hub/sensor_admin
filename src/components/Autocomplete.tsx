@@ -6,16 +6,17 @@ import {
   TextField,
   TextFieldProps,
 } from '@mui/material';
-import {merge} from 'lodash';
 import React from 'react';
 import LinkableTooltip from './LinkableTooltip';
+import {merge} from 'lodash';
 
-export type AutoCompleteFieldProps<T> = Omit<
-  AutocompleteProps<T, false, false, false>,
-  'renderInput'
+// notice we add M extends boolean to control multiple
+export type AutoCompleteFieldProps<T extends object, M extends boolean = false> = Omit<
+  AutocompleteProps<T, M, boolean, false>,
+  'renderInput' | 'onChange'
 > & {
-  selectValue: T | null;
-  onChange: (value: T | null) => void;
+  selectValue: M extends true ? T[] : T | null;
+  onChange: (value: M extends true ? T[] : T | null) => void;
   labelKey: keyof T;
   options: T[];
   error?: string | undefined;
@@ -23,7 +24,7 @@ export type AutoCompleteFieldProps<T> = Omit<
   fieldDescriptionText?: string;
 };
 
-const ExtendedAutocomplete = <T extends object>({
+const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
   selectValue,
   onChange,
   options,
@@ -31,10 +32,12 @@ const ExtendedAutocomplete = <T extends object>({
   error,
   textFieldsProps,
   fieldDescriptionText,
+  onInputChange,
+  inputValue,
   ...autocompleteProps
-}: AutoCompleteFieldProps<T>): React.ReactElement => {
+}: AutoCompleteFieldProps<T, M>): React.ReactElement => {
   return (
-    <Autocomplete<T>
+    <Autocomplete<T, M, boolean, false>
       id="demo"
       value={selectValue}
       options={options}
@@ -45,8 +48,29 @@ const ExtendedAutocomplete = <T extends object>({
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys
-      isOptionEqualToValue={(option, value) => option[labelKey] === value[labelKey]}
-      getOptionLabel={(option) => (option[labelKey] ? `${option[labelKey]}` : '')}
+      isOptionEqualToValue={(option, value) => {
+        return option[labelKey] === value[labelKey];
+      }}
+      getOptionLabel={(option) => {
+        return option[labelKey] ? `${option[labelKey]}` : '';
+      }}
+      filterSelectedOptions={true}
+      inputValue={inputValue}
+      onInputChange={(event, newInputValue, reason) => {
+        if (onInputChange && (reason === 'input' || reason === 'selectOption')) {
+          onInputChange(event, newInputValue, reason);
+        }
+        if (onInputChange && reason === 'clear') {
+          onChange(null as M extends true ? T[] : T | null);
+          onInputChange(event, '', reason);
+        }
+
+        if (onInputChange && reason === 'reset' && inputValue === '') {
+          onInputChange(event, newInputValue, reason);
+        }
+
+        if (onInputChange && reason === 'blur') onInputChange(event, newInputValue, reason);
+      }}
       renderInput={(params) => {
         const {InputProps} = params;
         let sx = {
@@ -56,8 +80,10 @@ const ExtendedAutocomplete = <T extends object>({
           },
           '& .MuiInputLabel-root': {
             color: 'primary.main',
-          }, //styles the label
-          '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+          },
+          '& .MuiInputLabel-root.Mui-disabled': {
+            color: 'rgba(0, 0, 0, 0.38)',
+          },
           '& .MuiOutlinedInput-root': {
             '& > fieldset': {borderColor: 'primary.main'},
           },

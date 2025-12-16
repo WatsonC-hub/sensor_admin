@@ -12,7 +12,7 @@ import Station from '~/pages/field/station/Station';
 import {BoreholeMapData} from '~/types';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
 import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
-import {locationMetadataQueryOptions, metadataQueryOptions} from '~/hooks/query/useMetadata';
+import {metadataQueryOptions} from '~/hooks/query/useMetadata';
 import {useQuery} from '@tanstack/react-query';
 import {displayStore, useDisplayState} from '~/hooks/ui';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
@@ -27,6 +27,8 @@ import {fullScreenAtom} from '~/state/atoms';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import LocationHighlighter from '~/features/map/components/LocationHighlighter';
 import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
+import OwnTaskList from './OwnTaskList';
+import {useUser} from '~/features/auth/useUser';
 
 const Overview = () => {
   const [, setPageToShow] = useStationPages();
@@ -47,6 +49,9 @@ const Overview = () => {
     setItineraryId,
     selectedTask,
     setSelectedTask,
+    showLocationRouter,
+    own_task_list,
+    setOwnTaskList,
   ] = useDisplayState((state) => [
     state.loc_id,
     state.setLocId,
@@ -63,13 +68,16 @@ const Overview = () => {
     state.setItineraryId,
     state.selectedTask,
     state.setSelectedTask,
+    state.showLocationRouter,
+    state.own_task_list,
+    state.setOwnTaskList,
   ]);
 
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
-  const {data: locationData} = useQuery(locationMetadataQueryOptions(loc_id || undefined));
   const {addLocationToTrip} = useTaskItinerary();
 
+  const {simpleTaskPermission} = useUser();
   const {isMobile, isTouch} = useBreakpoints();
   const fullScreen = useAtomValue(fullScreenAtom);
 
@@ -162,16 +170,27 @@ const Overview = () => {
           </WindowManager.Window>
 
           <WindowManager.Window
+            key="owntasklist"
+            priority={2}
+            mobilePriority={2}
+            show={own_task_list && simpleTaskPermission === true}
+            minSize={1}
+            onClose={() => setOwnTaskList(false)}
+            sx={{
+              borderBottomLeftRadius: isMobile ? 0 : 3,
+            }}
+            height={isMobile ? '50%' : '100%'}
+          >
+            <OwnTaskList />
+          </WindowManager.Window>
+
+          <WindowManager.Window
             key="locationlist"
             priority={2}
             mobilePriority={2}
             show={loc_list}
             minSize={1}
-            onClose={() => {
-              // setSelectedData(null);
-              setLocList(false);
-            }}
-            // fullScreen={isMobile}
+            onClose={() => setLocList(false)}
             sx={{
               borderBottomLeftRadius: isMobile ? 0 : 3,
             }}
@@ -188,7 +207,6 @@ const Overview = () => {
             mobilePriority={3}
             height={'100%'}
             onClose={() => {
-              // setSelectedData(null);
               closeLocation();
               setSelectedTask(null);
             }}
@@ -208,7 +226,6 @@ const Overview = () => {
             show={boreholeno !== null}
             minSize={1}
             onClose={() => {
-              // setSelectedData(null);
               setBoreholeNo(null);
             }}
           >
@@ -249,10 +266,10 @@ const Overview = () => {
             show={boreholeno !== null && intakeno !== null}
             minSize={2}
             maxSize={4}
-            fullScreen={isMobile || fullScreen}
+            fullScreen={isTouch || fullScreen}
             height="100%"
             sx={{
-              borderRadius: isMobile ? 0 : 3,
+              borderRadius: isTouch ? 0 : 3,
             }}
           >
             <AppContext.Provider value={{boreholeno: boreholeno!, intakeno: intakeno!}}>
@@ -268,9 +285,9 @@ const Overview = () => {
             show={ts_id !== null}
             minSize={2}
             maxSize={4}
-            fullScreen={isMobile || fullScreen}
+            fullScreen={isTouch || fullScreen}
             sx={{
-              borderRadius: isMobile ? 0 : 3,
+              borderRadius: isTouch ? 0 : 3,
             }}
             height="100%"
           >
@@ -281,13 +298,16 @@ const Overview = () => {
 
           <WindowManager.Window
             key="locationstation"
-            show={loc_id !== null && locationData?.timeseries.length === 0}
+            show={showLocationRouter}
             priority={9}
             mobilePriority={8}
             minSize={2}
             maxSize={4}
             onClose={() => setSelectedTask(null)}
-            fullScreen={isMobile || fullScreen}
+            fullScreen={isTouch || fullScreen}
+            sx={{
+              borderRadius: isTouch ? 0 : 3,
+            }}
             height="100%"
           >
             <AppContext.Provider value={{loc_id: loc_id ?? undefined}}>

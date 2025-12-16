@@ -23,6 +23,7 @@ const getOptions = <TData extends MRT_RowData>(
 ) => {
   const globalOptions: Partial<MRT_TableOptions<TData>> = {
     localization: MRT_Localization_DA,
+    autoResetPageIndex: false,
     enablePagination: true,
     globalFilterFn: 'fuzzy',
     enableStickyFooter: true,
@@ -50,7 +51,6 @@ const getOptions = <TData extends MRT_RowData>(
         flex: '1 1 0',
         display: 'flex',
         flexFlow: 'column',
-        boxShadow: '3',
         zIndex: 0,
         borderRadius: 4,
         borderWidth: 1,
@@ -274,6 +274,7 @@ export const useQueryTable = <TData extends MRT_RowData>(
   merge_method: string | undefined = MergeType.RECURSIVEMERGE
 ): MRT_TableInstance<TData> => {
   const breakpoints = useBreakpoints();
+  const [isFirstRender, setIsFirstRender] = useState(true);
 
   const {data, isFetched, error} = queryResult;
 
@@ -307,6 +308,15 @@ export const useQueryTable = <TData extends MRT_RowData>(
       showSkeletons: data === undefined && !isFetched,
     },
   });
+
+  if (isFirstRender) {
+    // Sets the columnFilterFns on the first render to avoid a bug with the columnFilterFns not being set correctly
+    table.setColumnFilterFns((prev) => ({
+      ...prev,
+      ...(state?.state?.columnFilterFns ?? {}),
+    }));
+    setIsFirstRender(false);
+  }
 
   return table;
 };

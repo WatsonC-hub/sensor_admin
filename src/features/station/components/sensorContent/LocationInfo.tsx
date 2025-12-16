@@ -8,6 +8,7 @@ import {useTimeseriesStatus} from '~/hooks/query/useNotificationOverview';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useUser} from '~/features/auth/useUser';
 
 const LocationInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);
@@ -16,11 +17,33 @@ const LocationInfo = () => {
   const {data: timeseriesList} = useTimeseriesStatus(loc_id);
   const [, setPageToShow] = useStationPages();
   const {isMobile} = useBreakpoints();
+  const {superUser} = useUser();
 
+  const isDGU = location_data?.loctype_name === 'DGU boring';
   return (
-    <Box display={'flex'} flexDirection={'column'} mt={-2}>
-      <Typography variant={'h6'} fontWeight={'bold'}>
-        {location_data?.loc_name}
+    <Box display={'flex'} flexDirection={'column'} mt={-2} gap={0.5}>
+      <Typography display={'flex'} flexDirection={'column'} variant={'h6'}>
+        {isDGU ? (
+          <Link
+            color="inherit"
+            href={`https://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${location_data.boreholeno}`}
+            target={!isMobile ? '_blank' : undefined}
+            rel={!isMobile ? 'noopener' : undefined}
+            sx={{
+              cursor: 'pointer',
+              textDecorationColor: 'rgba(0, 0, 0, 0.4)',
+            }}
+          >
+            {location_data?.loc_name}
+          </Link>
+        ) : (
+          location_data?.loc_name
+        )}
+        {location_data?.sla !== undefined && location_data.sla > 0 && superUser && (
+          <Typography mt={-1} ml={2} fontStyle={'italic'} fontWeight={'bold'} variant={'caption'}>
+            SLA: {location_data?.sla} {location_data.sla > 1 ? 'dage' : 'dag'}
+          </Typography>
+        )}
       </Typography>
       {location_data?.customer_name !== null && location_data?.customer_name !== undefined && (
         <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} gap={1}>

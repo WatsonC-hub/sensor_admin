@@ -7,7 +7,10 @@ import {
   StraightenRounded,
   Edit,
   Router,
+  Settings,
+  DoNotDisturb,
 } from '@mui/icons-material';
+import AlarmIcon from '@mui/icons-material/Alarm';
 import {
   Drawer,
   Box,
@@ -33,8 +36,8 @@ import {drawerOpenAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
 import {metadataQueryOptions, useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useUser} from '~/features/auth/useUser';
-import {OmitKeyof, UseQueryOptions} from '@tanstack/react-query';
-import {APIError, queryClient} from '~/queryClient';
+import {UseQueryOptions} from '@tanstack/react-query';
+import {queryClient} from '~/queryClient';
 import {pejlingGetOptions} from '~/features/pejling/api/usePejling';
 import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
 import {getMaalepunktOptions} from '~/hooks/query/useMaalepunkt';
@@ -48,6 +51,9 @@ import {stationPages, StationPages} from '~/helpers/EnumHelper';
 import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {timeseriesMeasureSampleSendOptions} from '../api/useTimeseriesMeasureSampleSend';
+import {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
+import {alarmGetOptions} from '../alarms/api/useAlarm';
 
 const drawerWidth = 200;
 
@@ -86,11 +92,14 @@ const StationDrawer = () => {
   const {isTouch} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
   const {data: locationdata} = useLocationData();
-  const user = useUser();
+  const {
+    superUser,
+    features: {iotAccess, alarms, contacts, keys: accessKeys, ressources},
+  } = useUser();
   const {createStamdata} = useNavigationFunctions();
 
-  const handlePrefetch = <TData extends object>(
-    options: OmitKeyof<UseQueryOptions<TData, APIError>, 'queryFn'>
+  const handlePrefetch = <TData extends object, TError extends Error>(
+    options: UseQueryOptions<TData, TError>
   ) => {
     queryClient.prefetchQuery({...options, staleTime: 1000 * 10});
   };
@@ -122,16 +131,26 @@ const StationDrawer = () => {
           icon: <Edit />,
           page: stationPages.GENERELTIDSSERIE,
           requiredTsId: true,
-          disabled: metadata?.calculated || !metadata?.ts_id,
+          disabled: !metadata?.ts_id,
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
         },
       ],
       items: [
+        ...(ts_id == undefined
+          ? [
+              {
+                text: 'Ingen tidsserier',
+                page: stationPages.PEJLING,
+                icon: <DoNotDisturb />,
+                requiredTsId: false,
+              },
+            ]
+          : []),
         {
           text: 'Kontrol',
           page: stationPages.PEJLING,
           icon: <AddCircle />,
-          requiredTsId: false,
+          requiredTsId: true,
           onHover: () => handlePrefetch(pejlingGetOptions(ts_id)),
         },
         {
@@ -139,9 +158,8 @@ const StationDrawer = () => {
           page: stationPages.TILSYN,
           icon: <PlaylistAddCheck />,
           requiredTsId: true,
-          disabled: metadata?.calculated,
+          disabled: metadata?.calculated || metadata?.unit_uuid === null,
           onHover: () => handlePrefetch(tilsynGetOptions(ts_id)),
-          // tooltip: 'På denne side kan du se og redigere tilsyn for din tidsserie.',
         },
         {
           text: 'Målepunkt',
@@ -150,7 +168,6 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.tstype_id != 1 || metadata?.calculated,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id!)),
-          // tooltip: 'På denne side kan du se og redigere målepunkter til din tidsserie.',
         },
         {
           text: 'Udstyr',
@@ -159,14 +176,13 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.calculated,
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-          // tooltip: 'På denne side kan du se og redigere udstyr til din tidsserie.',
         },
         {
           text: 'Juster data',
           page: stationPages.JUSTERINGER,
           icon: <QueryStatsIcon />,
           requiredTsId: true,
-          disabled: !user?.features?.iotAccess || metadata?.calculated,
+          disabled: !iotAccess || metadata?.calculated || metadata?.unit_uuid === null,
           onHover: () => handlePrefetch(getQAHistoryOptions(ts_id!)),
           tooltip:
             'På denne side kan du kvalitetssikre din tidsserie ved blandt andet at justere data, fjerne data og se historik for ændringer.',
@@ -176,9 +192,31 @@ const StationDrawer = () => {
           page: stationPages.ALGORITHMS,
           icon: <FunctionsIcon />,
           requiredTsId: true,
-          disabled: !user?.features?.iotAccess || metadata?.calculated,
+          disabled: !iotAccess || metadata?.unit_uuid === null,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id!)),
           tooltip: 'På denne side kan du justere advarsler for din tidsserie.',
+        },
+        {
+          text: 'Alarmer',
+          page: stationPages.ALARM,
+          icon: <AlarmIcon />,
+          requiredTsId: true,
+          onHover: () => handlePrefetch(alarmGetOptions(ts_id)),
+          disabled: !alarms,
+        },
+        {
+          text: 'Konfiguration',
+          page: stationPages.TIDSSERIEKONFIGURATION,
+          icon: <Settings />,
+          requiredTsId: true,
+          onHover: () => {
+            if (metadata?.unit_uuid && metadata?.calculated === false) {
+              handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!));
+            }
+            prefetchDmpAllowedMapList();
+          },
+          tooltip:
+            'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
         },
       ],
     },
@@ -207,7 +245,7 @@ const StationDrawer = () => {
           page: stationPages.KONTAKTER,
           icon: <PersonIcon />,
           requiredTsId: false,
-          disabled: !user?.features.contacts,
+          disabled: !contacts,
           onHover: () => handlePrefetch(ContactInfoGetOptions(loc_id)),
         },
         {
@@ -215,7 +253,7 @@ const StationDrawer = () => {
           page: stationPages.NØGLER,
           icon: <KeyIcon />,
           requiredTsId: false,
-          disabled: !user?.features.keys,
+          disabled: !accessKeys,
           onHover: () => handlePrefetch(LocationAccessGetOptions(loc_id)),
         },
         {
@@ -223,8 +261,15 @@ const StationDrawer = () => {
           page: stationPages.HUSKELISTE,
           icon: <BackpackIcon />,
           requiredTsId: false,
-          disabled: !user?.features.ressources,
+          disabled: !ressources,
           onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
+        },
+        {
+          text: 'Konfiguration',
+          page: stationPages.LOKATIONKONFIGURATION,
+          icon: <Settings />,
+          requiredTsId: false,
+          disabled: !superUser,
         },
       ],
     },
@@ -285,7 +330,10 @@ const StationDrawer = () => {
             let timer = 0;
 
             const mouseEnter = () => {
-              timer = setTimeout(item.onHover ? item.onHover : () => {}, 100);
+              timer = setTimeout(
+                item.onHover && pageToShow !== item.page ? item.onHover : () => {},
+                100
+              );
             };
 
             const mouseLeave = () => {
@@ -348,17 +396,6 @@ const StationDrawer = () => {
       <List>{drawerItems}</List>
     </Layout>
   );
-
-  // return (
-  //   <Layout variant="permanent">
-  //     <Toolbar disableGutters sx={{justifyContent: 'center'}} onClick={() => toggleDrawer(!open)}>
-  //       <IconButton sx={{color: 'white'}}>
-  //         <Menu />
-  //       </IconButton>
-  //     </Toolbar>
-  //     <List>{drawerItems}</List>
-  //   </Layout>
-  // );
 };
 
 type LayoutProps = {
@@ -389,14 +426,12 @@ const Layout = ({children, variant}: LayoutProps) => {
       }}
     >
       <Box pt={2} px={1}>
-        {/* <TooltipWrapper description="" color="white"> */}
         {!isTouch && <MinimalSelect />}
         {isTouch && (
           <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
             {locationdata?.loc_name}
           </Typography>
         )}
-        {/* </TooltipWrapper> */}
       </Box>
       <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
         <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>

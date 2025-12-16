@@ -1,5 +1,4 @@
 import {
-  BaseLocation,
   baseLocationSchema,
   boreholeAddLocationSchema,
   boreholeEditLocationSchema,
@@ -41,7 +40,7 @@ const getSchemaAndForm = <T extends FieldValues>(
   let selectedForm = DefaultLocationForm;
 
   switch (true) {
-    case loctype_id === -1:
+    case loctype_id === undefined:
       selectedSchema = baseLocationSchema;
       selectedForm = BaseLocationForm;
       break;
@@ -72,16 +71,16 @@ const getSchemaAndForm = <T extends FieldValues>(
   return [selectedSchema as ZodObject<T>, selectedForm] as const;
 };
 
-const useLocationForm = <T extends BaseLocation>({
+const useLocationForm = <T extends Record<string, any>>({
   defaultValues,
   mode,
   context,
   initialLocTypeId = -1,
 }: useLocationFormProps<T>) => {
-  const user = useUser();
+  const {superUser} = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user?.superUser, context.loc_id);
+  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, superUser, context.loc_id);
 
   const {data, success} = schema.safeParse({
     ...defaultValues,
@@ -92,7 +91,6 @@ const useLocationForm = <T extends BaseLocation>({
     resolver: zodResolver(schema),
     defaultValues: success ? defaultValuesData : defaultValues,
     mode: 'onTouched',
-    context: context,
   });
 
   const {watch} = formMethods;

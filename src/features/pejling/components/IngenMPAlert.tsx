@@ -10,7 +10,7 @@ type Props = {
 const IngenMPAlert = ({openAddMP}: Props) => {
   return (
     <div>
-      <Grid item xs={12} sm={12} display="flex" justifyContent="center">
+      <Grid item xs={12} sm={12} display="flex" justifyContent="center" p={2}>
         <Alert
           severity="error"
           sx={{
@@ -20,7 +20,7 @@ const IngenMPAlert = ({openAddMP}: Props) => {
             height: alertHeight,
           }}
         >
-          <Link component="button" variant="body2" color="error" onClick={openAddMP}>
+          <Link component="button" type="button" variant="body2" color="error" onClick={openAddMP}>
             Tilføj venligst et målepunkt først
           </Link>
         </Alert>

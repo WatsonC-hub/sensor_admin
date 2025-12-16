@@ -1,4 +1,4 @@
-import {MapRounded, Person, Menu as MenuIcon, Help} from '@mui/icons-material';
+import {MapRounded, Person, Menu as MenuIcon, Help, Notifications} from '@mui/icons-material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -7,6 +7,7 @@ import PlaceIcon from '@mui/icons-material/Place';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import {
   AppBar,
+  Badge,
   Box,
   IconButton,
   ListItemIcon,
@@ -17,10 +18,9 @@ import {
   Typography,
 } from '@mui/material';
 
-import {matchQuery, useQueryClient} from '@tanstack/react-query';
+import {useQueryClient} from '@tanstack/react-query';
 import {useAtom} from 'jotai';
 import {useState, ReactNode, MouseEventHandler} from 'react';
-// import {useNavigate} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
@@ -33,9 +33,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import Button from './Button';
 import {useDisplayState} from '~/hooks/ui';
 import {useNavigate} from 'react-router-dom';
-import {userQueryOptions} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 import {toast} from 'react-toastify';
 import CaptureDialog from './CaptureDialog';
+import {useTasks} from '~/features/tasks/api/useTasks';
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();
@@ -43,10 +46,8 @@ const LogOut = ({children}: {children?: ReactNode}) => {
 
   const handleLogout = async () => {
     await apiClient.get('/auth/logout/secure');
-    queryClient.removeQueries({
-      predicate: (query) => !matchQuery({queryKey: userQueryOptions.queryKey}, query),
-    });
-    await queryClient.invalidateQueries({queryKey: userQueryOptions.queryKey});
+    queryClient.setQueryData(queryKeys.user(), null);
+    queryClient.clear();
     home();
   };
 
@@ -307,6 +308,46 @@ const LocationList = () => {
   );
 };
 
+const OwnTaskList = () => {
+  const [own_task_list, setOwnTaskList] = useDisplayState((state) => [
+    state.own_task_list,
+    state.setOwnTaskList,
+  ]);
+  const user = useUser();
+  const {
+    get: {data: tasks},
+  } = useTasks();
+
+  const task_list = tasks?.filter(
+    (task) => task.assigned_to === user.user_id.toString() && task.status_id !== 2
+  );
+
+  return (
+    <Badge
+      variant="standard"
+      badgeContent={task_list?.length}
+      anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+      sx={{
+        height: 'fit-content',
+        alignSelf: 'center',
+        p: 1,
+        cursor: 'pointer',
+        '& .MuiBadge-badge': {
+          // color: 'grey.800',
+          backgroundColor: sensorColors[FlagEnum.OK].color,
+        },
+      }}
+    >
+      <Notifications
+        onClick={() => setOwnTaskList(!own_task_list)}
+        sx={{
+          color: own_task_list ? 'secondary.main' : 'inherit',
+        }}
+      />
+    </Badge>
+  );
+};
+
 const TripList = () => {
   const [trip_list, setTripList] = useDisplayState((state) => [state.trip_list, state.setTripList]);
   const {isMobile} = useBreakpoints();
@@ -376,19 +417,12 @@ const ScannerAsTitle = () => {
 
   return (
     <>
-      <IconButton
-        sx={{
-          position: 'absolute',
-          left: '50%',
-          transform: 'translateX(-50%)',
-        }}
-        color="inherit"
-        onClick={() => setOpen(true)}
-        size="large"
-      >
+      <IconButton color="inherit" onClick={() => setOpen(true)}>
         <QrCodeScannerIcon />
       </IconButton>
-      {open && <CaptureDialog open={open} handleClose={handleClose} handleScan={handleScan} />}
+      {open && (
+        <CaptureDialog open={open} handleClose={() => setOpen(false)} handleScan={handleScan} />
+      )}
     </>
   );
 };
@@ -422,5 +456,6 @@ NavBar.Close = Close;
 NavBar.LocationList = LocationList;
 NavBar.TripList = TripList;
 NavBar.StationDrawerMenu = StationDrawerMenu;
+NavBar.OwnTaskList = OwnTaskList;
 
 export default NavBar;

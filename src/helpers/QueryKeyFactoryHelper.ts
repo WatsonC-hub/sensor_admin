@@ -21,6 +21,8 @@ export const queryKeys = {
       ['location_permissions', 'metadata', loc_id] as const,
     minimalSelectList: (loc_id: number | undefined) =>
       ['tsList', 'location_metadata', 'metadata', loc_id] as const,
+    SLAConfiguration: (loc_id: number | undefined) =>
+      ['sla_configuration', 'register', loc_id] as const,
   },
   Timeseries: {
     all: () => ['timeseries'] as const,
@@ -29,7 +31,7 @@ export const queryKeys = {
     allPejling: () => ['measurements', 'register'] as const,
     pejling: (ts_id: number | undefined) => ['measurements', 'register', ts_id] as const,
     tilsyn: (ts_id: number) => ['service', 'register', ts_id] as const,
-    maalepunkt: (ts_id: number) => ['watlevmp', 'register', ts_id] as const,
+    maalepunkt: (ts_id: number | undefined) => ['watlevmp', 'register', ts_id] as const,
     unitHistory: (ts_id: number | undefined) => ['udstyr', 'metadata', ts_id] as const,
     algorithms: (ts_id: number) => ['algorithms', 'register', ts_id] as const,
     certifyQa: (ts_id: number) => ['certifyQa', 'register', ts_id] as const,
@@ -46,6 +48,9 @@ export const queryKeys = {
     edgeDates: (ts_id: number | undefined) => ['all_range', ts_id] as const,
     graphData: (ts_id: number | undefined, xRange: Array<Dayjs>) =>
       ['graphData', ts_id, xRange] as const,
+    MeasureSampleSend: (ts_id: number) => ['measure_sample_send', 'register', ts_id] as const,
+    ServiceInterval: (ts_id: number) => ['service_interval', 'register', ts_id] as const,
+    SyncData: (ts_id: number) => ['sync', 'register', ts_id] as const,
   },
   Borehole: {
     stamdata: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
@@ -54,8 +59,13 @@ export const queryKeys = {
       ['search_borehole', 'register', boreholeno] as const,
     intakeList: (boreholeno: string | undefined | null) =>
       ['intake_list', 'register', boreholeno] as const,
-    jupiterData: (boreholeno: string | undefined | null, intakeno: number) =>
+    jupiterData: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
       ['jupiter_waterlevel', 'register', boreholeno, intakeno] as const,
+    jupiterDataWithStartDate: (
+      boreholeno: string | undefined | null,
+      intakeno: number | undefined,
+      startdato: string | null
+    ) => ['jupiter_waterlevel', 'register', boreholeno, intakeno, startdato] as const,
     measurementsWithIntake: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
       ['measurements', 'register', boreholeno, intakeno] as const,
     measurements: (boreholeno: string | undefined | null) =>
@@ -98,7 +108,7 @@ export const queryKeys = {
     all: () => ['borehole_permissions', 'metadata'] as const,
   },
   AvailableUnits: {
-    all: () => ['available_units', 'metadata'] as const,
+    all: () => ['available_units', 'metadata', 'register'] as const,
   },
   LocationProjects: {
     all: () => ['location_projects'] as const,
@@ -114,8 +124,11 @@ export const queryKeys = {
   timeseriesTypes: () => ['timeseries_types'] as const,
   boreholeMap: () => ['borehole_map', 'register', 'metadata'] as const,
   user: () => ['user'] as const,
+  overblik: () => ['overblik'] as const,
+  overblikByLocId: (loc_id: number | undefined) => ['tasks', 'overblik', loc_id] as const,
   notificationTypes: () => ['notification_types'] as const,
   changeReasons: () => ['change_reasons'] as const,
   actions: (unit_uuid: string | undefined) => ['actions', unit_uuid] as const,
   cmdOptions: () => ['cmd_options'] as const,
+  dmpAllowedMapList: () => ['dmp_allowed_map_list'] as const,
 };

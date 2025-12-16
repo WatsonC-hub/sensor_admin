@@ -46,6 +46,8 @@ const boreholeEditLocationSchema = boreholeAddLocationSchema.extend({
 
 const baseTimeseriesSchema = z.object({
   sensor_depth_m: z.number().nullish(),
+  prefix: z.string().nullish(),
+  calypso_id: z.number().optional(),
 });
 
 const baseAddTimeseriesSchema = baseTimeseriesSchema.extend({
@@ -54,12 +56,17 @@ const baseAddTimeseriesSchema = baseTimeseriesSchema.extend({
   }),
 });
 
-const defaultEditTimeseriesSchema = baseTimeseriesSchema.extend({prefix: z.string().nullish()});
+const baseEditTimeseriesSchema = baseTimeseriesSchema.extend({
+  requires_auth: z.boolean().default(false),
+  hide_public: z.boolean().default(false),
+});
 
-const defaultAddTimeseriesSchema = baseAddTimeseriesSchema.extend({prefix: z.string().nullish()});
+const defaultEditTimeseriesSchema = baseEditTimeseriesSchema;
+
+const defaultAddTimeseriesSchema = baseAddTimeseriesSchema;
 
 const boreholeEditTimeseriesSchema = baseTimeseriesSchema.extend({
-  intakeno: z.number().optional(),
+  intakeno: z.number().nullish(),
 });
 
 const boreholeAddTimeseriesSchema = baseAddTimeseriesSchema.extend({
@@ -73,14 +80,18 @@ const watlevmpAddSchema = z.object({
     .min(3, {message: 'Beskrivelse skal være mindst 3 tegn'}),
 });
 
-const addUnitSchema = z.object({
-  unit_uuid: z.string(),
-  startdate: zodDayjs('Startdato skal udfyldes').optional(),
-});
+const addUnitSchema = z
+  .object({
+    unit_uuid: z.string({required_error: 'Vælg calypso ID'}).min(1, {message: 'Vælg calypso ID'}),
+    startdate: zodDayjs('Startdato skal udfyldes'),
+  })
+  .refine((unit) => unit.startdate !== undefined, {
+    message: 'Startdato skal udfyldes',
+  });
 
 const editUnitSchema = z
   .object({
-    unit_uuid: z.string(),
+    unit_uuid: z.string().min(1, {message: 'Vælg calypso ID'}),
     startdate: zodDayjs('Startdato skal udfyldes'),
     enddate: zodDayjs('Slutdato skal udfyldes'),
   })

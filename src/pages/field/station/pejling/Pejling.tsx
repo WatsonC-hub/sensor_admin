@@ -22,11 +22,7 @@ import {PejlingItem, LatestMeasurement} from '~/types';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import {
-  useCreateTabState,
-  useShowFormState,
-  useStationPages,
-} from '~/hooks/useQueryStateParameters';
+import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {useSetAtom} from 'jotai';
@@ -41,7 +37,6 @@ const Pejling = () => {
   const {data: timeseries_data} = useTimeseriesData();
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
-  const [, setTabValue] = useCreateTabState();
   const {
     get: {data: measurements},
     post: postPejling,
@@ -129,10 +124,9 @@ const Pejling = () => {
     delPejling.mutate(payload);
   };
 
-  const openAddMP = () => {
-    setPageToShow(stationPages.GENERELTUDSTYR);
-    setTabValue('udstyr');
-    setShowForm(true);
+  const openAddMP = async () => {
+    await setShowForm(null);
+    setPageToShow(stationPages.MAALEPUNKT);
   };
 
   useEffect(() => {
@@ -155,14 +149,16 @@ const Pejling = () => {
       </Box>
       <Divider />
       <StationPageBoxLayout>
-        <LatestMeasurementTable
-          latestMeasurement={latestMeasurement}
-          errorMessage={
-            isError && typeof error?.response?.data.detail == 'string'
-              ? error?.response?.data.detail
-              : undefined
-          }
-        />
+        {timeseries_data?.unit_uuid && (
+          <LatestMeasurementTable
+            latestMeasurement={latestMeasurement}
+            errorMessage={
+              isError && typeof error?.response?.data.detail == 'string'
+                ? error?.response?.data.detail
+                : undefined
+            }
+          />
+        )}
         <FormProvider {...formMethods}>
           {showForm === true && (
             <Card

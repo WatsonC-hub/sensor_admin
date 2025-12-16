@@ -1,7 +1,8 @@
-import {MenuItem, InputAdornment, TextField} from '@mui/material';
+import {InputAdornment, TextField, FormControlLabel, Checkbox, Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from '~/apiClient';
+import {PhotoCameraRounded} from '@mui/icons-material';
 import FormInput, {FormInputProps} from '~/components/FormInput';
 import {
   BoreholeAddTimeseries,
@@ -12,6 +13,12 @@ import {
 import FormTextField from '~/components/FormTextField';
 import {useAppContext} from '~/state/contexts';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {Controller, useFormContext} from 'react-hook-form';
+import Button from '~/components/Button';
+
+import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
+import CaptureDialog from '~/components/CaptureDialog';
+import {toast} from 'react-toastify';
 
 type Props = {
   children: React.ReactNode;
@@ -45,21 +52,20 @@ const TypeSelect = (
     refetchInterval: 1000 * 60 * 60 * 24, // Refetch every 24 hours
   });
 
-  const menuItems = timeseries_types
-    ?.filter((i) => i.tstype_id !== 0)
-    ?.map((item) => (
-      <MenuItem value={item.tstype_id} key={item.tstype_id}>
-        {item.tstype_name}
-      </MenuItem>
-    ));
-
   return (
-    <FormInput name="tstype_id" label="Tidsserietype" select required fullWidth {...props}>
-      <MenuItem disabled value={-1}>
-        Vælg type
-      </MenuItem>
-      {menuItems}
-    </FormInput>
+    <FormInput
+      name="tstype_id"
+      label="Tidsserietype"
+      select
+      placeholder="Vælg type"
+      options={timeseries_types
+        ?.filter((type) => type.tstype_id !== 0)
+        .map((type) => ({[type.tstype_id]: type.tstype_name}))}
+      keyType="number"
+      required
+      fullWidth
+      {...props}
+    />
   );
 };
 
@@ -110,19 +116,14 @@ const Intakeno = (
       label="Indtag"
       select
       required
-      disabled={props.disabled}
+      infoText="Vælg først et DGU nummer først"
+      disabled={props.disabled || !boreholeno}
+      placeholder="Vælg indtag"
+      options={intake_list?.map((item) => ({[item.intakeno]: item.intakeno}))}
+      keyType="number"
       fullWidth
       {...props}
-    >
-      <MenuItem disabled value={''}>
-        Vælg indtag
-      </MenuItem>
-      {intake_list?.map((item) => (
-        <MenuItem value={item.intakeno} key={item.intakeno}>
-          {item.intakeno}
-        </MenuItem>
-      ))}
-    </FormInput>
+    />
   );
 };
 
@@ -178,6 +179,97 @@ const SensorDepth = (
   );
 };
 
+const RequiresAuth = () => {
+  const {control} = useFormContext();
+  return (
+    <Controller
+      name="requires_auth"
+      control={control}
+      render={({field: {onChange, value}}) => (
+        <FormControlLabel
+          control={<Checkbox sx={{p: 0, ml: 1}} onChange={onChange} checked={value} />}
+          label="Kræver rettigheder for at se tidsserien"
+        />
+      )}
+    />
+  );
+};
+
+const HidePublic = () => {
+  const {control} = useFormContext();
+  return (
+    <Controller
+      name="hide_public"
+      control={control}
+      render={({field: {onChange, value}}) => (
+        <FormControlLabel
+          control={<Checkbox sx={{p: 0, ml: 1}} onChange={onChange} checked={value} />}
+          label="Skjul i offentlige visninger"
+        />
+      )}
+    />
+  );
+};
+
+const ScanCalypsoLabel = () => {
+  const [openCamera, setOpenCamera] = React.useState(false);
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [calypso_id, setCalypso_id] = React.useState<number | null>(null);
+  const {setValue, watch} = useFormContext();
+  const calypso_id_watch = watch('calypso_id');
+
+  const handleScan = async (data: any, calypso_id: number | null) => {
+    if (calypso_id) {
+      setCalypso_id(calypso_id);
+      setOpenCamera(false);
+      setOpenDialog(true);
+    } else {
+      toast.error('QR-koden er ikke gyldig', {autoClose: 2000});
+    }
+  };
+
+  return (
+    <Box
+      display="flex"
+      gap={1}
+      flexDirection="row"
+      alignItems="center"
+      justifyContent="space-between"
+    >
+      <FormInput label="Calypso ID" name="calypso_id" disabled fullWidth />
+      <Button
+        sx={{width: '80%', textTransform: 'initial', borderRadius: 15}}
+        bttype="primary"
+        color="primary"
+        startIcon={<PhotoCameraRounded />}
+        onClick={() => setOpenCamera(true)}
+      >
+        {calypso_id_watch ? 'Skift ID' : 'Tilføj ID'}
+      </Button>
+      {openCamera && (
+        <CaptureDialog
+          open={openCamera}
+          handleClose={() => setOpenCamera(false)}
+          handleScan={handleScan}
+        />
+      )}
+      {openDialog && (
+        <ConfirmCalypsoIDDialog
+          open={openDialog}
+          setOpen={setOpenDialog}
+          onConfirm={() => {
+            setValue('calypso_id', Number(calypso_id), {
+              shouldValidate: true,
+              shouldDirty: true,
+            });
+          }}
+          calypso_id={calypso_id}
+        />
+      )}
+    </Box>
+  );
+};
+
 const TimeseriesID = () => {
   const {ts_id} = useAppContext(['ts_id']);
   return (
@@ -189,6 +281,7 @@ const TimeseriesID = () => {
           shrink: true,
         },
       }}
+      fullWidth
       label="Tidsserie ID"
       sx={{
         pb: 0.6,
@@ -214,6 +307,9 @@ StamdataTimeseries.TimeriesTypeField = TimeseriesTypeField;
 StamdataTimeseries.Prefix = Prefix;
 StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;
+StamdataTimeseries.ScanCalypsoLabel = ScanCalypsoLabel;
 StamdataTimeseries.TimeseriesID = TimeseriesID;
+StamdataTimeseries.RequiresAuth = RequiresAuth;
+StamdataTimeseries.HidePublic = HidePublic;
 
 export default StamdataTimeseries;

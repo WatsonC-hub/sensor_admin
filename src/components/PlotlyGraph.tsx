@@ -8,7 +8,7 @@ import type {
 } from 'plotly.js';
 // @ts-expect-error not part of type
 import Plotly from 'plotly.js/dist/plotly-gl2d';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import ReplayIcon from '@mui/icons-material/Replay';
 import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
@@ -64,9 +64,25 @@ export default function PlotlyGraph({
   const unit = metadata?.unit;
   const plot = document.getElementById('graph');
   if (plot) Plotly.Plots.resize(plot);
-  // console.log('plot', Plotly.rezi);
   const [isOpen, setIsOpen] = useState(false);
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
+  const [traceVisibility, setTraceVisibility] = useState<Record<string, boolean | 'legendonly'>>(
+    {}
+  );
+
+  const stableData = useMemo(() => {
+    return data.map((trace) => {
+      const uid = trace.uid!;
+      const savedVis = traceVisibility[uid];
+
+      const data = {
+        ...trace,
+        visible: savedVis ?? trace.visible ?? true,
+      };
+
+      return data;
+    });
+  }, [data, traceVisibility]);
 
   const {mutation: correctMutation} = useCorrectData(metadata?.ts_id, 'graphData');
   usePageActions([
@@ -136,10 +152,10 @@ export default function PlotlyGraph({
   };
 
   const graphLayout = (type: string) => {
-    const flatArray = data
-      .filter((data) => data.yaxis != 'y2')
+    const flatArray = stableData
+      .filter((data) => data.yaxis != 'y2' || !(data.uid! in traceVisibility))
       .flatMap((array) => {
-        if (array.x == undefined) {
+        if (array.x == undefined || array.visible === false || array.visible === 'legendonly') {
           return [];
         }
         return array.x.length > 0 ? [array.x[0], array.x[array.x.length - 1]] : [];
@@ -233,7 +249,7 @@ export default function PlotlyGraph({
             Alt
           </Button>
         </Box>
-        {boreholeno === undefined && (
+        {((boreholeno !== null && ts_id !== undefined) || boreholeno === null) && (
           <Box display={'flex'} flexDirection={'row'} pr={1} gap={isTouch ? 0 : 1}>
             <Tooltip title={'Genberegn tidsserie data'} arrow placement="top">
               <Button
@@ -307,10 +323,10 @@ export default function PlotlyGraph({
         }}
         divId="graph"
         onRelayout={handleRelayout}
-        data={data}
+        data={stableData}
         layout={{...mergedLayout, shapes: shapes, annotations: annotations}}
         config={{
-          doubleClick: false,
+          doubleClick: 'reset',
           responsive: true,
           modeBarButtons: [
             boreholeno ? ['toImage'] : [],
@@ -319,9 +335,19 @@ export default function PlotlyGraph({
           displaylogo: false,
           displayModeBar: true,
         }}
-        onDoubleClick={() => {
-          graphLayout('all');
+        onLegendClick={(event) => {
+          const uid = event.curveNumber != null ? stableData[event.curveNumber].uid : null;
+
+          if (uid) {
+            setTraceVisibility((prev) => ({
+              ...prev,
+              [uid]: prev[uid] === 'legendonly' || prev[uid] === false ? true : 'legendonly',
+            }));
+          }
+
+          return false;
         }}
+        onLegendDoubleClick={() => false}
         onClick={plotEventProps && plotEventProps.onClick}
         useResizeHandler={true}
         style={{width: '99.863%', height: '90%'}}

@@ -200,7 +200,7 @@ export type SimpleItinerary = {
 };
 
 export type ContactInfo = {
-  id?: string | null;
+  id: string;
   name: string;
   mobile?: string | null;
   email: string | null;
@@ -218,12 +218,12 @@ export type ContactTable = {
   name: string;
   mobile: string | null;
   email: string | null;
-  contact_role: number;
+  contact_role?: number | undefined;
   comment?: string;
   user_id?: string | null;
   org: string;
   relation_id: number;
-  contact_type: string;
+  contact_type?: string | undefined;
   contact_role_name?: string;
   notify_required?: boolean;
 };
@@ -236,6 +236,9 @@ export type Access = {
   koden?: string;
   contact_id?: string | null;
   kommentar?: string;
+  contact_name?: string;
+  email?: string;
+  org_name?: string;
 };
 
 export type AccessTable = {
@@ -250,12 +253,11 @@ export type AccessTable = {
 };
 
 export type BatteryStatusType = {
-  current_bat: number;
-  usage_pr_day: number;
-  battery_percentage: number | null;
+  current_bat: number | null;
+  usage_pr_day: number | null;
+  battery_percentage: number;
   estimated_no_battery: string;
-  startdate: string;
-  enddate: string;
+  is_powered: boolean;
 };
 
 export type LatestMeasurement = {
@@ -403,6 +405,9 @@ export type LocationTasks = {
   count: number;
   name: string;
   blocks_notifications: Array<number>;
+  tstype_name: string;
+  link_name: Array<string>;
+  ts_ids: Array<number>;
 };
 
 export type DataToShow = {
@@ -415,6 +420,8 @@ export type DataToShow = {
   'Valide værdier': boolean;
   'Fjernet data': boolean;
   Rådata: boolean;
+  Jupiter: boolean;
+  'Alarm niveauer': boolean;
 };
 
 type HorizontalLine = {
@@ -425,4 +432,9 @@ type HorizontalLine = {
   tstype_id: number;
   line?: object;
   mode?: string;
+};
+
+export type DmpSyncValidCombination = {
+  loctype_id: number;
+  tstype_id: number;
 };

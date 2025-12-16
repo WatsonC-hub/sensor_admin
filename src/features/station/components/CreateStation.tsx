@@ -20,7 +20,7 @@ import DefaultUnitForm from './stamdata/stamdataComponents/DefaultUnitForm';
 import useUnitForm from '../api/useUnitForm';
 import Button from '~/components/Button';
 import useWatlevmpForm from '../api/useWatlevmpForm';
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {useLocation, useNavigate} from 'react-router-dom';
 import useTimeseriesForm from '../api/useTimeseriesForm';
@@ -34,12 +34,23 @@ import AlertDialog from '~/components/AlertDialog';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import dayjs from 'dayjs';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {
+  LastJupiterMPAPI,
+  LastJupiterMPData,
+} from '~/pages/field/boreholeno/components/LastJupiterMP';
+import {useDisplayState} from '~/hooks/ui';
 
 const CreateStation = () => {
+  const [showLocationRouter, setShowLocationRouter] = useDisplayState((state) => [
+    state.showLocationRouter,
+    state.setShowLocationRouter,
+  ]);
   const {isMobile} = useBreakpoints();
   const [showAlert, setShowAlert] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
+  const [helperText, setHelperText] = useState('');
   const size = isMobile ? 12 : 6;
   const navigate = useNavigate();
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
@@ -63,19 +74,19 @@ const CreateStation = () => {
 
   const defaultValues = {
     ...data,
-    loctype_id: 'loctype_id' in state ? state.loctype_id : -1,
+    loctype_id: 'loctype_id' in state ? state.loctype_id : undefined,
     initial_project_no: metadata?.projectno,
   } as Partial<DefaultAddLocation | BoreholeAddLocation>;
 
   const [locationFormMethods, LocationForm] = useLocationForm<
     DefaultAddLocation | BoreholeAddLocation
   >({
-    mode: 'Add',
     defaultValues: defaultValues,
+    mode: 'Add',
     context: {
       loc_id: loc_id,
     },
-    initialLocTypeId: defaultValues.loctype_id ? defaultValues.loctype_id : -1,
+    initialLocTypeId: defaultValues.loctype_id ? defaultValues.loctype_id : undefined,
   });
 
   const {
@@ -90,25 +101,27 @@ const CreateStation = () => {
   const loctype_id = watchLocation('loctype_id');
   const boreholeno = watchLocation('boreholeno');
 
-  let timeseriesValues: {tstype_id: number; intakeno?: number} = {
-    tstype_id: -1,
+  let timeseriesValues: {tstype_id: number | undefined; intakeno?: number} = {
+    tstype_id: undefined,
   };
 
   if (loctype_id === 9) {
     timeseriesValues = {
       ...timeseriesValues,
-      intakeno: -1,
+      intakeno: undefined,
     };
   }
 
   const [timeseriesFormMethods, TimeseriesForm] = useTimeseriesForm<
     DefaultAddTimeseries | BoreholeAddTimeseries
   >({
-    mode: 'Add',
-    defaultValues: timeseriesValues,
-    context: {
-      loctype_id: loctype_id,
+    formProps: {
+      defaultValues: timeseriesValues,
+      context: {
+        loctype_id: loctype_id,
+      },
     },
+    mode: 'Add',
   });
 
   const {
@@ -119,6 +132,22 @@ const CreateStation = () => {
   } = timeseriesFormMethods;
 
   const tstype_id = watchTimeseries('tstype_id');
+  const intakeno = watchTimeseries('intakeno');
+
+  const {data: watlevmp} = useQuery({
+    queryKey: queryKeys.Borehole.lastMP(boreholeno, intakeno),
+    queryFn: async () => {
+      const {data} = await apiClient.get<LastJupiterMPAPI>(
+        `/sensor_field/borehole/last_mp/${boreholeno}/${intakeno}`
+      );
+      return {
+        descriptio: data.descriptio,
+        elevation: data.elevation,
+        startdate: dayjs(data.startdate),
+      } as LastJupiterMPData;
+    },
+    enabled: !!boreholeno && !!intakeno && intakeno !== undefined,
+  });
 
   const unitFormMethods = useUnitForm<AddUnit>({
     mode: 'Add',
@@ -144,7 +173,11 @@ const CreateStation = () => {
     trigger: triggerWatlevmp,
     formState: {errors: watlevmpErrors},
     clearErrors: clearWatlevmpErrors,
+    reset: resetWatlevmp,
+    watch: watchWatlevmp,
   } = watlevmpFormMethods;
+
+  const elevation = watchWatlevmp('elevation');
 
   const stamdataNewLocationMutation = useMutation({
     mutationFn: async (location: DefaultAddLocation | BoreholeAddLocation) => {
@@ -172,11 +205,6 @@ const CreateStation = () => {
       );
       return out;
     },
-    onSuccess: (data) => {
-      toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
-      navigate('/');
-      stationNavigate(data.ts_id);
-    },
     meta: {
       invalidates: [['metadata']],
     },
@@ -200,7 +228,9 @@ const CreateStation = () => {
         loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
       );
       navigate('/');
+      locationNavigate(data.loc_id);
       stationNavigate(data.ts_id);
+      if (showLocationRouter) setShowLocationRouter(false);
     },
     meta: {
       invalidates: [['metadata']],
@@ -252,7 +282,16 @@ const CreateStation = () => {
         timeseries: timeseriesData,
       };
     }
-    stamdataNewTimeseriesMutation.mutate(form);
+    stamdataNewTimeseriesMutation.mutate(form, {
+      onSuccess: (data) => {
+        toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
+
+        navigate('/');
+        locationNavigate(data.loc_id);
+        stationNavigate(data.ts_id);
+        if (showLocationRouter) setShowLocationRouter(false);
+      },
+    });
   };
 
   const handleStamdataSubmit = async () => {
@@ -324,6 +363,24 @@ const CreateStation = () => {
   useEffect(() => {
     clearWatlevmpErrors();
   }, [tstype_id]);
+
+  useEffect(() => {
+    if (intakeno !== -1 && watlevmp !== undefined) {
+      resetWatlevmp({
+        elevation: watlevmp.elevation,
+        description: watlevmp.descriptio,
+      });
+      setHelperText('Målepuntsværdien er hentet fra Jupiter');
+    } else {
+      setHelperText('');
+    }
+  }, [watlevmp, intakeno, tstype_id, boreholeno]);
+
+  useEffect(() => {
+    if (!!watlevmp && watlevmp.elevation !== elevation) {
+      setHelperText('');
+    }
+  }, [elevation]);
 
   return (
     <>
@@ -435,7 +492,7 @@ const CreateStation = () => {
                   <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
                     <FormProvider {...watlevmpFormMethods}>
                       <StamdataWatlevmp tstype_id={tstype_id}>
-                        <DefaultWatlevmpForm />
+                        <DefaultWatlevmpForm helperText={helperText} />
                       </StamdataWatlevmp>
                     </FormProvider>
                   </Grid2>
@@ -490,6 +547,7 @@ const CreateStation = () => {
                   if (!location_valid) {
                     return;
                   }
+
                   setAlertTitle('Opret lokation');
                   setAlertMessage(
                     'Du er i gang med at oprette en lokation uden tidsserie og udstyr. Er du sikker på at du vil fortsætte?'
@@ -506,14 +564,18 @@ const CreateStation = () => {
                   }
                   setAlertTitle('Opret tidsserie');
                   setAlertMessage(
-                    'Du er i gang med at oprette en lokation og tidsserie uden udstyr. Er du sikker på at du vil fortsætte?'
+                    `Du er i gang med at oprette en ${loc_id ? '' : 'lokation og'} tidsserie uden udstyr. Vil du gerne drifte og kontrollere tidsserien?`
                   );
                   setShowAlert(true);
                 } else if (activeStep === 2 && isUnitDirty) {
                   handleStamdataSubmit();
                 }
               }}
-              disabled={loctype_id === -1 || (state?.loc_id && activeStep === 0)}
+              disabled={
+                loctype_id === -1 ||
+                (state?.loc_id && activeStep === 0) ||
+                (activeStep === 2 && !isUnitDirty)
+              }
             >
               Gem & afslut
             </Button>

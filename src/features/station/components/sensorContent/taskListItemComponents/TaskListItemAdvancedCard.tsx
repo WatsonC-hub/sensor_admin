@@ -24,6 +24,9 @@ import NotificationIcon from '~/pages/field/overview/components/NotificationIcon
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useDisplayState} from '~/hooks/ui';
+import {useUser} from '~/features/auth/useUser';
+import dayjs from 'dayjs';
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 
 type Props = {
   task: Task;
@@ -31,14 +34,18 @@ type Props = {
 
 const TaskListItemAdvancedCard = ({task}: Props) => {
   const [showAllComments, setShowAllComments] = useState<boolean>(false);
-  const {station} = useNavigationFunctions();
+  const {location} = useNavigationFunctions();
+  const {superUser} = useUser();
   const {
     patch: updateTask,
     getUsers: {data: taskUsers},
     getStatus: {data: taskStatus},
   } = useTasks();
 
-  const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
+  const [selectedTask, setSelectedTask] = useDisplayState((state) => [
+    state.selectedTask,
+    state.setSelectedTask,
+  ]);
 
   const patchTaskStatus = (status_id: number) => {
     const data = {
@@ -50,7 +57,12 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
       data: data,
     };
 
-    updateTask.mutate(payload);
+    updateTask.mutate(payload, {
+      onSuccess: () => {
+        if ((status_id === 3 || status_id === 34) && selectedTask === task.id)
+          setSelectedTask(null);
+      },
+    });
   };
 
   const patchTaskAssignedTo = (assigned_to: string | null) => {
@@ -130,26 +142,51 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                   }}
                   noCircle={true}
                 />
-                <Link
-                  onClick={() => station(task.ts_id)}
-                  color="inherit"
-                  variant="caption"
-                  underline="always"
-                  display="flex"
-                  flexWrap="wrap"
-                  gap={0.5}
-                  sx={{
-                    cursor: 'pointer',
-                    textDecorationColor: 'rgba(255, 255, 255, 0.6)',
-                  }}
-                >
-                  {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
-                  <Box>{task.name}</Box>
-                </Link>
+                <Box display="flex" flexDirection={'column'}>
+                  <Box display="flex" flexDirection={'row'} alignItems="center" gap={0.5}>
+                    <Link
+                      onClick={() => location(task.loc_id)}
+                      color="inherit"
+                      variant="caption"
+                      underline="always"
+                      display="flex"
+                      flexWrap="wrap"
+                      gap={0.5}
+                      sx={{
+                        cursor: 'pointer',
+                        textDecorationColor: 'rgba(255, 255, 255, 0.6)',
+                      }}
+                    >
+                      <Box>{task.location_name}</Box>
+                    </Link>
+                    <Box>
+                      <Typography variant="caption">
+                        {task.tstype_name} - {task.name}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  {!task.is_created && task.sla && superUser && (
+                    <Typography
+                      mt={-0.5}
+                      fontStyle={'italic'}
+                      fontWeight={'bold'}
+                      variant={'caption'}
+                    >
+                      Løsningsfrist: {task.sla.format('l')}
+                    </Typography>
+                  )}
+                </Box>
               </Box>
               {task.due_date && (
                 <Box display="flex" flexDirection={'row'} gap={1} alignItems={'center'}>
-                  <PendingActionsIcon />
+                  <PendingActionsIcon
+                    fontSize="small"
+                    sx={{
+                      color: dayjs(task.due_date).isBefore(dayjs(), 'day')
+                        ? sensorColors[FlagEnum.WARNING].color
+                        : 'white',
+                    }}
+                  />
                   <Typography variant="caption" noWrap>
                     {convertDate(task.due_date)}
                   </Typography>

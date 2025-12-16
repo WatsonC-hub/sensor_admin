@@ -59,7 +59,7 @@ const EditUnit = () => {
   });
 
   const formMethods = useUnitForm<EditUnitType>({
-    mode: 'Edit',
+    mode: unit?.gid && !openAddUdstyr ? 'Edit' : 'Add',
     defaultValues: defaultValues,
   });
 

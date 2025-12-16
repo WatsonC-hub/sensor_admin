@@ -1,8 +1,8 @@
 import {Update} from '@mui/icons-material';
-import {Box, IconButton, Typography} from '@mui/material';
+import {Box, IconButton, Skeleton, Typography} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import React, {useMemo} from 'react';
+import {useMemo} from 'react';
 import {toast} from 'react-toastify';
 
 import {limitDecimalNumbers, splitTimeFromDate} from '~/helpers/dateConverter';
@@ -28,10 +28,7 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
     () => [
       {
         header: 'Dato',
-        id: 'timeofmeas',
-        accessorFn: (row) => {
-          splitTimeFromDate(row.timeofmeas);
-        },
+        accessorKey: 'timeofmeas',
         sortingFn: (a, b) => (a.original.timeofmeas > b.original.timeofmeas ? 1 : -1),
         size: 80,
         Cell: ({row}) => {
@@ -47,7 +44,7 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
       },
       {
         header: 'Rå værdi',
-        id: 'rawMeasurement',
+        accessorKey: 'rawMeasurement',
         Cell: ({row}) => {
           return (
             <>
@@ -66,7 +63,7 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
       },
       {
         header: 'Værdi',
-        id: 'measurement',
+        accessorKey: 'measurement',
         size: 90,
         Cell: ({row}) => {
           return (
@@ -95,13 +92,37 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
     enableColumnActions: false,
     enableColumnFilters: false,
     enablePagination: false,
-    enableSorting: true,
+    enableSorting: false,
     enableTableFooter: false,
     enableStickyHeader: false,
+
     enableGlobalFilterRankedResults: false,
     muiTableContainerProps: {},
     muiTableHeadCellProps: {sx: {m: 0, py: 0}},
     muiTableBodyCellProps: {sx: {m: 0, py: 0, whiteSpace: 'pre-line'}},
+    renderEmptyRowsFallback: ({table}) => {
+      const rowCount = table.getRowCount();
+
+      if (rowCount == 0 && errorMessage == undefined) {
+        return (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              mx: 'auto',
+            }}
+          >
+            <Skeleton width="100%" sx={{mx: 1}} />
+          </Box>
+        );
+      }
+
+      return (
+        <Typography variant="body1" sx={{textAlign: 'center', fontStyle: 'italic', opacity: 0.6}}>
+          {errorMessage ?? MRT_Localization_DA.noRecordsToDisplay}
+        </Typography>
+      );
+    },
     renderRowActions: () => (
       <IconButton
         sx={{p: 0.5, marginRight: 0.5}}
@@ -136,7 +157,7 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
 
   const table = useTable<LatestMeasurement>(
     columns,
-    latestMeasurement ? (errorMessage ? [] : [latestMeasurement]) : [],
+    latestMeasurement ? [latestMeasurement] : [],
     options,
     undefined,
     TableTypes.TABLE,

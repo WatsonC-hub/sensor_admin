@@ -19,7 +19,7 @@ import 'dayjs/locale/da';
 import CreateItineraryDialog from './CreateItineraryDialog';
 import Button from '~/components/Button';
 import {useMapFilterStore} from '~/features/map/store';
-import {ItineraryColors} from '~/features/notifications/consts';
+import {FlagEnum, ItineraryColors, sensorColors} from '~/features/notifications/consts';
 import {useUser} from '~/features/auth/useUser';
 import {Edit, ExpandLess, ExpandMore, Person} from '@mui/icons-material';
 import TooltipWrapper from '~/components/TooltipWrapper';
@@ -78,11 +78,11 @@ function Droppable({id, children, color}: {id: string; children: ReactNode; colo
 const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
-  const user = useUser();
+  const {user_id} = useUser();
   const {
     get: {data},
   } = useTaskItinerary(undefined, {
-    select: (itineraries) => selectData(itineraries, user?.user_id),
+    select: (itineraries) => selectData(itineraries, user_id),
   });
 
   const [openItineraryDialog, setOpenItineraryDialog] = useState<string | undefined>(undefined);
@@ -193,7 +193,11 @@ const TaskItiniaries = () => {
                               pr={1}
                               justifyContent={'space-between'}
                               sx={{
-                                backgroundColor: color ? color : 'primary.main',
+                                backgroundColor: color
+                                  ? color
+                                  : dayjs(itinerary.due_date).isBefore(dayjs().toDate(), 'day')
+                                    ? sensorColors[FlagEnum.WARNING].color
+                                    : 'primary.main',
                               }}
                             >
                               <Box

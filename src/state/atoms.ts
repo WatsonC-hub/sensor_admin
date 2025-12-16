@@ -5,7 +5,7 @@ import {merge} from 'lodash';
 import type {MRT_TableState, MRT_RowData} from 'material-react-table';
 import {PlotDatum} from 'plotly.js';
 import {TaskUser} from '~/features/tasks/types';
-import {DataToShow} from '~/types';
+import {DataToShow, HorizontalLine} from '~/types';
 
 function createTimedStorage<T>(timeout_ms: number): SyncStorage<T> {
   return {
@@ -171,5 +171,8 @@ export const initiateSelectAtom = atom<boolean>(false);
 export const initiateConfirmTimeseriesAtom = atom<boolean>(false);
 export const levelCorrectionAtom = atom<boolean>(false);
 export const boreholeIsPumpAtom = atom<boolean>(false);
+export const tempHorizontalAtom = atom<
+  Array<Omit<HorizontalLine, 'unit' | 'parameter' | 'tstype_id'>> | undefined
+>([]);
 export const usedWidthAtom = atom<number>(0);
 export const usedHeightAtom = atom<number>(0);

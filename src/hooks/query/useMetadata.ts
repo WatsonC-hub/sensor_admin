@@ -4,6 +4,7 @@ import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
+import {Group} from '~/types';
 
 type Metadata = {
   loc_id: number;
@@ -28,16 +29,21 @@ type Metadata = {
   boreholeno: string;
   suffix: string | undefined;
   intakeno: number;
-  groups: string[];
+  groups: Group[];
   unit: string;
   prefix: string | null;
   unit_uuid: string | null;
+  startdato: string | null;
+  slutdato: string | null;
+  timeseries_calypso_id: number | null;
+  requires_auth: boolean;
+  hide_public: boolean;
 };
 
 type LocationMetadata = {
   loc_id: number;
-  loc_name: string;
   boreholeno: string | undefined;
+  loc_name: string;
   suffix: string | undefined;
   mainloc: string;
   subloc: string;
@@ -47,7 +53,7 @@ type LocationMetadata = {
   y: number;
   terrainlevel: number;
   terrainqual: string;
-  groups: string[];
+  groups: Group[];
   projectno: string | undefined;
   unit_uuid: string | undefined | null;
   timeseries: Array<{
@@ -58,6 +64,7 @@ type LocationMetadata = {
     prefix: string | null;
     tstype_name: string;
     intakeno: number;
+    timeseries_calypso_id?: number | null;
   }>;
 };
 
@@ -74,7 +81,7 @@ export const metadataQueryOptions = (ts_id?: number) => {
   });
 };
 
-export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
+const locationMetadataQueryOptions = (loc_id: number | undefined) => {
   const {ts_id} = useAppContext([], ['ts_id']);
   return queryOptions({
     queryKey: queryKeys.Location.metadata(loc_id),
@@ -113,6 +120,7 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
               prefix: data.prefix,
               tstype_name: data.tstype_name,
               intakeno: data.intakeno,
+              timeseries_calypso_id: data.timeseries_calypso_id,
             };
           }),
       };

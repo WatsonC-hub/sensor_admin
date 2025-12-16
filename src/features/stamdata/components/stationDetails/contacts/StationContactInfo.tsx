@@ -1,12 +1,5 @@
 import {Call, Email} from '@mui/icons-material';
-import {
-  MenuItem,
-  Grid,
-  InputAdornment,
-  IconButton,
-  Checkbox,
-  FormControlLabel,
-} from '@mui/material';
+import {Grid, InputAdornment, IconButton, Checkbox, FormControlLabel} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
@@ -101,7 +94,6 @@ export default function StationContactInfo({
           name="mobile"
           label="Tlf. nummer"
           placeholder="Telefonnummer..."
-          type={'number'}
           fullWidth
           disabled={(!isEditing && isUser) || (isUser && isEditing)}
           InputProps={{
@@ -124,9 +116,12 @@ export default function StationContactInfo({
         <FormInput
           name="contact_role"
           label="Rolle"
-          placeholder="Hvilken rolle har kontakten..."
+          placeholder="Vælg rolle..."
           disabled={tableModal}
+          required
           select
+          options={contactRoles?.map((role) => ({[role.id]: role.name}))}
+          keyType="number"
           fullWidth
           onChangeCallback={(value) => {
             if (typeof value == 'number') return;
@@ -134,22 +129,18 @@ export default function StationContactInfo({
               (role) =>
                 role.id === Number((value as React.ChangeEvent<HTMLInputElement>).target.value)
             );
+
+            if (role?.id === 1 && getValues('notify_required') === true)
+              setValue('notify_required', false);
+
             if (role) {
-              setValue('contact_type', role.default_type ?? '-1');
+              if (role.default_type !== null)
+                setValue('contact_type', role.default_type ?? undefined);
             } else {
-              setValue('contact_type', '-1');
+              setValue('contact_type', undefined);
             }
           }}
-        >
-          <MenuItem value={-1} key={-1}>
-            Vælg rolle
-          </MenuItem>
-          {contactRoles?.map((role) => (
-            <MenuItem key={role.id} value={role.id}>
-              {role.name}
-            </MenuItem>
-          ))}
-        </FormInput>
+        />
       </Grid>
       <Grid item xs={12} sm={6}>
         <FormInput
@@ -158,15 +149,10 @@ export default function StationContactInfo({
           placeholder="Tilknyt..."
           disabled={tableModal}
           select
+          options={[{Lokation: ContactInfoType.Lokation}, {Projekt: ContactInfoType.Projekt}]}
           required
           fullWidth
-        >
-          <MenuItem value={'-1'} key={'-1'}>
-            Vælg type
-          </MenuItem>
-          <MenuItem value={ContactInfoType.Lokation}>Lokation</MenuItem>
-          <MenuItem value={ContactInfoType.Projekt}>Projekt</MenuItem>
-        </FormInput>
+        />
       </Grid>
       <Grid item xs={12} sm={6}>
         <Controller

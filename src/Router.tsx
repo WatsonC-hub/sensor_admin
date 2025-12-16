@@ -88,24 +88,31 @@ const Router = () => {
     {
       id: 'openTimeseries',
       name: 'Åbn tidsserie via ID',
-      type: 'input',
+      type: 'selection',
       inputPlaceholder: 'Indtast tidsserie ID...',
+      options: calypsoIDData?.map((item) => ({
+        label: `${item.ts_id}`,
+        value: item,
+      })),
+      filter: (value, search) => {
+        return value.ts_id?.toString().includes(search.toLowerCase()) ? 1 : 0;
+      },
       perform: (input) => {
-        const tsId = Number(input);
-        if (tsId) {
-          station(tsId, true);
-        } else {
-          console.error('Invalid timeseries ID:', input);
-        }
+        const tsId = Number(input.ts_id);
+        const locId = Number(input.loc_id);
+        locationNavigation(locId, true);
+        station(tsId);
       },
       icon: <Timeline />,
       shortcut: 'I',
       group: 'Generelt',
-    },
+    } as SelectionCommand<CommandPalette>,
   ]);
 
-  if (user && !user?.features?.iotAccess && !user?.features?.boreholeAccess) {
-    return <AccessDenied message="Der er manglende rettigheder til at tilgå denne side." />;
+  if (!user.features.iotAccess && !user.features.boreholeAccess) {
+    return (
+      <AccessDenied message="Du har hverken IoT-adgang eller adgang til pejleboringer. Kontakt venligst WatsonC, hvis du ønsker opsætning af IoT-stationer eller pejleboringer, eller hvis du mener, dette er en fejl" />
+    );
   }
 
   return (

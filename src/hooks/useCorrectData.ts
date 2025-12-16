@@ -59,9 +59,7 @@ export const useCorrectData = (ts_id: number | undefined, queryKey: string) => {
       return res;
     },
     onSuccess: () => {
-      // refetch();
       setRefetchInterval(1000);
-      //handleXRangeChange({'xaxis.range[0]': undefined});
     },
     onError: () => {
       setRefetchInterval(false);

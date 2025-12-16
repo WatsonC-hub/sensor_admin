@@ -61,7 +61,10 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
   const [locItems, setLocItems] = useState<LocItems[]>([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const {isMobile} = useBreakpoints();
-  const user = useUser();
+  const {
+    features: {boreholeAccess},
+    superUser,
+  } = useUser();
 
   const elasticSearch = (
     e: SyntheticEvent,
@@ -88,7 +91,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         .sort((a, b) => a.name.localeCompare(b.name));
 
       let filteredBorehole: LocItems[] = [];
-      if (user?.features.boreholeAccess) {
+      if (boreholeAccess) {
         const search = {query: {bool: {must: {query_string: {query: search_string}}}}};
         postElasticSearch(search).then((res) => {
           filteredBorehole = res.data.hits.hits.map((elem: any) => {
@@ -111,7 +114,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
     setAnchorEl(null);
   };
 
-  const numFilters = getNumberOfNonDefaultFilters(mapFilter, defaultMapFilter(user?.superUser));
+  const numFilters = getNumberOfNonDefaultFilters(mapFilter, defaultMapFilter(superUser));
   return (
     <>
       <Autocomplete
@@ -119,6 +122,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         freeSolo={true}
         forcePopupIcon={false}
         options={locItems}
+        autoHighlight
         getOptionLabel={(option) => (typeof option == 'object' ? option.name : option)}
         groupBy={(option) => option.group}
         inputValue={typeAhead}

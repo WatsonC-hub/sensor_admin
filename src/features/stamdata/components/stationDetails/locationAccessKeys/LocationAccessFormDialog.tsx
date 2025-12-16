@@ -1,5 +1,5 @@
-import {Box, Collapse, Grid, MenuItem, Typography} from '@mui/material';
-import React, {useState} from 'react';
+import {Box, Collapse, Grid, Typography} from '@mui/material';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 
 import ExtendedAutocomplete from '~/components/Autocomplete';
@@ -7,9 +7,8 @@ import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {initialLocationAccessData} from '~/consts';
 import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
-import {AdgangsForhold} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {AccessType} from '~/helpers/EnumHelper';
-import {ContactInfo} from '~/types';
+import {Access, ContactInfo} from '~/types';
 
 type Props = {
   loc_id: number | undefined;
@@ -20,14 +19,45 @@ type Props = {
 
 const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: Props) => {
   const [selectedContactInfo, setSelectedContactInfo] = useState<ContactInfo | null>(null);
-  const {control, watch} = useFormContext<AdgangsForhold>();
-  const {reset, setValue} = useFormContext<AdgangsForhold>();
+  const {control, watch, reset, setValue} = useFormContext<Access>();
   const [search, setSearch] = useState<string>('');
-
   const {data} = useSearchContact(loc_id, search);
 
+  const contact_id = watch('contact_id');
+  const contact_name = watch('contact_name');
+  const email = watch('email');
+  const org_name = watch('org_name');
   const navnLabel = watch('type');
   const location_access_id = watch('id');
+
+  const merged_data = useMemo(() => {
+    let merged_data = [...(data ?? [])];
+    const existing = data?.find((c) => c.id === contact_id);
+    if (!existing) {
+      const contact: ContactInfo = {
+        id: contact_id ?? '',
+        name: contact_name ?? '',
+        email: email ?? '',
+        org: org_name ?? '',
+        loc_id: loc_id ?? -1,
+        contact_role: -1,
+        mobile: '',
+        contact_type: '',
+      };
+
+      merged_data = [...merged_data, contact].sort((a, b) =>
+        a.name.localeCompare(b.name, 'da', {sensitivity: 'base'})
+      );
+    }
+    return merged_data;
+  }, [data, location_access_id, createNew]);
+
+  useEffect(() => {
+    if (selectedContactInfo == null || selectedContactInfo.id !== contact_id) {
+      const contact = merged_data?.find((c) => c.id === contact_id) ?? null;
+      setSearch(contact ? contact.name : '');
+    }
+  }, [contact_id, createNew]);
 
   return (
     <Box>
@@ -40,7 +70,8 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                 if (createNew) {
                   reset(initialLocationAccessData);
                   setValue('id', -1);
-                }
+                } else setSelectedContactInfo(null);
+
                 if (setCreateNew) setCreateNew(!createNew);
               }}
             >
@@ -57,16 +88,11 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                   label="Type"
                   placeholder="Vælg en type..."
                   select
+                  options={[{Kode: AccessType.Code}, {Nøgle: AccessType.Key}]}
                   required
                   fullWidth
                   disabled={location_access_id !== -1 && editMode !== false}
-                >
-                  <MenuItem value={'-1'} key={'-1'}>
-                    Vælg type
-                  </MenuItem>
-                  <MenuItem value={AccessType.Code}>Kode</MenuItem>
-                  <MenuItem value={AccessType.Key}>Nøgle</MenuItem>
-                </FormInput>
+                />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Controller
@@ -75,7 +101,7 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                   render={({field: {onChange}}) => (
                     <>
                       <ExtendedAutocomplete<ContactInfo>
-                        options={data ?? []}
+                        options={merged_data ?? []}
                         labelKey="name"
                         onChange={(option) => {
                           if (option == null) {
@@ -89,9 +115,6 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                           }
                         }}
                         selectValue={selectedContactInfo}
-                        filterOptions={(options) => {
-                          return options;
-                        }}
                         inputValue={search}
                         renderOption={(props, option) => {
                           return (
@@ -119,57 +142,6 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                         clearOnBlur
                         handleHomeEndKeys
                       />
-
-                      {/* <ExtendedAutocomplete<baseContactInfo>
-                        options={contacts ?? []}
-                        labelKey="navn"
-                        error={error?.message}
-                        disabled={location_access_id !== -1 && editMode !== false}
-                        onChange={(option) => {
-                          if (option == null) {
-                            onChange(null);
-                            return;
-                          }
-                          if ('id' in option) {
-                            onChange(option.id);
-                          }
-                        }}
-                        selectValue={
-                          contacts.find((item) => item.id === value) ?? {
-                            id: '-1',
-                            navn: '',
-                            email: '',
-                          }
-                        }
-                        filterOptions={(options, params) => {
-                          const {inputValue} = params;
-                          const filter = options.filter(
-                            (option) =>
-                              (option.navn &&
-                                option.navn.toLowerCase().includes(inputValue.toLowerCase())) ||
-                              (option.email &&
-                                option.email.toLowerCase().includes(inputValue.toLowerCase()))
-                          );
-
-                          return filter;
-                        }}
-                        renderOption={(props, option) => {
-                          return (
-                            <li {...props} key={option.id}>
-                              <Box display={'flex'} flexDirection={'column'}>
-                                <Typography>{option.navn}</Typography>
-                                <Box display={'flex'} flexDirection={'row'} mx={2} gap={1}>
-                                  <Typography variant="body2">{option.email}</Typography>
-                                </Box>
-                              </Box>
-                            </li>
-                          );
-                        }}
-                        textFieldsProps={{
-                          label: 'Kontakt',
-                          placeholder: 'Vælg kontakt',
-                        }}
-                      /> */}
                     </>
                   )}
                 />

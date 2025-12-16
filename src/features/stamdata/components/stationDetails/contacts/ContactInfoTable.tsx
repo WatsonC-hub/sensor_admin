@@ -37,7 +37,9 @@ const onDeleteBtnClick = (
 
 const ContactInfoTable = ({delContact, editContact}: Props) => {
   const {loc_id} = useAppContext(['loc_id']);
-  const user = useUser();
+  const {
+    features: {contacts},
+  } = useUser();
   const [contactID, setContactID] = useState<number>(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const {
@@ -163,7 +165,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
               if ((e.target as HTMLElement).innerText && !disabled) {
                 reset({
                   ...row.original,
-                  mobile: row.original.mobile ? parseInt(row.original.mobile) : null,
+                  mobile: row.original.mobile ? row.original.mobile : null,
                 });
                 table.setEditingRow(row);
               }
@@ -185,7 +187,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         handleEdit={() => {
           reset({
             ...row.original,
-            mobile: row.original.mobile ? parseInt(row.original.mobile) : null,
+            mobile: row.original.mobile ? row.original.mobile : null,
           });
           setIsUser(row.original.org !== '');
           setOpenContactInfoDialog(true);
@@ -193,7 +195,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.relation_id, setDialogOpen, setContactID);
         }}
-        disabled={!user?.features?.contacts || disabled}
+        disabled={!contacts || disabled}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

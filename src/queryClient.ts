@@ -1,12 +1,23 @@
-import {createSyncStoragePersister} from '@tanstack/query-sync-storage-persister';
-import {matchQuery, MutationCache, QueryClient, QueryKey} from '@tanstack/react-query';
+import {createAsyncStoragePersister} from '@tanstack/query-async-storage-persister';
+import {
+  matchQuery,
+  MutationCache,
+  QueryClient,
+  QueryKey,
+  UseMutationOptions,
+} from '@tanstack/react-query';
 import axios, {AxiosError} from 'axios';
 import {toast} from 'react-toastify';
-
+import localforage from 'localforage';
 import {apiClient} from '~/apiClient';
 import {httpStatusDescriptions} from '~/consts';
 import {excludeDelOptions, excludePostOptions, excludePutOptions} from '~/hooks/query/useExclude';
 import {tags, queryKeys} from './helpers/QueryKeyFactoryHelper';
+import {
+  deleteImageMutationOptions,
+  postImageMutationOptions,
+  putImageMutationOptions,
+} from './hooks/query/useImageUpload';
 
 type ErrorDetail = {
   type: string;
@@ -29,6 +40,17 @@ declare module '@tanstack/react-query' {
 
 export type APIError = AxiosError<ErrorResponse>;
 
+type AppMutationOptions<TData, TVariables> = Omit<
+  UseMutationOptions<TData, APIError, TVariables>,
+  'mutationFn'
+> & {
+  mutationFn: (variables: TVariables) => Promise<TData>;
+};
+
+export const makeAppMutationOptions = <TData, TVariables>(
+  options: AppMutationOptions<TData, TVariables>
+) => options;
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -49,6 +71,10 @@ const queryClient = new QueryClient({
         }
         return false;
       },
+    },
+    mutations: {
+      retry: 1,
+      networkMode: 'offlineFirst', // ensures they queue
     },
   },
   mutationCache: new MutationCache({
@@ -72,6 +98,7 @@ const queryClient = new QueryClient({
       if (axios.isAxiosError(error)) {
         const localError = error as APIError;
         const detail = localError.response?.data.detail;
+
         if (detail) {
           if (typeof detail === 'string') {
             toast.error(detail);
@@ -124,12 +151,20 @@ queryClient.setMutationDefaults(['pejling'], {
   },
 });
 
+const imageTypes = ['station', 'borehole'] as const;
+
+imageTypes.forEach((type) => {
+  queryClient.setMutationDefaults(['image_post', type], postImageMutationOptions(type));
+  queryClient.setMutationDefaults(['image_put', type], putImageMutationOptions(type));
+  queryClient.setMutationDefaults(['image_del', type], deleteImageMutationOptions(type));
+});
+
 queryClient.setMutationDefaults(excludePostOptions.mutationKey, excludePostOptions);
 queryClient.setMutationDefaults(excludePutOptions.mutationKey, excludePutOptions);
 queryClient.setMutationDefaults(excludeDelOptions.mutationKey, excludeDelOptions);
 
-const persister = createSyncStoragePersister({
-  storage: window.localStorage,
+const persister = createAsyncStoragePersister({
+  storage: localforage,
 });
 
 export {persister, queryClient};

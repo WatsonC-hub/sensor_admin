@@ -1,4 +1,4 @@
-import {MenuItem, Typography, InputAdornment, TextField} from '@mui/material';
+import {Typography, InputAdornment, TextField} from '@mui/material';
 import {RefetchOptions, useQuery} from '@tanstack/react-query';
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
@@ -54,7 +54,7 @@ const StamdataLocation = ({children}: Props) => {
     queryKey: queryKeys.dtm(),
     queryFn: () => getDTMQuota(x, y),
     refetchOnWindowFocus: false,
-    enabled: x !== undefined && y !== undefined,
+    enabled: x !== undefined && y !== undefined && terrainqual === 'DTM',
   });
 
   useEffect(() => {
@@ -100,7 +100,9 @@ const LoctypeSelect = (
   const {data} = useQuery({
     queryKey: queryKeys.locationTypes(),
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/stamdata/location_types`);
+      const {data} = await apiClient.get<Array<locationType>>(
+        `/sensor_field/stamdata/location_types`
+      );
       return data;
     },
     refetchOnWindowFocus: false,
@@ -114,19 +116,12 @@ const LoctypeSelect = (
           label="Lokationstype"
           placeholder="Vælg type"
           select
+          options={data.map((item) => ({[item.loctype_id]: item.loctypename}))}
+          keyType="number"
           required
           infoText="Lokationstypen kan betyde hvilke muligheder der er for at tilføje data til lokationen. F.eks. kan DGU boringer oprettes smartere og synkroniseres til GEUS."
           {...props}
-        >
-          <MenuItem value={-1} key={-1}>
-            Vælg type
-          </MenuItem>
-          {data?.map((item: locationType) => (
-            <MenuItem value={item.loctype_id} key={item.loctype_id}>
-              {item.loctypename}
-            </MenuItem>
-          ))}
-        </FormInput>
+        />
       )}
     </>
   );
@@ -249,25 +244,16 @@ const TerrainQuality = (
       label="Type af terrænkote"
       select
       fullWidth
-      slotProps={{
-        select: {
-          displayEmpty: true,
-        },
-      }}
+      placeholder="Vælg type"
+      options={[{DTM: 'DTM'}, {dGPS: 'dGPS'}]}
+      keyType="string"
       onChangeCallback={(e) => {
         if ((e as ChangeEvent<HTMLTextAreaElement>).target.value === 'DTM') {
           refetchDTM();
         }
       }}
       {...props}
-    >
-      <MenuItem value="dGPS" key="dGPS">
-        dGPS
-      </MenuItem>
-      <MenuItem value="DTM" key="DTM">
-        DTM
-      </MenuItem>
-    </FormInput>
+    />
   );
 };
 
@@ -324,7 +310,7 @@ const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
           : null
       );
     } else if (editing === false) {
-      setSelectedBorehole(boreholeno ? {boreholeno, latitude: x, longitude: y} : null);
+      setSelectedBorehole(boreholeno ? {boreholeno, latitude: y, longitude: x} : null);
     }
   }, [boreholeno]);
 
@@ -482,7 +468,7 @@ const InitialProjectNo = (
     'name'
   >
 ) => {
-  const user = useUser();
+  const {superUser} = useUser();
   const {control} = useFormContext<
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
@@ -491,7 +477,7 @@ const InitialProjectNo = (
     select: (data) => data.find((loc) => loc.loc_id === loc_id),
   }); // Preload location data for better performance when opening projects dialog
 
-  const disable = data?.no_unit == false && data?.inactive == false;
+  const disable = data?.no_unit === false;
 
   return (
     <Controller
@@ -504,7 +490,7 @@ const InitialProjectNo = (
           setValue={onChange}
           onBlur={onBlur}
           error={error}
-          disable={user?.superUser === false || props.disabled || disable}
+          disable={superUser === false || props.disabled || disable}
         />
       )}
     />
