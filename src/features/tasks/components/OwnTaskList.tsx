@@ -80,7 +80,7 @@ const OwnTaskList = () => {
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
-                  <TaskListItemAdvancedCard task={task} />
+                  <TaskListItemAdvancedCard task={task} showLocationLink={true} />
                 </Box>
               );
             })}
