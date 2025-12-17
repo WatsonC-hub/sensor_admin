@@ -313,6 +313,8 @@ const StationDrawer = () => {
           icon: <Settings />,
           requiredTsId: false,
           disabled: !superUser,
+          progress: progress?.sla == false ? 0 : undefined,
+          maxProgress: 1,
         },
       ],
     },

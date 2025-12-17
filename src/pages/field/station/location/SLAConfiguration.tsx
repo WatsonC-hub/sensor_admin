@@ -11,6 +11,7 @@ import {
   useLocationSLAConfiguration,
   useLocationSLAConfigurationMutation,
 } from '~/features/station/api/useLocationSLAConfiguration';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
@@ -27,7 +28,7 @@ type SLAForm = {
 type SLASubmit = z.infer<typeof SLASchema>;
 
 const SLAConfiguration = () => {
-  const {loc_id} = useAppContext(['loc_id']);
+  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {superUser} = useUser();
   const {data: values, isPending} = useLocationSLAConfiguration(loc_id);
   const {mutate} = useLocationSLAConfigurationMutation(loc_id);
@@ -75,26 +76,10 @@ const SLAConfiguration = () => {
           }}
           fullWidth
         />
-
-        {/* <FormInput
-          name="lead_time"
-          label="Forvarselstid"
-          type="number"
-          disabled={
-            (values?.isCustomerService && user?.superUser) ||
-            (!values?.isCustomerService && !user?.superUser)
-          }
-          fullWidth
-          slotProps={{
-            input: {
-              startAdornment: <InputAdornment position="start">Indenfor</InputAdornment>,
-              endAdornment: <InputAdornment position="end">dage før kontrol</InputAdornment>,
-            },
-          }}
-        /> */}
       </Box>
 
-      <Box display="flex" justifyContent="flex-end">
+      <Box display="flex" justifyContent="flex-end" gap={1}>
+        <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="sla" />
         <Button
           bttype="primary"
           disabled={isSubmitting || !isDirty}
@@ -103,12 +88,7 @@ const SLAConfiguration = () => {
         >
           Gem
         </Button>
-        <Button
-          bttype="tertiary"
-          onClick={() => reset()}
-          disabled={isSubmitting}
-          sx={{marginLeft: 1}}
-        >
+        <Button bttype="tertiary" onClick={() => reset()} disabled={isSubmitting}>
           Annuller
         </Button>
       </Box>

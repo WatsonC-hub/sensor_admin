@@ -13,6 +13,7 @@ export type ProgressStatus = {
   alarm: boolean;
   samplesend: boolean;
   unit: boolean;
+  sla: boolean;
 };
 
 export const getQueryOptions = (loc_id: number | undefined, ts_id?: number) =>
