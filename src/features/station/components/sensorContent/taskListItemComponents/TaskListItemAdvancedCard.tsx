@@ -30,11 +30,12 @@ import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 
 type Props = {
   task: Task;
+  showLocationLink?: boolean;
 };
 
-const TaskListItemAdvancedCard = ({task}: Props) => {
+const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
   const [showAllComments, setShowAllComments] = useState<boolean>(false);
-  const {location} = useNavigationFunctions();
+  const {location, station} = useNavigationFunctions();
   const {superUser} = useUser();
   const {
     patch: updateTask,
@@ -143,9 +144,11 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                   noCircle={true}
                 />
                 <Box display="flex" flexDirection={'column'}>
-                  <Box display="flex" flexDirection={'row'} alignItems="center" gap={0.5}>
+                  <Box display="flex" flexDirection={'row'} flexWrap={'wrap'} gap={0.5}>
                     <Link
-                      onClick={() => location(task.loc_id)}
+                      onClick={() =>
+                        showLocationLink ? location(task.loc_id) : station(task.ts_id)
+                      }
                       color="inherit"
                       variant="caption"
                       underline="always"
@@ -157,13 +160,18 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                         textDecorationColor: 'rgba(255, 255, 255, 0.6)',
                       }}
                     >
-                      <Box>{task.location_name}</Box>
+                      {!showLocationLink
+                        ? `${task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:`
+                        : ''}
+                      <Box>{showLocationLink ? task.location_name : task.name}</Box>
                     </Link>
-                    <Box>
-                      <Typography variant="caption">
-                        {task.tstype_name} - {task.name}
-                      </Typography>
-                    </Box>
+                    {showLocationLink && (
+                      <Box>
+                        <Typography variant="caption">
+                          {task.tstype_name} - {task.name}
+                        </Typography>
+                      </Box>
+                    )}
                   </Box>
                   {!task.is_created && task.sla && superUser && (
                     <Typography

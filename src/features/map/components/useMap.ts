@@ -674,7 +674,7 @@ const useMap = <TData extends object>(
 
   useEffect(() => {
     const handler = (e: CustomEvent) => {
-      mapRef.current?.flyTo([e.detail.lat, e.detail.lng], e.detail.zoom || zoom);
+      mapRef.current?.flyTo([e.detail.lat, e.detail.lng], e.detail.zoom || zoom, {animate: false});
     };
 
     window.addEventListener('leaflet-pan', handler as EventListener);
