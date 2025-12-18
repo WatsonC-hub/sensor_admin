@@ -1,9 +1,11 @@
 import {
   Box,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   IconButton,
   List,
   Typography,
@@ -26,6 +28,7 @@ type UnitDialogProps = {
 const UnitDialog = ({open, onClose, onValidate}: UnitDialogProps) => {
   const [selectedUnit, setSelectedUnit] = React.useState<Unit | null>(null);
   const [selectedSensors, setSelectedSensors] = React.useState<Unit[]>([]);
+  const [checkedSensors, setCheckedSensors] = useState<Unit[]>([]);
   const [openCaptureDialog, setOpenCaptureDialog] = useState(false);
   const {
     get: {data: availableUnits},
@@ -58,11 +61,19 @@ const UnitDialog = ({open, onClose, onValidate}: UnitDialogProps) => {
     const sensors = sensorsForCalyspoId(option.calypso_id);
 
     setSelectedSensors(sensors || []);
+    setCheckedSensors(sensors || []);
+  };
+
+  const handleClose = () => {
+    onClose();
+    setSelectedSensors([]);
+    setCheckedSensors([]);
+    setSelectedUnit(null);
   };
 
   return (
     <>
-      <Dialog open={open} onClose={onClose}>
+      <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Tilføj tidsserier på baggrund af udstyr</DialogTitle>
         <DialogContent>
           <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -86,32 +97,58 @@ const UnitDialog = ({open, onClose, onValidate}: UnitDialogProps) => {
               <QrCodeScannerIcon />
             </IconButton>
           </Box>
+
           <Box>
             {selectedSensors.length > 0 && (
-              <>
-                <p>Følgende tidsserier vil blive tilføjet:</p>
-                <List>
-                  {selectedSensors.map((sensor) => (
-                    <Box
-                      key={sensor.unit_uuid}
-                      sx={{padding: '8px 0', borderBottom: '1px solid #eee'}}
-                    >
-                      sensor ID: {sensor.sensor_id} ({sensor.sensortypename})
-                    </Box>
-                  ))}
-                </List>
-              </>
+              <List>
+                <Typography variant="subtitle1" sx={{mt: 2}}>
+                  Tilgængelige tidsserier:
+                </Typography>
+                {selectedSensors.map((sensor) => (
+                  <Box
+                    key={sensor.unit_uuid}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={checkedSensors.includes(sensor)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setCheckedSensors((prev) => [...prev, sensor]);
+                            } else {
+                              setCheckedSensors((prev) =>
+                                prev.filter((s) => s.unit_uuid !== sensor.unit_uuid)
+                              );
+                            }
+                          }}
+                        />
+                      }
+                      label={
+                        <Typography>
+                          {sensor.channel} - {sensor.sensor_id} ({sensor.sensortypename})
+                        </Typography>
+                      }
+                    />
+                  </Box>
+                ))}
+              </List>
             )}
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button bttype="tertiary">Annuller</Button>
+          <Button bttype="tertiary" onClick={handleClose}>
+            Annuller
+          </Button>
           <Button
             bttype="primary"
-            disabled={selectedUnit === null}
+            disabled={checkedSensors.length === 0}
             onClick={() => {
               if (selectedUnit === null) return;
-              onValidate(selectedSensors);
+              onValidate(checkedSensors);
+              handleClose();
             }}
           >
             Tilføj tidsserier

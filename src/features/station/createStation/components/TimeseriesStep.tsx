@@ -305,26 +305,9 @@ const TimeseriesStep = () => {
                 sensor_id: unit.sensor_id,
               }));
 
-              // instead of adding a new timeseries, check first if the unit's sensortypeid already exists in timeseries and only add it if it doesn't, otherwise update the existing timeseries to have the unit_uuid and sensor_id of the unit being added
-              // unit_timeseries.forEach((uts) => {
-              //   const existingIndex = (timeseries || []).findIndex(
-              //     (ts) => ts.tstype_id === uts.tstype_id
-              //   );
-              //   if (existingIndex !== -1) {
-              //     update(existingIndex, {
-              //       ...timeseries![existingIndex],
-              //       unit_uuid: uts.unit_uuid,
-              //       sensor_id: uts.sensor_id,
-              //     });
-              //   } else {
-              //     append(uts);
-              //   }
-              // });
-
               const updated_timeseries = [...(timeseries || []), ...unit_timeseries];
               onValidate('timeseries', updated_timeseries);
               onValidate('units', units);
-              setUnitDialog(false);
             }}
           />
         </>
