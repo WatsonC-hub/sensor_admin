@@ -122,7 +122,6 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
         }
         handleOpret={() => {
           if (!formState) return;
-          console.log(formState);
           const submitState: SubmitState = {
             ...formState,
             units: formState.units
