@@ -120,15 +120,24 @@ const TimeseriesStep = () => {
                               const tstypeIndex = existingTstypeIds.findIndex(
                                 (_, i) => i === index
                               );
+
                               if (tstypeIndex !== -1) {
                                 existingTstypeIds[tstypeIndex] = parseInt(value);
                               } else {
                                 existingTstypeIds.push(parseInt(value));
                               }
 
+                              if (field.unit_uuid) {
+                                onValidate(
+                                  'units',
+                                  units?.filter((u) => u.unit_uuid !== field.unit_uuid) || []
+                                );
+                              }
+
                               update(index, {
                                 ...field,
                                 tstype_id: parseInt(value),
+                                unit_uuid: undefined,
                               });
 
                               setMeta((prev) => ({
