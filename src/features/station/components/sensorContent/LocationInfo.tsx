@@ -159,7 +159,8 @@ const LocationInfo = () => {
                   size="small"
                   label={<Link>{ressource}</Link>}
                   onClick={() => {
-                    setTsId(timeseriesList?.[0].ts_id ?? null);
+                    if (timeseriesList?.length === 0) setShowLocationRouter(true);
+                    else setTsId(timeseriesList?.[0].ts_id ?? null);
                     setPageToShow('huskeliste');
                   }}
                 />
