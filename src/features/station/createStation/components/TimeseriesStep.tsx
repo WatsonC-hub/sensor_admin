@@ -13,6 +13,7 @@ import UnitDialog from './UnitDialog';
 import WatlevmpForm from './WatlevmpForm';
 import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import UnitStep from './UnitStep';
+import dayjs from 'dayjs';
 const TimeseriesStep = () => {
   const {isMobile} = useBreakpoints();
   const [unitDialog, setUnitDialog] = useState(false);
@@ -241,7 +242,16 @@ const TimeseriesStep = () => {
                           tstype_id={field.tstype_id ?? undefined}
                           setUdstyrDialogOpen={setOpenUnitDialog}
                           onValidate={(unit) => {
-                            const updated_units = [...(units || []), unit];
+                            const updated_units = [
+                              ...(units || []),
+                              {
+                                unit_uuid: unit.unit_uuid,
+                                calypso_id: unit.calypso_id,
+                                sensor_id: unit.sensor_id,
+                                startdate: dayjs(),
+                                sensortypeid: unit.sensortypeid,
+                              },
+                            ];
                             onValidate('units', updated_units);
                             update(index, {
                               ...field,
@@ -269,10 +279,19 @@ const TimeseriesStep = () => {
                           ...prev,
                           tstype_id: updatedTstypeIds,
                         }));
+
+                        if (field.unit_uuid) {
+                          onValidate(
+                            'units',
+                            units?.filter((u) => u.unit_uuid !== field.unit_uuid) || []
+                          );
+                        }
+
                         onValidate(
                           'timeseries',
                           timeseries?.filter((_, i) => i !== index)
                         );
+
                         removeWatlevmpAtIndex(index);
                       }}
                     >
@@ -308,8 +327,8 @@ const TimeseriesStep = () => {
           <UnitDialog
             open={unitDialog}
             onClose={() => setUnitDialog(false)}
-            onValidate={(units) => {
-              const unit_timeseries = units.map((unit) => ({
+            onValidate={(validate_units) => {
+              const unit_timeseries = validate_units.map((unit) => ({
                 prefix: undefined,
                 intakeno: undefined,
                 tstype_id: unit.sensortypeid,
@@ -319,7 +338,18 @@ const TimeseriesStep = () => {
 
               const updated_timeseries = [...(timeseries || []), ...unit_timeseries];
               onValidate('timeseries', updated_timeseries);
-              onValidate('units', units);
+              onValidate('units', [
+                ...(units || []),
+                ...validate_units.map((u) => {
+                  return {
+                    unit_uuid: u.unit_uuid,
+                    calypso_id: u.calypso_id,
+                    sensor_id: u.sensor_id,
+                    startdate: dayjs(),
+                    sensortypeid: u.sensortypeid,
+                  };
+                }),
+              ]);
             }}
           />
         </>

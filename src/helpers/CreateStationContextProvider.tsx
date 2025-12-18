@@ -1,7 +1,6 @@
 import {Dayjs} from 'dayjs';
 import React, {createContext, useEffect, useState} from 'react';
 import {useLocation} from 'react-router';
-import {Unit} from '~/features/stamdata/api/useAddUnit';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 import {Watlevmp} from '~/features/station/schema';
 import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';

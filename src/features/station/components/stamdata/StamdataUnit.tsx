@@ -44,13 +44,7 @@ const CalypsoID = () => {
   const {tstype_id} = React.useContext(UnitContext);
 
   const uniqueCalypsoIDs = Array.from(
-    new Set(
-      availableUnits
-        ?.filter((unit) => unit.sensortypeid === tstype_id)
-        ?.map((unit) =>
-          unit.calypso_id === 0 ? unit.terminal_id.toString() : unit.calypso_id.toString()
-        )
-    )
+    new Set(availableUnits?.filter((unit) => unit.sensortypeid === tstype_id))
   );
 
   return (
@@ -58,7 +52,9 @@ const CalypsoID = () => {
       name="calypso_id"
       label="Calypso ID"
       select
-      options={uniqueCalypsoIDs?.map((calypso_id) => ({[calypso_id]: calypso_id}))}
+      options={uniqueCalypsoIDs?.map((unit) => ({
+        [unit.calypso_id]: unit.calypso_id === 0 ? unit.terminal_id : unit.calypso_id,
+      }))}
     />
   );
 };
@@ -77,8 +73,7 @@ const SensorID = () => {
       availableUnits?.filter(
         (unit) =>
           unit.sensortypeid === tstype_id &&
-          (unit.calypso_id.toString() === selectedCalypsoID ||
-            unit.terminal_id.toString() === selectedCalypsoID)
+          (unit.calypso_id.toString() == selectedCalypsoID || unit.terminal_id == selectedCalypsoID)
       )
     )
   );
@@ -88,11 +83,11 @@ const SensorID = () => {
       name="sensor_id"
       label="Sensor ID"
       select
-      options={uniqueAvailableUnits
-        ?.filter((unit) => unit.sensortypeid === tstype_id)
-        ?.map((unit) => ({
+      options={uniqueAvailableUnits?.map((unit) => {
+        return {
           [unit.sensor_id]: `${unit.channel} - ${unit.sensor_id}`,
-        }))}
+        };
+      })}
     />
   );
 };

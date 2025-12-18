@@ -46,8 +46,8 @@ const UnitStep = ({unit}: UnitStepProps) => {
     unitFormMethods.reset({
       startdate: dayjs(unit.startdate),
       unit_uuid: unit.unit_uuid,
-      calypso_id: unit.calypso_id.toString(),
-      sensor_id: unit.sensor_id.toString(),
+      calypso_id: unit.calypso_id?.toString(),
+      sensor_id: unit.sensor_id,
     });
   }, [unit]);
 
