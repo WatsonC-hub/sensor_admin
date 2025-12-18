@@ -1,10 +1,9 @@
-import {Box, Typography} from '@mui/material';
 import React from 'react';
 import {useFormContext} from 'react-hook-form';
-import Button from '~/components/Button';
-import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
-import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
-import {EditAddUnit} from '../../schema';
+import {AddUnit} from '../../schema';
+import {useUnit} from '~/features/stamdata/api/useAddUnit';
+import FormInput from '~/components/FormInput';
+import FormDateTime from '~/components/FormDateTime';
 
 type StamdataUnitProps = {
   children: React.ReactNode;
@@ -23,48 +22,88 @@ const StamdataUnit = ({children, tstype_id}: StamdataUnitProps) => {
   return <UnitContext.Provider value={{tstype_id}}>{children}</UnitContext.Provider>;
 };
 
-type UnitProps = {
-  onValidate?: (sensortypeList: Array<number>) => void;
-};
+// const Unit = () => {
+//   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
+//   const {tstype_id} = React.useContext(UnitContext);
+//   return (
+//     <Box>
+//       <AddUnitForm
+//         mode="add"
+//         udstyrDialogOpen={udstyrDialogOpen}
+//         setUdstyrDialogOpen={setUdstyrDialogOpen}
+//         tstype_id={tstype_id}
+//       />
+//     </Box>
+//   );
+// };
 
-const Unit = ({onValidate}: UnitProps) => {
-  const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
+const CalypsoID = () => {
   const {
-    getValues,
-    formState: {errors},
-  } = useFormContext<EditAddUnit>();
+    get: {data: availableUnits},
+  } = useUnit();
   const {tstype_id} = React.useContext(UnitContext);
+
+  const uniqueCalypsoIDs = Array.from(
+    new Set(
+      availableUnits
+        ?.filter((unit) => unit.sensortypeid === tstype_id)
+        ?.map((unit) =>
+          unit.calypso_id === 0 ? unit.terminal_id.toString() : unit.calypso_id.toString()
+        )
+    )
+  );
+
   return (
-    <>
-      <Box sx={{display: 'flex', alignItems: 'baseline', justifyContent: 'start'}}>
-        <Button
-          bttype="primary"
-          size="small"
-          sx={{ml: 1}}
-          onClick={() => setUdstyrDialogOpen(true)}
-        >
-          {getValues('unit_uuid') === '' || getValues('unit_uuid')?.length === 0
-            ? 'Tilføj Udstyr'
-            : 'Ændre udstyr'}
-        </Button>
-        {Object.keys(errors).length > 0 && (
-          <Typography variant="caption" color="error" ml={1}>
-            Vælg udstyr først eller sørg for at rette fejl i formularen
-          </Typography>
-        )}
-      </Box>
-      <UnitForm mode="normal" tstype_id={tstype_id} />
-      <AddUnitForm
-        mode="add"
-        udstyrDialogOpen={udstyrDialogOpen}
-        setUdstyrDialogOpen={setUdstyrDialogOpen}
-        tstype_id={tstype_id}
-        onValidate={onValidate}
-      />
-    </>
+    <FormInput
+      name="calypso_id"
+      label="Calypso ID"
+      select
+      options={uniqueCalypsoIDs?.map((calypso_id) => ({[calypso_id]: calypso_id}))}
+    />
   );
 };
 
-StamdataUnit.Unit = Unit;
+const SensorID = () => {
+  const {watch} = useFormContext<AddUnit>();
+  const {tstype_id} = React.useContext(UnitContext);
+  const {
+    get: {data: availableUnits},
+  } = useUnit();
+
+  const selectedCalypsoID = watch('calypso_id');
+
+  const uniqueAvailableUnits = Array.from(
+    new Set(
+      availableUnits?.filter(
+        (unit) =>
+          unit.sensortypeid === tstype_id &&
+          (unit.calypso_id.toString() === selectedCalypsoID ||
+            unit.terminal_id.toString() === selectedCalypsoID)
+      )
+    )
+  );
+
+  return (
+    <FormInput
+      name="sensor_id"
+      label="Sensor ID"
+      select
+      options={uniqueAvailableUnits
+        ?.filter((unit) => unit.sensortypeid === tstype_id)
+        ?.map((unit) => ({
+          [unit.sensor_id]: `${unit.channel} - ${unit.sensor_id}`,
+        }))}
+    />
+  );
+};
+
+const StartDate = () => {
+  return <FormDateTime name="startdate" label="Fra" />;
+};
+
+// StamdataUnit.Unit = Unit;
+StamdataUnit.CalypsoID = CalypsoID;
+StamdataUnit.SensorID = SensorID;
+StamdataUnit.StartDate = StartDate;
 
 export default StamdataUnit;

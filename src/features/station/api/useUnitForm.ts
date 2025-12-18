@@ -1,18 +1,20 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {DefaultValues, useForm} from 'react-hook-form';
-import {ZodType} from 'zod';
+import {ZodTypeAny} from 'zod';
 import {addUnitSchema, editAddUnitSchema} from '../schema';
 
 type UseUnitFormProps<T> = {
-  schema?: ZodType<T>;
+  schema?: ZodTypeAny;
   defaultValues?: DefaultValues<T>;
   mode?: 'Add' | 'Edit';
+  values?: T;
 };
 
 function useUnitForm<T extends Record<string, any>>({
   defaultValues,
   mode,
   schema,
+  values,
 }: UseUnitFormProps<T>) {
   const formMethods = useForm({
     resolver: (...opts) => {
@@ -26,6 +28,7 @@ function useUnitForm<T extends Record<string, any>>({
     },
     defaultValues,
     mode: 'onTouched',
+    values,
   });
 
   return formMethods;

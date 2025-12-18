@@ -25,7 +25,7 @@ type WatlevmpFormProps = {
 
 const WatlevmpForm = ({index, tstype_id, intakeno, onValidate}: WatlevmpFormProps) => {
   const {isMobile} = useBreakpoints();
-  const size = isMobile ? 12 : 5.5;
+  const size = isMobile ? 12 : 6;
   const [helperText, setHelperText] = useState('');
   const {
     meta,
@@ -72,7 +72,7 @@ const WatlevmpForm = ({index, tstype_id, intakeno, onValidate}: WatlevmpFormProp
   }, [watlevmpFormState.errors]);
 
   return (
-    <Grid2 container size={size} spacing={1} marginBottom={2}>
+    <Grid2 container size={size} spacing={1}>
       <FormProvider {...watlevmpFormMethods}>
         <StamdataWatlevmp tstype_id={tstype_id}>
           <DefaultWatlevmpForm

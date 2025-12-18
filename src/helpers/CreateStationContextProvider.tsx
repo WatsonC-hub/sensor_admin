@@ -1,6 +1,7 @@
 import {Dayjs} from 'dayjs';
 import React, {createContext, useEffect, useState} from 'react';
 import {useLocation} from 'react-router';
+import {Unit} from '~/features/stamdata/api/useAddUnit';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 import {Watlevmp} from '~/features/station/schema';
 import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
@@ -35,9 +36,12 @@ type LocationData = {
   groups?: Array<any>;
 };
 
-type UnitData = {
+export type UnitData = {
   unit_uuid: string;
   startdate: Dayjs;
+  calypso_id: number;
+  sensor_id: string;
+  sensortypeid: number;
 };
 
 type TimeseriesData = {
@@ -54,7 +58,7 @@ export type FormState = {
   location?: LocationData;
   timeseries?: Array<TimeseriesData>;
   watlevmp?: Array<Watlevmp>;
-  unit?: Array<UnitData>;
+  units?: Array<UnitData>;
   sync?: SyncFormValues;
   contacts?: Array<ContactTable>;
   location_access?: Array<AccessTable>;
@@ -74,7 +78,7 @@ type CreateStationContextType = {
       | 'location'
       | 'timeseries'
       | 'watlevmp'
-      | 'unit'
+      | 'units'
       | 'control_settings'
       | 'sync'
       | 'contacts'
@@ -107,7 +111,7 @@ const CreateStationContextProvider = ({children}: Props) => {
       | 'location'
       | 'timeseries'
       | 'watlevmp'
-      | 'unit'
+      | 'units'
       | 'control_settings'
       | 'sync'
       | 'contacts'

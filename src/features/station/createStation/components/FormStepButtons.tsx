@@ -12,9 +12,17 @@ import {apiClient} from '~/apiClient';
 import {useDisplayState} from '~/hooks/ui';
 import AlertDialog from '~/components/AlertDialog';
 import {FormState} from '~/helpers/CreateStationContextProvider';
+import {Dayjs} from 'dayjs';
 
 type Props = {
   onFormIsValid: () => Promise<boolean>;
+};
+
+type SubmitState = Omit<FormState, 'units'> & {
+  units: Array<{
+    unit_uuid: string;
+    startdate: Dayjs;
+  }>;
 };
 
 const FormStepButtons = ({onFormIsValid}: Props) => {
@@ -29,7 +37,7 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
   const {isMobile} = useBreakpoints();
 
   const stamdataNewMutation = useMutation({
-    mutationFn: async (data: FormState) => {
+    mutationFn: async (data: SubmitState) => {
       const {data: out} = await apiClient.post(
         `/sensor_field/stamdata/create_station/${meta?.loc_id ?? -1}`,
         data
@@ -114,7 +122,18 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
         }
         handleOpret={() => {
           if (!formState) return;
-          stamdataNewMutation.mutate(formState);
+          console.log(formState);
+          const submitState: SubmitState = {
+            ...formState,
+            units: formState.units
+              ? formState.units.map((unit) => ({
+                  unit_uuid: unit.unit_uuid,
+                  startdate: unit.startdate,
+                }))
+              : [],
+          };
+
+          stamdataNewMutation.mutate(submitState);
         }}
       />
     </Grid2>
