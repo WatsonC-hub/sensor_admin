@@ -12,7 +12,10 @@ import {useUser} from '~/features/auth/useUser';
 
 const LocationInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);
-  const [setTsId] = useDisplayState((state) => [state.setTsId]);
+  const [setTsId, setShowLocationRouter] = useDisplayState((state) => [
+    state.setTsId,
+    state.setShowLocationRouter,
+  ]);
   const {data: location_data} = useLocationInfo(loc_id);
   const {data: timeseriesList} = useTimeseriesStatus(loc_id);
   const [, setPageToShow] = useStationPages();
@@ -193,7 +196,8 @@ const LocationInfo = () => {
                   size="small"
                   label={<Link>{key}</Link>}
                   onClick={() => {
-                    setTsId(timeseriesList?.[0].ts_id ?? null);
+                    if (timeseriesList?.length === 0) setShowLocationRouter(true);
+                    else setTsId(timeseriesList?.[0].ts_id ?? null);
                     setPageToShow('nøgler');
                   }}
                 />
@@ -220,7 +224,8 @@ const LocationInfo = () => {
               size="small"
               label={<Link>{'Åbn kontakter'}</Link>}
               onClick={() => {
-                setTsId(timeseriesList?.[0].ts_id ?? null);
+                if (timeseriesList?.length === 0) setShowLocationRouter(true);
+                else setTsId(timeseriesList?.[0].ts_id ?? null);
                 setPageToShow('kontakter');
               }}
             />
