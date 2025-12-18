@@ -196,9 +196,11 @@ export default function AddUnitForm({
 
   const handleClose = () => {
     setUdstyrDialogOpen(false);
-    setUnitData({calypso_id: '', uuid: '', fra: dayjs()});
-    trigger();
-    reset();
+    if (!onValidate) {
+      setUnitData({calypso_id: '', uuid: '', fra: dayjs()});
+      trigger();
+      reset();
+    }
   };
 
   const handleSensorDialogClose = async (matchingParameters?: boolean) => {

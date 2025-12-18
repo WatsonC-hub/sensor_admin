@@ -50,6 +50,7 @@ const TimeseriesStep = () => {
   const {
     handleSubmit: handleTimeseriesSubmit,
     formState: timeseriesFormState,
+    getValues,
     control,
   } = timeseriesFormMethods;
 
@@ -80,17 +81,18 @@ const TimeseriesStep = () => {
       {activeStep === 1 && (
         <>
           <FormProvider {...timeseriesFormMethods}>
-            <Box>
+            <Box display="flex" gap={1} flexWrap="wrap">
               <Button
                 bttype="primary"
-                sx={{maxWidth: 200, mr: 1}}
-                onClick={() =>
-                  append({
+                onClick={() => {
+                  const append_timeseries = {
                     prefix: undefined,
                     intakeno: undefined,
                     tstype_id: undefined,
-                  })
-                }
+                  };
+                  append(append_timeseries);
+                  onValidate('timeseries', [...(timeseries || []), append_timeseries]);
+                }}
               >
                 Tilføj tidsserie
               </Button>
@@ -136,6 +138,7 @@ const TimeseriesStep = () => {
 
                               update(index, {
                                 ...field,
+                                prefix: getValues('timeseries')?.[index]?.prefix,
                                 tstype_id: parseInt(value),
                                 unit_uuid: undefined,
                               });
