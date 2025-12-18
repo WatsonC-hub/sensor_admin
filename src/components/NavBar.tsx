@@ -323,7 +323,15 @@ const OwnTaskList = () => {
   );
 
   return (
-    <IconButton onClick={() => setOwnTaskList(!own_task_list)}>
+    <IconButton
+      onClick={() => setOwnTaskList(!own_task_list)}
+      sx={{
+        backgroundColor: 'primary.main',
+        '&:hover': {
+          backgroundColor: 'primary.dark',
+        },
+      }}
+    >
       <Badge
         badgeContent={
           <Typography variant="caption" color="white" pr={0.2}>
