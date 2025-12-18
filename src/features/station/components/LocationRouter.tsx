@@ -75,7 +75,11 @@ export default function LocationRouter() {
             </StationPageBoxLayout>
           </Box>
         )}
-      {pageToShow === stationPages.BILLEDER && <ImagePage />}
+      {pageToShow === stationPages.BILLEDER && (
+        <StationPageBoxLayout>
+          <ImagePage />
+        </StationPageBoxLayout>
+      )}
       {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout>
           <EditLocation />
@@ -98,7 +102,7 @@ interface LayoutProps {
 
 const Layout = ({children}: LayoutProps) => {
   const {data: metadata} = useLocationData();
-  const {isMobile} = useBreakpoints();
+  const {isTouch, isMobile} = useBreakpoints();
   const setShowLocationRouter = useDisplayState((state) => state.setShowLocationRouter);
   const [pageToShow, setPageToShow] = useStationPages();
   const [fullscreen, setFullscreen] = useAtom(fullScreenAtom);
@@ -107,14 +111,14 @@ const Layout = ({children}: LayoutProps) => {
     <>
       <CssBaseline />
       <NavBar>
-        {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
+        {isTouch && <NavBar.StationDrawerMenu />}
         <Box display="block" flexGrow={1} overflow="hidden">
-          {!isMobile && (
+          {!isTouch && (
             <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
               {metadata?.loc_name}
             </Typography>
           )}
-          {isMobile && <MinimalSelect />}
+          {isTouch && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           {metadata?.projectno && (
@@ -150,9 +154,26 @@ const Layout = ({children}: LayoutProps) => {
         </Box>
       </NavBar>
 
-      <Box component="main" sx={{flexGrow: 1, display: 'flex', flexDirection: 'row'}}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'row',
+          overflow: 'hidden',
+        }}
+      >
         <StationDrawer />
-        <Box display="flex" width={'100%'} flexGrow={1} gap={1} flexDirection={'column'}>
+        <Box
+          key={'main_content'}
+          id={'main_content'}
+          display="flex"
+          width={'100%'}
+          flexGrow={1}
+          gap={1}
+          flexDirection={'column'}
+          overflow="auto"
+        >
           {children}
           {isMobile && <ActionArea />}
         </Box>

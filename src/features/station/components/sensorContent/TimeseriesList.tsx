@@ -11,12 +11,16 @@ import {useParkering} from '~/features/parkering/api/useParkering';
 import {utm} from '~/features/map/mapConsts';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import {useDisplayState} from '~/hooks/ui';
-
+import FmdGoodIcon from '@mui/icons-material/FmdGood';
+import useBreakpoints from '~/hooks/useBreakpoints';
 const TimeseriesList = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const {station} = useNavigationFunctions();
-  const setShowLocationRouter = useDisplayState((state) => state.setShowLocationRouter);
-
+  const [setShowLocationRouter, setHideSensorContent] = useDisplayState((state) => [
+    state.setShowLocationRouter,
+    state.setHideSensorContent,
+  ]);
+  const {isMobile} = useBreakpoints();
   const {data, isPending} = useTimeseriesStatus(loc_id);
   const {data: location_data} = useLocationInfo(loc_id);
   const {
@@ -72,7 +76,6 @@ const TimeseriesList = () => {
 
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>
-      {/* <TooltipWrapper description=""> */}
       <Box
         display={'flex'}
         flexDirection={'row'}
@@ -83,31 +86,52 @@ const TimeseriesList = () => {
           Tidsserier
         </Typography>
 
-        <IconButton
-          disabled={!location_data?.x || !location_data?.y}
-          onClick={() => {
-            const parking = parkings?.find((p) => p.loc_id === loc_id);
-            let x = location_data?.x;
-            let y = location_data?.y;
-            if (parking) {
-              x = parking.x;
-              y = parking.y;
-            }
+        <div>
+          <IconButton
+            onClick={() => {
+              if (location_data) {
+                const coords = utm.convertUtmToLatLng(location_data.x, location_data.y, 32, 'Z');
 
-            const coords = utm.convertUtmToLatLng(x!, y!, 32, 'Z');
-            if (typeof coords === 'object') {
-              window.open(
-                `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`,
-                '_blank'
-              );
-            }
-          }}
-          sx={{
-            color: 'primary.main',
-          }}
-        >
-          <DirectionsIcon />
-        </IconButton>
+                if (typeof coords === 'object') {
+                  if (isMobile) setHideSensorContent(true);
+                  window.dispatchEvent(
+                    new CustomEvent('leaflet-pan', {
+                      detail: {lat: coords.lat, lng: coords.lng, zoom: 13},
+                    })
+                  );
+                }
+              }
+            }}
+            sx={{color: 'primary.main'}}
+          >
+            <FmdGoodIcon />
+          </IconButton>
+          <IconButton
+            disabled={!location_data?.x || !location_data?.y}
+            onClick={() => {
+              const parking = parkings?.find((p) => p.loc_id === loc_id);
+              let x = location_data?.x;
+              let y = location_data?.y;
+              if (parking) {
+                x = parking.x;
+                y = parking.y;
+              }
+
+              const coords = utm.convertUtmToLatLng(x!, y!, 32, 'Z');
+              if (typeof coords === 'object') {
+                window.open(
+                  `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`,
+                  '_blank'
+                );
+              }
+            }}
+            sx={{
+              color: 'primary.main',
+            }}
+          >
+            <DirectionsIcon />
+          </IconButton>
+        </div>
       </Box>
       {data?.length === 0 && (
         <>

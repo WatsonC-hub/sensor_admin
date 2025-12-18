@@ -82,7 +82,7 @@ export const useMaalepunkt = (ts_id: number | undefined) => {
       toast.success('Målepunkt gemt');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['watlevmp']],
     },
   });
 
@@ -93,7 +93,7 @@ export const useMaalepunkt = (ts_id: number | undefined) => {
       toast.success('Målepunkt ændret');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['watlevmp']],
     },
   });
 
@@ -104,7 +104,7 @@ export const useMaalepunkt = (ts_id: number | undefined) => {
       toast.success('Målepunkt slettet');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['watlevmp']],
     },
   });
 

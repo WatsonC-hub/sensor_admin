@@ -213,6 +213,11 @@ export type AddLocationToItinerary = {
   data: {loc_id: Array<number>};
 };
 
+export type MergeItinerary = {
+  path: string;
+  data: {target_itinerary_id: string};
+};
+
 export enum TaskPermission {
   none = 0,
   simple = 1,

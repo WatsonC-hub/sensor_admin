@@ -71,7 +71,7 @@ const useMap = <TData extends object>(
   const [deleteId, setDeleteId] = useState<number>();
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
-  const {loc_id: selectedLocId} = useDisplayState((state) => state);
+  const [selectedLocId] = useDisplayState((state) => [state.loc_id]);
   const [type, setType] = useState<string>('parkering');
   const {
     features: {routesAndParking},
@@ -228,7 +228,6 @@ const useMap = <TData extends object>(
           if (mapRef.current) mapRef.current.getContainer().style.cursor = '';
         }
       }
-      // if (pageToShow !== 'pejling' && selectedLocId) setPageToShow('pejling');
     });
   };
 
@@ -665,6 +664,15 @@ const useMap = <TData extends object>(
       );
     }
   }, [usedWidth, usedHeight, doneRendering, isMobile]);
+
+  useEffect(() => {
+    const handler = (e: CustomEvent) => {
+      mapRef.current?.flyTo([e.detail.lat, e.detail.lng], e.detail.zoom || zoom, {animate: false});
+    };
+
+    window.addEventListener('leaflet-pan', handler as EventListener);
+    return () => window.removeEventListener('leaflet-pan', handler as EventListener);
+  }, [mapRef.current]);
 
   return {
     map: mapRef.current,

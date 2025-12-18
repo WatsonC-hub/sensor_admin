@@ -16,6 +16,8 @@ import {useDisplayState} from '~/hooks/ui';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import TripLocationAccess from './TripLocationAccess';
 import TripContacts from './TripContacts';
+import MoveUpIcon from '@mui/icons-material/MoveUp';
+import TripMergeDialog from './TripMergeDialog';
 
 interface TripPreparationProps {
   data: TaskCollection | undefined;
@@ -23,6 +25,7 @@ interface TripPreparationProps {
 
 const TripPreparation = ({data}: TripPreparationProps) => {
   const [completeOpen, setCompleteOpen] = React.useState(false);
+  const [mergeOpen, setMergeOpen] = React.useState(false);
   const [editName, setEditName] = useState<boolean>(false);
   const [editComment, setEditComment] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
@@ -166,6 +169,17 @@ const TripPreparation = ({data}: TripPreparationProps) => {
 
       <Box display="flex" gap={1} flexDirection={'row'} alignSelf={'center'}>
         <Button
+          bttype="primary"
+          sx={{borderRadius: 2.5}}
+          startIcon={<MoveUpIcon sx={{transform: 'rotate(90deg)'}} />}
+          // disabled={}
+          onClick={() => {
+            setMergeOpen(true);
+          }}
+        >
+          Overflyt tur
+        </Button>
+        <Button
           bttype="tertiary"
           sx={{borderRadius: 2.5}}
           startIcon={<Check />}
@@ -176,6 +190,8 @@ const TripPreparation = ({data}: TripPreparationProps) => {
           Afslut tur
         </Button>
       </Box>
+      <TripMergeDialog itinerary_id={itinerary_id} open={mergeOpen} setOpen={setMergeOpen} />
+
       <AlertDialog
         open={completeOpen}
         setOpen={setCompleteOpen}

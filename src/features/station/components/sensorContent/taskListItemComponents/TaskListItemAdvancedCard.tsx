@@ -30,11 +30,12 @@ import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 
 type Props = {
   task: Task;
+  showLocationLink?: boolean;
 };
 
-const TaskListItemAdvancedCard = ({task}: Props) => {
+const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
   const [showAllComments, setShowAllComments] = useState<boolean>(false);
-  const {station} = useNavigationFunctions();
+  const {location, station} = useNavigationFunctions();
   const {superUser} = useUser();
   const {
     patch: updateTask,
@@ -143,22 +144,35 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                   noCircle={true}
                 />
                 <Box display="flex" flexDirection={'column'}>
-                  <Link
-                    onClick={() => station(task.ts_id)}
-                    color="inherit"
-                    variant="caption"
-                    underline="always"
-                    display="flex"
-                    flexWrap="wrap"
-                    gap={0.5}
-                    sx={{
-                      cursor: 'pointer',
-                      textDecorationColor: 'rgba(255, 255, 255, 0.6)',
-                    }}
-                  >
-                    {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
-                    <Box>{task.name}</Box>
-                  </Link>
+                  <Box display="flex" flexDirection={'row'} flexWrap={'wrap'} gap={0.5}>
+                    <Link
+                      onClick={() =>
+                        showLocationLink ? location(task.loc_id) : station(task.ts_id)
+                      }
+                      color="inherit"
+                      variant="caption"
+                      underline="always"
+                      display="flex"
+                      flexWrap="wrap"
+                      gap={0.5}
+                      sx={{
+                        cursor: 'pointer',
+                        textDecorationColor: 'rgba(255, 255, 255, 0.6)',
+                      }}
+                    >
+                      {!showLocationLink
+                        ? `${task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:`
+                        : ''}
+                      <Box>{showLocationLink ? task.location_name : task.name}</Box>
+                    </Link>
+                    {showLocationLink && (
+                      <Box>
+                        <Typography variant="caption">
+                          {task.tstype_name} - {task.name}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
                   {!task.is_created && task.sla && superUser && (
                     <Typography
                       mt={-0.5}
