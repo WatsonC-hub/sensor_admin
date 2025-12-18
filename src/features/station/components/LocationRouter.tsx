@@ -28,6 +28,7 @@ import {Fullscreen, FullscreenExit} from '@mui/icons-material';
 import {useAtom} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 import {useDisplayState} from '~/hooks/ui';
+import LocationConfiguration from '~/pages/field/station/location/Configuration';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();
@@ -36,6 +37,7 @@ export default function LocationRouter() {
   const [pageToShow] = useStationPages();
   const {data: metadata} = useLocationData();
   const {
+    superUser,
     features: {contacts, keys: accessKeys, ressources},
   } = useUser();
   if (metadata != undefined && metadata.timeseries.length > 0)
@@ -92,6 +94,11 @@ export default function LocationRouter() {
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.NØGLER && accessKeys && <LocationAccess />}
+      {pageToShow === stationPages.LOKATIONKONFIGURATION && superUser && (
+        <StationPageBoxLayout>
+          <LocationConfiguration />
+        </StationPageBoxLayout>
+      )}
     </Layout>
   );
 }
