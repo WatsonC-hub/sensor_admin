@@ -323,28 +323,18 @@ const OwnTaskList = () => {
   );
 
   return (
-    <Badge
-      variant="standard"
-      badgeContent={task_list?.length}
-      anchorOrigin={{vertical: 'top', horizontal: 'right'}}
-      sx={{
-        height: 'fit-content',
-        alignSelf: 'center',
-        p: 1,
-        cursor: 'pointer',
-        '& .MuiBadge-badge': {
-          // color: 'grey.800',
-          backgroundColor: sensorColors[FlagEnum.OK].color,
-        },
-      }}
-    >
-      <Notifications
-        onClick={() => setOwnTaskList(!own_task_list)}
-        sx={{
-          color: own_task_list ? 'secondary.main' : 'inherit',
-        }}
-      />
-    </Badge>
+    <IconButton onClick={() => setOwnTaskList(!own_task_list)}>
+      <Badge
+        badgeContent={
+          <Typography variant="caption" color="white" pr={0.2}>
+            {task_list?.length}
+          </Typography>
+        }
+        color="secondary"
+      >
+        <Notifications sx={{color: own_task_list ? 'secondary.main' : 'white'}} />
+      </Badge>
+    </IconButton>
   );
 };
 
