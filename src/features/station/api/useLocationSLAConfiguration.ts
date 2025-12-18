@@ -49,7 +49,7 @@ export const useLocationSLAConfigurationMutation = (loc_id: number) => {
       toast.success('Konfiguration gemt');
     },
     meta: {
-      invalidates: [['register'], ['metadata']],
+      invalidates: [['sla_configuration']],
     },
   });
 };

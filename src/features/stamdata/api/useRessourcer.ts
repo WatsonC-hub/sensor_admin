@@ -1,4 +1,4 @@
-import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -63,7 +63,6 @@ export const getRessourcerOptions = (loc_id: number) =>
 
 export const useRessourcer = () => {
   const {loc_id} = useAppContext(['loc_id']);
-  const queryClient = useQueryClient();
   const get = useQuery({
     queryKey: queryKeys.Location.ressources(),
     queryFn: async () => {
@@ -80,30 +79,30 @@ export const useRessourcer = () => {
   const post = useMutation({
     ...ressourcerPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.locationRessources(loc_id),
-      });
       toast.success('Huskeliste gemt');
+    },
+    meta: {
+      invalidates: [['ressourcer']],
     },
   });
 
   const put = useMutation({
     ...ressourcerPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.locationRessources(loc_id),
-      });
       toast.success('Huskeliste ændret');
+    },
+    meta: {
+      invalidates: [['ressourcer']],
     },
   });
 
   const del = useMutation({
     ...ressourcerDelOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.locationRessources(loc_id),
-      });
       toast.success('Huskeliste slettet');
+    },
+    meta: {
+      invalidates: [['ressourcer']],
     },
   });
 

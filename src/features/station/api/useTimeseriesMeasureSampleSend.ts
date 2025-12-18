@@ -1,4 +1,4 @@
-import {queryOptions, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
@@ -44,7 +44,6 @@ export const useTimeseriesMeasureSampleSend = (ts_id: number) => {
 };
 
 export const useTimeseriesMeasureSampleSendMutation = (ts_id: number) => {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: MeasureSampleSend) => {
       const {data: out} = await apiClient.post(
@@ -54,14 +53,10 @@ export const useTimeseriesMeasureSampleSendMutation = (ts_id: number) => {
       return out;
     },
     onSuccess: () => {
-      // Invalidate query to refetch updated configuration
       toast.success('Konfiguration gemt');
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Timeseries.MeasureSampleSend(ts_id),
-      });
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['measure_sample_send']],
     },
   });
 };

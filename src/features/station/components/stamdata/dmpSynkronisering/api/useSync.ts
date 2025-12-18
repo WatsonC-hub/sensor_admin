@@ -32,7 +32,7 @@ const syncPostOptions: MutationOptions<unknown, unknown, SyncPost> = {
     return result;
   },
   meta: {
-    invalidates: [['register']],
+    invalidates: [['sync']],
   },
   onSuccess: () => {
     toast.success('Synkronisering er slået til');
@@ -47,7 +47,7 @@ const syncPutOptions: MutationOptions<unknown, unknown, SyncPut> = {
     return result;
   },
   meta: {
-    invalidates: [['register']],
+    invalidates: [['sync']],
   },
   onSuccess: () => {
     toast.success('Synkronisering er opdateret');
@@ -62,7 +62,7 @@ const syncDelOptions: MutationOptions<unknown, unknown, SyncBase> = {
     return result;
   },
   meta: {
-    invalidates: [['register']],
+    invalidates: [['sync']],
   },
   onSuccess: () => {
     toast.success('Synkronisering er slået fra');

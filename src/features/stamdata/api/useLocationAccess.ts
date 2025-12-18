@@ -1,4 +1,4 @@
-import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -86,28 +86,25 @@ export const useSearchLocationAccess = (loc_id: number, searchString: string) =>
 };
 
 export const useLocationAccess = (loc_id: number) => {
-  const queryClient = useQueryClient();
   const get = useQuery(LocationAccessGetOptions(loc_id));
 
   const post = useMutation({
     ...locationAccessPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.keys(loc_id),
-      });
-
       toast.success('Adgangsinformation gemt');
+    },
+    meta: {
+      invalidates: [['location_access']],
     },
   });
 
   const put = useMutation({
     ...locationAccessPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.keys(loc_id),
-      });
-
       toast.success('Adgangsinformation ændret');
+    },
+    meta: {
+      invalidates: [['location_access']],
     },
   });
 
@@ -115,9 +112,9 @@ export const useLocationAccess = (loc_id: number) => {
     ...locationAccessDelOptions,
     onSuccess: () => {
       toast.success('Adgangsinformation slettet');
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.keys(loc_id),
-      });
+    },
+    meta: {
+      invalidates: [['location_access']],
     },
   });
 

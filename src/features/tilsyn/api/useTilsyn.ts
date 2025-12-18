@@ -81,7 +81,7 @@ export const useTilsyn = () => {
       toast.success('Tilsyn gemt');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['service']],
     },
   });
 
@@ -91,7 +91,7 @@ export const useTilsyn = () => {
       toast.success('Tilsyn ændret');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['service']],
     },
   });
 
@@ -101,7 +101,7 @@ export const useTilsyn = () => {
       toast.success('Tilsyn slettet');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['service']],
     },
   });
 

@@ -67,7 +67,7 @@ export const pejlingGetOptions = (ts_id: number | undefined) =>
     staleTime: 1000 * 60 * 2, // 2 minutes
     enabled: ts_id !== 0 && ts_id !== null && ts_id !== undefined,
     meta: {
-      invalidates: ['register'],
+      invalidates: ['kontrol'],
     },
   });
 
@@ -85,7 +85,7 @@ export const usePejling = () => {
       toast.success('Pejling gemt');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['kontrol']],
     },
   });
 
@@ -95,7 +95,7 @@ export const usePejling = () => {
       toast.success('Pejling ændret');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['kontrol']],
     },
   });
 
@@ -105,7 +105,7 @@ export const usePejling = () => {
       toast.success('Pejling slettet');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['kontrol']],
     },
   });
 
