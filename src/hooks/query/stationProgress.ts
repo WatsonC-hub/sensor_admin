@@ -16,7 +16,7 @@ export type ProgressStatus = {
   sla: boolean;
 };
 
-export const getQueryOptions = (loc_id: number | undefined, ts_id?: number) =>
+const getQueryOptions = (loc_id: number | undefined, ts_id?: number) =>
   queryOptions<ProgressStatus>({
     queryKey: queryKeys.metadataProgress(loc_id, ts_id),
     queryFn: async () => {
@@ -86,4 +86,4 @@ const useStationProgress = (
   };
 };
 
-export {useProgress, useUpdateProgress, useStationProgress};
+export {useProgress, useStationProgress};
