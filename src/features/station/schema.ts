@@ -143,7 +143,6 @@ type BoreholeAddTimeseries = z.infer<typeof boreholeAddTimeseriesSchema>;
 type BoreholeEditTimeseries = z.infer<typeof boreholeEditTimeseriesSchema>;
 type BaseLocation = z.infer<typeof baseLocationSchema>;
 type AddUnit = z.infer<typeof addUnitSchema>;
-type EditAddUnit = z.infer<typeof editAddUnitSchema>;
 type EditUnit = z.infer<typeof editUnitSchema>;
 type Watlevmp = z.infer<typeof watlevmpAddSchema>;
 
@@ -158,7 +157,6 @@ export type {
   BaseLocation,
   DefaultEditTimeseries,
   AddUnit,
-  EditAddUnit,
   EditUnit,
   Watlevmp,
 };

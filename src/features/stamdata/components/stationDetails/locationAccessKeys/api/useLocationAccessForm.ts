@@ -43,8 +43,6 @@ const locationAccessSchema = z
     }
   );
 
-export type InferLocationAccessInfo = z.infer<typeof locationAccessSchema>;
-
 const locationAccessArraySchema = z.array(locationAccessSchema);
 
 type LocationAccessFormProps<T> = {

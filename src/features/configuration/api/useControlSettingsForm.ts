@@ -12,7 +12,6 @@ const controlSettingsSchema = z.object({
 const controlSettingsArraySchema = z.array(controlSettingsSchema);
 
 export type ControlSettingsFormValues = z.infer<typeof controlSettingsSchema>;
-export type ControlSettingsArrayFormValues = z.infer<typeof controlSettingsArraySchema>;
 
 type ControlSettingsProps<T extends FieldValues> = {
   mode: 'add' | 'edit' | 'mass_edit';

@@ -4,7 +4,7 @@ import {DefaultValues, FieldValues, useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {fetchDmpAllowedMapList} from '~/features/station/api/useDmpAllowedMapList';
 
-export const syncSchema = z
+const syncSchema = z
   .object({
     sync_dmp: z.boolean().optional(),
     owner_cvr: z.number().optional(),
@@ -24,10 +24,9 @@ export const syncSchema = z
     }
   );
 
-export const syncArraySchema = z.array(syncSchema);
+const syncArraySchema = z.array(syncSchema);
 
 export type SyncFormValues = z.infer<typeof syncSchema>;
-export type SyncFormArrayValues = z.infer<typeof syncArraySchema>;
 
 type SyncContext = {
   tstype_id?: number;
