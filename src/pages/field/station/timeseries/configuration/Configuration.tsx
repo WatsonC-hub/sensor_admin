@@ -5,8 +5,13 @@ import UnitMeasurementConfig from './UnitMeasurementConfig';
 import YearlyControlsConfig from './YearlyControlsConfig';
 import Synchronization from './Synchronization';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import VisibilityConfig from './VisibilityConfig';
 
-const Configuration = () => {
+type ConfigurationProps = {
+  ts_id: number;
+};
+
+const Configuration = ({ts_id}: ConfigurationProps) => {
   const [canSync, setCanSync] = useState(true);
   return (
     <>
@@ -35,6 +40,12 @@ const Configuration = () => {
           <Synchronization setCanSync={setCanSync} />
         </Layout>
       )}
+      <Layout>
+        <Typography variant="h6" gutterBottom>
+          Tilgængelighed
+        </Typography>
+        <VisibilityConfig ts_id={ts_id} />
+      </Layout>
     </>
   );
 };
