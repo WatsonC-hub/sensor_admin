@@ -102,7 +102,6 @@ export default function AddUnitForm({
     setUnitData((prev) => ({...prev, calypso_id: value, uuid: ''}));
 
     const sensors = sensorsForCalyspoId(value);
-    console.log(sensors);
     if (sensors && sensors.length === 1) {
       setUnitData((prev) => ({...prev, uuid: sensors[0].unit_uuid}));
       if (mode === 'edit') {
@@ -187,10 +186,13 @@ export default function AddUnitForm({
       setUdstyrDialogOpen(false);
       toast.success('Udstyr tilføjet til formularen');
     } else if (units.length > 1) {
-      setDisableMatchingParameters(
-        units.filter((u) => u.sensor_id === unit?.sensor_id).length === 1
-      );
-      setAddSensors(true);
+      const matchingParameters = units.filter((u) => u.sensor_id === unit?.sensor_id).length === 1;
+      setDisableMatchingParameters(matchingParameters);
+
+      if (mode !== 'add') setAddSensors(true);
+      else {
+        handleSensorDialogClose();
+      }
     }
   };
 
