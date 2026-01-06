@@ -42,7 +42,7 @@ import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {usedHeightAtom, usedWidthAtom} from '~/state/atoms';
+import {highlightedItinerariesAtom, usedHeightAtom, usedWidthAtom} from '~/state/atoms';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 const useMap = <TData extends object>(
@@ -65,6 +65,7 @@ const useMap = <TData extends object>(
   const usedHeight = useAtomValue(usedHeightAtom);
   const {isMobile} = useBreakpoints();
 
+  const highlightedItineraries = useAtomValue(highlightedItinerariesAtom);
   const [doneRendering, setDoneRendering] = useState(false);
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
@@ -620,12 +621,11 @@ const useMap = <TData extends object>(
   }, [leafletMapRoutes, parkings]);
 
   useEffect(() => {
-    if (mapRef.current && filters && filters.itineraries.length > 0) {
+    if (mapRef.current && filters && highlightedItineraries.length > 0) {
       const markers = markerLayerRef.current?.getLayers().filter((marker) => {
         if (marker instanceof L.Marker) {
-          return filters.itineraries
-            .map((itinerary) => itinerary.id)
-            .includes((marker.options.data as MapOverview).itinerary_id);
+          const itinerary_id = (marker.options.data as MapOverview).itinerary_id;
+          if (itinerary_id !== null) return highlightedItineraries.includes(itinerary_id);
         }
         return false;
       });
@@ -649,7 +649,7 @@ const useMap = <TData extends object>(
 
       fg.clearLayers();
     }
-  }, [filters.itineraries.length]);
+  }, [highlightedItineraries.length]);
 
   useEffect(() => {
     if (mapRef.current && doneRendering) {

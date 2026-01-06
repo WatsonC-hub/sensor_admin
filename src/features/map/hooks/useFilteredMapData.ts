@@ -90,11 +90,11 @@ const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id
         task.blocks_notifications.length === 0)
   );
 
-  const add_to_map = filter.locationFilter.some((filterName) => {
+  const add_to_map = filter.locationFilter?.some((filterName) => {
     if (filterName === 'fejlfri' && isFaultLess) return true;
     if (filterName === 'Tildelt til mig' && isAssignedToMe) return true;
-    if (filterName === 'Med notifikationer' && hasNotifications) return true;
-    if (filterName === 'I drift' && isInService) return true;
+    if (filterName === 'Notifikationer' && hasNotifications) return true;
+    if (filterName === 'Enkeltmålestationer' && isInService) return true;
     if (filterName === 'Nyopsætninger' && isNewInstallation) return true;
     if (filterName === 'Inaktive' && isInactive) return true;
     if (filterName === 'Uplanlagte opgaver' && not_handled_tasks && elem.itinerary_id === null)
@@ -143,20 +143,19 @@ const filterData = (
     'boreholeno' in elem ? filterBorehole(elem, filter.borehole) : true
   );
 
-  filteredData = filteredData.filter((elem) => {
-    if ('loc_id' in elem) {
-      const extend_map_data = extendMapData(elem, filter, tasks ?? [], user_id.toString());
+  if (
+    filter.groups.length === 0 &&
+    filter.projects.length === 0 &&
+    filter.notificationTypes.length === 0
+  ) {
+    filteredData = filteredData.filter((elem) => {
+      if ('loc_id' in elem) {
+        const extend_map_data = extendMapData(elem, filter, tasks ?? [], user_id.toString());
 
-      const filter_instead =
-        filter.groups.length > 0 ||
-        filter.projects.length > 0 ||
-        filter.notificationTypes.length > 0;
-
-      if (filter_instead) return true;
-
-      return extend_map_data;
-    }
-  });
+        return extend_map_data;
+      }
+    });
+  }
 
   if (filter.notificationTypes?.length > 0) {
     filteredData = filteredData.filter((elem) => {
@@ -167,23 +166,22 @@ const filterData = (
     });
   }
 
-  if (filter.groups && filter.groups.length > 0) {
-    filteredData = filteredData.filter((elem) => {
-      if (elem.groups !== null) {
-        return filter.groups.some((group) => elem.groups.some((item) => item.id === group.id));
-      }
-      return false;
-    });
-  }
-
-  if (filter.projects && filter.projects.length > 0) {
-    filteredData = filteredData.filter((elem) => {
+  filteredData = filteredData.filter((elem) => {
+    let matchGroupsAndProjects = filter.groups.length === 0 && filter.projects.length === 0;
+    if (filter.groups.length > 0) {
+      matchGroupsAndProjects = filter.groups.some((group) =>
+        elem.groups?.some((item) => item.id === group.id)
+      );
+    }
+    if (filter.projects.length > 0 && !matchGroupsAndProjects) {
       if ('loc_id' in elem && elem.projectno) {
-        return filter.projects.some((project) => elem.projectno === project.project_no);
+        matchGroupsAndProjects = filter.projects.some(
+          (project) => elem.projectno === project.project_no
+        );
       }
-      return false;
-    });
-  }
+    }
+    return matchGroupsAndProjects;
+  });
 
   return filteredData;
 };

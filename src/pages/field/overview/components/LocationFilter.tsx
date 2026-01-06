@@ -8,9 +8,10 @@ type Props = {
   setValue: (value: Array<string>) => void;
   onBlur?: Noop;
   label?: string;
+  disabled?: boolean;
 };
 
-const LocationFilter = ({value, setValue, onBlur, label}: Props) => {
+const LocationFilter = ({value, setValue, onBlur, label, disabled}: Props) => {
   return (
     <Autocomplete
       sx={{
@@ -18,6 +19,7 @@ const LocationFilter = ({value, setValue, onBlur, label}: Props) => {
         marginBottom: '4px',
         pb: 1.5,
       }}
+      disabled={disabled}
       freeSolo
       forcePopupIcon={false}
       multiple

@@ -1,5 +1,5 @@
 import {CloseOutlined, RestartAlt} from '@mui/icons-material';
-import {Box, Typography, Grid, Grid2} from '@mui/material';
+import {Box, Typography, Grid2} from '@mui/material';
 import React from 'react';
 import {useForm, FormProvider, Controller} from 'react-hook-form';
 
@@ -13,12 +13,14 @@ import TooltipWrapper from '~/components/TooltipWrapper';
 import ProjectsFilter from './ProjectsFilter';
 import LocationFilter from './LocationFilter';
 import FormToggleButton from '~/components/formComponents/FormToggleButton';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 interface FilterOptionsProps {
   onClose: () => void;
 }
 
 const FilterOptions = ({onClose}: FilterOptionsProps) => {
+  const {isMobile} = useBreakpoints();
   const {
     superUser,
     features: {boreholeAccess, iotAccess},
@@ -79,8 +81,8 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
           </Grid2>
         )}
       </Grid2>
-      <Grid container spacing={0} mt={1}>
-        <Grid item xs={12}>
+      <Grid2 container spacing={0.5} mt={1}>
+        <Grid2 size={12} display="flex">
           <Controller
             name="locationFilter"
             control={control}
@@ -91,12 +93,17 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                   onChange(value);
                   handleSubmit(submit)();
                 }}
-                label="Vis lokationer"
+                label="Vis lokationer der er/har"
+                disabled={
+                  filters.groups.length > 0 ||
+                  filters.projects.length > 0 ||
+                  filters.notificationTypes.length > 0
+                }
               />
             )}
           />
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={12}>
           <Controller
             name="notificationTypes"
             control={control}
@@ -112,8 +119,8 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             )}
           />
           {/* </TooltipWrapper> */}
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={isMobile ? 12 : 6}>
           <Controller
             name="groups"
             control={control}
@@ -130,9 +137,9 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
               />
             )}
           />
-        </Grid>
+        </Grid2>
         {superUser && (
-          <Grid item xs={12}>
+          <Grid2 size={isMobile ? 12 : 6}>
             <Controller
               name="projects"
               control={control}
@@ -147,9 +154,9 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                 />
               )}
             />
-          </Grid>
+          </Grid2>
         )}
-      </Grid>
+      </Grid2>
 
       <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: 1}}>
         <Button bttype="tertiary" onClick={resetFilters} startIcon={<RestartAlt />}>
