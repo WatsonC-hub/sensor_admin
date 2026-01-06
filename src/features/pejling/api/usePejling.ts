@@ -4,7 +4,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError, queryClient} from '~/queryClient';
+import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
@@ -79,9 +79,6 @@ export const usePejling = () => {
   const post = useMutation({
     ...pejlingPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Timeseries.pejling(ts_id!),
-      });
       toast.success('Pejling gemt');
     },
     meta: {

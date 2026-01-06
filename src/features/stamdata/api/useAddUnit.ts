@@ -1,9 +1,8 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useMutation} from '@tanstack/react-query';
 import {Dayjs} from 'dayjs';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {useAppContext} from '~/state/contexts';
 
 export interface Unit {
   terminal_type: string;
@@ -74,8 +73,6 @@ const unitPostOptions = {
 // };
 
 export const useUnit = () => {
-  const {ts_id} = useAppContext([], ['ts_id']);
-  const queryClient = useQueryClient();
   const get = useQuery({
     queryKey: queryKeys.AvailableUnits.all(),
     queryFn: async () => {
@@ -86,16 +83,9 @@ export const useUnit = () => {
   });
   const post = useMutation({
     ...unitPostOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.AvailableUnits.all(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['register', ts_id],
-      });
-    },
+    onSuccess: () => {},
     meta: {
-      invalidates: [['metadata']],
+      invalidates: [queryKeys.AvailableUnits.all(), ['udstyr']],
     },
   });
   // const put = useMutation({

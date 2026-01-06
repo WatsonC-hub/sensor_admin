@@ -18,17 +18,7 @@ export const queryKeys = {
         loc_id,
       ] as const,
     metadata: (loc_id: number | undefined) => ['location_metadata', 'metadata', loc_id] as const,
-    timeseries_status: (loc_id: number | undefined) =>
-      [
-        'timeseries_status',
-        'algorithms',
-        'removed_data',
-        'kontrol',
-        'udstyr',
-        'service_interval',
-        'certifyQa',
-        loc_id,
-      ] as const,
+    timeseries_status: (loc_id: number | undefined) => ['timeseries_status', loc_id] as const,
     contacts: (loc_id: number) => ['contact_info', loc_id] as const,
     searchContacts: (search: string) => ['search_contact_info', search] as const,
     keys: (loc_id: number) => ['location_access', loc_id] as const,
@@ -38,7 +28,7 @@ export const queryKeys = {
     permissions: (loc_id: number | undefined) =>
       ['location_permissions', 'tsList', loc_id] as const,
     minimalSelectList: (loc_id: number | undefined) =>
-      ['tsList', 'location_metadata', loc_id] as const,
+      ['tsList', 'location_metadata', 'metadata', loc_id] as const,
     SLAConfiguration: (loc_id: number | undefined) => ['sla_configuration', loc_id] as const,
   },
   Timeseries: {

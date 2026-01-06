@@ -97,21 +97,21 @@ export const useImageUpload = (endpoint: string, id: string | number) => {
   const post = useMutation({
     ...postImageMutationOptions(endpoint, id),
     meta: {
-      invalidates: [['register']],
+      invalidates: [['images']],
     },
   });
 
   const put = useMutation({
     ...putImageMutationOptions(endpoint, id),
     meta: {
-      invalidates: [['register']],
+      invalidates: [['images']],
     },
   });
 
   const del = useMutation({
     ...deleteImageMutationOptions(endpoint, id),
     meta: {
-      invalidates: [['register']],
+      invalidates: [['images']],
     },
   });
 

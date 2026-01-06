@@ -48,7 +48,7 @@ export const useYRangeMutations = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['qa_all']],
     },
   });
 
@@ -61,7 +61,7 @@ export const useYRangeMutations = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['qa_all']],
     },
   });
 
