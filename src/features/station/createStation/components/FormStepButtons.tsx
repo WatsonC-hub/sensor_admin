@@ -18,7 +18,10 @@ type Props = {
   onFormIsValid: () => Promise<boolean>;
 };
 
-type SubmitState = Omit<FormState, 'units'> & {
+type LocationWithLocId = {loc_id: number};
+
+type SubmitState = Omit<FormState, 'units' | 'location'> & {
+  location: FormState['location'] | LocationWithLocId;
   units: Array<{
     unit_uuid: string;
     startdate: Dayjs;
@@ -38,16 +41,13 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
 
   const stamdataNewMutation = useMutation({
     mutationFn: async (data: SubmitState) => {
-      const {data: out} = await apiClient.post(
-        `/sensor_field/stamdata/create_station/${meta?.loc_id ?? -1}`,
-        data
-      );
+      const {data: out} = await apiClient.post(`/sensor_field/stamdata/create_station`, data);
       return out;
     },
     onSuccess: (data) => {
       toast.success('Station oprettet succesfuldt!');
       locationNavigate(data.loc_id, true);
-      stationNavigate(data.ts_id);
+      if (data.ts_id && data.ts_id.length > 0) stationNavigate(data.ts_id[0]);
       if (showLocationRouter) setShowLocationRouter(false);
     },
     meta: {
@@ -124,6 +124,7 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
           if (!formState) return;
           const submitState: SubmitState = {
             ...formState,
+            location: meta?.loc_id ? {loc_id: meta.loc_id} : formState.location,
             units: formState.units
               ? formState.units.map((unit) => ({
                   unit_uuid: unit.unit_uuid,
