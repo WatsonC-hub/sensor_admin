@@ -9,6 +9,8 @@ import {useAtomValue} from 'jotai';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {isEmptyObject} from '~/helpers/guardHelper';
 import dayjs, {Dayjs} from 'dayjs';
+import {useUser} from '~/features/auth/useUser';
+import {Task} from '~/features/tasks/types';
 
 const searchValue = (value: any, search_string: string): boolean => {
   if (typeof value === 'string') {
@@ -34,49 +36,79 @@ const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string:
   if (search_string === '') return data;
   return data.filter((elem) => searchElement(elem, search_string));
 };
-/**
- * Filters the sensor data based on the provided filter criteria.
- * if keepLocationsWithoutNotifications is false it will hide locations without notifications - inactive locations included.
- */
-const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
-  const isNewInstallation =
-    data.not_serviced && data.inactive_new && !data.in_service && !data.has_task;
 
-  const isInactive = data.inactive_new && !data.not_serviced && !data.in_service;
-
-  if (filter.nyOpsætning) return isNewInstallation;
-  const customerServiceFilter = filter.showCustomerService === data.is_customer_service;
-  const watsoncServiceFilter =
-    filter.showWatsonCService === !data.is_customer_service || data.is_customer_service === null;
-
-  const serviceFilter =
-    (watsoncServiceFilter && customerServiceFilter) ||
-    (filter.showCustomerService && filter.showWatsonCService);
-
-  const hideSingleMeasurementsFilter =
-    data.in_service && data.inactive_new ? !filter.hideSingleMeasurements : true;
-
-  const activeFilter = isInactive
-    ? filter.showInactive ||
-      data.has_task ||
-      (data.notification_ids ? data.notification_ids.length > 0 : false)
-    : true;
-
-  const keepLocationsWithoutNotifications =
-    (!data.has_task || !data.due_date?.isBefore(dayjs().add(1, 'month'))) &&
-    !data.itinerary_id &&
-    data.flag === null &&
-    !data.not_serviced &&
-    !data.inactive_new
-      ? !filter.hideLocationsWithoutNotifications
-      : true;
-
+const filterSensor = (data: MapOverview, showService: Filter['showService']) => {
   return (
-    keepLocationsWithoutNotifications &&
-    activeFilter &&
-    serviceFilter &&
-    hideSingleMeasurementsFilter
+    showService === (data.is_customer_service ? 'kunde' : 'watsonc') || showService === 'begge'
   );
+};
+
+const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id: string) => {
+  const isFaultLess =
+    (elem.notification_ids === null || elem.notification_ids.length === 0) &&
+    !elem.has_task &&
+    !elem.itinerary_id &&
+    !elem.not_serviced &&
+    !elem.inactive_new;
+
+  const isInService = elem.in_service && elem.inactive_new;
+
+  // Der er opgaver som ikke har en dato. Det gør at lokationen ikke vises eftersom vi viser lokationer med due_date 1 måned frem.
+  const hasNotifications =
+    (elem.notification_ids && elem.notification_ids.length > 0 && !elem.has_task) ||
+    (elem.has_task && elem.due_date?.isBefore(dayjs().add(1, 'month'))) ||
+    elem.itinerary_id
+      ? true
+      : false;
+
+  // De Ovenstående opgaver vises dog under inaktive fordi lokationen er inaktiv.
+  const isInactive = elem.inactive_new && !elem.not_serviced && !elem.in_service;
+
+  const isNewInstallation =
+    elem.not_serviced && elem.inactive_new && !elem.in_service && !elem.has_task;
+
+  const filtered_tasks = tasks?.filter(
+    (task) => task.loc_id === elem.loc_id && elem.due_date?.isBefore(dayjs().add(1, 'month'))
+  );
+
+  const isAssignedToMe = filtered_tasks?.some(
+    (task) => task.assigned_to !== null && task.assigned_to === user_id
+  );
+
+  const not_handled_tasks = filtered_tasks?.some(
+    (task) =>
+      task.status_category === 'unstarted' &&
+      !task.blocks_notifications.includes(207) &&
+      !task.blocks_notifications.includes(1)
+  );
+
+  const not_handled_field_tasks = filtered_tasks?.some(
+    (task) =>
+      task.status_id === 2 &&
+      (task.blocks_notifications.includes(207) ||
+        task.blocks_notifications.includes(1) ||
+        task.blocks_notifications.length === 0)
+  );
+
+  const add_to_map = filter.locationFilter.some((filterName) => {
+    if (filterName === 'fejlfri' && isFaultLess) return true;
+    if (filterName === 'Tildelt til mig' && isAssignedToMe) return true;
+    if (filterName === 'Med notifikationer' && hasNotifications) return true;
+    if (filterName === 'I drift' && isInService) return true;
+    if (filterName === 'Nyopsætninger' && isNewInstallation) return true;
+    if (filterName === 'Inaktive' && isInactive) return true;
+    if (filterName === 'Uplanlagte opgaver' && not_handled_tasks && elem.itinerary_id === null)
+      return true;
+    if (
+      filterName === 'Uplanlagt feltarbejde' &&
+      not_handled_field_tasks &&
+      elem.itinerary_id === null
+    )
+      return true;
+    return false;
+  });
+
+  return add_to_map;
 };
 
 const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
@@ -95,16 +127,36 @@ const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
   return false;
 };
 
-const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => {
+const filterData = (
+  data: (MapOverview | BoreholeMapData)[],
+  filter: Filter,
+  user_id: number,
+  tasks: Array<Task> | undefined
+) => {
   let filteredData = data;
 
   filteredData = filteredData.filter((elem): elem is MapOverview =>
-    'loc_id' in elem ? filterSensor(elem, filter.sensor) : true
+    'loc_id' in elem ? filterSensor(elem, filter.showService) : true
   );
 
   filteredData = filteredData.filter((elem): elem is BoreholeMapData =>
     'boreholeno' in elem ? filterBorehole(elem, filter.borehole) : true
   );
+
+  filteredData = filteredData.filter((elem) => {
+    if ('loc_id' in elem) {
+      const extend_map_data = extendMapData(elem, filter, tasks ?? [], user_id.toString());
+
+      const filter_instead =
+        filter.groups.length > 0 ||
+        filter.projects.length > 0 ||
+        filter.notificationTypes.length > 0;
+
+      if (filter_instead) return true;
+
+      return extend_map_data;
+    }
+  });
 
   if (filter.notificationTypes?.length > 0) {
     filteredData = filteredData.filter((elem) => {
@@ -154,6 +206,7 @@ export const useFilteredMapData = () => {
   const {data: mapData} = useMapOverview({
     select: mapSelect,
   });
+  const {user_id} = useUser();
   const assignedToListFilter = useAtomValue(assignedToAtom);
   const {data: boreholeMapdata} = useBoreholeMap();
   const [extraData, setExtraData] = useState<MapOverview | BoreholeMapData | null>(null);
@@ -169,9 +222,14 @@ export const useFilteredMapData = () => {
   const {filters, locIds} = useMapFilterStore((state) => state);
 
   const mapFilteredData = useMemo(() => {
-    const filteredData = filterData(searchAcrossAll(data, filters.freeText ?? ''), filters);
+    const filteredData = filterData(
+      searchAcrossAll(data, filters.freeText ?? ''),
+      filters,
+      user_id,
+      tasks
+    );
     return [...filteredData, ...(extraData ? [extraData] : [])];
-  }, [data, filters, extraData]);
+  }, [data, filters, extraData, user_id]);
 
   const listFilteredData = useMemo(() => {
     let filteredList = mapFilteredData;

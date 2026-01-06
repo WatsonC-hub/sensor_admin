@@ -37,7 +37,6 @@ import {useUser} from '~/features/auth/useUser';
 import {toast} from 'react-toastify';
 import CaptureDialog from './CaptureDialog';
 import {useTasks} from '~/features/tasks/api/useTasks';
-import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const LogOut = ({children}: {children?: ReactNode}) => {

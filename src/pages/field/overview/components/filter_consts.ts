@@ -1,21 +1,26 @@
 import {Project} from '~/features/stamdata/api/useLocationProject';
 import type {Group, SimpleItinerary} from '~/types';
 
+export const locationFilterOptions = [
+  {name: 'fejlfri'},
+  {name: 'Tildelt til mig'},
+  {name: 'Med notifikationer'},
+  {name: 'I drift'},
+  {name: 'Inaktive'},
+  {name: 'Nyopsætninger'},
+  {name: 'Uplanlagte opgaver'},
+  {name: 'Uplanlagt feltarbejde'},
+];
+
 interface Filter {
   freeText?: string;
   borehole: {
     showHasControlProgram: boolean;
     showNoControlProgram: boolean;
   };
-  sensor: {
-    showInactive: boolean;
-    showCustomerService: boolean;
-    showWatsonCService: boolean;
-    hideLocationsWithoutNotifications: boolean;
-    hideSingleMeasurements?: boolean;
-    nyOpsætning: boolean;
-  };
+  showService: string;
   notificationTypes: number[];
+  locationFilter: string[];
   groups: Group[];
   itineraries: SimpleItinerary[];
   projects: Project[];
@@ -27,15 +32,14 @@ const defaultMapFilter = (superUser: boolean = false): Required<Filter> => ({
     showHasControlProgram: true,
     showNoControlProgram: true,
   },
-  sensor: {
-    showInactive: false,
-    showCustomerService: !superUser,
-    showWatsonCService: superUser,
-    hideLocationsWithoutNotifications: false,
-    hideSingleMeasurements: superUser,
-    nyOpsætning: false,
-  },
+  showService: superUser ? 'watsonc' : 'kunde',
   notificationTypes: [],
+  locationFilter: locationFilterOptions
+    .filter(
+      (option) =>
+        (superUser && option.name === 'Med notifikationer') || option.name === 'Nyopsætninger'
+    )
+    .map((option) => option.name),
   groups: [],
   itineraries: [],
   projects: [],
