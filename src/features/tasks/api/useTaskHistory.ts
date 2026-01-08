@@ -55,6 +55,9 @@ export const useTaskHistory = (task_id: string) => {
   });
   const addTaskComment = useMutation({
     ...taskCommentPostOptions,
+    meta: {
+      invalidates: [['tasks_history', task_id]],
+    },
   });
   const editTaskComment = useMutation({
     ...taskCommentPutOptions,
