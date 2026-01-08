@@ -1,12 +1,9 @@
 import {Warning} from '@mui/icons-material';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
-import {useMutation} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
-import {toast} from 'react-toastify';
 
-import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {useUser} from '~/features/auth/useUser';
@@ -25,6 +22,7 @@ import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
+import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
 import {useAppContext} from '~/state/contexts';
 
 const EditTimeseries = () => {
@@ -40,21 +38,7 @@ const EditTimeseries = () => {
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
 
-  const metadataEditTimeseriesMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const {data: out} = await apiClient.put(
-        `/sensor_field/stamdata/update_timeseries/${ts_id}`,
-        data
-      );
-      return out;
-    },
-    meta: {
-      invalidates: [['metadata']],
-    },
-    onSuccess: () => {
-      toast.success('metadata gemt');
-    },
-  });
+  const {updateTimeseries} = useUpdateTimeseries(ts_id);
 
   let schema;
 
@@ -101,7 +85,7 @@ const EditTimeseries = () => {
       const payload = {
         ...data,
       };
-      metadataEditTimeseriesMutation.mutate(payload);
+      updateTimeseries.mutate(payload);
     }
   };
 

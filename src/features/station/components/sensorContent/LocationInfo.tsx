@@ -131,7 +131,7 @@ const LocationInfo = () => {
           </Grid2>
         </Box>
       )}
-      {location_data?.ressources && location_data.ressources.length > 0 && (
+      {location_data?.ressources && location_data.ressources.length > 0 && superUser && (
         <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
           <Typography variant={'body2'} alignContent={'center'}>
             Huskeliste:

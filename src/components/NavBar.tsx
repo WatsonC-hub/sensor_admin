@@ -322,6 +322,8 @@ const OwnTaskList = () => {
     (task) => task.assigned_to === user.user_id.toString() && task.status_id !== 2
   );
 
+  const disabled = task_list == undefined || task_list.length === 0;
+
   return (
     <IconButton
       onClick={() => setOwnTaskList(!own_task_list)}
@@ -331,16 +333,21 @@ const OwnTaskList = () => {
           backgroundColor: 'primary.dark',
         },
       }}
+      disabled={disabled}
     >
       <Badge
         badgeContent={
-          <Typography variant="caption" color="white" pr={0.2}>
-            {task_list?.length}
-          </Typography>
+          task_list && task_list.length > 0 ? (
+            <Typography variant="caption" color="white" pr={0.2}>
+              {task_list.length}
+            </Typography>
+          ) : null
         }
         color="secondary"
       >
-        <Notifications sx={{color: own_task_list ? 'secondary.main' : 'white'}} />
+        <Notifications
+          sx={{color: own_task_list ? 'secondary.main' : disabled ? 'inherit' : 'white'}}
+        />
       </Badge>
     </IconButton>
   );
