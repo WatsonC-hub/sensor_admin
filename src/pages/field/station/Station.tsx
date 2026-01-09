@@ -121,7 +121,7 @@ export default function Station() {
               </StationPageBoxLayout>
             </>
           )}
-        {pageToShow === stationPages.ALARM && superUser && (
+        {pageToShow === stationPages.ALARM && (
           <>
             <Box key={`graph-${ts_id}`}>
               <GraphManager
