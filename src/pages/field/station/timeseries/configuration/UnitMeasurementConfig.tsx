@@ -265,6 +265,7 @@ const UnitMeasurementConfig = () => {
             ts_id={ts_id}
             progressKey="samplesend"
             disabled={disabled}
+            title="Aktuelle forholde OK"
           />
           <Button bttype="tertiary" onClick={() => reset()} disabled={isSubmitting || disabled}>
             Annuller

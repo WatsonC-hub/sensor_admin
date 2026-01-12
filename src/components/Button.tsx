@@ -3,24 +3,28 @@ import MuiButton from '@mui/material/Button';
 import {merge} from 'lodash';
 
 interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
-  bttype: 'primary' | 'secondary' | 'tertiary' | 'link' | 'itinerary' | 'danger';
+  bttype: 'primary' | 'secondary' | 'tertiary' | 'link' | 'itinerary' | 'danger' | 'progress';
   children: React.ReactNode;
   target?: string;
 }
 
 const Button = ({bttype, children, ...props}: MyButtonProps) => {
+  const baseSx = {
+    textTransform: 'initial',
+    my: 0.5,
+    p: '0.5rem 1rem',
+    borderRadius: 9999,
+    '&:hover': {
+      filter: 'brightness(90%)',
+      transition: '0.3s',
+    },
+  };
   let sx = {};
   if (bttype === 'primary') {
     sx = {
-      textTransform: 'initial',
-      my: 0.5,
-      p: '0.5rem 1rem',
-      borderRadius: 9999,
+      ...baseSx,
       backgroundColor: 'primary.main',
       color: 'white',
-      '&:hover': {
-        backgroundColor: 'primary.dark',
-      },
       '&:disabled': {
         backgroundColor: 'grey.200',
       },
@@ -29,25 +33,15 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
 
   if (bttype === 'tertiary') {
     sx = {
-      textTransform: 'initial',
-      my: 0.5,
-      p: '0.5rem 1rem',
-      borderRadius: 9999,
+      ...baseSx,
       backgroundColor: '#ffffff',
       borderColor: '#cacaca',
-      '&:hover': {
-        filter: 'brightness(90%)',
-        transition: '0.3s',
-      },
     };
   }
 
   if (bttype === 'itinerary') {
     sx = {
-      textTransform: 'initial',
-      my: 0.5,
-      p: '0.25rem 1rem',
-      borderRadius: 9999,
+      ...baseSx,
       backgroundColor: 'white',
       '&:disabled': {
         backgroundColor: 'grey.200',
@@ -55,18 +49,20 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
     };
   }
 
+  if (bttype === 'progress') {
+    sx = {
+      ...baseSx,
+      backgroundColor: 'info.main',
+      color: 'white',
+    };
+  }
+
   if (bttype === 'danger') {
     sx = {
-      textTransform: 'initial',
-      my: 0.5,
-      p: '0.5rem 1rem',
-      borderRadius: 9999,
+      ...baseSx,
       backgroundColor: '#d32f2f',
       borderColor: '#d32f2f',
       color: 'white',
-      '&:hover': {
-        backgroundColor: '#d32f2f',
-      },
       '&:disabled': {
         backgroundColor: 'grey.200',
       },
