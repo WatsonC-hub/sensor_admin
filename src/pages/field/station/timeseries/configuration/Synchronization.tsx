@@ -1,6 +1,5 @@
 import React from 'react';
 import useSync from '~/features/station/components/stamdata/dmpSynkronisering/api/useSync';
-import {useTimeseriesData, useLocationData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
 import {Box} from '@mui/material';
 import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';

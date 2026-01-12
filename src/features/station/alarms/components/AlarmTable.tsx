@@ -91,7 +91,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
           >
             {alarmNotification.length > 0 && (
               <Box>
-                <Typography variant="body2" fontWeight={'bold'} height={34} alignContent={'center'}>
+                <Typography variant="body2" fontWeight={'bold'} alignContent={'center'}>
                   Notifikationer
                 </Typography>
                 <AlarmNotificationTable alarm_notifications={alarmNotification} />
