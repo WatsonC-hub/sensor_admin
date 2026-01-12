@@ -1,16 +1,13 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useQuery} from '@tanstack/react-query';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import useSync from '~/features/station/components/stamdata/dmpSynkronisering/api/useSync';
-import {useTimeseriesData, useLocationData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
 import {Box, Grid2} from '@mui/material';
 import {createTypedForm} from '~/components/formComponents/Form';
-import {useUser} from '~/features/auth/useUser';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import useDmpAllowedMapList from '~/features/station/api/useDmpAllowedMapList';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 
 const SyncSchema = z
@@ -38,24 +35,13 @@ type SyncFormValues = z.infer<typeof SyncSchema>;
 const Form = createTypedForm<SyncFormValues>();
 
 type SynchronizationProps = {
-  setCanSync: (value: boolean) => void; // Placeholder until sync logic is implemented
+  canSyncJupiter?: boolean;
+  isDmpAllowed?: boolean;
+  disabled?: boolean;
 };
 
-const Synchronization = ({setCanSync}: SynchronizationProps) => {
-  const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
-  const {data: metadata} = useTimeseriesData(ts_id);
-  const {data: location_data} = useLocationData(loc_id);
-  const user = useUser();
-
-  const isJupiterType = [1, 11, 12, 16].includes(metadata?.tstype_id || 0);
-  const isBorehole = location_data?.loctype_id === 9;
-
-  const isDmpAllowed = useDmpAllowedMapList(ts_id);
-  const canSyncJupiter = isBorehole && isJupiterType;
-
-  const disabled =
-    (user.superUser && metadata?.is_customer_service) ||
-    (!user.superUser && !metadata?.is_customer_service);
+const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: SynchronizationProps) => {
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
 
   const {
     get: {data: sync_data},
@@ -128,12 +114,6 @@ const Synchronization = ({setCanSync}: SynchronizationProps) => {
       deleteSync.mutate({path: ts_id.toString()});
     }
   };
-
-  useEffect(() => {
-    if (metadata && location_data && user && isDmpAllowed !== null) {
-      setCanSync(!!(isDmpAllowed || canSyncJupiter));
-    }
-  }, [isDmpAllowed, canSyncJupiter, metadata, location_data, user, setCanSync]);
 
   return (
     <Box display={'flex'} flexDirection="column">

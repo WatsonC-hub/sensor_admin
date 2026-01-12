@@ -35,7 +35,12 @@ import BackpackIcon from '@mui/icons-material/Backpack';
 import KeyIcon from '@mui/icons-material/Key';
 import {drawerOpenAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {metadataQueryOptions, useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
+import {
+  Metadata,
+  metadataQueryOptions,
+  useLocationData,
+  useTimeseriesData,
+} from '~/hooks/query/useMetadata';
 import {useUser} from '~/features/auth/useUser';
 import {UseQueryOptions} from '@tanstack/react-query';
 import {queryClient} from '~/queryClient';
@@ -164,7 +169,7 @@ const StationDrawer = () => {
           page: stationPages.GENERELTIDSSERIE,
           requiredTsId: true,
           disabled: !metadata?.ts_id,
-          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+          onHover: () => handlePrefetch(metadataQueryOptions<Metadata>(ts_id)),
         },
       ],
       items: [
@@ -208,7 +213,7 @@ const StationDrawer = () => {
           icon: <Router />,
           requiredTsId: true,
           disabled: metadata?.calculated,
-          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+          onHover: () => handlePrefetch(metadataQueryOptions<Metadata>(ts_id)),
           progress: progress?.unit == false ? 0 : undefined,
         },
         {
@@ -267,7 +272,7 @@ const StationDrawer = () => {
           page: stationPages.GENERELTLOKATION,
           icon: <Edit />,
           requiredTsId: false,
-          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+          onHover: () => handlePrefetch(metadataQueryOptions<Metadata>(ts_id)),
         },
       ],
       items: [

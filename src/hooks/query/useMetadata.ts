@@ -1,12 +1,11 @@
-import {useQuery, queryOptions} from '@tanstack/react-query';
+import {useQuery, queryOptions, UseQueryOptions} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {Group} from '~/types';
 
-type Metadata = {
+export type Metadata = {
   loc_id: number;
   loc_name: string;
   mainloc: string;
@@ -68,9 +67,16 @@ type LocationMetadata = {
     timeseries_calypso_id?: number | null;
   }>;
 };
+//
+type MetadataQueryOptions<T> = Partial<
+  Omit<UseQueryOptions<Metadata, Error, T>, 'queryKey' | 'queryFn'>
+>;
 
-export const metadataQueryOptions = (ts_id?: number) => {
-  return queryOptions<Metadata, APIError>({
+export const metadataQueryOptions = <T extends Partial<Metadata>>(
+  ts_id?: number,
+  options?: MetadataQueryOptions<T>
+) => {
+  return queryOptions({
     queryKey: queryKeys.Timeseries.metadata(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/metadata/${ts_id}`);
@@ -79,6 +85,8 @@ export const metadataQueryOptions = (ts_id?: number) => {
     enabled: ts_id !== undefined,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 1, // 1 minute
+    ...options,
+    select: options?.select as (data: Metadata) => T,
   });
 };
 

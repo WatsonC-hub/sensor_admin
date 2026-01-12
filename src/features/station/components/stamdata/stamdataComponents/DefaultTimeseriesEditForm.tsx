@@ -4,7 +4,6 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import {useAppContext} from '~/state/contexts';
 import StamdataTimeseries from '../StamdataTimeseries';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import FormFieldset from '~/components/formComponents/FormFieldset';
 
 type Props = {
   size: number;
@@ -36,13 +35,6 @@ const DefaultTimeseriesEditForm = ({size, loc_name}: Props) => {
           <StamdataTimeseries.ScanCalypsoLabel />
         </Grid2>
       )}
-      {metadata?.calculated && <Grid2 size={size}></Grid2>}
-      <Grid2 size={size} display={'flex'} flexDirection={'column'} alignContent={'center'} gap={1}>
-        <FormFieldset label="Tilgængelighed">
-          <StamdataTimeseries.RequiresAuth />
-          <StamdataTimeseries.HidePublic />
-        </FormFieldset>
-      </Grid2>
     </Grid2>
   );
 };
