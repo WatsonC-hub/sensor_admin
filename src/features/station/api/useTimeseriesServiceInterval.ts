@@ -9,6 +9,7 @@ type ServiceConfiguration = {
   controlsPerYear: number | null;
   isCustomerService: boolean | null;
   leadTime: number | null;
+  from_unit: boolean;
   // forvarselstid
 };
 
