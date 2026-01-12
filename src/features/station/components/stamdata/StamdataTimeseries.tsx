@@ -154,33 +154,8 @@ const Prefix = ({loc_name, formPrefix, ...props}: PrefixProps) => {
           ),
         },
       }}
-      placeholder="Et genkendeligt navn for tidsserien..."
+      placeholder="Evt. supplerende beskrivelse..."
       fullWidth
-      {...props}
-    />
-  );
-};
-
-const SensorDepth = (
-  props: Omit<
-    FormInputProps<
-      DefaultAddTimeseries | DefaultEditTimeseries | BoreholeAddTimeseries | BoreholeEditTimeseries
-    >,
-    'name'
-  >
-) => {
-  return (
-    <FormInput
-      type="number"
-      label="Evt. loggerdybde under målepunkt"
-      name="sensor_depth_m"
-      disabled={props.disabled}
-      fullWidth
-      slotProps={{
-        input: {
-          endAdornment: <InputAdornment position="start">m</InputAdornment>,
-        },
-      }}
       {...props}
     />
   );
@@ -312,7 +287,6 @@ const TimeseriesID = () => {
 StamdataTimeseries.TypeSelect = TypeSelect;
 StamdataTimeseries.TimeriesTypeField = TimeseriesTypeField;
 StamdataTimeseries.Prefix = Prefix;
-StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;
 StamdataTimeseries.ScanCalypsoLabel = ScanCalypsoLabel;
 StamdataTimeseries.TimeseriesID = TimeseriesID;

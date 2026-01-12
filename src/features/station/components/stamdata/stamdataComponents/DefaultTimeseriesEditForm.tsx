@@ -23,11 +23,6 @@ const DefaultTimeseriesEditForm = ({size, loc_name}: Props) => {
       <Grid2 size={size}>
         <StamdataTimeseries.TimeriesTypeField tstype_id={metadata?.tstype_id} />
       </Grid2>
-      {!metadata?.calculated && (
-        <Grid2 size={size}>
-          <StamdataTimeseries.SensorDepth disabled={disabled} />
-        </Grid2>
-      )}
       <Grid2 size={size} alignContent={'center'}>
         <StamdataTimeseries.TimeseriesID />
       </Grid2>

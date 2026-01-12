@@ -7,6 +7,7 @@ import {FieldError, Noop} from 'react-hook-form';
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
 import useLocationProject, {Project} from '../../api/useLocationProject';
+import {AddCircle} from '@mui/icons-material';
 
 interface LocationProjectsProps {
   value: string | undefined | null;
@@ -14,6 +15,7 @@ interface LocationProjectsProps {
   onBlur: Noop;
   error: FieldError | undefined;
   disable?: boolean;
+  loc_id?: number | undefined;
 }
 
 const getLabel = (project: Project | null) => {
@@ -21,7 +23,14 @@ const getLabel = (project: Project | null) => {
   return `${project.project_no} ${project.customer_name ? ' - ' + project.customer_name : ''} ${project.project_info ? ' - ' + project.project_info : ''}`;
 };
 
-const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationProjectsProps) => {
+const LocationProjects = ({
+  value,
+  setValue,
+  error,
+  onBlur,
+  disable,
+  loc_id,
+}: LocationProjectsProps) => {
   const {
     get: {data: options},
   } = useLocationProject();
@@ -73,7 +82,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
                         rel="noopener"
                         sx={{textTransform: 'none'}}
                       >
-                        <OpenInNewIcon />
+                        {loc_id ? <OpenInNewIcon /> : <AddCircle />}
                       </Button>
                       {params.InputProps.endAdornment}
                     </>
