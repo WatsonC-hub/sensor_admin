@@ -7,6 +7,7 @@ const controlSettingsSchema = z.object({
   lead_time: z.number().nullable(),
   dummy: z.number().nullish().optional(),
   selectValue: z.number().default(1),
+  from_unit: z.boolean().optional(),
 });
 
 const controlSettingsArraySchema = z.array(controlSettingsSchema);

@@ -28,6 +28,7 @@ const AdditionalStep = () => {
       selectValue: 1,
       dummy: null,
       lead_time: null,
+      from_unit: false,
     },
     mode: 'add',
   });
