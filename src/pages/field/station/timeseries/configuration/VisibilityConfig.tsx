@@ -47,7 +47,7 @@ const VisibilityConfig = ({ts_id}: VisibilityConfigProps) => {
   return (
     <Box>
       <Form useGrid={false} formMethods={methods}>
-        <Form.Checkbox name="requires_auth" label="Krav om godkendelse for adgang" />
+        <Form.Checkbox name="requires_auth" label="Data tilgængelighed kræver login" />
         <Form.Checkbox name="hide_public" label="Skjul i offentlige visninger" />
         <Box display="flex" justifyContent="flex-end" gap={1}>
           <Form.Cancel
