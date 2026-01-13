@@ -20,7 +20,7 @@ const Huskeliste = () => {
     relation: {data: related},
   } = useRessourcer();
 
-  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {loc_id} = useAppContext(['loc_id']);
   const {location_permissions} = usePermissions(loc_id);
 
   const schema = ressourcer;
@@ -56,7 +56,7 @@ const Huskeliste = () => {
         />
       </FormProvider>
       <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
-        <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="ressourcer" />
+        <UpdateProgressButton loc_id={loc_id} ts_id={-1} progressKey="ressourcer" alterStyle />
       </Box>
     </StationPageBoxLayout>
   );

@@ -12,8 +12,8 @@ export type ProgressStatus = {
   kontrolhyppighed: boolean;
   alarm: boolean;
   samplesend: boolean;
-  unit: boolean;
   sla: boolean;
+  visibility: boolean;
 };
 
 const getQueryOptions = (loc_id: number | undefined, ts_id?: number) =>

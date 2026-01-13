@@ -12,6 +12,7 @@ import {
   useLocationSLAConfigurationMutation,
 } from '~/features/station/api/useLocationSLAConfiguration';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
@@ -28,11 +29,12 @@ type SLAForm = {
 type SLASubmit = z.infer<typeof SLASchema>;
 
 const SLAConfiguration = () => {
-  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {loc_id} = useAppContext(['loc_id']);
   const {superUser} = useUser();
   const {data: values, isPending} = useLocationSLAConfiguration(loc_id);
   const {mutate} = useLocationSLAConfigurationMutation(loc_id);
   const {isMobile} = useBreakpoints();
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'sla', -1);
 
   const formMethods = useForm<SLAForm, unknown, SLASubmit>({
     resolver: zodResolver(SLASchema),
@@ -79,11 +81,17 @@ const SLAConfiguration = () => {
       </Box>
 
       <Box display="flex" justifyContent="flex-end" gap={1}>
-        <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="sla" />
+        <UpdateProgressButton loc_id={loc_id} ts_id={-1} progressKey="sla" />
         <Button
           bttype="primary"
           disabled={isSubmitting || !isDirty}
-          onClick={handleSubmit((data) => mutate(data))}
+          onClick={handleSubmit((data) =>
+            mutate(data, {
+              onSuccess: () => {
+                if (needsProgress) hasAssessed();
+              },
+            })
+          )}
           startIcon={<Save />}
         >
           Gem

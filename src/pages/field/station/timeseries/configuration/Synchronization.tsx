@@ -9,6 +9,7 @@ import {Box, Grid2} from '@mui/material';
 import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 
 const SyncSchema = z
   .object({
@@ -82,6 +83,8 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
     },
   });
 
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'sync', ts_id);
+
   const {
     reset: resetSync,
     watch,
@@ -108,7 +111,11 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
       },
     };
 
-    postSync.mutate(syncPayload);
+    postSync.mutate(syncPayload, {
+      onSuccess: () => {
+        if (needsProgress) hasAssessed();
+      },
+    });
 
     if (data.sync_dmp == false && dirtyFields.sync_dmp !== undefined) {
       deleteSync.mutate({path: ts_id.toString()});

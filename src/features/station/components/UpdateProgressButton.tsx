@@ -1,3 +1,4 @@
+import {Typography} from '@mui/material';
 import React from 'react';
 import Button from '~/components/Button';
 import {ProgressStatus, useStationProgress} from '~/hooks/query/stationProgress';
@@ -8,16 +9,22 @@ type Props = {
   ts_id?: number;
   disabled?: boolean;
   title?: string;
+  alterStyle?: boolean;
 };
 
-const UpdateProgressButton = ({progressKey, loc_id, ts_id, disabled, title}: Props) => {
+const UpdateProgressButton = ({progressKey, loc_id, ts_id, disabled, title, alterStyle}: Props) => {
   const {needsProgress, hasAssessed} = useStationProgress(loc_id, progressKey, ts_id);
 
   return (
     <>
       {needsProgress ? (
-        <Button bttype="progress" onClick={hasAssessed} disabled={disabled}>
-          {title || 'Ikke relevant'}
+        <Button
+          bttype="progress"
+          onClick={hasAssessed}
+          disabled={disabled}
+          sx={{...(alterStyle ? {height: 56, borderRadius: 4.5} : {})}}
+        >
+          <Typography>{title || 'Ikke relevant'}</Typography>
         </Button>
       ) : null}
     </>

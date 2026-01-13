@@ -62,7 +62,7 @@ const Configuration = ({ts_id}: ConfigurationProps) => {
         <Typography variant="h6" gutterBottom>
           Tilgængelighed
         </Typography>
-        <VisibilityConfig ts_id={ts_id} />
+        <VisibilityConfig loc_id={loc_id} ts_id={ts_id} />
       </Layout>
     </>
   );

@@ -113,10 +113,11 @@ const StationDrawer = () => {
   const configurationProgress = progress
     ? (progress.kontrolhyppighed === false ? 0 : 1) +
       ((!isDmpAllowed && metadata?.loctype_id !== 9) || progress.sync === false ? 0 : 1) +
-      (progress.samplesend === false ? 0 : 1)
+      (progress.samplesend === false ? 0 : 1) +
+      (progress.visibility === false ? 0 : 1)
     : undefined;
 
-  let maxConfigurationProgress = 1;
+  let maxConfigurationProgress = 2;
 
   maxConfigurationProgress =
     isDmpAllowed ||
@@ -214,7 +215,6 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.calculated,
           onHover: () => handlePrefetch(metadataQueryOptions<Metadata>(ts_id)),
-          progress: progress?.unit == false ? 0 : undefined,
         },
         {
           text: 'Juster data',

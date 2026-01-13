@@ -26,11 +26,11 @@ const Alarms = ({ts_id, loc_id}: AlarmsProps) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap={2} mt={-2}>
+    <Box display="flex" flexDirection="column">
       <AlarmFormDialog open={open} onClose={cancel} setOpen={setOpen} />
       <AlarmTable alarms={alarms} />
-      <Box display="flex" justifyContent="flex-end" gap={1}>
-        <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="alarm" />
+      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+        <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="alarm" alterStyle />
         <FabWrapper
           icon={<MoreTimeIcon />}
           text="Tilføj Alarm"

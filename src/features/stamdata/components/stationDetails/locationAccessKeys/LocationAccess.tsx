@@ -20,6 +20,7 @@ import {
 } from '~/features/stamdata/components/stationDetails/zodSchemas';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 import {useAppContext} from '~/state/contexts';
 import {Access, AccessTable} from '~/types';
 
@@ -27,7 +28,7 @@ const LocationAccess = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [createNew, setCreateNew] = useState<boolean>(false);
-
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'adgangsforhold', ts_id);
   const {
     features: {keys: accessKeys},
   } = useUser();
@@ -73,6 +74,7 @@ const LocationAccess = () => {
         reset();
         setOpenDialog(false);
         setCreateNew(false);
+        if (needsProgress) hasAssessed();
       },
     });
   };
@@ -147,17 +149,22 @@ const LocationAccess = () => {
             </Dialog>
           )}
         </FormProvider>
+        <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+          <UpdateProgressButton
+            loc_id={loc_id}
+            ts_id={-1}
+            progressKey="adgangsforhold"
+            alterStyle
+          />
+          <FabWrapper
+            icon={<KeyIcon />}
+            text="Tilføj nøgle eller kode"
+            disabled={!accessKeys || disabled}
+            onClick={() => setOpenDialog(true)}
+            sx={{visibility: openDialog ? 'hidden' : 'visible', ml: 0}}
+          />
+        </Box>
       </StationPageBoxLayout>
-      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
-        <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="adgangsforhold" />
-        <FabWrapper
-          icon={<KeyIcon />}
-          text="Tilføj nøgle eller kode"
-          disabled={!accessKeys || disabled}
-          onClick={() => setOpenDialog(true)}
-          sx={{visibility: openDialog ? 'hidden' : 'visible', ml: 0}}
-        />
-      </Box>
     </>
   );
 };

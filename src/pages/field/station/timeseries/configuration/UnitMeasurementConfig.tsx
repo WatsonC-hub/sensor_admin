@@ -21,6 +21,7 @@ import {useUser} from '~/features/auth/useUser';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import dayjs from 'dayjs';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
@@ -69,6 +70,8 @@ const UnitMeasurementConfig = () => {
   const {isMobile} = useBreakpoints();
   const {superUser} = useUser();
   const values = data?.savedConfig ? data.savedConfig : undefined;
+
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'samplesend', ts_id);
 
   const formMethods = useForm<ConfigForm, unknown, ConfigSubmit>({
     resolver: zodResolver(ConfigurationSchema),
@@ -186,7 +189,13 @@ const UnitMeasurementConfig = () => {
       <ConfigAlert
         status={data?.configState || null}
         timeseriesStatus={data?.currentPendingTimeseries || null}
-        handleResend={handleSubmit((data) => mutate(data))}
+        handleResend={handleSubmit((data) =>
+          mutate(data, {
+            onSuccess: () => {
+              if (needsProgress) hasAssessed();
+            },
+          })
+        )}
       />
       <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} mb={-3}>
         <FormInput
@@ -273,7 +282,13 @@ const UnitMeasurementConfig = () => {
           <Button
             bttype="primary"
             disabled={isSubmitting || !data?.configPossible || !isDirty}
-            onClick={handleSubmit((data) => mutate(data))}
+            onClick={handleSubmit((data) =>
+              mutate(data, {
+                onSuccess: () => {
+                  if (needsProgress) hasAssessed();
+                },
+              })
+            )}
             startIcon={<Save />}
           >
             Gem

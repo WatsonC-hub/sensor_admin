@@ -14,6 +14,7 @@ import {z} from 'zod';
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 
 const yearlyControlsSchema = z.object({
   controls_per_year: z.number({required_error: 'Kontrol interval er påkrævet'}).nullable(),
@@ -44,6 +45,8 @@ const YearlyControlsConfig = () => {
 
   const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
   const {isMobile} = useBreakpoints();
+
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'kontrolhyppighed', ts_id);
 
   const disabled =
     (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser);
@@ -82,7 +85,10 @@ const YearlyControlsConfig = () => {
         lead_time: data.lead_time,
       },
       {
-        onSuccess: () => reset(),
+        onSuccess: () => {
+          reset();
+          if (needsProgress) hasAssessed();
+        },
       }
     );
   };
