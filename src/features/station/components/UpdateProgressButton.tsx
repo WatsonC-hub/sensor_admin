@@ -24,7 +24,11 @@ const UpdateProgressButton = ({progressKey, loc_id, ts_id, disabled, title, alte
           disabled={disabled}
           sx={{...(alterStyle ? {height: 56, borderRadius: 4.5} : {})}}
         >
-          <Typography>{title || 'Ikke relevant'}</Typography>
+          {alterStyle ? (
+            <Typography>{title || 'Ikke relevant'}</Typography>
+          ) : (
+            title || 'Ikke relevant'
+          )}
         </Button>
       ) : null}
     </>
