@@ -11,7 +11,7 @@ type Props = {
   children?: React.ReactNode;
 };
 
-type MetaType = {
+export type MetaType = {
   tstype_id?: Array<number>;
   loctype_id?: number;
   loc_id?: number;
@@ -49,8 +49,8 @@ type TimeseriesData = {
   sensor_depth_m?: number | null | undefined;
   calypso_id?: number | undefined;
   intakeno?: number | null | undefined;
-  sensor_id?: string;
   unit_uuid?: string;
+  control_settings?: any;
 };
 
 export type FormState = {
@@ -83,7 +83,8 @@ type CreateStationContextType = {
       | 'contacts'
       | 'location_access'
       | 'ressources',
-    data: any
+    data: any,
+    index?: number
   ) => void;
 };
 
@@ -116,9 +117,19 @@ const CreateStationContextProvider = ({children}: Props) => {
       | 'contacts'
       | 'location_access'
       | 'ressources',
-    data: FormState[keyof FormState]
+    data: FormState[keyof FormState],
+    index?: number
   ) => {
     if (data) {
+      if (key === 'control_settings' && index !== undefined) {
+        setFormState((prev: FormState) => {
+          const timeseries = prev.timeseries ? [...prev.timeseries] : [];
+          timeseries[index].control_settings = data;
+          return {...prev, timeseries};
+        });
+        return;
+      }
+
       setFormState((prev: FormState) => ({...prev, [key]: data}));
     }
   };

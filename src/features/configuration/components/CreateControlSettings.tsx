@@ -1,20 +1,28 @@
-import {Grid2, Grid2Props} from '@mui/material';
+import {Grid2} from '@mui/material';
 import React from 'react';
+import {FormInputProps} from '~/components/FormInput';
 import ControlSettings from '~/features/configuration/components/ControlSettings';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {ControlSettingsFormValues} from '../api/useControlSettingsForm';
 
-const CreateControlSettings = () => {
+type Props = {
+  slotProps?: {
+    controlFrequency?: Omit<FormInputProps<ControlSettingsFormValues>, 'name'>;
+    leadTime?: Omit<FormInputProps<ControlSettingsFormValues>, 'name'>;
+  };
+};
+
+const CreateControlSettings = ({slotProps}: Props) => {
   const {isMobile} = useBreakpoints();
-  const size: Grid2Props['size'] = isMobile ? 12 : 3;
   return (
-    <Grid2 container spacing={2}>
-      <Grid2 size={size}>
-        <ControlSettings.ControlFrequency />
+    <>
+      <Grid2 size={isMobile ? 12 : 3}>
+        <ControlSettings.ControlFrequency {...slotProps?.controlFrequency} />
       </Grid2>
-      <Grid2 size={size}>
-        <ControlSettings.LeadTime />
+      <Grid2 size={isMobile ? 12 : 3}>
+        <ControlSettings.LeadTime {...slotProps?.leadTime} />
       </Grid2>
-    </Grid2>
+    </>
   );
 };
 
