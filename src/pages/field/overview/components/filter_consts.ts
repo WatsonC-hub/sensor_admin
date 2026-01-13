@@ -36,7 +36,13 @@ const defaultMapFilter = (superUser: boolean = false): Required<Filter> => ({
   notificationTypes: [],
   locationFilter: locationFilterOptions
     .filter(
-      (option) => (superUser && option.name === 'Notifikationer') || option.name === 'Nyopsætninger'
+      (option) =>
+        (superUser && (option.name === 'Notifikationer' || option.name === 'Nyopsætninger')) ||
+        (!superUser &&
+          (option.name === 'fejlfri' ||
+            option.name === 'Enkeltmålestationer' ||
+            option.name === 'Notifikationer' ||
+            option.name === 'Nyopsætninger'))
     )
     .map((option) => option.name),
   groups: [],
