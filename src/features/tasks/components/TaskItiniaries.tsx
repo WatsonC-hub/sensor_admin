@@ -18,11 +18,12 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/da';
 import CreateItineraryDialog from './CreateItineraryDialog';
 import Button from '~/components/Button';
-import {useMapFilterStore} from '~/features/map/store';
 import {FlagEnum, ItineraryColors, sensorColors} from '~/features/notifications/consts';
 import {useUser} from '~/features/auth/useUser';
 import {Edit, ExpandLess, ExpandMore, Person} from '@mui/icons-material';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {useAtom} from 'jotai';
+import {highlightedItinerariesAtom} from '~/state/atoms';
 
 const selectData = (data: Taskitinerary[], user_id: number | undefined) => {
   const reduced = data.reduce(
@@ -86,9 +87,9 @@ const TaskItiniaries = () => {
   });
 
   const [openItineraryDialog, setOpenItineraryDialog] = useState<string | undefined>(undefined);
-  const [filters, setFilters] = useMapFilterStore((state) => [state.filters, state.setFilters]);
   const [expandItinerary, setExpandItinerary] = useState<Record<string, boolean>>({});
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const [highlightedItineraries, setHighlightedItineraries] = useAtom(highlightedItinerariesAtom);
   const [itinerary_id, setItineraryId, setLocId] = useDisplayState((state) => [
     state.itinerary_id,
     state.setItineraryId,
@@ -157,8 +158,8 @@ const TaskItiniaries = () => {
 
                     let color = undefined;
 
-                    if (filters?.itineraries?.map((SI) => SI.id).includes(itinerary.id)) {
-                      const index = filters.itineraries.findIndex((SI) => SI.id === itinerary.id);
+                    if (highlightedItineraries.includes(itinerary.id)) {
+                      const index = highlightedItineraries.findIndex((id) => id === itinerary.id);
                       color = ItineraryColors[index];
                     }
 
@@ -356,39 +357,19 @@ const TaskItiniaries = () => {
                                   <IconButton
                                     sx={{p: 0}}
                                     onClick={() => {
-                                      if (
-                                        filters?.itineraries
-                                          ?.map((SI) => SI.id)
-                                          .includes(itinerary.id)
-                                      ) {
-                                        setFilters({
-                                          ...filters,
-                                          itineraries: filters.itineraries.filter(
-                                            (SI) => SI.id !== itinerary.id
-                                          ),
-                                        });
+                                      if (highlightedItineraries.includes(itinerary.id)) {
+                                        setHighlightedItineraries((prev) =>
+                                          prev.filter((id) => id !== itinerary.id)
+                                        );
                                       } else {
-                                        setFilters({
-                                          ...filters,
-                                          itineraries: [
-                                            ...(filters.itineraries ?? []),
-                                            {
-                                              name: itinerary.name,
-                                              id: itinerary.id,
-                                              assigned_to_name:
-                                                users?.find(
-                                                  (user) => user.id === itinerary.assigned_to
-                                                )?.display_name ?? '',
-                                              due_date: itinerary.due_date ?? '',
-                                            },
-                                          ],
-                                        });
+                                        setHighlightedItineraries((prev) => [
+                                          ...prev,
+                                          itinerary.id,
+                                        ]);
                                       }
                                     }}
                                   >
-                                    {filters?.itineraries
-                                      ?.map((SI) => SI.id)
-                                      .includes(itinerary.id) ? (
+                                    {highlightedItineraries.includes(itinerary.id) ? (
                                       <VisibilityOffIcon sx={{color: 'white'}} fontSize="small" />
                                     ) : (
                                       <VisibilityIcon sx={{color: 'white'}} fontSize="small" />

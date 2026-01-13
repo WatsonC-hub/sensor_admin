@@ -1,0 +1,111 @@
+import {Autocomplete, Checkbox, Chip, FormControlLabel, TextField, Typography} from '@mui/material';
+import React, {useEffect} from 'react';
+import {Noop} from 'react-hook-form';
+import {locationFilterOptions} from './filter_consts';
+
+type Props = {
+  value: Array<string> | undefined | null;
+  setValue: (value: Array<string>) => void;
+  onBlur?: Noop;
+  label?: string;
+  disabled?: boolean;
+};
+
+const LocationFilter = ({value, setValue, onBlur, label, disabled}: Props) => {
+  useEffect(() => {
+    if (value && value.length > 1 && value.includes('Alle')) {
+      setValue(value.filter((item) => item == 'Alle'));
+    }
+  }, [value, setValue]);
+
+  return (
+    <Autocomplete
+      sx={{
+        marginTop: '8px',
+        marginBottom: '4px',
+        pb: 1.5,
+      }}
+      disabled={disabled}
+      freeSolo
+      forcePopupIcon={false}
+      multiple
+      fullWidth
+      value={locationFilterOptions.filter((item) => value?.includes(item.name)) ?? []}
+      autoHighlight={true}
+      onChange={(event, newValue) => {
+        setValue(newValue.filter((item) => typeof item != 'string').map((item) => item.name));
+      }}
+      id="tags-standard"
+      options={locationFilterOptions}
+      getOptionLabel={(option) => {
+        if (typeof option === 'string') {
+          return option;
+        }
+
+        return option.name;
+      }}
+      isOptionEqualToValue={(option, value) => {
+        return option.name === value.name;
+      }}
+      renderTags={(value, getTagProps) => {
+        return value.map((option, index) => {
+          const content = (
+            <Typography display="inline" variant="body2">
+              {option.name}
+            </Typography>
+          );
+
+          return (
+            <Chip
+              variant="outlined"
+              label={content}
+              component={'div'}
+              {...getTagProps({index})}
+              key={index}
+            />
+          );
+        });
+      }}
+      renderOption={(props, option) => (
+        <li {...props} key={option.name}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                size="small"
+                checked={(value?.includes(option.name) || value?.includes('Alle')) ?? false}
+              />
+            }
+            label={option.name}
+          />
+        </li>
+      )}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          fullWidth
+          InputLabelProps={{shrink: true}}
+          variant="outlined"
+          label={label}
+          placeholder="Vælg visning..."
+          onBlur={onBlur}
+          sx={{
+            '& .MuiInputBase-input.Mui-disabled': {
+              WebkitTextFillColor: '#000000',
+            },
+            '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+            '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+            '& .MuiOutlinedInput-root': {
+              '& > fieldset': {borderColor: 'primary.main'},
+            },
+          }}
+        />
+      )}
+      disableCloseOnSelect
+      selectOnFocus
+      clearOnBlur
+      handleHomeEndKeys
+    />
+  );
+};
+
+export default LocationFilter;
