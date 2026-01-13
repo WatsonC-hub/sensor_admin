@@ -11,6 +11,8 @@ import {
   useLocationSLAConfiguration,
   useLocationSLAConfigurationMutation,
 } from '~/features/station/api/useLocationSLAConfiguration';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
@@ -32,6 +34,7 @@ const SLAConfiguration = () => {
   const {data: values, isPending} = useLocationSLAConfiguration(loc_id);
   const {mutate} = useLocationSLAConfigurationMutation(loc_id);
   const {isMobile} = useBreakpoints();
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'sla', -1);
 
   const formMethods = useForm<SLAForm, unknown, SLASubmit>({
     resolver: zodResolver(SLASchema),
@@ -75,40 +78,25 @@ const SLAConfiguration = () => {
           }}
           fullWidth
         />
-
-        {/* <FormInput
-          name="lead_time"
-          label="Forvarselstid"
-          type="number"
-          disabled={
-            (values?.isCustomerService && user?.superUser) ||
-            (!values?.isCustomerService && !user?.superUser)
-          }
-          fullWidth
-          slotProps={{
-            input: {
-              startAdornment: <InputAdornment position="start">Indenfor</InputAdornment>,
-              endAdornment: <InputAdornment position="end">dage før kontrol</InputAdornment>,
-            },
-          }}
-        /> */}
       </Box>
 
-      <Box display="flex" justifyContent="flex-end">
+      <Box display="flex" justifyContent="flex-end" gap={1}>
+        <UpdateProgressButton loc_id={loc_id} ts_id={-1} progressKey="sla" />
         <Button
           bttype="primary"
           disabled={isSubmitting || !isDirty}
-          onClick={handleSubmit((data) => mutate(data))}
+          onClick={handleSubmit((data) =>
+            mutate(data, {
+              onSuccess: () => {
+                if (needsProgress) hasAssessed();
+              },
+            })
+          )}
           startIcon={<Save />}
         >
           Gem
         </Button>
-        <Button
-          bttype="tertiary"
-          onClick={() => reset()}
-          disabled={isSubmitting}
-          sx={{marginLeft: 1}}
-        >
+        <Button bttype="tertiary" onClick={() => reset()} disabled={isSubmitting}>
           Annuller
         </Button>
       </Box>

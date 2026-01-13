@@ -8,6 +8,7 @@ import {
   Edit,
   Router,
   Settings,
+  PriorityHigh,
   DoNotDisturb,
 } from '@mui/icons-material';
 import AlarmIcon from '@mui/icons-material/Alarm';
@@ -56,9 +57,14 @@ import {stationPages, StationPages} from '~/helpers/EnumHelper';
 import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import {timeseriesMeasureSampleSendOptions} from '../api/useTimeseriesMeasureSampleSend';
-import {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
+import {
+  timeseriesMeasureSampleSendOptions,
+  useTimeseriesMeasureSampleSend,
+} from '../api/useTimeseriesMeasureSampleSend';
+import useDmpAllowedMapList, {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
 import {alarmGetOptions} from '../alarms/api/useAlarm';
+import ProgressLabel from './ProgressLabel';
+import {useProgress} from '~/hooks/query/stationProgress';
 
 const drawerWidth = 200;
 
@@ -71,6 +77,8 @@ type Item = {
   requiredTsId: boolean;
   disabled?: boolean;
   tooltip?: string;
+  progress?: number;
+  maxProgress?: number;
 };
 
 type DrawerItems = {
@@ -97,6 +105,31 @@ const StationDrawer = () => {
   const {isTouch} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
   const {data: locationdata} = useLocationData();
+  const {data: progress} = useProgress(loc_id, ts_id);
+  const {data, error} = useTimeseriesMeasureSampleSend(ts_id);
+
+  const isDmpAllowed = useDmpAllowedMapList(ts_id);
+
+  const configurationProgress = progress
+    ? (progress.kontrolhyppighed === false ? 0 : 1) +
+      ((!isDmpAllowed && metadata?.loctype_id !== 9) || progress.sync === false ? 0 : 1) +
+      (progress.samplesend === false ? 0 : 1) +
+      (progress.visibility === false ? 0 : 1)
+    : undefined;
+
+  let maxConfigurationProgress = 2;
+
+  maxConfigurationProgress =
+    isDmpAllowed ||
+    (metadata?.loctype_id === 9 && [1, 11, 12, 16].includes(metadata?.tstype_id || 0))
+      ? maxConfigurationProgress + 1
+      : maxConfigurationProgress;
+
+  maxConfigurationProgress =
+    !metadata?.calculated && metadata?.unit_uuid && !error && data !== undefined
+      ? maxConfigurationProgress + 1
+      : maxConfigurationProgress;
+
   const {
     superUser,
     features: {iotAccess, alarms, contacts, keys: accessKeys, ressources},
@@ -173,6 +206,7 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.tstype_id != 1 || metadata?.calculated,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id!)),
+          progress: progress?.watlevmp == false ? 0 : undefined,
         },
         {
           text: 'Udstyr',
@@ -208,6 +242,7 @@ const StationDrawer = () => {
           requiredTsId: true,
           onHover: () => handlePrefetch(alarmGetOptions(ts_id)),
           disabled: !alarms,
+          progress: progress?.alarm == false ? 0 : undefined,
         },
         {
           text: 'Konfiguration',
@@ -222,6 +257,10 @@ const StationDrawer = () => {
           },
           tooltip:
             'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
+          // progress = kontrolhyppighed = true + sync = true = 2
+          progress:
+            configurationProgress === maxConfigurationProgress ? undefined : configurationProgress,
+          maxProgress: maxConfigurationProgress,
         },
       ],
     },
@@ -243,6 +282,7 @@ const StationDrawer = () => {
           icon: <PhotoLibraryRounded />,
           requiredTsId: false,
           onHover: () => handlePrefetch(getImageOptions(loc_id, 'images', 'station')),
+          progress: progress?.images == false ? 0 : undefined,
         },
 
         {
@@ -252,6 +292,7 @@ const StationDrawer = () => {
           requiredTsId: false,
           disabled: !contacts,
           onHover: () => handlePrefetch(ContactInfoGetOptions(loc_id)),
+          progress: progress?.kontakter == false ? 0 : undefined,
         },
         {
           text: 'Nøgler',
@@ -260,6 +301,7 @@ const StationDrawer = () => {
           requiredTsId: false,
           disabled: !accessKeys,
           onHover: () => handlePrefetch(LocationAccessGetOptions(loc_id)),
+          progress: progress?.adgangsforhold == false ? 0 : undefined,
         },
         {
           text: 'Huskeliste',
@@ -268,6 +310,7 @@ const StationDrawer = () => {
           requiredTsId: false,
           disabled: !ressources,
           onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
+          progress: progress?.ressourcer == false ? 0 : undefined,
         },
         {
           text: 'Konfiguration',
@@ -275,6 +318,8 @@ const StationDrawer = () => {
           icon: <Settings />,
           requiredTsId: false,
           disabled: !superUser,
+          progress: progress?.sla == false ? 0 : undefined,
+          maxProgress: 1,
         },
       ],
     },
@@ -363,6 +408,8 @@ const StationDrawer = () => {
                     borderRadius: '9999px',
                     color: navIconStyle(pageToShow === item.page),
                     py: 0,
+                    pr: 0,
+                    justifyContent: 'space-between',
                   }}
                   onClick={() => {
                     setPageToShow(item.page);
@@ -379,6 +426,23 @@ const StationDrawer = () => {
                       {item.text}
                     </Wrapper>
                   </ListItemText>
+                  {item.progress != undefined && item.maxProgress != undefined && (
+                    <ProgressLabel value={item.progress} max={item.maxProgress} />
+                  )}
+                  {item.progress != undefined && !item.maxProgress && (
+                    <PriorityHigh color="secondary" />
+                  )}
+                  {/* <ListItemIcon
+                    sx={{
+                      color: navIconStyle(pageToShow === item.page),
+                      width: 24,
+                      py: 0,
+                      pr: 1,
+                      justifyContent: 'end',
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon> */}
                 </ListItemButton>
               </ListItem>
             );

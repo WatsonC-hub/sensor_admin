@@ -23,7 +23,7 @@ type CommandPaletteOptions<T> = Partial<
   Omit<UseQueryOptions<CommandPalette[], Error, T>, 'queryKey' | 'queryFn'>
 >;
 
-const useCmdPalette = <T extends Array<CommandPalette>>(options?: CommandPaletteOptions<T>) => {
+const useCmdPalette = <T = Array<CommandPalette>>(options?: CommandPaletteOptions<T>) => {
   const get = useQuery({
     ...getCMDOptions,
     ...options,

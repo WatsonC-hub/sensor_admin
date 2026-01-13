@@ -20,6 +20,8 @@ import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useUser} from '~/features/auth/useUser';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import dayjs from 'dayjs';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
@@ -69,6 +71,8 @@ const UnitMeasurementConfig = () => {
   const {superUser} = useUser();
   const values = data?.savedConfig ? data.savedConfig : undefined;
 
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'samplesend', ts_id);
+
   const formMethods = useForm<ConfigForm, unknown, ConfigSubmit>({
     resolver: zodResolver(ConfigurationSchema),
     defaultValues: {
@@ -77,6 +81,11 @@ const UnitMeasurementConfig = () => {
     },
     values: values,
   });
+
+  const disabled =
+    !data?.configPossible ||
+    (currentLocation?.is_customer_service && superUser) ||
+    (!currentLocation?.is_customer_service && !superUser);
 
   const {
     handleSubmit,
@@ -180,7 +189,13 @@ const UnitMeasurementConfig = () => {
       <ConfigAlert
         status={data?.configState || null}
         timeseriesStatus={data?.currentPendingTimeseries || null}
-        handleResend={handleSubmit((data) => mutate(data))}
+        handleResend={handleSubmit((data) =>
+          mutate(data, {
+            onSuccess: () => {
+              if (needsProgress) hasAssessed();
+            },
+          })
+        )}
       />
       <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} mb={-3}>
         <FormInput
@@ -211,11 +226,7 @@ const UnitMeasurementConfig = () => {
               formMethods.setValue('sendInterval', undefined);
             }
           }}
-          disabled={
-            !data?.configPossible ||
-            (currentLocation?.is_customer_service && superUser) ||
-            (!currentLocation?.is_customer_service && !superUser)
-          }
+          disabled={disabled}
           slotProps={{
             input: {
               startAdornment: <InputAdornment position="start">hvert</InputAdornment>,
@@ -256,24 +267,34 @@ const UnitMeasurementConfig = () => {
         Forventet tidspunkt for omkonfigurering {configChange ? configChange : 'ukendt'}
       </Typography>
 
-      <Box display="flex" justifyContent="flex-end">
-        <Button
-          bttype="tertiary"
-          onClick={() => reset()}
-          disabled={isSubmitting || !data?.configPossible}
-        >
-          Annuller
-        </Button>
-        <Button
-          bttype="primary"
-          disabled={isSubmitting || !data?.configPossible || !isDirty}
-          onClick={handleSubmit((data) => mutate(data))}
-          startIcon={<Save />}
-          sx={{marginLeft: 1}}
-        >
-          Gem
-        </Button>
-      </Box>
+      {!disabled && (
+        <Box display="flex" justifyContent="flex-end" gap={1}>
+          <UpdateProgressButton
+            loc_id={loc_id}
+            ts_id={ts_id}
+            progressKey="samplesend"
+            disabled={disabled}
+            title="Aktuelle forholde er OK"
+          />
+          <Button bttype="tertiary" onClick={() => reset()} disabled={isSubmitting || disabled}>
+            Annuller
+          </Button>
+          <Button
+            bttype="primary"
+            disabled={isSubmitting || !data?.configPossible || !isDirty}
+            onClick={handleSubmit((data) =>
+              mutate(data, {
+                onSuccess: () => {
+                  if (needsProgress) hasAssessed();
+                },
+              })
+            )}
+            startIcon={<Save />}
+          >
+            Gem
+          </Button>
+        </Box>
+      )}
     </FormProvider>
   );
 };

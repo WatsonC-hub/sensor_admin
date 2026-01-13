@@ -1,10 +1,9 @@
-import {Box, Dialog, IconButton, Tooltip, Typography} from '@mui/material';
+import {Box, Dialog, Typography} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import RenderActions from '~/helpers/RowActions';
-import RestoreIcon from '@mui/icons-material/Restore';
 import {useAppContext} from '~/state/contexts';
 import Button from '~/components/Button';
 import AlarmHistoryTable from './AlarmHistoryTable';

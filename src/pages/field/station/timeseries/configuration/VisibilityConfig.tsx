@@ -5,10 +5,12 @@ import React from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {createTypedForm} from '~/components/formComponents/Form';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 import {metadataQueryOptions} from '~/hooks/query/useMetadata';
 import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
 
 type VisibilityConfigProps = {
+  loc_id: number;
   ts_id: number;
 };
 
@@ -21,7 +23,8 @@ type Form = z.infer<typeof schema>;
 
 const Form = createTypedForm<Form>();
 
-const VisibilityConfig = ({ts_id}: VisibilityConfigProps) => {
+const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'visibility', ts_id);
   const {data: timeseries} = useQuery(
     metadataQueryOptions<Form>(ts_id, {
       select: (data) => ({
@@ -57,7 +60,11 @@ const VisibilityConfig = ({ts_id}: VisibilityConfigProps) => {
           />
           <Form.Submit
             submit={async (values) => {
-              updateTimeseries.mutate(values);
+              updateTimeseries.mutate(values, {
+                onSuccess: () => {
+                  if (needsProgress) hasAssessed();
+                },
+              });
             }}
           >
             Gem
