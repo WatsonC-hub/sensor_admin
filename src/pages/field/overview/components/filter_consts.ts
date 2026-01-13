@@ -2,6 +2,7 @@ import {Project} from '~/features/stamdata/api/useLocationProject';
 import type {Group} from '~/types';
 
 export const locationFilterOptions = [
+  {name: 'Alle'},
   {name: 'fejlfri'},
   {name: 'Tildelt til mig'},
   {name: 'Notifikationer'},

@@ -1,5 +1,5 @@
-import {Autocomplete, Chip, TextField, Typography} from '@mui/material';
-import React from 'react';
+import {Autocomplete, Checkbox, Chip, FormControlLabel, TextField, Typography} from '@mui/material';
+import React, {useEffect} from 'react';
 import {Noop} from 'react-hook-form';
 import {locationFilterOptions} from './filter_consts';
 
@@ -12,6 +12,12 @@ type Props = {
 };
 
 const LocationFilter = ({value, setValue, onBlur, label, disabled}: Props) => {
+  useEffect(() => {
+    if (value && value.length > 1 && value.includes('Alle')) {
+      setValue(value.filter((item) => item == 'Alle'));
+    }
+  }, [value, setValue]);
+
   return (
     <Autocomplete
       sx={{
@@ -62,9 +68,15 @@ const LocationFilter = ({value, setValue, onBlur, label, disabled}: Props) => {
       }}
       renderOption={(props, option) => (
         <li {...props} key={option.name}>
-          <Typography display="inline" variant="body2">
-            {option.name}
-          </Typography>
+          <FormControlLabel
+            control={
+              <Checkbox
+                size="small"
+                checked={(value?.includes(option.name) || value?.includes('Alle')) ?? false}
+              />
+            }
+            label={option.name}
+          />
         </li>
       )}
       renderInput={(params) => (
@@ -88,7 +100,7 @@ const LocationFilter = ({value, setValue, onBlur, label, disabled}: Props) => {
           }}
         />
       )}
-      filterSelectedOptions
+      disableCloseOnSelect
       selectOnFocus
       clearOnBlur
       handleHomeEndKeys

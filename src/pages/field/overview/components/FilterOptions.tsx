@@ -103,23 +103,6 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             )}
           />
         </Grid2>
-        <Grid2 size={12}>
-          <Controller
-            name="notificationTypes"
-            control={control}
-            render={({field: {onChange, value}}) => (
-              <NotificationTypeFilter
-                value={value}
-                setValue={(value) => {
-                  onChange(value);
-                  handleSubmit(submit)();
-                }}
-                label="Filtrer på notifikationer"
-              />
-            )}
-          />
-          {/* </TooltipWrapper> */}
-        </Grid2>
         <Grid2 size={isMobile ? 12 : 6}>
           <Controller
             name="groups"
@@ -131,7 +114,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                   onChange(value);
                   handleSubmit(submit)();
                 }}
-                label="Filtrer på grupper"
+                label="Vis fra grupper"
                 disableLink
                 creatable={false}
               />
@@ -150,12 +133,29 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                     onChange(value);
                     handleSubmit(submit)();
                   }}
-                  label="Filtrer på projekter"
+                  label="Vis fra projekter"
                 />
               )}
             />
           </Grid2>
         )}
+        <Grid2 size={12}>
+          <Controller
+            name="notificationTypes"
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <NotificationTypeFilter
+                value={value}
+                setValue={(value) => {
+                  onChange(value);
+                  handleSubmit(submit)();
+                }}
+                label="Filtrer på notifikationer"
+              />
+            )}
+          />
+          {/* </TooltipWrapper> */}
+        </Grid2>
       </Grid2>
 
       <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: 1}}>

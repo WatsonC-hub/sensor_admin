@@ -44,6 +44,8 @@ const filterSensor = (data: MapOverview, showService: Filter['showService']) => 
 };
 
 const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id: string) => {
+  if (filter.locationFilter.includes('Alle')) return true;
+
   const isFaultLess =
     (elem.notification_ids === null || elem.notification_ids.length === 0) &&
     !elem.has_task &&
