@@ -1,5 +1,4 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
-import {Box} from '@mui/material';
 import dayjs from 'dayjs';
 import React, {ChangeEvent, createRef, useState} from 'react';
 
@@ -8,12 +7,11 @@ import Images from '~/components/Images';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 
 const ImagePage = () => {
-  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {loc_id} = useAppContext(['loc_id']);
   const fileInputRef = createRef<HTMLInputElement>();
   const [, setShowForm] = useShowFormState();
   const [dataUri, setdataUri] = useState<string | ArrayBuffer | null>('');
