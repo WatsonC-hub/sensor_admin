@@ -173,7 +173,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         }}
         sx={{'& .MuiPaper-root': {width: isMobile ? '90%' : 500, p: 1}}}
       >
-        <FilterOptions onClose={handleClose} />
+        <FilterOptions isParentClosed={!anchorEl} onClose={handleClose} />
       </Menu>
     </>
   );

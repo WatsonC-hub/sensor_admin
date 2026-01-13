@@ -44,8 +44,6 @@ const filterSensor = (data: MapOverview, showService: Filter['showService']) => 
 };
 
 const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id: string) => {
-  if (filter.locationFilter.includes('Alle')) return true;
-
   const isFaultLess =
     (elem.notification_ids === null || elem.notification_ids.length === 0) &&
     !elem.has_task &&
@@ -93,7 +91,7 @@ const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id
   );
 
   const add_to_map = filter.locationFilter?.some((filterName) => {
-    if (filterName === 'fejlfri' && isFaultLess) return true;
+    if (filterName === 'Fejlfri' && isFaultLess) return true;
     if (filterName === 'Tildelt til mig' && isAssignedToMe) return true;
     if (filterName === 'Notifikationer' && hasNotifications) return true;
     if (filterName === 'Enkeltmålestationer' && isInService) return true;

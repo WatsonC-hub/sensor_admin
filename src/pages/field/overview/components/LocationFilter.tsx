@@ -1,4 +1,13 @@
-import {Autocomplete, Checkbox, Chip, FormControlLabel, TextField, Typography} from '@mui/material';
+import {
+  Autocomplete,
+  Box,
+  Checkbox,
+  Chip,
+  Divider,
+  FormControlLabel,
+  TextField,
+  Typography,
+} from '@mui/material';
 import React, {useEffect} from 'react';
 import {Noop} from 'react-hook-form';
 import {locationFilterOptions} from './filter_consts';
@@ -6,20 +15,35 @@ import {locationFilterOptions} from './filter_consts';
 type Props = {
   value: Array<string> | undefined | null;
   setValue: (value: Array<string>) => void;
+  isParentClosed: boolean;
   onBlur?: Noop;
   label?: string;
   disabled?: boolean;
 };
 
-const LocationFilter = ({value, setValue, onBlur, label, disabled}: Props) => {
+const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disabled}: Props) => {
+  const [open, setOpen] = React.useState(false);
   useEffect(() => {
     if (value && value.length > 1 && value.includes('Alle')) {
       setValue(value.filter((item) => item == 'Alle'));
     }
   }, [value, setValue]);
 
+  useEffect(() => {
+    if (isParentClosed) {
+      setOpen(false);
+    }
+  }, [isParentClosed]);
+
   return (
     <Autocomplete
+      open={open && !isParentClosed}
+      onOpen={() => {
+        setOpen(true);
+      }}
+      onClose={() => {
+        setOpen(false);
+      }}
       sx={{
         marginTop: '8px',
         marginBottom: '4px',
@@ -27,13 +51,26 @@ const LocationFilter = ({value, setValue, onBlur, label, disabled}: Props) => {
       }}
       disabled={disabled}
       freeSolo
+      openOnFocus
+      autoHighlight
       forcePopupIcon={false}
       multiple
       fullWidth
       value={locationFilterOptions.filter((item) => value?.includes(item.name)) ?? []}
-      autoHighlight={true}
       onChange={(event, newValue) => {
-        setValue(newValue.filter((item) => typeof item != 'string').map((item) => item.name));
+        const newObjects = newValue.filter((item) => typeof item != 'string');
+
+        if (newObjects.find((item) => item.name === 'Alle')) {
+          if (value && value.length === locationFilterOptions.length - 1) setValue([]);
+          if (value && value.length < locationFilterOptions.length - 1) {
+            setValue(
+              locationFilterOptions.map((item) => item.name).filter((name) => name !== 'Alle')
+            );
+          }
+
+          return;
+        }
+        setValue(newObjects.map((item) => item.name));
       }}
       id="tags-standard"
       options={locationFilterOptions}
@@ -68,15 +105,38 @@ const LocationFilter = ({value, setValue, onBlur, label, disabled}: Props) => {
       }}
       renderOption={(props, option) => (
         <li {...props} key={option.name}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                size="small"
-                checked={(value?.includes(option.name) || value?.includes('Alle')) ?? false}
+          {option.name != 'Alle' ? (
+            <FormControlLabel
+              control={<Checkbox size="small" checked={value?.includes(option.name) ?? false} />}
+              label={
+                <Typography onClick={(e) => e.preventDefault()} variant="body2">
+                  {option.name}
+                </Typography>
+              }
+            />
+          ) : (
+            <Box sx={{width: '100%'}}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    size="small"
+                    checked={value?.length === locationFilterOptions.length - 1}
+                    indeterminate={
+                      value != null &&
+                      value.length > 0 &&
+                      value.length < locationFilterOptions.length - 1
+                    }
+                  />
+                }
+                label={
+                  <Typography onClick={(e) => e.preventDefault()} variant="body2">
+                    {option.name}
+                  </Typography>
+                }
               />
-            }
-            label={option.name}
-          />
+              <Divider sx={{my: 1}} />
+            </Box>
+          )}
         </li>
       )}
       renderInput={(params) => (

@@ -16,10 +16,11 @@ import FormToggleButton from '~/components/formComponents/FormToggleButton';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 interface FilterOptionsProps {
+  isParentClosed: boolean;
   onClose: () => void;
 }
 
-const FilterOptions = ({onClose}: FilterOptionsProps) => {
+const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
   const {isMobile} = useBreakpoints();
   const {
     superUser,
@@ -88,6 +89,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             control={control}
             render={({field: {onChange, value}}) => (
               <LocationFilter
+                isParentClosed={isParentClosed}
                 value={value}
                 setValue={(value) => {
                   onChange(value);
