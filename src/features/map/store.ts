@@ -27,7 +27,7 @@ const mapFilterStore = create<MapFilterState>()(
     {
       name: 'calypso-map-filter',
       storage: createJSONStorage(() => localStorage),
-      version: 2,
+      version: 3,
       merge: (persistedState, currentState) => {
         const merged = merge({filters: {...defaultMapFilter()}}, currentState, persistedState);
         return merged;
