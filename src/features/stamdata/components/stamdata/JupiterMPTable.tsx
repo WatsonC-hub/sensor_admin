@@ -1,5 +1,6 @@
 import {Download} from '@mui/icons-material';
-import {Box, IconButton, Typography} from '@mui/material';
+import {CircularProgress, Box, IconButton, Typography} from '@mui/material';
+
 import {useQuery} from '@tanstack/react-query';
 import dayjs, {Dayjs} from 'dayjs';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
@@ -34,7 +35,7 @@ const JupiterMPTable = () => {
     post: addWatlevmp,
   } = useMaalepunkt(ts_id);
 
-  const {data} = useQuery({
+  const {data, isPending} = useQuery({
     queryKey: queryKeys.Borehole.lastMP(boreholeno, intakeno),
     queryFn: async () => {
       const {data} = await apiClient.get<LastJupiterMPAPI>(
@@ -115,13 +116,13 @@ const JupiterMPTable = () => {
   );
 
   const options: Partial<MRT_TableOptions<LastJupiterMPData>> = {
-    localization: {
-      ...MRT_Localization_DA,
-      noRecordsToDisplay:
-        intakeno === undefined
-          ? 'Det var ikke muligt at søge efter et målepunkt, da tidsserien ikke har et indtagsnummer'
-          : 'Kan ikke finde et målepunkt i Jupiter',
-    },
+    // localization: {
+    //   ...MRT_Localization_DA,
+    //   noRecordsToDisplay:
+    //     intakeno === undefined
+    //       ? 'Det var ikke muligt at søge efter et målepunkt, da tidsserien ikke har et indtagsnummer'
+    //       : 'Kan ikke finde et målepunkt i Jupiter',
+    // },
     enableFullScreenToggle: false,
     positionExpandColumn: 'last',
     positionActionsColumn: 'last',
@@ -136,13 +137,26 @@ const JupiterMPTable = () => {
     muiTableContainerProps: {},
     muiTableHeadCellProps: {sx: {m: 0, py: 0}},
     muiTableBodyCellProps: {sx: {m: 0, py: 0, whiteSpace: 'pre-line'}},
-    renderEmptyRowsFallback: () => (
-      <Typography variant="body1" sx={{textAlign: 'center', fontStyle: 'italic', opacity: 0.6}}>
-        {intakeno === undefined
-          ? 'Det var ikke muligt at søge efter et målepunkt, da tidsserien ikke har et indtagsnummer'
-          : 'Kan ikke finde et målepunkt i Jupiter'}
-      </Typography>
-    ),
+    renderEmptyRowsFallback: () => {
+      return (
+        <>
+          {isPending ? (
+            <Box display="flex" justifyContent="center" p={0.5} alignItems="center">
+              <CircularProgress size="18px" />
+            </Box>
+          ) : (
+            <Typography
+              variant="body1"
+              sx={{textAlign: 'center', fontStyle: 'italic', opacity: 0.6}}
+            >
+              {intakeno === -1
+                ? 'Det var ikke muligt at søge efter et målepunkt, da tidsserien ikke har et indtagsnummer'
+                : 'Kan ikke finde et målepunkt i Jupiter'}
+            </Typography>
+          )}
+        </>
+      );
+    },
     renderRowActions: () =>
       showQuickAdd && (
         <TooltipWrapper description="Tilføj målepunkt fra Jupiter" withIcon={false}>
