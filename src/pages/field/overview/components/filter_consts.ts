@@ -3,7 +3,7 @@ import type {Group} from '~/types';
 
 export const locationFilterOptions = [
   {name: 'Alle'},
-  {name: 'fejlfri'},
+  {name: 'Fejlfri'},
   {name: 'Tildelt til mig'},
   {name: 'Notifikationer'},
   {name: 'Enkeltmålestationer'},
@@ -39,7 +39,7 @@ const defaultMapFilter = (superUser: boolean = false): Required<Filter> => ({
       (option) =>
         (superUser && (option.name === 'Notifikationer' || option.name === 'Nyopsætninger')) ||
         (!superUser &&
-          (option.name === 'fejlfri' ||
+          (option.name === 'Fejlfri' ||
             option.name === 'Enkeltmålestationer' ||
             option.name === 'Notifikationer' ||
             option.name === 'Nyopsætninger'))
