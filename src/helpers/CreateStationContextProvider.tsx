@@ -20,6 +20,12 @@ export type MetaType = {
   intakeno?: number;
 };
 
+type ControlSettings = {
+  controls_per_year: number | undefined;
+  lead_time: number | undefined;
+  selectValue: number | undefined;
+};
+
 type LocationData = {
   loc_id?: number;
   loc_name?: string;
@@ -50,7 +56,7 @@ type TimeseriesData = {
   calypso_id?: number | undefined;
   intakeno?: number | null | undefined;
   unit_uuid?: string;
-  control_settings?: any;
+  control_settings?: ControlSettings;
 };
 
 export type FormState = {
@@ -121,10 +127,11 @@ const CreateStationContextProvider = ({children}: Props) => {
     index?: number
   ) => {
     if (data) {
+      console.log('Validating', key, data, index);
       if (key === 'control_settings' && index !== undefined) {
         setFormState((prev: FormState) => {
           const timeseries = prev.timeseries ? [...prev.timeseries] : [];
-          timeseries[index].control_settings = data;
+          timeseries[index].control_settings = data as ControlSettings;
           return {...prev, timeseries};
         });
         return;

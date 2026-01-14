@@ -61,8 +61,7 @@ export const removeTimeseries = (
   onValidate: (key: keyof FormState, data: FormState[keyof FormState], index?: number) => void,
   timeseries: FormState['timeseries'],
   units: FormState['units'],
-  remove: UseFieldArrayRemove,
-  removeWatlevmpAtIndex: (index: number) => void
+  remove: UseFieldArrayRemove
 ) => {
   remove(index);
   const updatedTstypeIds = meta?.tstype_id?.filter((_, i) => i !== index);
@@ -79,8 +78,6 @@ export const removeTimeseries = (
     'timeseries',
     timeseries?.filter((_, i) => i !== index)
   );
-
-  removeWatlevmpAtIndex(index);
 };
 
 export const onUnitValidate = (

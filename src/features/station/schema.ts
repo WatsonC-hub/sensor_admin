@@ -45,7 +45,6 @@ const boreholeEditLocationSchema = boreholeAddLocationSchema.extend({
 });
 
 const baseTimeseriesSchema = z.object({
-  sensor_depth_m: z.number().nullish(),
   prefix: z.string().nullish(),
   calypso_id: z.number().optional(),
 });
@@ -55,7 +54,13 @@ const baseAddTimeseriesSchema = baseTimeseriesSchema.extend({
     message: 'Vælg tidsserietype',
   }),
   unit_uuid: z.string().optional(),
-  sensor_id: z.string().optional(),
+  control_settings: z
+    .object({
+      controls_per_year: z.number().optional(),
+      lead_time: z.number().optional(),
+      selectValue: z.number().default(1),
+    })
+    .optional(),
 });
 
 const baseEditTimeseriesSchema = baseTimeseriesSchema.extend({

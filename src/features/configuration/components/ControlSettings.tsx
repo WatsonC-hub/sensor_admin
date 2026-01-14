@@ -1,8 +1,9 @@
 import {InputAdornment, Typography} from '@mui/material';
 import React, {ChangeEvent, createContext} from 'react';
 import {useFormContext} from 'react-hook-form';
-import FormInput from '~/components/FormInput';
+import FormInput, {FormInputProps} from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
+import {ControlSettingsFormValues} from '../api/useControlSettingsForm';
 
 type Props = {
   children: React.ReactNode;
@@ -73,7 +74,9 @@ const IntervalType = () => {
   );
 };
 
-const ControlFrequency = () => {
+type ControlSettingsProps = Omit<FormInputProps<ControlSettingsFormValues>, 'name'>;
+
+const ControlFrequency = ({onChangeCallback, ...rest}: ControlSettingsProps) => {
   const {superUser} = useUser();
   const {getValues, setValue, watch} = useFormContext();
   const values = getValues();
@@ -81,6 +84,7 @@ const ControlFrequency = () => {
   const selectValue = watch('selectValue');
   return (
     <FormInput
+      {...rest}
       name="dummy"
       label={values.from_unit ? 'Kontrolhyppighed (fra udstyret)' : 'Kontrolhyppighed'}
       type="number"
@@ -95,6 +99,7 @@ const ControlFrequency = () => {
             setValue('controls_per_year', Number((12 / Number(e)).toFixed(3)), {
               shouldDirty: true,
             });
+          if (onChangeCallback) onChangeCallback(e);
         }
       }}
       slotProps={{
@@ -121,12 +126,13 @@ const ControlFrequency = () => {
   );
 };
 
-const LeadTime = () => {
+const LeadTime = ({onChangeCallback, ...rest}: ControlSettingsProps) => {
   const {superUser} = useUser();
   const {getValues} = useFormContext();
   const values = getValues();
   return (
     <FormInput
+      {...rest}
       name="lead_time"
       label="Forvarsling"
       type="number"
@@ -139,6 +145,7 @@ const LeadTime = () => {
           endAdornment: <InputAdornment position="end">dage før kontrol</InputAdornment>,
         },
       }}
+      onChangeCallback={onChangeCallback}
     />
   );
 };

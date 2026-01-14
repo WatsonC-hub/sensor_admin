@@ -17,9 +17,9 @@ import {
   removeTimeseries,
   typeSelectChanged,
 } from '../helper/TimeseriesStepHelper';
-import AddUnitSection from './addUnitSection';
 import WatlevmpSection from './WatlevmpSection';
 import ControlSettingSection from './ControlSettingSection';
+import AddUnitSection from './AddUnitSection';
 const TimeseriesStep = () => {
   const {isMobile} = useBreakpoints();
   const [unitDialog, setUnitDialog] = useState(false);
@@ -34,7 +34,7 @@ const TimeseriesStep = () => {
     formState: {timeseries, watlevmp, units},
     activeStep,
   } = useCreateStationContext();
-
+  console.log('TimeseriesStep render with timeseries:', timeseries);
   const [timeseriesFormMethods, TimeseriesForm] = useTimeseriesForm({
     formProps: {
       context: {
@@ -48,6 +48,7 @@ const TimeseriesStep = () => {
   const {
     handleSubmit: handleTimeseriesSubmit,
     formState: timeseriesFormState,
+    setValue,
     getValues,
     control,
   } = timeseriesFormMethods;
@@ -170,6 +171,11 @@ const TimeseriesStep = () => {
                     controlSettingIndex={controlSettings}
                     setControlSettingIndex={setControlSettings}
                     removeControlSettingsAtIndex={removeControlSettingsAtIndex}
+                    setValue={(key, value) => {
+                      setValue(`timeseries.${index}.control_settings.${key}`, value);
+                    }}
+                    field={field}
+                    update={update}
                   />
 
                   <Grid2
@@ -191,9 +197,11 @@ const TimeseriesStep = () => {
                           onValidate,
                           timeseries,
                           units,
-                          remove,
-                          removeWatlevmpAtIndex
+                          remove
                         );
+
+                        removeWatlevmpAtIndex(index);
+                        removeControlSettingsAtIndex(index);
                       }}
                     >
                       Fjern tidsserie
@@ -209,9 +217,18 @@ const TimeseriesStep = () => {
               let isValid = true;
               await handleTimeseriesSubmit(
                 (data) => {
+                  timeseries?.forEach((ts, index) => {
+                    console.log(ts);
+                    update(index, {
+                      ...ts,
+                      ...data.timeseries?.[index],
+                    });
+                  });
+
                   onValidate('timeseries', data.timeseries);
                 },
                 (e) => {
+                  console.log(e);
                   onValidate('timeseries', null);
                   setFormErrors((prev) => ({
                     ...prev,
