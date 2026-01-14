@@ -140,14 +140,10 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
           >
             <AlarmContactTypedForm.Autocomplete<AlarmContactTypeDialog, false>
               options={options}
-              labelKey="contact_id"
+              valueKey="contact_id"
+              labelKey="name"
               name={'contact_id'}
-              label={`Kontakt`}
               gridSizes={{xs: 12, sm: 12}}
-              getOptionKey={(o) => o.contact_id}
-              getOptionLabel={(o) => {
-                return o.name || '';
-              }}
               textFieldsProps={{
                 label: 'Kontakt',
                 placeholder: 'Søg og vælg kontakt...',
