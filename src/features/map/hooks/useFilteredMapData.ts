@@ -44,6 +44,8 @@ const filterSensor = (data: MapOverview, showService: Filter['showService']) => 
 };
 
 const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id: string) => {
+  const isUpcoming = elem.due_date?.isBefore(dayjs().add(1, 'month'));
+
   const isFaultLess =
     (elem.notification_ids === null || elem.notification_ids.length === 0) &&
     !elem.has_task &&
@@ -56,7 +58,7 @@ const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id
   // Der er opgaver som ikke har en dato. Det gør at lokationen ikke vises eftersom vi viser lokationer med due_date 1 måned frem.
   const hasNotifications =
     (elem.notification_ids && elem.notification_ids.length > 0 && !elem.has_task) ||
-    (elem.has_task && elem.due_date?.isBefore(dayjs().add(1, 'month'))) ||
+    elem.has_task ||
     elem.itinerary_id
       ? true
       : false;
@@ -67,27 +69,16 @@ const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id
   const isNewInstallation =
     elem.not_serviced && elem.inactive_new && !elem.in_service && !elem.has_task;
 
-  const filtered_tasks = tasks?.filter(
-    (task) => task.loc_id === elem.loc_id && elem.due_date?.isBefore(dayjs().add(1, 'month'))
-  );
+  const filtered_tasks = tasks?.filter((task) => task.loc_id === elem.loc_id);
 
-  const isAssignedToMe = filtered_tasks?.some(
-    (task) => task.assigned_to !== null && task.assigned_to === user_id
-  );
+  const isAssignedToMe = filtered_tasks?.some((task) => task.assigned_to === user_id);
 
   const not_handled_tasks = filtered_tasks?.some(
-    (task) =>
-      task.status_category === 'unstarted' &&
-      !task.blocks_notifications.includes(207) &&
-      !task.blocks_notifications.includes(1)
+    (task) => task.status_category === 'unstarted' && isUpcoming
   );
 
   const not_handled_field_tasks = filtered_tasks?.some(
-    (task) =>
-      task.status_id === 2 &&
-      (task.blocks_notifications.includes(207) ||
-        task.blocks_notifications.includes(1) ||
-        task.blocks_notifications.length === 0)
+    (task) => task.status_id === 2 && (!task.is_created || (task.is_created && isUpcoming))
   );
 
   const add_to_map = filter.locationFilter?.some((filterName) => {
