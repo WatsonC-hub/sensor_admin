@@ -87,7 +87,7 @@ const YearlyControlsConfig = () => {
       <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} alignItems={'center'}>
         <FormInput
           name="dummy"
-          label="Kontrolhyppighed"
+          label={values?.from_unit ? 'Kontrolhyppighed (fra udstyret)' : 'Kontrolhyppighed'}
           type="number"
           disabled={
             (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser)
