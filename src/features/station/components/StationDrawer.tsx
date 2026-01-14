@@ -9,6 +9,7 @@ import {
   Router,
   Settings,
   DoNotDisturb,
+  Comment,
 } from '@mui/icons-material';
 import AlarmIcon from '@mui/icons-material/Alarm';
 import {
@@ -165,6 +166,12 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.calculated || metadata?.unit_uuid === null,
           onHover: () => handlePrefetch(tilsynGetOptions(ts_id)),
+        },
+        {
+          text: 'Aktivitet',
+          page: stationPages.ACTIVITY,
+          icon: <Comment />,
+          requiredTsId: false,
         },
         {
           text: 'Målepunkt',

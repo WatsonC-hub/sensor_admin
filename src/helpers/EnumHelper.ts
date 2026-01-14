@@ -6,6 +6,7 @@ export const stationPages = {
   LOKATIONKONFIGURATION: 'lokationkonfiguration',
   PEJLING: 'pejling',
   TILSYN: 'tilsyn',
+  ACTIVITY: 'aktivitet',
   KONTAKTER: 'kontakter',
   NØGLER: 'nøgler',
   HUSKELISTE: 'huskeliste',

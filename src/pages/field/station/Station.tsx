@@ -35,6 +35,7 @@ import Alarms from './alarms/Alarms';
 import TimeseriesConfiguration from './timeseries/configuration/Configuration';
 import LocationConfiguration from './location/Configuration';
 import AppContextProvider from '~/helpers/AppContextProvider';
+import ActivityTimeline from './activity/ActivityTimeline';
 
 export default function Station() {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
@@ -72,6 +73,7 @@ export default function Station() {
         {pageToShow === stationPages.TILSYN &&
           !metadata?.calculated &&
           metadata?.unit_uuid !== null && <Tilsyn key={ts_id} />}
+        {pageToShow === stationPages.ACTIVITY && <ActivityTimeline key={ts_id} />}
         {pageToShow === stationPages.GENERELTUDSTYR && (
           <>
             <Box key={`graph-${ts_id}`}>
