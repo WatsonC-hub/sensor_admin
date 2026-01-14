@@ -18,7 +18,12 @@ type FormRadioProps<T extends FieldValues> = {
   gridSizes?: GridBaseProps['size'];
   icon?: React.ReactNode;
   gridProps?: Grid2Props;
-  options: {value: string | number | boolean; label: string; icon?: React.ReactNode}[];
+  options: {
+    value: string | number | boolean;
+    label: string;
+    icon?: React.ReactNode;
+    disabled?: boolean;
+  }[];
 } & Omit<RadioGroupProps, 'name' | 'value' | 'onChange'>;
 
 const FormRadio = <T extends FieldValues>({
@@ -49,6 +54,7 @@ const FormRadio = <T extends FieldValues>({
               <FormControlLabel
                 key={opt.label}
                 value={opt.value}
+                disabled={opt.disabled}
                 control={<Radio />}
                 label={<Box sx={{display: 'flex', alignItems: 'center'}}>{opt.label}</Box>}
               />

@@ -23,6 +23,12 @@ export const queryKeys = {
     SLAConfiguration: (loc_id: number | undefined) =>
       ['sla_configuration', 'register', loc_id] as const,
   },
+  Activity: {
+    options: (ts_id: number | undefined) => ['activity_options', ts_id] as const,
+    allOptions: () => ['all_activity_options'] as const,
+    activities: (loc_id: number, ts_id: number | undefined) =>
+      ['activities', loc_id, ts_id] as const,
+  },
   Timeseries: {
     all: () => ['timeseries'] as const,
     metadata: (ts_id: number | undefined) => ['metadata', 'register', ts_id] as const,

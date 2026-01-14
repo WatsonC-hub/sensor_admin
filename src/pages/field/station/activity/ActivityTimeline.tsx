@@ -1,20 +1,18 @@
-import {zodResolver} from '@hookform/resolvers/zod';
 import {AddComment} from '@mui/icons-material';
 import {Box, Divider} from '@mui/material';
 import dayjs from 'dayjs';
-import {FormProvider, useForm} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import GraphManager from '~/features/station/components/GraphManager';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 import ActivityTimelineTable from '../activity/ActivityTimelineTable';
-import {activitySchema, ActivitySchemaType} from './types';
+import {ActivitySchemaType} from './types';
 import ActivityForm from './ActivityForm';
+import {useActivities} from './activityQueries';
 
 const defaultData = () =>
   ({
@@ -31,6 +29,8 @@ export default function ActivityTimeline() {
 
   const {location_permissions} = usePermissions(loc_id);
 
+  const {data} = useActivities(loc_id, ts_id);
+
   return (
     <>
       <Box>
@@ -38,8 +38,8 @@ export default function ActivityTimeline() {
       </Box>
       <Divider />
       <StationPageBoxLayout>
-        {showForm && <ActivityForm initialData={defaultData} />}
-        <ActivityTimelineTable />
+        {showForm && <ActivityForm initialData={defaultData} loc_id={loc_id} ts_id={ts_id} />}
+        <ActivityTimelineTable data={data} />
       </StationPageBoxLayout>
       <FabWrapper
         icon={<AddComment />}

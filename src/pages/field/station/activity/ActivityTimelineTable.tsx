@@ -27,6 +27,8 @@ import EventIcon from '@mui/icons-material/Event';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {RestartAlt} from '@mui/icons-material';
 import {ActivityRow, CommentRow, EventRow} from './types';
+import {useAllActivityOptions} from './activityQueries';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 // -----------------------------------------------------------------------------
 // Types
@@ -42,7 +44,7 @@ const MOCK_DATA: ActivityRow[] = [
     kind: 'comment',
     scope: 'location',
     comment: 'Meget svært at tilgå om vinteren.',
-    flags: ['Disk skiftet'],
+    flags: [1],
     pinned: false,
     createdAt: '2026-01-12T09:15:00Z',
     createdBy: 'Alex',
@@ -50,17 +52,17 @@ const MOCK_DATA: ActivityRow[] = [
   {
     id: 'e1',
     kind: 'event',
-    eventType: 'equipment_replaced',
-    label: 'Udstyr udskiftet',
+    comment: 'Udstyr udskiftet',
     createdAt: '2026-01-10T14:00:00Z',
     createdBy: 'system',
+    scope: 'timeseries',
   },
   {
     id: 'c2',
     kind: 'comment',
     scope: 'timeseries',
     comment: 'Data for denne tidsserie er meget ujævn pga. sporadisk sensorfejl.',
-    flags: ['Sensor renset', 'Skiftet batteri'],
+    flags: [1, 2],
     pinned: true,
     createdAt: '2026-01-10T08:30:00Z',
     createdBy: 'Maria',
@@ -68,8 +70,8 @@ const MOCK_DATA: ActivityRow[] = [
   {
     id: 'e2',
     kind: 'event',
-    eventType: 'image_added',
-    label: 'Billede tilføjet til lokalitet',
+    comment: 'Billede tilføjet til lokalitet',
+    scope: 'location',
     createdAt: '2026-01-05T11:20:00Z',
     createdBy: 'Alex',
   },
@@ -78,7 +80,7 @@ const MOCK_DATA: ActivityRow[] = [
     kind: 'comment',
     scope: 'location',
     comment: 'Adgang til lokaliteten kræver en 4x4 efter kraftig regn.',
-    flags: ['Adgang vanskelig', 'Sæsonbetonet problem'],
+    flags: [1, 2],
     pinned: false,
     createdAt: '2026-01-02T16:45:00Z',
     createdBy: 'Alex',
@@ -103,7 +105,7 @@ const columns: MRT_ColumnDef<ActivityRow>[] = [
   {
     id: 'content',
     header: 'Indhold',
-    accessorFn: (row) => (row.kind === 'comment' ? row.comment : row.label),
+    accessorKey: 'comment',
     // enableGlobalFilter: true,
     enableColumnFilter: false,
   },
@@ -162,6 +164,8 @@ const columns: MRT_ColumnDef<ActivityRow>[] = [
 // -----------------------------------------------------------------------------
 
 function CommentCard({row}: {row: MRT_Row<CommentRow>}) {
+  const {data: activityOptions} = useAllActivityOptions();
+
   const isPinned = row.original.pinned;
 
   const table = useActivityTableContext();
@@ -177,6 +181,10 @@ function CommentCard({row}: {row: MRT_Row<CommentRow>}) {
         title={
           row.original.scope === 'timeseries' ? `Kommentar på tidsserie` : 'Kommentar på lokalitet'
         }
+        sx={{
+          pb: 0,
+          mb: 0,
+        }}
         subheader={`${row.original.createdBy} · ${convertDateWithTimeStamp(row.original.createdAt)}`}
         action={
           <IconButton size="small">
@@ -184,27 +192,30 @@ function CommentCard({row}: {row: MRT_Row<CommentRow>}) {
           </IconButton>
         }
       />
-      <CardContent>
-        <Typography variant="body1">
-          <MRT_TableBodyCellValue table={table} cell={contentCell} />
-        </Typography>
-
+      <CardContent sx={{pt: 0}}>
         {row.original.flags && (
           <Stack direction="row" spacing={1} mt={1} flexWrap="wrap">
-            {row.original.flags.map((val) => {
+            {row.original.flags.map((id) => {
+              const option = activityOptions?.find((opt) => opt.id === id);
+              const val = option ? option.label : `Ukendt aktivitet (${id})`;
               const isMatch = search && val.toLowerCase().includes(search.toLowerCase());
               return (
-                <Chip
-                  key={val}
-                  size="small"
-                  label={val}
-                  variant={isMatch ? 'filled' : 'outlined'}
-                  color={isMatch ? 'secondary' : 'default'}
-                />
+                <TooltipWrapper description={option?.description || ''} key={val} withIcon={false}>
+                  <Chip
+                    key={val}
+                    size="medium"
+                    label={val}
+                    variant={isMatch ? 'filled' : 'outlined'}
+                    color={isMatch ? 'secondary' : 'default'}
+                  />
+                </TooltipWrapper>
               );
             })}
           </Stack>
         )}
+        <Typography variant="body1" mt={2}>
+          <MRT_TableBodyCellValue table={table} cell={contentCell} />
+        </Typography>
       </CardContent>
     </Card>
   );
@@ -216,7 +227,7 @@ function EventCard({row}: {row: MRT_Row<EventRow>}) {
       <CardContent>
         <Stack direction="row" spacing={1} alignItems="center">
           <EventIcon fontSize="small" color="action" />
-          <Typography variant="body2">{row.original.label}</Typography>
+          <Typography variant="body2">{row.original.comment}</Typography>
           <Typography variant="caption" color="text.secondary">
             · {convertDateWithTimeStamp(row.original.createdAt)}
           </Typography>
@@ -256,11 +267,15 @@ function ActivityRowRenderer({row}: {row: MRT_Row<ActivityRow>}) {
 // Main Component
 // -----------------------------------------------------------------------------
 
-export default function ActivityTimelineTable() {
+interface ActivityTimelineTableProps {
+  data?: ActivityRow[];
+}
+
+export default function ActivityTimelineTable({data = []}: ActivityTimelineTableProps) {
   const table = useMaterialReactTable({
     localization: MRT_Localization_DA,
     columns,
-    data: MOCK_DATA,
+    data: data,
     getRowId: (originalRow) => originalRow.id,
     enableGlobalFilter: true, // ← REQUIRED
     globalFilterFn: 'includesString',
