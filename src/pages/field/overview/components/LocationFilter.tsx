@@ -50,9 +50,9 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
         pb: 1.5,
       }}
       disabled={disabled}
-      freeSolo
-      openOnFocus
-      autoHighlight
+      // freeSolo
+      // openOnFocus
+      // autoHighlight
       forcePopupIcon={false}
       multiple
       fullWidth
@@ -108,11 +108,8 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
           {option.name != 'Alle' ? (
             <FormControlLabel
               control={<Checkbox size="small" checked={value?.includes(option.name) ?? false} />}
-              label={
-                <Typography onClick={(e) => e.preventDefault()} variant="body2">
-                  {option.name}
-                </Typography>
-              }
+              label={<Typography variant="body2">{option.name}</Typography>}
+              inert
             />
           ) : (
             <Box sx={{width: '100%'}}>
@@ -128,11 +125,8 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
                     }
                   />
                 }
-                label={
-                  <Typography onClick={(e) => e.preventDefault()} variant="body2">
-                    {option.name}
-                  </Typography>
-                }
+                label={<Typography variant="body2">{option.name}</Typography>}
+                inert
               />
               <Divider sx={{my: 1}} />
             </Box>
@@ -162,7 +156,7 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
       )}
       disableCloseOnSelect
       selectOnFocus
-      clearOnBlur
+      // clearOnBlur
       handleHomeEndKeys
     />
   );
