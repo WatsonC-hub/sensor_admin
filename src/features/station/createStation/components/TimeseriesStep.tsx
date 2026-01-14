@@ -34,7 +34,6 @@ const TimeseriesStep = () => {
     formState: {timeseries, watlevmp, units},
     activeStep,
   } = useCreateStationContext();
-  console.log('TimeseriesStep render with timeseries:', timeseries);
   const [timeseriesFormMethods, TimeseriesForm] = useTimeseriesForm({
     formProps: {
       context: {
@@ -138,11 +137,13 @@ const TimeseriesStep = () => {
                               const value = (
                                 event as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
                               ).target.value;
-                              // find the timeseries in the timeseries array and update its intakeno
+
                               update(index, {
                                 ...field,
                                 intakeno: parseInt(value),
                               });
+
+                              onValidate('timeseries', getValues('timeseries'));
                             },
                           },
                         }}
@@ -218,7 +219,6 @@ const TimeseriesStep = () => {
               await handleTimeseriesSubmit(
                 (data) => {
                   timeseries?.forEach((ts, index) => {
-                    console.log(ts);
                     update(index, {
                       ...ts,
                       ...data.timeseries?.[index],

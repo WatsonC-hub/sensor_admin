@@ -43,6 +43,8 @@ export const typeSelectChanged = (
     unit_uuid: undefined,
   });
 
+  onValidate('timeseries', getValues('timeseries'));
+
   setMeta((prev) => ({
     ...prev,
     tstype_id: existingTstypeIds,

@@ -127,7 +127,6 @@ const CreateStationContextProvider = ({children}: Props) => {
     index?: number
   ) => {
     if (data) {
-      console.log('Validating', key, data, index);
       if (key === 'control_settings' && index !== undefined) {
         setFormState((prev: FormState) => {
           const timeseries = prev.timeseries ? [...prev.timeseries] : [];
