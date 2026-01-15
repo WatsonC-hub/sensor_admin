@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {Noop} from 'react-hook-form';
 import {locationFilterOptions} from './filter_consts';
 
@@ -23,6 +23,8 @@ type Props = {
 
 const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disabled}: Props) => {
   const [open, setOpen] = React.useState(false);
+  const optionsWithAlle = useMemo(() => [{name: 'Alle'}, ...locationFilterOptions], []);
+
   useEffect(() => {
     if (value && value.length > 1 && value.includes('Alle')) {
       setValue(value.filter((item) => item == 'Alle'));
@@ -56,16 +58,13 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
       forcePopupIcon={false}
       multiple
       fullWidth
-      value={locationFilterOptions.filter((item) => value?.includes(item.name)) ?? []}
+      value={optionsWithAlle.filter((item) => value?.includes(item.name)) ?? []}
       onChange={(event, newValue) => {
         const newObjects = newValue.filter((item) => typeof item != 'string');
-
         if (newObjects.find((item) => item.name === 'Alle')) {
-          if (value && value.length === locationFilterOptions.length - 1) setValue([]);
-          if (value && value.length < locationFilterOptions.length - 1) {
-            setValue(
-              locationFilterOptions.map((item) => item.name).filter((name) => name !== 'Alle')
-            );
+          if (value && value.length === optionsWithAlle.length - 1) setValue([]);
+          if (value && value.length < optionsWithAlle.length - 1) {
+            setValue(optionsWithAlle.map((item) => item.name).filter((name) => name !== 'Alle'));
           }
 
           return;
@@ -73,7 +72,7 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
         setValue(newObjects.map((item) => item.name));
       }}
       id="tags-standard"
-      options={locationFilterOptions}
+      options={optionsWithAlle}
       getOptionLabel={(option) => {
         if (typeof option === 'string') {
           return option;
@@ -117,11 +116,9 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
                 control={
                   <Checkbox
                     size="small"
-                    checked={value?.length === locationFilterOptions.length - 1}
+                    checked={value?.length === optionsWithAlle.length - 1}
                     indeterminate={
-                      value != null &&
-                      value.length > 0 &&
-                      value.length < locationFilterOptions.length - 1
+                      value != null && value.length > 0 && value.length < optionsWithAlle.length - 1
                     }
                   />
                 }
