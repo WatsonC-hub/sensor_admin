@@ -110,12 +110,12 @@ const columns: MRT_ColumnDef<ActivityRow>[] = [
     // enableGlobalFilter: true,
     enableColumnFilter: false,
   },
-  {
-    id: 'pinned',
-    header: 'Fastgjort',
-    accessorFn: (row) => (row.kind === 'comment' ? row.pinned : false),
-    enableColumnFilter: false,
-  },
+  // {
+  //   id: 'pinned',
+  //   header: 'Fastgjort',
+  //   accessorFn: (row) => (row.kind === 'comment' ? row.pinned : false),
+  //   enableColumnFilter: false,
+  // },
   {
     id: 'kind',
     header: 'Type',
@@ -226,14 +226,24 @@ function CommentCard({row}: {row: MRT_Row<CommentRow>}) {
 function EventCard({row}: {row: MRT_Row<EventRow>}) {
   return (
     <Card variant="outlined" sx={{backgroundColor: 'action.hover'}}>
-      <CardContent>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <EventIcon fontSize="small" color="action" />
-          <Typography variant="body2">{row.original.comment}</Typography>
+      <CardContent
+        sx={{
+          display: 'flex',
+          gap: 1,
+        }}
+      >
+        <EventIcon fontSize="small" color="action" />
+        <Box>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Typography variant="body2">{row.original.comment}</Typography>
+            <Typography variant="caption" color="text.secondary">
+              · {convertDateWithTimeStamp(row.original.created_at)}
+            </Typography>
+          </Stack>
           <Typography variant="caption" color="text.secondary">
-            · {convertDateWithTimeStamp(row.original.created_at)}
+            {row.original.created_by}
           </Typography>
-        </Stack>
+        </Box>
       </CardContent>
     </Card>
   );
@@ -277,6 +287,7 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
   const table = useMaterialReactTable({
     localization: MRT_Localization_DA,
     columns,
+    // TODO: Maybe readd pinned column?
     data: data,
     getRowId: (originalRow) => originalRow.id.toString(),
     enableGlobalFilter: true, // ← REQUIRED
@@ -290,7 +301,7 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
 
     initialState: {
       sorting: [
-        {id: 'pinned', desc: true},
+        // {id: 'pinned', desc: true},
         {id: 'created_at', desc: true},
       ],
       rowPinning: {
@@ -298,9 +309,16 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
       },
       showGlobalFilter: true,
     },
+    state: {
+      rowPinning: {
+        top: data.filter((row) => row.pinned).map((row) => row.id),
+      },
+    },
   });
 
-  const rows = table.getRowModel().rows;
+  const rows = table.getCenterRows();
+
+  const topRows = table.getTopRows();
   return (
     <Box display={'flex'} flexDirection={'column'} gap={2} width="100%">
       {/* MRT logic container */}
@@ -330,6 +348,12 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
       {/* Custom headless rendering */}
       <Stack spacing={2} mt={2}>
         <ActivityTableContext.Provider value={table}>
+          {topRows.map((row) => (
+            <React.Fragment key={row.id}>
+              <ActivityRowRenderer row={row} />
+              <Divider />
+            </React.Fragment>
+          ))}
           {rows.map((row, index) => (
             <React.Fragment key={row.id}>
               <ActivityRowRenderer row={row} />

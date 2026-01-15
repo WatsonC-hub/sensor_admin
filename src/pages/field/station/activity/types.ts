@@ -20,7 +20,7 @@ type BaseRow = {
   pinned?: boolean;
   scope: 'location' | 'timeseries';
   created_at: string;
-  created_by: 'system' | string;
+  created_by: string | null;
 };
 
 export type CommentRow = BaseRow & {
