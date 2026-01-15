@@ -27,8 +27,9 @@ import EventIcon from '@mui/icons-material/Event';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {RestartAlt} from '@mui/icons-material';
 import {ActivityRow, CommentRow, EventRow} from './types';
-import {useAllActivityOptions} from './activityQueries';
+import {useAllActivityOptions, usePinActivity} from './activityQueries';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import dayjs from 'dayjs';
 
 // -----------------------------------------------------------------------------
 // Types
@@ -38,54 +39,54 @@ import TooltipWrapper from '~/components/TooltipWrapper';
 // Mock Data
 // -----------------------------------------------------------------------------
 
-const MOCK_DATA: ActivityRow[] = [
-  {
-    id: 'c1',
-    kind: 'comment',
-    scope: 'location',
-    comment: 'Meget svært at tilgå om vinteren.',
-    flags: [1],
-    pinned: false,
-    createdAt: '2026-01-12T09:15:00Z',
-    createdBy: 'Alex',
-  },
-  {
-    id: 'e1',
-    kind: 'event',
-    comment: 'Udstyr udskiftet',
-    createdAt: '2026-01-10T14:00:00Z',
-    createdBy: 'system',
-    scope: 'timeseries',
-  },
-  {
-    id: 'c2',
-    kind: 'comment',
-    scope: 'timeseries',
-    comment: 'Data for denne tidsserie er meget ujævn pga. sporadisk sensorfejl.',
-    flags: [1, 2],
-    pinned: true,
-    createdAt: '2026-01-10T08:30:00Z',
-    createdBy: 'Maria',
-  },
-  {
-    id: 'e2',
-    kind: 'event',
-    comment: 'Billede tilføjet til lokalitet',
-    scope: 'location',
-    createdAt: '2026-01-05T11:20:00Z',
-    createdBy: 'Alex',
-  },
-  {
-    id: 'c3',
-    kind: 'comment',
-    scope: 'location',
-    comment: 'Adgang til lokaliteten kræver en 4x4 efter kraftig regn.',
-    flags: [1, 2],
-    pinned: false,
-    createdAt: '2026-01-02T16:45:00Z',
-    createdBy: 'Alex',
-  },
-];
+// const MOCK_DATA: ActivityRow[] = [
+//   {
+//     id: 'c1',
+//     kind: 'comment',
+//     scope: 'location',
+//     comment: 'Meget svært at tilgå om vinteren.',
+//     flags: [1],
+//     pinned: false,
+//     createdAt: '2026-01-12T09:15:00Z',
+//     createdBy: 'Alex',
+//   },
+//   {
+//     id: 'e1',
+//     kind: 'event',
+//     comment: 'Udstyr udskiftet',
+//     createdAt: '2026-01-10T14:00:00Z',
+//     createdBy: 'system',
+//     scope: 'timeseries',
+//   },
+//   {
+//     id: 'c2',
+//     kind: 'comment',
+//     scope: 'timeseries',
+//     comment: 'Data for denne tidsserie er meget ujævn pga. sporadisk sensorfejl.',
+//     flags: [1, 2],
+//     pinned: true,
+//     createdAt: '2026-01-10T08:30:00Z',
+//     createdBy: 'Maria',
+//   },
+//   {
+//     id: 'e2',
+//     kind: 'event',
+//     comment: 'Billede tilføjet til lokalitet',
+//     scope: 'location',
+//     createdAt: '2026-01-05T11:20:00Z',
+//     createdBy: 'Alex',
+//   },
+//   {
+//     id: 'c3',
+//     kind: 'comment',
+//     scope: 'location',
+//     comment: 'Adgang til lokaliteten kræver en 4x4 efter kraftig regn.',
+//     flags: [1, 2],
+//     pinned: false,
+//     createdAt: '2026-01-02T16:45:00Z',
+//     createdBy: 'Alex',
+//   },
+// ];
 
 // -----------------------------------------------------------------------------
 // Column Definitions (logic-only, not visual)
@@ -130,7 +131,7 @@ const columns: MRT_ColumnDef<ActivityRow>[] = [
   {
     id: 'flags',
     header: 'Flag',
-    accessorFn: (row) => (row.kind === 'comment' ? row.flags.join('|') : ''),
+    accessorFn: (row) => (row.kind === 'comment' ? row.flag_ids.join('|') : ''),
     filterVariant: 'autocomplete',
   },
   {
@@ -146,15 +147,15 @@ const columns: MRT_ColumnDef<ActivityRow>[] = [
     filterFn: 'arrIncludesSome',
   },
   {
-    id: 'createdAt',
+    id: 'created_at',
     header: 'Oprettet den',
-    accessorKey: 'createdAt',
+    accessorFn: (row) => dayjs(row.created_at),
     enableColumnFilter: false,
   },
   {
-    id: 'createdBy',
+    id: 'created_by',
     header: 'Oprettet af',
-    accessorKey: 'createdBy',
+    accessorKey: 'created_by',
     enableColumnFilter: false,
   },
 ];
@@ -165,6 +166,7 @@ const columns: MRT_ColumnDef<ActivityRow>[] = [
 
 function CommentCard({row}: {row: MRT_Row<CommentRow>}) {
   const {data: activityOptions} = useAllActivityOptions();
+  const mutation = usePinActivity();
 
   const isPinned = row.original.pinned;
 
@@ -185,17 +187,17 @@ function CommentCard({row}: {row: MRT_Row<CommentRow>}) {
           pb: 0,
           mb: 0,
         }}
-        subheader={`${row.original.createdBy} · ${convertDateWithTimeStamp(row.original.createdAt)}`}
+        subheader={`${row.original.created_by} · ${convertDateWithTimeStamp(row.original.created_at)}`}
         action={
-          <IconButton size="small">
+          <IconButton size="small" onClick={() => mutation.mutate(row.original.id)}>
             <PushPinIcon fontSize="small" color={isPinned ? 'primary' : 'disabled'} />
           </IconButton>
         }
       />
       <CardContent sx={{pt: 0}}>
-        {row.original.flags && (
+        {row.original.flag_ids && (
           <Stack direction="row" spacing={1} mt={1} flexWrap="wrap">
-            {row.original.flags.map((id) => {
+            {row.original.flag_ids.map((id) => {
               const option = activityOptions?.find((opt) => opt.id === id);
               const val = option ? option.label : `Ukendt aktivitet (${id})`;
               const isMatch = search && val.toLowerCase().includes(search.toLowerCase());
@@ -229,7 +231,7 @@ function EventCard({row}: {row: MRT_Row<EventRow>}) {
           <EventIcon fontSize="small" color="action" />
           <Typography variant="body2">{row.original.comment}</Typography>
           <Typography variant="caption" color="text.secondary">
-            · {convertDateWithTimeStamp(row.original.createdAt)}
+            · {convertDateWithTimeStamp(row.original.created_at)}
           </Typography>
         </Stack>
       </CardContent>
@@ -276,7 +278,7 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
     localization: MRT_Localization_DA,
     columns,
     data: data,
-    getRowId: (originalRow) => originalRow.id,
+    getRowId: (originalRow) => originalRow.id.toString(),
     enableGlobalFilter: true, // ← REQUIRED
     globalFilterFn: 'includesString',
 
@@ -289,7 +291,7 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
     initialState: {
       sorting: [
         {id: 'pinned', desc: true},
-        {id: 'createdAt', desc: true},
+        {id: 'created_at', desc: true},
       ],
       rowPinning: {
         top: ['c2'],
@@ -308,6 +310,7 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          width: '100%',
         }}
       >
         {/**
@@ -316,7 +319,7 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
          */}
         {/* <MRT_TablePagination table={table} /> */}
         <MRT_GlobalFilterTextField table={table} />
-        <ResetTableStateButton table={table} />
+        {/* <ResetTableStateButton table={table} /> */}
       </Box>
       {/* <MRT_TopToolbar table={table} /> */}
 

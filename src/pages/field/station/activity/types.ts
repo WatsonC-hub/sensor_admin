@@ -4,7 +4,7 @@ import {zodDayjs} from '~/helpers/schemas';
 
 const activitySchema = z.object({
   created_at: zodDayjs('Tidspunkt skal være udfyldt'),
-  id: z.number().optional().default(-1),
+  id: z.string().optional().default(''),
   onTimeseries: z.preprocess((val) => val === 'true', z.boolean()).default(false),
   flag_ids: z.array(z.number()).optional().default([]),
   comment: z.string().default(''),
@@ -16,22 +16,22 @@ type BaseRow = {
   id: string;
   kind: 'comment' | 'event';
   comment: string;
-  flags?: Array<number>;
+  flag_ids?: Array<number>;
   pinned?: boolean;
   scope: 'location' | 'timeseries';
-  createdAt: string;
-  createdBy: 'system' | string;
+  created_at: string;
+  created_by: 'system' | string;
 };
 
 export type CommentRow = BaseRow & {
   kind: 'comment';
-  flags: Array<number>;
+  flag_ids: Array<number>;
   pinned: boolean;
 };
 
 export type EventRow = BaseRow & {
   kind: 'event';
-  flags?: never;
+  flag_ids?: never;
   pinned?: never;
 };
 
@@ -45,7 +45,7 @@ export type ActivityOption = {
 };
 
 export type ActivityPost = {
-  id: number;
+  id: string;
   loc_id?: number;
   ts_id?: number;
   created_at: Dayjs;

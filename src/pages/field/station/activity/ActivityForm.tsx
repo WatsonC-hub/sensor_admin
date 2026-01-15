@@ -32,14 +32,21 @@ const ActivityForm = ({loc_id, ts_id, initialData}: ActivityFormProps) => {
   });
 
   const onSubmit = (values: ActivitySchemaType) => {
-    mutation.mutate({
-      comment: values.comment,
-      created_at: values.created_at,
-      flag_ids: values.flag_ids,
-      id: values.id,
-      loc_id: values.onTimeseries ? undefined : loc_id,
-      ts_id: values.onTimeseries ? ts_id : undefined,
-    });
+    mutation.mutate(
+      {
+        comment: values.comment,
+        created_at: values.created_at,
+        flag_ids: values.flag_ids,
+        id: values.id,
+        loc_id: values.onTimeseries ? undefined : loc_id,
+        ts_id: values.onTimeseries ? ts_id : undefined,
+      },
+      {
+        onSuccess: () => {
+          setShowForm(null);
+        },
+      }
+    );
   };
 
   return (
@@ -55,7 +62,7 @@ const ActivityForm = ({loc_id, ts_id, initialData}: ActivityFormProps) => {
         }}
       >
         <Typography variant="h6" gutterBottom>
-          {activityData?.id === -1 ? 'Tilføj aktivitet' : 'Rediger aktivitet'}
+          {activityData?.id === '' ? 'Tilføj aktivitet' : 'Rediger aktivitet'}
         </Typography>
         <Form.DateTime gridSizes={{xs: 12}} name="created_at" label="Dato" />
         <Form.Radio

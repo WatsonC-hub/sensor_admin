@@ -16,7 +16,7 @@ import {useActivities} from './activityQueries';
 
 const defaultData = () =>
   ({
-    id: -1,
+    id: '',
     created_at: dayjs(),
     onTimeseries: false,
     comment: '',

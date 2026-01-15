@@ -1,8 +1,15 @@
-import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
+import {
+  MutationOptions,
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {ActivityOption, ActivityPost, ActivityRow} from './types';
+import {toast} from 'react-toastify';
 
 const activityOptionsQueryOptions = (ts_id?: number) =>
   queryOptions<ActivityOption[], APIError>({
@@ -39,7 +46,7 @@ const activityQueryOptions = (loc_id: number, ts_id?: number) =>
     },
   });
 
-export const commentPostOptions = {
+export const commentPostOptions: MutationOptions<unknown, APIError, ActivityPost> = {
   mutationKey: ['activity_comment_post'],
   mutationFn: async (data: ActivityPost) => {
     const {data: res} = await apiClient.post(`/sensor_field/station/activity/`, data);
@@ -60,7 +67,53 @@ const useActivities = (loc_id: number, ts_id?: number) => {
 };
 
 const useActivityPost = () => {
-  return useMutation(commentPostOptions);
+  return useMutation({
+    ...commentPostOptions,
+    onSuccess: () => {
+      toast.success('Aktivitet gemt');
+    },
+    meta: {
+      invalidates: [['activities']],
+    },
+  });
 };
 
-export {useActivityOptions, useAllActivityOptions, useActivities, useActivityPost};
+const usePinActivity = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['activity_pin'],
+    mutationFn: async (id: string) => {
+      const {data: res} = await apiClient.post(`/sensor_field/station/activity/pin/${id}`);
+      return res;
+    },
+    onMutate: async (id) => {
+      // Cancel any outgoing refetches
+      // (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({queryKey: ['activities']});
+      const queryCache = queryClient.getQueryCache();
+
+      const active = queryCache.findAll({type: 'active', queryKey: ['activities']});
+      // Snapshot the previous value
+      if (active && active.length > 0) {
+        queryClient.setQueryData<ActivityRow[]>(active[0].queryKey, (old) => {
+          if (old == undefined) return [];
+          return old.map((row) => {
+            if (row.id == id && row.kind == 'comment') {
+              return {
+                ...row,
+                pinned: !row.pinned,
+              };
+            }
+            return row;
+          });
+        });
+      }
+    },
+    meta: {
+      invalidates: [['activities']],
+      optOutGeneralInvalidations: true,
+    },
+  });
+};
+
+export {useActivityOptions, useAllActivityOptions, useActivities, useActivityPost, usePinActivity};
