@@ -1,6 +1,6 @@
 import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useMapFilterStore} from '../store';
-import {Filter} from '~/pages/field/overview/components/filter_consts';
+import {Filter, locationFilterOptions} from '~/pages/field/overview/components/filter_consts';
 import {BoreholeMapData} from '~/types';
 import {useMemo, useState} from 'react';
 import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
@@ -44,7 +44,9 @@ const filterSensor = (data: MapOverview, showService: Filter['showService']) => 
 };
 
 const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id: string) => {
-  const isUpcoming = elem.due_date?.isBefore(dayjs().add(1, 'month'));
+  if (filter.locationFilter.length === locationFilterOptions.length) return true;
+
+  const isUpcoming = elem.due_date?.isBefore(dayjs().add(1, 'month')) || elem.due_date === null;
 
   const isFaultLess =
     (elem.notification_ids === null || elem.notification_ids.length === 0) &&
@@ -57,11 +59,7 @@ const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id
 
   // Der er opgaver som ikke har en dato. Det gør at lokationen ikke vises eftersom vi viser lokationer med due_date 1 måned frem.
   const hasNotifications =
-    (elem.notification_ids && elem.notification_ids.length > 0 && !elem.has_task) ||
-    elem.has_task ||
-    elem.itinerary_id
-      ? true
-      : false;
+    (elem.notification_ids && elem.notification_ids.length > 0) || (elem.has_task && isUpcoming);
 
   // De Ovenstående opgaver vises dog under inaktive fordi lokationen er inaktiv.
   const isInactive = elem.inactive_new && !elem.not_serviced && !elem.in_service;
@@ -74,7 +72,11 @@ const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id
   const isAssignedToMe = filtered_tasks?.some((task) => task.assigned_to === user_id);
 
   const not_handled_tasks = filtered_tasks?.some(
-    (task) => task.status_category === 'unstarted' && isUpcoming
+    (task) =>
+      (task.status_category === 'unstarted' && isUpcoming) ||
+      (task.status_id !== 2 &&
+        task.status_category !== 'unstarted' &&
+        (task.due_date == null || task.assigned_to === null))
   );
 
   const not_handled_field_tasks = filtered_tasks?.some(

@@ -2,7 +2,6 @@ import {Project} from '~/features/stamdata/api/useLocationProject';
 import type {Group} from '~/types';
 
 export const locationFilterOptions = [
-  {name: 'Alle'},
   {name: 'Fejlfri'},
   {name: 'Tildelt til mig'},
   {name: 'Notifikationer'},
@@ -11,7 +10,7 @@ export const locationFilterOptions = [
   {name: 'Nyopsætninger'},
   {name: 'Uplanlagte opgaver'},
   {name: 'Uplanlagt feltarbejde'},
-];
+] as const;
 
 interface Filter {
   freeText?: string;
@@ -21,7 +20,7 @@ interface Filter {
   };
   showService: string;
   notificationTypes: number[];
-  locationFilter: string[];
+  locationFilter: (typeof locationFilterOptions)[number]['name'][];
   groups: Group[];
   projects: Project[];
 }
