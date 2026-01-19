@@ -23,7 +23,7 @@ export type MetaType = {
 type ControlSettings = {
   controls_per_year: number | undefined;
   lead_time: number | undefined;
-  selectValue: number | undefined;
+  selectValue: 1 | 2;
 };
 
 type LocationData = {
@@ -57,6 +57,7 @@ type TimeseriesData = {
   intakeno?: number | null | undefined;
   unit_uuid?: string;
   control_settings?: ControlSettings;
+  sync?: SyncFormValues;
 };
 
 export type FormState = {
@@ -64,7 +65,6 @@ export type FormState = {
   timeseries?: Array<TimeseriesData>;
   watlevmp?: Array<Watlevmp>;
   units?: Array<UnitData>;
-  sync?: SyncFormValues;
   contacts?: Array<ContactTable>;
   location_access?: Array<AccessTable>;
   ressources?: Array<Ressourcer>;
@@ -131,6 +131,15 @@ const CreateStationContextProvider = ({children}: Props) => {
         setFormState((prev: FormState) => {
           const timeseries = prev.timeseries ? [...prev.timeseries] : [];
           timeseries[index].control_settings = data as ControlSettings;
+          return {...prev, timeseries};
+        });
+        return;
+      }
+
+      if (key === 'sync' && index !== undefined) {
+        setFormState((prev: FormState) => {
+          const timeseries = prev.timeseries ? [...prev.timeseries] : [];
+          timeseries[index].sync = data as SyncFormValues;
           return {...prev, timeseries};
         });
         return;

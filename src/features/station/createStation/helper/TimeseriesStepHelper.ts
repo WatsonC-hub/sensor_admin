@@ -7,6 +7,9 @@ import {
 } from 'react-hook-form';
 import {Unit} from '~/features/stamdata/api/useAddUnit';
 import {FormState, MetaType} from '~/helpers/CreateStationContextProvider';
+import {queryClient} from '~/queryClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {DmpSyncValidCombination} from '~/types';
 
 export const typeSelectChanged = (
   event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -135,4 +138,20 @@ export const onUnitListValidate = (
       };
     }),
   ]);
+};
+
+export const isSynchronizationAllowed = (
+  tstype_id: number | undefined,
+  loctype_id: number | undefined
+): boolean => {
+  const data =
+    queryClient.getQueryData<Array<DmpSyncValidCombination>>(queryKeys.dmpAllowedMapList()) || [];
+  const isJupiterType = [1, 11, 12, 16].includes(tstype_id || 0);
+  const isBorehole = loctype_id === 9;
+  const canSyncJupiter = isBorehole && isJupiterType;
+  const isDmpAllowed = data?.some((combination) => {
+    return combination.loctype_id === loctype_id && combination.tstype_id === tstype_id;
+  });
+
+  return isDmpAllowed || canSyncJupiter;
 };

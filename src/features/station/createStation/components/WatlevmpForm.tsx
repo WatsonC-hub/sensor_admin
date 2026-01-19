@@ -13,7 +13,6 @@ import useWatlevmpForm from '../../api/useWatlevmpForm';
 import DefaultWatlevmpForm from '../../components/stamdata/stamdataComponents/DefaultWatlevmpForm';
 import StamdataWatlevmp from '../../components/stamdata/StamdataWatlevmp';
 import useCreateStationContext from '../api/useCreateStationContext';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {Watlevmp} from '../../schema';
 
 type WatlevmpFormProps = {
@@ -24,8 +23,6 @@ type WatlevmpFormProps = {
 };
 
 const WatlevmpForm = ({index, tstype_id, intakeno, onValidate}: WatlevmpFormProps) => {
-  const {isMobile} = useBreakpoints();
-  const size = isMobile ? 12 : 6;
   const [helperText, setHelperText] = useState('');
   const {
     meta,
@@ -72,7 +69,7 @@ const WatlevmpForm = ({index, tstype_id, intakeno, onValidate}: WatlevmpFormProp
   }, [watlevmpFormState.errors]);
 
   return (
-    <Grid2 container size={size} spacing={1}>
+    <Grid2 container size={12} spacing={1}>
       <FormProvider {...watlevmpFormMethods}>
         <StamdataWatlevmp tstype_id={tstype_id}>
           <DefaultWatlevmpForm

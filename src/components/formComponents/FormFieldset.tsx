@@ -4,12 +4,13 @@ import React from 'react';
 type Props = {
   children: React.ReactNode;
   sx?: object;
-  label: string;
+  label: React.ReactNode;
   icon?: React.ReactNode;
+  labelPosition?: number;
   onClick?: () => void;
 };
 
-const FormFieldset = ({children, sx = {}, label, icon, onClick}: Props) => {
+const FormFieldset = ({children, sx = {}, label, icon, labelPosition = -28, onClick}: Props) => {
   return (
     <Box
       sx={{
@@ -32,7 +33,7 @@ const FormFieldset = ({children, sx = {}, label, icon, onClick}: Props) => {
           component="legend"
           sx={{
             position: 'relative',
-            top: -28,
+            top: labelPosition,
             //   left: 5,
             width: 'fit-content',
             height: 'fit-content',

@@ -13,6 +13,7 @@ import UnitDialog from './UnitDialog';
 import UnitStep from './UnitStep';
 
 import {
+  isSynchronizationAllowed,
   onUnitListValidate,
   removeTimeseries,
   typeSelectChanged,
@@ -20,11 +21,13 @@ import {
 import WatlevmpSection from './WatlevmpSection';
 import ControlSettingSection from './ControlSettingSection';
 import AddUnitSection from './AddUnitSection';
+import SyncSection from './SyncSection';
 const TimeseriesStep = () => {
   const {isMobile} = useBreakpoints();
   const [unitDialog, setUnitDialog] = useState(false);
   const [watlevmpIndex, setWatlevmpIndex] = useState<Array<number>>([]);
   const [controlSettings, setControlSettings] = useState<Array<number>>([]);
+  const [timeseriesSyncList, setTimeseriesSyncList] = useState<Array<number>>([]);
   const size = isMobile ? 12 : 6;
   const {
     meta,
@@ -39,7 +42,7 @@ const TimeseriesStep = () => {
       context: {
         loctype_id: meta?.loctype_id,
       },
-      values: {timeseries: timeseries},
+      values: {timeseries},
     },
     mode: 'Add',
   });
@@ -57,18 +60,24 @@ const TimeseriesStep = () => {
     name: 'timeseries',
   });
 
-  const removeWatlevmpAtIndex = (index: number) => {
+  const removeWatlevmpAtIndex = (index: number, validate?: boolean) => {
     const indexInWatlevmp = watlevmpIndex.find((i) => i === index);
     setWatlevmpIndex((prev) => prev.filter((i) => i !== index));
-    onValidate(
-      'watlevmp',
-      (watlevmp || []).filter((_, i) => i !== indexInWatlevmp)
-    );
+    if (validate)
+      onValidate(
+        'watlevmp',
+        (watlevmp || []).filter((_, i) => i !== indexInWatlevmp)
+      );
   };
 
-  const removeControlSettingsAtIndex = (index: number) => {
+  const removeControlSettingsAtIndex = (index: number, validate?: boolean) => {
     setControlSettings((prev) => prev.filter((i) => i !== index));
-    onValidate('control_settings', undefined, index);
+    if (validate) onValidate('control_settings', {}, index);
+  };
+
+  const removeSyncAtIndex = (index: number, validate?: boolean) => {
+    setTimeseriesSyncList((prev) => prev.filter((i) => i !== index));
+    if (validate) onValidate('sync', {}, index);
   };
 
   useEffect(() => {
@@ -105,8 +114,17 @@ const TimeseriesStep = () => {
             </Box>
             {fields?.map((field, index) => {
               const unit = units?.find((u) => u.unit_uuid === field.unit_uuid);
+              const isSyncAllowed = isSynchronizationAllowed(
+                field.tstype_id ?? undefined,
+                meta?.loctype_id
+              );
               return (
-                <FormFieldset key={field.id} label="" sx={{width: '100%'}}>
+                <FormFieldset
+                  key={field.id}
+                  label={'Tidsserie - ' + (index + 1)}
+                  labelPosition={-20}
+                  sx={{width: '100%', p: 1, gap: 2}}
+                >
                   <StamdataTimeseries boreholeno={meta?.boreholeno}>
                     <Grid2 container size={12} spacing={1}>
                       <TimeseriesForm
@@ -164,7 +182,9 @@ const TimeseriesStep = () => {
                   {unit?.unit_uuid ? (
                     <UnitStep unit={unit} />
                   ) : (
-                    <AddUnitSection field={field} index={index} update={update} />
+                    field.tstype_id && (
+                      <AddUnitSection field={field} index={index} update={update} />
+                    )
                   )}
 
                   <ControlSettingSection
@@ -178,6 +198,20 @@ const TimeseriesStep = () => {
                     field={field}
                     update={update}
                   />
+
+                  {field?.tstype_id && meta?.loctype_id && isSyncAllowed && (
+                    <SyncSection
+                      index={index}
+                      SyncIndex={timeseriesSyncList}
+                      setSyncIndex={setTimeseriesSyncList}
+                      removeSyncAtIndex={removeSyncAtIndex}
+                      setValue={(value) => {
+                        setValue(`timeseries.${index}.sync`, value);
+                      }}
+                      field={field}
+                      update={update}
+                    />
+                  )}
 
                   <Grid2
                     size={isMobile ? 12 : 1}
@@ -201,8 +235,9 @@ const TimeseriesStep = () => {
                           remove
                         );
 
-                        removeWatlevmpAtIndex(index);
+                        removeWatlevmpAtIndex(index, true);
                         removeControlSettingsAtIndex(index);
+                        removeSyncAtIndex(index);
                       }}
                     >
                       Fjern tidsserie
@@ -217,15 +252,8 @@ const TimeseriesStep = () => {
             onFormIsValid={async () => {
               let isValid = true;
               await handleTimeseriesSubmit(
-                (data) => {
-                  timeseries?.forEach((ts, index) => {
-                    update(index, {
-                      ...ts,
-                      ...data.timeseries?.[index],
-                    });
-                  });
-
-                  onValidate('timeseries', data.timeseries);
+                () => {
+                  onValidate('timeseries', fields);
                 },
                 (e) => {
                   console.log(e);

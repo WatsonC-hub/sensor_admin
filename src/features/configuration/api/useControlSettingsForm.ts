@@ -6,7 +6,7 @@ const controlSettingsSchema = z.object({
   controls_per_year: z.number().nullable(),
   lead_time: z.number().nullable(),
   dummy: z.number().nullish().optional(),
-  selectValue: z.number().default(1),
+  selectValue: z.literal(1).or(z.literal(2)).default(1),
   from_unit: z.boolean().optional(),
 });
 

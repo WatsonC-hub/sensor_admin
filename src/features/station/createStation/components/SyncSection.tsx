@@ -1,35 +1,41 @@
-import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
-import {Grid2, Box, Typography, IconButton} from '@mui/material';
+import {Box, Grid2, IconButton, Typography} from '@mui/material';
 import React from 'react';
-import WatlevmpForm from './WatlevmpForm';
-import useCreateStationContext from '../api/useCreateStationContext';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import Button from '~/components/Button';
-import {FieldArrayWithId} from 'react-hook-form';
+import {FieldArrayWithId, UseFieldArrayUpdate} from 'react-hook-form';
+import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
 import {FormState} from '~/helpers/CreateStationContextProvider';
+import useCreateStationContext from '../api/useCreateStationContext';
+import JupiterDmpSync from '~/features/synchronization/components/JupiterDmpSync';
+import Button from '~/components/Button';
+import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 
 type Props = {
-  showAddWatlevmpButton: boolean;
   index: number;
+  SyncIndex: Array<number>;
+  setSyncIndex: React.Dispatch<React.SetStateAction<Array<number>>>;
+  removeSyncAtIndex: (index: number, validate?: boolean) => void;
   field: FieldArrayWithId<{timeseries: FormState['timeseries']}, 'timeseries', 'id'>;
-  removeWatlevmpAtIndex: (index: number, validate?: boolean) => void;
-  setWatlevmpIndex: React.Dispatch<React.SetStateAction<Array<number>>>;
+  setValue: (value: SyncFormValues | undefined) => void;
+  update: UseFieldArrayUpdate<{timeseries: FormState['timeseries'] | undefined}, 'timeseries'>;
 };
 
-const WatlevmpSection = ({
-  showAddWatlevmpButton,
+const SyncSection = ({
   index,
+  SyncIndex,
+  setSyncIndex,
+  removeSyncAtIndex,
   field,
-  removeWatlevmpAtIndex,
-  setWatlevmpIndex,
+  setValue,
+  update,
 }: Props) => {
-  const {onValidate} = useCreateStationContext();
+  const {meta} = useCreateStationContext();
+  const timeseriesHasSync = SyncIndex.includes(index);
   const {isMobile} = useBreakpoints();
 
   return (
     <>
-      {!showAddWatlevmpButton ? (
+      {timeseriesHasSync ? (
         <FormFieldset
           label={
             isMobile ? (
@@ -38,15 +44,15 @@ const WatlevmpSection = ({
                 sx={{p: 0, m: 0}}
                 startIcon={<RemoveCircleOutline color="primary" />}
                 onClick={() => {
-                  removeWatlevmpAtIndex(index, true);
+                  removeSyncAtIndex(index, true);
                 }}
               >
                 <Typography variant="body2" color="grey.700">
-                  Målepunkt
+                  Synkronisering
                 </Typography>
               </Button>
             ) : (
-              'Målepunkt'
+              'Synkronisering'
             )
           }
           labelPosition={isMobile ? -22 : -20}
@@ -58,19 +64,26 @@ const WatlevmpSection = ({
                 color="primary"
                 size="small"
                 onClick={() => {
-                  removeWatlevmpAtIndex(index, true);
+                  removeSyncAtIndex(index, true);
                 }}
               >
                 <RemoveCircleOutline />
               </IconButton>
             )}
             <Grid2 container size={12} spacing={1}>
-              <WatlevmpForm
-                index={index}
-                tstype_id={field.tstype_id!}
-                intakeno={field.intakeno ?? undefined}
-                onValidate={onValidate}
-              />
+              <Grid2 size={12}>
+                <JupiterDmpSync
+                  mode="add"
+                  loctype_id={meta?.loctype_id}
+                  tstype_id={field.tstype_id ?? undefined}
+                  values={field.sync}
+                  onValidate={(key, data) => {
+                    update(index, {...field, sync: {...field.sync, ...data}});
+                    // onValidate(key, data, index);
+                    setValue(data);
+                  }}
+                />
+              </Grid2>
             </Grid2>
           </Box>
         </FormFieldset>
@@ -89,11 +102,11 @@ const WatlevmpSection = ({
               },
             }}
             onClick={() => {
-              setWatlevmpIndex((prev) => [...prev, index]);
+              setSyncIndex((prev) => [...prev, index]);
             }}
           >
             <Typography variant="body1" color="primary">
-              Tilføj målepunkt
+              Tilføj synkronisering
             </Typography>
           </Button>
         </Box>
@@ -102,4 +115,4 @@ const WatlevmpSection = ({
   );
 };
 
-export default WatlevmpSection;
+export default SyncSection;

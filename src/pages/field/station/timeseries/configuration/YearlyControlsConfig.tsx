@@ -12,11 +12,13 @@ import EditControlSettings from '~/features/configuration/components/EditControl
 import useControlSettingsForm, {
   ControlSettingsFormValues,
 } from '~/features/configuration/api/useControlSettingsForm';
+import {useUser} from '~/features/auth/useUser';
 
 const YearlyControlsConfig = () => {
   const {ts_id} = useAppContext(['ts_id']);
   const {data: values} = useTimeseriesServiceInterval(ts_id);
   const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
+  const {superUser} = useUser();
 
   const formMethods = useControlSettingsForm<ControlSettingsFormValues>({
     mode: 'edit',
@@ -40,6 +42,9 @@ const YearlyControlsConfig = () => {
     formState: {isSubmitting, dirtyFields},
   } = formMethods;
 
+  const disabled =
+    (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser);
+
   const onSubmit = (data: ControlSettingsFormValues) => {
     mutate(
       {
@@ -54,7 +59,7 @@ const YearlyControlsConfig = () => {
 
   return (
     <FormProvider {...formMethods}>
-      <EditControlSettings />
+      <EditControlSettings disabled={disabled} />
 
       <Box display="flex" justifyContent="flex-end">
         <Button

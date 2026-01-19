@@ -5,12 +5,13 @@ import useUnitForm from '../../api/useUnitForm';
 import StamdataUnit from '../../components/stamdata/StamdataUnit';
 import {z} from 'zod';
 import {zodDayjs} from '~/helpers/schemas';
-import {Grid2} from '@mui/material';
+import {Box, Grid2, IconButton, Typography} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import Button from '~/components/Button';
 import useCreateStationContext from '../api/useCreateStationContext';
-import {Delete} from '@mui/icons-material';
+import {RemoveCircleOutline} from '@mui/icons-material';
 import {UnitData} from '~/helpers/CreateStationContextProvider';
+import FormFieldset from '~/components/formComponents/FormFieldset';
+import Button from '~/components/Button';
 
 type UnitStepProps = {
   unit: UnitData;
@@ -52,37 +53,57 @@ const UnitStep = ({unit}: UnitStepProps) => {
   }, [unit]);
 
   return (
-    <FormProvider {...unitFormMethods}>
-      <StamdataUnit tstype_id={unit.sensortypeid}>
-        <Grid2
-          container
-          size={12}
-          spacing={1}
-          alignItems="center"
-          display={isMobile ? 'flex' : undefined}
-          justifyContent={isMobile ? 'end' : undefined}
-        >
-          <Grid2 size={isMobile ? 12 : 6}>
-            <StamdataUnit.CalypsoID />
-          </Grid2>
-          <Grid2 size={isMobile ? 12 : 6}>
-            <StamdataUnit.SensorID />
-          </Grid2>
-          <Grid2 size={isMobile ? 12 : 6}>
-            <StamdataUnit.StartDate />
-          </Grid2>
+    <FormFieldset
+      label={
+        isMobile ? (
           <Button
-            bttype="tertiary"
-            startIcon={<Delete />}
+            bttype="borderless"
+            sx={{p: 0, m: 0}}
+            startIcon={<RemoveCircleOutline color="primary" />}
             onClick={() => {
               onValidate('units', units?.filter((u) => u.unit_uuid !== unit.unit_uuid) || []);
             }}
           >
-            Fjern udstyr
+            <Typography variant="body2" color="grey.700">
+              Udstyr
+            </Typography>
           </Button>
-        </Grid2>
-      </StamdataUnit>
-    </FormProvider>
+        ) : (
+          'Udstyr'
+        )
+      }
+      labelPosition={isMobile ? -22 : -20}
+      sx={{width: '100%', p: 1}}
+    >
+      <FormProvider {...unitFormMethods}>
+        <Box display="flex" flexDirection="row" gap={1} alignItems="center">
+          {!isMobile && (
+            <IconButton
+              color="primary"
+              size="small"
+              onClick={() => {
+                onValidate('units', units?.filter((u) => u.unit_uuid !== unit.unit_uuid) || []);
+              }}
+            >
+              <RemoveCircleOutline />
+            </IconButton>
+          )}
+          <StamdataUnit tstype_id={unit.sensortypeid}>
+            <Grid2 container size={12} spacing={1} direction={isMobile ? 'column-reverse' : 'row'}>
+              <Grid2 size={isMobile ? 12 : 4}>
+                <StamdataUnit.CalypsoID />
+              </Grid2>
+              <Grid2 size={isMobile ? 12 : 4}>
+                <StamdataUnit.SensorID />
+              </Grid2>
+              <Grid2 size={isMobile ? 12 : 4}>
+                <StamdataUnit.StartDate />
+              </Grid2>
+            </Grid2>
+          </StamdataUnit>
+        </Box>
+      </FormProvider>
+    </FormFieldset>
   );
 };
 

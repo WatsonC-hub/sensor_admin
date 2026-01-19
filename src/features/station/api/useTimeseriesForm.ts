@@ -55,7 +55,37 @@ const useTimeseriesForm = <T extends Record<string, any>>({
 
   const [schema, form] = getSchemaAndForm(loctype_id, mode);
 
-  const arraySchema = z.object({timeseries: z.array(schema.optional())});
+  const arraySchema = z.object({
+    timeseries: z.array(schema.optional()).superRefine((value, ctx) => {
+      const seen = new Map<string, number>();
+      value.forEach((ts, index) => {
+        if (ts && 'tstype_id' in ts === true && 'intakeno' in ts === true) {
+          if (!ts.tstype_id || !ts.intakeno) return;
+
+          const key = `${ts.intakeno ?? 0}-${ts.tstype_id}`;
+          const message =
+            'Tidsserietype og indtag kombinationen skal være unik i listen af tidsserier';
+          if (seen.has(key)) {
+            const firstIndex = seen.get(key)!;
+
+            ctx.addIssue({
+              path: [index, 'tstype_id'],
+              message: message,
+              code: z.ZodIssueCode.custom,
+            });
+
+            ctx.addIssue({
+              path: [firstIndex, 'tstype_id'],
+              message: message,
+              code: z.ZodIssueCode.custom,
+            });
+          } else {
+            seen.set(key, index);
+          }
+        }
+      });
+    }),
+  });
 
   const formMethods = useForm<T, {loctype_id: number | undefined}>({
     resolver: zodResolver(mode === 'Add' ? arraySchema : schema),

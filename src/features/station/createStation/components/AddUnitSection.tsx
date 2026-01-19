@@ -7,7 +7,6 @@ import {FieldArrayWithId, UseFieldArrayUpdate} from 'react-hook-form';
 import {FormState} from '~/helpers/CreateStationContextProvider';
 import Button from '~/components/Button';
 import useCreateStationContext from '../api/useCreateStationContext';
-import useBreakpoints from '~/hooks/useBreakpoints';
 
 type Props = {
   field: FieldArrayWithId<{timeseries: FormState['timeseries']}, 'timeseries', 'id'>;
@@ -20,15 +19,16 @@ const AddUnitSection = ({field, index, update}: Props) => {
     onValidate,
     formState: {units},
   } = useCreateStationContext();
-  const {isMobile} = useBreakpoints();
   const [openUnitDialog, setOpenUnitDialog] = React.useState(false);
   return (
-    <Box display={isMobile ? 'flex' : undefined} justifyContent={isMobile ? 'end' : undefined}>
+    <Box>
       <Button
         bttype="primary"
+        startIcon={<AddCircleOutline color="primary" />}
         sx={{
           width: 'fit-content',
           backgroundColor: 'transparent',
+          px: 0.5,
           border: 'none',
           ':hover': {
             backgroundColor: 'grey.200',
@@ -36,12 +36,9 @@ const AddUnitSection = ({field, index, update}: Props) => {
         }}
         onClick={() => setOpenUnitDialog(true)}
       >
-        <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
-          <Typography variant="body1" color="primary">
-            Tilføj udstyr
-          </Typography>
-          <AddCircleOutline color="primary" />
-        </Box>
+        <Typography variant="body1" color="primary">
+          Tilføj udstyr
+        </Typography>
       </Button>
       {openUnitDialog && (
         <AddUnitForm

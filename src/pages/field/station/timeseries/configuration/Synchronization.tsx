@@ -1,7 +1,7 @@
 import React from 'react';
 import useSync from '~/features/station/components/stamdata/dmpSynkronisering/api/useSync';
 import {useAppContext} from '~/state/contexts';
-import {Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
 import JupiterDmpSync from '~/features/synchronization/components/JupiterDmpSync';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
@@ -35,7 +35,10 @@ const Synchronization = () => {
   };
 
   return (
-    <Box display={'flex'} flexDirection="column">
+    <Box display={'flex'} flexGrow={1} flexDirection="column" justifyContent={'space-between'}>
+      <Typography variant="subtitle1" marginBottom={1}>
+        Synkronisering
+      </Typography>
       <JupiterDmpSync
         mode="edit"
         loctype_id={location_data?.loctype_id}
