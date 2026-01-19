@@ -30,6 +30,7 @@ import {ActivityRow, CommentRow, EventRow} from './types';
 import {useAllActivityOptions, usePinActivity} from './activityQueries';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import dayjs from 'dayjs';
+import {useMemo} from 'react';
 
 // -----------------------------------------------------------------------------
 // Types
@@ -102,64 +103,6 @@ const useActivityTableContext = () => {
   return context;
 };
 
-const columns: MRT_ColumnDef<ActivityRow>[] = [
-  {
-    id: 'content',
-    header: 'Indhold',
-    accessorKey: 'comment',
-    // enableGlobalFilter: true,
-    enableColumnFilter: false,
-  },
-  // {
-  //   id: 'pinned',
-  //   header: 'Fastgjort',
-  //   accessorFn: (row) => (row.kind === 'comment' ? row.pinned : false),
-  //   enableColumnFilter: false,
-  // },
-  {
-    id: 'kind',
-    header: 'Type',
-    accessorKey: 'kind',
-    enableColumnFilter: true,
-    filterSelectOptions: [
-      {label: 'Comment', value: 'comment'},
-      {label: 'Event', value: 'event'},
-    ],
-    filterVariant: 'multi-select',
-    filterFn: 'arrIncludesSome',
-  },
-  {
-    id: 'flags',
-    header: 'Flag',
-    accessorFn: (row) => (row.kind === 'comment' ? row.flag_ids.join('|') : ''),
-    filterVariant: 'autocomplete',
-  },
-  {
-    id: 'scope',
-    header: 'Område',
-    accessorKey: 'scope',
-    enableColumnFilter: true,
-    filterSelectOptions: [
-      {label: 'Lokation', value: 'location'},
-      {label: 'Tidsserie', value: 'timeseries'},
-    ],
-    filterVariant: 'multi-select',
-    filterFn: 'arrIncludesSome',
-  },
-  {
-    id: 'created_at',
-    header: 'Oprettet den',
-    accessorFn: (row) => dayjs(row.created_at),
-    enableColumnFilter: false,
-  },
-  {
-    id: 'created_by',
-    header: 'Oprettet af',
-    accessorKey: 'created_by',
-    enableColumnFilter: false,
-  },
-];
-
 // -----------------------------------------------------------------------------
 // Row Cards
 // -----------------------------------------------------------------------------
@@ -181,13 +124,22 @@ function CommentCard({row}: {row: MRT_Row<CommentRow>}) {
     <Card variant="outlined" sx={{borderColor: isPinned ? 'primary.main' : 'divider'}}>
       <CardHeader
         title={
-          row.original.scope === 'timeseries' ? `Kommentar på tidsserie` : 'Kommentar på lokalitet'
+          <Typography>
+            {row.original.scope === 'timeseries'
+              ? `Kommentar på tidsserie`
+              : 'Kommentar på lokalitet'}
+          </Typography>
         }
         sx={{
           pb: 0,
           mb: 0,
         }}
-        subheader={`${row.original.created_by} · ${convertDateWithTimeStamp(row.original.created_at)}`}
+        subheader={
+          <Typography
+            color="text.secondary"
+            variant="caption"
+          >{`${row.original.created_by} · ${convertDateWithTimeStamp(row.original.created_at)}`}</Typography>
+        }
         action={
           <IconButton size="small" onClick={() => mutation.mutate(row.original.id)}>
             <PushPinIcon fontSize="small" color={isPinned ? 'primary' : 'disabled'} />
@@ -205,7 +157,7 @@ function CommentCard({row}: {row: MRT_Row<CommentRow>}) {
                 <TooltipWrapper description={option?.description || ''} key={val} withIcon={false}>
                   <Chip
                     key={val}
-                    size="medium"
+                    size="small"
                     label={val}
                     variant={isMatch ? 'filled' : 'outlined'}
                     color={isMatch ? 'secondary' : 'default'}
@@ -284,6 +236,72 @@ interface ActivityTimelineTableProps {
 }
 
 export default function ActivityTimelineTable({data = []}: ActivityTimelineTableProps) {
+  const {data: activityOptions} = useAllActivityOptions();
+  const columns = useMemo<MRT_ColumnDef<ActivityRow>[]>(
+    () => [
+      {
+        id: 'content',
+        header: 'Indhold',
+        accessorKey: 'comment',
+        // enableGlobalFilter: true,
+        enableColumnFilter: false,
+      },
+      // {
+      //   id: 'pinned',
+      //   header: 'Fastgjort',
+      //   accessorFn: (row) => (row.kind === 'comment' ? row.pinned : false),
+      //   enableColumnFilter: false,
+      // },
+      {
+        id: 'kind',
+        header: 'Type',
+        accessorKey: 'kind',
+        enableColumnFilter: true,
+        filterSelectOptions: [
+          {label: 'Comment', value: 'comment'},
+          {label: 'Event', value: 'event'},
+        ],
+        filterVariant: 'multi-select',
+        filterFn: 'arrIncludesSome',
+      },
+      {
+        id: 'flags',
+        header: 'Flag',
+        accessorFn: (row) =>
+          row.kind === 'comment'
+            ? row.flag_ids
+                .map((id) => activityOptions?.find((opt) => opt.id === id)?.label)
+                .join('|')
+            : '',
+        filterVariant: 'autocomplete',
+      },
+      {
+        id: 'scope',
+        header: 'Område',
+        accessorKey: 'scope',
+        enableColumnFilter: true,
+        filterSelectOptions: [
+          {label: 'Lokation', value: 'location'},
+          {label: 'Tidsserie', value: 'timeseries'},
+        ],
+        filterVariant: 'multi-select',
+        filterFn: 'arrIncludesSome',
+      },
+      {
+        id: 'created_at',
+        header: 'Oprettet den',
+        accessorFn: (row) => dayjs(row.created_at),
+        enableColumnFilter: false,
+      },
+      {
+        id: 'created_by',
+        header: 'Oprettet af',
+        accessorKey: 'created_by',
+        enableColumnFilter: false,
+      },
+    ],
+    [activityOptions]
+  );
   const table = useMaterialReactTable({
     localization: MRT_Localization_DA,
     columns,

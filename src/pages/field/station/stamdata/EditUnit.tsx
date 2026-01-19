@@ -12,14 +12,15 @@ import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import FabWrapper from '~/components/FabWrapper';
-import {BuildRounded} from '@mui/icons-material';
+import {BatteryAlertRounded, BuildRounded} from '@mui/icons-material';
 import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import UnitEndDateDialog from './UnitEndDialog';
 import useUnitForm from '~/features/station/api/useUnitForm';
 import {EditUnit as EditUnitType, editUnitSchema} from '~/features/station/schema';
 
 import UnitHistoryTable from './UnitHistoryTable';
+import FloatingContainer from '~/components/ui/FloatingContainer';
+import FloatingButton from '~/components/ui/FloatingButton';
 
 const EditUnit = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
@@ -33,9 +34,9 @@ const EditUnit = () => {
   const tstype_id = metadata?.tstype_id;
   const disabled = location_permissions !== 'edit';
 
-  const mode =
+  const hasActiveEquipment =
     unit_history && unit_history.length > 0 && moment(unit_history?.[0].slutdato) > moment();
-  const fabText = mode ? 'Hjemtag udstyr' : 'Tilføj udstyr';
+  const fabText = hasActiveEquipment ? 'Hjemtag udstyr' : 'Tilføj udstyr';
 
   const metadataEditUnitMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -99,14 +100,25 @@ const EditUnit = () => {
           </FormProvider>
         </Box>
       </StationPageBoxLayout>
-      <FabWrapper
-        icon={<BuildRounded />}
-        text={fabText}
-        disabled={disabled}
-        onClick={() => (mode ? setOpenDialog(true) : setOpenAddUdstyr(true))}
-        sx={{visibility: openAddUdstyr || openDialog ? 'hidden' : 'visible'}}
-        showText={true}
-      />
+      <FloatingContainer sx={{visibility: openAddUdstyr || openDialog ? 'hidden' : 'visible'}}>
+        <FloatingButton
+          icon={<BatteryAlertRounded />}
+          text={'Skift batteri'}
+          disabled={!hasActiveEquipment}
+          onClick={() => console.log(unit_history?.[0]?.terminal_id)}
+          color="info"
+          sx={{
+            visibility: hasActiveEquipment ? 'visible' : 'hidden',
+          }}
+        />
+        <FloatingButton
+          icon={<BuildRounded />}
+          text={fabText}
+          disabled={disabled}
+          onClick={() => (hasActiveEquipment ? setOpenDialog(true) : setOpenAddUdstyr(true))}
+          showText={true}
+        />
+      </FloatingContainer>
     </>
   );
 };
