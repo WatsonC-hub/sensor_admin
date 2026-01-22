@@ -43,13 +43,13 @@ const filterSensor = (data: MapOverview, showService: Filter['showService']) => 
   );
 };
 
-const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id: string) => {
+const showElement = (elem: MapOverview, filter: Filter, tasks: Task[], user_id: string) => {
   if (filter.locationFilter.length === locationFilterOptions.length) return true;
 
   const isUpcoming = elem.due_date?.isBefore(dayjs().add(1, 'month')) || elem.due_date === null;
 
   const isFaultLess =
-    (elem.notification_ids === null || elem.notification_ids.length === 0) &&
+    (elem.notification_ids === null || elem.notification_ids?.length === 0) &&
     !elem.has_task &&
     !elem.itinerary_id &&
     !elem.not_serviced &&
@@ -104,18 +104,19 @@ const extendMapData = (elem: MapOverview, filter: Filter, tasks: Task[], user_id
   return add_to_map;
 };
 
-const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
-  if (filter.showHasControlProgram && filter.showNoControlProgram) return true;
+const filterBorehole = (data: BoreholeMapData, filter: Filter) => {
+  if (filter.locationFilter?.includes('Enkeltmålestationer')) return true;
+  // if (filter.showHasControlProgram && filter.showNoControlProgram) return true;
 
-  const hasControlProgram = data.num_controls_in_a_year.some((num) => num > 0);
+  // const hasControlProgram = data.num_controls_in_a_year.some((num) => num > 0);
 
-  if (filter.showHasControlProgram && hasControlProgram) {
-    return true;
-  }
+  // if (filter.showHasControlProgram && hasControlProgram) {
+  //   return true;
+  // }
 
-  if (filter.showNoControlProgram && !hasControlProgram) {
-    return true;
-  }
+  // if (filter.showNoControlProgram && !hasControlProgram) {
+  //   return true;
+  // }
 
   return false;
 };
@@ -127,53 +128,52 @@ const filterData = (
   tasks: Array<Task> | undefined
 ) => {
   let filteredData = data;
-
-  filteredData = filteredData.filter((elem): elem is MapOverview =>
-    'loc_id' in elem ? filterSensor(elem, filter.showService) : true
-  );
-
-  filteredData = filteredData.filter((elem): elem is BoreholeMapData =>
-    'boreholeno' in elem ? filterBorehole(elem, filter.borehole) : true
-  );
-
-  if (
-    filter.groups.length === 0 &&
-    filter.projects.length === 0 &&
-    filter.notificationTypes.length === 0
-  ) {
-    filteredData = filteredData.filter((elem) => {
-      if ('loc_id' in elem) {
-        const extend_map_data = extendMapData(elem, filter, tasks ?? [], user_id.toString());
-
-        return extend_map_data;
-      }
-    });
-  }
-
-  if (filter.notificationTypes?.length > 0) {
-    filteredData = filteredData.filter((elem) => {
-      if ('loc_id' in elem) {
-        return filter.notificationTypes.some((type) => elem.notification_ids?.includes(type));
-      }
-      return false;
-    });
-  }
+  const hasGroupFilter = filter.groups?.length > 0;
+  const hasProjectFilter = filter.projects?.length > 0;
+  const hasNotificationFilter = filter.notificationTypes?.length > 0;
+  const hasNoFilter = !(hasGroupFilter || hasProjectFilter || hasNotificationFilter);
 
   filteredData = filteredData.filter((elem) => {
-    let matchGroupsAndProjects = filter.groups.length === 0 && filter.projects.length === 0;
-    if (filter.groups.length > 0) {
-      matchGroupsAndProjects = filter.groups.some((group) =>
-        elem.groups?.some((item) => item.id === group.id)
+    let showElem = true;
+    let showService = false;
+    const hasLocId = 'loc_id' in elem;
+    const hasBoreholeNo = 'boreholeno' in elem;
+
+    if (hasLocId) {
+      showService = filterSensor(elem, filter.showService);
+    } else if (hasBoreholeNo) {
+      showService = filterBorehole(elem, filter);
+    }
+
+    if (hasNoFilter) {
+      showElem = showElement(elem as MapOverview, filter, tasks ?? [], user_id.toString());
+    }
+
+    if (hasNotificationFilter) {
+      showElem = filter.notificationTypes?.some((type) =>
+        (elem as MapOverview).notification_ids?.includes(type)
       );
     }
-    if (filter.projects.length > 0 && !matchGroupsAndProjects) {
-      if ('loc_id' in elem && elem.projectno) {
-        matchGroupsAndProjects = filter.projects.some(
-          (project) => elem.projectno === project.project_no
+
+    let matchGroupsAndProjects = filter.groups?.length === 0 && filter.projects?.length === 0;
+    if (hasGroupFilter) {
+      matchGroupsAndProjects = filter.groups?.some((group) =>
+        elem.groups?.some((item) => item.id === group.id)
+      );
+      showElem = matchGroupsAndProjects;
+    }
+    if (hasProjectFilter && !matchGroupsAndProjects) {
+      if (hasLocId && (elem as MapOverview).projectno) {
+        matchGroupsAndProjects = filter.projects?.some(
+          (project) => (elem as MapOverview).projectno === project.project_no
         );
+        showElem = matchGroupsAndProjects;
       }
     }
-    return matchGroupsAndProjects;
+
+    if (hasBoreholeNo) return showService;
+
+    return showElem && showService;
   });
 
   return filteredData;
