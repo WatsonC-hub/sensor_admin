@@ -47,7 +47,8 @@ const AddUnitSection = ({field, index, update}: Props) => {
           tstype_id={field.tstype_id ?? undefined}
           setUdstyrDialogOpen={setOpenUnitDialog}
           onValidate={(unit) => {
-            onUnitValidate(unit, index, field, onValidate, units, update);
+            onValidate('units', [...(units || []), unit]);
+            // onUnitValidate(unit, index, field, onValidate, units, update);
           }}
         />
       )}

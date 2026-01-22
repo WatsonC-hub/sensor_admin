@@ -1,5 +1,5 @@
 import React from 'react';
-import StamdataWatlevmp from '../StamdataWatlevmp';
+import StamdataWatlevmp from '../MPFormCompound';
 import {Grid2} from '@mui/material';
 import {FormInputProps} from '~/components/FormInput';
 import {Watlevmp} from '~/features/station/schema';

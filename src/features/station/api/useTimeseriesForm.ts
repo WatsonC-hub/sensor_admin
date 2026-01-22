@@ -11,11 +11,11 @@ import DefaultTimeseriesForm from '../components/stamdata/stamdataComponents/Def
 import BoreholeTimeseriesForm from '../components/stamdata/stamdataComponents/BoreholeTimeseriesForm';
 import DefaultTimeseriesEditForm from '../components/stamdata/stamdataComponents/DefaultTimeseriesEditForm';
 import BoreholeTimeseriesEditForm from '../components/stamdata/stamdataComponents/BoreholeTimeseriesEditForm';
-import {z} from 'zod';
 
 type useTimeseriesFormProps<T extends FieldValues> = {
   formProps: UseFormProps<T, {loctype_id: number | undefined; loc_id?: number | undefined}>;
   mode: 'Add' | 'Edit';
+  validate_mode?: 'onBlur' | 'onChange' | 'onSubmit' | 'onTouched' | 'all';
 };
 
 const getSchemaAndForm = (loctype_id: number | undefined, mode: 'Add' | 'Edit') => {
@@ -47,6 +47,7 @@ const getSchemaAndForm = (loctype_id: number | undefined, mode: 'Add' | 'Edit') 
 const useTimeseriesForm = <T extends Record<string, any>>({
   formProps,
   mode,
+  validate_mode = 'onTouched',
 }: useTimeseriesFormProps<T>) => {
   const loctype_id = formProps.context?.loctype_id;
   if (mode === undefined) {
@@ -55,42 +56,10 @@ const useTimeseriesForm = <T extends Record<string, any>>({
 
   const [schema, form] = getSchemaAndForm(loctype_id, mode);
 
-  const arraySchema = z.object({
-    timeseries: z.array(schema.optional()).superRefine((value, ctx) => {
-      const seen = new Map<string, number>();
-      value.forEach((ts, index) => {
-        if (ts && 'tstype_id' in ts === true && 'intakeno' in ts === true) {
-          if (!ts.tstype_id || !ts.intakeno) return;
-
-          const key = `${ts.intakeno ?? 0}-${ts.tstype_id}`;
-          const message =
-            'Tidsserietype og indtag kombinationen skal være unik i listen af tidsserier';
-          if (seen.has(key)) {
-            const firstIndex = seen.get(key)!;
-
-            ctx.addIssue({
-              path: [index, 'tstype_id'],
-              message: message,
-              code: z.ZodIssueCode.custom,
-            });
-
-            ctx.addIssue({
-              path: [firstIndex, 'tstype_id'],
-              message: message,
-              code: z.ZodIssueCode.custom,
-            });
-          } else {
-            seen.set(key, index);
-          }
-        }
-      });
-    }),
-  });
-
   const formMethods = useForm<T, {loctype_id: number | undefined}>({
-    resolver: zodResolver(mode === 'Add' ? arraySchema : schema),
+    resolver: zodResolver(schema),
     ...formProps,
-    mode: 'onTouched',
+    mode: validate_mode,
   });
 
   return [formMethods, form] as const;

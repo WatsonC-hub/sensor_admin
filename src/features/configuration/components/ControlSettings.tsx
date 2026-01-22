@@ -81,7 +81,6 @@ const ControlFrequency = ({
         render={({field: {onChange, value}, fieldState: {error}}) => {
           let innerValue = undefined;
 
-          console.log(value);
           if (value !== undefined && value !== null && value !== '')
             innerValue = intervalType === 1 ? value : Number((12 / value).toFixed(3));
 

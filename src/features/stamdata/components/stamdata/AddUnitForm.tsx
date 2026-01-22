@@ -176,6 +176,7 @@ export default function AddUnitForm({
     if (units.length === 1) {
       setUnitData((prev) => ({...prev, uuid: units[0].unit_uuid}));
       if (mode === 'add' && unit && onValidate) {
+        console.log('ON VALIDATE UNIT:', unit);
         onValidate(unit);
       }
       setValue('unit_uuid', units[0].unit_uuid, {shouldDirty: true, shouldValidate: true});

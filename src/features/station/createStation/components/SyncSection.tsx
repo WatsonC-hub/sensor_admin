@@ -29,7 +29,7 @@ const SyncSection = ({
   setValue,
   update,
 }: Props) => {
-  const {meta} = useCreateStationContext();
+  const {meta, onValidate} = useCreateStationContext();
   const timeseriesHasSync = SyncIndex.includes(index);
   const {isMobile} = useBreakpoints();
 
@@ -79,7 +79,7 @@ const SyncSection = ({
                   values={field.sync}
                   onValidate={(key, data) => {
                     update(index, {...field, sync: {...field.sync, ...data}});
-                    // onValidate(key, data, index);
+                    onValidate(key, data, index);
                     setValue(data);
                   }}
                 />

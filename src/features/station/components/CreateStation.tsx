@@ -50,7 +50,7 @@ const CreateStation = () => {
           </Box>
           <FormSteps />
           {meta?.loc_id === undefined && <LocationStep />}
-          <TimeseriesStep />
+          <TimeseriesStep key="ts" />
           <AdditionalStep />
         </Grid2>
       </Box>

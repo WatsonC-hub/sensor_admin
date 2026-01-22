@@ -15,20 +15,18 @@ const controlSettingsArraySchema = z.array(controlSettingsSchema);
 export type ControlSettingsFormValues = z.infer<typeof controlSettingsSchema>;
 
 type ControlSettingsProps<T extends FieldValues> = {
-  mode: 'add' | 'edit' | 'mass_edit';
-  defaultValues: DefaultValues<T>;
+  // mode: 'add' | 'edit' | 'mass_edit';
+  defaultValues: DefaultValues<T> | undefined;
   values?: T;
 };
 
 const useControlSettingsForm = <T extends FieldValues>({
-  mode,
+  // mode,
   defaultValues,
   values,
 }: ControlSettingsProps<T>) => {
   const controlSettingsFormMethods = useForm<T>({
-    resolver: zodResolver(
-      mode === 'mass_edit' ? controlSettingsArraySchema : controlSettingsSchema
-    ),
+    resolver: zodResolver(controlSettingsSchema),
     defaultValues: defaultValues,
     mode: 'onTouched',
     values,

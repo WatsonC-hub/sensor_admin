@@ -7,7 +7,7 @@ import FabWrapper from '~/components/FabWrapper';
 import MaalepunktTableDesktop from '~/components/tableComponents/MaalepunktTableDesktop';
 import MaalepunktTableMobile from '~/components/tableComponents/MaalepunktTableMobile';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import WatlevMPForm from '~/features/station/components/watlevmp/WatlevMPForm';
+import StationMPForm from '~/features/station/components/watlevmp/StationMPForm';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
@@ -94,7 +94,7 @@ export default function ReferenceForm() {
   return (
     <>
       {metadata?.loctype_id === 9 && <JupiterMPTable />}
-      {showForm === true && <WatlevMPForm formMethods={formMethods} />}
+      {showForm === true && <StationMPForm formMethods={formMethods} />}
       {isMobile ? (
         <MaalepunktTableMobile
           handleEdit={handleEdit}

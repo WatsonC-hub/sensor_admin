@@ -49,22 +49,25 @@ export type UnitData = {
   sensortypeid: number;
 };
 
+export type TimeseriesMeta = {
+  tstype_id: number;
+  intakeno?: number;
+  prefix?: string;
+};
+
 type TimeseriesData = {
   tstype_id: number | null | undefined;
   prefix?: string | null | undefined;
-  sensor_depth_m?: number | null | undefined;
-  calypso_id?: number | undefined;
   intakeno?: number | null | undefined;
-  unit_uuid?: string;
   control_settings?: ControlSettings;
+  watlevmp?: Watlevmp;
   sync?: SyncFormValues;
+  unit?: UnitData;
 };
 
 export type FormState = {
   location?: LocationData;
   timeseries?: Array<TimeseriesData>;
-  watlevmp?: Array<Watlevmp>;
-  units?: Array<UnitData>;
   contacts?: Array<ContactTable>;
   location_access?: Array<AccessTable>;
   ressources?: Array<Ressourcer>;
@@ -145,7 +148,66 @@ const CreateStationContextProvider = ({children}: Props) => {
         return;
       }
 
+      if (key === 'watlevmp' && index !== undefined) {
+        setFormState((prev: FormState) => {
+          const timeseries = prev.timeseries ? [...prev.timeseries] : [];
+          timeseries[index].watlevmp = data as Watlevmp;
+          return {...prev, timeseries};
+        });
+        return;
+      }
+
+      if (key === 'units' && index !== undefined) {
+        setFormState((prev: FormState) => {
+          const timeseries = prev.timeseries ? [...prev.timeseries] : [];
+          timeseries[index].units = data as Array<UnitData>;
+          return {...prev, timeseries};
+        });
+        return;
+      }
+
       setFormState((prev: FormState) => ({...prev, [key]: data}));
+    } else {
+      if (key === 'control_settings' && index !== undefined) {
+        setFormState((prev: FormState) => {
+          const timeseries = prev.timeseries ? [...prev.timeseries] : [];
+          if (timeseries[index]) timeseries[index].control_settings = undefined;
+          return {...prev, timeseries};
+        });
+        return;
+      }
+      if (key === 'sync' && index !== undefined) {
+        setFormState((prev: FormState) => {
+          const timeseries = prev.timeseries ? [...prev.timeseries] : [];
+          if (timeseries[index]) timeseries[index].sync = undefined;
+          return {...prev, timeseries};
+        });
+        return;
+      }
+
+      if (key === 'watlevmp' && index !== undefined) {
+        setFormState((prev: FormState) => {
+          const timeseries = prev.timeseries ? [...prev.timeseries] : [];
+          if (timeseries[index]) timeseries[index].watlevmp = undefined;
+          return {...prev, timeseries};
+        });
+        return;
+      }
+
+      if (key === 'units' && index !== undefined) {
+        setFormState((prev: FormState) => {
+          const timeseries = prev.timeseries ? [...prev.timeseries] : [];
+          if (timeseries[index]) timeseries[index].units = undefined;
+          return {...prev, timeseries};
+        });
+        return;
+      }
+
+      setFormState((prev: FormState) => {
+        const newState = {...prev};
+        delete newState[key as keyof FormState];
+        return newState;
+      });
     }
   };
 

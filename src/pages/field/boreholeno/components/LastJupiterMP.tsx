@@ -20,8 +20,8 @@ interface JupiterMPProps {
 }
 
 export type LastJupiterMPData = {
-  descriptio: string | undefined;
-  elevation: number | null;
+  description: string;
+  elevation: number;
   startdate: Dayjs;
 };
 
@@ -41,7 +41,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
         `/sensor_field/borehole/last_mp/${boreholeno}/${intakeno}`
       );
       return {
-        descriptio: data.descriptio,
+        description: data.descriptio,
         elevation: data.elevation,
         startdate: dayjs(data.startdate),
       } as LastJupiterMPData;

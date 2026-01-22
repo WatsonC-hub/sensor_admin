@@ -7,7 +7,6 @@ import {FormInputProps} from '~/components/FormInput';
 type Props = {
   size: number;
   loc_name: string | undefined;
-  formPrefix?: string;
   required?: boolean;
   slotProps?: {
     TypeSelect?: Omit<FormInputProps<DefaultAddTimeseries>, 'name'>;
@@ -15,18 +14,14 @@ type Props = {
   };
 };
 
-const DefaultTimeseriesForm = ({size, loc_name, required, slotProps, formPrefix}: Props) => {
+const DefaultTimeseriesForm = ({size, loc_name, required, slotProps}: Props) => {
   return (
     <>
       <Grid2 size={size}>
-        <StamdataTimeseries.Prefix loc_name={loc_name} formPrefix={formPrefix} />
+        <StamdataTimeseries.Prefix loc_name={loc_name} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataTimeseries.TypeSelect
-          required={required}
-          {...slotProps?.TypeSelect}
-          formPrefix={formPrefix}
-        />
+        <StamdataTimeseries.TypeSelect required={required} {...slotProps?.TypeSelect} />
       </Grid2>
       {/* <Grid2 size={size}>
         <StamdataTimeseries.SensorDepth />

@@ -1,5 +1,5 @@
 import React, {JSX} from 'react';
-import {FieldValues} from 'react-hook-form';
+import {FieldValues, Path} from 'react-hook-form';
 import FormCheckbox from './FormCheckbox';
 import FormInputWrapper from './FormInputWrapper';
 import Submit from './Submit';
@@ -8,6 +8,7 @@ import Cancel from './Cancel';
 import FormAutocomplete from './FormAutocomplete';
 import FormRadio from './FormRadio';
 import FormDateTimeWrapper from './FormDateTimeWrapper';
+import FormController from './FormController';
 
 type TypedFormComponent<T extends FieldValues> = React.FC<
   React.ComponentProps<typeof TypedForm<T>>
@@ -21,6 +22,9 @@ type TypedFormComponent<T extends FieldValues> = React.FC<
   ) => JSX.Element;
   Submit: React.FC<React.ComponentProps<typeof Submit<T>>>;
   Cancel: React.FC<React.ComponentProps<typeof Cancel>>;
+  Controller: <K extends Path<T>>(
+    props: React.ComponentProps<typeof FormController<T, K>>
+  ) => JSX.Element;
 };
 
 function wrap<TProps extends object>(
@@ -42,6 +46,12 @@ export function createTypedForm<T extends FieldValues = never>(): TypedFormCompo
   Form.DateTime = wrap(FormDateTimeWrapper<T>, 'TypedForm.DateTime');
   Form.Submit = wrap(Submit<T>, 'TypedForm.Submit');
   Form.Cancel = wrap(Cancel, 'TypedForm.Cancel');
+
+  const ControllerComponent = <K extends Path<T>>(
+    props: React.ComponentProps<typeof FormController<T, K>>
+  ) => <FormController<T, K> {...props} />;
+  ControllerComponent.displayName = 'TypedForm.Controller';
+  Form.Controller = ControllerComponent;
 
   const AutocompleteComponent = <K extends object, M extends boolean = false>(
     props: React.ComponentProps<typeof FormAutocomplete<T, K, M>>

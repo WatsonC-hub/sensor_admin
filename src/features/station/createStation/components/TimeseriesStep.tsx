@@ -1,129 +1,93 @@
-import {Box, Grid2} from '@mui/material';
+import {Box} from '@mui/material';
 import React, {useEffect, useState} from 'react';
-import {FormProvider, useFieldArray} from 'react-hook-form';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import useTimeseriesForm from '../../api/useTimeseriesForm';
-import StamdataTimeseries from '../../components/stamdata/StamdataTimeseries';
 import useCreateStationContext from '../api/useCreateStationContext';
 import FormStepButtons from './FormStepButtons';
 import Button from '~/components/Button';
-import {Delete} from '@mui/icons-material';
-import FormFieldset from '~/components/formComponents/FormFieldset';
 import UnitDialog from './UnitDialog';
-import UnitStep from './UnitStep';
 
-import {
-  isSynchronizationAllowed,
-  onUnitListValidate,
-  removeTimeseries,
-  typeSelectChanged,
-} from '../helper/TimeseriesStepHelper';
-import WatlevmpSection from './WatlevmpSection';
-import ControlSettingSection from './ControlSettingSection';
-import AddUnitSection from './AddUnitSection';
-import SyncSection from './SyncSection';
+import {useRootFormController} from '../controller/useRootFormController';
+import TimeseriesEditor from '../helper/TimeseriesEditor';
+import FormFieldset from '~/components/formComponents/FormFieldset';
 const TimeseriesStep = () => {
-  const {isMobile} = useBreakpoints();
   const [unitDialog, setUnitDialog] = useState(false);
-  const [watlevmpIndex, setWatlevmpIndex] = useState<Array<number>>([]);
-  const [controlSettings, setControlSettings] = useState<Array<number>>([]);
-  const [timeseriesSyncList, setTimeseriesSyncList] = useState<Array<number>>([]);
-  const size = isMobile ? 12 : 6;
-  const {
-    meta,
-    setMeta,
-    onValidate,
-    setFormErrors,
-    formState: {timeseries, watlevmp, units},
-    activeStep,
-  } = useCreateStationContext();
-  const [timeseriesFormMethods, TimeseriesForm] = useTimeseriesForm({
-    formProps: {
-      context: {
-        loctype_id: meta?.loctype_id,
-      },
-      values: {timeseries},
-    },
-    mode: 'Add',
-  });
+  const [ids, setIds] = useState<string[]>([]);
 
-  const {
-    handleSubmit: handleTimeseriesSubmit,
-    formState: timeseriesFormState,
-    setValue,
-    getValues,
-    control,
-  } = timeseriesFormMethods;
+  const {activeStep} = useCreateStationContext();
 
-  const {fields, append, remove, update} = useFieldArray({
-    control,
-    name: 'timeseries',
-  });
+  const {aggregate, removeTimeseries, registerTimeseries, validateAllSlices, timeseries} =
+    useRootFormController();
 
-  const removeWatlevmpAtIndex = (index: number, validate?: boolean) => {
-    const indexInWatlevmp = watlevmpIndex.find((i) => i === index);
-    setWatlevmpIndex((prev) => prev.filter((i) => i !== index));
-    if (validate)
-      onValidate(
-        'watlevmp',
-        (watlevmp || []).filter((_, i) => i !== indexInWatlevmp)
-      );
-  };
-
-  const removeControlSettingsAtIndex = (index: number, validate?: boolean) => {
-    setControlSettings((prev) => prev.filter((i) => i !== index));
-    if (validate) onValidate('control_settings', {}, index);
-  };
-
-  const removeSyncAtIndex = (index: number, validate?: boolean) => {
-    setTimeseriesSyncList((prev) => prev.filter((i) => i !== index));
-    if (validate) onValidate('sync', {}, index);
+  const addTimeseries = () => {
+    setIds((ids) => [...ids, crypto.randomUUID()]);
   };
 
   useEffect(() => {
-    const timeseriesInvalid = Object.keys(timeseriesFormState.errors).length > 0;
-    setFormErrors((prev) => ({
-      ...prev,
-      timeseries: timeseriesInvalid,
-    }));
-  }, [timeseriesFormState.errors]);
+    if (ids.length === 0) {
+      return;
+    }
+
+    aggregate.registerSlice('timeseries', true, async () => {
+      console.log('Validating timeseries slice', timeseries);
+      const allValid = Object.entries(timeseries).every(async ([id, ts]) => {
+        console.log('Validating timeseries controller:', id, ts);
+        return await ts.validateAllSlices();
+      });
+
+      return allValid;
+    });
+  }, [timeseries]);
 
   return (
     <>
       {activeStep === 1 && (
         <>
-          <FormProvider {...timeseriesFormMethods}>
-            <Box display="flex" gap={1} flexWrap="wrap">
-              <Button
-                bttype="primary"
-                onClick={() => {
-                  const append_timeseries = {
-                    prefix: undefined,
-                    intakeno: undefined,
-                    tstype_id: undefined,
-                  };
-                  append(append_timeseries);
-                  onValidate('timeseries', [...(timeseries || []), append_timeseries]);
-                }}
+          <Box display="flex" gap={1} flexWrap="wrap">
+            <Button bttype="primary" onClick={() => addTimeseries()}>
+              Tilføj tidsserie
+            </Button>
+            <Button bttype="primary" onClick={() => setUnitDialog(true)}>
+              Tilføj fra udstyr
+            </Button>
+          </Box>
+
+          {ids.map((id, index) => {
+            return (
+              <FormFieldset
+                key={id}
+                label={'Tidsserie - ' + (index + 1)}
+                labelPosition={-20}
+                sx={{width: '100%', p: 1, gap: 2}}
               >
-                Tilføj tidsserie
-              </Button>
-              <Button bttype="primary" onClick={() => setUnitDialog(true)}>
-                Tilføj fra udstyr
-              </Button>
-            </Box>
-            {fields?.map((field, index) => {
-              const unit = units?.find((u) => u.unit_uuid === field.unit_uuid);
-              const isSyncAllowed = isSynchronizationAllowed(
-                field.tstype_id ?? undefined,
-                meta?.loctype_id
-              );
+                <TimeseriesEditor
+                  key={id}
+                  onRegister={(controller) => registerTimeseries(id, controller)}
+                  // onChange={(state) => updateTimeseries(id, state)}
+                  onRemove={() => {
+                    removeTimeseries(id);
+                    setIds((ids) => ids.filter((x) => x !== id));
+                  }}
+                />
+              </FormFieldset>
+            );
+          })}
+
+          {/* {false && <WatlevmpSection controller={ts} />} */}
+          {/* {timeseries?.map((field, index) => {
+              // let isSyncAllowed = false;
+              // const unit = timeseries?.[index].unit;
+
+              // isSyncAllowed = isSynchronizationAllowed(
+              //   field.tstype_id ?? undefined,
+              //   meta?.loctype_id,
+              //   dmpAllowedMapList
+              // );
+
               return (
                 <FormFieldset
-                  key={field.id}
-                  label={'Tidsserie - ' + (index + 1)}
-                  labelPosition={-20}
-                  sx={{width: '100%', p: 1, gap: 2}}
+                key={index}
+                label={'Tidsserie - ' + (index + 1)}
+                labelPosition={-20}
+                sx={{width: '100%', p: 1, gap: 2}}
                 >
                   <StamdataTimeseries boreholeno={meta?.boreholeno}>
                     <Grid2 container size={12} spacing={1}>
@@ -135,33 +99,44 @@ const TimeseriesStep = () => {
                         slotProps={{
                           TypeSelect: {
                             onChangeCallback: (event) => {
-                              typeSelectChanged(
-                                event as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-                                index,
-                                field,
-                                meta,
-                                setMeta,
-                                onValidate,
-                                units,
-                                update,
-                                watlevmpIndex,
-                                removeWatlevmpAtIndex,
-                                getValues
-                              );
-                            },
-                          },
-                          intakeno: {
-                            onChangeCallback: (event) => {
                               const value = (
                                 event as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
                               ).target.value;
+                              const existingTstypeIds = [...(meta?.tstype_id || [])];
 
-                              update(index, {
-                                ...field,
-                                intakeno: parseInt(value),
-                              });
+                              const tstypeIndex = existingTstypeIds.findIndex(
+                                (_, i) => i === index
+                              );
 
-                              onValidate('timeseries', getValues('timeseries'));
+                              if (tstypeIndex !== -1) {
+                                existingTstypeIds[tstypeIndex] = parseInt(value);
+                              } else {
+                                existingTstypeIds.push(parseInt(value));
+                              }
+
+                              // typeSelectChanged(
+                              //   event as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+                              //   index,
+                              //   field,
+                              //   meta,
+                              //   setMeta,
+                              //   onValidate,
+                              //   watlevmpIndex,
+                              //   removeWatlevmpAtIndex,
+                              //   timeseries
+                              // );
+                            },
+                          },
+                          intakeno: {
+                            onChangeCallback: () => {
+                              // const value = (
+                              //   event as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+                              // ).target.value;
+                              // update(index, {
+                              //   ...field,
+                              //   intakeno: parseInt(value),
+                              // });
+                              // onValidate('timeseries', getValues('timeseries'));
                             },
                           },
                         }}
@@ -171,11 +146,9 @@ const TimeseriesStep = () => {
                   {field.tstype_id === 1 && (
                     <>
                       <WatlevmpSection
-                        showAddWatlevmpButton={!watlevmpIndex.includes(index)}
+                        showAddWatlevmpButton={!timeseries?.[index].watlevmp}
                         index={index}
-                        field={field}
                         removeWatlevmpAtIndex={removeWatlevmpAtIndex}
-                        setWatlevmpIndex={setWatlevmpIndex}
                       />
                     </>
                   )}
@@ -213,68 +186,23 @@ const TimeseriesStep = () => {
                     />
                   )}
 
-                  <Grid2
-                    size={isMobile ? 12 : 1}
-                    alignContent={'center'}
-                    display={'flex'}
-                    width={'100%'}
-                    justifyContent={'end'}
-                  >
-                    <Button
-                      bttype="tertiary"
-                      startIcon={<Delete />}
-                      onClick={() => {
-                        removeTimeseries(
-                          index,
-                          field,
-                          meta,
-                          setMeta,
-                          onValidate,
-                          timeseries,
-                          units,
-                          remove
-                        );
 
-                        removeWatlevmpAtIndex(index, true);
-                        removeControlSettingsAtIndex(index);
-                        removeSyncAtIndex(index);
-                      }}
-                    >
-                      Fjern tidsserie
-                    </Button>
-                  </Grid2>
                 </FormFieldset>
               );
-            })}
-          </FormProvider>
+            })} */}
           <FormStepButtons
             key={'timeseries'}
             onFormIsValid={async () => {
-              let isValid = true;
-              await handleTimeseriesSubmit(
-                () => {
-                  onValidate('timeseries', fields);
-                },
-                (e) => {
-                  console.log(e);
-                  onValidate('timeseries', null);
-                  setFormErrors((prev) => ({
-                    ...prev,
-                    timeseries: Object.keys(e).length > 0,
-                  }));
-
-                  isValid = Object.keys(e).length === 0;
-                }
-              )();
-
-              return isValid;
+              const isValid = await validateAllSlices();
+              console.log('TimeseriesStep valid:', isValid);
+              return false;
             }}
           />
           <UnitDialog
             open={unitDialog}
             onClose={() => setUnitDialog(false)}
-            onValidate={(validate_units) => {
-              onUnitListValidate(validate_units, onValidate, timeseries, units);
+            onValidate={() => {
+              // onUnitListValidate(validate_units, onValidate, timeseries, units);
             }}
           />
         </>

@@ -5,33 +5,19 @@ import {Watlevmp} from '../../schema';
 
 type StamdataWatlevmpProps = {
   children: React.ReactNode;
-  tstype_id: number | undefined;
 };
 
-type WatlevmpContextType = {
-  tstype_id: number | undefined;
-};
-
-const WatlevmpContext = React.createContext<WatlevmpContextType>({
-  tstype_id: undefined,
-});
-
-const StamdataWatlevmp = ({children, tstype_id}: StamdataWatlevmpProps) => {
-  return <WatlevmpContext.Provider value={{tstype_id}}>{children}</WatlevmpContext.Provider>;
+const StamdataWatlevmp = ({children}: StamdataWatlevmpProps) => {
+  return {children};
 };
 
 const Elevation = (props: Omit<FormInputProps<Watlevmp>, 'name'>) => {
-  const {tstype_id} = React.useContext(WatlevmpContext);
-
-  if (tstype_id !== 1) {
-    return null;
-  }
-
   return (
     <FormInput
       type="number"
       label="Målepunktskote"
       name="elevation"
+      required
       disabled={props.disabled}
       fullWidth
       InputProps={{
@@ -43,16 +29,11 @@ const Elevation = (props: Omit<FormInputProps<Watlevmp>, 'name'>) => {
 };
 
 const Description = (props: Omit<FormInputProps<Watlevmp>, 'name'>) => {
-  const {tstype_id} = React.useContext(WatlevmpContext);
-
-  if (tstype_id !== 1) {
-    return null;
-  }
-
   return (
     <FormInput
       label="Målepunkt placering"
       name="description"
+      required
       disabled={props.disabled}
       fullWidth
       placeholder="f.eks. top af rør"

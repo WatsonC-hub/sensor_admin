@@ -53,14 +53,14 @@ const baseAddTimeseriesSchema = baseTimeseriesSchema.extend({
   tstype_id: z.number({required_error: 'Vælg tidsserietype'}).gte(1, {
     message: 'Vælg tidsserietype',
   }),
-  unit_uuid: z.string().optional(),
-  control_settings: z
-    .object({
-      controls_per_year: z.number().optional(),
-      lead_time: z.number().optional(),
-      selectValue: z.number().default(1),
-    })
-    .optional(),
+  // unit_uuid: z.string().optional(),
+  // control_settings: z
+  //   .object({
+  //     controls_per_year: z.number().optional(),
+  //     lead_time: z.number().optional(),
+  //     selectValue: z.number().default(1),
+  //   })
+  //   .optional(),
 });
 
 const baseEditTimeseriesSchema = baseTimeseriesSchema.extend({
@@ -81,8 +81,10 @@ const boreholeAddTimeseriesSchema = baseAddTimeseriesSchema.extend({
 });
 
 const watlevmpAddSchema = z.object({
-  elevation: z.number({required_error: 'Målepunkt skal udfyldes'}).nullish(),
-  description: z.string({required_error: 'Beskrivelse skal udfyldes'}).optional(),
+  elevation: z.number({required_error: 'Målepunkt skal udfyldes'}),
+  description: z.string({required_error: 'Beskrivelse skal udfyldes'}).min(3, {
+    message: 'Beskrivelse skal være mindst 3 tegn',
+  }),
 });
 
 const addUnitSchema = z.object({

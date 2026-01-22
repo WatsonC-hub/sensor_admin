@@ -37,14 +37,9 @@ const StamdataTimeseries = ({children, boreholeno}: Props) => {
   return <TimeseriesContext.Provider value={{boreholeno}}>{children}</TimeseriesContext.Provider>;
 };
 
-type TypeSelectProps = Omit<
-  FormInputProps<DefaultAddTimeseries | BoreholeAddTimeseries>,
-  'name'
-> & {
-  formPrefix?: string;
-};
+type TypeSelectProps = Omit<FormInputProps<DefaultAddTimeseries | BoreholeAddTimeseries>, 'name'>;
 
-const TypeSelect = ({formPrefix, ...props}: TypeSelectProps) => {
+const TypeSelect = ({...props}: TypeSelectProps) => {
   const {data: timeseries_types} = useQuery({
     queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
@@ -59,7 +54,7 @@ const TypeSelect = ({formPrefix, ...props}: TypeSelectProps) => {
 
   return (
     <FormInput
-      name={`${formPrefix}tstype_id`}
+      name={`tstype_id`}
       label="Tidsserietype"
       select
       placeholder="Vælg type"
@@ -100,11 +95,9 @@ const TimeseriesTypeField = ({tstype_id}: {tstype_id: number | undefined}) => {
 type IntakenoProps = Omit<
   FormInputProps<BoreholeAddTimeseries | BoreholeEditTimeseries>,
   'name'
-> & {
-  formPrefix?: string;
-};
+> & {};
 
-const Intakeno = ({formPrefix, ...props}: IntakenoProps) => {
+const Intakeno = ({...props}: IntakenoProps) => {
   const {boreholeno} = React.useContext(TimeseriesContext);
 
   const {data: intake_list} = useQuery({
@@ -121,7 +114,7 @@ const Intakeno = ({formPrefix, ...props}: IntakenoProps) => {
 
   return (
     <FormInput
-      name={`${formPrefix}intakeno`}
+      name={`intakeno`}
       label="Indtag"
       select
       infoText="Vælg først et DGU nummer for at hente indtag"
@@ -137,13 +130,12 @@ const Intakeno = ({formPrefix, ...props}: IntakenoProps) => {
 
 type PrefixProps = Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'> & {
   loc_name: string | undefined;
-  formPrefix?: string;
 };
 
-const Prefix = ({loc_name, formPrefix, ...props}: PrefixProps) => {
+const Prefix = ({loc_name, ...props}: PrefixProps) => {
   return (
     <FormInput
-      name={`${formPrefix}prefix`}
+      name="prefix"
       label="Navn"
       slotProps={{
         input: {

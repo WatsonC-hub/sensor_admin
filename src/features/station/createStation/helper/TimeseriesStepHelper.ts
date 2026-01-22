@@ -1,14 +1,7 @@
 import dayjs from 'dayjs';
-import {
-  FieldArrayWithId,
-  UseFieldArrayRemove,
-  UseFieldArrayUpdate,
-  UseFormGetValues,
-} from 'react-hook-form';
+import {FieldArrayWithId, UseFieldArrayRemove, UseFieldArrayUpdate} from 'react-hook-form';
 import {Unit} from '~/features/stamdata/api/useAddUnit';
 import {FormState, MetaType} from '~/helpers/CreateStationContextProvider';
-import {queryClient} from '~/queryClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {DmpSyncValidCombination} from '~/types';
 
 export const typeSelectChanged = (
@@ -18,11 +11,9 @@ export const typeSelectChanged = (
   meta: MetaType | null,
   setMeta: React.Dispatch<React.SetStateAction<MetaType | null>>,
   onValidate: (key: keyof FormState, data: FormState[keyof FormState], index?: number) => void,
-  units: FormState['units'],
-  update: UseFieldArrayUpdate<{timeseries: FormState['timeseries']}, 'timeseries'>,
   watlevmpIndex: Array<number>,
   removeWatlevmpAtIndex: (index: number) => void,
-  getValues: UseFormGetValues<{timeseries: FormState['timeseries']}>
+  timeseries: FormState['timeseries'] | undefined
 ) => {
   const value = event.target.value;
   const existingTstypeIds = [...(meta?.tstype_id || [])];
@@ -35,18 +26,22 @@ export const typeSelectChanged = (
     existingTstypeIds.push(parseInt(value));
   }
 
-  if (field.unit_uuid) {
-    onValidate('units', units?.filter((u) => u.unit_uuid !== field.unit_uuid) || []);
-  }
+  // if (field.unit_uuid) {
+  //   onValidate('units', units?.filter((u) => u.unit_uuid !== field.unit_uuid) || []);
+  // }
 
-  update(index, {
-    ...field,
-    prefix: getValues('timeseries')?.[index]?.prefix,
-    tstype_id: parseInt(value),
-    unit_uuid: undefined,
-  });
+  // update(index, {
+  //   ...field,
+  //   prefix: getValues('timeseries')?.[index]?.prefix,
+  //   tstype_id: parseInt(value),
+  //   unit_uuid: undefined,
+  // });
 
-  onValidate('timeseries', getValues('timeseries'));
+  onValidate('timeseries', [
+    ...(timeseries || []).map((ts, i) =>
+      i === index ? {...ts, tstype_id: parseInt(value), unit_uuid: undefined} : ts
+    ),
+  ]);
 
   setMeta((prev) => ({
     ...prev,
@@ -65,7 +60,7 @@ export const removeTimeseries = (
   setMeta: React.Dispatch<React.SetStateAction<MetaType | null>>,
   onValidate: (key: keyof FormState, data: FormState[keyof FormState], index?: number) => void,
   timeseries: FormState['timeseries'],
-  units: FormState['units'],
+  // units: FormState['units'],
   remove: UseFieldArrayRemove
 ) => {
   remove(index);
@@ -75,9 +70,9 @@ export const removeTimeseries = (
     tstype_id: updatedTstypeIds,
   }));
 
-  if (field.unit_uuid) {
-    onValidate('units', units?.filter((u) => u.unit_uuid !== field.unit_uuid) || []);
-  }
+  // if (field.unit_uuid) {
+  //   onValidate('units', units?.filter((u) => u.unit_uuid !== field.unit_uuid) || []);
+  // }
 
   onValidate(
     'timeseries',
@@ -90,24 +85,23 @@ export const onUnitValidate = (
   index: number,
   field: FieldArrayWithId<{timeseries: FormState['timeseries']}, 'timeseries', 'id'>,
   onValidate: (key: keyof FormState, data: FormState[keyof FormState], index?: number) => void,
-  units: FormState['units'],
   update: UseFieldArrayUpdate<{timeseries: FormState['timeseries']}, 'timeseries'>
 ) => {
-  const updated_units = [
-    ...(units || []),
-    {
-      unit_uuid: unit.unit_uuid,
-      calypso_id: unit.calypso_id,
-      sensor_id: unit.sensor_id,
-      startdate: dayjs(),
-      sensortypeid: unit.sensortypeid,
-    },
-  ];
-  onValidate('units', updated_units);
-  update(index, {
-    ...field,
-    unit_uuid: unit.unit_uuid,
-  });
+  // const updated_units = [
+  //   ...(units || []),
+  //   {
+  //     unit_uuid: unit.unit_uuid,
+  //     calypso_id: unit.calypso_id,
+  //     sensor_id: unit.sensor_id,
+  //     startdate: dayjs(),
+  //     sensortypeid: unit.sensortypeid,
+  //   },
+  // ];
+  // update(index, {
+  //   ...field,
+  //   unit_uuid: unit.unit_uuid,
+  // });
+  // onValidate('units', updated_units);
 };
 
 export const onUnitListValidate = (
@@ -124,8 +118,6 @@ export const onUnitListValidate = (
     sensor_id: unit.sensor_id,
   }));
 
-  const updated_timeseries = [...(timeseries || []), ...unit_timeseries];
-  onValidate('timeseries', updated_timeseries);
   onValidate('units', [
     ...(units || []),
     ...validate_units.map((u) => {
@@ -138,18 +130,20 @@ export const onUnitListValidate = (
       };
     }),
   ]);
+
+  const updated_timeseries = [...(timeseries || []), ...unit_timeseries];
+  onValidate('timeseries', updated_timeseries);
 };
 
 export const isSynchronizationAllowed = (
   tstype_id: number | undefined,
-  loctype_id: number | undefined
+  loctype_id: number | undefined,
+  dmpAllowedMapList: Array<DmpSyncValidCombination> | undefined
 ): boolean => {
-  const data =
-    queryClient.getQueryData<Array<DmpSyncValidCombination>>(queryKeys.dmpAllowedMapList()) || [];
   const isJupiterType = [1, 11, 12, 16].includes(tstype_id || 0);
   const isBorehole = loctype_id === 9;
   const canSyncJupiter = isBorehole && isJupiterType;
-  const isDmpAllowed = data?.some((combination) => {
+  const isDmpAllowed = dmpAllowedMapList?.some((combination) => {
     return combination.loctype_id === loctype_id && combination.tstype_id === tstype_id;
   });
 

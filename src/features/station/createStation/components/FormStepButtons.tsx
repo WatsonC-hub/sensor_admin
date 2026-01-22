@@ -71,7 +71,8 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
           startIcon={!isMobile && <ArrowBack />}
           disabled={activeStep === 0 || (meta?.loc_id !== undefined && activeStep === 1)}
           onClick={async () => {
-            await onFormIsValid();
+            const isStepValid = await onFormIsValid();
+            if (!isStepValid) return;
             setActiveStep(activeStep - 1);
           }}
           sx={{mr: 1}}
@@ -84,7 +85,8 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
           disabled={activeStep === 2}
           endIcon={!isMobile && <ArrowForwardIcon fontSize="small" />}
           onClick={async () => {
-            await onFormIsValid();
+            const isStepValid = await onFormIsValid();
+            if (!isStepValid) return;
             setActiveStep(activeStep + 1);
           }}
           sx={{mr: 1}}
@@ -106,7 +108,7 @@ const FormStepButtons = ({onFormIsValid}: Props) => {
             meta?.loctype_id === -1 || Object.values(formErrors).some((error) => error === true)
           }
         >
-          {!isMobile ? activeStep === 3 ? `Gem & afslut` : 'Gem' : <Save fontSize="small" />}
+          {!isMobile ? activeStep === 2 ? `Gem & afslut` : 'Gem' : <Save fontSize="small" />}
         </Button>
       </Grid2>
       <AlertDialog
