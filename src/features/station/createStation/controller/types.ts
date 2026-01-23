@@ -1,6 +1,7 @@
 import {TimeseriesMeta} from '~/helpers/CreateStationContextProvider';
 import {Watlevmp} from '../../schema';
 import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
+import {useAggregateController} from './useAggregateController';
 
 export type ControlSettings = {
   controls_per_year: number;
@@ -41,3 +42,5 @@ export type TimeseriesPayload = {
   control_settings?: ControlSettings;
   sync?: SyncFormValues;
 };
+
+export type AggregateControllerType = ReturnType<typeof useAggregateController<TimeseriesPayload>>;

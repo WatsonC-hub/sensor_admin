@@ -5,11 +5,10 @@ import useControlSettingsForm from '~/features/configuration/api/useControlSetti
 import ControlSettings from '~/features/configuration/components/ControlSettings';
 import CreateControlSettings from '~/features/configuration/components/CreateControlSettings';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {ControlSettings as ControlSettingsType, TimeseriesPayload} from '../controller/types';
-import {useAggregateController} from '../controller/useAggregateController';
+import {AggregateControllerType, ControlSettings as ControlSettingsType} from '../controller/types';
 
 type Props = {
-  controller: ReturnType<typeof useAggregateController<TimeseriesPayload>>;
+  controller: AggregateControllerType;
 };
 
 const ControlSettingForm = ({controller}: Props) => {

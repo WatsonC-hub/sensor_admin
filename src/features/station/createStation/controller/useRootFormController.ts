@@ -9,8 +9,7 @@ export function useRootFormController() {
 
   const aggregate = useAggregateController<RootPayload>();
 
-  console.log('Aggregate slices in RootFormController:', aggregate.getSlices());
-  console.log('Timeseries controllers in RootFormController:', timeseries);
+  console.log('Aggregate slices in RootFormController:', aggregate);
 
   const registerTimeseries = useCallback((id: string, controller: TimeseriesController) => {
     setTimeseries((prev) => ({

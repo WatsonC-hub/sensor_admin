@@ -10,11 +10,18 @@ import FormSteps from '../createStation/components/FormSteps';
 import TimeseriesStep from '../createStation/components/TimeseriesStep';
 import useCreateStationContext from '../createStation/api/useCreateStationContext';
 import AdditionalStep from '../createStation/components/AdditionalStep';
+import {AggregateController} from '../createStation/controller/AggregateController';
+import {RootPayload} from '../createStation/controller/types';
+import {TimeseriesManager} from '../createStation/controller/TimeseriesManager';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
   const {meta} = useCreateStationContext();
   const size = isMobile ? 12 : 6;
+  const parent = new AggregateController<RootPayload>();
+  const manager = new TimeseriesManager(parent);
+
+  console.log('AggregateController initialized with slices:', parent.getSlices());
 
   return (
     <>
@@ -50,7 +57,7 @@ const CreateStation = () => {
           </Box>
           <FormSteps />
           {meta?.loc_id === undefined && <LocationStep />}
-          <TimeseriesStep key="ts" />
+          <TimeseriesStep key="ts" manager={manager} />
           <AdditionalStep />
         </Grid2>
       </Box>

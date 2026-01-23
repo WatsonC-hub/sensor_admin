@@ -28,11 +28,10 @@ export class AggregateController<T extends Record<string, any>> {
     this.sliceListeners.forEach((l) => l(id, slice));
   }
 
-  registerSlice<K extends keyof T>(id: K, required: boolean, validate?: () => Promise<boolean>) {
+  registerSlice<K extends keyof T>(id: K, required: boolean) {
     this.slices[id] = {
       required,
       valid: false,
-      validate,
     };
     this.emitSliceChange(id);
     this.emitValidity();
@@ -45,7 +44,7 @@ export class AggregateController<T extends Record<string, any>> {
   }
 
   updateSlice<K extends keyof T>(id: K, valid: boolean, value?: T[K]) {
-    const slice = this.slices[id];
+    const slice = this.slices?.[id];
     if (!slice) return;
 
     slice.valid = valid;
@@ -66,7 +65,7 @@ export class AggregateController<T extends Record<string, any>> {
         isValid = isValid && sliceValid;
       }
     }
-
+    this.emitValidity();
     return isValid;
   }
 
@@ -80,9 +79,9 @@ export class AggregateController<T extends Record<string, any>> {
     const values: Partial<T> = {};
     for (const key in this.slices) {
       const slice = this.slices[key as keyof T];
-      if (slice?.value !== undefined) {
-        values[key as keyof T] = slice.value;
-      }
+      //   if (slice?.value !== undefined) {
+      values[key as keyof T] = slice?.value;
+      //   }
     }
     return values;
   }

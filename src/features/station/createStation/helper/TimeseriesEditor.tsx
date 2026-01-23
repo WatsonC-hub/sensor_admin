@@ -1,48 +1,39 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import TimeseriesMetaForm from '../forms/TimeseriesMetaForm';
 import WatlevmpSection from '../components/WatlevmpSection';
-import {TimeseriesPayload} from '../controller/types';
 import {Delete} from '@mui/icons-material';
 import {Grid2} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import Button from '~/components/Button';
 import ControlSettingSection from '../components/ControlSettingSection';
-import {useAggregateController} from '../controller/useAggregateController';
+import {TimeseriesAggregate} from '../controller/TimeseriesAggregate';
 
 type Props = {
-  // onChange: (state: {valid: boolean; value?: TimeseriesPayload}) => void;
-  onRegister: (controller: ReturnType<typeof useAggregateController<TimeseriesPayload>>) => void;
+  aggregate: TimeseriesAggregate;
   onRemove: () => void;
 };
 
-const TimeseriesEditor = ({onRegister, onRemove}: Props) => {
+const TimeseriesEditor = ({aggregate, onRemove}: Props) => {
   const [showWatlevmp, setShowWatlevmp] = useState(false);
   const [showControlSettings, setShowControlSettings] = useState(false);
   const {isMobile} = useBreakpoints();
-  const ts = useAggregateController<TimeseriesPayload>();
-
-  // useEffect(() => {
-  //   ts.publish();
-  // }, [ts.isValid]);
-  useEffect(() => {
-    onRegister(ts);
-  }, [ts]);
+  const controller = aggregate.getController();
 
   return (
     <>
       <TimeseriesMetaForm
-        onValidChange={(isValid, value) => ts.updateSlice('meta', isValid, value)}
-        controller={ts}
+        onValidChange={(isValid, value) => controller.updateSlice('meta', isValid, value)}
+        controller={controller}
       />
 
-      {ts.getSlices()['meta']?.value?.tstype_id === 1 && (
-        <WatlevmpSection show={showWatlevmp} setShow={setShowWatlevmp} controller={ts} />
+      {controller.getSlices()['meta']?.value?.tstype_id === 1 && (
+        <WatlevmpSection show={showWatlevmp} setShow={setShowWatlevmp} controller={controller} />
       )}
 
       <ControlSettingSection
         show={showControlSettings}
         setShow={setShowControlSettings}
-        controller={ts}
+        controller={controller}
       />
 
       <Grid2
@@ -52,7 +43,13 @@ const TimeseriesEditor = ({onRegister, onRemove}: Props) => {
         width={'100%'}
         justifyContent={'end'}
       >
-        <Button bttype="tertiary" startIcon={<Delete />} onClick={() => onRemove()}>
+        <Button
+          bttype="tertiary"
+          startIcon={<Delete />}
+          onClick={() => {
+            onRemove();
+          }}
+        >
           Fjern tidsserie
         </Button>
       </Grid2>

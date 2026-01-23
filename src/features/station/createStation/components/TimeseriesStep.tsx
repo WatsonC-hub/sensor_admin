@@ -1,56 +1,71 @@
-import {Box} from '@mui/material';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import useCreateStationContext from '../api/useCreateStationContext';
 import FormStepButtons from './FormStepButtons';
-import Button from '~/components/Button';
 import UnitDialog from './UnitDialog';
 
-import {useRootFormController} from '../controller/useRootFormController';
-import TimeseriesEditor from '../helper/TimeseriesEditor';
-import FormFieldset from '~/components/formComponents/FormFieldset';
-const TimeseriesStep = () => {
+import TimeseriesList from '../helper/TimeseriesList';
+import {TimeseriesManager} from '../controller/TimeseriesManager';
+
+type Props = {
+  manager: TimeseriesManager;
+};
+
+const TimeseriesStep = ({manager}: Props) => {
   const [unitDialog, setUnitDialog] = useState(false);
-  const [ids, setIds] = useState<string[]>([]);
+  // const [ids, setIds] = useState<string[]>([]);
 
   const {activeStep} = useCreateStationContext();
 
-  const {aggregate, removeTimeseries, registerTimeseries, validateAllSlices, timeseries} =
-    useRootFormController();
+  // const aggregateController = new AggregateController();
 
-  const addTimeseries = () => {
-    setIds((ids) => [...ids, crypto.randomUUID()]);
-  };
+  // const {
+  //   registerSlice: registerTimeseries,
+  //   unregisterSlice: removeTimeseries,
+  //   validateAllSlices,
+  // } = aggregateController;
 
-  useEffect(() => {
-    if (ids.length === 0) {
-      return;
-    }
+  // const {aggregate, removeTimeseries, registerTimeseries, validateAllSlices, timeseries} =
+  //   useRootFormController();
 
-    aggregate.registerSlice('timeseries', true, async () => {
-      console.log('Validating timeseries slice', timeseries);
-      const allValid = Object.entries(timeseries).every(async ([id, ts]) => {
-        console.log('Validating timeseries controller:', id, ts);
-        return await ts.validateAllSlices();
-      });
+  // const addTimeseries = () => {
+  //   setIds((ids) => [...ids, crypto.randomUUID()]);
+  // };
 
-      return allValid;
-    });
-  }, [timeseries]);
+  // useEffect(() => {
+  //   aggregate.onSliceChange((id, slice) => {
+  //     if (id !== 'timeseries') return;
+
+  //     aggregate.updateSlice(
+  //       'timeseries',
+  //       Object.values(timeseries).every((ts) => ts.isValid()),
+  //       Object.values(timeseries).map((ts) => ts.getValues()) || undefined
+  //     );
+  //   });
+  // }, [timeseries]);
+
+  // useEffect(() => {
+  //   if (ids.length === 0) {
+  //     return;
+  //   }
+
+  //   aggregate.registerSlice('timeseries', true, async () => {
+  //     console.log('Validating timeseries slice', timeseries);
+  //     const allValid = Object.entries(timeseries).every(async ([id, ts]) => {
+  //       console.log('Validating timeseries controller:', id, ts);
+  //       return await ts.validateAllSlices();
+  //     });
+
+  //     return allValid;
+  //   });
+  // }, [timeseries]);
 
   return (
     <>
       {activeStep === 1 && (
         <>
-          <Box display="flex" gap={1} flexWrap="wrap">
-            <Button bttype="primary" onClick={() => addTimeseries()}>
-              Tilføj tidsserie
-            </Button>
-            <Button bttype="primary" onClick={() => setUnitDialog(true)}>
-              Tilføj fra udstyr
-            </Button>
-          </Box>
+          <TimeseriesList manager={manager} AddByUnit={() => setUnitDialog(true)} />
 
-          {ids.map((id, index) => {
+          {/* {ids.map((id, index) => {
             return (
               <FormFieldset
                 key={id}
@@ -60,16 +75,18 @@ const TimeseriesStep = () => {
               >
                 <TimeseriesEditor
                   key={id}
-                  onRegister={(controller) => registerTimeseries(id, controller)}
-                  // onChange={(state) => updateTimeseries(id, state)}
+                  parent={parent}
+                  onRegister={() => {
+                    parent.registerSlice('timeseries', true);
+                  }}
                   onRemove={() => {
-                    removeTimeseries(id);
+                    parent.unregisterSlice('timeseries');
                     setIds((ids) => ids.filter((x) => x !== id));
                   }}
                 />
               </FormFieldset>
             );
-          })}
+          })} */}
 
           {/* {false && <WatlevmpSection controller={ts} />} */}
           {/* {timeseries?.map((field, index) => {
@@ -193,8 +210,8 @@ const TimeseriesStep = () => {
           <FormStepButtons
             key={'timeseries'}
             onFormIsValid={async () => {
-              const isValid = await validateAllSlices();
-              console.log('TimeseriesStep valid:', isValid);
+              // const isValid = await parent.validateAllSlices();
+              // console.log('TimeseriesStep valid:', isValid);
               return false;
             }}
           />

@@ -6,12 +6,11 @@ import StamdataTimeseries from '../../components/stamdata/StamdataTimeseries';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {FormProvider} from 'react-hook-form';
 import {TimeseriesMeta} from '~/helpers/CreateStationContextProvider';
-import {useAggregateController} from '../controller/useAggregateController';
-import {TimeseriesPayload} from '../controller/types';
+import {AggregateControllerType} from '../controller/types';
 
 type TimeseriesMetaFormProps = {
   onValidChange: (isValid: boolean, value?: TimeseriesMeta) => void;
-  controller: ReturnType<typeof useAggregateController<TimeseriesPayload>>;
+  controller: AggregateControllerType;
 };
 
 const TimeseriesMetaForm = ({onValidChange, controller}: TimeseriesMetaFormProps) => {
@@ -36,17 +35,14 @@ const TimeseriesMetaForm = ({onValidChange, controller}: TimeseriesMetaFormProps
   } = timeseriesFormMethods;
 
   useEffect(() => {
-    controller.registerSlice('meta', true, async () => {
-      const isValid = await trigger();
-      return isValid;
-    });
+    controller.registerSlice('meta', true);
   }, []);
 
   useEffect(() => {
     if (!isValidating) {
       onValidChange(isValid, getValues());
     }
-  }, [isValidating]);
+  }, [isValid, isValidating]);
 
   return (
     <FormProvider {...timeseriesFormMethods}>

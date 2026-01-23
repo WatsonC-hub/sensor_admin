@@ -13,13 +13,12 @@ import useCreateStationContext from '../api/useCreateStationContext';
 import {createTypedForm} from '~/components/formComponents/Form';
 import MPDescription from '../../components/stamdata/MPDescription';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {TimeseriesPayload} from '../controller/types';
-import {useAggregateController} from '../controller/useAggregateController';
+import {AggregateControllerType} from '../controller/types';
 
 type WatlevmpFormProps = {
   tstype_id: number;
   intakeno?: number;
-  controller: ReturnType<typeof useAggregateController<TimeseriesPayload>>;
+  controller: AggregateControllerType;
 };
 
 type Watlevmp = {
@@ -63,10 +62,7 @@ const WatlevmpForm = ({tstype_id, intakeno, controller}: WatlevmpFormProps) => {
   const elevation = watch('elevation');
 
   useEffect(() => {
-    controller.registerSlice('watlevmp', true, async () => {
-      const isValid = await trigger();
-      return isValid;
-    });
+    controller.registerSlice('watlevmp', true);
   }, []);
 
   useEffect(() => {
@@ -74,7 +70,7 @@ const WatlevmpForm = ({tstype_id, intakeno, controller}: WatlevmpFormProps) => {
       const values = getValues();
       controller.updateSlice('watlevmp', isValid, values);
     }
-  }, [isValidating]);
+  }, [controller.getValues()]);
 
   useEffect(() => {
     if (elevation === watlevmp?.elevation && watlevmp?.elevation !== undefined) {

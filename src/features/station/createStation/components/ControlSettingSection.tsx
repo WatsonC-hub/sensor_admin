@@ -5,13 +5,12 @@ import Button from '~/components/Button';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import ControlSettingForm from '../forms/ControlSettingForm';
-import {useAggregateController} from '../controller/useAggregateController';
-import {TimeseriesPayload} from '../controller/types';
+import {AggregateControllerType} from '../controller/types';
 
 type Props = {
   show: boolean;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
-  controller: ReturnType<typeof useAggregateController<TimeseriesPayload>>;
+  controller: AggregateControllerType;
 };
 
 const ControlSettingSection = ({show, setShow, controller}: Props) => {
