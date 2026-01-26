@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import NavBar from '~/components/NavBar';
 import {Box, Grid2, Typography} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -18,10 +18,18 @@ const CreateStation = () => {
   const {isMobile} = useBreakpoints();
   const {meta} = useCreateStationContext();
   const size = isMobile ? 12 : 6;
-  const parent = new AggregateController<RootPayload>();
-  const manager = new TimeseriesManager(parent);
 
-  console.log('AggregateController initialized with slices:', parent.getSlices());
+  const parentRef = useRef<AggregateController<RootPayload> | undefined>(undefined);
+  const managerRef = useRef<TimeseriesManager | undefined>(undefined);
+
+  useEffect(() => {
+    if (!parentRef.current) {
+      parentRef.current = new AggregateController<RootPayload>();
+    }
+    if (!managerRef.current && parentRef.current) {
+      managerRef.current = new TimeseriesManager(parentRef.current);
+    }
+  }, []);
 
   return (
     <>
@@ -57,7 +65,7 @@ const CreateStation = () => {
           </Box>
           <FormSteps />
           {meta?.loc_id === undefined && <LocationStep />}
-          <TimeseriesStep key="ts" manager={manager} />
+          <TimeseriesStep key="ts" managerRef={managerRef} parentRef={parentRef} />
           <AdditionalStep />
         </Grid2>
       </Box>

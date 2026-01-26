@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import useSyncForm, {SyncFormValues} from '../api/useSyncForm';
 import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {Grid2, Box} from '@mui/material';
+import {TimeseriesController} from '~/features/station/createStation/controller/types';
 
 const Form = createTypedForm<SyncFormValues>();
 
@@ -12,7 +13,8 @@ type JupiterDmpSyncProps = {
   tstype_id?: number;
   values?: SyncFormValues;
   submit?: (data: SyncFormValues) => void;
-  onValidate?: (key: 'sync', data: SyncFormValues) => void;
+  controller?: TimeseriesController;
+  onValidChange?: (isValid: boolean, value?: SyncFormValues) => void;
 };
 
 const JupiterDmpSync = ({
@@ -21,16 +23,19 @@ const JupiterDmpSync = ({
   mode,
   values,
   submit,
-  onValidate,
+  controller,
+  onValidChange,
 }: JupiterDmpSyncProps) => {
   const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm<SyncFormValues>({
     mode: mode,
-    defaultValues: {
-      jupiter: false,
-      sync_dmp: false,
-      owner_name: undefined,
-      owner_cvr: undefined,
-    },
+    defaultValues: !controller
+      ? {
+          jupiter: false,
+          sync_dmp: false,
+          owner_name: undefined,
+          owner_cvr: undefined,
+        }
+      : controller.getValues().sync,
     context: {
       loctype_id,
       tstype_id,
@@ -38,8 +43,30 @@ const JupiterDmpSync = ({
     values: values,
   });
 
-  const {watch, trigger, setValue, reset, getValues} = syncFormMethods;
+  const {
+    watch,
+    trigger,
+    setValue,
+    getValues,
+    reset,
+    formState: {isValid, isValidating},
+  } = syncFormMethods;
   const sync_dmp = watch('sync_dmp');
+
+  useEffect(() => {
+    if (controller)
+      controller.registerSlice('sync', true, async () => {
+        const isValid = await trigger();
+        console.log(isValid);
+        return isValid;
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!isValidating && onValidChange) {
+      onValidChange(isValid, getValues());
+    }
+  }, [isValid, isValidating]);
 
   return (
     <>
@@ -47,17 +74,7 @@ const JupiterDmpSync = ({
         <Form formMethods={syncFormMethods} gridSizes={12}>
           {canSyncJupiter && (
             <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til Jupiter">
-              <Form.Checkbox
-                name="jupiter"
-                label="Jupiter"
-                onChangeCallback={(value) => {
-                  if (onValidate)
-                    onValidate('sync', {
-                      ...getValues(),
-                      jupiter: value,
-                    });
-                }}
-              />
+              <Form.Checkbox name="jupiter" label="Jupiter" />
             </TooltipWrapper>
           )}
           {isDmpAllowed && (
@@ -72,11 +89,6 @@ const JupiterDmpSync = ({
                     setValue('owner_cvr', undefined);
                     setValue('owner_name', undefined);
                   }
-                  if (onValidate)
-                    onValidate('sync', {
-                      ...getValues(),
-                      sync_dmp: value,
-                    });
                 }}
               />
               <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til DMP">
@@ -98,12 +110,6 @@ const JupiterDmpSync = ({
                       setValue('owner_cvr', parseInt(owner.cvr));
                       setValue('owner_name', owner.name);
                     }
-                    if (onValidate)
-                      onValidate('sync', {
-                        ...getValues(),
-                        owner_cvr: parseInt(owner_cvr),
-                        owner_name: owner ? owner.name : undefined,
-                      });
                   }}
                 />
               </TooltipWrapper>

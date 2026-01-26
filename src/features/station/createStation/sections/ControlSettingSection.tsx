@@ -5,12 +5,12 @@ import Button from '~/components/Button';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import ControlSettingForm from '../forms/ControlSettingForm';
-import {AggregateControllerType} from '../controller/types';
+import {TimeseriesController} from '../controller/types';
 
 type Props = {
   show: boolean;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
-  controller: AggregateControllerType;
+  controller: TimeseriesController;
 };
 
 const ControlSettingSection = ({show, setShow, controller}: Props) => {
@@ -55,7 +55,12 @@ const ControlSettingSection = ({show, setShow, controller}: Props) => {
                 <RemoveCircleOutline />
               </IconButton>
             )}
-            <ControlSettingForm controller={controller} />
+            <ControlSettingForm
+              controller={controller}
+              onValidChange={(isValid, value) =>
+                controller.updateSlice('control_settings', isValid, value)
+              }
+            />
           </Box>
         </FormFieldset>
       )}

@@ -25,15 +25,16 @@ import OwnDatePicker from '~/components/OwnDatePicker';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {useAppContext} from '~/state/contexts';
-import {Unit, UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
+import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
 import AddSensorDialog from './AddSensorDialog';
+import {AddUnitType} from '~/features/station/createStation/forms/UnitForm';
 
 interface AddUnitFormProps {
   udstyrDialogOpen: boolean;
   setUdstyrDialogOpen: (open: boolean) => void;
   tstype_id?: number;
   mode: 'add' | 'edit';
-  onValidate?: (unit: Unit) => void;
+  onValidChange?: (isValid: boolean, value?: AddUnitType) => void;
 }
 
 export default function AddUnitForm({
@@ -41,7 +42,7 @@ export default function AddUnitForm({
   setUdstyrDialogOpen,
   mode,
   tstype_id,
-  onValidate,
+  onValidChange,
 }: AddUnitFormProps) {
   const [addSensors, setAddSensors] = useState(false);
   const [disableMatchingParameters, setDisableMatchingParameters] = useState(true);
@@ -58,7 +59,7 @@ export default function AddUnitForm({
     handleSubmit,
     reset,
     trigger,
-    formState: {isSubmitting},
+    formState: {isSubmitting, isValid},
   } = useFormContext();
 
   const [unitData, setUnitData] = useState({
@@ -173,15 +174,25 @@ export default function AddUnitForm({
     if (!units || units.length === 0) return;
 
     const unit = units.find((u) => u.unit_uuid === unitData.uuid);
+
+    if (onValidChange) {
+      const transformedUnit: AddUnitType = {
+        calypso_id: unit?.calypso_id.toString(),
+        unit_uuid: unit?.unit_uuid || '',
+        startdate: dayjs(unit?.startdato),
+        sensor_id: unit ? unit.sensor_id : undefined,
+      };
+
+      console.log('unit', unitData, unit, transformedUnit);
+      onValidChange(isValid, transformedUnit);
+    }
+
     if (units.length === 1) {
       setUnitData((prev) => ({...prev, uuid: units[0].unit_uuid}));
-      if (mode === 'add' && unit && onValidate) {
-        console.log('ON VALIDATE UNIT:', unit);
-        onValidate(unit);
-      }
+      // if (!onValidChange) {
       setValue('unit_uuid', units[0].unit_uuid, {shouldDirty: true, shouldValidate: true});
       setValue('startdate', dayjs(unitData.fra), {shouldDirty: true, shouldValidate: true});
-
+      // }
       const isValid = await trigger();
       if (!isValid) return;
       setUdstyrDialogOpen(false);
@@ -199,7 +210,7 @@ export default function AddUnitForm({
 
   const handleClose = () => {
     setUdstyrDialogOpen(false);
-    if (!onValidate) {
+    if (!onValidChange) {
       setUnitData({calypso_id: '', uuid: '', fra: dayjs()});
       trigger();
       reset();
@@ -211,17 +222,25 @@ export default function AddUnitForm({
 
     const sensortypeList = sensorsForCalyspoId(unitData.calypso_id);
     const unit = sensortypeList?.find((u) => u.unit_uuid === unitData.uuid);
+
+    const transformedUnit: AddUnitType = {
+      calypso_id: unit?.calypso_id.toString(),
+      unit_uuid: unit?.unit_uuid || '',
+      startdate: dayjs(unit?.startdato),
+      sensor_id: unit ? unit.sensor_id : undefined,
+    };
+
     if (matchingParameters) {
-      if (mode === 'add' && unit && onValidate) {
-        onValidate(unit);
+      if (mode === 'add' && unit && onValidChange) {
+        onValidChange(true, transformedUnit);
       }
     } else if (matchingParameters === false) {
-      if (mode === 'add' && unit && onValidate) {
-        onValidate(unit);
+      if (mode === 'add' && unit && onValidChange) {
+        onValidChange(true, transformedUnit);
       }
     } else if (matchingParameters === undefined) {
-      if (mode === 'add' && onValidate && unit) {
-        onValidate(unit);
+      if (mode === 'add' && onValidChange && unit) {
+        onValidChange(true, transformedUnit);
       }
     }
 

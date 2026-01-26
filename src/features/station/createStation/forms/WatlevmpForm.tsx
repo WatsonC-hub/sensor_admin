@@ -13,12 +13,13 @@ import useCreateStationContext from '../api/useCreateStationContext';
 import {createTypedForm} from '~/components/formComponents/Form';
 import MPDescription from '../../components/stamdata/MPDescription';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {AggregateControllerType} from '../controller/types';
+import {TimeseriesController} from '../controller/types';
 
 type WatlevmpFormProps = {
   tstype_id: number;
   intakeno?: number;
-  controller: AggregateControllerType;
+  controller: TimeseriesController;
+  onValidChange: (isValid: boolean, value?: Watlevmp) => void;
 };
 
 type Watlevmp = {
@@ -28,7 +29,7 @@ type Watlevmp = {
 
 const Form = createTypedForm<Watlevmp>();
 
-const WatlevmpForm = ({tstype_id, intakeno, controller}: WatlevmpFormProps) => {
+const WatlevmpForm = ({tstype_id, intakeno, controller, onValidChange}: WatlevmpFormProps) => {
   const [helperText, setHelperText] = useState('');
   const {meta} = useCreateStationContext();
   const {isMobile} = useBreakpoints();
@@ -48,33 +49,36 @@ const WatlevmpForm = ({tstype_id, intakeno, controller}: WatlevmpFormProps) => {
   });
 
   const watlevmpFormMethods = useWatlevmpForm<Watlevmp>({
-    defaultValues: controller.getSlices()['watlevmp']?.value,
+    defaultValues: controller.getValues()['watlevmp'],
     values: watlevmp,
   });
 
   const {
-    trigger,
     watch,
     getValues,
+    trigger,
     formState: {isValid, isValidating},
   } = watlevmpFormMethods;
 
   const elevation = watch('elevation');
 
   useEffect(() => {
-    controller.registerSlice('watlevmp', true);
+    controller.registerSlice('watlevmp', true, async () => {
+      const isValid = await trigger();
+      return isValid;
+    });
   }, []);
 
   useEffect(() => {
     if (!isValidating) {
       const values = getValues();
-      controller.updateSlice('watlevmp', isValid, values);
+      onValidChange(isValid, values);
     }
-  }, [controller.getValues()]);
+  }, [isValid, isValidating]);
 
   useEffect(() => {
     if (elevation === watlevmp?.elevation && watlevmp?.elevation !== undefined) {
-      setHelperText(`${watlevmp.startdate.isValid() ? 'Målepunkt' : 'Terrænkote'} fra Jupiter`);
+      setHelperText(`${watlevmp?.startdate.isValid() ? 'Målepunkt' : 'Terrænkote'} fra Jupiter`);
     }
   }, [elevation, intakeno]);
 
@@ -83,6 +87,7 @@ const WatlevmpForm = ({tstype_id, intakeno, controller}: WatlevmpFormProps) => {
       <Form.Input
         name="elevation"
         label="Målepunktskote"
+        required
         type="number"
         onChangeCallback={(value) => {
           if (watlevmp?.elevation !== undefined) {
@@ -105,6 +110,7 @@ const WatlevmpForm = ({tstype_id, intakeno, controller}: WatlevmpFormProps) => {
               slots={{
                 textfield: {
                   error: !!error,
+                  required: true,
                   helperText: error?.message,
                 },
               }}

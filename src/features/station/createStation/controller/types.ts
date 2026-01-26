@@ -1,7 +1,9 @@
 import {TimeseriesMeta} from '~/helpers/CreateStationContextProvider';
 import {Watlevmp} from '../../schema';
 import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
-import {useAggregateController} from './useAggregateController';
+import {AggregateController} from './AggregateController';
+import {Dayjs} from 'dayjs';
+import {AddUnitType} from '../forms/UnitForm';
 
 export type ControlSettings = {
   controls_per_year: number;
@@ -24,6 +26,26 @@ type LocationData = {
   groups?: Array<any>;
 };
 
+export type UnitValues = {
+  unit_uuid: string;
+  startdate: string;
+};
+
+export type UnitData = {
+  unit_uuid: string;
+  startdate: Dayjs;
+  calypso_id: string;
+  sensor_id: string;
+  sensortypeid: number;
+};
+
+// export type UnitDisplayValues = {
+//   unit_uuid: string;
+//   startdate: Date;
+//   calypso_id: number;
+//   sensor_id: string;
+// };
+
 export type RootPayload = {
   location?: LocationData;
   timeseries: TimeseriesPayload[];
@@ -41,6 +63,7 @@ export type TimeseriesPayload = {
   watlevmp?: Watlevmp;
   control_settings?: ControlSettings;
   sync?: SyncFormValues;
+  unit?: AddUnitType;
 };
 
-export type AggregateControllerType = ReturnType<typeof useAggregateController<TimeseriesPayload>>;
+export type TimeseriesController = AggregateController<TimeseriesPayload>;

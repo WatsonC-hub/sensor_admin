@@ -60,7 +60,7 @@ const CalypsoID = () => {
 };
 
 const SensorID = () => {
-  const {watch} = useFormContext<AddUnit>();
+  const {watch, setValue} = useFormContext<AddUnit>();
   const {tstype_id} = React.useContext(UnitContext);
   const {
     get: {data: availableUnits},
@@ -88,6 +88,14 @@ const SensorID = () => {
           [unit.sensor_id]: `${unit.channel} - ${unit.sensor_id}`,
         };
       })}
+      onChangeCallback={(value) => {
+        const unit_uuid = uniqueAvailableUnits.find(
+          (unit) =>
+            unit.sensor_id.toString() ===
+            (value as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>).target.value
+        )?.unit_uuid;
+        setValue('unit_uuid', unit_uuid || '');
+      }}
     />
   );
 };

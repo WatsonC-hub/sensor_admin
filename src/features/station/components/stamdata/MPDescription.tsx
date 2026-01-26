@@ -37,8 +37,8 @@ const MPDescription = ({value, onChange, onBlur, ref, slots}: Props) => {
         },
       }}
       options={options}
-      inputValue={value}
-      value={value}
+      inputValue={value ?? ''}
+      value={value ?? ''}
       ref={ref}
       fullWidth
       onBlur={onBlur}

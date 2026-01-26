@@ -3,29 +3,29 @@ import TimeseriesEditor from './TimeseriesEditor';
 import Button from '~/components/Button';
 import {Box} from '@mui/material';
 import {useEffect, useState} from 'react';
+import FormFieldset from '~/components/formComponents/FormFieldset';
 
 type Props = {
-  manager: TimeseriesManager;
+  manager: TimeseriesManager | undefined;
   AddByUnit: () => void;
 };
 
 function TimeseriesList({manager, AddByUnit}: Props) {
-  const [tick, setTick] = useState(0);
+  const [, setTick] = useState(0);
 
   // subscribe to manager changes
   useEffect(() => {
-    const unsubscribe = manager.onChange(() => {
+    const unsubscribe = manager?.onChange(() => {
       setTick((x) => x + 1);
     });
 
     return () => {
-      console.log('TimeseriesList unsubscribing from manager changes', tick);
-      unsubscribe();
+      unsubscribe?.();
     }; // ✅ cleanup
   }, [manager]);
 
-  const add = () => manager.add(crypto.randomUUID());
-  const remove = (id: string) => manager.remove(id);
+  const add = () => manager?.add(crypto.randomUUID());
+  const remove = (id: string) => manager?.remove(id);
 
   return (
     <>
@@ -37,8 +37,17 @@ function TimeseriesList({manager, AddByUnit}: Props) {
           Tilføj fra udstyr
         </Button>
       </Box>
-      {manager.list().map(({id, agg}) => {
-        return <TimeseriesEditor key={id} aggregate={agg} onRemove={() => remove(id)} />;
+      {manager?.list().map(({id, agg}, index) => {
+        return (
+          <FormFieldset
+            key={id}
+            label={`Tidsserie ${index + 1}`}
+            sx={{width: '100%', p: 1, mb: 2}}
+            labelPosition={-20}
+          >
+            <TimeseriesEditor key={id} aggregate={agg} onRemove={() => remove(id)} />
+          </FormFieldset>
+        );
       })}
     </>
   );

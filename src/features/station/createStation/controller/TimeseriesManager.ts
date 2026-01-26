@@ -1,7 +1,7 @@
 import {wireChildToParent} from '../helper/wireChildToParent';
 import {AggregateController} from './AggregateController';
 import {TimeseriesAggregate} from './TimeseriesAggregate';
-import {RootPayload} from './types';
+import {RootPayload, TimeseriesPayload} from './types';
 
 type Listener = () => void;
 
@@ -12,6 +12,7 @@ export class TimeseriesManager {
     {
       agg: TimeseriesAggregate;
       unsubscribe: () => void;
+      validate?: () => Promise<boolean>;
     }
   >();
 
@@ -20,7 +21,9 @@ export class TimeseriesManager {
   constructor(parent: AggregateController<RootPayload>) {
     this.parent = parent;
     // parent slice for timeseries array
-    this.parent.registerSlice('timeseries', true);
+    this.parent.registerSlice('timeseries', true, async () => {
+      return await this.validateAllSlices();
+    });
   }
 
   /** Subscribe to changes in the list */
@@ -80,15 +83,31 @@ export class TimeseriesManager {
     }));
   }
 
+  /** Validate all timeseries slices */
+  private async validateAllSlices() {
+    let isValid = true;
+    for (const [, item] of this.items.entries()) {
+      if (item.agg) {
+        const snapshot = item.agg.snapshot();
+        const valid = await snapshot.validate?.();
+
+        isValid = isValid && (valid || false);
+      }
+    }
+    return isValid;
+  }
+
   /** Update parent slice with current valid values */
   private updateParentSlice() {
-    const snapshots = Array.from(this.items.values()).map((i) => i.agg.snapshot());
-    console.log('TimeseriesManager updating parent slice with snapshots:', snapshots);
-    const valid = snapshots.every((s) => s.valid);
-    const values = snapshots.map((s) => s.value!);
+    this.validateAllSlices().then((isValid) => {
+      const values = this.list()
+        .filter(({agg}) => agg.getController().isValid())
+        .map(({agg}) => {
+          const v = agg.getController().getValues();
 
-    console.log('Updating parent timeseries slice:', {valid, values});
-
-    this.parent.updateSlice('timeseries', valid, values);
+          return v as TimeseriesPayload;
+        });
+      this.parent.updateSlice('timeseries', isValid, values);
+    });
   }
 }

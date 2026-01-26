@@ -3,6 +3,7 @@ import {TimeseriesPayload} from './types';
 
 export type AggregateSnapshot<T> = {
   valid: boolean;
+  validate: () => Promise<boolean>;
   value?: T;
 };
 
@@ -13,9 +14,12 @@ export class TimeseriesAggregate {
     const valid = this.controller.isValid();
     const payload = {
       valid,
-      value: valid ? (this.controller.getValues() as TimeseriesPayload) : undefined,
+      value: this.controller.getValues() as TimeseriesPayload,
+      validate: async () => {
+        const isValid = await this.controller.validateAllSlices();
+        return isValid;
+      },
     };
-    console.log(payload);
     return payload;
   }
 

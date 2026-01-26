@@ -5,21 +5,22 @@ import useControlSettingsForm from '~/features/configuration/api/useControlSetti
 import ControlSettings from '~/features/configuration/components/ControlSettings';
 import CreateControlSettings from '~/features/configuration/components/CreateControlSettings';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {AggregateControllerType, ControlSettings as ControlSettingsType} from '../controller/types';
+import {TimeseriesController, ControlSettings as ControlSettingsType} from '../controller/types';
 
 type Props = {
-  controller: AggregateControllerType;
+  controller: TimeseriesController;
+  onValidChange: (isValid: boolean, value?: ControlSettingsType) => void;
 };
 
-const ControlSettingForm = ({controller}: Props) => {
+const ControlSettingForm = ({controller, onValidChange}: Props) => {
   const {isMobile} = useBreakpoints();
   const controlSettingsFormMethods = useControlSettingsForm<ControlSettingsType>({
-    defaultValues: controller.getSlices()['control_settings']?.value,
+    defaultValues: controller.getValues()['control_settings'],
   });
   const {
     formState: {isValid, isValidating},
-    trigger,
     getValues,
+    trigger,
   } = controlSettingsFormMethods;
 
   useEffect(() => {
@@ -32,9 +33,9 @@ const ControlSettingForm = ({controller}: Props) => {
   useEffect(() => {
     if (!isValidating) {
       const values = getValues();
-      controller.updateSlice('control_settings', isValid, values);
+      onValidChange(isValid, values);
     }
-  }, [isValidating]);
+  }, [isValidating, isValid]);
 
   return (
     <Grid2

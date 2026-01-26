@@ -1,56 +1,51 @@
-import dayjs from 'dayjs';
-import React, {useEffect} from 'react';
-import {FormProvider} from 'react-hook-form';
-import useUnitForm from '../../api/useUnitForm';
-import StamdataUnit from '../../components/stamdata/StamdataUnit';
-import {z} from 'zod';
-import {zodDayjs} from '~/helpers/schemas';
-import {Box, Grid2, IconButton, Typography} from '@mui/material';
+import React from 'react';
+import {Box, IconButton, Typography} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import useCreateStationContext from '../api/useCreateStationContext';
-import {RemoveCircleOutline} from '@mui/icons-material';
-import {UnitData} from '~/helpers/CreateStationContextProvider';
+import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import Button from '~/components/Button';
+import {TimeseriesController, TimeseriesPayload} from '../controller/types';
+import UnitForm from '../forms/UnitForm';
 
 type UnitStepProps = {
-  unit: UnitData;
+  tstype_id: number;
+  show: boolean;
+  setShow: React.Dispatch<React.SetStateAction<boolean>>;
+  controller: TimeseriesController;
 };
 
-const addSchema = z.object({
-  startdate: zodDayjs().default(dayjs()),
-  unit_uuid: z.string({required_error: 'Udstyrs UUID er påkrævet'}),
-  calypso_id: z.string().optional(),
-  sensor_id: z.string().optional(),
-});
-
-type AddUnitForm = z.infer<typeof addSchema>;
-
-const UnitStep = ({unit}: UnitStepProps) => {
+const UnitStep = ({show, setShow, tstype_id, controller}: UnitStepProps) => {
+  const [openUnitDialog, setOpenUnitDialog] = React.useState(false);
+  const [isUnitSelected, setIsUnitSelected] = React.useState(false);
   const {isMobile} = useBreakpoints();
-  const {
-    formState: {units},
-    onValidate,
-  } = useCreateStationContext();
-  const unitFormMethods = useUnitForm<AddUnitForm>({
-    schema: addSchema,
-    mode: 'Add',
-    defaultValues: {
-      startdate: dayjs(),
-      unit_uuid: '',
-      calypso_id: '',
-      sensor_id: '',
-    },
-  });
+  const unit = controller.getValues().unit;
 
-  useEffect(() => {
-    unitFormMethods.reset({
-      startdate: dayjs(unit.startdate),
-      unit_uuid: unit.unit_uuid,
-      calypso_id: unit.calypso_id?.toString(),
-      sensor_id: unit.sensor_id,
-    });
-  }, [unit]);
+  if (!show)
+    return (
+      <Box>
+        <Button
+          bttype="primary"
+          startIcon={<AddCircleOutline color="primary" />}
+          sx={{
+            width: 'fit-content',
+            backgroundColor: 'transparent',
+            px: 0.5,
+            border: 'none',
+            ':hover': {
+              backgroundColor: 'grey.200',
+            },
+          }}
+          onClick={() => {
+            if (!isUnitSelected) setOpenUnitDialog(true);
+            setShow(true);
+          }}
+        >
+          <Typography variant="body1" color="primary">
+            Tilføj udstyr
+          </Typography>
+        </Button>
+      </Box>
+    );
 
   return (
     <FormFieldset
@@ -61,7 +56,9 @@ const UnitStep = ({unit}: UnitStepProps) => {
             sx={{p: 0, m: 0}}
             startIcon={<RemoveCircleOutline color="primary" />}
             onClick={() => {
-              onValidate('units', units?.filter((u) => u.unit_uuid !== unit.unit_uuid) || []);
+              setShow(false);
+              controller.unregisterSlice('unit');
+              setIsUnitSelected(false);
             }}
           >
             <Typography variant="body2" color="grey.700">
@@ -75,34 +72,36 @@ const UnitStep = ({unit}: UnitStepProps) => {
       labelPosition={isMobile ? -22 : -20}
       sx={{width: '100%', p: 1}}
     >
-      <FormProvider {...unitFormMethods}>
-        <Box display="flex" flexDirection="row" gap={1} alignItems="center">
-          {!isMobile && (
+      <Box display="flex" flexDirection="row" gap={1}>
+        {!isMobile && (
+          <>
             <IconButton
               color="primary"
               size="small"
               onClick={() => {
-                onValidate('units', units?.filter((u) => u.unit_uuid !== unit.unit_uuid) || []);
+                setShow(false);
+                controller.unregisterSlice('unit');
+                setIsUnitSelected(false);
               }}
             >
               <RemoveCircleOutline />
             </IconButton>
-          )}
-          <StamdataUnit tstype_id={unit.sensortypeid}>
-            <Grid2 container size={12} spacing={1} direction={isMobile ? 'column-reverse' : 'row'}>
-              <Grid2 size={isMobile ? 12 : 4}>
-                <StamdataUnit.CalypsoID />
-              </Grid2>
-              <Grid2 size={isMobile ? 12 : 4}>
-                <StamdataUnit.SensorID />
-              </Grid2>
-              <Grid2 size={isMobile ? 12 : 4}>
-                <StamdataUnit.StartDate />
-              </Grid2>
-            </Grid2>
-          </StamdataUnit>
-        </Box>
-      </FormProvider>
+            <UnitForm
+              setIsUnitSelected={setIsUnitSelected}
+              tstype_id={tstype_id}
+              onValidChange={(isValid, value) => {
+                controller.updateSlice('unit', isValid, value);
+              }}
+              registerSlice={(id, required, validate) =>
+                controller.registerSlice(id as keyof TimeseriesPayload, required, validate)
+              }
+              openUnitDialog={openUnitDialog}
+              setOpenUnitDialog={setOpenUnitDialog}
+              unit={unit}
+            />
+          </>
+        )}
+      </Box>
     </FormFieldset>
   );
 };

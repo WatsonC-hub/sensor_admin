@@ -41,14 +41,6 @@ type LocationData = {
   groups?: Array<any>;
 };
 
-export type UnitData = {
-  unit_uuid: string;
-  startdate: Dayjs;
-  calypso_id: number;
-  sensor_id: string;
-  sensortypeid: number;
-};
-
 export type TimeseriesMeta = {
   tstype_id: number;
   intakeno?: number;

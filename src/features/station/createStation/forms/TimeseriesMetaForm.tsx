@@ -6,11 +6,11 @@ import StamdataTimeseries from '../../components/stamdata/StamdataTimeseries';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {FormProvider} from 'react-hook-form';
 import {TimeseriesMeta} from '~/helpers/CreateStationContextProvider';
-import {AggregateControllerType} from '../controller/types';
+import {TimeseriesController} from '../controller/types';
 
 type TimeseriesMetaFormProps = {
   onValidChange: (isValid: boolean, value?: TimeseriesMeta) => void;
-  controller: AggregateControllerType;
+  controller: TimeseriesController;
 };
 
 const TimeseriesMetaForm = ({onValidChange, controller}: TimeseriesMetaFormProps) => {
@@ -20,7 +20,7 @@ const TimeseriesMetaForm = ({onValidChange, controller}: TimeseriesMetaFormProps
 
   const [timeseriesFormMethods, TimeseriesForm] = useTimeseriesForm({
     formProps: {
-      defaultValues: controller.getSlices()['meta']?.value,
+      defaultValues: controller.getValues()['meta'],
       context: {
         loctype_id: meta?.loctype_id,
       },
@@ -35,7 +35,10 @@ const TimeseriesMetaForm = ({onValidChange, controller}: TimeseriesMetaFormProps
   } = timeseriesFormMethods;
 
   useEffect(() => {
-    controller.registerSlice('meta', true);
+    controller.registerSlice('meta', true, async () => {
+      const isValid = await trigger();
+      return isValid;
+    });
   }, []);
 
   useEffect(() => {

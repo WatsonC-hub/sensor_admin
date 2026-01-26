@@ -5,18 +5,18 @@ import WatlevmpForm from '../forms/WatlevmpForm';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
-import {AggregateControllerType} from '../controller/types';
+import {TimeseriesController} from '../controller/types';
 
 type Props = {
   show: boolean;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
-  controller: AggregateControllerType;
+  controller: TimeseriesController;
 };
 
 const WatlevmpSection = ({show, setShow, controller}: Props) => {
   const {isMobile} = useBreakpoints();
-  const tstype_id = controller.getSlices()['meta']?.value?.tstype_id;
-  const intakeno = controller.getSlices()['meta']?.value?.intakeno;
+  const tstype_id = controller.getValues()['meta']?.tstype_id;
+  const intakeno = controller.getValues()['meta']?.intakeno;
 
   if (show)
     return (
@@ -64,6 +64,9 @@ const WatlevmpSection = ({show, setShow, controller}: Props) => {
                 tstype_id={tstype_id!}
                 intakeno={intakeno ?? undefined}
                 controller={controller}
+                onValidChange={(isValid, value) =>
+                  controller.updateSlice('watlevmp', isValid, value)
+                }
               />
             </Grid2>
           </Grid2>
