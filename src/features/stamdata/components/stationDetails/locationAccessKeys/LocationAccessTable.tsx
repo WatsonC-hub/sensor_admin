@@ -20,13 +20,7 @@ import {useTable} from '~/hooks/useTable';
 import {AccessTable} from '~/types';
 
 type LocationAccessTableProps = {
-  mode?: 'add' | 'edit' | 'mass_edit';
   loc_id?: number;
-  location_access?: Array<AccessTable> | undefined;
-  removeLocationAccess?: (index: number) => void;
-  alterLocationAccess?: (index: number, data?: AccessTable) => void;
-  currentIndex?: number;
-  setCurrentIndex?: (index: number) => void;
 };
 
 const onDeleteBtnClick = (
@@ -38,15 +32,7 @@ const onDeleteBtnClick = (
   setDialogOpen(true);
 };
 
-const LocationAccessTable = ({
-  mode,
-  loc_id,
-  location_access,
-  removeLocationAccess,
-  alterLocationAccess,
-  currentIndex,
-  setCurrentIndex,
-}: LocationAccessTableProps) => {
+const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
   const [removeId, setRemoveId] = useState<number>(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const {
@@ -175,10 +161,7 @@ const LocationAccessTable = ({
         ? {}
         : {
             onClick: (e) => {
-              if ((e.target as HTMLElement).innerText && !disabled && mode === 'edit') {
-                reset(row.original);
-              } else if (mode === 'add') {
-                if (setCurrentIndex) setCurrentIndex(row.index);
+              if ((e.target as HTMLElement).innerText && !disabled) {
                 reset(row.original);
               }
               table.setEditingRow(row);
@@ -204,18 +187,11 @@ const LocationAccessTable = ({
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          if (mode === 'edit') reset(row.original);
-          else if (mode === 'add') {
-            if (setCurrentIndex) setCurrentIndex(row.index);
-            reset(row.original);
-          }
+          reset(row.original);
           setOpenLocationAccessDialog(true);
         }}
         onDeleteBtnClick={() => {
-          if (mode === 'edit') onDeleteBtnClick(row.original.id, setDialogOpen, setRemoveId);
-          else if (mode === 'add') {
-            onDeleteBtnClick(row.index, setDialogOpen, setRemoveId);
-          }
+          onDeleteBtnClick(row.original.id, setDialogOpen, setRemoveId);
         }}
         disabled={!accessKeys || disabled}
       />
@@ -240,7 +216,7 @@ const LocationAccessTable = ({
 
   const table = useTable<AccessTable>(
     isMobile ? mobileColumns : columns,
-    data ?? location_access ?? [],
+    data ?? [],
     options,
     tableState,
     TableTypes.TABLE,
@@ -253,11 +229,7 @@ const LocationAccessTable = ({
   };
 
   const handleSave: SubmitHandler<AccessTable> = async (details) => {
-    if (mode === 'edit') {
-      handleEdit(details);
-    } else if (mode === 'add' && alterLocationAccess) {
-      alterLocationAccess(currentIndex ?? 0, details);
-    }
+    handleEdit(details);
     setOpenLocationAccessDialog(false);
     // reset(initialLocationAccessData);
   };
@@ -284,15 +256,11 @@ const LocationAccessTable = ({
   };
 
   const handleDelete = (location_access_id: number | undefined) => {
-    if (mode === 'edit') {
-      const payload = {
-        path: `${loc_id}/${location_access_id}`,
-      };
+    const payload = {
+      path: `${loc_id}/${location_access_id}`,
+    };
 
-      delLocationAccess.mutate(payload);
-    } else if (mode === 'add' && removeLocationAccess) {
-      removeLocationAccess(removeId);
-    }
+    delLocationAccess.mutate(payload);
   };
 
   return (

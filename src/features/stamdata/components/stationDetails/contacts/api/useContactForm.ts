@@ -24,15 +24,15 @@ const contactSchema = z.object({
   notify_required: z.boolean().optional().default(false),
 });
 
-// const contact_info_table = contactSchema.extend({
-//   id: z.string(),
-//   relation_id: z.number(),
-//   org: z.string(),
-//   contact_role_name: z.string(),
-// });
+const contact_info_table = contactSchema.extend({
+  id: z.string(),
+  relation_id: z.number(),
+  org: z.string(),
+  contact_role_name: z.string(),
+});
 
 export type InferContactInfo = z.infer<typeof contactSchema>;
-// export type InferContactTable = z.infer<typeof contact_info_table>;
+export type InferContactTable = z.infer<typeof contact_info_table>;
 
 const contactArraySchema = z.array(contactSchema);
 

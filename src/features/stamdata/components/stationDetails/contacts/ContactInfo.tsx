@@ -39,7 +39,7 @@ const ContactInfo = () => {
               loc_id={loc_id}
             />
           )}
-          <ContactInfoTable mode="edit" loc_id={loc_id} />
+          <ContactInfoTable loc_id={loc_id} />
         </FormProvider>
       </StationPageBoxLayout>
       <FabWrapper

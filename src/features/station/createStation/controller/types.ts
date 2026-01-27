@@ -4,6 +4,8 @@ import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
 import {AggregateController} from './AggregateController';
 import {Dayjs} from 'dayjs';
 import {AddUnitType} from '../forms/UnitForm';
+import {AccessTable, ContactTable} from '~/types';
+import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 
 export type ControlSettings = {
   controls_per_year: number;
@@ -11,7 +13,7 @@ export type ControlSettings = {
   selectValue: 1 | 2;
 };
 
-type LocationData = {
+export type LocationData = {
   loc_id?: number;
   loc_name?: string;
   loctype_id?: number;
@@ -24,6 +26,13 @@ type LocationData = {
   initial_project_no?: string;
   description?: string;
   groups?: Array<any>;
+};
+
+export type LocationPayload = {
+  meta: LocationData;
+  contacts: ContactTable[];
+  location_access: AccessTable[];
+  ressourcer: Ressourcer[];
 };
 
 export type UnitValues = {
@@ -39,15 +48,12 @@ export type UnitData = {
   sensortypeid: number;
 };
 
-// export type UnitDisplayValues = {
-//   unit_uuid: string;
-//   startdate: Date;
-//   calypso_id: number;
-//   sensor_id: string;
-// };
+export type TransformedUnit = AddUnitType & {
+  tstype_id: number;
+};
 
 export type RootPayload = {
-  location?: LocationData;
+  location?: LocationPayload;
   timeseries: TimeseriesPayload[];
 };
 
@@ -66,4 +72,15 @@ export type TimeseriesPayload = {
   unit?: AddUnitType;
 };
 
+export type SimpleContact = {
+  name: string;
+  email: string;
+};
+
+export type SimpleLocationAccess = {
+  type: string;
+  name: string;
+};
+
 export type TimeseriesController = AggregateController<TimeseriesPayload>;
+export type LocationController = AggregateController<LocationPayload>;

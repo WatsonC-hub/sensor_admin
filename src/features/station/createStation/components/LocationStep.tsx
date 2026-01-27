@@ -1,113 +1,43 @@
-import React, {useEffect} from 'react';
-import useCreateStationContext from '../api/useCreateStationContext';
-import useLocationForm from '../../api/useLocationForm';
-import {FormProvider} from 'react-hook-form';
-import StamdataLocation from '../../components/stamdata/StamdataLocation';
-import useBreakpoints from '~/hooks/useBreakpoints';
+import React, {useEffect, useState} from 'react';
+
 import FormStepButtons from './FormStepButtons';
-import OptionalLocationForm from '../../components/stamdata/stamdataComponents/OptionalLocationForm';
+import {LocationManager} from '../controller/LocationManager';
+import LocationEditor from '../helper/LocationEditor';
 
-const LocationStep = () => {
-  const {isMobile} = useBreakpoints();
-  const size = isMobile ? 12 : 6;
-  const {
-    meta,
-    setMeta,
-    onValidate,
-    formState: {location},
-    formErrors: {location: locErrors},
-    setFormErrors,
-    activeStep,
-  } = useCreateStationContext();
+type Props = {
+  locationManager: LocationManager;
+  activeStep: number;
+  setActiveStep: (step: number) => void;
+  defaultState?: Partial<Record<string, any>>;
+};
 
-  const [locationFormMethods, LocationForm] = useLocationForm({
-    defaultValues: location,
-    mode: 'Add',
-    context: {
-      loc_id: meta?.loc_id,
-    },
-    initialLocTypeId: meta?.loctype_id,
-  });
+const LocationStep = ({locationManager, activeStep, setActiveStep}: Props) => {
+  const [, setTick] = useState(0);
 
-  const {
-    handleSubmit,
-    formState: {errors},
-    trigger,
-  } = locationFormMethods;
-
+  // subscribe to manager changes
   useEffect(() => {
-    if (locErrors)
-      setFormErrors((prev) => ({
-        ...prev,
-        location: Object.keys(errors).length > 0,
-      }));
-  }, [errors]);
+    const unsubscribe = locationManager?.onChange(() => {
+      setTick((x) => x + 1);
+    });
 
-  useEffect(() => {
-    if (locErrors === true && Object.keys(errors).length === 0) trigger();
-  }, [locErrors]);
+    return () => {
+      unsubscribe?.();
+    }; // ✅ cleanup
+  }, [locationManager]);
 
   return (
     <>
       {activeStep === 0 && (
         <>
-          <FormProvider {...locationFormMethods}>
-            <StamdataLocation>
-              <LocationForm
-                size={size}
-                loc_id={meta?.loc_id}
-                slotProps={{
-                  loctypeSelect: {
-                    onChangeCallback: (event) => {
-                      const value = (
-                        event as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-                      ).target.value;
-                      setMeta((prev) => ({...prev, loctype_id: value as unknown as number}));
-                    },
-                  },
-                  loc_name: {
-                    onChangeCallback: (event) => {
-                      const value = (
-                        event as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-                      ).target.value;
-                      setMeta((prev) => ({...prev, loc_name: value}));
-                    },
-                  },
-                  boreholeno: {
-                    onChangeCallback: (value) => {
-                      setMeta((prev) => ({...prev, boreholeno: value?.boreholeno || ''}));
-                    },
-                  },
-                }}
-              />
-              {meta?.loctype_id && <OptionalLocationForm size={size} loc_id={meta?.loc_id} />}
-            </StamdataLocation>
-          </FormProvider>
+          <LocationEditor manager={locationManager} />
           <FormStepButtons
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
             key={'location'}
             onFormIsValid={async () => {
-              let isValid = true;
-              await handleSubmit(
-                (data) => {
-                  onValidate('location', data);
+              const isValid = await locationManager?.get()?.getController().validateAllSlices();
 
-                  setFormErrors((prev) => ({
-                    ...prev,
-                    location: false,
-                  }));
-                },
-                (e) => {
-                  onValidate('location', null);
-                  setFormErrors((prev) => ({
-                    ...prev,
-                    location: Object.keys(e).length > 0,
-                  }));
-
-                  isValid = false;
-                }
-              )();
-
-              return isValid;
+              return isValid ?? false;
             }}
           />
         </>

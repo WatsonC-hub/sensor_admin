@@ -1,7 +1,6 @@
-import {wireChildToParent} from '../helper/wireChildToParent';
 import {AggregateController} from './AggregateController';
 import {TimeseriesAggregate} from './TimeseriesAggregate';
-import {RootPayload, TimeseriesPayload} from './types';
+import {RootPayload} from './types';
 
 type Listener = () => void;
 
@@ -14,7 +13,7 @@ export class TimeseriesManager {
       unsubscribe: () => void;
       validate?: () => Promise<boolean>;
     }
-  >();
+  >([]);
 
   private listeners = new Set<Listener>();
 
@@ -35,7 +34,6 @@ export class TimeseriesManager {
   /** Notify all listeners */
   private emit() {
     this.listeners.forEach((l) => l());
-    // this.updateParentSlice();
   }
 
   /** Add a new timeseries */
@@ -44,14 +42,13 @@ export class TimeseriesManager {
 
     const agg = new TimeseriesAggregate();
 
-    const unsubscribe = wireChildToParent(
-      {
-        snapshot: () => agg.snapshot(),
-        controller: agg.getController(),
-      },
-      this.parent,
-      'timeseries'
-    );
+    const unsubSlice = agg.getController().onSliceChange(() => {
+      this.updateParentSlice();
+    });
+
+    const unsubscribe = () => {
+      unsubSlice();
+    };
 
     this.items.set(id, {agg, unsubscribe});
     this.updateParentSlice();
@@ -83,6 +80,16 @@ export class TimeseriesManager {
     }));
   }
 
+  clear() {
+    if (this.items.size === 0) return;
+
+    this.items.forEach(({unsubscribe}) => unsubscribe());
+    this.items.clear();
+    // Clear parent slice
+    this.parent.updateSlice('timeseries', false, undefined);
+    this.emit();
+  }
+
   /** Validate all timeseries slices */
   private async validateAllSlices() {
     let isValid = true;
@@ -99,15 +106,11 @@ export class TimeseriesManager {
 
   /** Update parent slice with current valid values */
   private updateParentSlice() {
-    this.validateAllSlices().then((isValid) => {
-      const values = this.list()
-        .filter(({agg}) => agg.getController().isValid())
-        .map(({agg}) => {
-          const v = agg.getController().getValues();
+    const snapshots = this.list().map(({agg}) => agg.snapshot());
 
-          return v as TimeseriesPayload;
-        });
-      this.parent.updateSlice('timeseries', isValid, values);
-    });
+    const valid = snapshots.every((s) => s.valid);
+    const values = snapshots.filter((s) => s.valid).map((s) => s.value!);
+
+    this.parent.updateSlice('timeseries', valid, values);
   }
 }

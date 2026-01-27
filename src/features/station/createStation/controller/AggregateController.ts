@@ -28,17 +28,42 @@ export class AggregateController<T extends Record<string, any>> {
     this.sliceListeners.forEach((l) => l(id, slice));
   }
 
-  registerSlice<K extends keyof T>(id: K, required: boolean, validate: () => Promise<boolean>) {
-    if (this.slices[id]) return;
+  registerSlice<K extends keyof T>(id: K, required: boolean, validate?: () => Promise<boolean>) {
+    const existing = this.slices[id];
 
-    this.slices[id] = {
-      required,
-      valid: false,
-      validate,
-    };
+    // 🟢 First registration
+    if (!existing) {
+      this.slices[id] = {
+        required,
+        valid: false,
+        validate,
+      };
 
-    this.emitSliceChange(id);
-    this.emitValidity();
+      this.emitSliceChange(id);
+      this.emitValidity();
+      return;
+    }
+
+    // 🟡 Slice already exists — allow enrichment
+
+    let changed = false;
+
+    // Required flag might change (rare but legal)
+    if (existing.required !== required) {
+      existing.required = required;
+      changed = true;
+    }
+
+    // Attach validator if it didn't have one
+    if (!existing.validate && validate) {
+      existing.validate = validate;
+      changed = true;
+    }
+
+    if (changed) {
+      this.emitSliceChange(id);
+      this.emitValidity();
+    }
   }
 
   unregisterSlice<K extends keyof T>(id: K) {

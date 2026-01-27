@@ -23,7 +23,7 @@ import SelectLocationAccess from './SelectLocationAccess';
 import {Save} from '@mui/icons-material';
 
 type Props = {
-  loc_id: number | undefined;
+  loc_id?: number | undefined;
   editMode?: boolean;
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;

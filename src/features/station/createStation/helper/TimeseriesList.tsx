@@ -4,13 +4,18 @@ import Button from '~/components/Button';
 import {Box} from '@mui/material';
 import {useEffect, useState} from 'react';
 import FormFieldset from '~/components/formComponents/FormFieldset';
+import UnitDialog from '../components/UnitDialog';
+import {onAddUnitList} from './TimeseriesStepHelper';
+import {TransformedUnit} from '../controller/types';
+import {AddUnitType} from '../forms/UnitForm';
+import dayjs from 'dayjs';
 
 type Props = {
   manager: TimeseriesManager | undefined;
-  AddByUnit: () => void;
 };
 
-function TimeseriesList({manager, AddByUnit}: Props) {
+function TimeseriesList({manager}: Props) {
+  const [unitDialog, setUnitDialog] = useState(false);
   const [, setTick] = useState(0);
 
   // subscribe to manager changes
@@ -24,16 +29,19 @@ function TimeseriesList({manager, AddByUnit}: Props) {
     }; // ✅ cleanup
   }, [manager]);
 
-  const add = () => manager?.add(crypto.randomUUID());
+  const add = () => {
+    return manager?.add(crypto.randomUUID());
+  };
+
   const remove = (id: string) => manager?.remove(id);
 
   return (
     <>
-      <Box display="flex" gap={1} flexWrap="wrap">
+      <Box display="flex" gap={1} flexWrap="wrap" alignSelf={'center'}>
         <Button bttype="primary" onClick={() => add()}>
           Tilføj tidsserie
         </Button>
-        <Button bttype="primary" onClick={AddByUnit}>
+        <Button bttype="primary" onClick={() => setUnitDialog(true)}>
           Tilføj fra udstyr
         </Button>
       </Box>
@@ -49,6 +57,28 @@ function TimeseriesList({manager, AddByUnit}: Props) {
           </FormFieldset>
         );
       })}
+      <UnitDialog
+        open={unitDialog}
+        onClose={() => setUnitDialog(false)}
+        onAddUnitList={(units) => {
+          const transformedUnit: TransformedUnit[] = units.map((unit) => {
+            const transformedUnit: AddUnitType = {
+              unit_uuid: unit.unit_uuid,
+              startdate: dayjs(unit.startdato),
+              calypso_id: unit.calypso_id.toString(),
+              sensor_id: unit.sensor_id,
+            };
+
+            return {
+              ...transformedUnit,
+              tstype_id: unit.sensortypeid,
+            };
+          });
+
+          const controller_list = manager?.list().map(({agg}) => agg.getController()) || [];
+          onAddUnitList(transformedUnit, controller_list, add);
+        }}
+      />
     </>
   );
 }

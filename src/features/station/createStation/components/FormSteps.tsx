@@ -1,33 +1,31 @@
 import {Stepper, Step, StepLabel, Typography, ButtonBase} from '@mui/material';
 import React from 'react';
-import useCreateStationContext from '../api/useCreateStationContext';
+import {LocationManager} from '../controller/LocationManager';
+import {TimeseriesManager} from '../controller/TimeseriesManager';
 
-const FormSteps = () => {
-  const {activeStep, setActiveStep, formErrors, formState, setFormErrors, meta} =
-    useCreateStationContext();
+type Props = {
+  locationManager: LocationManager;
+  timeseriesManager: TimeseriesManager;
+  activeStep: number;
+  setActiveStep: (step: number) => void;
+  loc_id?: number;
+};
 
-  const validateLocationStep = async () => {
-    if (meta?.loc_id === undefined) {
-      setFormErrors(() => ({
-        ...formErrors,
-        location: !(
-          formState.location !== undefined &&
-          formState.location.loctype_id !== -1 &&
-          formState.location.loc_name !== '' &&
-          formState.location.loc_name !== undefined &&
-          formState.location.initial_project_no !== '' &&
-          formState.location.initial_project_no !== undefined
-        ),
-      }));
-    }
-  };
-
+const FormSteps = ({
+  locationManager,
+  timeseriesManager,
+  activeStep,
+  setActiveStep,
+  loc_id,
+}: Props) => {
+  const isLocationValid = locationManager.get()?.snapshot().valid;
+  const isTimeseriesValid = timeseriesManager.list().every((item) => item.agg.snapshot().valid);
   return (
     <Stepper nonLinear activeStep={activeStep} alternativeLabel>
-      {meta?.loc_id === undefined && (
+      {loc_id === undefined && (
         <Step
           key={'lokation'}
-          completed={!formErrors.location && activeStep > 0}
+          completed={isLocationValid && activeStep > 0}
           active={activeStep === 0}
         >
           <ButtonBase
@@ -35,7 +33,7 @@ const FormSteps = () => {
             sx={{display: 'block', width: '100%', textAlign: 'left'}}
           >
             <StepLabel
-              error={Boolean(formErrors.location)}
+              error={isLocationValid === false}
               optional={<Typography variant="caption">Obligatorisk</Typography>}
             >
               <Typography variant="body1">Lokation</Typography>
@@ -45,20 +43,19 @@ const FormSteps = () => {
       )}
       <Step
         key={'tidsserie'}
-        completed={!formErrors.timeseries && !formErrors.watlevmp && activeStep > 1}
+        completed={isTimeseriesValid && activeStep > 1}
         active={activeStep === 1}
       >
         <ButtonBase
           onClick={async () => {
-            await validateLocationStep();
             if (activeStep !== 1) setActiveStep(1);
           }}
           sx={{display: 'block', width: '100%', textAlign: 'left'}}
         >
           <StepLabel
-            error={Boolean(formErrors.timeseries)}
+            error={isTimeseriesValid === false}
             optional={
-              meta?.loc_id === undefined && !formErrors.timeseries ? (
+              loc_id === undefined ? (
                 <Typography variant="caption">Valgfrit</Typography>
               ) : (
                 <Typography variant="caption">Obligatorisk</Typography>
@@ -72,7 +69,6 @@ const FormSteps = () => {
       <Step key={'additional'} active={activeStep === 2}>
         <ButtonBase
           onClick={async () => {
-            await validateLocationStep();
             if (activeStep !== 2) setActiveStep(2);
           }}
           sx={{display: 'block', width: '100%', textAlign: 'left'}}

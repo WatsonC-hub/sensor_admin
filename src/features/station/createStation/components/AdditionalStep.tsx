@@ -1,54 +1,69 @@
-import {Box, Typography} from '@mui/material';
-import React from 'react';
-import ContactForm from '~/features/stamdata/components/stationDetails/contacts/ContactForm';
-import LocationAccessForm from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessForm';
-import useCreateStationContext from '../api/useCreateStationContext';
+import {Box} from '@mui/material';
+import React, {useEffect, useState} from 'react';
 import FormStepButtons from './FormStepButtons';
 
-import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
+import {RootPayload} from '../controller/types';
+import {AggregateController} from '../controller/AggregateController';
+import {LocationManager} from '../controller/LocationManager';
+import ContactSection from '../sections/contactSection';
+import LocationAccessSection from '../sections/LocationAccessSection';
+import RessourceSection from '../sections/RessourceSection';
+import FormFieldset from '~/components/formComponents/FormFieldset';
 
-const AdditionalStep = () => {
-  const {
-    meta,
-    formState: {contacts, location_access},
-    activeStep,
-    onValidate,
-  } = useCreateStationContext();
+type Props = {
+  activeStep: number;
+  setActiveStep: (step: number) => void;
+  RootController: AggregateController<RootPayload>;
+  locationManager: LocationManager;
+};
+
+const AdditionalStep = ({activeStep, setActiveStep, RootController, locationManager}: Props) => {
+  const loc_id = RootController.getValues().location?.meta.loc_id;
+  const controller = locationManager.get()?.getController();
+
+  // subscribe to manager changes
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const unsubscribe = locationManager.onChange(() => {
+      setTick((x) => x + 1);
+    });
+
+    return () => {
+      unsubscribe?.();
+    }; // ✅ cleanup
+  }, [locationManager]);
 
   return (
     <>
       {activeStep === 2 && (
-        <Box display={'flex'} flexDirection={'column'} gap={1.5}>
-          {meta?.loc_id === undefined && (
-            <>
-              <Typography variant="subtitle1" fontWeight={'bold'}>
-                Kontakter
-              </Typography>
-              <ContactForm mode={'add'} defaultContacts={contacts} />
-              <Typography variant="subtitle1" fontWeight={'bold'}>
-                Adgangsnøgler
-              </Typography>
-              <LocationAccessForm mode={'add'} defaultLocationAccess={location_access} />
-              <Typography variant="subtitle1" fontWeight={'bold'}>
-                Ressourcer
-              </Typography>
-              <Huskeliste
-                onValidate={(ressourcer) => {
-                  onValidate('ressources', ressourcer);
-                }}
-              />
-            </>
-          )}
+        <>
+          <FormFieldset
+            label="Yderligere oplysninger"
+            sx={{width: '100%', p: 1}}
+            labelPosition={-27}
+          >
+            {loc_id === undefined && (
+              <>
+                <ContactSection controller={controller} />
+                <LocationAccessSection controller={controller} />
+                <RessourceSection controller={controller} />
+              </>
+            )}
+          </FormFieldset>
+          <Box display={'flex'} flexDirection={'column'} gap={1.5}>
+            <FormStepButtons
+              activeStep={activeStep}
+              setActiveStep={setActiveStep}
+              key={'additional'}
+              onFormIsValid={async () => {
+                const isValid = await RootController.validateAllSlices();
+                console.log('AdditionalStep values', RootController.getValues());
 
-          <FormStepButtons
-            key={'additional'}
-            onFormIsValid={async () => {
-              const isValid = true;
-
-              return isValid;
-            }}
-          />
-        </Box>
+                return isValid;
+              }}
+            />
+          </Box>
+        </>
       )}
     </>
   );

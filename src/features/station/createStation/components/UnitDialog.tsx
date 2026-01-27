@@ -22,10 +22,10 @@ import Button from '~/components/Button';
 type UnitDialogProps = {
   open: boolean;
   onClose: () => void;
-  onValidate: (units: Unit[]) => void;
+  onAddUnitList: (units: Unit[]) => void;
 };
 
-const UnitDialog = ({open, onClose, onValidate}: UnitDialogProps) => {
+const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
   const [selectedUnit, setSelectedUnit] = React.useState<Unit | null>(null);
   const [selectedSensors, setSelectedSensors] = React.useState<Unit[]>([]);
   const [checkedSensors, setCheckedSensors] = useState<Unit[]>([]);
@@ -147,7 +147,7 @@ const UnitDialog = ({open, onClose, onValidate}: UnitDialogProps) => {
             disabled={checkedSensors.length === 0}
             onClick={() => {
               if (selectedUnit === null) return;
-              onValidate(checkedSensors);
+              onAddUnitList(checkedSensors);
               handleClose();
             }}
           >

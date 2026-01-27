@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useState} from 'react';
 import NavBar from '~/components/NavBar';
 import {Box, Grid2, Typography} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -11,25 +11,26 @@ import TimeseriesStep from '../createStation/components/TimeseriesStep';
 import useCreateStationContext from '../createStation/api/useCreateStationContext';
 import AdditionalStep from '../createStation/components/AdditionalStep';
 import {AggregateController} from '../createStation/controller/AggregateController';
-import {RootPayload} from '../createStation/controller/types';
+import {LocationData, RootPayload} from '../createStation/controller/types';
 import {TimeseriesManager} from '../createStation/controller/TimeseriesManager';
+import {useLocation} from 'react-router-dom';
+import {LocationManager} from '../createStation/controller/LocationManager';
 
 const CreateStation = () => {
+  let {state} = useLocation();
+  const [activeStep, setActiveStep] = useState(state?.loc_id ? 1 : 0);
+  state = {
+    ...state,
+    terrainqual: 'DTM',
+  } as LocationData;
   const {isMobile} = useBreakpoints();
   const {meta} = useCreateStationContext();
   const size = isMobile ? 12 : 6;
 
-  const parentRef = useRef<AggregateController<RootPayload> | undefined>(undefined);
-  const managerRef = useRef<TimeseriesManager | undefined>(undefined);
-
-  useEffect(() => {
-    if (!parentRef.current) {
-      parentRef.current = new AggregateController<RootPayload>();
-    }
-    if (!managerRef.current && parentRef.current) {
-      managerRef.current = new TimeseriesManager(parentRef.current);
-    }
-  }, []);
+  const [rootController] = useState(new AggregateController<RootPayload>());
+  const [timeseriesManager] = useState(new TimeseriesManager(rootController));
+  const [locationManager] = useState(new LocationManager(rootController, state));
+  console.log('test', locationManager);
 
   return (
     <>
@@ -63,10 +64,35 @@ const CreateStation = () => {
               </Typography>
             </TooltipWrapper>
           </Box>
-          <FormSteps />
-          {meta?.loc_id === undefined && <LocationStep />}
-          <TimeseriesStep key="ts" managerRef={managerRef} parentRef={parentRef} />
-          <AdditionalStep />
+          {state.loc_id === undefined && (
+            <>
+              <FormSteps
+                locationManager={locationManager}
+                timeseriesManager={timeseriesManager}
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+              />
+              <LocationStep
+                locationManager={locationManager}
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+                defaultState={state}
+              />
+              <AdditionalStep
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+                RootController={rootController}
+                locationManager={locationManager}
+              />
+            </>
+          )}
+          <TimeseriesStep
+            key="ts"
+            timeseriesManager={timeseriesManager}
+            RootController={rootController}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+          />
         </Grid2>
       </Box>
     </>

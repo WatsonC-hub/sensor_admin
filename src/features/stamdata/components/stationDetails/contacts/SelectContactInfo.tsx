@@ -20,13 +20,13 @@ import {useContactInfo, useSearchContact} from '~/features/stamdata/api/useConta
 import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
 import {ContactInfo} from '~/types';
-import {InferContactInfo} from './api/useContactForm';
+import {InferContactTable} from './api/useContactForm';
 
 interface SelectContactInfoProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   loc_id?: number;
-  onValidate?: (data: InferContactInfo) => void;
+  onValidate?: (data: InferContactTable) => void;
 }
 
 const SelectContactInfo = ({open, setOpen, loc_id, onValidate}: SelectContactInfoProps) => {
@@ -34,7 +34,7 @@ const SelectContactInfo = ({open, setOpen, loc_id, onValidate}: SelectContactInf
   const [search, setSearch] = useState<string>('');
   const deboundedSearch = useDebouncedValue(search, 500);
 
-  const {reset, handleSubmit} = useFormContext<InferContactInfo>();
+  const {reset, handleSubmit} = useFormContext<InferContactTable>();
   const [createNew, setCreateNew] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -49,7 +49,7 @@ const SelectContactInfo = ({open, setOpen, loc_id, onValidate}: SelectContactInf
     setOpen(false);
   };
 
-  const handleSave: SubmitHandler<InferContactInfo> = async (contact_info) => {
+  const handleSave: SubmitHandler<InferContactTable> = async (contact_info) => {
     if (loc_id) {
       const payload = {
         path: `${loc_id}`,

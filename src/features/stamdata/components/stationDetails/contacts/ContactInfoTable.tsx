@@ -1,5 +1,5 @@
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
-import {lowerCase, startCase} from 'lodash';
+import {startCase} from 'lodash';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
@@ -19,16 +19,9 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {ContactTable} from '~/types';
-import {setRoleName} from './const';
 
 type Props = {
-  mode: 'add' | 'edit' | 'mass_edit';
   loc_id?: number;
-  contacts?: Array<ContactTable>;
-  removeContact?: (index: number) => void;
-  alterContact?: (index: number, data?: ContactTable) => void;
-  currentIndex?: number;
-  setCurrentIndex?: (index: number) => void;
 };
 
 const onDeleteBtnClick = (
@@ -40,15 +33,7 @@ const onDeleteBtnClick = (
   setDialogOpen(true);
 };
 
-const ContactInfoTable = ({
-  loc_id,
-  contacts,
-  mode,
-  removeContact,
-  alterContact,
-  currentIndex,
-  setCurrentIndex,
-}: Props) => {
+const ContactInfoTable = ({loc_id}: Props) => {
   const {
     features: {contacts: contactsFeature},
   } = useUser();
@@ -68,19 +53,16 @@ const ContactInfoTable = ({
     del: deleteContact,
     put: editContact,
   } = useContactInfo(loc_id);
+
   const {location_permissions} = usePermissions(loc_id);
-  const disabled = location_permissions !== 'edit' || (mode === 'add' && loc_id !== undefined);
+  const disabled = location_permissions !== 'edit';
 
   const handleDelete = (relation_id: number) => {
-    if (mode === 'edit') {
-      const payload = {
-        path: `${relation_id}`,
-      };
+    const payload = {
+      path: `${relation_id}`,
+    };
 
-      deleteContact.mutate(payload);
-    } else if (mode === 'add' && removeContact) {
-      removeContact(removeId);
-    }
+    deleteContact.mutate(payload);
   };
 
   const handleEdit = (contactInfo: ContactTable) => {
@@ -110,17 +92,12 @@ const ContactInfoTable = ({
   };
 
   const handleSave: SubmitHandler<ContactTable> = async (details) => {
-    if (mode === 'edit') {
-      handleEdit({
-        ...details,
-        email: details.email ?? '',
-        mobile: details.mobile ? details.mobile.toString() : null,
-      });
-    } else if (mode === 'add' && alterContact && currentIndex !== undefined) {
-      details.contact_type = lowerCase(details.contact_type || '');
-      details.contact_role_name = setRoleName(details.contact_role || 0);
-      alterContact(currentIndex, details);
-    }
+    handleEdit({
+      ...details,
+      email: details.email ?? '',
+      mobile: details.mobile ? details.mobile.toString() : null,
+    });
+
     setOpenContactInfoDialog(false);
     setIsUser(false);
   };
@@ -235,14 +212,11 @@ const ContactInfoTable = ({
         ? {}
         : {
             onClick: (e) => {
-              if ((e.target as HTMLElement).innerText && !disabled && mode === 'edit') {
+              if ((e.target as HTMLElement).innerText) {
                 reset({
                   ...row.original,
                   mobile: row.original.mobile ? row.original.mobile : null,
                 });
-              } else if (mode === 'add') {
-                if (setCurrentIndex) setCurrentIndex(row.index);
-                reset(row.original);
               }
               table.setEditingRow(row);
             },
@@ -261,23 +235,16 @@ const ContactInfoTable = ({
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          if (mode === 'edit') {
-            reset({
-              ...row.original,
-              mobile: row.original.mobile ? row.original.mobile : null,
-            });
-          } else if (mode === 'add') {
-            if (setCurrentIndex) setCurrentIndex(row.index);
-            reset(row.original);
-          }
+          reset({
+            ...row.original,
+            mobile: row.original.mobile ? row.original.mobile : null,
+          });
 
           setIsUser(row.original.org !== '');
           setOpenContactInfoDialog(true);
         }}
         onDeleteBtnClick={() => {
-          if (mode === 'edit')
-            onDeleteBtnClick(row.original.relation_id, setDialogOpen, setRemoveId);
-          else if (mode === 'add') onDeleteBtnClick(row.index, setDialogOpen, setRemoveId);
+          onDeleteBtnClick(row.original.relation_id, setDialogOpen, setRemoveId);
         }}
         disabled={!contactsFeature || disabled}
       />
@@ -308,7 +275,7 @@ const ContactInfoTable = ({
 
   const table = useTable<ContactTable>(
     isMobile ? mobileColumns : columns,
-    data ?? (contacts || []),
+    data ?? [],
     options,
     tableState,
     TableTypes.TABLE,

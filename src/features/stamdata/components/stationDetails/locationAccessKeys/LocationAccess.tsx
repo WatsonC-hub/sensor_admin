@@ -58,7 +58,7 @@ const LocationAccess = () => {
     <>
       <StationPageBoxLayout>
         <FormProvider {...formMethods}>
-          <LocationAccessTable mode="edit" loc_id={loc_id} />
+          <LocationAccessTable loc_id={loc_id} />
           {openDialog && (
             <LocationAccessFormDialog
               loc_id={loc_id}
