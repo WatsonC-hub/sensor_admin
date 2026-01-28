@@ -15,7 +15,8 @@ import {CreateLocationData, CreateStationPayload} from '~/features/createStation
 import {TimeseriesManager} from '~/features/createStation/controller/TimeseriesManager';
 import {useLocation} from 'react-router-dom';
 import {LocationManager} from '~/features/createStation/controller/LocationManager';
-import {useCreateStationStore} from '~/features/createStation/state/store';
+import {useCreateStationStore} from '~/features/createStation/state/useCreateStationStore';
+import CreateStationStoreProvider from '~/features/createStation/state/CreateStationStoreProvider';
 
 const CreateStation = () => {
   let {state} = useLocation();
@@ -28,23 +29,23 @@ const CreateStation = () => {
   const {meta} = useCreateStationContext();
   const size = isMobile ? 12 : 6;
 
-  const [setState, submitters] = useCreateStationStore((state) => [
-    state.setState,
-    state.submitters,
-  ]);
+  // const [setState, submitters] = useCreateStationStore((state) => [
+  //   state.setState,
+  //   state.submitters,
+  // ]);
 
-  useEffect(() => {
-    setState('location.meta', {...state});
-  }, []);
+  // useEffect(() => {
+  //   setState('location.meta', {...state});
+  // }, []);
 
-  console.log('submitters', submitters);
+  // console.log('submitters', submitters);
 
   const [rootController] = useState(new AggregateController<CreateStationPayload>());
   const [timeseriesManager] = useState(new TimeseriesManager(rootController));
   const [locationManager] = useState(new LocationManager(rootController, state));
 
   return (
-    <>
+    <CreateStationStoreProvider defaultValues={{location: {meta: {...state}}}}>
       <NavBar>
         <NavBar.GoBack />
         <NavBar.Logo />
@@ -106,7 +107,7 @@ const CreateStation = () => {
           />
         </Grid2>
       </Box>
-    </>
+    </CreateStationStoreProvider>
   );
 };
 

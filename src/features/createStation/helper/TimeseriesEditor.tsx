@@ -14,7 +14,7 @@ import useCreateStationContext from '../api/useCreateStationContext';
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
 import UnitStep from '../components/UnitStep';
 import {CreateStationPayload, TimeseriesPayload} from '../controller/types';
-import {PathValue, useCreateStationStore} from '../state/store';
+import {PathValue, useCreateStationStore} from '../state/useCreateStationStore';
 
 type Props = {
   index: string;

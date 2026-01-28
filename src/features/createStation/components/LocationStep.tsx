@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import FormStepButtons from './FormStepButtons';
 import {LocationManager} from '../controller/LocationManager';
 import LocationEditor from '../helper/LocationEditor';
-import {useCreateStationStore} from '../state/store';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type Props = {
   locationManager: LocationManager;

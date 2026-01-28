@@ -14,7 +14,7 @@ import {createTypedForm} from '~/components/formComponents/Form';
 import MPDescription from '~/features/station/components/stamdata/MPDescription';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {TimeseriesController} from '../controller/types';
-import {useCreateStationStore} from '../state/store';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type WatlevmpFormProps = {
   tstype_id: number;

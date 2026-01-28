@@ -5,7 +5,7 @@ import OptionalLocationForm from '~/features/station/components/stamdata/stamdat
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {LocationController, CreateLocationData} from '../controller/types';
-import {useCreateStationStore} from '../state/store';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type Props = {
   controller: LocationController | undefined;
@@ -25,7 +25,7 @@ const LocationForm = ({controller, onValidChange}: Props) => {
       loc_id: undefined,
     },
     initialLocTypeId: formState?.location?.meta?.loctype_id,
-    values: formState?.location?.meta,
+    defaultValues: formState?.location?.meta,
   });
 
   const {

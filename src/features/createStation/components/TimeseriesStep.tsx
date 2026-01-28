@@ -5,7 +5,7 @@ import TimeseriesList from '../helper/TimeseriesList';
 import {TimeseriesManager} from '../controller/TimeseriesManager';
 import {CreateStationPayload} from '../controller/types';
 import {AggregateController} from '../controller/AggregateController';
-import {useCreateStationStore} from '../state/store';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type Props = {
   timeseriesManager: TimeseriesManager;

@@ -35,9 +35,9 @@ export type AddTimeseriesLocationData = {
 
 export type LocationFormState = {
   meta: CreateLocationData | AddTimeseriesLocationData;
-  contacts: ContactTable[];
-  location_access: AccessTable[];
-  ressourcer: Ressourcer[];
+  contacts?: ContactTable[];
+  location_access?: AccessTable[];
+  ressourcer?: Ressourcer[];
 };
 
 export type UnitValues = {

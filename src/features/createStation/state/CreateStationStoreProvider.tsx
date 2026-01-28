@@ -1,6 +1,7 @@
-import {create} from 'zustand';
-import {useShallow} from 'zustand/shallow';
-import {CreateStationFormState, CreateStationPayload} from '../controller/types';
+import React, {useState} from 'react';
+
+import {createStore} from 'zustand';
+import {CreateStationFormState} from '../controller/types';
 import {devtools} from 'zustand/middleware';
 
 function setByPath<T extends object, P extends Path<T>>(
@@ -93,7 +94,7 @@ export type PathValue<T, P extends Path<T>> = P extends `${infer K}.${infer Rest
     ? NonUndefined<T[P]>
     : never;
 
-type CreateStationState = {
+export type CreateStationStoreState = {
   formState: Partial<CreateStationFormState>;
   isFormError: boolean;
   submitters: Submitters;
@@ -109,36 +110,56 @@ type CreateStationState = {
   clearSubmitters: () => void;
 };
 
-export const createStationStore = create<CreateStationState>()(
-  devtools((set) => ({
-    formState: {},
-    submitters: {},
-    isFormError: false,
-    setState: (path, data) =>
-      set((state) => ({
-        formState: setByPath(state.formState, path, data),
-      })),
-    setIsFormError: (value) => set(() => ({isFormError: value})),
-    deleteState: (path) =>
-      set((state) => ({
-        formState: deleteByPath(state.formState, path),
-      })),
+const createStationStore = (defaultValues?: Partial<CreateStationFormState>) =>
+  createStore<CreateStationStoreState>()(
+    devtools((set) => ({
+      formState: {
+        ...defaultValues,
+      },
+      submitters: {},
+      isFormError: false,
+      setState: (path, data) =>
+        set((state) => ({
+          formState: setByPath(state.formState, path, data),
+        })),
+      setIsFormError: (value) => set(() => ({isFormError: value})),
+      deleteState: (path) =>
+        set((state) => ({
+          formState: deleteByPath(state.formState, path),
+        })),
 
-    registerSubmitter: (id, callback) =>
-      set((state) => ({
-        submitters: {...state.submitters, [id]: callback},
-      })),
+      registerSubmitter: (id, callback) =>
+        set((state) => ({
+          submitters: {...state.submitters, [id]: callback},
+        })),
 
-    removeSubmitter: (id) =>
-      set((state) => {
-        const {[id]: _, ...rest} = state.submitters;
-        return {submitters: rest};
-      }),
-    clearSubmitters: () => set(() => ({submitters: {}})),
-    runValidators: () => true,
-  }))
-);
+      removeSubmitter: (id) =>
+        set((state) => {
+          const {[id]: _, ...rest} = state.submitters;
+          return {submitters: rest};
+        }),
+      clearSubmitters: () => set(() => ({submitters: {}})),
+      runValidators: () => true,
+    }))
+  );
 
-export const useCreateStationStore = <T>(selector: (state: CreateStationState) => T) => {
-  return createStationStore(useShallow(selector));
+export const CreateStationStoreContext = React.createContext<ReturnType<
+  typeof createStationStore
+> | null>(null);
+
+interface CreateStationStoreProviderProps {
+  children: React.ReactNode;
+  defaultValues?: Partial<CreateStationFormState>;
+}
+
+const CreateStationStoreProvider = ({children, defaultValues}: CreateStationStoreProviderProps) => {
+  const [store] = useState(() => createStationStore(defaultValues));
+
+  return (
+    <CreateStationStoreContext.Provider value={store}>
+      {children}
+    </CreateStationStoreContext.Provider>
+  );
 };
+
+export default CreateStationStoreProvider;

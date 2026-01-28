@@ -7,7 +7,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AlertDialog from '~/components/AlertDialog';
 
 import {useLocation} from 'react-router-dom';
-import {useCreateStationStore} from '../state/store';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type Props = {
   activeStep: number;

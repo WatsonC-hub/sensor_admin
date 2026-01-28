@@ -7,7 +7,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {FormProvider} from 'react-hook-form';
 import {TimeseriesMeta} from '~/helpers/CreateStationContextProvider';
 import {TimeseriesController} from '../controller/types';
-import {useCreateStationStore} from '../state/store';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type TimeseriesMetaFormProps = {
   index: string;

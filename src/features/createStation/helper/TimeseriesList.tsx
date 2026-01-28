@@ -9,7 +9,7 @@ import {onAddUnitList} from './TimeseriesStepHelper';
 import {TransformedUnit} from '../controller/types';
 import {AddUnitType} from '../forms/UnitForm';
 import dayjs from 'dayjs';
-import {useCreateStationStore} from '../state/store';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type Props = {
   manager: TimeseriesManager | undefined;
