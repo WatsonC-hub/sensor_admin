@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import FormStepButtons from './FormStepButtons';
 import {LocationManager} from '../controller/LocationManager';
 import LocationEditor from '../helper/LocationEditor';
+import {useCreateStationStore} from '../state/store';
 
 type Props = {
   locationManager: LocationManager;
@@ -13,6 +14,8 @@ type Props = {
 
 const LocationStep = ({locationManager, activeStep, setActiveStep}: Props) => {
   const [, setTick] = useState(0);
+
+  const submitters = useCreateStationStore((state) => state.submitters);
 
   // subscribe to manager changes
   useEffect(() => {
@@ -35,9 +38,13 @@ const LocationStep = ({locationManager, activeStep, setActiveStep}: Props) => {
             setActiveStep={setActiveStep}
             key={'location'}
             onFormIsValid={async () => {
-              const isValid = await locationManager?.get()?.getController().validateAllSlices();
+              console.log('submitters', submitters);
 
-              return isValid ?? false;
+              const valid = (
+                await Promise.all(Object.values(submitters).map(async (cb) => await cb()))
+              ).every(Boolean);
+
+              return valid;
             }}
           />
         </>

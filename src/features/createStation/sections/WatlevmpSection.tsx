@@ -6,17 +6,20 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import {TimeseriesController} from '../controller/types';
+import {Watlevmp} from '~/features/station/schema';
 
 type Props = {
+  index: string;
   show: boolean;
+  setValues: (vals: Watlevmp) => void;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
-  controller: TimeseriesController;
+  // controller: TimeseriesController;
 };
 
-const WatlevmpSection = ({show, setShow, controller}: Props) => {
+const WatlevmpSection = ({show, setShow, index}: Props) => {
   const {isMobile} = useBreakpoints();
-  const tstype_id = controller.getValues()['meta']?.tstype_id;
-  const intakeno = controller.getValues()['meta']?.intakeno;
+  const tstype_id = 1;
+  const intakeno = undefined;
 
   if (show)
     return (
@@ -29,7 +32,7 @@ const WatlevmpSection = ({show, setShow, controller}: Props) => {
               startIcon={<RemoveCircleOutline color="primary" />}
               onClick={() => {
                 setShow(false);
-                controller.unregisterSlice('watlevmp');
+                // controller.unregisterSlice('watlevmp');
               }}
             >
               <Typography variant="body2" color="grey.700">
@@ -52,7 +55,7 @@ const WatlevmpSection = ({show, setShow, controller}: Props) => {
                   size="small"
                   onClick={() => {
                     setShow(false);
-                    controller.unregisterSlice('watlevmp');
+                    // controller.unregisterSlice('watlevmp');
                   }}
                 >
                   <RemoveCircleOutline />
@@ -63,9 +66,11 @@ const WatlevmpSection = ({show, setShow, controller}: Props) => {
               <WatlevmpForm
                 tstype_id={tstype_id!}
                 intakeno={intakeno ?? undefined}
-                controller={controller}
-                onValidChange={(isValid, value) =>
-                  controller.updateSlice('watlevmp', isValid, value)
+                index={index}
+                // controller={controller}
+                onValidChange={
+                  (isValid, value) => {}
+                  // controller.updateSlice('watlevmp', isValid, value)
                 }
               />
             </Grid2>

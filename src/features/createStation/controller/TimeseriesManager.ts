@@ -1,11 +1,11 @@
 import {AggregateController} from './AggregateController';
 import {TimeseriesAggregate} from './TimeseriesAggregate';
-import {RootPayload} from './types';
+import {CreateStationPayload} from './types';
 
 type Listener = () => void;
 
 export class TimeseriesManager {
-  private parent: AggregateController<RootPayload>;
+  private parent: AggregateController<CreateStationPayload>;
   private items = new Map<
     string,
     {
@@ -17,7 +17,7 @@ export class TimeseriesManager {
 
   private listeners = new Set<Listener>();
 
-  constructor(parent: AggregateController<RootPayload>) {
+  constructor(parent: AggregateController<CreateStationPayload>) {
     this.parent = parent;
     // parent slice for timeseries array
     this.parent.registerSlice('timeseries', true, async () => {

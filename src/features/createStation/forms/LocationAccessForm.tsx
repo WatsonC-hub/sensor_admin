@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
 import {AccessTable} from '~/types';
 import {FormProvider} from 'react-hook-form';
-import useLocationAccessForm from '../../../stamdata/components/stationDetails/locationAccessKeys/api/useLocationAccessForm';
-import LocationAccessFormDialog from '../../../stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
+import useLocationAccessForm from '~/features/stamdata/components/stationDetails/locationAccessKeys/api/useLocationAccessForm';
+import LocationAccessFormDialog from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
 import {LocationController} from '../controller/types';
 import Button from '~/components/Button';
 import {Add} from '@mui/icons-material';

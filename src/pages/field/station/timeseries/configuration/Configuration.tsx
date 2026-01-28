@@ -6,7 +6,7 @@ import YearlyControlsConfig from './YearlyControlsConfig';
 import Synchronization from './Synchronization';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import useDmpAllowedMapList from '~/features/station/api/useDmpAllowedMapList';
+import useDMPAllowed from '~/features/station/api/useDmpAllowedMapList';
 
 type ConfigurationProps = {
   ts_id?: number;
@@ -17,7 +17,7 @@ const Configuration = ({ts_id}: ConfigurationProps) => {
   const isJupiterType = [1, 11, 12, 16].includes(metadata?.tstype_id || 0);
   const isBorehole = metadata?.loctype_id === 9;
 
-  const isDmpAllowed = useDmpAllowedMapList(ts_id);
+  const isDmpAllowed = useDMPAllowed(ts_id);
 
   const canSyncJupiter = isBorehole && isJupiterType;
   return (

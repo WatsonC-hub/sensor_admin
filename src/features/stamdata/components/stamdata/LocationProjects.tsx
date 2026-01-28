@@ -38,6 +38,7 @@ const LocationProjects = ({
   const {superUser} = useUser();
 
   const selectedValue = options?.find((option) => option.project_no == value) ?? null;
+  console.log('value', value);
 
   return (
     <>
@@ -104,7 +105,6 @@ const LocationProjects = ({
               }}
             />
           )}
-          selectOnFocus
           clearOnBlur
           handleHomeEndKeys
         />

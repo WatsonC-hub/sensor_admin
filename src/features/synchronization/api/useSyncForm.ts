@@ -2,7 +2,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useQuery} from '@tanstack/react-query';
 import {DefaultValues, FieldValues, useForm} from 'react-hook-form';
 import {z} from 'zod';
-import {fetchDmpAllowedMapList} from '~/features/station/api/useDmpAllowedMapList';
+import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
 
 const syncSchema = z
   .object({
@@ -50,7 +50,7 @@ const useSyncForm = <T extends FieldValues>({
   const isJupiterType = [1, 11, 12, 16].includes(context?.tstype_id || 0);
   const isBorehole = context?.loctype_id === 9;
 
-  const {data} = fetchDmpAllowedMapList();
+  const {data} = useDMPAllowedList();
 
   const isDmpAllowed = data?.some((combination) => {
     return (

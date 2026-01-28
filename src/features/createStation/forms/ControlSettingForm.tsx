@@ -5,7 +5,10 @@ import useControlSettingsForm from '~/features/configuration/api/useControlSetti
 import ControlSettings from '~/features/configuration/components/ControlSettings';
 import CreateControlSettings from '~/features/configuration/components/CreateControlSettings';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {TimeseriesController, ControlSettings as ControlSettingsType} from '../controller/types';
+import {
+  TimeseriesController,
+  ControlSettingsFormState as ControlSettingsType,
+} from '../controller/types';
 
 type Props = {
   controller: TimeseriesController;

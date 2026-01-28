@@ -2,10 +2,10 @@ import {Box} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import FormStepButtons from './FormStepButtons';
 
-import {RootPayload} from '../controller/types';
+import {CreateStationPayload} from '../controller/types';
 import {AggregateController} from '../controller/AggregateController';
 import {LocationManager} from '../controller/LocationManager';
-import ContactSection from '../sections/contactSection';
+import ContactSection from '../sections/ContactSection';
 import LocationAccessSection from '../sections/LocationAccessSection';
 import RessourceSection from '../sections/RessourceSection';
 import FormFieldset from '~/components/formComponents/FormFieldset';
@@ -13,7 +13,7 @@ import FormFieldset from '~/components/formComponents/FormFieldset';
 type Props = {
   activeStep: number;
   setActiveStep: (step: number) => void;
-  RootController: AggregateController<RootPayload>;
+  RootController: AggregateController<CreateStationPayload>;
   locationManager: LocationManager;
 };
 

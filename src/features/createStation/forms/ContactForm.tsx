@@ -1,12 +1,12 @@
 import React, {useEffect} from 'react';
 import {Add} from '@mui/icons-material';
-import useContactForm from '../../../stamdata/components/stationDetails/contacts/api/useContactForm';
+import useContactForm from '~/features/stamdata/components/stationDetails/contacts/api/useContactForm';
 import {ContactTable} from '~/types';
 import Button from '~/components/Button';
 import {FormProvider} from 'react-hook-form';
-import SelectContactInfo from '../../../stamdata/components/stationDetails/contacts/SelectContactInfo';
+import SelectContactInfo from '~/features/stamdata/components/stationDetails/contacts/SelectContactInfo';
 import {lowerCase} from 'lodash';
-import {setRoleName} from '../../../stamdata/components/stationDetails/contacts/const';
+import {setRoleName} from '~/features/stamdata/components/stationDetails/contacts/const';
 import {LocationController} from '../controller/types';
 import SimpleContactList from '../helper/SimpleContactList';
 import {Box} from '@mui/material';

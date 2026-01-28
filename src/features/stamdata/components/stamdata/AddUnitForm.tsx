@@ -27,7 +27,7 @@ import {useUser} from '~/features/auth/useUser';
 import {useAppContext} from '~/state/contexts';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
 import AddSensorDialog from './AddSensorDialog';
-import {AddUnitType} from '~/features/station/createStation/forms/UnitForm';
+import {AddUnitType} from '~/features/createStation/forms/UnitForm';
 
 interface AddUnitFormProps {
   udstyrDialogOpen: boolean;

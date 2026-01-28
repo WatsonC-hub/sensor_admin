@@ -9,6 +9,7 @@ import {onAddUnitList} from './TimeseriesStepHelper';
 import {TransformedUnit} from '../controller/types';
 import {AddUnitType} from '../forms/UnitForm';
 import dayjs from 'dayjs';
+import {useCreateStationStore} from '../state/store';
 
 type Props = {
   manager: TimeseriesManager | undefined;
@@ -16,24 +17,35 @@ type Props = {
 
 function TimeseriesList({manager}: Props) {
   const [unitDialog, setUnitDialog] = useState(false);
-  const [, setTick] = useState(0);
+  const [timeseries, setState, deleteState, removeSubmitter] = useCreateStationStore((state) => [
+    state.formState.timeseries,
+    state.setState,
+    state.deleteState,
+    state.removeSubmitter,
+  ]);
+  // const [, setTick] = useState(0);
 
-  // subscribe to manager changes
-  useEffect(() => {
-    const unsubscribe = manager?.onChange(() => {
-      setTick((x) => x + 1);
-    });
+  // // subscribe to manager changes
+  // useEffect(() => {
+  //   const unsubscribe = manager?.onChange(() => {
+  //     setTick((x) => x + 1);
+  //   });
 
-    return () => {
-      unsubscribe?.();
-    }; // ✅ cleanup
-  }, [manager]);
+  //   return () => {
+  //     unsubscribe?.();
+  //   }; // ✅ cleanup
+  // }, [manager]);
 
   const add = () => {
-    return manager?.add(crypto.randomUUID());
+    // const currentIdx = timeseries?.length ?? 0;
+    const uuid = crypto.randomUUID();
+    setState(`timeseries.${uuid}`, {});
   };
 
-  const remove = (id: string) => manager?.remove(id);
+  const remove = (index: string) => {
+    deleteState(`timeseries.${index}`);
+    removeSubmitter(`timeseries.${index}.meta`);
+  };
 
   return (
     <>
@@ -45,7 +57,7 @@ function TimeseriesList({manager}: Props) {
           Tilføj fra udstyr
         </Button>
       </Box>
-      {manager?.list().map(({id, agg}, index) => {
+      {Object.entries(timeseries ?? {})?.map(([id, data], index) => {
         return (
           <FormFieldset
             key={id}
@@ -53,7 +65,7 @@ function TimeseriesList({manager}: Props) {
             sx={{width: '100%', p: 1, mb: 2}}
             labelPosition={-20}
           >
-            <TimeseriesEditor key={id} aggregate={agg} onRemove={() => remove(id)} />
+            <TimeseriesEditor key={id} index={id} onRemove={() => remove(id)} />
           </FormFieldset>
         );
       })}

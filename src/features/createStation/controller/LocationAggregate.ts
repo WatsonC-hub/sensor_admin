@@ -1,5 +1,5 @@
 import {AggregateController} from './AggregateController';
-import {LocationController, LocationData, LocationPayload} from './types';
+import {LocationController, CreateLocationData, LocationFormState} from './types';
 
 export type AggregateSnapshot<T> = {
   valid: boolean;
@@ -8,18 +8,18 @@ export type AggregateSnapshot<T> = {
 };
 
 export class LocationAggregate {
-  private controller: LocationController = new AggregateController<LocationPayload>();
+  private controller: LocationController = new AggregateController<LocationFormState>();
 
-  constructor(defaultState: LocationData) {
+  constructor(defaultState: CreateLocationData) {
     this.controller.registerSlice('meta', true);
     this.controller.updateSlice('meta', true, defaultState);
   }
 
-  snapshot(): AggregateSnapshot<LocationPayload> {
+  snapshot(): AggregateSnapshot<LocationFormState> {
     const valid = this.controller.isValid();
     const payload = {
       valid,
-      value: this.controller.getValues() as LocationPayload,
+      value: this.controller.getValues() as LocationFormState,
       validate: async () => {
         const isValid = await this.controller.validateAllSlices();
         return isValid;

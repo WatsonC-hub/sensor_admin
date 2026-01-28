@@ -3,12 +3,13 @@ import FormStepButtons from './FormStepButtons';
 
 import TimeseriesList from '../helper/TimeseriesList';
 import {TimeseriesManager} from '../controller/TimeseriesManager';
-import {RootPayload} from '../controller/types';
+import {CreateStationPayload} from '../controller/types';
 import {AggregateController} from '../controller/AggregateController';
+import {useCreateStationStore} from '../state/store';
 
 type Props = {
   timeseriesManager: TimeseriesManager;
-  RootController: AggregateController<RootPayload>;
+  RootController: AggregateController<CreateStationPayload>;
   activeStep: number;
   setActiveStep: (step: number) => void;
 };
@@ -21,6 +22,8 @@ const TimeseriesStep = ({timeseriesManager, RootController, activeStep, setActiv
     };
   }, []);
 
+  const submitters = useCreateStationStore((state) => state.submitters);
+
   return (
     <>
       {activeStep === 1 && (
@@ -31,13 +34,13 @@ const TimeseriesStep = ({timeseriesManager, RootController, activeStep, setActiv
             setActiveStep={setActiveStep}
             key={'timeseries'}
             onFormIsValid={async () => {
-              const isValid = timeseriesManager
-                ?.list()
-                .map(async (item) => await item.agg.getController().validateAllSlices())
-                .every((v) => v);
+              console.log('submitters', submitters);
 
-              console.log('RootController values', RootController.getValues());
-              return isValid ?? false;
+              const valid = (
+                await Promise.all(Object.values(submitters).map(async (cb) => await cb()))
+              ).every(Boolean);
+
+              return valid;
             }}
           />
         </>

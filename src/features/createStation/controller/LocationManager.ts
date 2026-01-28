@@ -1,20 +1,23 @@
 import {wireChildToParent} from '../helper/wireChildToParent';
 import {AggregateController} from './AggregateController';
 import {LocationAggregate} from './LocationAggregate';
-import {LocationData, RootPayload} from './types';
+import {CreateLocationData, CreateStationPayload} from './types';
 
 type Listener = () => void;
 
 export class LocationManager {
-  private parent: AggregateController<RootPayload>;
+  private parent: AggregateController<CreateStationPayload>;
   private agg?: LocationAggregate;
   private unsubscribe?: () => void;
 
   private listeners = new Set<Listener>();
 
-  private defaultState: LocationData = {};
+  private defaultState: CreateLocationData = {};
 
-  constructor(parent: AggregateController<RootPayload>, defaultState: LocationData = {}) {
+  constructor(
+    parent: AggregateController<CreateStationPayload>,
+    defaultState: CreateLocationData = {}
+  ) {
     this.parent = parent;
     this.agg = this.getOrCreate(defaultState);
 
@@ -38,7 +41,7 @@ export class LocationManager {
   }
 
   /** Create or return existing location aggregate */
-  getOrCreate(defaultState: LocationData = this.defaultState) {
+  getOrCreate(defaultState: CreateLocationData = this.defaultState) {
     if (this.agg) return this.agg;
 
     const agg = new LocationAggregate(defaultState);

@@ -8,18 +8,19 @@ import {
   LastJupiterMPAPI,
   LastJupiterMPData,
 } from '~/pages/field/boreholeno/components/LastJupiterMP';
-import useWatlevmpForm from '../../api/useWatlevmpForm';
+import useWatlevmpForm from '~/features/station/api/useWatlevmpForm';
 import useCreateStationContext from '../api/useCreateStationContext';
 import {createTypedForm} from '~/components/formComponents/Form';
-import MPDescription from '../../components/stamdata/MPDescription';
+import MPDescription from '~/features/station/components/stamdata/MPDescription';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {TimeseriesController} from '../controller/types';
+import {useCreateStationStore} from '../state/store';
 
 type WatlevmpFormProps = {
   tstype_id: number;
   intakeno?: number;
-  controller: TimeseriesController;
   onValidChange: (isValid: boolean, value?: Watlevmp) => void;
+  index: number;
 };
 
 type Watlevmp = {
@@ -29,7 +30,11 @@ type Watlevmp = {
 
 const Form = createTypedForm<Watlevmp>();
 
-const WatlevmpForm = ({tstype_id, intakeno, controller, onValidChange}: WatlevmpFormProps) => {
+const WatlevmpForm = ({tstype_id, intakeno, onValidChangem, index}: WatlevmpFormProps) => {
+  const {formState, setState, registerSubmitter, removeSubmitter} = useCreateStationStore(
+    (state) => state
+  );
+
   const [helperText, setHelperText] = useState('');
   const {meta} = useCreateStationContext();
   const {isMobile} = useBreakpoints();
@@ -49,7 +54,7 @@ const WatlevmpForm = ({tstype_id, intakeno, controller, onValidChange}: Watlevmp
   });
 
   const watlevmpFormMethods = useWatlevmpForm<Watlevmp>({
-    defaultValues: controller.getValues()['watlevmp'],
+    defaultValues: formState.timeseries?.[index].watlevmp,
     values: watlevmp,
   });
 
@@ -58,23 +63,40 @@ const WatlevmpForm = ({tstype_id, intakeno, controller, onValidChange}: Watlevmp
     getValues,
     trigger,
     formState: {isValid, isValidating},
+    handleSubmit,
   } = watlevmpFormMethods;
 
   const elevation = watch('elevation');
 
   useEffect(() => {
-    controller.registerSlice('watlevmp', true, async () => {
-      const isValid = await trigger();
-      return isValid;
+    registerSubmitter(`timeseries.${index}.watlevmp`, async () => {
+      let valid: boolean = false;
+      await handleSubmit(
+        (values) => {
+          setState(`timeseries.${index}.watlevmp`, values);
+          valid = true;
+        },
+        (errors) => console.log('errors', errors)
+      )();
+      return valid;
     });
-  }, []);
 
-  useEffect(() => {
-    if (!isValidating) {
-      const values = getValues();
-      onValidChange(isValid, values);
-    }
-  }, [isValid, isValidating]);
+    return () => removeSubmitter(`timeseries.${index}.watlevmp`);
+  }, [handleSubmit]);
+
+  // useEffect(() => {
+  //   controller.registerSlice('watlevmp', true, async () => {
+  //     const isValid = await trigger();
+  //     return isValid;
+  //   });
+  // }, []);
+
+  // useEffect(() => {
+  //   if (!isValidating) {
+  //     const values = getValues();
+  //     onValidChange(isValid, values);
+  //   }
+  // }, [isValid, isValidating]);
 
   useEffect(() => {
     if (elevation === watlevmp?.elevation && watlevmp?.elevation !== undefined) {

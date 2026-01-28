@@ -1,20 +1,21 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import NavBar from '~/components/NavBar';
 import {Box, Grid2, Typography} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 import TooltipWrapper from '~/components/TooltipWrapper';
 
-import LocationStep from '../createStation/components/LocationStep';
-import FormSteps from '../createStation/components/FormSteps';
-import TimeseriesStep from '../createStation/components/TimeseriesStep';
-import useCreateStationContext from '../createStation/api/useCreateStationContext';
-import AdditionalStep from '../createStation/components/AdditionalStep';
-import {AggregateController} from '../createStation/controller/AggregateController';
-import {LocationData, RootPayload} from '../createStation/controller/types';
-import {TimeseriesManager} from '../createStation/controller/TimeseriesManager';
+import LocationStep from '~/features/createStation/components/LocationStep';
+import FormSteps from '~/features/createStation/components/FormSteps';
+import TimeseriesStep from '~/features/createStation/components/TimeseriesStep';
+import useCreateStationContext from '~/features/createStation/api/useCreateStationContext';
+import AdditionalStep from '~/features/createStation/components/AdditionalStep';
+import {AggregateController} from '~/features/createStation/controller/AggregateController';
+import {CreateLocationData, CreateStationPayload} from '~/features/createStation/controller/types';
+import {TimeseriesManager} from '~/features/createStation/controller/TimeseriesManager';
 import {useLocation} from 'react-router-dom';
-import {LocationManager} from '../createStation/controller/LocationManager';
+import {LocationManager} from '~/features/createStation/controller/LocationManager';
+import {useCreateStationStore} from '~/features/createStation/state/store';
 
 const CreateStation = () => {
   let {state} = useLocation();
@@ -22,15 +23,25 @@ const CreateStation = () => {
   state = {
     ...state,
     terrainqual: 'DTM',
-  } as LocationData;
+  } as CreateLocationData;
   const {isMobile} = useBreakpoints();
   const {meta} = useCreateStationContext();
   const size = isMobile ? 12 : 6;
 
-  const [rootController] = useState(new AggregateController<RootPayload>());
+  const [setState, submitters] = useCreateStationStore((state) => [
+    state.setState,
+    state.submitters,
+  ]);
+
+  useEffect(() => {
+    setState('location.meta', {...state});
+  }, []);
+
+  console.log('submitters', submitters);
+
+  const [rootController] = useState(new AggregateController<CreateStationPayload>());
   const [timeseriesManager] = useState(new TimeseriesManager(rootController));
   const [locationManager] = useState(new LocationManager(rootController, state));
-  console.log('test', locationManager);
 
   return (
     <>

@@ -7,6 +7,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AlertDialog from '~/components/AlertDialog';
 
 import {useLocation} from 'react-router-dom';
+import {useCreateStationStore} from '../state/store';
 
 type Props = {
   activeStep: number;
@@ -20,6 +21,8 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
   state = state ?? {};
   const [showAlert, setShowAlert] = useState(false);
   const {isMobile} = useBreakpoints();
+
+  const isFormError = useCreateStationStore((state) => state.isFormError);
 
   return (
     <Grid2 size={12} gap={0.5} pr={0.5}>
@@ -66,6 +69,7 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
         )}
         <Button
           bttype="primary"
+          disabled={isFormError}
           startIcon={!isMobile && <Save fontSize="small" />}
           onClick={async () => {
             const isStepValid = await onFormIsValid();
