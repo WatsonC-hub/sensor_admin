@@ -135,8 +135,12 @@ const createStationStore = (defaultValues?: Partial<CreateStationFormState>) =>
 
       removeSubmitter: (id) =>
         set((state) => {
-          const {[id]: _, ...rest} = state.submitters;
-          return {submitters: rest};
+          const submitters = {
+            ...state.submitters,
+          };
+          delete submitters[id];
+
+          return {submitters: submitters};
         }),
       clearSubmitters: () => set(() => ({submitters: {}})),
       runValidators: () => true,
