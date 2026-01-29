@@ -57,7 +57,7 @@ export const useLevelCorrection = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['qa_all']],
     },
   });
 
@@ -70,7 +70,7 @@ export const useLevelCorrection = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['qa_all']],
     },
   });
 
@@ -83,7 +83,7 @@ export const useLevelCorrection = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['qa_all']],
     },
   });
 

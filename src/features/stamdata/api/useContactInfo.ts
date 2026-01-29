@@ -104,7 +104,7 @@ export const useContactInfo = (loc_id: number) => {
       toast.success('Kontakt information tilføjet');
     },
     meta: {
-      invalidates: [['metadata']],
+      invalidates: [['contact_info']],
     },
   });
 
@@ -114,7 +114,7 @@ export const useContactInfo = (loc_id: number) => {
       toast.success('Kontakt information ændret');
     },
     meta: {
-      invalidates: [['metadata']],
+      invalidates: [['contact_info']],
     },
   });
 
@@ -124,7 +124,7 @@ export const useContactInfo = (loc_id: number) => {
       toast.success('Kontakt information slettet');
     },
     meta: {
-      invalidates: [['metadata']],
+      invalidates: [['contact_info']],
     },
   });
 

@@ -46,7 +46,7 @@ const EditUnit = () => {
       toast.success('Udstyr er opdateret');
     },
     meta: {
-      invalidates: [['metadata'], ['register']],
+      invalidates: [['metadata']],
     },
   });
 

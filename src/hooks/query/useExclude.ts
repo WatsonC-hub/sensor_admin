@@ -78,7 +78,7 @@ export const useExclude = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['removed_data']],
     },
   });
 
@@ -91,7 +91,7 @@ export const useExclude = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['removed_data']],
     },
   });
 
@@ -104,7 +104,7 @@ export const useExclude = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['removed_data']],
     },
   });
 

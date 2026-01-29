@@ -100,19 +100,19 @@ export const useAlarm = () => {
   const post = useMutation({
     ...alarmPostOptions,
     meta: {
-      invalidates: [['register']],
+      invalidates: [['alarm']],
     },
   });
   const put = useMutation({
     ...alarmPutOptions,
     meta: {
-      invalidates: [['register']],
+      invalidates: [['alarm']],
     },
   });
   const del = useMutation({
     ...alarmDelOptions,
     meta: {
-      invalidates: [['register']],
+      invalidates: [['alarm']],
     },
   });
 

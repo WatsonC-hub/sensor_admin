@@ -198,7 +198,7 @@ const Boreholeno = () => {
       }
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['measurements']],
     },
   });
 
@@ -226,7 +226,7 @@ const Boreholeno = () => {
       }
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['borehole_watlevmp']],
     },
   });
 
