@@ -12,7 +12,7 @@ import localforage from 'localforage';
 import {apiClient} from '~/apiClient';
 import {httpStatusDescriptions} from '~/consts';
 import {excludeDelOptions, excludePostOptions, excludePutOptions} from '~/hooks/query/useExclude';
-import {tags, queryKeys} from './helpers/QueryKeyFactoryHelper';
+import {queryKeys} from './helpers/QueryKeyFactoryHelper';
 import {
   deleteImageMutationOptions,
   postImageMutationOptions,
@@ -33,7 +33,7 @@ type ErrorResponse = {
 declare module '@tanstack/react-query' {
   interface Register {
     mutationMeta: {
-      invalidates?: Array<QueryKey | Array<keyof typeof tags>>;
+      invalidates?: Array<QueryKey>;
       optOutGeneralInvalidations?: boolean;
     };
   }

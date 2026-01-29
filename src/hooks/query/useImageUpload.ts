@@ -98,6 +98,7 @@ export const useImageUpload = (endpoint: string, id: string | number) => {
     ...postImageMutationOptions(endpoint, id),
     meta: {
       invalidates: [['images']],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -105,6 +106,7 @@ export const useImageUpload = (endpoint: string, id: string | number) => {
     ...putImageMutationOptions(endpoint, id),
     meta: {
       invalidates: [['images']],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -112,6 +114,7 @@ export const useImageUpload = (endpoint: string, id: string | number) => {
     ...deleteImageMutationOptions(endpoint, id),
     meta: {
       invalidates: [['images']],
+      optOutGeneralInvalidations: true,
     },
   });
 

@@ -1,10 +1,5 @@
 import {Dayjs} from 'dayjs';
 
-export const tags = {
-  metadata: 'metadata',
-  register: 'register',
-} as const;
-
 export const queryKeys = {
   Location: {
     info: (loc_id: number | undefined) =>
@@ -77,10 +72,10 @@ export const queryKeys = {
       ['last_jupiter_mp', 'borehole_watlevmp', boreholeno, intakeno] as const,
   },
   Map: {
-    all: () => ['map', 'tasks', 'itineraries', 'register', 'metadata'] as const,
+    all: () => ['map'] as const,
   },
   Tasks: {
-    all: () => ['all_tasks', 'tasks', 'register', 'itineraries'] as const,
+    all: () => ['all_tasks', 'tasks'] as const,
     closedTasks: (loc_id: number | undefined) => ['tasks', loc_id] as const,
     taskHistory: (task_id: string) => ['tasks_history', 'tasks', task_id] as const,
     nextDueDate: (ts_id: number | undefined) =>
@@ -92,9 +87,9 @@ export const queryKeys = {
     all: () => ['tasks', 'itineraries'] as const,
     byId: (itinerary_id: string | null) => ['tasks', 'itineraries', itinerary_id] as const,
     itineraryTasks: (itinerary_id: string | undefined) =>
-      ['tasks', itinerary_id, 'register', 'itineraries'] as const,
+      ['tasks', itinerary_id, 'itineraries'] as const,
     itineraryCollection: (itinerary_id: string | null) =>
-      ['tasks', 'collection', itinerary_id, 'register', 'itineraries'] as const,
+      ['tasks', 'collection', itinerary_id, 'itineraries'] as const,
   },
   Parking: {
     all: () => ['parking'] as const,
