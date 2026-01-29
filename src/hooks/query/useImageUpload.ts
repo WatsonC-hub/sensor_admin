@@ -28,7 +28,7 @@ type ImagePayloadEdit = {
   data: EditImageData;
 };
 
-export const dataURLtoFile = (dataurl: string | ArrayBuffer | null, filename?: string) => {
+const dataURLtoFile = (dataurl: string | ArrayBuffer | null, filename?: string) => {
   if (typeof dataurl !== 'string') {
     throw new Error('Invalid dataurl: must be a non-null string');
   }

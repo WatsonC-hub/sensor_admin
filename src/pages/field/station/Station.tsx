@@ -95,7 +95,7 @@ export default function Station() {
         )}
         {pageToShow === stationPages.TIDSSERIEKONFIGURATION && (
           <StationPageBoxLayout>
-            <TimeseriesConfiguration />
+            <TimeseriesConfiguration ts_id={ts_id} />
           </StationPageBoxLayout>
         )}
         {pageToShow === stationPages.ALGORITHMS && iotAccess && (
@@ -121,7 +121,7 @@ export default function Station() {
               </StationPageBoxLayout>
             </>
           )}
-        {pageToShow === stationPages.ALARM && superUser && (
+        {pageToShow === stationPages.ALARM && (
           <>
             <Box key={`graph-${ts_id}`}>
               <GraphManager

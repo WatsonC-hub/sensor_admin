@@ -1,13 +1,26 @@
 import {Box, Typography} from '@mui/material';
-import React, {useState} from 'react';
+import React from 'react';
 
 import UnitMeasurementConfig from './UnitMeasurementConfig';
 import YearlyControlsConfig from './YearlyControlsConfig';
 import Synchronization from './Synchronization';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import VisibilityConfig from './VisibilityConfig';
+import {useAppContext} from '~/state/contexts';
+import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
+import useDmpAllowedMapList from '~/features/station/api/useDmpAllowedMapList';
 
-const Configuration = () => {
-  const [canSync, setCanSync] = useState(true);
+type ConfigurationProps = {
+  ts_id: number;
+};
+
+const Configuration = ({ts_id}: ConfigurationProps) => {
+  const {loc_id} = useAppContext(['loc_id']);
+  const {data: location_data} = useLocationData(loc_id);
+  const {data: metadata} = useTimeseriesData(ts_id);
+  const isJupiterType = [1, 11, 12, 16].includes(metadata?.tstype_id || 0);
+  const isBorehole = location_data?.loctype_id === 9;
+  const isDmpAllowed = useDmpAllowedMapList(ts_id);
   return (
     <>
       <Layout>
@@ -27,14 +40,23 @@ const Configuration = () => {
         </Box>
         <YearlyControlsConfig />
       </Layout>
-      {canSync && (
+      {(isDmpAllowed || (isJupiterType && isBorehole)) && (
         <Layout>
           <Typography variant="h6" gutterBottom>
             Synkronisering
           </Typography>
-          <Synchronization setCanSync={setCanSync} />
+          <Synchronization
+            canSyncJupiter={isJupiterType && isBorehole}
+            isDmpAllowed={isDmpAllowed ?? false}
+          />
         </Layout>
       )}
+      <Layout>
+        <Typography variant="h6" gutterBottom>
+          Tilgængelighed
+        </Typography>
+        <VisibilityConfig ts_id={ts_id} />
+      </Layout>
     </>
   );
 };

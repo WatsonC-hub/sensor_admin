@@ -12,7 +12,10 @@ import {useUser} from '~/features/auth/useUser';
 
 const LocationInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);
-  const [setTsId] = useDisplayState((state) => [state.setTsId]);
+  const [setTsId, setShowLocationRouter] = useDisplayState((state) => [
+    state.setTsId,
+    state.setShowLocationRouter,
+  ]);
   const {data: location_data} = useLocationInfo(loc_id);
   const {data: timeseriesList} = useTimeseriesStatus(loc_id);
   const [, setPageToShow] = useStationPages();
@@ -128,7 +131,7 @@ const LocationInfo = () => {
           </Grid2>
         </Box>
       )}
-      {location_data?.ressources && location_data.ressources.length > 0 && (
+      {location_data?.ressources && location_data.ressources.length > 0 && superUser && (
         <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
           <Typography variant={'body2'} alignContent={'center'}>
             Huskeliste:
@@ -156,7 +159,8 @@ const LocationInfo = () => {
                   size="small"
                   label={<Link>{ressource}</Link>}
                   onClick={() => {
-                    setTsId(timeseriesList?.[0].ts_id ?? null);
+                    if (timeseriesList?.length === 0) setShowLocationRouter(true);
+                    else setTsId(timeseriesList?.[0].ts_id ?? null);
                     setPageToShow('huskeliste');
                   }}
                 />
@@ -193,7 +197,8 @@ const LocationInfo = () => {
                   size="small"
                   label={<Link>{key}</Link>}
                   onClick={() => {
-                    setTsId(timeseriesList?.[0].ts_id ?? null);
+                    if (timeseriesList?.length === 0) setShowLocationRouter(true);
+                    else setTsId(timeseriesList?.[0].ts_id ?? null);
                     setPageToShow('nøgler');
                   }}
                 />
@@ -220,7 +225,8 @@ const LocationInfo = () => {
               size="small"
               label={<Link>{'Åbn kontakter'}</Link>}
               onClick={() => {
-                setTsId(timeseriesList?.[0].ts_id ?? null);
+                if (timeseriesList?.length === 0) setShowLocationRouter(true);
+                else setTsId(timeseriesList?.[0].ts_id ?? null);
                 setPageToShow('kontakter');
               }}
             />

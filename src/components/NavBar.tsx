@@ -322,29 +322,34 @@ const OwnTaskList = () => {
     (task) => task.assigned_to === user.user_id.toString() && task.status_id !== 2
   );
 
+  const disabled = task_list == undefined || task_list.length === 0;
+
   return (
-    <Badge
-      variant="standard"
-      badgeContent={task_list?.length}
-      anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+    <IconButton
+      onClick={() => setOwnTaskList(!own_task_list)}
       sx={{
-        height: 'fit-content',
-        alignSelf: 'center',
-        p: 1,
-        cursor: 'pointer',
-        '& .MuiBadge-badge': {
-          // color: 'grey.800',
-          backgroundColor: sensorColors[FlagEnum.OK].color,
+        backgroundColor: 'primary.main',
+        '&:hover': {
+          backgroundColor: 'primary.dark',
         },
       }}
+      disabled={disabled}
     >
-      <Notifications
-        onClick={() => setOwnTaskList(!own_task_list)}
-        sx={{
-          color: own_task_list ? 'secondary.main' : 'inherit',
-        }}
-      />
-    </Badge>
+      <Badge
+        badgeContent={
+          task_list && task_list.length > 0 ? (
+            <Typography variant="caption" color="white" pr={0.2}>
+              {task_list.length}
+            </Typography>
+          ) : null
+        }
+        color="secondary"
+      >
+        <Notifications
+          sx={{color: own_task_list ? 'secondary.main' : disabled ? 'inherit' : 'white'}}
+        />
+      </Badge>
+    </IconButton>
   );
 };
 
