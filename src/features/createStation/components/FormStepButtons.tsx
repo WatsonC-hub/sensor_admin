@@ -8,6 +8,12 @@ import AlertDialog from '~/components/AlertDialog';
 
 import {useLocation} from 'react-router-dom';
 import {useCreateStationStore} from '../state/useCreateStationStore';
+import {CreateStationPayload} from '../types';
+import {useMutation} from '@tanstack/react-query';
+import {toast} from 'react-toastify';
+import {apiClient} from '~/apiClient';
+import {useDisplayState} from '~/hooks/ui';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 type Props = {
   activeStep: number;
@@ -17,12 +23,37 @@ type Props = {
 };
 
 const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Props) => {
+  const [showLocationRouter, setShowLocationRouter] = useDisplayState((state) => [
+    state.showLocationRouter,
+    state.setShowLocationRouter,
+  ]);
+  const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
+
   let {state} = useLocation();
   state = state ?? {};
   const [showAlert, setShowAlert] = useState(false);
   const {isMobile} = useBreakpoints();
 
-  const isFormError = useCreateStationStore((state) => state.isFormError);
+  const [isFormError, formState] = useCreateStationStore((state) => [
+    state.isFormError,
+    state.formState,
+  ]);
+
+  const stamdataNewMutation = useMutation({
+    mutationFn: async (data: CreateStationPayload) => {
+      const {data: out} = await apiClient.post(`/sensor_field/stamdata/create_station`, data);
+      return out;
+    },
+    onSuccess: (data) => {
+      toast.success('Station oprettet succesfuldt!');
+      locationNavigate(data.loc_id, true);
+      if (data.ts_id && data.ts_id.length > 0) stationNavigate(data.ts_id[0]);
+      if (showLocationRouter) setShowLocationRouter(false);
+    },
+    meta: {
+      invalidates: [['metadata']],
+    },
+  });
 
   return (
     <Grid2 size={12} gap={0.5} pr={0.5}>
@@ -67,14 +98,14 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
             </Button>
           </>
         )}
-        {activeStep === 2 && (
+        {(activeStep === 2 || state.loc_id !== undefined) && (
           <Button
             bttype="primary"
             disabled={isFormError}
             startIcon={!isMobile && <Save fontSize="small" />}
             onClick={async () => {
               const isStepValid = await onFormIsValid();
-              if (isStepValid && activeStep === 2) {
+              if (isStepValid) {
                 setShowAlert(true);
               }
             }}
@@ -89,18 +120,21 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
         title="Færdiggør oprettelse"
         message={'Er du sikker på, at du vil færdiggøre oprettelsen af stationen?'}
         handleOpret={() => {
-          // if (!formState) return;
-          // const submitState: SubmitState = {
-          //   ...formState,
-          //   location: meta?.loc_id ? {loc_id: meta.loc_id} : formState.location,
-          //   units: formState.units
-          //     ? formState.units.map((unit) => ({
-          //         unit_uuid: unit.unit_uuid,
-          //         startdate: unit.startdate,
-          //       }))
-          //     : [],
-          // };
-          // stamdataNewMutation.mutate(submitState);
+          console.log('Submitting form...', formState);
+          if (!formState) return;
+          const submitState: CreateStationPayload = {
+            location: state.loc_id
+              ? {loc_id: state.loc_id}
+              : ((formState.location || {}) as CreateStationPayload['location']),
+            timeseries: Object.values(formState.timeseries || {}).map((ts) => ({
+              ...ts,
+              sync: {
+                ...ts.sync,
+                sync_dmp: ts.sync?.owner_cvr ? true : false,
+              },
+            })),
+          };
+          stamdataNewMutation.mutate(submitState);
         }}
       />
     </Grid2>

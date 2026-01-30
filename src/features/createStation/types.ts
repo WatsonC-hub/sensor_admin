@@ -73,7 +73,11 @@ export type TimeseriesPayload = {
   unit?: AddUnitType;
 };
 
+type LocationWithLocId = {
+  loc_id: number;
+};
+
 export type CreateStationPayload = {
-  location: LocationFormState;
+  location: LocationFormState | LocationWithLocId;
   timeseries: TimeseriesPayload[];
 };
