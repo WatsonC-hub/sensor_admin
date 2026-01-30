@@ -21,7 +21,6 @@ const YearlyControlsConfig = () => {
   const {superUser} = useUser();
 
   const formMethods = useControlSettingsForm<ControlSettingsFormValues>({
-    mode: 'edit',
     defaultValues: {
       controls_per_year: null,
       lead_time: null,

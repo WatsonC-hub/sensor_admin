@@ -35,13 +35,12 @@ const FormDateTime = <TFieldValues extends FieldValues>({
     <Controller
       name={name}
       control={control}
-      rules={{required}}
       render={({field: {onChange, onBlur, value}, fieldState: {error}}) => {
         return (
           <DateTimePicker
             {...pickerProps}
             label={label}
-            value={value}
+            value={value ? dayjs(value) : null}
             onChange={(newValue) => {
               onChange(newValue);
               if (onChangeCallback) onChangeCallback(newValue);
@@ -74,6 +73,7 @@ const FormDateTime = <TFieldValues extends FieldValues>({
               },
               textField: {
                 ...slotProps?.textField,
+                required: required,
                 InputProps: {
                   sx: {
                     '& > fieldset': {

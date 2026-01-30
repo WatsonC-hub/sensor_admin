@@ -67,31 +67,27 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
             </Button>
           </>
         )}
-        <Button
-          bttype="primary"
-          disabled={isFormError}
-          startIcon={!isMobile && <Save fontSize="small" />}
-          onClick={async () => {
-            const isStepValid = await onFormIsValid();
-            if (isStepValid && activeStep === 2) {
-              setShowAlert(true);
-            }
-          }}
-        >
-          {!isMobile ? activeStep === 2 ? `Gem & afslut` : 'Gem' : <Save fontSize="small" />}
-        </Button>
+        {activeStep === 2 && (
+          <Button
+            bttype="primary"
+            disabled={isFormError}
+            startIcon={!isMobile && <Save fontSize="small" />}
+            onClick={async () => {
+              const isStepValid = await onFormIsValid();
+              if (isStepValid && activeStep === 2) {
+                setShowAlert(true);
+              }
+            }}
+          >
+            {!isMobile ? `Gem & afslut` : <Save fontSize="small" />}
+          </Button>
+        )}
       </Grid2>
       <AlertDialog
         open={showAlert}
         setOpen={setShowAlert}
         title="Færdiggør oprettelse"
-        message={
-          activeStep === 0
-            ? `Du er i gang med at oprette en lokation uden tidsserie og udstyr. Er du sikker på at du vil fortsætte?`
-            : activeStep === 1
-              ? `Du er i gang med at oprette en ${loc_id ? '' : 'lokation og'} tidsserie uden udstyr. Er du sikker på at du vil fortsætte?`
-              : `Du er i gang med at oprette udstyr. Er du sikker på at du vil fortsætte?`
-        }
+        message={'Er du sikker på, at du vil færdiggøre oprettelsen af stationen?'}
         handleOpret={() => {
           // if (!formState) return;
           // const submitState: SubmitState = {

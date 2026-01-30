@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 
 import {createStore} from 'zustand';
-import {CreateStationFormState} from '../controller/types';
+import {CreateStationFormState} from '../types';
 import {devtools} from 'zustand/middleware';
 
 function setByPath<T extends object, P extends Path<T>>(
@@ -72,7 +72,7 @@ type NonUndefined<T> = T extends undefined ? never : T;
 
 type Primitive = string | number | boolean | bigint | symbol | null | undefined;
 
-export type Path<T> = T extends Primitive
+type Path<T> = T extends Primitive
   ? never
   : {
       [K in keyof T & (string | number)]: NonUndefined<T[K]> extends Primitive
@@ -82,7 +82,7 @@ export type Path<T> = T extends Primitive
           : `${K}` | `${K}.${Path<NonUndefined<T[K]>>}`;
     }[keyof T & (string | number)];
 
-export type PathValue<T, P extends Path<T>> = P extends `${infer K}.${infer Rest}`
+type PathValue<T, P extends Path<T>> = P extends `${infer K}.${infer Rest}`
   ? K extends keyof T
     ? NonUndefined<T[K]> extends Array<infer U>
       ? Rest extends `${number}.${infer R}`

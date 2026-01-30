@@ -147,17 +147,19 @@ export default function CheckboxesTags({loc_id, value, setValue}: CheckboxesTags
               setValue(newValue);
             }}
           />
-          <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-            <Button
-              bttype="primary"
-              disabled={disabled}
-              onClick={handleSave}
-              sx={{mt: 5}}
-              startIcon={<Save />}
-            >
-              Gem
-            </Button>
-          </Box>
+          {loc_id !== undefined && (
+            <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+              <Button
+                bttype="primary"
+                disabled={disabled}
+                onClick={handleSave}
+                sx={{mt: 5}}
+                startIcon={<Save />}
+              >
+                Gem
+              </Button>
+            </Box>
+          )}
         </Box>
       )}
     </>

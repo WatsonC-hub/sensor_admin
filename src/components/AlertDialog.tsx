@@ -1,12 +1,6 @@
-import {
-  DialogActions,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from '@mui/material';
+import {DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
 import React from 'react';
+import Button from './Button';
 
 interface AlertProps {
   open: boolean;
@@ -39,8 +33,12 @@ export default function AlertDialog({open, setOpen, title, message, handleOpret}
           <DialogContentText id="alert-dialog-description">{message}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Annuller</Button>
-          <Button onClick={handleContinue}>Fortsæt</Button>
+          <Button bttype="tertiary" onClick={handleClose}>
+            Annuller
+          </Button>
+          <Button bttype="primary" onClick={handleContinue}>
+            Fortsæt
+          </Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

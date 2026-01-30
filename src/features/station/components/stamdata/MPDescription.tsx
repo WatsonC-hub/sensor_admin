@@ -64,6 +64,11 @@ const MPDescription = ({value, onChange, onBlur, ref, slots}: Props) => {
             },
             inputLabel: {
               shrink: true,
+              sx: {
+                '& .Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'},
+                color: 'primary.main',
+                zIndex: 0,
+              },
             },
             formHelperText: {
               sx: {

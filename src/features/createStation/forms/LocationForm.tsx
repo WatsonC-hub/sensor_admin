@@ -4,21 +4,13 @@ import useLocationForm from '~/features/station/api/useLocationForm';
 import OptionalLocationForm from '~/features/station/components/stamdata/stamdataComponents/OptionalLocationForm';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {LocationController, CreateLocationData} from '../controller/types';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 
-type Props = {
-  controller: LocationController | undefined;
-  onValidChange: (isValid: boolean, value?: CreateLocationData) => void;
-};
-
-const LocationForm = ({controller, onValidChange}: Props) => {
+const LocationForm = () => {
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
-  // const values = controller?.getValues()['meta'];
   const {setState, registerSubmitter, formState, setIsFormError, removeSubmitter} =
     useCreateStationStore((state) => state);
-  // console.log('LocationForm values', values);
   const [locationFormMethods, LocationForm] = useLocationForm({
     mode: 'Add',
     context: {
@@ -29,25 +21,18 @@ const LocationForm = ({controller, onValidChange}: Props) => {
   });
 
   const {
-    trigger,
     formState: {isValid, isSubmitted},
     handleSubmit,
     watch,
-    getValues,
   } = locationFormMethods;
-
-  console.log('formValues', getValues());
 
   useEffect(() => {
     registerSubmitter('location.meta', async () => {
       let valid: boolean = false;
-      await handleSubmit(
-        (values) => {
-          setState('location.meta', values);
-          valid = true;
-        },
-        (errors) => console.log('errors', errors)
-      )();
+      await handleSubmit((values) => {
+        setState('location.meta', values);
+        valid = true;
+      })();
       return valid;
     });
 
@@ -55,14 +40,6 @@ const LocationForm = ({controller, onValidChange}: Props) => {
   }, [handleSubmit]);
 
   useEffect(() => {
-    controller?.registerSlice('meta', true, async () => {
-      const isValid = await trigger();
-      return isValid;
-    });
-  }, [controller]);
-
-  useEffect(() => {
-    console.log(isSubmitted, isValid);
     setIsFormError(isSubmitted ? !isValid : false);
   }, [isSubmitted, isValid]);
 

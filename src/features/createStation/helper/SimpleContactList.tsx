@@ -1,5 +1,5 @@
 import React from 'react';
-import {SimpleContact} from '../controller/types';
+import {SimpleContact} from '../types';
 import {List, ListItem, ListItemIcon, ListItemText, Box, ListItemButton} from '@mui/material';
 import {Delete, Edit, Person} from '@mui/icons-material';
 

@@ -5,16 +5,23 @@ import Button from '~/components/Button';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import ControlSettingForm from '../forms/ControlSettingForm';
-import {TimeseriesController} from '../controller/types';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type Props = {
+  uuid: string;
   show: boolean;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
-  controller: TimeseriesController;
 };
 
-const ControlSettingSection = ({show, setShow, controller}: Props) => {
+const ControlSettingSection = ({uuid, show, setShow}: Props) => {
   const {isMobile} = useBreakpoints();
+  const [setState, control_settings, deleteState] = useCreateStationStore((state) => [
+    state.setState,
+    state.formState.timeseries?.[uuid]?.control_settings,
+    state.deleteState,
+  ]);
+
+  const id = `timeseries.${uuid}.control_settings`;
 
   return (
     <>
@@ -28,7 +35,6 @@ const ControlSettingSection = ({show, setShow, controller}: Props) => {
                 startIcon={<RemoveCircleOutline color="primary" />}
                 onClick={() => {
                   setShow(false);
-                  controller.unregisterSlice('control_settings');
                 }}
               >
                 <Typography variant="body2" color="grey.700">
@@ -49,17 +55,16 @@ const ControlSettingSection = ({show, setShow, controller}: Props) => {
                 size="small"
                 onClick={() => {
                   setShow(false);
-                  controller.unregisterSlice('control_settings');
+                  deleteState(`timeseries.${uuid}.control_settings`);
                 }}
               >
                 <RemoveCircleOutline />
               </IconButton>
             )}
             <ControlSettingForm
-              controller={controller}
-              onValidChange={(isValid, value) =>
-                controller.updateSlice('control_settings', isValid, value)
-              }
+              id={id}
+              control_settings={control_settings}
+              setValues={(value) => setState(`timeseries.${uuid}.control_settings`, value)}
             />
           </Box>
         </FormFieldset>

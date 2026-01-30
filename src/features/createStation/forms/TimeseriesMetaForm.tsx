@@ -1,29 +1,29 @@
 import React, {useEffect} from 'react';
-import useCreateStationContext from '../api/useCreateStationContext';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
 import {Grid2} from '@mui/material';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {FormProvider} from 'react-hook-form';
-import {TimeseriesMeta} from '~/helpers/CreateStationContextProvider';
-import {TimeseriesController} from '../controller/types';
 import {useCreateStationStore} from '../state/useCreateStationStore';
+import {TimeseriesMeta} from '../types';
 
 type TimeseriesMetaFormProps = {
-  index: string;
-  // onValidChange: (isValid: boolean, value?: TimeseriesMeta) => void;
-  // controller: TimeseriesController;
+  uuid: string;
+  setTstype: (tstype_id: number) => void;
+  setValues: (values: TimeseriesMeta) => void;
 };
 
-const TimeseriesMetaForm = ({index}: TimeseriesMetaFormProps) => {
-  const [timeseries, loctype_id, registerSubmitter, setState] = useCreateStationStore((state) => [
-    state.formState.timeseries?.[index],
-    state.formState.location?.meta.loctype_id,
-    state.registerSubmitter,
-    state.setState,
-  ]);
+const TimeseriesMetaForm = ({uuid, setValues, setTstype}: TimeseriesMetaFormProps) => {
+  const [timeseries, locationMeta, registerSubmitter, removeSubmitter] = useCreateStationStore(
+    (state) => [
+      state.formState.timeseries?.[uuid],
+      state.formState.location?.meta,
+      state.registerSubmitter,
+      state.removeSubmitter,
+    ]
+  );
 
-  const {meta} = useCreateStationContext();
+  const id = `timeseries.${uuid}.meta`;
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
 
@@ -31,58 +31,38 @@ const TimeseriesMetaForm = ({index}: TimeseriesMetaFormProps) => {
     formProps: {
       defaultValues: timeseries?.['meta'],
       context: {
-        loctype_id: loctype_id,
+        loctype_id: locationMeta?.loctype_id,
       },
     },
     mode: 'Add',
   });
 
-  const {
-    formState: {isValid, isValidating},
-    getValues,
-    trigger,
-    handleSubmit,
-    watch,
-  } = timeseriesFormMethods;
+  const {handleSubmit, watch} = timeseriesFormMethods;
 
   const tstype_id = watch('tstype_id');
 
   useEffect(() => {
-    setState(`timeseries.${index}.meta.tstype_id`, tstype_id);
+    setTstype(tstype_id);
   }, [tstype_id]);
 
   useEffect(() => {
-    registerSubmitter(`timeseries.${index}.meta`, async () => {
+    registerSubmitter(id, async () => {
       let valid: boolean = false;
-      await handleSubmit(
-        (values) => {
-          setState(`timeseries.${index}.meta`, values);
-          valid = true;
-        },
-        (errors) => console.log('errors', errors)
-      )();
+      await handleSubmit((values) => {
+        setValues(values);
+        valid = true;
+      })();
       return valid;
     });
+
+    return () => removeSubmitter(id);
   }, [handleSubmit]);
-
-  // useEffect(() => {
-  //   controller.registerSlice('meta', true, async () => {
-  //     const isValid = await trigger();
-  //     return isValid;
-  //   });
-  // }, []);
-
-  // useEffect(() => {
-  //   if (!isValidating) {
-  //     onValidChange(isValid, getValues());
-  //   }
-  // }, [isValid, isValidating]);
 
   return (
     <FormProvider {...timeseriesFormMethods}>
-      <StamdataTimeseries boreholeno={meta?.boreholeno}>
+      <StamdataTimeseries boreholeno={locationMeta?.boreholeno}>
         <Grid2 container size={12} spacing={1}>
-          <TimeseriesForm size={size} loc_name={meta?.loc_name} required />
+          <TimeseriesForm size={size} loc_name={locationMeta?.loc_name} required />
         </Grid2>
       </StamdataTimeseries>
     </FormProvider>

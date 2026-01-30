@@ -5,40 +5,39 @@ import useControlSettingsForm from '~/features/configuration/api/useControlSetti
 import ControlSettings from '~/features/configuration/components/ControlSettings';
 import CreateControlSettings from '~/features/configuration/components/CreateControlSettings';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {
-  TimeseriesController,
-  ControlSettingsFormState as ControlSettingsType,
-} from '../controller/types';
+import {ControlSettingsFormState as ControlSettingsType} from '../types';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type Props = {
-  controller: TimeseriesController;
-  onValidChange: (isValid: boolean, value?: ControlSettingsType) => void;
+  id: string;
+  control_settings?: ControlSettingsType;
+  setValues: (values: ControlSettingsType) => void;
 };
 
-const ControlSettingForm = ({controller, onValidChange}: Props) => {
+const ControlSettingForm = ({id, control_settings, setValues}: Props) => {
   const {isMobile} = useBreakpoints();
+  const [registerSubmitter, removeSubmitter] = useCreateStationStore((state) => [
+    state.registerSubmitter,
+    state.removeSubmitter,
+  ]);
   const controlSettingsFormMethods = useControlSettingsForm<ControlSettingsType>({
-    defaultValues: controller.getValues()['control_settings'],
+    defaultValues: control_settings,
   });
-  const {
-    formState: {isValid, isValidating},
-    getValues,
-    trigger,
-  } = controlSettingsFormMethods;
+
+  const {handleSubmit} = controlSettingsFormMethods;
 
   useEffect(() => {
-    controller.registerSlice('control_settings', true, async () => {
-      const isValid = await trigger();
-      return isValid;
+    registerSubmitter(id, async () => {
+      let valid: boolean = false;
+      await handleSubmit((values) => {
+        setValues(values);
+        valid = true;
+      })();
+      return valid;
     });
-  }, []);
 
-  useEffect(() => {
-    if (!isValidating) {
-      const values = getValues();
-      onValidChange(isValid, values);
-    }
-  }, [isValidating, isValid]);
+    return () => removeSubmitter(id);
+  }, [handleSubmit]);
 
   return (
     <Grid2
@@ -51,7 +50,18 @@ const ControlSettingForm = ({controller, onValidChange}: Props) => {
     >
       <FormProvider {...controlSettingsFormMethods}>
         <ControlSettings>
-          <CreateControlSettings containerGridSize={12} />
+          <CreateControlSettings
+            containerGridSize={12}
+            slotProps={{
+              controlFrequency: {
+                disabled: false,
+                selectValue: control_settings?.selectValue,
+                setSelectValue: (value) => {
+                  controlSettingsFormMethods.setValue('selectValue', value);
+                },
+              },
+            }}
+          />
         </ControlSettings>
       </FormProvider>
     </Grid2>

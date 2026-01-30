@@ -4,21 +4,24 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import Button from '~/components/Button';
-import {TimeseriesController, TimeseriesPayload} from '../controller/types';
 import UnitForm from '../forms/UnitForm';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type UnitStepProps = {
+  uuid: string;
   tstype_id: number;
   show: boolean;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
-  controller: TimeseriesController;
 };
 
-const UnitStep = ({show, setShow, tstype_id, controller}: UnitStepProps) => {
-  const [openUnitDialog, setOpenUnitDialog] = React.useState(false);
-  const [isUnitSelected, setIsUnitSelected] = React.useState(false);
+const UnitSection = ({uuid, show, setShow, tstype_id}: UnitStepProps) => {
   const {isMobile} = useBreakpoints();
-  const unit = controller.getValues().unit;
+  const [unit, setState, deleteState] = useCreateStationStore((state) => [
+    state.formState.timeseries?.[uuid].unit,
+    state.setState,
+    state.deleteState,
+  ]);
+  const id = `timeseries.${uuid}.unit`;
 
   if (!show)
     return (
@@ -36,7 +39,6 @@ const UnitStep = ({show, setShow, tstype_id, controller}: UnitStepProps) => {
             },
           }}
           onClick={() => {
-            if (!isUnitSelected) setOpenUnitDialog(true);
             setShow(true);
           }}
         >
@@ -57,8 +59,6 @@ const UnitStep = ({show, setShow, tstype_id, controller}: UnitStepProps) => {
             startIcon={<RemoveCircleOutline color="primary" />}
             onClick={() => {
               setShow(false);
-              controller.unregisterSlice('unit');
-              setIsUnitSelected(false);
             }}
           >
             <Typography variant="body2" color="grey.700">
@@ -80,24 +80,16 @@ const UnitStep = ({show, setShow, tstype_id, controller}: UnitStepProps) => {
               size="small"
               onClick={() => {
                 setShow(false);
-                controller.unregisterSlice('unit');
-                setIsUnitSelected(false);
+                deleteState(`timeseries.${uuid}.unit`);
               }}
             >
               <RemoveCircleOutline />
             </IconButton>
             <UnitForm
-              setIsUnitSelected={setIsUnitSelected}
-              tstype_id={tstype_id}
-              onValidChange={(isValid, value) => {
-                controller.updateSlice('unit', isValid, value);
-              }}
-              registerSlice={(id, required, validate) =>
-                controller.registerSlice(id as keyof TimeseriesPayload, required, validate)
-              }
-              openUnitDialog={openUnitDialog}
-              setOpenUnitDialog={setOpenUnitDialog}
+              id={id}
               unit={unit}
+              setValues={(values) => setState(`timeseries.${uuid}.unit`, values)}
+              tstype_id={tstype_id}
             />
           </>
         )}
@@ -106,4 +98,4 @@ const UnitStep = ({show, setShow, tstype_id, controller}: UnitStepProps) => {
   );
 };
 
-export default UnitStep;
+export default UnitSection;

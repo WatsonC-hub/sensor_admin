@@ -1,21 +1,15 @@
-import {TimeseriesManager} from '../controller/TimeseriesManager';
 import TimeseriesEditor from './TimeseriesEditor';
 import Button from '~/components/Button';
 import {Box} from '@mui/material';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import UnitDialog from '../components/UnitDialog';
-import {onAddUnitList} from './TimeseriesStepHelper';
-import {TransformedUnit} from '../controller/types';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 import {AddUnitType} from '../forms/UnitForm';
 import dayjs from 'dayjs';
-import {useCreateStationStore} from '../state/useCreateStationStore';
+import {TransformedUnit} from '../types';
 
-type Props = {
-  manager: TimeseriesManager | undefined;
-};
-
-function TimeseriesList({manager}: Props) {
+function TimeseriesList() {
   const [unitDialog, setUnitDialog] = useState(false);
   const [timeseries, setState, deleteState, removeSubmitter] = useCreateStationStore((state) => [
     state.formState.timeseries,
@@ -23,23 +17,11 @@ function TimeseriesList({manager}: Props) {
     state.deleteState,
     state.removeSubmitter,
   ]);
-  // const [, setTick] = useState(0);
-
-  // // subscribe to manager changes
-  // useEffect(() => {
-  //   const unsubscribe = manager?.onChange(() => {
-  //     setTick((x) => x + 1);
-  //   });
-
-  //   return () => {
-  //     unsubscribe?.();
-  //   }; // ✅ cleanup
-  // }, [manager]);
 
   const add = () => {
-    // const currentIdx = timeseries?.length ?? 0;
     const uuid = crypto.randomUUID();
     setState(`timeseries.${uuid}`, {});
+    return uuid;
   };
 
   const remove = (index: string) => {
@@ -57,7 +39,7 @@ function TimeseriesList({manager}: Props) {
           Tilføj fra udstyr
         </Button>
       </Box>
-      {Object.entries(timeseries ?? {})?.map(([id, data], index) => {
+      {Object.entries(timeseries ?? {})?.map(([id], index) => {
         return (
           <FormFieldset
             key={id}
@@ -76,19 +58,20 @@ function TimeseriesList({manager}: Props) {
           const transformedUnit: TransformedUnit[] = units.map((unit) => {
             const transformedUnit: AddUnitType = {
               unit_uuid: unit.unit_uuid,
-              startdate: dayjs(unit.startdato),
+              startdate: dayjs(),
               calypso_id: unit.calypso_id.toString(),
-              sensor_id: unit.sensor_id,
             };
-
             return {
               ...transformedUnit,
               tstype_id: unit.sensortypeid,
             };
           });
 
-          const controller_list = manager?.list().map(({agg}) => agg.getController()) || [];
-          onAddUnitList(transformedUnit, controller_list, add);
+          transformedUnit.forEach((unit) => {
+            const uuid = add();
+            setState(`timeseries.${uuid}.meta`, {tstype_id: unit.tstype_id});
+            setState(`timeseries.${uuid}.unit`, unit);
+          });
         }}
       />
     </>

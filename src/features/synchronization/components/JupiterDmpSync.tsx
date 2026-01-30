@@ -1,9 +1,8 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import useSyncForm, {SyncFormValues} from '../api/useSyncForm';
 import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {Grid2, Box} from '@mui/material';
-import {TimeseriesController} from '~/features/station/createStation/controller/types';
 
 const Form = createTypedForm<SyncFormValues>();
 
@@ -11,31 +10,13 @@ type JupiterDmpSyncProps = {
   mode: 'add' | 'edit' | 'mass_edit';
   loctype_id?: number;
   tstype_id?: number;
-  values?: SyncFormValues;
-  submit?: (data: SyncFormValues) => void;
-  controller?: TimeseriesController;
-  onValidChange?: (isValid: boolean, value?: SyncFormValues) => void;
+  values: SyncFormValues | undefined;
+  submit: (data: SyncFormValues) => void;
 };
 
-const JupiterDmpSync = ({
-  loctype_id,
-  tstype_id,
-  mode,
-  values,
-  submit,
-  controller,
-  onValidChange,
-}: JupiterDmpSyncProps) => {
+const JupiterDmpSync = ({loctype_id, tstype_id, mode, values, submit}: JupiterDmpSyncProps) => {
   const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm<SyncFormValues>({
     mode: mode,
-    defaultValues: !controller
-      ? {
-          jupiter: false,
-          sync_dmp: false,
-          owner_name: undefined,
-          owner_cvr: undefined,
-        }
-      : controller.getValues().sync,
     context: {
       loctype_id,
       tstype_id,
@@ -43,30 +24,8 @@ const JupiterDmpSync = ({
     values: values,
   });
 
-  const {
-    watch,
-    trigger,
-    setValue,
-    getValues,
-    reset,
-    formState: {isValid, isValidating},
-  } = syncFormMethods;
+  const {watch, trigger, setValue, reset} = syncFormMethods;
   const sync_dmp = watch('sync_dmp');
-
-  useEffect(() => {
-    if (controller)
-      controller.registerSlice('sync', true, async () => {
-        const isValid = await trigger();
-        console.log(isValid);
-        return isValid;
-      });
-  }, []);
-
-  useEffect(() => {
-    if (!isValidating && onValidChange) {
-      onValidChange(isValid, getValues());
-    }
-  }, [isValid, isValidating]);
 
   return (
     <>
@@ -96,7 +55,7 @@ const JupiterDmpSync = ({
                   select
                   name="owner_cvr"
                   label="Data ejer"
-                  disabled={(!sync_dmp || values?.sync_dmp) && mode === 'edit'}
+                  disabled={!sync_dmp && mode === 'edit'}
                   placeholder="Vælg data ejer"
                   options={owners?.map((owner) => ({
                     [owner.cvr]: owner.name + ` (${owner.cvr})`,
@@ -116,18 +75,10 @@ const JupiterDmpSync = ({
             </Box>
           )}
 
-          {mode !== 'add' && submit && (
-            <Grid2
-              size={12}
-              sx={{alignSelf: 'end'}}
-              display="flex"
-              gap={1}
-              justifyContent="flex-end"
-            >
-              <Form.Cancel cancel={() => reset()} />
-              <Form.Submit submit={submit} />
-            </Grid2>
-          )}
+          <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">
+            <Form.Cancel cancel={() => reset()} />
+            <Form.Submit submit={submit} />
+          </Grid2>
         </Form>
       )}
     </>

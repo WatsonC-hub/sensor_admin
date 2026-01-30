@@ -9,18 +9,16 @@ import {
   LastJupiterMPData,
 } from '~/pages/field/boreholeno/components/LastJupiterMP';
 import useWatlevmpForm from '~/features/station/api/useWatlevmpForm';
-import useCreateStationContext from '../api/useCreateStationContext';
 import {createTypedForm} from '~/components/formComponents/Form';
 import MPDescription from '~/features/station/components/stamdata/MPDescription';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {TimeseriesController} from '../controller/types';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type WatlevmpFormProps = {
-  tstype_id: number;
   intakeno?: number;
-  onValidChange: (isValid: boolean, value?: Watlevmp) => void;
-  index: number;
+  id: string;
+  values: Watlevmp | undefined;
+  setValues: (values: Watlevmp) => void;
 };
 
 type Watlevmp = {
@@ -30,19 +28,19 @@ type Watlevmp = {
 
 const Form = createTypedForm<Watlevmp>();
 
-const WatlevmpForm = ({tstype_id, intakeno, onValidChangem, index}: WatlevmpFormProps) => {
-  const {formState, setState, registerSubmitter, removeSubmitter} = useCreateStationStore(
-    (state) => state
-  );
-
+const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
+  const [location_meta, registerSubmitter, removeSubmitter] = useCreateStationStore((state) => [
+    state.formState.location?.meta,
+    state.registerSubmitter,
+    state.removeSubmitter,
+  ]);
   const [helperText, setHelperText] = useState('');
-  const {meta} = useCreateStationContext();
   const {isMobile} = useBreakpoints();
   const {data: watlevmp} = useQuery({
-    queryKey: queryKeys.Borehole.lastMP(meta?.boreholeno, intakeno),
+    queryKey: queryKeys.Borehole.lastMP(location_meta?.boreholeno, intakeno),
     queryFn: async () => {
       const {data} = await apiClient.get<LastJupiterMPAPI>(
-        `/sensor_field/borehole/last_mp/${meta?.boreholeno}/${intakeno}`
+        `/sensor_field/borehole/last_mp/${location_meta?.boreholeno}/${intakeno}`
       );
       return {
         description: data.descriptio,
@@ -50,53 +48,30 @@ const WatlevmpForm = ({tstype_id, intakeno, onValidChangem, index}: WatlevmpForm
         startdate: dayjs(data.startdate),
       } as LastJupiterMPData;
     },
-    enabled: !!meta?.boreholeno && intakeno !== undefined && tstype_id === 1,
+    enabled: !!location_meta?.boreholeno && intakeno !== undefined,
   });
 
   const watlevmpFormMethods = useWatlevmpForm<Watlevmp>({
-    defaultValues: formState.timeseries?.[index].watlevmp,
+    defaultValues: values,
     values: watlevmp,
   });
 
-  const {
-    watch,
-    getValues,
-    trigger,
-    formState: {isValid, isValidating},
-    handleSubmit,
-  } = watlevmpFormMethods;
+  const {watch, handleSubmit} = watlevmpFormMethods;
 
   const elevation = watch('elevation');
 
   useEffect(() => {
-    registerSubmitter(`timeseries.${index}.watlevmp`, async () => {
+    registerSubmitter(id, async () => {
       let valid: boolean = false;
-      await handleSubmit(
-        (values) => {
-          setState(`timeseries.${index}.watlevmp`, values);
-          valid = true;
-        },
-        (errors) => console.log('errors', errors)
-      )();
+      await handleSubmit((values) => {
+        setValues(values);
+        valid = true;
+      })();
       return valid;
     });
 
-    return () => removeSubmitter(`timeseries.${index}.watlevmp`);
+    return () => removeSubmitter(id);
   }, [handleSubmit]);
-
-  // useEffect(() => {
-  //   controller.registerSlice('watlevmp', true, async () => {
-  //     const isValid = await trigger();
-  //     return isValid;
-  //   });
-  // }, []);
-
-  // useEffect(() => {
-  //   if (!isValidating) {
-  //     const values = getValues();
-  //     onValidChange(isValid, values);
-  //   }
-  // }, [isValid, isValidating]);
 
   useEffect(() => {
     if (elevation === watlevmp?.elevation && watlevmp?.elevation !== undefined) {

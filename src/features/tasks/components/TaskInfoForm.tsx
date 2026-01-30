@@ -162,9 +162,6 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
               <TaskForm.BlockAll
                 sx={{pb: 0}}
                 onBlurCallback={async () => await handlePatch('block_all')}
-                onChangeCallback={(e) => {
-                  console.log(e);
-                }}
               />
             </Grid>
             <Grid

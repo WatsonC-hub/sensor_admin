@@ -1,5 +1,5 @@
 import {InputAdornment, Select, Typography, MenuItem} from '@mui/material';
-import React, {ChangeEvent, createContext, useState} from 'react';
+import React, {createContext, useState} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 import FormInput, {FormInputProps} from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
@@ -59,14 +59,12 @@ export type ControlSettingsProps = {
   selectValue?: 1 | 2;
   setSelectValue?: (value: 1 | 2) => void;
   disabled?: boolean;
-  onBlurCallback?: (value: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | number) => void;
 } & Omit<FormTextFieldProps, 'label' | 'value'>;
 
 const ControlFrequency = ({
   selectValue,
   setSelectValue,
   disabled = false,
-  onBlurCallback,
   ...rest
 }: ControlSettingsProps) => {
   const {control} = useFormContext();
@@ -79,6 +77,7 @@ const ControlFrequency = ({
         name="controls_per_year"
         control={control}
         render={({field: {onChange, value}, fieldState: {error}}) => {
+          console.log(error);
           let innerValue = undefined;
 
           if (value !== undefined && value !== null && value !== '')
@@ -100,9 +99,6 @@ const ControlFrequency = ({
 
                 onChange(newValue);
               }}
-              onBlur={(e) => {
-                if (onBlurCallback) onBlurCallback(e);
-              }}
               disabled={disabled}
               slotProps={{
                 input: {
@@ -120,7 +116,9 @@ const ControlFrequency = ({
                 },
               }}
               helperText={
-                value ? (
+                error ? (
+                  error.message
+                ) : value ? (
                   intervalType === 1 ? (
                     interval === 'Ingen interval' ? (
                       <Typography variant="caption">{interval}</Typography>
@@ -139,48 +137,6 @@ const ControlFrequency = ({
           );
         }}
       />
-      {/* <FormInput
-        {...rest}
-        name="dummy"
-        label={values.from_unit ? 'Kontrolhyppighed (fra udstyret)' : 'Kontrolhyppighed'}
-        type="number"
-        disabled={
-          (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser)
-        }
-        fullWidth
-        onChangeCallback={(e) => {
-          if (typeof e == 'number') {
-            if (selectValue === 1) setValue('controls_per_year', Number(e), {shouldDirty: true});
-            else if (selectValue === 2 && Number(e) !== 0)
-              setValue('controls_per_year', Number((12 / Number(e)).toFixed(3)), {
-                shouldDirty: true,
-              });
-            if (onChangeCallback) onChangeCallback(e);
-          }
-        }}
-        slotProps={{
-          input: {
-            endAdornment: (
-              <InputAdornment position="end">
-                <IntervalType />
-              </InputAdornment>
-            ),
-          },
-        }}
-        helperText={
-          controlsPerYear ? (
-            selectValue === 1 ? (
-              <Typography variant="caption">
-                Kontrolmåles hver {intervalFromFrequencyPerYear(controlsPerYear ?? 0)}
-              </Typography>
-            ) : (
-              <Typography variant="caption">
-                Kontrolmåles {controlsPerYear} gange om året
-              </Typography>
-            )
-          ) : null
-        }
-      /> */}
     </>
   );
 };

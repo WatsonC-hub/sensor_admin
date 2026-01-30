@@ -3,12 +3,12 @@ import React from 'react';
 import FormInput, {FormInputProps} from '~/components/FormInput';
 import {Watlevmp} from '../../schema';
 
-type StamdataWatlevmpProps = {
+type MPFormCompoundProps = {
   children: React.ReactNode;
 };
 
-const StamdataWatlevmp = ({children}: StamdataWatlevmpProps) => {
-  return {children};
+const MPFormCompound = ({children}: MPFormCompoundProps) => {
+  return <>{children}</>;
 };
 
 const Elevation = (props: Omit<FormInputProps<Watlevmp>, 'name'>) => {
@@ -42,7 +42,7 @@ const Description = (props: Omit<FormInputProps<Watlevmp>, 'name'>) => {
   );
 };
 
-StamdataWatlevmp.Elevation = Elevation;
-StamdataWatlevmp.Description = Description;
+MPFormCompound.Elevation = Elevation;
+MPFormCompound.Description = Description;
 
-export default StamdataWatlevmp;
+export default MPFormCompound;

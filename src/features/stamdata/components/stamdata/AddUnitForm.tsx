@@ -34,7 +34,7 @@ interface AddUnitFormProps {
   setUdstyrDialogOpen: (open: boolean) => void;
   tstype_id?: number;
   mode: 'add' | 'edit';
-  onValidChange?: (isValid: boolean, value?: AddUnitType) => void;
+  setValues?: (values: AddUnitType) => void;
 }
 
 export default function AddUnitForm({
@@ -42,7 +42,7 @@ export default function AddUnitForm({
   setUdstyrDialogOpen,
   mode,
   tstype_id,
-  onValidChange,
+  setValues,
 }: AddUnitFormProps) {
   const [addSensors, setAddSensors] = useState(false);
   const [disableMatchingParameters, setDisableMatchingParameters] = useState(true);
@@ -59,7 +59,7 @@ export default function AddUnitForm({
     handleSubmit,
     reset,
     trigger,
-    formState: {isSubmitting, isValid},
+    formState: {isSubmitting},
   } = useFormContext();
 
   const [unitData, setUnitData] = useState({
@@ -175,24 +175,24 @@ export default function AddUnitForm({
 
     const unit = units.find((u) => u.unit_uuid === unitData.uuid);
 
-    if (onValidChange) {
-      const transformedUnit: AddUnitType = {
-        calypso_id: unit?.calypso_id.toString(),
-        unit_uuid: unit?.unit_uuid || '',
-        startdate: dayjs(unit?.startdato),
-        sensor_id: unit ? unit.sensor_id : undefined,
-      };
-
-      console.log('unit', unitData, unit, transformedUnit);
-      onValidChange(isValid, transformedUnit);
-    }
-
-    if (units.length === 1) {
-      setUnitData((prev) => ({...prev, uuid: units[0].unit_uuid}));
-      // if (!onValidChange) {
-      setValue('unit_uuid', units[0].unit_uuid, {shouldDirty: true, shouldValidate: true});
-      setValue('startdate', dayjs(unitData.fra), {shouldDirty: true, shouldValidate: true});
-      // }
+    if (units.length === 1 && unit) {
+      if (setValues) {
+        setValues({
+          unit_uuid: unit.unit_uuid,
+          startdate: dayjs(unitData.fra),
+          calypso_id:
+            unit.calypso_id == 0 ? unit.terminal_id.toString() : unit.calypso_id.toString(),
+        });
+      }
+      setUnitData((prev) => ({...prev, uuid: unit.unit_uuid}));
+      setValue('unit_uuid', unit.unit_uuid, {shouldDirty: true, shouldValidate: true});
+      setValue('startdate', unitData.fra.toString(), {shouldDirty: true, shouldValidate: true});
+      setValue(
+        'calypso_id',
+        unit.calypso_id == 0 ? unit.terminal_id.toString() : unit.calypso_id.toString(),
+        {shouldDirty: true, shouldValidate: true}
+      );
+      setValue('sensor_id', unit.sensor_id, {shouldDirty: true, shouldValidate: true});
       const isValid = await trigger();
       if (!isValid) return;
       setUdstyrDialogOpen(false);
@@ -210,39 +210,16 @@ export default function AddUnitForm({
 
   const handleClose = () => {
     setUdstyrDialogOpen(false);
-    if (!onValidChange) {
-      setUnitData({calypso_id: '', uuid: '', fra: dayjs()});
-      trigger();
-      reset();
-    }
+    setUnitData({calypso_id: '', uuid: '', fra: dayjs()});
+    trigger();
+    reset();
   };
 
-  const handleSensorDialogClose = async (matchingParameters?: boolean) => {
+  const handleSensorDialogClose = async () => {
     setAddSensors(false);
 
     const sensortypeList = sensorsForCalyspoId(unitData.calypso_id);
     const unit = sensortypeList?.find((u) => u.unit_uuid === unitData.uuid);
-
-    const transformedUnit: AddUnitType = {
-      calypso_id: unit?.calypso_id.toString(),
-      unit_uuid: unit?.unit_uuid || '',
-      startdate: dayjs(unit?.startdato),
-      sensor_id: unit ? unit.sensor_id : undefined,
-    };
-
-    if (matchingParameters) {
-      if (mode === 'add' && unit && onValidChange) {
-        onValidChange(true, transformedUnit);
-      }
-    } else if (matchingParameters === false) {
-      if (mode === 'add' && unit && onValidChange) {
-        onValidChange(true, transformedUnit);
-      }
-    } else if (matchingParameters === undefined) {
-      if (mode === 'add' && onValidChange && unit) {
-        onValidChange(true, transformedUnit);
-      }
-    }
 
     setValue('unit_uuid', unit?.unit_uuid, {shouldDirty: true, shouldValidate: true});
     setValue('startdate', dayjs(unitData.fra), {shouldDirty: true, shouldValidate: true});

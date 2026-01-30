@@ -52,7 +52,7 @@ interface TransferListProps extends MultiSelectProps {
 
 export default function TranserList({loc_id, value, setValue}: TransferListProps) {
   const [checked, setChecked] = useState<Ressourcer[]>([]);
-  const [selected, setSelected] = useState<Ressourcer[]>(value);
+  const [selected, setSelected] = useState<Ressourcer[]>(value ?? []);
   const [selectedCategory, setSelectedCategory] = useState<Array<string>>([]);
   const [categories] = useState<Array<string>>(
     Object.keys(CategoryType).splice(
@@ -148,6 +148,8 @@ export default function TranserList({loc_id, value, setValue}: TransferListProps
     };
     postRessourcer.mutate(payload);
   };
+
+  console.log(not(selected, rightChecked));
 
   const handleClick = (collapsedCategory: string) => {
     if (!collapsed.includes(collapsedCategory)) {

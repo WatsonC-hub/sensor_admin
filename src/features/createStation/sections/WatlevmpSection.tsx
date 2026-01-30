@@ -5,21 +5,24 @@ import WatlevmpForm from '../forms/WatlevmpForm';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
-import {TimeseriesController} from '../controller/types';
-import {Watlevmp} from '~/features/station/schema';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type Props = {
   index: string;
   show: boolean;
-  setValues: (vals: Watlevmp) => void;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
-  // controller: TimeseriesController;
 };
 
 const WatlevmpSection = ({show, setShow, index}: Props) => {
   const {isMobile} = useBreakpoints();
-  const tstype_id = 1;
-  const intakeno = undefined;
+  const [intakeno, watlevmp, setState, deleteState] = useCreateStationStore((state) => [
+    state.formState.timeseries?.[index]?.meta?.intakeno,
+    state.formState.timeseries?.[index]?.watlevmp,
+    state.setState,
+    state.deleteState,
+  ]);
+
+  const id = `timeseries.${index}.watlevmp`;
 
   if (show)
     return (
@@ -32,7 +35,6 @@ const WatlevmpSection = ({show, setShow, index}: Props) => {
               startIcon={<RemoveCircleOutline color="primary" />}
               onClick={() => {
                 setShow(false);
-                // controller.unregisterSlice('watlevmp');
               }}
             >
               <Typography variant="body2" color="grey.700">
@@ -55,7 +57,7 @@ const WatlevmpSection = ({show, setShow, index}: Props) => {
                   size="small"
                   onClick={() => {
                     setShow(false);
-                    // controller.unregisterSlice('watlevmp');
+                    deleteState(`timeseries.${index}.watlevmp`);
                   }}
                 >
                   <RemoveCircleOutline />
@@ -64,14 +66,10 @@ const WatlevmpSection = ({show, setShow, index}: Props) => {
             </Grid2>
             <Grid2 size={11}>
               <WatlevmpForm
-                tstype_id={tstype_id!}
-                intakeno={intakeno ?? undefined}
-                index={index}
-                // controller={controller}
-                onValidChange={
-                  (isValid, value) => {}
-                  // controller.updateSlice('watlevmp', isValid, value)
-                }
+                id={id}
+                intakeno={intakeno}
+                values={watlevmp}
+                setValues={(values) => setState(`timeseries.${index}.watlevmp`, values)}
               />
             </Grid2>
           </Grid2>

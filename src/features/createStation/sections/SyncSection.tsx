@@ -1,25 +1,29 @@
 import {Box, Grid2, IconButton, Typography} from '@mui/material';
 import React from 'react';
-import useCreateStationContext from '../api/useCreateStationContext';
-import JupiterDmpSync from '~/features/synchronization/components/JupiterDmpSync';
 import Button from '~/components/Button';
 import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import FormFieldset from '~/components/formComponents/FormFieldset';
-import {AggregateController} from '../controller/AggregateController';
-import {TimeseriesPayload} from '../controller/types';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+import SyncForm from '../forms/SyncForm';
 
 type Props = {
+  uuid: string;
   show: boolean;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
-  controller: AggregateController<TimeseriesPayload>;
+  tstype_id?: number;
 };
 
-const SyncSection = ({show, setShow, controller}: Props) => {
-  const {meta} = useCreateStationContext();
+const SyncSection = ({uuid, show, setShow, tstype_id}: Props) => {
+  const [meta, setState, deleteState, sync] = useCreateStationStore((state) => [
+    state.formState.location?.meta,
+    state.setState,
+    state.deleteState,
+    state.formState.timeseries?.[uuid].sync,
+  ]);
+
   const {isMobile} = useBreakpoints();
-  const values = controller.getValues();
-  const tstype_id = values.meta?.tstype_id;
+  const id = `timeseries.${uuid}.sync`;
 
   if (show)
     return (
@@ -31,7 +35,6 @@ const SyncSection = ({show, setShow, controller}: Props) => {
               sx={{p: 0, m: 0}}
               startIcon={<RemoveCircleOutline color="primary" />}
               onClick={() => {
-                controller.unregisterSlice('sync');
                 setShow(false);
               }}
             >
@@ -52,8 +55,8 @@ const SyncSection = ({show, setShow, controller}: Props) => {
               color="primary"
               size="small"
               onClick={() => {
-                controller.unregisterSlice('sync');
                 setShow(false);
+                deleteState(`timeseries.${uuid}.sync`);
               }}
             >
               <RemoveCircleOutline />
@@ -61,15 +64,13 @@ const SyncSection = ({show, setShow, controller}: Props) => {
           )}
           <Grid2 container size={12} spacing={1}>
             <Grid2 size={12}>
-              <JupiterDmpSync
+              <SyncForm
                 mode="add"
                 loctype_id={meta?.loctype_id}
                 tstype_id={tstype_id ?? undefined}
-                values={values.sync}
-                controller={controller}
-                onValidChange={(isValid, value) => {
-                  controller.updateSlice('sync', isValid, value);
-                }}
+                id={id}
+                values={sync}
+                setValues={(values) => setState(`timeseries.${uuid}.sync`, values)}
               />
             </Grid2>
           </Grid2>

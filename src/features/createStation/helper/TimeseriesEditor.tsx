@@ -1,20 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import TimeseriesMetaForm from '../forms/TimeseriesMetaForm';
 import WatlevmpSection from '../sections/WatlevmpSection';
 import {Delete} from '@mui/icons-material';
 import {Grid2} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import Button from '~/components/Button';
-import ControlSettingSection from '../sections/ControlSettingSection';
-import {TimeseriesAggregate} from '../controller/TimeseriesAggregate';
-import {TimeseriesMeta} from '~/helpers/CreateStationContextProvider';
-import SyncSection from '../sections/SyncSection';
 import {isSynchronizationAllowed} from './TimeseriesStepHelper';
-import useCreateStationContext from '../api/useCreateStationContext';
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
-import UnitStep from '../components/UnitStep';
-import {CreateStationPayload, TimeseriesPayload} from '../controller/types';
-import {PathValue, useCreateStationStore} from '../state/useCreateStationStore';
+import {TimeseriesPayload} from '../types';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+import ControlSettingSection from '../sections/ControlSettingSection';
+import SyncSection from '../sections/SyncSection';
+import UnitSection from '../sections/UnitSection';
 
 type Props = {
   index: string;
@@ -22,11 +19,11 @@ type Props = {
 };
 
 const TimeseriesEditor = ({index, onRemove}: Props) => {
-  // const controller = aggregate.getController();
-  // const values = controller.getValues();
-  const [timeseries, setState] = useCreateStationStore((state) => [
+  const [timeseries, location_meta, setState, deleteState] = useCreateStationStore((state) => [
     state.formState.timeseries?.[index] as TimeseriesPayload,
+    state.formState.location?.meta,
     state.setState,
+    state.deleteState,
   ]);
 
   const [showWatlevmp, setShowWatlevmp] = useState(!!timeseries.watlevmp);
@@ -39,67 +36,51 @@ const TimeseriesEditor = ({index, onRemove}: Props) => {
   const {data: dmpAllowedList} = useDMPAllowedList();
 
   const {isMobile} = useBreakpoints();
-  const {meta: metaTmp} = useCreateStationContext();
 
-  const isSyncAllowed = isSynchronizationAllowed(tstype_id, metaTmp?.loctype_id, dmpAllowedList);
-
-  // useEffect(() => {
-  //   const unsub = controller.onSliceChange((id, slice) => {
-  //     if (id === 'meta') {
-  //       const meta = slice?.value as TimeseriesMeta;
-  //       setTstype(meta?.tstype_id);
-  //       if (meta?.tstype_id !== 1 && showWatlevmp) {
-  //         setShowWatlevmp(false);
-  //         controller.unregisterSlice('watlevmp');
-  //       }
-
-  //       if (!isSyncAllowed && showSync) {
-  //         setShowSync(false);
-  //         controller.unregisterSlice('sync');
-  //       }
-  //     }
-  //   });
-
-  //   return () => {
-  //     unsub();
-  //   };
-  // }, [controller]);
+  const isSyncAllowed = isSynchronizationAllowed(
+    tstype_id,
+    location_meta?.loctype_id,
+    dmpAllowedList
+  );
 
   return (
     <>
       <TimeseriesMetaForm
-        index={index}
-        // onValidChange={(isValid, value) => controller.updateSlice('meta', isValid, value)}
-        // controller={controller}
+        uuid={index}
+        setValues={(meta) => {
+          setState(`timeseries.${index}.meta`, meta);
+        }}
+        setTstype={(tstype_id) => {
+          setState(`timeseries.${index}.meta.tstype_id`, tstype_id);
+          deleteState(`timeseries.${index}.unit`);
+          deleteState(`timeseries.${index}.watlevmp`);
+          if (showWatlevmp) setShowWatlevmp(false);
+        }}
       />
 
-      {/* {tstype && (
-        <UnitStep
-          tstype_id={tstype}
+      {tstype_id && (
+        <UnitSection
+          key={tstype_id}
+          uuid={index}
+          tstype_id={tstype_id}
           show={showUnit}
           setShow={setShowUnit}
-          controller={controller}
         />
       )}
 
       <ControlSettingSection
+        uuid={index}
         show={showControlSettings}
         setShow={setShowControlSettings}
-        controller={controller}
-      /> */}
+      />
 
       {tstype_id === 1 && (
-        <WatlevmpSection
-          index={index}
-          show={showWatlevmp}
-          setShow={setShowWatlevmp}
-          setValues={(vals) => setState(`timeseries.${index}.watlevmp`, vals)}
-        />
+        <WatlevmpSection index={index} show={showWatlevmp} setShow={setShowWatlevmp} />
       )}
 
-      {/* {isSyncAllowed && (
-        <SyncSection show={showSync} setShow={setShowSync} controller={controller} />
-      )} */}
+      {isSyncAllowed && (
+        <SyncSection uuid={index} show={showSync} setShow={setShowSync} tstype_id={tstype_id} />
+      )}
 
       <Grid2
         size={isMobile ? 12 : 1}
