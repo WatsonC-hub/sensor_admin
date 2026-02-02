@@ -40,7 +40,7 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
     state.submitters,
   ]);
 
-  const isDisabled = isFormError || Object.values(submitters).length === 0;
+  const isDisabled = isFormError || (state.loc_id && Object.values(submitters).length === 0);
 
   const stamdataNewMutation = useMutation({
     mutationFn: async (data: CreateStationPayload) => {
