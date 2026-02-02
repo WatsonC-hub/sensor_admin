@@ -34,10 +34,13 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
   const [showAlert, setShowAlert] = useState(false);
   const {isMobile} = useBreakpoints();
 
-  const [isFormError, formState] = useCreateStationStore((state) => [
+  const [isFormError, formState, submitters] = useCreateStationStore((state) => [
     state.isFormError,
     state.formState,
+    state.submitters,
   ]);
+
+  const isDisabled = isFormError || Object.values(submitters).length === 0;
 
   const stamdataNewMutation = useMutation({
     mutationFn: async (data: CreateStationPayload) => {
@@ -101,7 +104,7 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
         {(activeStep === 2 || state.loc_id !== undefined) && (
           <Button
             bttype="primary"
-            disabled={isFormError}
+            disabled={isDisabled}
             startIcon={!isMobile && <Save fontSize="small" />}
             onClick={async () => {
               const isStepValid = await onFormIsValid();
@@ -120,7 +123,6 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
         title="Færdiggør oprettelse"
         message={'Er du sikker på, at du vil færdiggøre oprettelsen af stationen?'}
         handleOpret={() => {
-          console.log('Submitting form...', formState);
           if (!formState) return;
           const submitState: CreateStationPayload = {
             location: state.loc_id

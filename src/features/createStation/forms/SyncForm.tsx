@@ -51,7 +51,7 @@ const SyncForm = ({id, mode, loctype_id, tstype_id, values, setValues}: SyncForm
         <Form formMethods={syncFormMethods} gridSizes={12}>
           {canSyncJupiter && (
             <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til Jupiter">
-              <Form.Checkbox required name="jupiter" label="Jupiter" />
+              <Form.Checkbox name="jupiter" label="Jupiter" />
             </TooltipWrapper>
           )}
           {isDmpAllowed && (
