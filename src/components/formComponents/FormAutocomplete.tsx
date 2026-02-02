@@ -6,8 +6,8 @@ import ExtendedAutocomplete, {AutoCompleteFieldProps} from '../Autocomplete';
 
 type FormAutocompleteProps<T extends FieldValues, K extends object, M extends boolean = false> = {
   name: Path<T>;
-  label: string;
   gridSizes?: GridBaseProps['size'];
+  valueKey: keyof K;
   icon?: React.ReactNode;
   onChangeCallback?: (value: M extends true ? K[] : K) => void;
 } & Omit<AutoCompleteFieldProps<K, M>, 'selectValue' | 'onChange'>;
@@ -17,6 +17,7 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
   gridSizes,
   onChangeCallback,
   options,
+  valueKey,
   labelKey,
   ...props
 }: FormAutocompleteProps<T, K, M>) => {
@@ -36,11 +37,11 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
             ? K[]
             : K | null;
           if (Array.isArray(value)) {
-            selectValue = options.filter((o) => value.includes(o[labelKey])) as M extends true
+            selectValue = options.filter((o) => value.includes(o[valueKey])) as M extends true
               ? K[]
               : K | null;
           } else {
-            selectValue = (options.find((o) => o[labelKey] === value) ?? '') as M extends true
+            selectValue = (options.find((o) => o[valueKey] === value) ?? '') as M extends true
               ? K[]
               : K | null;
           }
@@ -51,9 +52,9 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
               error={errors[name]?.message as string | undefined}
               onChange={(value) => {
                 if (Array.isArray(value)) {
-                  onChange((value as K[]).map((v) => v[labelKey]));
+                  onChange((value as K[]).map((v) => v[valueKey]));
                 } else {
-                  onChange(value ? (value as K)[labelKey] : null);
+                  onChange(value ? (value as K)[valueKey] : null);
                 }
                 if (onChangeCallback) onChangeCallback(value as M extends true ? K[] : K);
               }}

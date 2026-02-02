@@ -9,3 +9,7 @@
   margin-top: calc(var(--icon-size) / -1) !important;
   color: white;
 }
+
+.route-tooltip {
+  background-color: transparent;
+}

@@ -101,19 +101,16 @@ const AlarmNotificationForm = () => {
       </Box>
       <AlarmNotificationTypedForm.Autocomplete<NotificationType, true>
         options={data ?? []}
-        labelKey="gid"
+        valueKey="gid"
+        labelKey="name"
         name="notification_ids"
-        multiple={true}
-        label={`Notifikationer`}
+        multiple
         fullWidth
         gridSizes={12}
         textFieldsProps={{
           label: 'Notifikationer',
           placeholder: 'Søg og vælg notifikation...',
           required: true,
-        }}
-        getOptionLabel={(o) => {
-          return o.name;
         }}
         // onChangeCallback={(value) => {
         //   setValue(
