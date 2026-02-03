@@ -274,14 +274,17 @@ const UnitMeasurementConfig = () => {
             ts_id={ts_id}
             progressKey="samplesend"
             disabled={disabled}
-            title="Aktuelle forholde er OK"
           />
-          <Button bttype="tertiary" onClick={() => reset()} disabled={isSubmitting || disabled}>
+          <Button
+            bttype="tertiary"
+            onClick={() => reset()}
+            disabled={isSubmitting || !isDirty || disabled}
+          >
             Annuller
           </Button>
           <Button
             bttype="primary"
-            disabled={isSubmitting || !data?.configPossible || !isDirty}
+            disabled={isSubmitting || !isDirty || disabled}
             onClick={handleSubmit((data) =>
               mutate(data, {
                 onSuccess: () => {

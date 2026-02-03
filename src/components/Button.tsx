@@ -1,4 +1,4 @@
-import type {ButtonProps} from '@mui/material';
+import {useTheme, type ButtonProps} from '@mui/material';
 import MuiButton from '@mui/material/Button';
 import {merge} from 'lodash';
 
@@ -9,6 +9,7 @@ interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
 }
 
 const Button = ({bttype, children, ...props}: MyButtonProps) => {
+  const theme = useTheme();
   const baseSx = {
     textTransform: 'initial',
     my: 0.5,
@@ -52,7 +53,8 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
   if (bttype === 'progress') {
     sx = {
       ...baseSx,
-      backgroundColor: 'info.main',
+      backgroundColor: theme.palette.info.main,
+      borderColor: theme.palette.info.main,
       color: 'white',
     };
   }
