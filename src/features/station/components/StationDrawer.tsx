@@ -23,6 +23,7 @@ import {
   ListItemButton,
   ClickAwayListener,
   Typography,
+  useTheme,
 } from '@mui/material';
 import {useAtom} from 'jotai';
 import React, {ReactNode} from 'react';
@@ -63,7 +64,6 @@ import {
 } from '../api/useTimeseriesMeasureSampleSend';
 import useDmpAllowedMapList, {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
 import {alarmGetOptions} from '../alarms/api/useAlarm';
-import ProgressLabel from './ProgressLabel';
 import {useProgress} from '~/hooks/query/stationProgress';
 
 const drawerWidth = 200;
@@ -78,7 +78,6 @@ type Item = {
   disabled?: boolean;
   tooltip?: string;
   progress?: number;
-  maxProgress?: number;
 };
 
 type DrawerItems = {
@@ -99,6 +98,7 @@ const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
 };
 const StationDrawer = () => {
+  const theme = useTheme();
   const {ts_id, loc_id} = useAppContext(['loc_id'], ['ts_id']);
   const [pageToShow, setPageToShow] = useStationPages();
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
@@ -110,29 +110,19 @@ const StationDrawer = () => {
 
   const isDmpAllowed = useDmpAllowedMapList(ts_id);
 
-  const configurationProgress = progress
-    ? (progress.kontrolhyppighed === false ? 0 : 1) +
-      ((!isDmpAllowed && metadata?.loctype_id !== 9) || progress.sync === false ? 0 : 1) +
-      (progress.samplesend === false ? 0 : 1) +
-      (progress.visibility === false ? 0 : 1)
-    : undefined;
-
-  let maxConfigurationProgress = 2;
-
-  maxConfigurationProgress =
-    isDmpAllowed ||
-    (metadata?.loctype_id === 9 && [1, 11, 12, 16].includes(metadata?.tstype_id || 0))
-      ? maxConfigurationProgress + 1
-      : maxConfigurationProgress;
-
-  maxConfigurationProgress =
-    !metadata?.calculated && metadata?.unit_uuid && !error && data !== undefined
-      ? maxConfigurationProgress + 1
-      : maxConfigurationProgress;
+  const configurationProgress =
+    progress?.kontrolhyppighed === false ||
+    (progress?.sync === false &&
+      (isDmpAllowed ||
+        (metadata?.loctype_id === 9 && [1, 11, 12, 16].includes(metadata?.tstype_id || 0)))) ||
+    progress?.visibility === false ||
+    (progress?.samplesend === false && data !== undefined && !error)
+      ? 0
+      : undefined;
 
   const {
     superUser,
-    features: {iotAccess, alarms, contacts, keys: accessKeys, ressources},
+    features: {iotAccess, alarms, contacts, keys: accessKeys, ressources, stationProgress},
   } = useUser();
   const {createStamdata} = useNavigationFunctions();
 
@@ -258,9 +248,7 @@ const StationDrawer = () => {
           tooltip:
             'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
           // progress = kontrolhyppighed = true + sync = true = 2
-          progress:
-            configurationProgress === maxConfigurationProgress ? undefined : configurationProgress,
-          maxProgress: maxConfigurationProgress,
+          progress: configurationProgress,
         },
       ],
     },
@@ -319,7 +307,6 @@ const StationDrawer = () => {
           requiredTsId: false,
           disabled: !superUser,
           progress: progress?.sla == false ? 0 : undefined,
-          maxProgress: 1,
         },
       ],
     },
@@ -426,23 +413,9 @@ const StationDrawer = () => {
                       {item.text}
                     </Wrapper>
                   </ListItemText>
-                  {item.progress != undefined && item.maxProgress != undefined && (
-                    <ProgressLabel value={item.progress} max={item.maxProgress} />
+                  {item.progress != undefined && stationProgress && (
+                    <PriorityHigh sx={{color: theme.palette.info.light}} />
                   )}
-                  {item.progress != undefined && !item.maxProgress && (
-                    <PriorityHigh color="secondary" />
-                  )}
-                  {/* <ListItemIcon
-                    sx={{
-                      color: navIconStyle(pageToShow === item.page),
-                      width: 24,
-                      py: 0,
-                      pr: 1,
-                      justifyContent: 'end',
-                    }}
-                  >
-                    {item.icon}
-                  </ListItemIcon> */}
                 </ListItemButton>
               </ListItem>
             );

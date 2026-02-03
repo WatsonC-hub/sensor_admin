@@ -82,6 +82,9 @@ const SLAConfiguration = () => {
 
       <Box display="flex" justifyContent="flex-end" gap={1}>
         <UpdateProgressButton loc_id={loc_id} ts_id={-1} progressKey="sla" />
+        <Button bttype="tertiary" disabled={isSubmitting || !isDirty} onClick={() => reset()}>
+          Annuller
+        </Button>
         <Button
           bttype="primary"
           disabled={isSubmitting || !isDirty}
@@ -95,9 +98,6 @@ const SLAConfiguration = () => {
           startIcon={<Save />}
         >
           Gem
-        </Button>
-        <Button bttype="tertiary" onClick={() => reset()} disabled={isSubmitting}>
-          Annuller
         </Button>
       </Box>
     </FormProvider>

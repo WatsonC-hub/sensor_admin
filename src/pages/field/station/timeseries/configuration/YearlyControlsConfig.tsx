@@ -70,7 +70,7 @@ const YearlyControlsConfig = () => {
   const {
     handleSubmit,
     reset,
-    formState: {isSubmitting, dirtyFields},
+    formState: {isSubmitting, dirtyFields, isDirty},
     setValue,
     watch,
   } = formMethods;
@@ -190,7 +190,7 @@ const YearlyControlsConfig = () => {
             onClick={() => {
               reset();
             }}
-            disabled={isSubmitting || disabled}
+            disabled={isSubmitting || !isDirty}
           >
             Annuller
           </Button>
@@ -198,7 +198,8 @@ const YearlyControlsConfig = () => {
             bttype="primary"
             disabled={
               isSubmitting ||
-              Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0
+              Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0 ||
+              !isDirty
             }
             onClick={handleSubmit(onSubmit, (error) => console.log(error))}
             startIcon={<Save />}

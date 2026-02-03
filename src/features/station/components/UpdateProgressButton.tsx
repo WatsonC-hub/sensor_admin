@@ -1,6 +1,8 @@
+import {PriorityHigh} from '@mui/icons-material';
 import {Typography} from '@mui/material';
 import React from 'react';
 import Button from '~/components/Button';
+import {useUser} from '~/features/auth/useUser';
 import {ProgressStatus, useStationProgress} from '~/hooks/query/stationProgress';
 
 type Props = {
@@ -8,27 +10,26 @@ type Props = {
   loc_id: number | undefined;
   ts_id?: number;
   disabled?: boolean;
-  title?: string;
   alterStyle?: boolean;
 };
 
-const UpdateProgressButton = ({progressKey, loc_id, ts_id, disabled, title, alterStyle}: Props) => {
+const UpdateProgressButton = ({progressKey, loc_id, ts_id, disabled, alterStyle}: Props) => {
+  const {
+    features: {stationProgress},
+  } = useUser();
   const {needsProgress, hasAssessed} = useStationProgress(loc_id, progressKey, ts_id);
 
   return (
     <>
-      {needsProgress ? (
+      {needsProgress && stationProgress ? (
         <Button
           bttype="progress"
           onClick={hasAssessed}
           disabled={disabled}
-          sx={{...(alterStyle ? {height: 56, borderRadius: 4.5} : {})}}
+          startIcon={<PriorityHigh />}
+          sx={{...(alterStyle ? {height: 56, borderRadius: 4.5} : {}), alignContent: 'center'}}
         >
-          {alterStyle ? (
-            <Typography>{title || 'Ikke relevant'}</Typography>
-          ) : (
-            title || 'Ikke relevant'
-          )}
+          {alterStyle ? <Typography>{'Godkend indstilling'}</Typography> : 'Godkend indstilling'}
         </Button>
       ) : null}
     </>
