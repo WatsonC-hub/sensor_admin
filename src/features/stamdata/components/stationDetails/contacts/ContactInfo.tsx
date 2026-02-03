@@ -7,7 +7,7 @@ import {initialContactData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
-import SelectContactInfo from '~/features/stamdata/components/stationDetails/contacts/SelectContactInfo';
+import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddtContactInfo';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {useAppContext} from '~/state/contexts';
 import useContactForm from './api/useContactForm';
@@ -33,7 +33,7 @@ const ContactInfo = () => {
       <StationPageBoxLayout>
         <FormProvider {...contactFormMethods}>
           {openContactInfoDialog && (
-            <SelectContactInfo
+            <AddContactInfo
               open={openContactInfoDialog}
               setOpen={setOpenContactInfoDialog}
               loc_id={loc_id}

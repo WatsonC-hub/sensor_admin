@@ -2,7 +2,7 @@ import React from 'react';
 import useContactForm from '~/features/stamdata/components/stationDetails/contacts/api/useContactForm';
 import {ContactTable} from '~/types';
 import {FormProvider} from 'react-hook-form';
-import SelectContactInfo from '~/features/stamdata/components/stationDetails/contacts/SelectContactInfo';
+import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddtContactInfo';
 import {lowerCase} from 'lodash';
 import {setRoleName} from '~/features/stamdata/components/stationDetails/contacts/const';
 import SimpleContactList from '../helper/SimpleContactList';
@@ -25,18 +25,8 @@ const ContactForm = () => {
     mode: 'add',
   });
 
-  const {reset} = contactInfoMethods;
-
   const onValidChange = (value: ContactTable[]) => {
     setContacts('location.contacts', value);
-  };
-
-  const onEdit = (index: number, data?: ContactTable) => {
-    if (data) {
-      const updatedContacts = (contacts || []).map((contact, i) => (i === index ? data : contact));
-      onValidChange(updatedContacts);
-      reset();
-    }
   };
 
   const removeContact = (index: number) => {
@@ -57,7 +47,6 @@ const ContactForm = () => {
               values={(contacts || []).map((item) => {
                 return {name: item.name, email: item.email ?? ''};
               })}
-              onEdit={onEdit}
               onRemove={removeContact}
             />
           )}
@@ -68,7 +57,7 @@ const ContactForm = () => {
               width: 'fit-content',
               backgroundColor: 'transparent',
               border: 'none',
-              px: 0.5,
+              px: 1,
               ':hover': {
                 backgroundColor: 'grey.200',
               },
@@ -83,7 +72,7 @@ const ContactForm = () => {
           </Button>
         </Box>
         {contactDialogOpen && (
-          <SelectContactInfo
+          <AddContactInfo
             open={contactDialogOpen}
             setOpen={setContactDialogOpen}
             onValidate={(data) => {

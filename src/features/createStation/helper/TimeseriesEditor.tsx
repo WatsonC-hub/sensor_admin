@@ -12,6 +12,7 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 import ControlSettingSection from '../sections/ControlSettingSection';
 import SyncSection from '../sections/SyncSection';
 import UnitSection from '../sections/UnitSection';
+import VisibilitySection from '../sections/VisibilitySection';
 
 type Props = {
   index: string;
@@ -30,6 +31,7 @@ const TimeseriesEditor = ({index, onRemove}: Props) => {
   const [showControlSettings, setShowControlSettings] = useState(!!timeseries.control_settings);
   const [showSync, setShowSync] = useState(!!timeseries.sync);
   const [showUnit, setShowUnit] = useState(!!timeseries.unit);
+  const [showVisibility, setShowVisibility] = useState(!!timeseries.visibility);
 
   const tstype_id = timeseries.meta?.tstype_id;
 
@@ -58,6 +60,14 @@ const TimeseriesEditor = ({index, onRemove}: Props) => {
         }}
       />
 
+      <VisibilitySection uuid={index} show={showVisibility} setShow={setShowVisibility} />
+
+      <ControlSettingSection
+        uuid={index}
+        show={showControlSettings}
+        setShow={setShowControlSettings}
+      />
+
       {tstype_id && (
         <UnitSection
           key={tstype_id}
@@ -67,12 +77,6 @@ const TimeseriesEditor = ({index, onRemove}: Props) => {
           setShow={setShowUnit}
         />
       )}
-
-      <ControlSettingSection
-        uuid={index}
-        show={showControlSettings}
-        setShow={setShowControlSettings}
-      />
 
       {tstype_id === 1 && (
         <WatlevmpSection index={index} show={showWatlevmp} setShow={setShowWatlevmp} />

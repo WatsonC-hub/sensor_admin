@@ -491,7 +491,6 @@ const InitialProjectNo = (
           onBlur={onBlur}
           error={error}
           disable={superUser === false || props.disabled || disable}
-          loc_id={loc_id}
         />
       )}
     />

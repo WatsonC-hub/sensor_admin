@@ -21,7 +21,7 @@ const RessourceSection = () => {
   return (
     <Layout setShow={setShow} deleteState={deleteState}>
       {show ? (
-        <Box display="flex" flexDirection="row" gap={1}>
+        <Box display="flex" flexDirection="row" gap={1} alignItems={'center'}>
           {!isMobile && (
             <IconButton
               color="primary"
@@ -31,7 +31,7 @@ const RessourceSection = () => {
                 deleteState('location.ressourcer');
               }}
             >
-              <RemoveCircleOutline />
+              <RemoveCircleOutline fontSize="small" />
             </IconButton>
           )}
           <RessourceForm />
@@ -45,7 +45,7 @@ const RessourceSection = () => {
               width: 'fit-content',
               backgroundColor: 'transparent',
               border: 'none',
-              px: 0.5,
+              px: 1,
               ':hover': {
                 backgroundColor: 'grey.200',
               },

@@ -245,6 +245,7 @@ const LocationAccessFormDialog = ({
         <Button
           onClick={() => {
             handleSubmit(handleSave, (error) => console.log(error))();
+            reset(initialLocationAccessData);
             setCreateNew(false);
           }}
           bttype="primary"

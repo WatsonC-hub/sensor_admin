@@ -32,6 +32,11 @@ type AddTimeseriesLocationData = {
   loc_name: string;
 };
 
+type VisibilityFormState = {
+  requires_auth: boolean;
+  hide_public: boolean;
+};
+
 type LocationFormState = {
   meta: CreateLocationData | AddTimeseriesLocationData;
   contacts?: ContactTable[];
@@ -71,6 +76,7 @@ export type TimeseriesPayload = {
   control_settings?: ControlSettingsFormState;
   sync?: SyncFormValues;
   unit?: AddUnitType;
+  visibility?: VisibilityFormState;
 };
 
 type LocationWithLocId = {

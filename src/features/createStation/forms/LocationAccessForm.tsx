@@ -19,22 +19,13 @@ const LocationAccessForm = () => {
     state.setState,
   ]);
 
-  const contactInfoMethods = useLocationAccessForm<AccessTable>({
+  const locationAccessMethods = useLocationAccessForm<AccessTable>({
     defaultValues: undefined,
     mode: 'add',
   });
 
   const onValidChange = (value: AccessTable[]) => {
     setLocationAccess('location.location_access', value);
-  };
-
-  const onEdit = (index: number, data?: AccessTable) => {
-    if (data) {
-      onValidChange(
-        location_access?.map((access: AccessTable, i: number) => (i === index ? data : access)) ??
-          []
-      );
-    }
   };
 
   const removeLocationAccess = (index: number) => {
@@ -47,14 +38,13 @@ const LocationAccessForm = () => {
       labelPosition={isMobile ? -22 : -20}
       sx={{width: '100%', p: 1}}
     >
-      <FormProvider {...contactInfoMethods}>
+      <FormProvider {...locationAccessMethods}>
         <Box width={'100%'} display={'flex'} flexDirection={'column'}>
           {location_access && location_access.length > 0 && (
             <SimpleLocationAccessList
               values={(location_access || []).map((item) => {
                 return {type: item.type, name: item.navn};
               })}
-              onEdit={onEdit}
               onRemove={removeLocationAccess}
             />
           )}
@@ -65,7 +55,7 @@ const LocationAccessForm = () => {
               width: 'fit-content',
               backgroundColor: 'transparent',
               border: 'none',
-              px: 0.5,
+              px: 1,
               ':hover': {
                 backgroundColor: 'grey.200',
               },
@@ -82,7 +72,9 @@ const LocationAccessForm = () => {
         {locationAccessDialogOpen && (
           <LocationAccessFormDialog
             openDialog={locationAccessDialogOpen}
-            setOpenDialog={setLocationAccessDialogOpen}
+            setOpenDialog={(close) => {
+              setLocationAccessDialogOpen(close);
+            }}
             handleSave={(data) => {
               onValidChange([...(location_access || []), data]);
               setLocationAccessDialogOpen(false);

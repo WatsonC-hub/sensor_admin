@@ -4,8 +4,8 @@ import React from 'react';
 import Button from '~/components/Button';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import FormFieldset from '~/components/formComponents/FormFieldset';
-import ControlSettingForm from '../forms/ControlSettingForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
+import VisibilityForm from '../forms/VisibilityForm';
 
 type Props = {
   uuid: string;
@@ -13,15 +13,15 @@ type Props = {
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ControlSettingSection = ({uuid, show, setShow}: Props) => {
+const VisibilitySection = ({uuid, show, setShow}: Props) => {
   const {isMobile} = useBreakpoints();
-  const [setState, control_settings, deleteState] = useCreateStationStore((state) => [
+  const [setState, visibility, deleteState] = useCreateStationStore((state) => [
     state.setState,
-    state.formState.timeseries?.[uuid]?.control_settings,
+    state.formState.timeseries?.[uuid]?.visibility,
     state.deleteState,
   ]);
 
-  const id = `timeseries.${uuid}.control_settings`;
+  const id = `timeseries.${uuid}.visibility`;
 
   return (
     <>
@@ -35,15 +35,15 @@ const ControlSettingSection = ({uuid, show, setShow}: Props) => {
                 startIcon={<RemoveCircleOutline color="primary" />}
                 onClick={() => {
                   setShow(false);
-                  deleteState(`timeseries.${uuid}.control_settings`);
+                  deleteState(`timeseries.${uuid}.visibility`);
                 }}
               >
                 <Typography variant="body2" color="grey.700">
-                  Kontrolhyppighed
+                  Tilgængelighed
                 </Typography>
               </Button>
             ) : (
-              'Kontrolhyppighed'
+              'Tilgængelighed'
             )
           }
           labelPosition={isMobile ? -22 : -20}
@@ -56,16 +56,16 @@ const ControlSettingSection = ({uuid, show, setShow}: Props) => {
                 size="small"
                 onClick={() => {
                   setShow(false);
-                  deleteState(`timeseries.${uuid}.control_settings`);
+                  deleteState(`timeseries.${uuid}.visibility`);
                 }}
               >
                 <RemoveCircleOutline fontSize="small" />
               </IconButton>
             )}
-            <ControlSettingForm
+            <VisibilityForm
               id={id}
-              control_settings={control_settings}
-              setValues={(value) => setState(`timeseries.${uuid}.control_settings`, value)}
+              visibility={visibility}
+              setValues={(value) => setState(`timeseries.${uuid}.visibility`, value)}
             />
           </Box>
         </FormFieldset>
@@ -89,7 +89,7 @@ const ControlSettingSection = ({uuid, show, setShow}: Props) => {
             }}
           >
             <Typography variant="body1" color="primary">
-              Tilføj kontrolhyppighed
+              Tilføj tilgængelighed
             </Typography>
           </Button>
         </Box>
@@ -98,4 +98,4 @@ const ControlSettingSection = ({uuid, show, setShow}: Props) => {
   );
 };
 
-export default ControlSettingSection;
+export default VisibilitySection;

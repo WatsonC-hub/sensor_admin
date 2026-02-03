@@ -32,7 +32,7 @@ const UnitSection = ({uuid, show, setShow, tstype_id}: UnitStepProps) => {
           sx={{
             width: 'fit-content',
             backgroundColor: 'transparent',
-            px: 0.5,
+            px: 1,
             border: 'none',
             ':hover': {
               backgroundColor: 'grey.200',
@@ -56,9 +56,10 @@ const UnitSection = ({uuid, show, setShow, tstype_id}: UnitStepProps) => {
           <Button
             bttype="borderless"
             sx={{p: 0, m: 0}}
-            startIcon={<RemoveCircleOutline color="primary" />}
+            startIcon={<RemoveCircleOutline color="primary" fontSize="small" />}
             onClick={() => {
               setShow(false);
+              deleteState(`timeseries.${uuid}.unit`);
             }}
           >
             <Typography variant="body2" color="grey.700">
@@ -72,27 +73,25 @@ const UnitSection = ({uuid, show, setShow, tstype_id}: UnitStepProps) => {
       labelPosition={isMobile ? -22 : -20}
       sx={{width: '100%', p: 1}}
     >
-      <Box display="flex" flexDirection="row" gap={1}>
+      <Box display="flex" flexDirection="row" gap={1} alignItems={'center'}>
         {!isMobile && (
-          <>
-            <IconButton
-              color="primary"
-              size="small"
-              onClick={() => {
-                setShow(false);
-                deleteState(`timeseries.${uuid}.unit`);
-              }}
-            >
-              <RemoveCircleOutline />
-            </IconButton>
-            <UnitForm
-              id={id}
-              unit={unit}
-              setValues={(values) => setState(`timeseries.${uuid}.unit`, values)}
-              tstype_id={tstype_id}
-            />
-          </>
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={() => {
+              setShow(false);
+              deleteState(`timeseries.${uuid}.unit`);
+            }}
+          >
+            <RemoveCircleOutline fontSize="small" />
+          </IconButton>
         )}
+        <UnitForm
+          id={id}
+          unit={unit}
+          setValues={(values) => setState(`timeseries.${uuid}.unit`, values)}
+          tstype_id={tstype_id}
+        />
       </Box>
     </FormFieldset>
   );

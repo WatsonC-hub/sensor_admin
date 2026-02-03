@@ -1,24 +1,23 @@
-import {Box, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
+import {Box} from '@mui/material';
 import {startCase} from 'lodash';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
 
-import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {initialContactData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
-import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
 import {ContactInfoType, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {ContactTable} from '~/types';
+import EditContactInfo from './EditContactInfo';
 
 type Props = {
   loc_id?: number;
@@ -204,8 +203,6 @@ const ContactInfoTable = ({loc_id}: Props) => {
     muiTablePaperProps: {},
     muiTableContainerProps: {},
     enableColumnPinning: true,
-    enableEditing: true,
-    editDisplayMode: 'modal',
     enableBottomToolbar: false,
     muiTableBodyRowProps: ({row, table}) => {
       return !isMobile
@@ -222,13 +219,7 @@ const ContactInfoTable = ({loc_id}: Props) => {
             },
           };
     },
-    renderEditRowDialogContent: () => {
-      return (
-        <Box py={4} px={2} boxShadow={6}>
-          <StationContactInfo isEditing={true} isUser={true} tableModal={true} />
-        </Box>
-      );
-    },
+
     onEditingRowCancel: () => {
       reset();
     },
@@ -298,28 +289,13 @@ const ContactInfoTable = ({loc_id}: Props) => {
         }}
       />
 
-      <Dialog
-        open={openContactInfoDialog}
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
-      >
-        <DialogTitle id="form-dialog-title">Ændre kontakt information</DialogTitle>
-        <DialogContent>
-          <StationContactInfo isEditing={true} isUser={isUser} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} bttype="tertiary">
-            Annuller
-          </Button>
-          <Button
-            disabled={Object.keys(dirtyFields).length === 0}
-            onClick={handleSubmit(handleSave, (error) => console.log(error))}
-            bttype="primary"
-          >
-            Ændre kontakt
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <EditContactInfo
+        openContactInfoDialog={openContactInfoDialog}
+        handleClose={handleClose}
+        handleSave={() => handleSubmit(handleSave, (e) => console.log(e))()}
+        isDisabled={Object.keys(dirtyFields).length === 0}
+        isUser={isUser}
+      />
       <MaterialReactTable table={table} />
     </Box>
   );

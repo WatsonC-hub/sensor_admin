@@ -32,9 +32,10 @@ const WatlevmpSection = ({show, setShow, index}: Props) => {
             <Button
               bttype="borderless"
               sx={{p: 0, m: 0}}
-              startIcon={<RemoveCircleOutline color="primary" />}
+              startIcon={<RemoveCircleOutline color="primary" fontSize="small" />}
               onClick={() => {
                 setShow(false);
+                deleteState(`timeseries.${index}.watlevmp`);
               }}
             >
               <Typography variant="body2" color="grey.700">
@@ -60,7 +61,7 @@ const WatlevmpSection = ({show, setShow, index}: Props) => {
                     deleteState(`timeseries.${index}.watlevmp`);
                   }}
                 >
-                  <RemoveCircleOutline />
+                  <RemoveCircleOutline fontSize="small" />
                 </IconButton>
               )}
             </Grid2>
@@ -86,7 +87,7 @@ const WatlevmpSection = ({show, setShow, index}: Props) => {
           width: 'fit-content',
           backgroundColor: 'transparent',
           border: 'none',
-          px: 0.5,
+          px: 1,
           ':hover': {
             backgroundColor: 'grey.200',
           },

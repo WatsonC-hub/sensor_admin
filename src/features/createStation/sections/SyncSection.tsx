@@ -36,6 +36,7 @@ const SyncSection = ({uuid, show, setShow, tstype_id}: Props) => {
               startIcon={<RemoveCircleOutline color="primary" />}
               onClick={() => {
                 setShow(false);
+                deleteState(`timeseries.${uuid}.sync`);
               }}
             >
               <Typography variant="body2" color="grey.700">
@@ -49,7 +50,7 @@ const SyncSection = ({uuid, show, setShow, tstype_id}: Props) => {
         labelPosition={isMobile ? -22 : -20}
         sx={{width: '100%', p: 1}}
       >
-        <Box display="flex" flexDirection="row" gap={1} alignItems="center">
+        <Box display="flex" flexDirection="row" gap={1} alignItems={'center'}>
           {!isMobile && (
             <IconButton
               color="primary"
@@ -59,7 +60,7 @@ const SyncSection = ({uuid, show, setShow, tstype_id}: Props) => {
                 deleteState(`timeseries.${uuid}.sync`);
               }}
             >
-              <RemoveCircleOutline />
+              <RemoveCircleOutline fontSize="small" />
             </IconButton>
           )}
           <Grid2 container size={12} spacing={1}>
@@ -87,7 +88,7 @@ const SyncSection = ({uuid, show, setShow, tstype_id}: Props) => {
           width: 'fit-content',
           backgroundColor: 'transparent',
           border: 'none',
-          px: 0.5,
+          px: 1,
           ':hover': {
             backgroundColor: 'grey.200',
           },
