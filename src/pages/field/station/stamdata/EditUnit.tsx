@@ -98,15 +98,17 @@ const EditUnit = () => {
             />
           </FormProvider>
         </Box>
+        <Box display="flex" justifyContent={'flex-end'}>
+          <FabWrapper
+            icon={<BuildRounded />}
+            text={fabText}
+            disabled={disabled}
+            onClick={() => (mode ? setOpenDialog(true) : setOpenAddUdstyr(true))}
+            sx={{visibility: openAddUdstyr || openDialog ? 'hidden' : 'visible'}}
+            showText={true}
+          />
+        </Box>
       </StationPageBoxLayout>
-      <FabWrapper
-        icon={<BuildRounded />}
-        text={fabText}
-        disabled={disabled}
-        onClick={() => (mode ? setOpenDialog(true) : setOpenAddUdstyr(true))}
-        sx={{visibility: openAddUdstyr || openDialog ? 'hidden' : 'visible'}}
-        showText={true}
-      />
     </>
   );
 };

@@ -99,26 +99,20 @@ export const useAlarm = () => {
 
   const post = useMutation({
     ...alarmPostOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['alarm', ts_id],
-      });
+    meta: {
+      invalidates: [['register']],
     },
   });
   const put = useMutation({
     ...alarmPutOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['alarm', ts_id],
-      });
+    meta: {
+      invalidates: [['register']],
     },
   });
   const del = useMutation({
     ...alarmDelOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['alarm', ts_id],
-      });
+    meta: {
+      invalidates: [['register']],
     },
   });
 
