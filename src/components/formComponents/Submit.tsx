@@ -7,7 +7,7 @@ type SubmitProps<T> = ButtonProps & {
   submit: (values: T) => void;
 };
 
-const Submit = <T extends FieldValues>({submit}: SubmitProps<T>) => {
+const Submit = <T extends FieldValues>({submit, ...rest}: SubmitProps<T>) => {
   const {
     handleSubmit,
     formState: {errors, isDirty},
@@ -18,7 +18,7 @@ const Submit = <T extends FieldValues>({submit}: SubmitProps<T>) => {
       bttype="primary"
       fullWidth={false}
       startIcon={<Save />}
-      disabled={Object.keys(errors).length > 0 || !isDirty}
+      disabled={Object.keys(errors).length > 0 || !isDirty || rest.disabled}
       onClick={handleSubmit(submit, (errors) => console.log('errors:', errors))}
     >
       Gem

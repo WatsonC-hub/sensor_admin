@@ -116,6 +116,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
       parameters: qaAlgorithm.parameter_values,
     });
   if (schemaData.success) defaultValues = schemaData.data;
+
   const formMethods = useForm<QaAlgorithmsPut>({
     resolver: zodResolver(schema),
     defaultValues: defaultValues,

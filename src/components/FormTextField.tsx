@@ -1,11 +1,11 @@
-import {TextField} from '@mui/material';
+import {TextField, TextFieldProps} from '@mui/material';
 import React from 'react';
 
-interface FormTextFieldProps {
-  value: string;
+type FormTextFieldProps = {
+  value: string | number;
   label: string;
   disabled: boolean;
-}
+} & TextFieldProps;
 
 const FormTextField = ({value, label, disabled, ...rest}: FormTextFieldProps) => {
   return (

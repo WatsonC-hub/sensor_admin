@@ -15,7 +15,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Chip,
   Stack,
   Typography,
   IconButton,
@@ -25,75 +24,105 @@ import {
 import PushPinIcon from '@mui/icons-material/PushPin';
 import EventIcon from '@mui/icons-material/Event';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {RestartAlt} from '@mui/icons-material';
+import {Check, Delete, Edit, RestartAlt} from '@mui/icons-material';
 import {ActivityRow, CommentRow, EventRow} from './types';
-import {useAllActivityOptions, usePinActivity} from './activityQueries';
+import {useActivityDelete, useAllActivityOptions, usePinActivity} from './activityQueries';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import dayjs from 'dayjs';
-import {useMemo} from 'react';
+import {useMemo, useState} from 'react';
+import AlertDialog from '~/components/AlertDialog';
 
-// -----------------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------------
+function HighlightText({text, query}: {text: string; query?: string}) {
+  if (!query) return <>{text}</>;
 
-// -----------------------------------------------------------------------------
-// Mock Data
-// -----------------------------------------------------------------------------
+  const q = query.toLowerCase();
+  const parts = text.split(new RegExp(`(${query})`, 'ig'));
 
-// const MOCK_DATA: ActivityRow[] = [
-//   {
-//     id: 'c1',
-//     kind: 'comment',
-//     scope: 'location',
-//     comment: 'Meget svært at tilgå om vinteren.',
-//     flags: [1],
-//     pinned: false,
-//     createdAt: '2026-01-12T09:15:00Z',
-//     createdBy: 'Alex',
-//   },
-//   {
-//     id: 'e1',
-//     kind: 'event',
-//     comment: 'Udstyr udskiftet',
-//     createdAt: '2026-01-10T14:00:00Z',
-//     createdBy: 'system',
-//     scope: 'timeseries',
-//   },
-//   {
-//     id: 'c2',
-//     kind: 'comment',
-//     scope: 'timeseries',
-//     comment: 'Data for denne tidsserie er meget ujævn pga. sporadisk sensorfejl.',
-//     flags: [1, 2],
-//     pinned: true,
-//     createdAt: '2026-01-10T08:30:00Z',
-//     createdBy: 'Maria',
-//   },
-//   {
-//     id: 'e2',
-//     kind: 'event',
-//     comment: 'Billede tilføjet til lokalitet',
-//     scope: 'location',
-//     createdAt: '2026-01-05T11:20:00Z',
-//     createdBy: 'Alex',
-//   },
-//   {
-//     id: 'c3',
-//     kind: 'comment',
-//     scope: 'location',
-//     comment: 'Adgang til lokaliteten kræver en 4x4 efter kraftig regn.',
-//     flags: [1, 2],
-//     pinned: false,
-//     createdAt: '2026-01-02T16:45:00Z',
-//     createdBy: 'Alex',
-//   },
-// ];
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === q ? (
+          <Box
+            key={i}
+            component="mark"
+            sx={{
+              backgroundColor: 'secondary.light',
+              color: 'secondary.contrastText',
+              px: 0.3,
+              borderRadius: 0.5,
+            }}
+          >
+            {part}
+          </Box>
+        ) : (
+          <React.Fragment key={i}>{part}</React.Fragment>
+        )
+      )}
+    </>
+  );
+}
+
+type FlagGridProps = {
+  flags: Record<string, string | number | null>;
+  search?: string;
+  activityOptions?: {id: number; label: string; description?: string}[];
+};
+
+function FlagGrid({flags, search, activityOptions}: FlagGridProps) {
+  const optionMap = useMemo(
+    () => new Map(activityOptions?.map((opt) => [opt.id, opt]) ?? []),
+    [activityOptions]
+  );
+
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: '1fr', // 📱 mobile
+          sm: 'minmax(80px, max-content) minmax(0, 1fr)', // 🖥️ desktop
+        },
+        columnGap: 2,
+        rowGap: 1,
+        mt: 1,
+      }}
+    >
+      {Object.entries(flags).map(([id, value]) => {
+        const option = optionMap.get(Number(id));
+        const label = option?.label ?? `Ukendt aktivitet (${id})`;
+
+        return (
+          <React.Fragment key={id}>
+            {/* Key */}
+            <TooltipWrapper description={option?.description || ''} withIcon={false}>
+              <Typography variant="body2" sx={{fontWeight: 500, color: 'text.secondary'}}>
+                <HighlightText text={label} query={search} />
+              </Typography>
+            </TooltipWrapper>
+
+            {/* Value */}
+            {value == null ? (
+              <Check color="action" sx={{width: 'fit-content'}} />
+            ) : (
+              <Typography variant="body2" sx={{whiteSpace: 'pre-wrap'}}>
+                <HighlightText text={String(value)} query={search} />
+              </Typography>
+            )}
+          </React.Fragment>
+        );
+      })}
+    </Box>
+  );
+}
 
 // -----------------------------------------------------------------------------
 // Column Definitions (logic-only, not visual)
 // -----------------------------------------------------------------------------
 
-const ActivityTableContext = React.createContext<MRT_TableInstance<ActivityRow> | null>(null);
+const ActivityTableContext = React.createContext<{
+  table: MRT_TableInstance<ActivityRow>;
+  handleDelete: (id: string) => void;
+} | null>(null);
 
 const useActivityTableContext = () => {
   const context = React.useContext(ActivityTableContext);
@@ -113,23 +142,25 @@ function CommentCard({row}: {row: MRT_Row<CommentRow>}) {
 
   const isPinned = row.original.pinned;
 
-  const table = useActivityTableContext();
+  const {table, handleDelete} = useActivityTableContext();
 
   const cells = row.getVisibleCells();
 
   const contentCell = cells.find((cell) => cell.column.id === 'content') as MRT_Cell<ActivityRow>;
 
   const search = table.getState().globalFilter;
+
   return (
-    <Card variant="outlined" sx={{borderColor: isPinned ? 'primary.main' : 'divider'}}>
+    <Card
+      variant="outlined"
+      sx={{
+        borderColor: isPinned ? 'primary.main' : 'divider',
+        minWidth: '200px',
+        maxWidth: '500px',
+      }}
+    >
       <CardHeader
-        title={
-          <Typography>
-            {row.original.scope === 'timeseries'
-              ? `Kommentar på tidsserie`
-              : 'Kommentar på lokalitet'}
-          </Typography>
-        }
+        title={<Typography>Tilsyn</Typography>}
         sx={{
           pb: 0,
           mb: 0,
@@ -141,36 +172,27 @@ function CommentCard({row}: {row: MRT_Row<CommentRow>}) {
           >{`${row.original.created_by} · ${convertDateWithTimeStamp(row.original.created_at)}`}</Typography>
         }
         action={
-          <IconButton size="small" onClick={() => mutation.mutate(row.original.id)}>
-            <PushPinIcon fontSize="small" color={isPinned ? 'primary' : 'disabled'} />
-          </IconButton>
+          <>
+            <IconButton size="small" onClick={() => mutation.mutate(row.original.id)}>
+              <PushPinIcon fontSize="small" color={isPinned ? 'primary' : 'disabled'} />
+            </IconButton>
+            <IconButton onClick={() => table.setEditingRow(row as MRT_Row<ActivityRow>)}>
+              <Edit />
+            </IconButton>
+            <IconButton onClick={() => handleDelete(row.original.id)}>
+              <Delete />
+            </IconButton>
+          </>
         }
       />
-      <CardContent sx={{pt: 0}}>
-        {row.original.flag_ids && (
-          <Stack direction="row" spacing={1} mt={1} flexWrap="wrap">
-            {row.original.flag_ids.map((id) => {
-              const option = activityOptions?.find((opt) => opt.id === id);
-              const val = option ? option.label : `Ukendt aktivitet (${id})`;
-              const isMatch = search && val.toLowerCase().includes(search.toLowerCase());
-              return (
-                <TooltipWrapper description={option?.description || ''} key={val} withIcon={false}>
-                  <Chip
-                    key={val}
-                    size="small"
-                    label={val}
-                    variant={isMatch ? 'filled' : 'outlined'}
-                    color={isMatch ? 'secondary' : 'default'}
-                  />
-                </TooltipWrapper>
-              );
-            })}
-          </Stack>
+      <Box sx={{py: 0, px: 2}}>
+        {row.original.flags && (
+          <FlagGrid flags={row.original.flags} activityOptions={activityOptions} search={search} />
         )}
         <Typography variant="body1" mt={2}>
           <MRT_TableBodyCellValue table={table} cell={contentCell} />
         </Typography>
-      </CardContent>
+      </Box>
     </Card>
   );
 }
@@ -233,10 +255,16 @@ function ActivityRowRenderer({row}: {row: MRT_Row<ActivityRow>}) {
 
 interface ActivityTimelineTableProps {
   data?: ActivityRow[];
+  setEditData?: (value: ActivityRow) => void;
 }
 
-export default function ActivityTimelineTable({data = []}: ActivityTimelineTableProps) {
+export default function ActivityTimelineTable({
+  data = [],
+  setEditData,
+}: ActivityTimelineTableProps) {
   const {data: activityOptions} = useAllActivityOptions();
+  const {mutate: deleteActivity} = useActivityDelete();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const columns = useMemo<MRT_ColumnDef<ActivityRow>[]>(
     () => [
       {
@@ -269,24 +297,17 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
         header: 'Flag',
         accessorFn: (row) =>
           row.kind === 'comment'
-            ? row.flag_ids
-                .map((id) => activityOptions?.find((opt) => opt.id === id)?.label)
+            ? Object.entries(row.flags)
+                .map(([id, value]) =>
+                  activityOptions
+                    ?.find((opt) => opt.id === Number(id))
+                    ?.label.concat('|', value ? value.toString() : '')
+                )
                 .join('|')
             : '',
         filterVariant: 'autocomplete',
       },
-      {
-        id: 'scope',
-        header: 'Område',
-        accessorKey: 'scope',
-        enableColumnFilter: true,
-        filterSelectOptions: [
-          {label: 'Lokation', value: 'location'},
-          {label: 'Tidsserie', value: 'timeseries'},
-        ],
-        filterVariant: 'multi-select',
-        filterFn: 'arrIncludesSome',
-      },
+
       {
         id: 'created_at',
         header: 'Oprettet den',
@@ -302,6 +323,11 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
     ],
     [activityOptions]
   );
+
+  const handleDelete = () => {
+    if (deleteId) deleteActivity(deleteId);
+  };
+
   const table = useMaterialReactTable({
     localization: MRT_Localization_DA,
     columns,
@@ -310,13 +336,15 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
     getRowId: (originalRow) => originalRow.id.toString(),
     enableGlobalFilter: true, // ← REQUIRED
     globalFilterFn: 'includesString',
-
     // enableRowPinning: true,
     enablePagination: false,
     enableSorting: true,
     enableHiding: false,
     enableColumnFilters: true,
-
+    onEditingRowChange: (updateOrValue) => {
+      if (typeof updateOrValue != 'function' && updateOrValue != undefined && setEditData)
+        setEditData(updateOrValue.original);
+    },
     initialState: {
       sorting: [
         // {id: 'pinned', desc: true},
@@ -364,8 +392,8 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
       </table> */}
 
       {/* Custom headless rendering */}
-      <Stack spacing={2} mt={2}>
-        <ActivityTableContext.Provider value={table}>
+      <Stack spacing={1} mt={2}>
+        <ActivityTableContext.Provider value={{table, handleDelete: setDeleteId}}>
           {topRows.map((row) => (
             <React.Fragment key={row.id}>
               <ActivityRowRenderer row={row} />
@@ -380,7 +408,13 @@ export default function ActivityTimelineTable({data = []}: ActivityTimelineTable
           ))}
         </ActivityTableContext.Provider>
       </Stack>
-
+      <AlertDialog
+        handleOpret={handleDelete}
+        open={deleteId != null}
+        setOpen={() => setDeleteId(null)}
+        title="Vil du slette tilsyn?"
+        message="Er du sikker på du vil slette?"
+      />
       {/* <MRT_BottomToolbar table={table} /> */}
     </Box>
   );

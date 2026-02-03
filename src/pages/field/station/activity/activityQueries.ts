@@ -38,9 +38,7 @@ const activityQueryOptions = (loc_id: number, ts_id?: number) =>
   queryOptions<ActivityRow[], APIError>({
     queryKey: queryKeys.Activity.activities(loc_id, ts_id),
     queryFn: async () => {
-      const {data} = await apiClient.get<ActivityRow[]>(
-        `/sensor_field/station/activity/${loc_id}/${ts_id ?? ''}`
-      );
+      const {data} = await apiClient.get<ActivityRow[]>(`/sensor_field/station/activity/${loc_id}`);
 
       return data;
     },
@@ -50,6 +48,14 @@ export const commentPostOptions: MutationOptions<unknown, APIError, ActivityPost
   mutationKey: ['activity_comment_post'],
   mutationFn: async (data: ActivityPost) => {
     const {data: res} = await apiClient.post(`/sensor_field/station/activity/`, data);
+    return res;
+  },
+};
+
+export const activityDeleteOptions: MutationOptions<unknown, APIError, string> = {
+  mutationKey: ['activity_comment_delete'],
+  mutationFn: async (id: string) => {
+    const {data: res} = await apiClient.delete(`/sensor_field/station/activity/${id}`);
     return res;
   },
 };
@@ -64,6 +70,18 @@ const useAllActivityOptions = () => {
 
 const useActivities = (loc_id: number, ts_id?: number) => {
   return useQuery(activityQueryOptions(loc_id, ts_id));
+};
+
+const useActivityDelete = () => {
+  return useMutation({
+    ...activityDeleteOptions,
+    onSuccess: () => {
+      toast.success('Aktivitet slettet');
+    },
+    meta: {
+      invalidates: [['activities']],
+    },
+  });
 };
 
 const useActivityPost = () => {
@@ -116,4 +134,11 @@ const usePinActivity = () => {
   });
 };
 
-export {useActivityOptions, useAllActivityOptions, useActivities, useActivityPost, usePinActivity};
+export {
+  useActivityOptions,
+  useActivityDelete,
+  useAllActivityOptions,
+  useActivities,
+  useActivityPost,
+  usePinActivity,
+};

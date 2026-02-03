@@ -2,12 +2,14 @@ import {Dayjs} from 'dayjs';
 import {z} from 'zod';
 import {zodDayjs} from '~/helpers/schemas';
 
+const FlagValues = z.union([z.string(), z.number(), z.null()]);
+
 const activitySchema = z.object({
   created_at: zodDayjs('Tidspunkt skal være udfyldt'),
   id: z.string().optional().default(''),
-  onTimeseries: z.preprocess((val) => val === 'true', z.boolean()).default(false),
   flag_ids: z.array(z.number()).optional().default([]),
-  comment: z.string().default(''),
+  flags: z.record(z.string(), FlagValues),
+  // comment: z.string().default(''),
 });
 
 export type ActivitySchemaType = z.infer<typeof activitySchema>;
@@ -15,8 +17,7 @@ export type ActivitySchemaType = z.infer<typeof activitySchema>;
 type BaseRow = {
   id: string;
   kind: 'comment' | 'event';
-  comment: string;
-  flag_ids?: Array<number>;
+  flags?: Record<number, number | string | null>;
   pinned?: boolean;
   scope: 'location' | 'timeseries';
   created_at: string;
@@ -25,14 +26,15 @@ type BaseRow = {
 
 export type CommentRow = BaseRow & {
   kind: 'comment';
-  flag_ids: Array<number>;
+  flags: Record<number, number | string | null>;
   pinned: boolean;
 };
 
 export type EventRow = BaseRow & {
   kind: 'event';
-  flag_ids?: never;
+  flags?: never;
   pinned?: never;
+  comment?: string;
 };
 
 export type ActivityRow = CommentRow | EventRow;
@@ -42,6 +44,7 @@ export type ActivityOption = {
   key: string;
   label: string;
   description: string;
+  input_type: 'number' | 'text' | 'null' | 'textarea';
 };
 
 export type ActivityPost = {
@@ -49,8 +52,7 @@ export type ActivityPost = {
   loc_id?: number;
   ts_id?: number;
   created_at: Dayjs;
-  flag_ids: number[];
-  comment: string;
+  flags: Record<number, number | string | null>;
 };
 
 export {activitySchema};
