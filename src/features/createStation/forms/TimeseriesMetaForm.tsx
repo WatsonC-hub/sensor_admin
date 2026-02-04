@@ -42,7 +42,7 @@ const TimeseriesMetaForm = ({uuid, setValues, setTstype}: TimeseriesMetaFormProp
   const tstype_id = watch('tstype_id');
 
   useEffect(() => {
-    setTstype(tstype_id);
+    if (tstype_id !== timeseries?.meta?.tstype_id) setTstype(tstype_id);
   }, [tstype_id]);
 
   useEffect(() => {
