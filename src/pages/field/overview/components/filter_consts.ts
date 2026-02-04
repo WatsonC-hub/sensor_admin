@@ -25,7 +25,7 @@ interface Filter {
   projects: Project[];
 }
 
-const defaultMapFilter = (superUser: boolean = false): Required<Filter> => ({
+const defaultMapFilter = (superUser?: boolean): Required<Filter> => ({
   freeText: '',
   borehole: {
     showHasControlProgram: true,
@@ -36,8 +36,9 @@ const defaultMapFilter = (superUser: boolean = false): Required<Filter> => ({
   locationFilter: locationFilterOptions
     .filter(
       (option) =>
-        (superUser && (option.name === 'Notifikationer' || option.name === 'Nyopsætninger')) ||
-        (!superUser &&
+        (superUser === true &&
+          (option.name === 'Notifikationer' || option.name === 'Nyopsætninger')) ||
+        (superUser === false &&
           (option.name === 'Fejlfri' ||
             option.name === 'Enkeltmålestationer' ||
             option.name === 'Notifikationer' ||

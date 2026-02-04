@@ -87,22 +87,25 @@ const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
           <Controller
             name="locationFilter"
             control={control}
-            render={({field: {onChange, value}}) => (
-              <LocationFilter
-                isParentClosed={isParentClosed}
-                value={value}
-                setValue={(value) => {
-                  onChange(value);
-                  handleSubmit(submit)();
-                }}
-                label="Vis lokationer der er/har"
-                disabled={
-                  filters.groups.length > 0 ||
-                  filters.projects.length > 0 ||
-                  filters.notificationTypes.length > 0
-                }
-              />
-            )}
+            render={({field: {onChange, value}}) => {
+              const unique = Array.from(new Set(value));
+              return (
+                <LocationFilter
+                  isParentClosed={isParentClosed}
+                  value={unique}
+                  setValue={(value) => {
+                    onChange(value);
+                    handleSubmit(submit)();
+                  }}
+                  label="Vis lokationer der er/har"
+                  disabled={
+                    filters.groups.length > 0 ||
+                    filters.projects.length > 0 ||
+                    filters.notificationTypes.length > 0
+                  }
+                />
+              );
+            }}
           />
         </Grid2>
         <Grid2 size={isMobile ? 12 : 6}>
