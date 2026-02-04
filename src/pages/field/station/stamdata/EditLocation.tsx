@@ -103,6 +103,7 @@ const EditLocation = () => {
             >
               <Button
                 bttype="danger"
+                disabled={location_permissions !== 'edit'}
                 startIcon={<Warning />}
                 onClick={() => setAssertDeletion(true)}
               >

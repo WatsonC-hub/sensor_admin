@@ -32,7 +32,7 @@ const DefaultTimeseriesEditForm = ({size, loc_name}: Props) => {
       </Grid2>
       {!metadata?.calculated && (
         <Grid2 size={size}>
-          <StamdataTimeseries.ScanCalypsoLabel />
+          <StamdataTimeseries.ScanCalypsoLabel disabled={disabled} />
         </Grid2>
       )}
     </Grid2>

@@ -10,6 +10,7 @@ import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useStationProgress} from '~/hooks/query/stationProgress';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 const SyncSchema = z
   .object({
@@ -43,7 +44,7 @@ type SynchronizationProps = {
 
 const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: SynchronizationProps) => {
   const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
-
+  const {location_permissions} = usePermissions(loc_id);
   const {
     get: {data: sync_data},
     post: postSync,
@@ -90,7 +91,7 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
     watch,
     setValue,
     trigger,
-    formState: {dirtyFields},
+    formState: {dirtyFields, isDirty},
   } = syncMethods;
 
   const syncDmp = watch('sync_dmp');
@@ -128,7 +129,11 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
         <Form formMethods={syncMethods} gridSizes={12}>
           {canSyncJupiter && (
             <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til Jupiter">
-              <Form.Checkbox name="jupiter" label="Jupiter" />
+              <Form.Checkbox
+                disabled={location_permissions !== 'edit'}
+                name="jupiter"
+                label="Jupiter"
+              />
             </TooltipWrapper>
           )}
           {isDmpAllowed && (
@@ -136,7 +141,7 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
               <Form.Checkbox
                 name="sync_dmp"
                 label="DMP"
-                disabled={sync_data?.sync_dmp}
+                disabled={sync_data?.sync_dmp || location_permissions !== 'edit'}
                 onChangeCallback={(value) => {
                   if (!value) trigger('owner_cvr');
                 }}
@@ -146,7 +151,7 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
                   select
                   name="owner_cvr"
                   label="Data ejer"
-                  disabled={!syncDmp || sync_data?.sync_dmp}
+                  disabled={!syncDmp || sync_data?.sync_dmp || location_permissions !== 'edit'}
                   placeholder="Vælg data ejer"
                   options={owners?.map((owner) => ({[owner.cvr]: owner.name + ` (${owner.cvr})`}))}
                   onChangeCallback={(value) => {
@@ -165,16 +170,15 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
           )}
 
           {!disabled && (
-            <Grid2
-              size={12}
-              sx={{alignSelf: 'end'}}
-              display="flex"
-              gap={1}
-              justifyContent="flex-end"
-            >
-              <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="sync" />
-              <Form.Cancel cancel={() => resetSync()} />
-              <Form.Submit submit={submit} />
+            <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+              <UpdateProgressButton
+                loc_id={loc_id}
+                disabled={isDirty || location_permissions !== 'edit'}
+                ts_id={ts_id}
+                progressKey="sync"
+              />
+              <Form.Cancel disabled={location_permissions !== 'edit'} cancel={() => resetSync()} />
+              <Form.Submit disabled={location_permissions !== 'edit'} submit={submit} />
             </Grid2>
           )}
         </Form>

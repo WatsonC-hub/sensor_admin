@@ -11,8 +11,6 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 import {Ressourcer} from './multiselect/types';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import {Box} from '@mui/material';
-import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 
 const Huskeliste = () => {
   const {isMobile} = useBreakpoints();
@@ -55,9 +53,6 @@ const Huskeliste = () => {
           }
         />
       </FormProvider>
-      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
-        <UpdateProgressButton loc_id={loc_id} ts_id={-1} progressKey="ressourcer" alterStyle />
-      </Box>
     </StationPageBoxLayout>
   );
 };

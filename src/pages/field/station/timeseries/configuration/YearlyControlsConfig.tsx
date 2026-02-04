@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, InputAdornment, Typography} from '@mui/material';
+import {Box, Grid2, InputAdornment, Typography} from '@mui/material';
 import React, {ChangeEvent} from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
@@ -15,6 +15,7 @@ import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useStationProgress} from '~/hooks/query/stationProgress';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 const yearlyControlsSchema = z.object({
   controls_per_year: z.number({required_error: 'Kontrol interval er påkrævet'}).nullable(),
@@ -45,11 +46,14 @@ const YearlyControlsConfig = () => {
 
   const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
   const {isMobile} = useBreakpoints();
+  const {location_permissions} = usePermissions(loc_id);
 
   const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'kontrolhyppighed', ts_id);
 
   const disabled =
-    (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser);
+    (values?.isCustomerService && superUser) ||
+    (!values?.isCustomerService && !superUser) ||
+    location_permissions !== 'edit';
 
   const formMethods = useForm<ServiceIntervalSubmit>({
     resolver: zodResolver(yearlyControlsSchema),
@@ -178,12 +182,12 @@ const YearlyControlsConfig = () => {
       </Box>
 
       {!disabled && (
-        <Box display="flex" justifyContent="flex-end" gap={1}>
+        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
           <UpdateProgressButton
             loc_id={loc_id}
             ts_id={ts_id}
             progressKey="kontrolhyppighed"
-            disabled={disabled}
+            disabled={disabled || isDirty}
           />
           <Button
             bttype="tertiary"
@@ -192,7 +196,7 @@ const YearlyControlsConfig = () => {
             }}
             disabled={isSubmitting || !isDirty}
           >
-            Annuller
+            <Typography variant="body2">Annuller</Typography>
           </Button>
           <Button
             bttype="primary"
@@ -204,9 +208,9 @@ const YearlyControlsConfig = () => {
             onClick={handleSubmit(onSubmit, (error) => console.log(error))}
             startIcon={<Save />}
           >
-            Gem
+            <Typography variant="body2">Gem</Typography>
           </Button>
-        </Box>
+        </Grid2>
       )}
     </FormProvider>
   );
