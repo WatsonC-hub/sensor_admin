@@ -14,11 +14,11 @@ import {FormContext} from './const';
 
 type FormRadioProps<T extends FieldValues> = {
   name: Path<T>;
-  label?: string;
+  label?: React.ReactNode;
   gridSizes?: GridBaseProps['size'];
   icon?: React.ReactNode;
   gridProps?: Grid2Props;
-  options: {value: string | number; label: string; icon?: React.ReactNode}[];
+  options: {value: string | number | boolean; label: string; icon?: React.ReactNode}[];
 } & Omit<RadioGroupProps, 'name' | 'value' | 'onChange'>;
 
 const FormRadio = <T extends FieldValues>({
@@ -34,7 +34,7 @@ const FormRadio = <T extends FieldValues>({
 
   return (
     <Grid2 {...gridProps} size={gridSizes ?? contextGridSizes}>
-      {label && <Box sx={{mb: 1, display: 'flex', alignItems: 'center'}}>{label}</Box>}
+      {label && <Box sx={{display: 'flex', alignItems: 'center'}}>{label}</Box>}
       <Controller
         name={name}
         control={control}
@@ -47,7 +47,7 @@ const FormRadio = <T extends FieldValues>({
           >
             {options.map((opt) => (
               <FormControlLabel
-                key={opt.value}
+                key={opt.label}
                 value={opt.value}
                 control={<Radio />}
                 label={<Box sx={{display: 'flex', alignItems: 'center'}}>{opt.label}</Box>}

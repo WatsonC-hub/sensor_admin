@@ -1,26 +1,31 @@
-import type {ButtonProps} from '@mui/material';
+import {useTheme, type ButtonProps} from '@mui/material';
 import MuiButton from '@mui/material/Button';
 import {merge} from 'lodash';
 
 interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
-  bttype: 'primary' | 'secondary' | 'tertiary' | 'link' | 'itinerary' | 'danger';
+  bttype: 'primary' | 'secondary' | 'tertiary' | 'link' | 'itinerary' | 'danger' | 'progress';
   children: React.ReactNode;
   target?: string;
 }
 
 const Button = ({bttype, children, ...props}: MyButtonProps) => {
+  const theme = useTheme();
+  const baseSx = {
+    textTransform: 'initial',
+    my: 0.5,
+    p: '0.5rem 1rem',
+    borderRadius: 9999,
+    '&:hover': {
+      filter: 'brightness(90%)',
+      transition: '0.3s',
+    },
+  };
   let sx = {};
   if (bttype === 'primary') {
     sx = {
-      textTransform: 'initial',
-      my: 0.5,
-      p: '0.5rem 1rem',
-      borderRadius: 9999,
+      ...baseSx,
       backgroundColor: 'primary.main',
       color: 'white',
-      '&:hover': {
-        backgroundColor: 'primary.dark',
-      },
       '&:disabled': {
         backgroundColor: 'grey.200',
       },
@@ -29,26 +34,28 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
 
   if (bttype === 'tertiary') {
     sx = {
-      textTransform: 'initial',
-      my: 0.5,
-      p: '0.5rem 1rem',
-      borderRadius: 9999,
+      ...baseSx,
       backgroundColor: '#ffffff',
       borderColor: '#cacaca',
-      '&:hover': {
-        filter: 'brightness(90%)',
-        transition: '0.3s',
-      },
     };
   }
 
   if (bttype === 'itinerary') {
     sx = {
-      textTransform: 'initial',
-      my: 0.5,
-      p: '0.25rem 1rem',
-      borderRadius: 9999,
+      ...baseSx,
       backgroundColor: 'white',
+      '&:disabled': {
+        backgroundColor: 'grey.200',
+      },
+    };
+  }
+
+  if (bttype === 'progress') {
+    sx = {
+      ...baseSx,
+      backgroundColor: theme.palette.info.main,
+      borderColor: theme.palette.info.main,
+      color: 'white',
       '&:disabled': {
         backgroundColor: 'grey.200',
       },
@@ -57,16 +64,10 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
 
   if (bttype === 'danger') {
     sx = {
-      textTransform: 'initial',
-      my: 0.5,
-      p: '0.5rem 1rem',
-      borderRadius: 9999,
+      ...baseSx,
       backgroundColor: '#d32f2f',
       borderColor: '#d32f2f',
       color: 'white',
-      '&:hover': {
-        backgroundColor: '#d32f2f',
-      },
       '&:disabled': {
         backgroundColor: 'grey.200',
       },

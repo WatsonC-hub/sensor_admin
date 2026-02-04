@@ -21,6 +21,7 @@ type Features = {
   ressources: boolean;
   routesAndParking: boolean;
   alarms: boolean;
+  stationProgress: boolean;
 };
 
 const defaultUser: UserAccessControl = {
@@ -36,6 +37,7 @@ const defaultUser: UserAccessControl = {
     ressources: false,
     routesAndParking: false,
     alarms: false,
+    stationProgress: false,
   },
   advancedTaskPermission: false,
   simpleTaskPermission: false,

@@ -28,6 +28,7 @@ const Huskeliste = () => {
     defaultValues: {
       ressourcer: result.success ? result.data : [],
     },
+    values: {ressourcer: result.data ?? []},
     mode: 'onSubmit',
   });
 

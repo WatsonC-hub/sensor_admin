@@ -33,15 +33,12 @@ const AlarmGroup = ({disableClearable = false}: AlarmGroupProps) => {
         }
       >
         <FormAutocomplete<AlarmsFormValues, AlarmGroupOptions, false>
-          labelKey="group_id"
+          labelKey="group_name"
+          valueKey="group_id"
           disabled={options === undefined || options.length === 0}
           name="group_id"
           options={options}
           disableClearable={disableClearable}
-          getOptionLabel={(o) => {
-            return o.group_name || '';
-          }}
-          label={'Lokationsgrupper*'}
           fullWidth
           gridSizes={12}
           textFieldsProps={{

@@ -34,6 +34,7 @@ declare module '@tanstack/react-query' {
   interface Register {
     mutationMeta: {
       invalidates?: Array<QueryKey | Array<keyof typeof tags>>;
+      optOutGeneralInvalidations?: boolean;
     };
   }
 }
@@ -75,6 +76,9 @@ const queryClient = new QueryClient({
     mutations: {
       retry: 0,
       networkMode: 'offlineFirst', // ensures they queue
+      meta: {
+        optOutGeneralInvalidations: false,
+      },
     },
   },
   mutationCache: new MutationCache({
@@ -88,16 +92,18 @@ const queryClient = new QueryClient({
           );
         },
       });
-      queryClient.invalidateQueries({
-        predicate: (query) => {
-          if (matchQuery({queryKey: ['map']}, query)) return true;
-          if (matchQuery({queryKey: ['borehole_map']}, query)) return true;
-          if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
-          if (matchQuery({queryKey: ['all_tasks']}, query)) return true;
 
-          return false;
-        },
-      });
+      if (mutation.meta?.optOutGeneralInvalidations != true)
+        queryClient.invalidateQueries({
+          predicate: (query) => {
+            if (matchQuery({queryKey: ['map']}, query)) return true;
+            if (matchQuery({queryKey: ['borehole_map']}, query)) return true;
+            if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
+            if (matchQuery({queryKey: ['all_tasks']}, query)) return true;
+
+            return false;
+          },
+        });
     },
     onError: (error) => {
       if (axios.isAxiosError(error)) {
