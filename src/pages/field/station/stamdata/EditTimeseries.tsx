@@ -127,7 +127,7 @@ const EditTimeseries = () => {
             onClick={() => {
               reset(defaultValues);
             }}
-            disabled={location_permissions !== 'edit'}
+            disabled={location_permissions !== 'edit' || !isDirty}
           >
             Annuller
           </Button>

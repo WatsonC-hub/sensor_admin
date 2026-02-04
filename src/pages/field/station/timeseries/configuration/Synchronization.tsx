@@ -8,6 +8,8 @@ import {useAppContext} from '~/state/contexts';
 import {Box, Grid2} from '@mui/material';
 import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 
 const SyncSchema = z
   .object({
@@ -36,10 +38,11 @@ const Form = createTypedForm<SyncFormValues>();
 type SynchronizationProps = {
   canSyncJupiter?: boolean;
   isDmpAllowed?: boolean;
+  disabled?: boolean;
 };
 
-const Synchronization = ({canSyncJupiter, isDmpAllowed}: SynchronizationProps) => {
-  const {ts_id} = useAppContext(['ts_id']);
+const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: SynchronizationProps) => {
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
 
   const {
     get: {data: sync_data},
@@ -80,6 +83,8 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed}: SynchronizationProps) =
     },
   });
 
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'sync', ts_id);
+
   const {
     reset: resetSync,
     watch,
@@ -106,7 +111,11 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed}: SynchronizationProps) =
       },
     };
 
-    postSync.mutate(syncPayload);
+    postSync.mutate(syncPayload, {
+      onSuccess: () => {
+        if (needsProgress) hasAssessed();
+      },
+    });
 
     if (data.sync_dmp == false && dirtyFields.sync_dmp !== undefined) {
       deleteSync.mutate({path: ts_id.toString()});
@@ -155,10 +164,19 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed}: SynchronizationProps) =
             </>
           )}
 
-          <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">
-            <Form.Cancel cancel={() => resetSync()} />
-            <Form.Submit submit={submit} />
-          </Grid2>
+          {!disabled && (
+            <Grid2
+              size={12}
+              sx={{alignSelf: 'end'}}
+              display="flex"
+              gap={1}
+              justifyContent="flex-end"
+            >
+              <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="sync" />
+              <Form.Cancel cancel={() => resetSync()} />
+              <Form.Submit submit={submit} />
+            </Grid2>
+          )}
         </Form>
       )}
     </Box>
