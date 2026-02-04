@@ -115,7 +115,7 @@ const EditTimeseries = () => {
               <Button
                 bttype="danger"
                 startIcon={<Warning />}
-                disabled={metadata?.calculated}
+                disabled={metadata?.calculated || location_permissions !== 'edit'}
                 onClick={() => setAssertDeletion(true)}
               >
                 Slet tidsserie

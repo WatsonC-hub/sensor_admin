@@ -56,6 +56,9 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
       backgroundColor: theme.palette.info.main,
       borderColor: theme.palette.info.main,
       color: 'white',
+      '&:disabled': {
+        backgroundColor: 'grey.200',
+      },
     };
   }
 
