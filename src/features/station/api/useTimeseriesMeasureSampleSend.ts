@@ -56,7 +56,8 @@ export const useTimeseriesMeasureSampleSendMutation = (ts_id: number) => {
       toast.success('Konfiguration gemt');
     },
     meta: {
-      invalidates: [['measure_sample_send']],
+      invalidates: [queryKeys.Timeseries.MeasureSampleSend(ts_id)],
+      optOutGeneralInvalidations: true,
     },
   });
 };

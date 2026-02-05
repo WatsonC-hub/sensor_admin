@@ -30,7 +30,7 @@ export const queryKeys = {
     metadata: (ts_id: number | undefined) => ['metadata', ts_id] as const,
     allPejling: () => ['kontrol', 'watlevmp'] as const,
     pejling: (ts_id: number | undefined) => ['kontrol', 'watlevmp', ts_id] as const,
-    tilsyn: (ts_id: number) => ['service', 'udstyr', ts_id] as const,
+    tilsyn: (ts_id: number | undefined) => ['service', 'udstyr', ts_id] as const,
     maalepunkt: (ts_id: number | undefined) => ['watlevmp', ts_id] as const,
     unitHistory: (ts_id: number | undefined) => ['udstyr', ts_id] as const,
     algorithms: (ts_id: number) => ['algorithms', ts_id] as const,
@@ -51,6 +51,7 @@ export const queryKeys = {
     MeasureSampleSend: (ts_id: number) => ['measure_sample_send', 'udstyr', ts_id] as const,
     ServiceInterval: (ts_id: number) => ['service_interval', 'udstyr', ts_id] as const,
     SyncData: (ts_id: number) => ['sync', ts_id] as const,
+    AlarmList: (ts_id: number | undefined) => ['alarm', ts_id] as const,
   },
   Borehole: {
     stamdata: (boreholeno: string | undefined | null, intakeno: number | undefined) =>

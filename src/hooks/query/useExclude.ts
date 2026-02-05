@@ -3,6 +3,7 @@ import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {rerunToast} from '~/helpers/toasts';
 import {useAppContext} from '~/state/contexts';
 
@@ -78,7 +79,7 @@ export const useExclude = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['removed_data']],
+      invalidates: [queryKeys.Timeseries.removedData(ts_id)],
     },
   });
 
@@ -91,7 +92,7 @@ export const useExclude = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['removed_data']],
+      invalidates: [queryKeys.Timeseries.removedData(ts_id)],
     },
   });
 
@@ -104,7 +105,7 @@ export const useExclude = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['removed_data']],
+      invalidates: [queryKeys.Timeseries.removedData(ts_id)],
     },
   });
 

@@ -57,6 +57,7 @@ export const useTaskHistory = (task_id: string) => {
     ...taskCommentPostOptions,
     meta: {
       invalidates: [queryKeys.Tasks.taskHistory(task_id)],
+      optOutGeneralInvalidations: true,
     },
   });
   const editTaskComment = useMutation({
@@ -71,6 +72,7 @@ export const useTaskHistory = (task_id: string) => {
     },
     meta: {
       invalidates: [queryKeys.Tasks.taskHistory(task_id)],
+      optOutGeneralInvalidations: true,
     },
   });
   const deleteTaskComment = useMutation({
@@ -80,6 +82,7 @@ export const useTaskHistory = (task_id: string) => {
     },
     meta: {
       invalidates: [queryKeys.Tasks.taskHistory(task_id)],
+      optOutGeneralInvalidations: true,
     },
   });
   return {get, addTaskComment, editTaskComment, deleteTaskComment};

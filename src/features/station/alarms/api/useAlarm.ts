@@ -4,6 +4,7 @@ import {useAppContext} from '~/state/contexts';
 import {AlarmNotificationType, AlarmHistory, AlarmTableType} from '../types';
 import {APIError, queryClient} from '~/queryClient';
 import {AlarmsFormValues} from '../schema';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 interface AlarmBase {
   path: string;
@@ -100,19 +101,22 @@ export const useAlarm = () => {
   const post = useMutation({
     ...alarmPostOptions,
     meta: {
-      invalidates: [['alarm']],
+      invalidates: [queryKeys.Timeseries.AlarmList(ts_id)],
+      optOutGeneralInvalidations: true,
     },
   });
   const put = useMutation({
     ...alarmPutOptions,
     meta: {
-      invalidates: [['alarm']],
+      invalidates: [queryKeys.Timeseries.AlarmList(ts_id)],
+      optOutGeneralInvalidations: true,
     },
   });
   const del = useMutation({
     ...alarmDelOptions,
     meta: {
-      invalidates: [['alarm']],
+      invalidates: [queryKeys.Timeseries.AlarmList(ts_id)],
+      optOutGeneralInvalidations: true,
     },
   });
 
