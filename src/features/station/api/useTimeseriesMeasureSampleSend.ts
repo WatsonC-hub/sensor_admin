@@ -20,9 +20,9 @@ export type Configuration = {
   currentPendingTimeseries: string | null;
 };
 
-export const timeseriesMeasureSampleSendOptions = (ts_id: number) =>
+export const timeseriesMeasureSampleSendOptions = (ts_id: number | undefined) =>
   queryOptions<Configuration, APIError>({
-    queryKey: queryKeys.Timeseries.MeasureSampleSend(ts_id!),
+    queryKey: queryKeys.Timeseries.MeasureSampleSend(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<Configuration>(
         `/sensor_field/configuration/sample_send/${ts_id}`
@@ -32,7 +32,7 @@ export const timeseriesMeasureSampleSendOptions = (ts_id: number) =>
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-export const useTimeseriesMeasureSampleSend = (ts_id: number) => {
+export const useTimeseriesMeasureSampleSend = (ts_id: number | undefined) => {
   const {data: timeseriesData} = useTimeseriesData(ts_id);
   const {
     features: {iotAccess},

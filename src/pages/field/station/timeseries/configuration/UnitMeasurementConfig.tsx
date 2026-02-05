@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, Typography, TextField, InputAdornment, Alert} from '@mui/material';
+import {Box, Typography, TextField, InputAdornment, Alert, Grid2} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
@@ -20,6 +20,9 @@ import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useUser} from '~/features/auth/useUser';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import dayjs from 'dayjs';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {useStationProgress} from '~/hooks/query/stationProgress';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
@@ -69,6 +72,8 @@ const UnitMeasurementConfig = () => {
   const {superUser} = useUser();
   const values = data?.savedConfig ? data.savedConfig : undefined;
 
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'samplesend', ts_id);
+
   const formMethods = useForm<ConfigForm, unknown, ConfigSubmit>({
     resolver: zodResolver(ConfigurationSchema),
     defaultValues: {
@@ -77,6 +82,14 @@ const UnitMeasurementConfig = () => {
     },
     values: values,
   });
+
+  const {location_permissions} = usePermissions(loc_id);
+
+  const disabled =
+    !data?.configPossible ||
+    (currentLocation?.is_customer_service && superUser) ||
+    (!currentLocation?.is_customer_service && !superUser) ||
+    location_permissions !== 'edit';
 
   const {
     handleSubmit,
@@ -180,7 +193,13 @@ const UnitMeasurementConfig = () => {
       <ConfigAlert
         status={data?.configState || null}
         timeseriesStatus={data?.currentPendingTimeseries || null}
-        handleResend={handleSubmit((data) => mutate(data))}
+        handleResend={handleSubmit((data) =>
+          mutate(data, {
+            onSuccess: () => {
+              if (needsProgress) hasAssessed();
+            },
+          })
+        )}
       />
       <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} mb={-3}>
         <FormInput
@@ -211,11 +230,7 @@ const UnitMeasurementConfig = () => {
               formMethods.setValue('sendInterval', undefined);
             }
           }}
-          disabled={
-            !data?.configPossible ||
-            (currentLocation?.is_customer_service && superUser) ||
-            (!currentLocation?.is_customer_service && !superUser)
-          }
+          disabled={disabled}
           slotProps={{
             input: {
               startAdornment: <InputAdornment position="start">hvert</InputAdornment>,
@@ -256,24 +271,37 @@ const UnitMeasurementConfig = () => {
         Forventet tidspunkt for omkonfigurering {configChange ? configChange : 'ukendt'}
       </Typography>
 
-      <Box display="flex" justifyContent="flex-end">
-        <Button
-          bttype="tertiary"
-          onClick={() => reset()}
-          disabled={isSubmitting || !data?.configPossible}
-        >
-          Annuller
-        </Button>
-        <Button
-          bttype="primary"
-          disabled={isSubmitting || !data?.configPossible || !isDirty}
-          onClick={handleSubmit((data) => mutate(data))}
-          startIcon={<Save />}
-          sx={{marginLeft: 1}}
-        >
-          Gem
-        </Button>
-      </Box>
+      {!disabled && (
+        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+          <UpdateProgressButton
+            loc_id={loc_id}
+            ts_id={ts_id}
+            progressKey="samplesend"
+            disabled={disabled || isDirty}
+          />
+          <Button
+            bttype="tertiary"
+            onClick={() => reset()}
+            disabled={isSubmitting || !isDirty || disabled}
+          >
+            <Typography variant="body2">Annuller</Typography>
+          </Button>
+          <Button
+            bttype="primary"
+            disabled={isSubmitting || !isDirty || disabled}
+            onClick={handleSubmit((data) =>
+              mutate(data, {
+                onSuccess: () => {
+                  if (needsProgress) hasAssessed();
+                },
+              })
+            )}
+            startIcon={<Save />}
+          >
+            <Typography variant="body2">Gem</Typography>
+          </Button>
+        </Grid2>
+      )}
     </FormProvider>
   );
 };

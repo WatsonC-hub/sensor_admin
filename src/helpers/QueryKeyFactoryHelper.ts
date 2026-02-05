@@ -48,7 +48,8 @@ export const queryKeys = {
     edgeDates: (ts_id: number | undefined) => ['all_range', 'kontrol', ts_id] as const,
     graphData: (ts_id: number | undefined, xRange: Array<Dayjs>) =>
       ['graphData', 'kontrol', ts_id, xRange] as const,
-    MeasureSampleSend: (ts_id: number) => ['measure_sample_send', 'udstyr', ts_id] as const,
+    MeasureSampleSend: (ts_id: number | undefined) =>
+      ['measure_sample_send', 'udstyr', ts_id] as const,
     ServiceInterval: (ts_id: number) => ['service_interval', 'udstyr', ts_id] as const,
     SyncData: (ts_id: number) => ['sync', ts_id] as const,
     AlarmList: (ts_id: number | undefined) => ['alarm', ts_id] as const,
@@ -122,4 +123,6 @@ export const queryKeys = {
   actions: (unit_uuid: string | undefined) => ['actions', unit_uuid] as const,
   cmdOptions: () => ['cmd_options'] as const,
   dmpAllowedMapList: () => ['dmp_allowed_map_list'] as const,
+  metadataProgress: (loc_id: number | undefined, ts_id: number | undefined) =>
+    ['metadata_progress', 'register', 'metadata', loc_id, ts_id] as const,
 };

@@ -18,7 +18,7 @@ import {toast} from 'react-toastify';
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
 import {useMapUtilityStore, mapUtilityStore} from '~/state/store';
-import {BoreholeMapData, LeafletMapRoute, Parking, PartialBy} from '~/types';
+import {BoreholeMapData, Parking, PartialBy} from '~/types';
 import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
 
 import {
@@ -28,12 +28,13 @@ import {
   zoomThreshold,
   zoomAtom,
   panAtom,
-  routeStyle,
+  drawStyle,
   utm,
   parkingIcon,
   hightlightParkingIcon,
   markerNumThreshold,
   defaultMapBox,
+  routeStyle,
 } from '../mapConsts';
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
@@ -265,16 +266,12 @@ const useMap = <TData extends object>(
     setPan(map.getCenter());
 
     const layer = markerLayerRef.current;
-    // if (!layer) return;
 
     const parkingLayer = parkingLayerRef.current;
-    // if (!parkingLayer) return;
 
     const geoJsonLayer = geoJsonRef.current;
-    // if (!geoJsonLayer) return;
 
     const tooltipLayer = tooltipRef.current;
-    // if (!tooltipLayer) return;
 
     if (geoJsonLayer) {
       if (zoom > zoomThresholdForParking && leafletMapRoutes && leafletMapRoutes.length > 0) {
@@ -347,37 +344,41 @@ const useMap = <TData extends object>(
       });
       if (mapRef && mapRef.current && data.length > 0 && zoom > zoomThresholdForParking) {
         if (leafletMapRoutes && leafletMapRoutes.length > 0) {
-          leafletMapRoutes.forEach((route: LeafletMapRoute) => {
-            if (active_loc_ids.includes(route.geo_route.loc_id)) {
-              const geo = L.geoJSON(route.geo_route, {
-                onEachFeature: function onEachFeature(feature, layer) {
-                  layer.bindContextMenu({
-                    contextmenu: routesAndParking,
-                    contextmenuInheritItems: false,
-                    contextmenuItems: [
-                      {
-                        text: 'Slet rute',
-                        callback: () => {
-                          setDeleteId(route.geo_route.route_id);
-                          setEditRouteLayer(route.geo_route.loc_id);
-                          setDisplayDelete(true);
-                          setType('rute');
-                          setDeleteTitle('Er du sikker på at du vil slette denne rute?');
-                        },
-                        icon: '/mapRoute.png',
-                      },
-                      {text: 'divider', separator: true},
-                      ...items.slice(2),
-                    ],
-                  });
-                },
+          const geo = L.geoJSON(leafletMapRoutes, {
+            style: routeStyle,
+            filter: (feature) => {
+              return active_loc_ids.includes(feature.properties.loc_id);
+            },
+            onEachFeature: function onEachFeature(feature, layer) {
+              if (feature.properties.comment != null)
+                layer.bindTooltip(feature.properties.comment, {
+                  permanent: true,
+                  direction: 'center',
+                });
+              layer.bindContextMenu({
+                contextmenu: routesAndParking,
+                contextmenuInheritItems: false,
+                contextmenuItems: [
+                  {
+                    text: 'Slet rute',
+                    callback: () => {
+                      setDeleteId(feature.properties.id);
+                      setEditRouteLayer(feature.properties.loc_id);
+                      setDisplayDelete(true);
+                      setType('rute');
+                      setDeleteTitle('Er du sikker på at du vil slette denne rute?');
+                    },
+                    icon: '/mapRoute.png',
+                  },
+                  {text: 'divider', separator: true},
+                  ...items.slice(2),
+                ],
               });
-              if (geoJsonRef && geoJsonRef.current) {
-                geo.addTo(geoJsonRef.current);
-              }
-            }
+            },
           });
-          geoJsonRef.current.setStyle(routeStyle);
+          if (geoJsonRef && geoJsonRef.current) {
+            geo.addTo(geoJsonRef.current);
+          }
         }
       }
     }
@@ -586,11 +587,11 @@ const useMap = <TData extends object>(
     tooltipRef.current = L.featureGroup();
     geoJsonRef.current = L.featureGroup().addTo(mapRef.current);
 
-    geoJsonRef.current?.setStyle(routeStyle);
+    // geoJsonRef.current?.setStyle(routeStyle);
     mapRef.current?.pm.setGlobalOptions({
       snappable: true,
       snapDistance: 5,
-      pathOptions: routeStyle,
+      pathOptions: drawStyle,
     });
 
     setDoneRendering(true);
@@ -691,7 +692,6 @@ const useMap = <TData extends object>(
       deleteTitle,
       displayDelete,
       setDisplayDelete,
-      deleteParkering,
       deleteRoute,
       deleteParking,
       setDeleteTitle,
