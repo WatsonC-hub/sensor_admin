@@ -1,11 +1,13 @@
-import React from 'react';
-import {Box, IconButton, Typography} from '@mui/material';
+import React, {useState} from 'react';
+import {Box, Dialog, DialogContent, DialogTitle, IconButton, Typography} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import Button from '~/components/Button';
 import UnitForm from '../forms/UnitForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
+import {useUnit} from '~/features/stamdata/api/useAddUnit';
+import dayjs from 'dayjs';
 
 type UnitStepProps = {
   uuid: string;
@@ -16,12 +18,24 @@ type UnitStepProps = {
 
 const UnitSection = ({uuid, show, setShow, tstype_id}: UnitStepProps) => {
   const {isMobile} = useBreakpoints();
+  const [open, setOpen] = useState(false);
   const [unit, setState, deleteState] = useCreateStationStore((state) => [
     state.formState.timeseries?.[uuid].unit,
     state.setState,
     state.deleteState,
   ]);
-  const id = `timeseries.${uuid}.unit`;
+
+  const {
+    get: {data: availableUnits},
+  } = useUnit();
+
+  const uniqueUnit = availableUnits?.find(
+    (data) =>
+      data.sensortypeid === tstype_id &&
+      (data.calypso_id.toString() === unit?.calypso_id || data.terminal_id === unit?.calypso_id)
+  );
+
+  const sensor_id = `${uniqueUnit?.signal_id} - ${uniqueUnit?.sensortypename}`;
 
   if (!show)
     return (
@@ -40,6 +54,7 @@ const UnitSection = ({uuid, show, setShow, tstype_id}: UnitStepProps) => {
           }}
           onClick={() => {
             setShow(true);
+            setOpen(true);
           }}
         >
           <Typography variant="body1" color="primary">
@@ -86,13 +101,33 @@ const UnitSection = ({uuid, show, setShow, tstype_id}: UnitStepProps) => {
             <RemoveCircleOutline fontSize="small" />
           </IconButton>
         )}
-        <UnitForm
-          id={id}
-          unit={unit}
-          setValues={(values) => setState(`timeseries.${uuid}.unit`, values)}
-          tstype_id={tstype_id}
-        />
+        {unit && (
+          <Box display={'flex'} flexDirection={'column'} gap={1}>
+            <Typography>Calypso ID: {unit?.calypso_id}</Typography>
+            <Typography>Sensor ID: {sensor_id}</Typography>
+            <Typography>
+              Start dato: {unit?.startdate && dayjs(unit.startdate).format('LLL')}
+            </Typography>
+          </Box>
+        )}
       </Box>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>Tilføj udstyr</DialogTitle>
+        <DialogContent>
+          <UnitForm
+            unit={unit}
+            onClose={() => {
+              setOpen(false);
+              setShow(false);
+            }}
+            setValues={(values) => {
+              setState(`timeseries.${uuid}.unit`, values);
+              setOpen(false);
+            }}
+            tstype_id={tstype_id}
+          />
+        </DialogContent>
+      </Dialog>
     </FormFieldset>
   );
 };

@@ -75,23 +75,6 @@ const SLAConfiguration = () => {
           }}
           fullWidth
         />
-
-        {/* <FormInput
-          name="lead_time"
-          label="Forvarselstid"
-          type="number"
-          disabled={
-            (values?.isCustomerService && user?.superUser) ||
-            (!values?.isCustomerService && !user?.superUser)
-          }
-          fullWidth
-          slotProps={{
-            input: {
-              startAdornment: <InputAdornment position="start">Indenfor</InputAdornment>,
-              endAdornment: <InputAdornment position="end">dage før kontrol</InputAdornment>,
-            },
-          }}
-        /> */}
       </Box>
 
       <Box display="flex" justifyContent="flex-end">

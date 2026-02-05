@@ -12,7 +12,6 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 import ControlSettingSection from '../sections/ControlSettingSection';
 import SyncSection from '../sections/SyncSection';
 import UnitSection from '../sections/UnitSection';
-import VisibilitySection from '../sections/VisibilitySection';
 
 type Props = {
   index: string;
@@ -31,16 +30,15 @@ const TimeseriesEditor = ({index, onRemove}: Props) => {
   const [showControlSettings, setShowControlSettings] = useState(!!timeseries.control_settings);
   const [showSync, setShowSync] = useState(!!timeseries.sync);
   const [showUnit, setShowUnit] = useState(!!timeseries.unit);
-  const [showVisibility, setShowVisibility] = useState(!!timeseries.visibility);
 
-  const tstype_id = timeseries.meta?.tstype_id;
+  const meta_tstype_id = timeseries.meta?.tstype_id;
 
   const {data: dmpAllowedList} = useDMPAllowedList();
 
   const {isMobile} = useBreakpoints();
 
   const isSyncAllowed = isSynchronizationAllowed(
-    tstype_id,
+    meta_tstype_id,
     location_meta?.loctype_id,
     dmpAllowedList
   );
@@ -56,36 +54,43 @@ const TimeseriesEditor = ({index, onRemove}: Props) => {
           setState(`timeseries.${index}.meta.tstype_id`, tstype_id);
           deleteState(`timeseries.${index}.unit`);
           deleteState(`timeseries.${index}.watlevmp`);
-          if (showWatlevmp) setShowWatlevmp(false);
+          if (tstype_id !== meta_tstype_id) {
+            setShowWatlevmp(true);
+            setShowControlSettings(true);
+          }
         }}
       />
 
-      <VisibilitySection uuid={index} show={showVisibility} setShow={setShowVisibility} />
+      {meta_tstype_id && (
+        <>
+          {meta_tstype_id === 1 && (
+            <WatlevmpSection index={index} show={showWatlevmp} setShow={setShowWatlevmp} />
+          )}
 
-      <ControlSettingSection
-        uuid={index}
-        show={showControlSettings}
-        setShow={setShowControlSettings}
-      />
+          <UnitSection
+            key={meta_tstype_id}
+            uuid={index}
+            tstype_id={meta_tstype_id}
+            show={showUnit}
+            setShow={setShowUnit}
+          />
 
-      {tstype_id && (
-        <UnitSection
-          key={tstype_id}
-          uuid={index}
-          tstype_id={tstype_id}
-          show={showUnit}
-          setShow={setShowUnit}
-        />
+          <ControlSettingSection
+            uuid={index}
+            show={showControlSettings}
+            setShow={setShowControlSettings}
+          />
+
+          {isSyncAllowed && (
+            <SyncSection
+              uuid={index}
+              show={showSync}
+              setShow={setShowSync}
+              tstype_id={meta_tstype_id}
+            />
+          )}
+        </>
       )}
-
-      {tstype_id === 1 && (
-        <WatlevmpSection index={index} show={showWatlevmp} setShow={setShowWatlevmp} />
-      )}
-
-      {isSyncAllowed && (
-        <SyncSection uuid={index} show={showSync} setShow={setShowSync} tstype_id={tstype_id} />
-      )}
-
       <Grid2
         size={isMobile ? 12 : 1}
         alignContent={'center'}

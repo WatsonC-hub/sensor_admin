@@ -7,7 +7,6 @@ import {useForm} from 'react-hook-form';
 
 const schema = z.object({
   requires_auth: z.boolean(),
-  hide_public: z.boolean(),
 });
 
 type Form = z.infer<typeof schema>;
@@ -15,12 +14,11 @@ type Form = z.infer<typeof schema>;
 const Form = createTypedForm<Form>();
 
 type VisibilityFormProps = {
-  id: string;
   visibility?: Form;
   setValues: (values: Form) => void;
 };
 
-const VisibilityForm = ({id, visibility, setValues}: VisibilityFormProps) => {
+const VisibilityForm = ({visibility, setValues}: VisibilityFormProps) => {
   const [registerSubmitter, removeSubmitter] = useCreateStationStore((state) => [
     state.registerSubmitter,
     state.removeSubmitter,
@@ -29,14 +27,13 @@ const VisibilityForm = ({id, visibility, setValues}: VisibilityFormProps) => {
     resolver: zodResolver(schema),
     defaultValues: visibility ?? {
       requires_auth: false,
-      hide_public: false,
     },
   });
 
   const {handleSubmit} = methods;
 
   useEffect(() => {
-    registerSubmitter(id, async () => {
+    registerSubmitter('location.visibility', async () => {
       let valid: boolean = false;
       await handleSubmit((values) => {
         setValues(values);
@@ -45,13 +42,12 @@ const VisibilityForm = ({id, visibility, setValues}: VisibilityFormProps) => {
       return valid;
     });
 
-    return () => removeSubmitter(id);
+    return () => removeSubmitter('location.visibility');
   }, [handleSubmit]);
 
   return (
     <Form gridSizes={12} formMethods={methods}>
       <Form.Checkbox name="requires_auth" label="Data tilgængelighed kræver login" />
-      <Form.Checkbox name="hide_public" label="Skjul i offentlige visninger" />
     </Form>
   );
 };

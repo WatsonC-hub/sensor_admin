@@ -1,23 +1,23 @@
-import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
-import {Box, IconButton, Typography} from '@mui/material';
+import {RemoveCircleOutline, AddCircleOutline} from '@mui/icons-material';
+import {Typography, Box, IconButton} from '@mui/material';
 import React from 'react';
-import Button from '~/components/Button';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import FormFieldset from '~/components/formComponents/FormFieldset';
+import SlaForm from '../forms/SlaForm';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import Button from '~/components/Button';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import VisibilityForm from '../forms/VisibilityForm';
 
 type Props = {
   show: boolean;
-  setShow: React.Dispatch<React.SetStateAction<boolean>>;
+  setShow: (show: boolean) => void;
 };
 
-const VisibilitySection = ({show, setShow}: Props) => {
+const SlaSection = ({show, setShow}: Props) => {
   const {isMobile} = useBreakpoints();
-  const [setState, visibility, deleteState] = useCreateStationStore((state) => [
-    state.setState,
-    state.formState.location?.visibility,
+
+  const [deleteState, setState] = useCreateStationStore((state) => [
     state.deleteState,
+    state.setState,
   ]);
 
   return (
@@ -32,15 +32,15 @@ const VisibilitySection = ({show, setShow}: Props) => {
                 startIcon={<RemoveCircleOutline color="primary" />}
                 onClick={() => {
                   setShow(false);
-                  deleteState(`location.visibility`);
+                  deleteState(`location.sla`);
                 }}
               >
                 <Typography variant="body2" color="grey.700">
-                  Tilgængelighed
+                  SLA (Service Level Agreement)
                 </Typography>
               </Button>
             ) : (
-              'Tilgængelighed'
+              'SLA (Service Level Agreement)'
             )
           }
           labelPosition={isMobile ? -22 : -20}
@@ -53,16 +53,15 @@ const VisibilitySection = ({show, setShow}: Props) => {
                 size="small"
                 onClick={() => {
                   setShow(false);
-                  deleteState(`location.visibility`);
+                  deleteState(`location.sla`);
                 }}
               >
                 <RemoveCircleOutline fontSize="small" />
               </IconButton>
             )}
-            <VisibilityForm
-              visibility={visibility}
-              setValues={(value) => {
-                setState(`location.visibility`, value);
+            <SlaForm
+              setValues={(values) => {
+                setState('location.sla', values);
               }}
             />
           </Box>
@@ -87,7 +86,7 @@ const VisibilitySection = ({show, setShow}: Props) => {
             }}
           >
             <Typography variant="body1" color="primary">
-              Tilføj tilgængelighed
+              Tilføj SLA (Service Level Agreement)
             </Typography>
           </Button>
         </Box>
@@ -96,4 +95,4 @@ const VisibilitySection = ({show, setShow}: Props) => {
   );
 };
 
-export default VisibilitySection;
+export default SlaSection;

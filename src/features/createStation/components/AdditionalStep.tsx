@@ -1,5 +1,5 @@
 import {Box} from '@mui/material';
-import React from 'react';
+import React, {useState} from 'react';
 import FormStepButtons from './FormStepButtons';
 
 import RessourceSection from '../sections/RessourceSection';
@@ -7,6 +7,9 @@ import FormFieldset from '~/components/formComponents/FormFieldset';
 import ContactForm from '../forms/ContactForm';
 import LocationAccessForm from '../forms/LocationAccessForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
+import VisibilitySection from '../sections/VisibilitySection';
+import SlaSection from '../sections/SlaSection';
+import {useUser} from '~/features/auth/useUser';
 
 type Props = {
   activeStep: number;
@@ -14,7 +17,15 @@ type Props = {
 };
 
 const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
-  const submitters = useCreateStationStore((state) => state.submitters);
+  const [submitters, location, timeseries] = useCreateStationStore((state) => [
+    state.submitters,
+    state.formState.location,
+    state.formState.timeseries,
+  ]);
+  const [showVisibility, setShowVisibility] = useState(!!location?.visibility);
+  const [showSla, setShowSla] = useState(!!location?.sla);
+  const {superUser} = useUser();
+
   return (
     <>
       {activeStep === 2 && (
@@ -24,6 +35,11 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
             sx={{width: '100%', p: 1}}
             labelPosition={-27}
           >
+            {Object.values(timeseries ?? {}).length > 0 && (
+              <VisibilitySection show={showVisibility} setShow={setShowVisibility} />
+            )}
+
+            {superUser && <SlaSection show={showSla} setShow={setShowSla} />}
             <ContactForm />
             <LocationAccessForm />
             <RessourceSection />
@@ -37,8 +53,6 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
                 const valid = (
                   await Promise.all(Object.values(submitters).map(async (cb) => await cb()))
                 ).every(Boolean);
-
-                console.log('Additional step valid:', valid);
 
                 return valid;
               }}

@@ -34,14 +34,19 @@ type AddTimeseriesLocationData = {
 
 type VisibilityFormState = {
   requires_auth: boolean;
-  hide_public: boolean;
+};
+
+type SLA = {
+  days_to_visitation: number;
 };
 
 type LocationFormState = {
   meta: CreateLocationData | AddTimeseriesLocationData;
+  visibility?: VisibilityFormState;
   contacts?: ContactTable[];
   location_access?: AccessTable[];
   ressourcer?: Ressourcer[];
+  sla?: SLA;
 };
 
 export type CreateStationFormState = {
@@ -76,7 +81,6 @@ export type TimeseriesPayload = {
   control_settings?: ControlSettingsFormState;
   sync?: SyncFormValues;
   unit?: AddUnitType;
-  visibility?: VisibilityFormState;
 };
 
 type LocationWithLocId = {
