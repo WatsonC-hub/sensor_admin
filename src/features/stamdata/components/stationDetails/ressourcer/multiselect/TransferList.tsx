@@ -149,13 +149,11 @@ export default function TranserList({loc_id, value, setValue}: TransferListProps
     postRessourcer.mutate(payload);
   };
 
-  console.log(not(selected, rightChecked));
-
   const handleClick = (collapsedCategory: string) => {
     if (!collapsed.includes(collapsedCategory)) {
       setCollapsed([...collapsed, collapsedCategory]);
     } else {
-      setCollapsed(...[collapsed.filter((category) => category !== collapsedCategory)]);
+      setCollapsed([...collapsed.filter((category) => category !== collapsedCategory)]);
     }
   };
 

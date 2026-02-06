@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import TimeseriesMetaForm from '../forms/TimeseriesMetaForm';
 import WatlevmpSection from '../sections/WatlevmpSection';
-import {Delete} from '@mui/icons-material';
+import {RemoveCircleOutline} from '@mui/icons-material';
 import {Grid2} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import Button from '~/components/Button';
@@ -100,7 +100,7 @@ const TimeseriesEditor = ({index, onRemove}: Props) => {
       >
         <Button
           bttype="tertiary"
-          startIcon={<Delete />}
+          startIcon={<RemoveCircleOutline fontSize="small" />}
           onClick={() => {
             onRemove();
           }}

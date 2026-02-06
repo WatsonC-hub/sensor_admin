@@ -77,7 +77,6 @@ const ControlFrequency = ({
         name="controls_per_year"
         control={control}
         render={({field: {onChange, value}, fieldState: {error}}) => {
-          console.log(error);
           let innerValue = undefined;
 
           if (value !== undefined && value !== null && value !== '')
@@ -87,6 +86,7 @@ const ControlFrequency = ({
           return (
             <FormTextField
               label="Kontrolhyppighed"
+              type="number"
               value={innerValue ?? ''}
               onChange={(e) => {
                 const inputValue = e.target.value;
@@ -113,6 +113,14 @@ const ControlFrequency = ({
                       />
                     </InputAdornment>
                   ),
+                  sx: {
+                    '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                      display: 'none',
+                    },
+                    '& input[type=number]': {
+                      MozAppearance: 'textfield',
+                    },
+                  },
                 },
               }}
               helperText={
