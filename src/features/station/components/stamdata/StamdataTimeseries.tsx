@@ -67,7 +67,7 @@ const TypeSelect = ({...props}: TypeSelectProps) => {
   );
 };
 
-const TimeseriesTypeField = ({tstype_id}: {tstype_id: number}) => {
+const TimeseriesTypeField = ({tstype_id}: {tstype_id: number | undefined}) => {
   const {data: timeseries_types} = useQuery({
     queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {

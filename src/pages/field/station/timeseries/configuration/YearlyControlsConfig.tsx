@@ -1,5 +1,5 @@
 import {Save} from '@mui/icons-material';
-import {Box} from '@mui/material';
+import {Grid2, Typography} from '@mui/material';
 import React from 'react';
 import {FormProvider} from 'react-hook-form';
 import {useAppContext} from '~/state/contexts';
@@ -52,9 +52,6 @@ const YearlyControlsConfig = () => {
     reset,
     formState: {isSubmitting, dirtyFields, isDirty},
   } = formMethods;
-
-  const disabled =
-    (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser);
 
   const onSubmit = (data: ControlSettingsFormValues) => {
     mutate(

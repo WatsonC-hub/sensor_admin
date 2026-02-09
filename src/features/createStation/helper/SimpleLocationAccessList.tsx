@@ -1,7 +1,7 @@
 import React from 'react';
 import {SimpleLocationAccess} from '../types';
-import {List, ListItem, ListItemText, IconButton} from '@mui/material';
-import {RemoveCircleOutline} from '@mui/icons-material';
+import {List} from '@mui/material';
+import SimpleTextView from '~/components/SimpleTextView';
 
 type Props = {
   values: SimpleLocationAccess[];
@@ -12,18 +12,12 @@ const SimpleLocationAccessList = ({values, onRemove}: Props) => {
   return (
     <List sx={{maxWidth: 320, bgcolor: 'background.paper'}}>
       {values.map((contact, index) => (
-        <ListItem key={index} disableGutters>
-          <IconButton aria-label="remove location access" size="small" edge="start">
-            <RemoveCircleOutline
-              fontSize="small"
-              color="primary"
-              onClick={() => {
-                onRemove(index);
-              }}
-            />
-          </IconButton>
-          <ListItemText primary={contact.name} secondary={contact.type} />
-        </ListItem>
+        <SimpleTextView
+          key={index}
+          primaryText={contact.name}
+          secondaryText={contact.type}
+          onRemove={() => onRemove(index)}
+        />
       ))}
     </List>
   );

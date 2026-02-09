@@ -9,6 +9,7 @@ import TransferList from '~/features/stamdata/components/stationDetails/ressourc
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {Ressourcer} from './multiselect/types';
 import {z} from 'zod';
+import {Box} from '@mui/material';
 
 const ressourcer = z
   .array(
@@ -65,23 +66,25 @@ const Huskeliste = ({loc_id, onValidate}: HuskelisteProps) => {
         name="ressourcer"
         control={control}
         disabled={location_permissions !== 'edit'}
-        render={
-          !isMobile
-            ? ({field: {onChange, value}}) => (
+        render={({field: {onChange, value}}) => {
+          return (
+            <Box display={'flex'} flexGrow={1} minWidth={275} maxWidth={1080}>
+              {!isMobile ? (
                 <TransferList
                   loc_id={loc_id}
                   value={value ?? []}
                   setValue={loc_id === undefined && onValidate ? onValidate : onChange}
                 />
-              )
-            : ({field: {onChange, value}}) => (
+              ) : (
                 <Autocomplete
                   loc_id={loc_id}
                   value={value ?? []}
                   setValue={loc_id === undefined && onValidate ? onValidate : onChange}
                 />
-              )
-        }
+              )}
+            </Box>
+          );
+        }}
       />
     </FormProvider>
   );

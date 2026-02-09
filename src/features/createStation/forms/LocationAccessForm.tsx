@@ -9,11 +9,9 @@ import SimpleLocationAccessList from '../helper/SimpleLocationAccessList';
 import {Box, Typography} from '@mui/material';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import FormFieldset from '~/components/formComponents/FormFieldset';
-import useBreakpoints from '~/hooks/useBreakpoints';
 
 const LocationAccessForm = () => {
   const [locationAccessDialogOpen, setLocationAccessDialogOpen] = React.useState<boolean>(false);
-  const {isMobile} = useBreakpoints();
   const [location_access, setLocationAccess] = useCreateStationStore((state) => [
     state.formState.location?.location_access,
     state.setState,
@@ -33,11 +31,7 @@ const LocationAccessForm = () => {
   };
 
   return (
-    <FormFieldset
-      label={'Adgangsnøgler'}
-      labelPosition={isMobile ? -22 : -20}
-      sx={{width: '100%', p: 1}}
-    >
+    <FormFieldset label={'Adgangsnøgler'} labelPosition={-20} sx={{width: '100%', p: 1}}>
       <FormProvider {...locationAccessMethods}>
         <Box width={'100%'} display={'flex'} flexDirection={'column'}>
           {location_access && location_access.length > 0 && (

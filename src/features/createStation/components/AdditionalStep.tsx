@@ -23,7 +23,7 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
     state.formState.timeseries,
   ]);
   const [showVisibility, setShowVisibility] = useState(!!location?.visibility);
-  const [showSla, setShowSla] = useState(!!location?.sla);
+  const [showSla, setShowSla] = useState(true);
   const {superUser} = useUser();
 
   return (
@@ -33,7 +33,7 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
           <FormFieldset
             label="Yderligere oplysninger"
             sx={{width: '100%', p: 1}}
-            labelPosition={-27}
+            labelPosition={-20}
           >
             {Object.values(timeseries ?? {}).length > 0 && (
               <VisibilitySection show={showVisibility} setShow={setShowVisibility} />

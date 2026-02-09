@@ -1,5 +1,5 @@
 import {ExpandLess, ExpandMore, Save} from '@mui/icons-material';
-import {Box, Collapse, List, ListItemText, Popper, Typography} from '@mui/material';
+import {Box, Collapse, List, ListItemText, Typography} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import * as React from 'react';
@@ -85,7 +85,7 @@ export default function CheckboxesTags({loc_id, value, setValue}: CheckboxesTags
   return (
     <>
       {options && options.length > 0 && (
-        <Box display={'flex'} flexDirection={'column'}>
+        <Box display={'flex'} flexDirection={'column'} flexGrow={1}>
           <Autocomplete
             multiple
             disabled={disabled}
@@ -97,9 +97,9 @@ export default function CheckboxesTags({loc_id, value, setValue}: CheckboxesTags
             value={selected}
             filterSelectedOptions
             groupBy={(option) => option.kategori}
-            PopperComponent={(props) => <Popper {...props} placement="bottom" />}
-            componentsProps={{
+            slotProps={{
               popper: {
+                placement: 'bottom',
                 modifiers: [
                   {
                     name: 'flip',
@@ -141,11 +141,17 @@ export default function CheckboxesTags({loc_id, value, setValue}: CheckboxesTags
             disableCloseOnSelect
             getOptionLabel={(option) => option.navn}
             isOptionEqualToValue={(option, value) => option.id === value.id}
-            sx={{
-              minWidth: 300,
-            }}
             renderInput={(params) => (
-              <TextField {...params} label="Huskeliste" placeholder="Udvalgt" />
+              <TextField
+                {...params}
+                fullWidth
+                slotProps={{
+                  select: {displayEmpty: true, fullWidth: true},
+                  inputLabel: {shrink: true},
+                }}
+                label="Ressourcer"
+                placeholder="Vælg ressourcer"
+              />
             )}
             onChange={(event, newValue: Ressourcer[]) => {
               setSelected(newValue);

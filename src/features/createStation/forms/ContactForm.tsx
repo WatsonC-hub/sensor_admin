@@ -11,11 +11,9 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 import {AddCircleOutline} from '@mui/icons-material';
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
-import useBreakpoints from '~/hooks/useBreakpoints';
 
 const ContactForm = () => {
   const [contactDialogOpen, setContactDialogOpen] = React.useState<boolean>(false);
-  const {isMobile} = useBreakpoints();
   const [contacts, setContacts] = useCreateStationStore((state) => [
     state.formState.location?.contacts,
     state.setState,
@@ -35,11 +33,7 @@ const ContactForm = () => {
   };
 
   return (
-    <FormFieldset
-      label={'Kontakter'}
-      labelPosition={isMobile ? -22 : -20}
-      sx={{width: '100%', p: 1}}
-    >
+    <FormFieldset label={'Kontakter'} labelPosition={-20} sx={{width: '100%', p: 1}}>
       <FormProvider {...contactInfoMethods}>
         <Box width={'100%'} display={'flex'} flexDirection={'column'}>
           {contacts && contacts.length > 0 && (

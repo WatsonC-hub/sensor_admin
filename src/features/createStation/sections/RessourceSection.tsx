@@ -19,7 +19,7 @@ const RessourceSection = () => {
   const {isMobile} = useBreakpoints();
 
   return (
-    <Layout setShow={setShow} deleteState={deleteState}>
+    <Layout show={show} setShow={setShow} deleteState={deleteState}>
       {show ? (
         <Box display="flex" flexDirection="row" gap={1} alignItems={'center'}>
           {!isMobile && (
@@ -66,17 +66,18 @@ const RessourceSection = () => {
 
 type LayoutProps = {
   children: React.ReactNode;
+  show: boolean | undefined;
   setShow: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   deleteState: <P extends Path<Partial<CreateStationFormState>>>(path: P) => void;
 };
 
-const Layout = ({children, setShow, deleteState}: LayoutProps) => {
+const Layout = ({children, show, setShow, deleteState}: LayoutProps) => {
   const {isMobile} = useBreakpoints();
 
   return (
     <FormFieldset
       label={
-        isMobile ? (
+        isMobile && show ? (
           <Button
             bttype="borderless"
             sx={{p: 0, m: 0}}
@@ -94,7 +95,7 @@ const Layout = ({children, setShow, deleteState}: LayoutProps) => {
           'Ressourcer'
         )
       }
-      labelPosition={isMobile ? -22 : -20}
+      labelPosition={-20}
       sx={{width: '100%', p: 1}}
     >
       {children}

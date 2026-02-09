@@ -1,5 +1,5 @@
 import KeyIcon from '@mui/icons-material/Key';
-import {Box, Dialog, DialogActions, DialogContent, DialogTitle, Divider} from '@mui/material';
+import {Box} from '@mui/material';
 import React, {useState} from 'react';
 import {FormProvider, SubmitHandler} from 'react-hook-form';
 
@@ -54,37 +54,7 @@ const LocationAccess = () => {
       onSuccess: () => {
         reset();
         setOpenDialog(false);
-        setCreateNew(false);
         if (needsProgress) hasAssessed();
-      },
-    });
-  };
-
-  const handleDelete = (location_access_id: number | undefined) => {
-    const payload = {
-      path: `${loc_id}/${location_access_id}`,
-    };
-
-    delLocationAccess.mutate(payload);
-  };
-
-  const handleEdit = async (locationAccess: AccessTable) => {
-    const payload = {
-      path: `${locationAccess.id}`,
-      data: {
-        id: locationAccess.id ?? -1,
-        navn: locationAccess.navn,
-        type: locationAccess.type,
-        contact_id: locationAccess.contact_id,
-        kommentar: locationAccess.kommentar,
-        placering: locationAccess.placering ?? null,
-        koden: locationAccess.koden ?? null,
-      },
-    };
-
-    editLocationAccess.mutate(payload, {
-      onSuccess: () => {
-        reset();
       },
     });
   };

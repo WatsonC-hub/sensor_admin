@@ -37,8 +37,8 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
   const uniqueUnitsByCalypsoId = () => {
     const uniqueMap: {[key: string]: Unit} = {};
     availableUnits?.forEach((unit) => {
-      if (!uniqueMap[unit.calypso_id.toString()]) {
-        uniqueMap[unit.calypso_id.toString()] = unit;
+      if (!uniqueMap[unit.calypso_id == 0 ? unit.terminal_id : unit.calypso_id]) {
+        uniqueMap[unit.calypso_id == 0 ? unit.terminal_id : unit.calypso_id] = unit;
       }
     });
     return Object.values(uniqueMap);
@@ -81,6 +81,11 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
               id="unit_uuid"
               labelKey="calypso_id"
               textFieldsProps={{label: 'Calypso ID', placeholder: 'Søg Calypso ID'}}
+              getOptionLabel={(option) =>
+                option.calypso_id == 0
+                  ? option.terminal_id.toString()
+                  : option.calypso_id.toString()
+              }
               isOptionEqualToValue={(option, value) => option.unit_uuid === value.unit_uuid}
               options={uniqueUnitsByCalypsoId() || []}
               selectValue={selectedUnit}
@@ -88,7 +93,9 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
               renderOption={(props, option) => {
                 return (
                   <li {...props} key={option.unit_uuid}>
-                    <Typography>{option.calypso_id}</Typography>
+                    <Typography>
+                      {option.calypso_id == 0 ? option.terminal_id : option.calypso_id}
+                    </Typography>
                   </li>
                 );
               }}

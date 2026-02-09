@@ -79,13 +79,13 @@ const RessourceForm = () => {
               {!isMobile ? (
                 <TranserList
                   loc_id={undefined}
-                  value={value}
+                  value={value ?? []}
                   setValue={(ressourcer) => onChange(ressourcer)}
                 />
               ) : (
                 <CheckboxesTags
                   loc_id={undefined}
-                  value={value}
+                  value={value ?? []}
                   setValue={(ressourcer) => onChange(ressourcer)}
                 />
               )}

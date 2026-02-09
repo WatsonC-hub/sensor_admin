@@ -1,16 +1,26 @@
 import {DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
-import React from 'react';
+import React, {ReactNode} from 'react';
 import Button from './Button';
 
 interface AlertProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   title: string;
-  message: string;
+  closeTitle?: string;
+  saveTitle?: string;
+  message: ReactNode | string;
   handleOpret: () => void;
 }
 
-export default function AlertDialog({open, setOpen, title, message, handleOpret}: AlertProps) {
+export default function AlertDialog({
+  open,
+  setOpen,
+  title,
+  closeTitle,
+  saveTitle,
+  message,
+  handleOpret,
+}: AlertProps) {
   const handleClose = () => {
     setOpen(false);
   };
@@ -34,10 +44,10 @@ export default function AlertDialog({open, setOpen, title, message, handleOpret}
         </DialogContent>
         <DialogActions>
           <Button bttype="tertiary" onClick={handleClose}>
-            Annuller
+            {closeTitle ?? 'Annuller'}
           </Button>
           <Button bttype="primary" onClick={handleContinue}>
-            Fortsæt
+            {saveTitle ?? 'Fortsæt'}
           </Button>
         </DialogActions>
       </Dialog>

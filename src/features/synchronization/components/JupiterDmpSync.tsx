@@ -3,6 +3,7 @@ import useSyncForm, {SyncFormValues} from '../api/useSyncForm';
 import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {Grid2, Box} from '@mui/material';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 const Form = createTypedForm<SyncFormValues>();
 
@@ -12,9 +13,17 @@ type JupiterDmpSyncProps = {
   tstype_id?: number;
   values: SyncFormValues | undefined;
   submit: (data: SyncFormValues) => void;
+  intakeno?: number | null;
 };
 
-const JupiterDmpSync = ({loctype_id, tstype_id, mode, values, submit}: JupiterDmpSyncProps) => {
+const JupiterDmpSync = ({
+  loctype_id,
+  tstype_id,
+  mode,
+  values,
+  submit,
+  intakeno,
+}: JupiterDmpSyncProps) => {
   const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm<SyncFormValues>({
     mode: mode,
     context: {
@@ -25,6 +34,7 @@ const JupiterDmpSync = ({loctype_id, tstype_id, mode, values, submit}: JupiterDm
   });
 
   const {watch, trigger, setValue, reset} = syncFormMethods;
+  const {location_permissions} = usePermissions();
   const sync_dmp = watch('sync_dmp');
 
   return (
@@ -32,8 +42,18 @@ const JupiterDmpSync = ({loctype_id, tstype_id, mode, values, submit}: JupiterDm
       {(canSyncJupiter || isDmpAllowed) && (
         <Form formMethods={syncFormMethods} gridSizes={12}>
           {canSyncJupiter && (
-            <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til Jupiter">
-              <Form.Checkbox name="jupiter" label="Jupiter" />
+            <TooltipWrapper
+              description={
+                intakeno == null
+                  ? 'Indtagsnummer mangler før du kan synkronisere til Jupiter. Indtast det under rediger tidsserie.'
+                  : 'Aktiverer synkronisering af denne tidsserie til Jupiter'
+              }
+            >
+              <Form.Checkbox
+                disabled={location_permissions !== 'edit' || intakeno == null}
+                name="jupiter"
+                label="Jupiter"
+              />
             </TooltipWrapper>
           )}
           {isDmpAllowed && (

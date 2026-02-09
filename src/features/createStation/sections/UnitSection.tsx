@@ -9,6 +9,7 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 import {useUnit} from '~/features/stamdata/api/useAddUnit';
 import dayjs from 'dayjs';
 import RouterIcon from '@mui/icons-material/Router';
+import SimpleTextView from '~/components/SimpleTextView';
 
 type UnitStepProps = {
   uuid: string;
@@ -36,7 +37,7 @@ const UnitSection = ({uuid, show, setShow, tstype_id}: UnitStepProps) => {
       (data.calypso_id.toString() === unit?.calypso_id || data.terminal_id === unit?.calypso_id)
   );
 
-  const sensor_id = `${uniqueUnit?.signal_id} - ${uniqueUnit?.sensortypename}`;
+  const sensor_id = `${uniqueUnit?.signal_id} - ${uniqueUnit?.sensor_id} (${uniqueUnit?.sensortypename})`;
 
   if (!show)
     return (
@@ -103,17 +104,22 @@ const UnitSection = ({uuid, show, setShow, tstype_id}: UnitStepProps) => {
           </IconButton>
         )}
         {unit && (
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
-            <RouterIcon color="primary" />
-            <Typography>
-              <Typography variant="body2">
-                {unit?.calypso_id} - {sensor_id}
-              </Typography>
-              <Typography variant="caption" color="grey.700">
-                {unit?.startdate && dayjs(unit.startdate).format('L HH:mm')}
-              </Typography>
-            </Typography>
-          </Box>
+          <SimpleTextView
+            onRemove={() => deleteState(`timeseries.${uuid}.unit`)}
+            withRemoveIcon={false}
+            icon={<RouterIcon color="primary" sx={{mr: 1.5}} />}
+            primaryText={<Typography variant="body2">{unit?.calypso_id}</Typography>}
+            secondaryText={
+              <>
+                <Typography variant="caption" display={'block'}>
+                  {sensor_id}
+                </Typography>
+                <Typography variant="caption">
+                  {unit?.startdate && dayjs(unit.startdate).format('L HH:mm')}
+                </Typography>
+              </>
+            }
+          />
         )}
       </Box>
       <Dialog open={open} onClose={() => setOpen(false)}>

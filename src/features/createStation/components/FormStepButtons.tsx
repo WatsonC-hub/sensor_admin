@@ -14,6 +14,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {useDisplayState} from '~/hooks/ui';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useUser} from '~/features/auth/useUser';
 
 type Props = {
   activeStep: number;
@@ -28,11 +29,12 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
     state.setShowLocationRouter,
   ]);
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
-
+  const [showDialog, setShowDialog] = useState<boolean>(false);
   let {state} = useLocation();
   state = state ?? {};
   const [showAlert, setShowAlert] = useState(false);
   const {isMobile} = useBreakpoints();
+  const {superUser} = useUser();
 
   const [isFormError, formState, submitters] = useCreateStationStore((state) => [
     state.isFormError,
@@ -121,7 +123,65 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
         open={showAlert}
         setOpen={setShowAlert}
         title="Færdiggør oprettelse"
-        message={'Er du sikker på, at du vil færdiggøre oprettelsen af stationen?'}
+        saveTitle={superUser ? 'Forsæt' : 'Opret station'}
+        message={
+          <Typography>
+            {!loc_id && (
+              <>
+                Du er i gang med at oprette en ny lokation med dette navn:
+                <Typography pl={1} component="span" fontWeight="bold">
+                  {formState?.location?.meta.loc_name}
+                </Typography>
+                <br />
+                <br />
+              </>
+            )}
+            {Object.values(formState?.timeseries || {}).length === 0 ? (
+              'Der er ikke blevet tilføjet nogen tidsserier'
+            ) : (
+              <>
+                Der er blevet tilføjet
+                <Typography pl={0.5} component="span" fontWeight="bold">
+                  {Object.values(formState?.timeseries || {}).length}
+                </Typography>{' '}
+                tidsserie(r) (
+                {
+                  Object.values(formState?.timeseries || {}).filter((ts) => ts.unit !== undefined)
+                    .length
+                }{' '}
+                med udstyr) <br />
+              </>
+            )}
+            <Typography mt={2}>Er du sikker på, at du vil færdiggøre oprettelsen?</Typography>
+          </Typography>
+        }
+        handleOpret={() => {
+          if (superUser) setShowDialog(true);
+          else {
+            if (!formState) return;
+            const submitState: CreateStationPayload = {
+              location: state.loc_id
+                ? {loc_id: state.loc_id}
+                : ((formState.location || {}) as CreateStationPayload['location']),
+              timeseries: Object.values(formState.timeseries || {}).map((ts) => ({
+                ...ts,
+                sync: {
+                  ...ts.sync,
+                  sync_dmp: ts.sync?.owner_cvr ? true : false,
+                },
+              })),
+            };
+            stamdataNewMutation.mutate(submitState);
+          }
+        }}
+      />
+      <AlertDialog
+        open={showDialog}
+        setOpen={setShowDialog}
+        title="Har du taget stilling til alle felter?"
+        closeTitle="Nej"
+        saveTitle="Ja"
+        message="Stationen vil blive oprettet uanset dit valg. Hvis du vælger “Nej”, kan du efterfølgende tage stilling til de felterne på stationssiden"
         handleOpret={() => {
           if (!formState) return;
           const submitState: CreateStationPayload = {

@@ -7,14 +7,14 @@ import Synchronization from './Synchronization';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useDMPAllowed from '~/features/station/api/useDmpAllowedMapList';
-import {useUser} from '~/features/auth/useUser';
 import VisibilityConfig from './VisibilityConfig';
 
 type ConfigurationProps = {
-  ts_id?: number;
+  loc_id: number;
+  ts_id: number;
 };
 
-const Configuration = ({ts_id}: ConfigurationProps) => {
+const Configuration = ({loc_id, ts_id}: ConfigurationProps) => {
   const {data: metadata} = useTimeseriesData(ts_id);
   const isJupiterType = [1, 11, 12, 16].includes(metadata?.tstype_id || 0);
   const isBorehole = metadata?.loctype_id === 9;

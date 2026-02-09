@@ -95,7 +95,7 @@ export default function Station() {
         )}
         {pageToShow === stationPages.TIDSSERIEKONFIGURATION && (
           <StationPageBoxLayout>
-            <TimeseriesConfiguration ts_id={ts_id} />
+            <TimeseriesConfiguration loc_id={loc_id} ts_id={ts_id} />
           </StationPageBoxLayout>
         )}
         {pageToShow === stationPages.ALGORITHMS && iotAccess && (
