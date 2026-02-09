@@ -7,6 +7,8 @@ import Synchronization from './Synchronization';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useDMPAllowed from '~/features/station/api/useDmpAllowedMapList';
+import {useUser} from '~/features/auth/useUser';
+import VisibilityConfig from './VisibilityConfig';
 
 type ConfigurationProps = {
   ts_id?: number;
@@ -44,6 +46,12 @@ const Configuration = ({ts_id}: ConfigurationProps) => {
           <Synchronization />
         </Layout>
       )}
+      <Layout>
+        <Typography variant="h6" gutterBottom>
+          Tilgængelighed
+        </Typography>
+        <VisibilityConfig loc_id={loc_id} ts_id={ts_id} />
+      </Layout>
     </>
   );
 };

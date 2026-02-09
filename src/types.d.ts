@@ -1,6 +1,8 @@
 import {SvgIconProps} from '@mui/material';
 import {Dayjs} from 'dayjs';
 import {ReactNode} from 'react';
+// import type {FeatureCollection, Geometry} from 'leaflet';
+import * as geojson from 'geojson';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -186,11 +188,9 @@ export type Tstype = {
   service_interval: number | null;
 };
 
-export type LeafletMapRoute = {
-  route_id: number;
-  loc_id: number;
-  geo_route: JSON | GeoJsonObject;
-};
+type RouteProperties = {loc_id: number; id: number; comment: string | null; type: 'walk' | 'drive'};
+
+export type RouteFeature = geojson.Feature<geojson.Geometry, RouteProperties>;
 
 export type Group = {
   id: string;

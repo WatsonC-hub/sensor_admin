@@ -25,7 +25,7 @@ const BoreholeTimeseriesEditForm = ({size}: Props) => {
       </Grid2>
       {!metadata?.calculated && (
         <Grid2 size={{xs: 12, sm: 4}}>
-          <StamdataTimeseries.ScanCalypsoLabel />
+          <StamdataTimeseries.ScanCalypsoLabel disabled={disabled} />
         </Grid2>
       )}
     </Grid2>

@@ -13,12 +13,24 @@ import useControlSettingsForm, {
   ControlSettingsFormValues,
 } from '~/features/configuration/api/useControlSettingsForm';
 import {useUser} from '~/features/auth/useUser';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {useStationProgress} from '~/hooks/query/stationProgress';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 const YearlyControlsConfig = () => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: values} = useTimeseriesServiceInterval(ts_id);
+
   const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
   const {superUser} = useUser();
+  const {location_permissions} = usePermissions(loc_id);
+
+  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'kontrolhyppighed', ts_id);
+
+  const disabled =
+    (values?.isCustomerService && superUser) ||
+    (!values?.isCustomerService && !superUser) ||
+    location_permissions !== 'edit';
 
   const formMethods = useControlSettingsForm<ControlSettingsFormValues>({
     defaultValues: {
@@ -30,7 +42,7 @@ const YearlyControlsConfig = () => {
     values: values && {
       controls_per_year: values.controlsPerYear,
       lead_time: values.leadTime ?? null,
-      dummy: values.controlsPerYear ? Number(values.controlsPerYear.toFixed(3)) : null,
+      dummy: values.controlsPerYear !== null ? Number(values.controlsPerYear.toFixed(3)) : null,
       selectValue: 1,
     },
   });
@@ -38,7 +50,7 @@ const YearlyControlsConfig = () => {
   const {
     handleSubmit,
     reset,
-    formState: {isSubmitting, dirtyFields},
+    formState: {isSubmitting, dirtyFields, isDirty},
   } = formMethods;
 
   const disabled =
@@ -51,7 +63,10 @@ const YearlyControlsConfig = () => {
         lead_time: data.lead_time,
       },
       {
-        onSuccess: () => reset(),
+        onSuccess: () => {
+          reset();
+          if (needsProgress) hasAssessed();
+        },
       }
     );
   };
@@ -60,29 +75,37 @@ const YearlyControlsConfig = () => {
     <FormProvider {...formMethods}>
       <EditControlSettings disabled={disabled} />
 
-      <Box display="flex" justifyContent="flex-end">
-        <Button
-          bttype="tertiary"
-          onClick={() => {
-            reset();
-          }}
-          disabled={isSubmitting}
-        >
-          Annuller
-        </Button>
-        <Button
-          bttype="primary"
-          disabled={
-            isSubmitting ||
-            Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0
-          }
-          onClick={handleSubmit(onSubmit, (error) => console.log(error))}
-          startIcon={<Save />}
-          sx={{marginLeft: 1}}
-        >
-          Gem
-        </Button>
-      </Box>
+      {!disabled && (
+        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+          <UpdateProgressButton
+            loc_id={loc_id}
+            ts_id={ts_id}
+            progressKey="kontrolhyppighed"
+            disabled={disabled || isDirty}
+          />
+          <Button
+            bttype="tertiary"
+            onClick={() => {
+              reset();
+            }}
+            disabled={isSubmitting || !isDirty}
+          >
+            <Typography variant="body2">Annuller</Typography>
+          </Button>
+          <Button
+            bttype="primary"
+            disabled={
+              isSubmitting ||
+              Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0 ||
+              !isDirty
+            }
+            onClick={handleSubmit(onSubmit, (error) => console.log(error))}
+            startIcon={<Save />}
+          >
+            <Typography variant="body2">Gem</Typography>
+          </Button>
+        </Grid2>
+      )}
     </FormProvider>
   );
 };

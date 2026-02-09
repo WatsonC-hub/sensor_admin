@@ -180,7 +180,11 @@ const HidePublic = () => {
   );
 };
 
-const ScanCalypsoLabel = () => {
+type ScanCalypsoLabelProps = {
+  disabled?: boolean;
+};
+
+const ScanCalypsoLabel = ({disabled}: ScanCalypsoLabelProps) => {
   const [openCamera, setOpenCamera] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [calypso_id, setCalypso_id] = React.useState<number | null>(null);
@@ -212,6 +216,7 @@ const ScanCalypsoLabel = () => {
         color="primary"
         startIcon={<PhotoCameraRounded />}
         onClick={() => setOpenCamera(true)}
+        disabled={disabled}
       >
         {calypso_id_watch ? 'Skift ID' : 'Tilføj ID'}
       </Button>

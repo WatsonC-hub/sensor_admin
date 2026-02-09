@@ -3,7 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {LeafletMapRoute} from '~/types';
+import {RouteFeature} from '~/types';
 
 interface LeafletMapRouteBase {
   path: string;
@@ -54,7 +54,7 @@ export const useLeafletMapRoute = () => {
   const get = useQuery({
     queryKey: queryKeys.Routes.all(),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<LeafletMapRoute>>(`/sensor_field/leaflet_map_route`);
+      const {data} = await apiClient.get<Array<RouteFeature>>(`/sensor_field/leaflet_map_route`);
 
       return data;
     },

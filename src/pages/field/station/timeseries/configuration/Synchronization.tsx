@@ -11,6 +11,7 @@ const Synchronization = () => {
   const {data: metadata} = useTimeseriesData(ts_id);
   const {data: location_data} = useLocationData(loc_id);
 
+  const {data: metadata} = useTimeseriesData(ts_id);
   const {
     get: {data: sync_data},
     post: postSync,
@@ -31,7 +32,11 @@ const Synchronization = () => {
       },
     };
 
-    postSync.mutate(syncPayload);
+    postSync.mutate(syncPayload, {
+      onSuccess: () => {
+        if (needsProgress) hasAssessed();
+      },
+    });
   };
 
   return (

@@ -52,6 +52,7 @@ const Huskeliste = ({loc_id, onValidate}: HuskelisteProps) => {
     defaultValues: {
       ressourcer: result.success ? result.data : [],
     },
+    values: {ressourcer: result.data ?? []},
     mode: 'onSubmit',
   });
 
