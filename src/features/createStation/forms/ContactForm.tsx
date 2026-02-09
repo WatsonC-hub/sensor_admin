@@ -57,7 +57,7 @@ const ContactForm = () => {
               width: 'fit-content',
               backgroundColor: 'transparent',
               border: 'none',
-              px: 1,
+              px: '6.5px',
               ':hover': {
                 backgroundColor: 'grey.200',
               },

@@ -1,7 +1,7 @@
 import React from 'react';
 import {SimpleContact} from '../types';
-import {List, ListItem, ListItemIcon, ListItemText, IconButton} from '@mui/material';
-import {Person, RemoveCircleOutline} from '@mui/icons-material';
+import {List, ListItem, ListItemText, IconButton} from '@mui/material';
+import {RemoveCircleOutline} from '@mui/icons-material';
 
 type Props = {
   values: SimpleContact[];
@@ -13,11 +13,7 @@ const SimpleContactList = ({values, onRemove}: Props) => {
     <List sx={{maxWidth: 320, bgcolor: 'background.paper'}}>
       {values.map((contact, index) => (
         <ListItem key={index} disableGutters>
-          <ListItemIcon sx={{minWidth: '15%'}}>
-            <Person sx={{color: 'grey.700'}} />
-          </ListItemIcon>
-          <ListItemText primary={contact.name} secondary={contact.email} />
-          <IconButton aria-label="remove contact" size="small">
+          <IconButton aria-label="remove contact" size="small" edge="start">
             <RemoveCircleOutline
               color="primary"
               fontSize="small"
@@ -26,6 +22,7 @@ const SimpleContactList = ({values, onRemove}: Props) => {
               }}
             />
           </IconButton>
+          <ListItemText primary={contact.name} secondary={contact.email} />
         </ListItem>
       ))}
     </List>

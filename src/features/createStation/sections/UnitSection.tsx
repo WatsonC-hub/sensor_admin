@@ -8,6 +8,7 @@ import UnitForm from '../forms/UnitForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import {useUnit} from '~/features/stamdata/api/useAddUnit';
 import dayjs from 'dayjs';
+import RouterIcon from '@mui/icons-material/Router';
 
 type UnitStepProps = {
   uuid: string;
@@ -102,11 +103,15 @@ const UnitSection = ({uuid, show, setShow, tstype_id}: UnitStepProps) => {
           </IconButton>
         )}
         {unit && (
-          <Box display={'flex'} flexDirection={'column'} gap={1}>
-            <Typography>Calypso ID: {unit?.calypso_id}</Typography>
-            <Typography>Sensor ID: {sensor_id}</Typography>
+          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
+            <RouterIcon color="primary" />
             <Typography>
-              Start dato: {unit?.startdate && dayjs(unit.startdate).format('LLL')}
+              <Typography variant="body2">
+                {unit?.calypso_id} - {sensor_id}
+              </Typography>
+              <Typography variant="caption" color="grey.700">
+                {unit?.startdate && dayjs(unit.startdate).format('L HH:mm')}
+              </Typography>
             </Typography>
           </Box>
         )}
