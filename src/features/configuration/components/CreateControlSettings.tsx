@@ -24,7 +24,7 @@ const CreateControlSettings = ({slotProps, containerGridSize = 12}: Props) => {
         />
       </Grid2>
       <Grid2 size={isMobile ? 12 : 6}>
-        <ControlSettings.LeadTime required />
+        <ControlSettings.LeadTime />
       </Grid2>
     </Grid2>
   );

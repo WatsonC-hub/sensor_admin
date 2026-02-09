@@ -11,7 +11,6 @@ const controlSettingsSchema = z.object({
     .nullable(),
   lead_time: z
     .number({
-      required_error: 'Forvarsling er påkrævet',
       invalid_type_error: 'Forvarsling skal være et tal',
     })
     .nullable(),

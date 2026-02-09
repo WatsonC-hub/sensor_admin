@@ -10,21 +10,27 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type Props = {
   id: string;
-  control_settings?: ControlSettingsType;
+  values: ControlSettingsType | undefined;
   setValues: (values: ControlSettingsType) => void;
 };
 
-const ControlSettingForm = ({id, control_settings, setValues}: Props) => {
+const ControlSettingForm = ({id, values, setValues}: Props) => {
   const {isMobile} = useBreakpoints();
-  const [registerSubmitter, removeSubmitter] = useCreateStationStore((state) => [
+  const [registerSubmitter, removeSubmitter, timeseries] = useCreateStationStore((state) => [
     state.registerSubmitter,
     state.removeSubmitter,
+    state.formState.timeseries,
   ]);
+
   const controlSettingsFormMethods = useControlSettingsForm<ControlSettingsType>({
-    defaultValues: control_settings,
+    defaultValues: values,
   });
 
-  const {handleSubmit} = controlSettingsFormMethods;
+  const {handleSubmit, reset, setValue} = controlSettingsFormMethods;
+
+  useEffect(() => {
+    reset(values);
+  }, [values]);
 
   useEffect(() => {
     registerSubmitter(id, async () => {
@@ -55,9 +61,9 @@ const ControlSettingForm = ({id, control_settings, setValues}: Props) => {
             slotProps={{
               controlFrequency: {
                 disabled: false,
-                selectValue: control_settings?.selectValue,
+                selectValue: timeseries?.[id]?.control_settings?.selectValue,
                 setSelectValue: (value) => {
-                  controlSettingsFormMethods.setValue('selectValue', value);
+                  setValue('selectValue', value);
                 },
               },
             }}

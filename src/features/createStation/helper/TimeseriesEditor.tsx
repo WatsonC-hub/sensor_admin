@@ -12,6 +12,10 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 import ControlSettingSection from '../sections/ControlSettingSection';
 import SyncSection from '../sections/SyncSection';
 import UnitSection from '../sections/UnitSection';
+import {useQuery} from '@tanstack/react-query';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {apiClient} from '~/apiClient';
+import {Tstype} from '~/types';
 
 type Props = {
   index: string;
@@ -25,6 +29,16 @@ const TimeseriesEditor = ({index, onRemove}: Props) => {
     state.setState,
     state.deleteState,
   ]);
+
+  const {data: timeseries_types} = useQuery({
+    queryKey: queryKeys.timeseriesTypes(),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<Tstype>>(`/sensor_field/timeseries_types`);
+      return data;
+    },
+    staleTime: Infinity, // Cache indefinitely
+    refetchInterval: 1000 * 60 * 60 * 24, // Refetch every 24 hours
+  });
 
   const [showWatlevmp, setShowWatlevmp] = useState(!!timeseries.watlevmp);
   const [showControlSettings, setShowControlSettings] = useState(!!timeseries.control_settings);
@@ -54,7 +68,18 @@ const TimeseriesEditor = ({index, onRemove}: Props) => {
           setState(`timeseries.${index}.meta.tstype_id`, tstype_id);
           deleteState(`timeseries.${index}.unit`);
           deleteState(`timeseries.${index}.watlevmp`);
+
           if (tstype_id !== meta_tstype_id) {
+            const service_interval = timeseries_types?.find(
+              (type) => type.tstype_id === tstype_id
+            )?.service_interval;
+            if (service_interval !== null && service_interval !== undefined) {
+              setState(`timeseries.${index}.control_settings`, {
+                controls_per_year: 12 / service_interval,
+                lead_time: null,
+                selectValue: 1,
+              });
+            }
             setShowWatlevmp(true);
             setShowControlSettings(true);
           }

@@ -39,6 +39,21 @@ const FormTextField = ({
         '& .MuiOutlinedInput-root': {
           '& > fieldset': {borderColor: 'primary.main'},
         },
+        ...(type === 'number'
+          ? {
+              '& input': {
+                MozAppearance: 'textfield', // Firefox
+              },
+              '& input::-webkit-outer-spin-button': {
+                WebkitAppearance: 'none',
+                margin: 0,
+              },
+              '& input::-webkit-inner-spin-button': {
+                WebkitAppearance: 'none',
+                margin: 0,
+              },
+            }
+          : {}),
       }}
       disabled={disabled}
       variant={variant}
@@ -70,16 +85,6 @@ const FormTextField = ({
               borderColor: 'primary.main',
             },
           },
-          ...(type === 'number'
-            ? {
-                '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                  display: 'none',
-                },
-                '& input[type=number]': {
-                  MozAppearance: 'textfield',
-                },
-              }
-            : {}),
           ...slotProps?.input,
         },
         formHelperText: {

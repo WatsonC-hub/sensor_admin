@@ -180,6 +180,12 @@ export type Parking = {
   y: number;
 };
 
+export type Tstype = {
+  tstype_id: number;
+  tstype_name: string;
+  service_interval: number | null;
+};
+
 export type LeafletMapRoute = {
   route_id: number;
   loc_id: number;

@@ -15,10 +15,10 @@ type Props = {
 
 const ControlSettingSection = ({uuid, show, setShow}: Props) => {
   const {isMobile} = useBreakpoints();
-  const [setState, control_settings, deleteState] = useCreateStationStore((state) => [
+  const [setState, deleteState, control_settings] = useCreateStationStore((state) => [
     state.setState,
-    state.formState.timeseries?.[uuid]?.control_settings,
     state.deleteState,
+    state.formState.timeseries?.[uuid]?.control_settings,
   ]);
 
   const id = `timeseries.${uuid}.control_settings`;
@@ -64,7 +64,7 @@ const ControlSettingSection = ({uuid, show, setShow}: Props) => {
             )}
             <ControlSettingForm
               id={id}
-              control_settings={control_settings}
+              values={control_settings}
               setValues={(value) => setState(`timeseries.${uuid}.control_settings`, value)}
             />
           </Box>

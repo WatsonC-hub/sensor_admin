@@ -20,7 +20,7 @@ const DefaultTimeseriesEditForm = ({size, loc_name}: Props) => {
         <StamdataTimeseries.Prefix loc_name={loc_name} disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataTimeseries.TimeriesTypeField tstype_id={metadata?.tstype_id} />
+        <StamdataTimeseries.TimeseriesTypeField tstype_id={metadata?.tstype_id} />
       </Grid2>
       <Grid2 size={size} alignContent={'center'}>
         <StamdataTimeseries.TimeseriesID />

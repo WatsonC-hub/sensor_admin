@@ -18,7 +18,7 @@ const BoreholeTimeseriesEditForm = ({size}: Props) => {
         <StamdataTimeseries.Intakeno disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataTimeseries.TimeriesTypeField tstype_id={metadata?.tstype_id} />
+        <StamdataTimeseries.TimeseriesTypeField tstype_id={metadata?.tstype_id} />
       </Grid2>
       <Grid2 size={{xs: 12, sm: 2}} alignContent={'center'}>
         <StamdataTimeseries.TimeseriesID />

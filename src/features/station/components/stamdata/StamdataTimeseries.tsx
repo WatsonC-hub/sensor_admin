@@ -19,6 +19,7 @@ import Button from '~/components/Button';
 import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
 import CaptureDialog from '~/components/CaptureDialog';
 import {toast} from 'react-toastify';
+import {Tstype} from '~/types';
 
 type Props = {
   children: React.ReactNode;
@@ -43,9 +44,7 @@ const TypeSelect = ({...props}: TypeSelectProps) => {
   const {data: timeseries_types} = useQuery({
     queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<{tstype_id: number; tstype_name: string}>>(
-        `/sensor_field/timeseries_types`
-      );
+      const {data} = await apiClient.get<Array<Tstype>>(`/sensor_field/timeseries_types`);
       return data;
     },
     staleTime: Infinity, // Cache indefinitely
@@ -68,11 +67,11 @@ const TypeSelect = ({...props}: TypeSelectProps) => {
   );
 };
 
-const TimeseriesTypeField = ({tstype_id}: {tstype_id: number | undefined}) => {
+const TimeseriesTypeField = ({tstype_id}: {tstype_id: number}) => {
   const {data: timeseries_types} = useQuery({
     queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/timeseries_types`);
+      const {data} = await apiClient.get<Array<Tstype>>(`/sensor_field/timeseries_types`);
       return data;
     },
     staleTime: Infinity, // Cache indefinitely
@@ -83,11 +82,7 @@ const TimeseriesTypeField = ({tstype_id}: {tstype_id: number | undefined}) => {
     <FormTextField
       disabled
       label="Tidsserie type"
-      value={
-        timeseries_types?.filter(
-          (elem: {tstype_id: number; tstype_name: string}) => elem.tstype_id == tstype_id
-        )[0]?.tstype_name
-      }
+      value={timeseries_types?.filter((elem) => elem.tstype_id == tstype_id)[0]?.tstype_name ?? ''}
     />
   );
 };
@@ -277,7 +272,7 @@ const TimeseriesID = () => {
 };
 
 StamdataTimeseries.TypeSelect = TypeSelect;
-StamdataTimeseries.TimeriesTypeField = TimeseriesTypeField;
+StamdataTimeseries.TimeseriesTypeField = TimeseriesTypeField;
 StamdataTimeseries.Prefix = Prefix;
 StamdataTimeseries.Intakeno = Intakeno;
 StamdataTimeseries.ScanCalypsoLabel = ScanCalypsoLabel;
