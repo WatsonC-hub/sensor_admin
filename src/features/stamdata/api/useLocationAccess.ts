@@ -94,7 +94,8 @@ export const useLocationAccess = (loc_id: number) => {
       toast.success('Adgangsinformation gemt');
     },
     meta: {
-      invalidates: [['location_access']],
+      invalidates: [queryKeys.Location.keys(loc_id), [queryKeys.Location.info(loc_id)]],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -104,7 +105,8 @@ export const useLocationAccess = (loc_id: number) => {
       toast.success('Adgangsinformation ændret');
     },
     meta: {
-      invalidates: [['location_access']],
+      invalidates: [queryKeys.Location.keys(loc_id), [queryKeys.Location.info(loc_id)]],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -114,7 +116,8 @@ export const useLocationAccess = (loc_id: number) => {
       toast.success('Adgangsinformation slettet');
     },
     meta: {
-      invalidates: [['location_access']],
+      invalidates: [queryKeys.Location.keys(loc_id), [queryKeys.Location.info(loc_id)]],
+      optOutGeneralInvalidations: true,
     },
   });
 

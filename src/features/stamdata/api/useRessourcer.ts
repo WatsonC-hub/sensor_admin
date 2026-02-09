@@ -82,7 +82,11 @@ export const useRessourcer = () => {
       toast.success('Huskeliste gemt');
     },
     meta: {
-      invalidates: [['ressourcer']],
+      invalidates: [
+        queryKeys.Location.locationRessources(loc_id),
+        [queryKeys.Location.info(loc_id)],
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -92,7 +96,11 @@ export const useRessourcer = () => {
       toast.success('Huskeliste ændret');
     },
     meta: {
-      invalidates: [['ressourcer']],
+      invalidates: [
+        queryKeys.Location.locationRessources(loc_id),
+        [queryKeys.Location.info(loc_id)],
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -102,7 +110,11 @@ export const useRessourcer = () => {
       toast.success('Huskeliste slettet');
     },
     meta: {
-      invalidates: [['ressourcer']],
+      invalidates: [
+        queryKeys.Location.locationRessources(loc_id),
+        [queryKeys.Location.info(loc_id)],
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 

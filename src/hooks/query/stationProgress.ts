@@ -57,7 +57,8 @@ const useUpdateProgress = (loc_id: number | undefined, ts_id?: number) => {
       return res;
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [queryKeys.Timeseries.StationProgress(loc_id, ts_id)],
+      optOutGeneralInvalidations: true,
     },
   });
 

@@ -2,8 +2,9 @@ import {apiClient} from '~/apiClient';
 import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {useAppContext} from '~/state/contexts';
 import {AlarmNotificationType, AlarmHistory, AlarmTableType} from '../types';
-import {APIError, queryClient} from '~/queryClient';
+import {APIError} from '~/queryClient';
 import {AlarmsFormValues} from '../schema';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 interface AlarmBase {
   path: string;
@@ -20,12 +21,6 @@ const alarmPostOptions = {
     const {data: result} = await apiClient.post(`/sensor_field/stamdata/alarms/${path}`, data);
     return result;
   },
-  onSuccess: () => {
-    // Optionally handle success, e.g., show a toast notification
-    queryClient.invalidateQueries({
-      queryKey: ['alarm'],
-    });
-  },
 };
 
 const alarmPutOptions = {
@@ -35,11 +30,6 @@ const alarmPutOptions = {
     const {data: result} = await apiClient.put(`/sensor_field/stamdata/alarms/${path}`, data);
     return result;
   },
-  onSuccess: () => {
-    queryClient.invalidateQueries({
-      queryKey: ['alarm'],
-    });
-  },
 };
 
 const alarmDelOptions = {
@@ -48,11 +38,6 @@ const alarmDelOptions = {
     const {path} = mutation_data;
     const {data: result} = await apiClient.delete(`/sensor_field/stamdata/alarms/${path}`);
     return result;
-  },
-  onSuccess: () => {
-    queryClient.invalidateQueries({
-      queryKey: ['alarm'],
-    });
   },
 };
 
@@ -100,19 +85,22 @@ export const useAlarm = () => {
   const post = useMutation({
     ...alarmPostOptions,
     meta: {
-      invalidates: [['alarm']],
+      invalidates: [queryKeys.Timeseries.AlarmList(ts_id)],
+      optOutGeneralInvalidations: true,
     },
   });
   const put = useMutation({
     ...alarmPutOptions,
     meta: {
-      invalidates: [['alarm']],
+      invalidates: [queryKeys.Timeseries.AlarmList(ts_id)],
+      optOutGeneralInvalidations: true,
     },
   });
   const del = useMutation({
     ...alarmDelOptions,
     meta: {
-      invalidates: [['alarm']],
+      invalidates: [queryKeys.Timeseries.AlarmList(ts_id)],
+      optOutGeneralInvalidations: true,
     },
   });
 

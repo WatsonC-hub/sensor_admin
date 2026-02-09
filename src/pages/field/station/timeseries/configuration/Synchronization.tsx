@@ -11,6 +11,7 @@ import TooltipWrapper from '~/components/TooltipWrapper';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useStationProgress} from '~/hooks/query/stationProgress';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 
 const SyncSchema = z
   .object({
@@ -45,6 +46,8 @@ type SynchronizationProps = {
 const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: SynchronizationProps) => {
   const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const {location_permissions} = usePermissions(loc_id);
+
+  const {data: metadata} = useTimeseriesData(ts_id);
   const {
     get: {data: sync_data},
     post: postSync,
@@ -128,9 +131,15 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
       {(isDmpAllowed || canSyncJupiter) && (
         <Form formMethods={syncMethods} gridSizes={12}>
           {canSyncJupiter && (
-            <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til Jupiter">
+            <TooltipWrapper
+              description={
+                metadata?.intakeno == null
+                  ? 'Indtagsnummer mangler før du kan synkronisere til Jupiter. Indtast det under rediger tidsserie.'
+                  : 'Aktiverer synkronisering af denne tidsserie til Jupiter'
+              }
+            >
               <Form.Checkbox
-                disabled={location_permissions !== 'edit'}
+                disabled={location_permissions !== 'edit' || metadata?.intakeno == null}
                 name="jupiter"
                 label="Jupiter"
               />

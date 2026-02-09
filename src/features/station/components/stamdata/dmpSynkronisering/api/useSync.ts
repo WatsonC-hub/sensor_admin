@@ -31,9 +31,6 @@ const syncPostOptions: MutationOptions<unknown, unknown, SyncPost> = {
     const {data: result} = await apiClient.post(`/sensor_field/stamdata/sync/${path}`, data);
     return result;
   },
-  meta: {
-    invalidates: [['sync']],
-  },
   onSuccess: () => {
     toast.success('Synkronisering er slået til');
   },
@@ -46,9 +43,6 @@ const syncPutOptions: MutationOptions<unknown, unknown, SyncPut> = {
     const {data: result} = await apiClient.put(`/sensor_field/stamdata/sync/${path}`, data);
     return result;
   },
-  meta: {
-    invalidates: [['sync']],
-  },
   onSuccess: () => {
     toast.success('Synkronisering er opdateret');
   },
@@ -60,9 +54,6 @@ const syncDelOptions: MutationOptions<unknown, unknown, SyncBase> = {
     const {path} = mutation_data;
     const {data: result} = await apiClient.delete(`/sensor_field/stamdata/sync/${path}`);
     return result;
-  },
-  meta: {
-    invalidates: [['sync']],
   },
   onSuccess: () => {
     toast.success('Synkronisering er slået fra');
@@ -82,10 +73,24 @@ const syncGetOptions = (ts_id: number) =>
 const useSync = () => {
   const {ts_id} = useAppContext(['ts_id']);
 
+  const meta = {
+    invalidates: [queryKeys.Timeseries.SyncData(ts_id)],
+    optOutGeneralInvalidations: true,
+  };
+
   const syncGet = useQuery(syncGetOptions(ts_id));
-  const syncPost = useMutation(syncPostOptions);
-  const syncPut = useMutation(syncPutOptions);
-  const syncDel = useMutation(syncDelOptions);
+  const syncPost = useMutation({
+    ...syncPostOptions,
+    meta,
+  });
+  const syncPut = useMutation({
+    ...syncPutOptions,
+    meta,
+  });
+  const syncDel = useMutation({
+    ...syncDelOptions,
+    meta,
+  });
 
   return {
     get: syncGet,

@@ -127,13 +127,12 @@ const Intakeno = (
   );
 };
 
-const Prefix = (
-  props: Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'> & {
-    loc_name: string | undefined;
-  }
-) => {
-  // const {loc_name} = React.useContext(TimeseriesContext);
-  const loc_name = props.loc_name;
+const Prefix = ({
+  loc_name,
+  ...props
+}: Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'> & {
+  loc_name: string | undefined;
+}) => {
   return (
     <FormInput
       name="prefix"

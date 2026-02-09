@@ -12,6 +12,7 @@ const updateTimeseriesMutationOptions = (ts_id: number) => ({
   },
   meta: {
     invalidates: [['metadata']],
+    optOutGeneralInvalidations: true,
   },
   onSuccess: () => {
     toast.success('metadata gemt');

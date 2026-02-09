@@ -67,7 +67,7 @@ export const useParkering = () => {
     onSuccess: () => {
       toast.success('Parkering gemt');
     },
-    meta: {invalidates: [queryKeys.Parking.all()]},
+    meta: {invalidates: [queryKeys.Parking.all()], optOutGeneralInvalidations: true},
   });
 
   const put = useMutation({
@@ -75,7 +75,7 @@ export const useParkering = () => {
     onSuccess: () => {
       toast.success('Parkering ændret');
     },
-    meta: {invalidates: [queryKeys.Parking.all()]},
+    meta: {invalidates: [queryKeys.Parking.all()], optOutGeneralInvalidations: true},
   });
 
   const del = useMutation({
@@ -83,7 +83,7 @@ export const useParkering = () => {
     onSuccess: () => {
       toast.success('Parkering slettet');
     },
-    meta: {invalidates: [queryKeys.Parking.all()]},
+    meta: {invalidates: [queryKeys.Parking.all()], optOutGeneralInvalidations: true},
   });
 
   return {get, post, put, del};

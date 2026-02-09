@@ -81,7 +81,7 @@ export const useTilsyn = () => {
       toast.success('Tilsyn gemt');
     },
     meta: {
-      invalidates: [['service']],
+      invalidates: [queryKeys.Timeseries.tilsyn(ts_id)],
     },
   });
 
@@ -91,7 +91,7 @@ export const useTilsyn = () => {
       toast.success('Tilsyn ændret');
     },
     meta: {
-      invalidates: [['service']],
+      invalidates: [queryKeys.Timeseries.tilsyn(ts_id)],
     },
   });
 
@@ -101,7 +101,7 @@ export const useTilsyn = () => {
       toast.success('Tilsyn slettet');
     },
     meta: {
-      invalidates: [['service']],
+      invalidates: [queryKeys.Timeseries.tilsyn(ts_id)],
     },
   });
 

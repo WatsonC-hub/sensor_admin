@@ -65,7 +65,7 @@ export const useLeafletMapRoute = () => {
     onSuccess: () => {
       toast.success('Rute gemt');
     },
-    meta: {invalidates: [queryKeys.Routes.all()]},
+    meta: {invalidates: [queryKeys.Routes.all()], optOutGeneralInvalidations: true},
   });
 
   const put = useMutation({
@@ -73,7 +73,7 @@ export const useLeafletMapRoute = () => {
     onSuccess: () => {
       toast.success('Rute ændret');
     },
-    meta: {invalidates: [queryKeys.Routes.all()]},
+    meta: {invalidates: [queryKeys.Routes.all()], optOutGeneralInvalidations: true},
   });
 
   const del = useMutation({
@@ -81,7 +81,7 @@ export const useLeafletMapRoute = () => {
     onSuccess: () => {
       toast.success('Rute slettet');
     },
-    meta: {invalidates: [queryKeys.Routes.all()]},
+    meta: {invalidates: [queryKeys.Routes.all()], optOutGeneralInvalidations: true},
   });
 
   return {get, post, put, del};
