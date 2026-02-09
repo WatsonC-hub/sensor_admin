@@ -79,7 +79,7 @@ export const useExclude = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.removedData(ts_id)],
+      invalidates: [queryKeys.Timeseries.QAWithTsId(ts_id)],
     },
   });
 
@@ -92,7 +92,7 @@ export const useExclude = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.removedData(ts_id)],
+      invalidates: [queryKeys.Timeseries.QAWithTsId(ts_id)],
     },
   });
 
@@ -105,7 +105,7 @@ export const useExclude = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.removedData(ts_id)],
+      invalidates: [queryKeys.Timeseries.QAWithTsId(ts_id)],
     },
   });
 

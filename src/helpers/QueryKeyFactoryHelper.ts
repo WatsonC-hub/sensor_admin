@@ -53,6 +53,8 @@ export const queryKeys = {
     ServiceInterval: (ts_id: number) => ['service_interval', 'udstyr', ts_id] as const,
     SyncData: (ts_id: number) => ['sync', ts_id] as const,
     AlarmList: (ts_id: number | undefined) => ['alarm', ts_id] as const,
+    StationProgress: (loc_id: number | undefined, ts_id: number | undefined) =>
+      ['station_progress', loc_id, ts_id] as const,
   },
   Borehole: {
     stamdata: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
