@@ -6,9 +6,7 @@ const Configuration = () => {
   return (
     <>
       <Layout>
-        <Box width="fit-content" alignItems="center">
-          <Typography variant="h6">Service Level Agreement (SLA)</Typography>
-        </Box>
+        <Typography variant="h6">Service Level Agreement (SLA)</Typography>
 
         <SLAConfiguration />
       </Layout>
@@ -33,7 +31,7 @@ const Layout = ({children}: LayoutProps) => {
         border: '1px solid',
         borderColor: 'divider',
         borderRadius: 1,
-        minWidth: 500,
+        maxWidth: 700,
       }}
     >
       {children}

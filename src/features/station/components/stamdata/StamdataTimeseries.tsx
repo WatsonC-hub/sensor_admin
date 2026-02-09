@@ -127,13 +127,12 @@ const Intakeno = (
   );
 };
 
-const Prefix = (
-  props: Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'> & {
-    loc_name: string | undefined;
-  }
-) => {
-  // const {loc_name} = React.useContext(TimeseriesContext);
-  const loc_name = props.loc_name;
+const Prefix = ({
+  loc_name,
+  ...props
+}: Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'> & {
+  loc_name: string | undefined;
+}) => {
   return (
     <FormInput
       name="prefix"
@@ -211,7 +210,11 @@ const HidePublic = () => {
   );
 };
 
-const ScanCalypsoLabel = () => {
+type ScanCalypsoLabelProps = {
+  disabled?: boolean;
+};
+
+const ScanCalypsoLabel = ({disabled}: ScanCalypsoLabelProps) => {
   const [openCamera, setOpenCamera] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [calypso_id, setCalypso_id] = React.useState<number | null>(null);
@@ -243,6 +246,7 @@ const ScanCalypsoLabel = () => {
         color="primary"
         startIcon={<PhotoCameraRounded />}
         onClick={() => setOpenCamera(true)}
+        disabled={disabled}
       >
         {calypso_id_watch ? 'Skift ID' : 'Tilføj ID'}
       </Button>

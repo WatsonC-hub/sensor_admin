@@ -16,6 +16,7 @@ import type {
   MultiSelectProps,
   Ressourcer,
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {CategoryType} from '~/helpers/EnumHelper';
 import {useStationProgress} from '~/hooks/query/stationProgress';
 import {useAppContext} from '~/state/contexts';
@@ -297,6 +298,19 @@ export default function TranserList({value, setValue}: TransferListProps) {
           {customList(selected ?? [], selectedCategory ?? [], 'Udvalgt')}
         </Box>
       )}
+      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+        <UpdateProgressButton
+          loc_id={loc_id}
+          ts_id={-1}
+          disabled={
+            checked.length > 0 ||
+            (selected.length === value.length && selected.length > 0) ||
+            disabled
+          }
+          progressKey="ressourcer"
+          alterStyle
+        />
+      </Box>
     </>
   );
 }

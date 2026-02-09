@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, Typography, TextField, InputAdornment, Alert} from '@mui/material';
+import {Box, Typography, TextField, InputAdornment, Alert, Grid2} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
@@ -22,6 +22,7 @@ import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import dayjs from 'dayjs';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useStationProgress} from '~/hooks/query/stationProgress';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
@@ -82,10 +83,13 @@ const UnitMeasurementConfig = () => {
     values: values,
   });
 
+  const {location_permissions} = usePermissions(loc_id);
+
   const disabled =
     !data?.configPossible ||
     (currentLocation?.is_customer_service && superUser) ||
-    (!currentLocation?.is_customer_service && !superUser);
+    (!currentLocation?.is_customer_service && !superUser) ||
+    location_permissions !== 'edit';
 
   const {
     handleSubmit,
@@ -268,19 +272,19 @@ const UnitMeasurementConfig = () => {
       </Typography>
 
       {!disabled && (
-        <Box display="flex" justifyContent="flex-end" gap={1}>
+        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
           <UpdateProgressButton
             loc_id={loc_id}
             ts_id={ts_id}
             progressKey="samplesend"
-            disabled={disabled}
+            disabled={disabled || isDirty}
           />
           <Button
             bttype="tertiary"
             onClick={() => reset()}
             disabled={isSubmitting || !isDirty || disabled}
           >
-            Annuller
+            <Typography variant="body2">Annuller</Typography>
           </Button>
           <Button
             bttype="primary"
@@ -294,9 +298,9 @@ const UnitMeasurementConfig = () => {
             )}
             startIcon={<Save />}
           >
-            Gem
+            <Typography variant="body2">Gem</Typography>
           </Button>
-        </Box>
+        </Grid2>
       )}
     </FormProvider>
   );
