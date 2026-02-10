@@ -195,6 +195,11 @@ export type PostTaskitinerary = Omit<
   due_date?: string | null;
 };
 
+export type PatchTaskitinerary = {
+  path: string;
+  data: Partial<Omit<Taskitinerary, 'id' | 'created_at' | 'created_by'>>;
+};
+
 export type DeleteTaskFromItinerary = {
   path: string;
 };
