@@ -112,17 +112,10 @@ const useMap = <TData extends object>(
     {
       text: 'Google Maps',
       callback: function (e: L.ContextMenuItemClickEvent) {
-        if (e.relatedTarget && 'data' in e.relatedTarget.options) {
-          window.open(
-            `https://www.google.com/maps/search/?api=1&query=${e.relatedTarget.options.data.latitude},${e.relatedTarget.options.data.longitude}`,
-            '_blank'
-          );
-        } else {
-          window.open(
-            `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
-            '_blank'
-          );
-        }
+        window.open(
+          `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
+          '_blank'
+        );
       },
       icon: '/leaflet-images/directions.png',
     },
@@ -267,16 +260,12 @@ const useMap = <TData extends object>(
     setPan(map.getCenter());
 
     const layer = markerLayerRef.current;
-    // if (!layer) return;
 
     const parkingLayer = parkingLayerRef.current;
-    // if (!parkingLayer) return;
 
     const geoJsonLayer = geoJsonRef.current;
-    // if (!geoJsonLayer) return;
 
     const tooltipLayer = tooltipRef.current;
-    // if (!tooltipLayer) return;
 
     if (geoJsonLayer) {
       if (zoom > zoomThresholdForParking && leafletMapRoutes && leafletMapRoutes.length > 0) {
@@ -384,8 +373,6 @@ const useMap = <TData extends object>(
           if (geoJsonRef && geoJsonRef.current) {
             geo.addTo(geoJsonRef.current);
           }
-
-          // geoJsonRef.current.setStyle(routeStyle);
         }
       }
     }

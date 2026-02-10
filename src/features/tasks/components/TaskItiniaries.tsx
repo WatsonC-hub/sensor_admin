@@ -22,6 +22,7 @@ import {FlagEnum, ItineraryColors, sensorColors} from '~/features/notifications/
 import {useUser} from '~/features/auth/useUser';
 import {Edit, ExpandLess, ExpandMore, Person} from '@mui/icons-material';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useAtom} from 'jotai';
 import {highlightedItinerariesAtom} from '~/state/atoms';
 
@@ -86,6 +87,12 @@ const TaskItiniaries = () => {
     select: (itineraries) => selectData(itineraries, user_id),
   });
 
+  const {data: mapOverview} = useMapOverview({
+    select: (data) => {
+      return data.filter((location) => location.itinerary_id !== null);
+    },
+  });
+
   const [openItineraryDialog, setOpenItineraryDialog] = useState<string | undefined>(undefined);
   const [expandItinerary, setExpandItinerary] = useState<Record<string, boolean>>({});
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -143,14 +150,11 @@ const TaskItiniaries = () => {
                       (task) => task.itinerary_id === itinerary.id
                     );
 
-                    const loc_ids = [...new Set(itinerary_tasks?.map((task) => task.loc_id))];
-
-                    const locations = loc_ids
-                      .map((loc_id) => ({
-                        loc_id,
-                        loc_name:
-                          itinerary_tasks?.find((task) => task.loc_id === loc_id)?.location_name ??
-                          '',
+                    const locations = mapOverview
+                      ?.filter((location) => location.itinerary_id === itinerary.id)
+                      .map((loc) => ({
+                        loc_id: loc.loc_id,
+                        loc_name: loc.loc_name,
                       }))
                       .sort((a, b) =>
                         a.loc_name.localeCompare(b.loc_name, 'da', {sensitivity: 'base'})
@@ -395,7 +399,7 @@ const TaskItiniaries = () => {
                               >
                                 <Box display="flex" gap={0.5} flexDirection={'column'}>
                                   {expanded
-                                    ? locations.map((location) => {
+                                    ? locations?.map((location) => {
                                         return (
                                           <Box
                                             key={location.loc_id}

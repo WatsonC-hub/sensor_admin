@@ -31,9 +31,11 @@ const SensorContent = () => {
     },
   });
 
-  const enableDragToTrip = tasks?.some(
-    (task) => task.loc_id === loc_id && task.status_id == StatusEnum.FIELD
-  );
+  const enableDragToTrip =
+    tasks?.some((task) => task.loc_id === loc_id && task.status_id == StatusEnum.FIELD) ||
+    (location?.not_serviced == true &&
+      location?.inactive_new == true &&
+      location?.in_service == false);
 
   const {ref} = useDraggable({
     id: 'location' + loc_id,
@@ -57,7 +59,7 @@ const SensorContent = () => {
             title={
               !enableDragToTrip
                 ? 'Lav en opgave til feltarbejde for at kunne trække til tur'
-                : 'Træk til tur for at tilføje opgaver'
+                : 'Træk lokationen til en tur for at tilføje den til turen'
             }
             arrow
           >
