@@ -268,7 +268,7 @@ export default function TranserList({loc_id, value, setValue}: TransferListProps
   };
 
   return (
-    <>
+    <Box display="flex" flexDirection={'column'}>
       {options && options.length > 0 && categories && categories.length > 0 && (
         <Box my={1} gap={1} display={'flex'} flexDirection={'row'} justifyContent="center">
           {customList(left ?? [], leftCategory ?? [], 'Valgbare')}
@@ -310,6 +310,6 @@ export default function TranserList({loc_id, value, setValue}: TransferListProps
           alterStyle
         />
       </Box>
-    </>
+    </Box>
   );
 }

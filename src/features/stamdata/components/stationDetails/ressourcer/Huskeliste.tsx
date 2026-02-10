@@ -42,7 +42,7 @@ const Huskeliste = ({loc_id, onValidate}: HuskelisteProps) => {
   const {isMobile} = useBreakpoints();
   const {
     relation: {data: related},
-  } = useRessourcer();
+  } = useRessourcer(loc_id);
 
   const {location_permissions} = usePermissions(loc_id);
 
