@@ -133,18 +133,18 @@ export const useTasks = () => {
     simpleTaskPermission,
   } = useUser();
 
-  const get = useQuery<Array<TaskAPI>, APIError, Task[]>({
+  const get = useQuery<Task[], APIError, Task[]>({
     queryKey: queryKeys.Tasks.all(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<TaskAPI>>(`/sensor_admin/tasks`);
-      return data;
-    },
-    select: (data): Array<Task> =>
-      data.map((task) => ({
+
+      return data.map((task) => ({
         ...task,
         due_date: task.due_date ? dayjs(task.due_date) : null,
         sla: task.sla ? dayjs(task.sla) : null,
-      })),
+      }));
+    },
+
     staleTime: 1000 * 60 * 1, // 1 minute
   });
 

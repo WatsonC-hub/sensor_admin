@@ -3,7 +3,6 @@ import {useQuery, queryOptions} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {TaskPermission} from '../tasks/types';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 type User = {
   user_id: number;
@@ -57,7 +56,6 @@ export const userQueryOptions = queryOptions({
 
 export const useUser = () => {
   const {data} = useQuery(userQueryOptions);
-  useNavigationFunctions();
 
   if (!data) return defaultUser;
 

@@ -139,7 +139,7 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
               }
             >
               <Form.Checkbox
-                disabled={location_permissions !== 'edit' || metadata?.intakeno == null}
+                disabled={location_permissions !== 'edit' || metadata?.intakeno == null || disabled}
                 name="jupiter"
                 label="Jupiter"
               />
@@ -186,7 +186,10 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
                 ts_id={ts_id}
                 progressKey="sync"
               />
-              <Form.Cancel disabled={location_permissions !== 'edit'} cancel={() => resetSync()} />
+              <Form.Cancel
+                disabled={location_permissions !== 'edit' || !isDirty}
+                cancel={() => resetSync()}
+              />
               <Form.Submit disabled={location_permissions !== 'edit'} submit={submit} />
             </Grid2>
           )}
