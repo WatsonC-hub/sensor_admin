@@ -14,6 +14,7 @@ import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
 type VisibilityConfigProps = {
   loc_id: number;
   ts_id: number;
+  disabled: boolean;
 };
 
 const schema = z.object({
@@ -25,7 +26,7 @@ type Form = z.infer<typeof schema>;
 
 const Form = createTypedForm<Form>();
 
-const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
+const VisibilityConfig = ({loc_id, ts_id, disabled}: VisibilityConfigProps) => {
   const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'visibility', ts_id);
   const {location_permissions} = usePermissions(loc_id);
   const {data: timeseries} = useQuery(
@@ -59,30 +60,32 @@ const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
         <Form.Checkbox
           name="requires_auth"
           label="Data tilgængelighed kræver login"
-          disabled={location_permissions !== 'edit'}
+          disabled={location_permissions !== 'edit' || disabled}
         />
         <Form.Checkbox
           name="hide_public"
           label="Skjul i offentlige visninger"
-          disabled={location_permissions !== 'edit'}
+          disabled={location_permissions !== 'edit' || disabled}
         />
-        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
-          <UpdateProgressButton
-            loc_id={loc_id}
-            disabled={isDirty || location_permissions !== 'edit'}
-            ts_id={ts_id}
-            progressKey="visibility"
-          />
-          <Form.Cancel disabled={location_permissions !== 'edit'} cancel={() => reset()} />
-          <Form.Submit
-            disabled={location_permissions !== 'edit'}
-            submit={async (values) => {
-              updateTimeseries.mutate(values, {
-                onSuccess: () => needsProgress && hasAssessed(),
-              });
-            }}
-          />
-        </Grid2>
+        {(location_permissions !== 'edit' || !disabled) && (
+          <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+            <UpdateProgressButton
+              loc_id={loc_id}
+              disabled={isDirty}
+              ts_id={ts_id}
+              progressKey="visibility"
+            />
+            <Form.Cancel disabled={!isDirty} cancel={() => reset()} />
+            <Form.Submit
+              disabled={!isDirty}
+              submit={async (values) => {
+                updateTimeseries.mutate(values, {
+                  onSuccess: () => needsProgress && hasAssessed(),
+                });
+              }}
+            />
+          </Grid2>
+        )}
       </Form>
     </Box>
   );
