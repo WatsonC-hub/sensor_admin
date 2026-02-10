@@ -17,7 +17,7 @@ interface MaalepunktPost extends MaalepunktBase {
     startdate: Dayjs;
     enddate: Dayjs;
     elevation: number | null;
-    mp_description?: string;
+    mp_description?: string | null;
   };
 }
 
@@ -27,7 +27,7 @@ interface MaalepunktPut extends MaalepunktPost {
     startdate: Dayjs;
     enddate: Dayjs;
     elevation: number | null;
-    mp_description?: string;
+    mp_description?: string | null;
   };
 }
 

@@ -45,7 +45,6 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
     const data = {
       ...values,
     };
-
     if (values.gid === undefined) {
       const payload = {
         data: data,
@@ -60,7 +59,6 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
       putWatlevmp.mutate(payload, mutationOptions);
     }
   };
-
   return (
     <Box maxWidth={600} margin="auto">
       <Form
@@ -97,8 +95,8 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
                   disableClearable
                   slotProps={{}}
                   options={options}
-                  inputValue={value}
-                  value={value}
+                  inputValue={value ?? ''}
+                  value={value ?? ''}
                   ref={ref}
                   fullWidth
                   onBlur={onBlur}
@@ -140,6 +138,7 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
           ml="auto"
         >
           <Form.Cancel
+            disabled={false}
             cancel={() => {
               if (defaultValues?.gid) reset(initialWatlevmpData());
               else reset();
