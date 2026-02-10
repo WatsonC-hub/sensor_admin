@@ -8,6 +8,7 @@ import {APIError} from '~/queryClient';
 import {
   type completeItinerary,
   type AddLocationToItinerary,
+  type PatchTaskitinerary,
   type PostTaskitinerary,
   type Task,
   type Taskitinerary,
@@ -39,6 +40,15 @@ const addLocationToItineraryOptions = {
   mutationFn: async (mutation_data: AddLocationToItinerary) => {
     const {path, data} = mutation_data;
     const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}`, data);
+    return result;
+  },
+};
+
+const patchItineraryOptions = {
+  mutationKey: ['itinerary_patch'],
+  mutationFn: async (mutation_data: PatchTaskitinerary) => {
+    const {path, data} = mutation_data;
+    const {data: result} = await apiClient.patch(`/sensor_admin/tasks/itineraries/${path}`, data);
     return result;
   },
 };
@@ -114,6 +124,16 @@ const useTaskItinerary = <T = Taskitinerary[]>(
     },
   });
 
+  const patch = useMutation({
+    ...patchItineraryOptions,
+    onSuccess: () => {
+      toast.success('Tur opdateret');
+    },
+    meta: {
+      invalidates: [queryKeys.Itineraries.all()],
+    },
+  });
+
   const complete = useMutation({
     ...completeItineraryOptions,
     onSuccess: () => {
@@ -148,6 +168,7 @@ const useTaskItinerary = <T = Taskitinerary[]>(
     get,
     getItinerary,
     createItinerary,
+    patch,
     getItineraryTasks,
     complete,
     addLocationToTrip,
