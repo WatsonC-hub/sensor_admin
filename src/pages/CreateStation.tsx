@@ -67,7 +67,12 @@ const CreateStation = () => {
               <AdditionalStep activeStep={activeStep} setActiveStep={setActiveStep} />
             </>
           )}
-          <TimeseriesStep key="ts" activeStep={activeStep} setActiveStep={setActiveStep} />
+          <TimeseriesStep
+            key="ts"
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            loc_id={state.loc_id}
+          />
         </Grid2>
       </Box>
     </CreateStationStoreProvider>

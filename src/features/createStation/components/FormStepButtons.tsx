@@ -43,7 +43,6 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
   ]);
 
   const isDisabled = isFormError || (state.loc_id && Object.values(submitters).length === 0);
-
   const stamdataNewMutation = useMutation({
     mutationFn: async (data: CreateStationPayload) => {
       const {data: out} = await apiClient.post(`/sensor_field/stamdata/create_station`, data);
@@ -59,6 +58,13 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
       invalidates: [['metadata']],
     },
   });
+
+  const timeseries = Object.values(formState?.timeseries || []);
+  const withEquipment = timeseries.filter((ts) => ts.unit !== undefined).length;
+
+  const dialogMessage = loc_id
+    ? `Du er i gang med at tilføje tidsserier til lokationen: ${formState?.location?.meta.loc_name}. \n\n Der er blevet tilføjet ${timeseries.length} ${timeseries.length > 1 ? 'tidsserier' : 'tidsserie'} (${withEquipment} med udstyr). \n\n Er du sikker på, at du vil færdiggøre oprettelsen?`
+    : `Du er i gang med at oprette en ny lokation med dette navn: ${formState?.location?.meta.loc_name}. \n\n Der er blevet tilføjet ${timeseries.length}  ${timeseries.length > 1 ? 'tidsserier' : 'tidsserie'} (${withEquipment} med udstyr). \n\n Er du sikker på, at du vil færdiggøre oprettelsen?`;
 
   return (
     <Grid2 size={12} gap={0.5} pr={0.5}>
@@ -123,38 +129,16 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
         open={showAlert}
         setOpen={setShowAlert}
         title="Færdiggør oprettelse"
-        saveTitle={superUser ? 'Forsæt' : 'Opret station'}
-        message={
-          <Typography>
-            {!loc_id && (
-              <>
-                Du er i gang med at oprette en ny lokation med dette navn:
-                <Typography pl={1} component="span" fontWeight="bold">
-                  {formState?.location?.meta.loc_name}
-                </Typography>
-                <br />
-                <br />
-              </>
-            )}
-            {Object.values(formState?.timeseries || {}).length === 0 ? (
-              'Der er ikke blevet tilføjet nogen tidsserier'
-            ) : (
-              <>
-                Der er blevet tilføjet
-                <Typography pl={0.5} component="span" fontWeight="bold">
-                  {Object.values(formState?.timeseries || {}).length}
-                </Typography>{' '}
-                tidsserie(r) (
-                {
-                  Object.values(formState?.timeseries || {}).filter((ts) => ts.unit !== undefined)
-                    .length
-                }{' '}
-                med udstyr) <br />
-              </>
-            )}
-            <Typography mt={2}>Er du sikker på, at du vil færdiggøre oprettelsen?</Typography>
-          </Typography>
+        saveTitle={
+          superUser
+            ? 'Forsæt'
+            : loc_id
+              ? timeseries.length > 1
+                ? 'Opret tidsserier'
+                : 'Opret tidsserie'
+              : 'Opret lokation'
         }
+        message={dialogMessage}
         handleOpret={() => {
           if (superUser) setShowDialog(true);
           else {
@@ -181,7 +165,7 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
         title="Har du taget stilling til alle felter?"
         closeTitle="Nej"
         saveTitle="Ja"
-        message="Stationen vil blive oprettet uanset dit valg. Hvis du vælger “Nej”, kan du efterfølgende tage stilling til de felterne på stationssiden"
+        message="Stationen vil blive oprettet uanset dit valg. Hvis du vælger “Nej”, kan du efterfølgende tage stilling til felterne på stationssiden"
         handleOpret={() => {
           if (!formState) return;
           const submitState: CreateStationPayload = {

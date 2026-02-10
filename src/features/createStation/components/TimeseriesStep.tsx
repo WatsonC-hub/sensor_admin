@@ -7,9 +7,10 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 type Props = {
   activeStep: number;
   setActiveStep: (step: number) => void;
+  loc_id?: number;
 };
 
-const TimeseriesStep = ({activeStep, setActiveStep}: Props) => {
+const TimeseriesStep = ({activeStep, setActiveStep, loc_id}: Props) => {
   const submitters = useCreateStationStore((state) => state.submitters);
 
   return (
@@ -21,6 +22,7 @@ const TimeseriesStep = ({activeStep, setActiveStep}: Props) => {
             activeStep={activeStep}
             setActiveStep={setActiveStep}
             key={'timeseries'}
+            loc_id={loc_id}
             onFormIsValid={async () => {
               const valid = (
                 await Promise.all(Object.values(submitters).map(async (cb) => await cb()))

@@ -122,7 +122,13 @@ const UnitSection = ({uuid, show, setShow, tstype_id}: UnitStepProps) => {
           />
         )}
       </Box>
-      <Dialog open={open} onClose={() => setOpen(false)}>
+      <Dialog
+        open={open}
+        onClose={() => {
+          setOpen(false);
+          setShow(false);
+        }}
+      >
         <DialogTitle>Tilføj udstyr</DialogTitle>
         <DialogContent>
           <UnitForm

@@ -2,7 +2,6 @@ import {InputAdornment, Select, Typography, MenuItem} from '@mui/material';
 import React, {createContext, useState} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import {useUser} from '~/features/auth/useUser';
 import {ControlSettingsFormValues} from '../api/useControlSettingsForm';
 import FormTextField, {FormTextFieldProps} from '~/components/FormTextField';
 
@@ -144,18 +143,12 @@ const ControlFrequency = ({
 type LeadTimeProps = Omit<FormInputProps<ControlSettingsFormValues>, 'name'>;
 
 const LeadTime = ({onChangeCallback, ...rest}: LeadTimeProps) => {
-  const {superUser} = useUser();
-  const {getValues} = useFormContext();
-  const values = getValues();
   return (
     <FormInput
       {...rest}
       name="lead_time"
       label="Forvarsling"
       type="number"
-      disabled={
-        (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser)
-      }
       fullWidth
       slotProps={{
         input: {

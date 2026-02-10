@@ -1,5 +1,5 @@
 import {DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
-import React, {ReactNode} from 'react';
+import React from 'react';
 import Button from './Button';
 
 interface AlertProps {
@@ -8,7 +8,7 @@ interface AlertProps {
   title: string;
   closeTitle?: string;
   saveTitle?: string;
-  message: ReactNode | string;
+  message: string;
   handleOpret: () => void;
 }
 
@@ -40,7 +40,9 @@ export default function AlertDialog({
       >
         <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">{message}</DialogContentText>
+          <DialogContentText id="alert-dialog-description" sx={{whiteSpace: 'pre-line'}}>
+            {message}
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button bttype="tertiary" onClick={handleClose}>

@@ -26,7 +26,7 @@ const getQueryOptions = (loc_id: number | undefined, ts_id?: number) =>
       );
       return data;
     },
-    enabled: loc_id != undefined || ts_id != undefined,
+    enabled: loc_id != -1 || ts_id !== -1,
   });
 
 type ProgressStatusOptions<T> = Partial<
