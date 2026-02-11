@@ -113,15 +113,13 @@ export const useNotificationTypes = () => {
     queryKey: queryKeys.notificationTypes(),
     queryFn: async () => {
       const {data} = await apiClient.get<NotificationType[]>('/sensor_admin/notification-types');
-      return data;
-    },
-    staleTime: 1000 * 60 * 60,
-    select: (data) =>
-      data.sort((a, b) => {
+      return data.sort((a, b) => {
         if (a.flag === b.flag) {
           return a.name.localeCompare(b.name);
         }
         return b.flag - a.flag;
-      }),
+      });
+    },
+    staleTime: 1000 * 60 * 60,
   });
 };

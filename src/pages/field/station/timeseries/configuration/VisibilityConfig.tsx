@@ -8,7 +8,7 @@ import {createTypedForm} from '~/components/formComponents/Form';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useStationProgress} from '~/hooks/query/stationProgress';
-import {metadataQueryOptions} from '~/hooks/query/useMetadata';
+import {Metadata, metadataQueryOptions} from '~/hooks/query/useMetadata';
 import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
 
 type VisibilityConfigProps = {
@@ -26,15 +26,17 @@ type Form = z.infer<typeof schema>;
 
 const Form = createTypedForm<Form>();
 
+const metadataSelector = (data: Metadata) => ({
+  requires_auth: data.requires_auth,
+  hide_public: data.hide_public,
+});
+
 const VisibilityConfig = ({loc_id, ts_id, disabled}: VisibilityConfigProps) => {
   const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'visibility', ts_id);
   const {location_permissions} = usePermissions(loc_id);
   const {data: timeseries} = useQuery(
     metadataQueryOptions<Form>(ts_id, {
-      select: (data) => ({
-        requires_auth: data.requires_auth,
-        hide_public: data.hide_public,
-      }),
+      select: metadataSelector,
     })
   );
 

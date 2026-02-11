@@ -1,5 +1,5 @@
 import {Box, Typography, Card, IconButton, Link} from '@mui/material';
-import React, {ReactNode, useRef, useState} from 'react';
+import React, {ReactNode, useCallback, useRef, useState} from 'react';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
@@ -23,7 +23,7 @@ import {FlagEnum, ItineraryColors, sensorColors} from '~/features/notifications/
 import {useUser} from '~/features/auth/useUser';
 import {Edit, ExpandLess, ExpandMore, Person} from '@mui/icons-material';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
 
 const selectData = (data: Taskitinerary[], user_id: number | undefined) => {
   const reduced = data.reduce(
@@ -76,6 +76,9 @@ function Droppable({id, children, color}: {id: string; children: ReactNode; colo
   );
 }
 
+const filterMapOverview = (data: MapOverview[]) =>
+  data.filter((location) => location.itinerary_id !== null);
+
 const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -83,13 +86,11 @@ const TaskItiniaries = () => {
   const {
     get: {data},
   } = useTaskItinerary(undefined, {
-    select: (itineraries) => selectData(itineraries, user_id),
+    select: useCallback((data: Taskitinerary[]) => selectData(data, user_id), [user_id]),
   });
 
   const {data: mapOverview} = useMapOverview({
-    select: (data) => {
-      return data.filter((location) => location.itinerary_id !== null);
-    },
+    select: filterMapOverview,
   });
 
   const [openItineraryDialog, setOpenItineraryDialog] = useState<string | undefined>(undefined);

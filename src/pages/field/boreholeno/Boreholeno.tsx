@@ -105,24 +105,19 @@ const Boreholeno = () => {
   const [control, setcontrol] = useState<Array<BoreholeMeasurement> | undefined>();
   const [dynamic, setDynamic] = useState<{date: string; measurement: number} | null>(null);
 
-  const {data: measurements} = useQuery<
-    Array<BoreholeMeasurementAPI>,
-    Error,
-    Array<BoreholeMeasurement>
-  >({
+  const {data: measurements} = useQuery({
     queryKey: queryKeys.Borehole.measurementsWithIntake(boreholeno, intakeno),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<BoreholeMeasurementAPI>>(
         `/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`
       );
-      return data;
-    },
-    select: (data): Array<BoreholeMeasurement> =>
-      data.map((e) => ({
+      return data.map((e) => ({
         ...e,
         timeofmeas: dayjs(e.timeofmeas),
         pumpstop: e.pumpstop ? dayjs(e.pumpstop) : null,
-      })),
+      }));
+    },
+
     enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
     placeholderData: [],
   });
