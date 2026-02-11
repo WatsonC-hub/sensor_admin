@@ -3,7 +3,7 @@ import React, {useCallback} from 'react';
 import {Noop} from 'react-hook-form';
 import {ItineraryColors} from '~/features/notifications/consts';
 import {useItineraries} from '~/features/tasks/api/useItinerary';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {useTaskUsers} from '~/features/tasks/api/useTasks';
 import {Taskitinerary} from '~/features/tasks/types';
 import {SimpleItinerary} from '~/types';
 
@@ -15,9 +15,7 @@ type Props = {
 };
 
 const HighlightItineraries = ({setValue, value, onBlur, label = 'Itineraries'}: Props) => {
-  const {
-    getUsers: {data: users},
-  } = useTasks();
+  const {data: users} = useTaskUsers();
   const {data: options} = useItineraries({
     select: useCallback(
       (data: Taskitinerary[]) =>

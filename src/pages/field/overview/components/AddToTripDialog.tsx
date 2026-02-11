@@ -10,7 +10,7 @@ import {
 import React from 'react';
 import Button from '~/components/Button';
 import {useItineraryMutations, useItineraries} from '~/features/tasks/api/useItinerary';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {useTaskUsers} from '~/features/tasks/api/useTasks';
 
 type AddToTripDialogProps = {
   open: boolean;
@@ -23,9 +23,7 @@ const AddToTripDialog = ({open, onClose, loc_id}: AddToTripDialogProps) => {
   const {data: itineraries} = useItineraries();
   const {addLocationToTrip} = useItineraryMutations();
 
-  const {
-    getUsers: {data: taskUsers},
-  } = useTasks();
+  const {data: taskUsers} = useTaskUsers();
 
   const handleClose = () => {
     onClose();

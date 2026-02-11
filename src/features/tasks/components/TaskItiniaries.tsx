@@ -7,7 +7,7 @@ import {useTaskState} from '~/features/tasks/api/useTaskState';
 
 import {useItineraries, useItineraryMutations} from '../api/useItinerary';
 
-import {useTasks} from '../api/useTasks';
+import {useTaskUsers} from '../api/useTasks';
 import {Taskitinerary} from '../types';
 import {convertDate} from '~/helpers/dateConverter';
 import {useDisplayState} from '~/hooks/ui';
@@ -101,9 +101,7 @@ const TaskItiniaries = () => {
     state.setLocId,
   ]);
 
-  const {
-    getUsers: {data: users},
-  } = useTasks();
+  const {data: users} = useTaskUsers();
   const {tasks} = useTaskState();
   const {patch: updateItinerary} = useItineraryMutations();
 

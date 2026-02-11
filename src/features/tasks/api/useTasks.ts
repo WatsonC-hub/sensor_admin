@@ -120,30 +120,43 @@ export const useNextDueDate = (ts_id: number | undefined) => {
   return useQuery(getNextDueDateOptions(ts_id));
 };
 
-// /location_related_tasks/{loc_id}
-export const useTasks = () => {
-  const queryClient = useQueryClient();
-
-  const [setSelectedTask] = useDisplayState((state) => [state.setSelectedTask]);
+const useTaskUsers = () => {
   const {
     features: {iotAccess},
     simpleTaskPermission,
   } = useUser();
-
-  const get = useQuery<Task[], APIError, Task[]>({
-    queryKey: queryKeys.Tasks.all(),
+  return useQuery({
+    queryKey: queryKeys.Tasks.taskUsers(),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<TaskAPI>>(`/sensor_admin/tasks`);
+      const {data} = await apiClient.get<TaskUser[]>('/sensor_admin/tasks/task_users');
 
-      return data.map((task) => ({
-        ...task,
-        due_date: task.due_date ? dayjs(task.due_date) : null,
-        sla: task.sla ? dayjs(task.sla) : null,
-      }));
+      return data;
     },
-
-    staleTime: 1000 * 60 * 1, // 1 minute
+    staleTime: 1000 * 60 * 60,
+    enabled: simpleTaskPermission && iotAccess,
   });
+};
+
+const useTaskStatus = () => {
+  const {
+    features: {iotAccess},
+    simpleTaskPermission,
+  } = useUser();
+  return useQuery({
+    queryKey: queryKeys.Tasks.taskStatus(),
+    queryFn: async () => {
+      const {data} = await apiClient.get<TaskStatus[]>('/sensor_admin/tasks/status');
+
+      return data;
+    },
+    staleTime: 1000 * 60 * 60,
+    enabled: simpleTaskPermission && iotAccess,
+  });
+};
+
+const useTaskMutations = () => {
+  const queryClient = useQueryClient();
+  const [setSelectedTask] = useDisplayState((state) => [state.setSelectedTask]);
 
   const post = useMutation({
     ...tasksPostOptions,
@@ -217,28 +230,6 @@ export const useTasks = () => {
     onSuccess: () => {},
   });
 
-  const getUsers = useQuery<TaskUser[], APIError>({
-    queryKey: queryKeys.Tasks.taskUsers(),
-    queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_admin/tasks/task_users');
-
-      return data;
-    },
-    staleTime: 1000 * 60 * 60,
-    enabled: simpleTaskPermission && iotAccess,
-  });
-
-  const getStatus = useQuery<TaskStatus[], APIError>({
-    queryKey: queryKeys.Tasks.taskStatus(),
-    queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_admin/tasks/status');
-
-      return data;
-    },
-    staleTime: 1000 * 60 * 60,
-    enabled: simpleTaskPermission && iotAccess,
-  });
-
   const deleteTaskFromItinerary = useMutation({
     ...deleteTaskFromItineraryOptions,
     onSuccess: (data, variables) => {
@@ -260,17 +251,33 @@ export const useTasks = () => {
       toast.success('Opgaver fjernet fra tur');
     },
   });
-
   return {
-    get,
     post,
     patch,
     del,
     convertNotificationToTask,
     updateNotification,
-    getUsers,
-    getStatus,
+
     deleteTaskFromItinerary,
-    // getProjects,
   };
 };
+
+// /location_related_tasks/{loc_id}
+const useTasks = () => {
+  return useQuery<Task[], APIError, Task[]>({
+    queryKey: queryKeys.Tasks.all(),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<TaskAPI>>(`/sensor_admin/tasks`);
+
+      return data.map((task) => ({
+        ...task,
+        due_date: task.due_date ? dayjs(task.due_date) : null,
+        sla: task.sla ? dayjs(task.sla) : null,
+      }));
+    },
+
+    staleTime: 1000 * 60 * 1, // 1 minute
+  });
+};
+
+export {useTasks, useTaskMutations, useTaskUsers, useTaskStatus};

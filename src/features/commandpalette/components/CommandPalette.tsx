@@ -119,9 +119,15 @@ function CommandPalette() {
           />
         )}
         <Command.List className="cmdk-list">
-          {page == 'all' && <Command.Empty className="cmdk-empty">Ingen resultater</Command.Empty>}
+          {page == 'all' && (
+            <Command.Empty key="empty_all" className="cmdk-empty">
+              Ingen resultater
+            </Command.Empty>
+          )}
           {page == 'selection' && (
-            <Command.Empty className="cmdk-empty">Ingen resultater</Command.Empty>
+            <Command.Empty key="empty_selection" className="cmdk-empty">
+              Ingen resultater
+            </Command.Empty>
           )}
           {page == 'selection' &&
             selectedAction?.type === 'selection' &&
