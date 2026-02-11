@@ -94,7 +94,12 @@ export const useLocationAccess = (loc_id: number) => {
       toast.success('Adgangsinformation gemt');
     },
     meta: {
-      invalidates: [queryKeys.Location.keys(loc_id), [queryKeys.Location.info(loc_id)]],
+      invalidates: [
+        queryKeys.Location.keys(loc_id),
+        queryKeys.Location.info(loc_id),
+        queryKeys.StationProgress(),
+        queryKeys.Itineraries.itineraryCollection(null),
+      ],
       optOutGeneralInvalidations: true,
     },
   });
@@ -105,7 +110,11 @@ export const useLocationAccess = (loc_id: number) => {
       toast.success('Adgangsinformation ændret');
     },
     meta: {
-      invalidates: [queryKeys.Location.keys(loc_id), [queryKeys.Location.info(loc_id)]],
+      invalidates: [
+        queryKeys.Location.keys(loc_id),
+        queryKeys.Location.info(loc_id),
+        queryKeys.Itineraries.itineraryCollection(null),
+      ],
       optOutGeneralInvalidations: true,
     },
   });
@@ -116,7 +125,11 @@ export const useLocationAccess = (loc_id: number) => {
       toast.success('Adgangsinformation slettet');
     },
     meta: {
-      invalidates: [queryKeys.Location.keys(loc_id), [queryKeys.Location.info(loc_id)]],
+      invalidates: [
+        queryKeys.Location.keys(loc_id),
+        queryKeys.Location.info(loc_id),
+        queryKeys.Itineraries.itineraryCollection(null),
+      ],
       optOutGeneralInvalidations: true,
     },
   });

@@ -53,8 +53,6 @@ export const queryKeys = {
     ServiceInterval: (ts_id: number) => ['service_interval', 'udstyr', ts_id] as const,
     SyncData: (ts_id: number) => ['sync', ts_id] as const,
     AlarmList: (ts_id: number | undefined) => ['alarm', ts_id] as const,
-    StationProgress: (loc_id: number | undefined, ts_id: number | undefined) =>
-      ['station_progress', loc_id, ts_id] as const,
   },
   Borehole: {
     stamdata: (boreholeno: string | undefined | null, intakeno: number | undefined) =>
@@ -125,6 +123,5 @@ export const queryKeys = {
   actions: (unit_uuid: string | undefined) => ['actions', unit_uuid] as const,
   cmdOptions: () => ['cmd_options'] as const,
   dmpAllowedMapList: () => ['dmp_allowed_map_list'] as const,
-  metadataProgress: (loc_id: number | undefined, ts_id: number | undefined) =>
-    ['metadata_progress', 'register', 'metadata', loc_id, ts_id] as const,
+  StationProgress: () => ['station_progress'] as const,
 };

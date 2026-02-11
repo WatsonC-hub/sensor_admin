@@ -18,35 +18,11 @@ interface RessourcerPost extends RessourcerBase {
   };
 }
 
-interface RessourcerPut extends RessourcerBase {
-  data: {
-    ressourcer: Array<Ressourcer>;
-  };
-}
-
 const ressourcerPostOptions = {
   mutationKey: ['ressourcer_post'],
   mutationFn: async (mutation_data: RessourcerPost) => {
     const {path, data} = mutation_data;
     const {data: result} = await apiClient.post(`/sensor_field/stamdata/ressourcer/${path}`, data);
-    return result;
-  },
-};
-
-const ressourcerPutOptions = {
-  mutationKey: ['ressourcer_put'],
-  mutationFn: async (mutation_data: RessourcerPut) => {
-    const {path, data} = mutation_data;
-    const {data: result} = await apiClient.put(`/sensor_field/stamdata/ressourcer/${path}`, data);
-    return result;
-  },
-};
-
-const ressourcerDelOptions = {
-  mutationKey: ['ressourcer_del'],
-  mutationFn: async (mutation_data: RessourcerBase) => {
-    const {path} = mutation_data;
-    const {data: result} = await apiClient.delete(`/sensor_field/stamdata/ressourcer/${path}`);
     return result;
   },
 };
@@ -84,39 +60,13 @@ export const useRessourcer = () => {
     meta: {
       invalidates: [
         queryKeys.Location.locationRessources(loc_id),
-        [queryKeys.Location.info(loc_id)],
+        queryKeys.Location.info(loc_id),
+        queryKeys.Itineraries.itineraryCollection(null),
+        queryKeys.StationProgress(),
       ],
       optOutGeneralInvalidations: true,
     },
   });
 
-  const put = useMutation({
-    ...ressourcerPutOptions,
-    onSuccess: () => {
-      toast.success('Huskeliste ændret');
-    },
-    meta: {
-      invalidates: [
-        queryKeys.Location.locationRessources(loc_id),
-        [queryKeys.Location.info(loc_id)],
-      ],
-      optOutGeneralInvalidations: true,
-    },
-  });
-
-  const del = useMutation({
-    ...ressourcerDelOptions,
-    onSuccess: () => {
-      toast.success('Huskeliste slettet');
-    },
-    meta: {
-      invalidates: [
-        queryKeys.Location.locationRessources(loc_id),
-        [queryKeys.Location.info(loc_id)],
-      ],
-      optOutGeneralInvalidations: true,
-    },
-  });
-
-  return {get, relation, post, put, del};
+  return {get, relation, post};
 };

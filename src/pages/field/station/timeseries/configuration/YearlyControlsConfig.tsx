@@ -14,7 +14,6 @@ import {z} from 'zod';
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 import usePermissions from '~/features/permissions/api/usePermissions';
 
 const yearlyControlsSchema = z.object({
@@ -47,8 +46,6 @@ const YearlyControlsConfig = () => {
   const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
   const {isMobile} = useBreakpoints();
   const {location_permissions} = usePermissions(loc_id);
-
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'kontrolhyppighed', ts_id);
 
   const disabled =
     (values?.isCustomerService && superUser) ||
@@ -91,7 +88,6 @@ const YearlyControlsConfig = () => {
       {
         onSuccess: () => {
           reset();
-          if (needsProgress) hasAssessed();
         },
       }
     );

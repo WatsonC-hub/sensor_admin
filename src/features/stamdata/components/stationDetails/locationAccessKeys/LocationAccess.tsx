@@ -20,15 +20,13 @@ import {
 } from '~/features/stamdata/components/stationDetails/zodSchemas';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 import {useAppContext} from '~/state/contexts';
 import {Access, AccessTable} from '~/types';
 
 const LocationAccess = () => {
-  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {loc_id} = useAppContext(['loc_id']);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [createNew, setCreateNew] = useState<boolean>(false);
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'adgangsforhold', ts_id);
   const {
     features: {keys: accessKeys},
   } = useUser();
@@ -74,7 +72,6 @@ const LocationAccess = () => {
         reset();
         setOpenDialog(false);
         setCreateNew(false);
-        if (needsProgress) hasAssessed();
       },
     });
   };

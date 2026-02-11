@@ -23,7 +23,7 @@ const getQueryOptions = <TData = ProgressStatus>(
   select?: (data: ProgressStatus) => TData
 ) =>
   queryOptions({
-    queryKey: queryKeys.metadataProgress(loc_id, ts_id),
+    queryKey: queryKeys.StationProgress(),
     queryFn: async () => {
       const tsParam = ts_id ?? -1;
       const {data} = await apiClient.get<ProgressStatus>(
@@ -32,7 +32,10 @@ const getQueryOptions = <TData = ProgressStatus>(
       return data;
     },
     select,
-    enabled: loc_id != undefined || ts_id != undefined,
+    enabled:
+      (loc_id != -1 && ts_id === -1) ||
+      (loc_id === -1 && ts_id != -1) ||
+      (loc_id != -1 && ts_id != -1),
   });
 
 const useProgress = <TData = ProgressStatus>(
@@ -78,7 +81,7 @@ const useUpdateProgress = (loc_id: number | undefined, ts_id?: number) => {
       return res;
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.StationProgress(loc_id, ts_id)],
+      invalidates: [queryKeys.StationProgress()],
       optOutGeneralInvalidations: true,
     },
   });
