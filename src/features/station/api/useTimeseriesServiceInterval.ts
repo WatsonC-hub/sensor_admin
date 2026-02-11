@@ -53,7 +53,7 @@ export const useTimeseriesServiceIntervalMutation = (ts_id: number) => {
       toast.success('Konfiguration gemt');
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.ServiceInterval(ts_id)],
+      invalidates: [queryKeys.Timeseries.ServiceInterval(ts_id), queryKeys.StationProgress()],
     },
   });
 };

@@ -7,7 +7,6 @@ import {z} from 'zod';
 import {createTypedForm} from '~/components/formComponents/Form';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 import {Metadata, metadataQueryOptions} from '~/hooks/query/useMetadata';
 import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
 
@@ -32,7 +31,6 @@ const metadataSelector = (data: Metadata) => ({
 });
 
 const VisibilityConfig = ({loc_id, ts_id, disabled}: VisibilityConfigProps) => {
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'visibility', ts_id);
   const {location_permissions} = usePermissions(loc_id);
   const {data: timeseries} = useQuery(
     metadataQueryOptions<Form>(ts_id, {
@@ -81,9 +79,7 @@ const VisibilityConfig = ({loc_id, ts_id, disabled}: VisibilityConfigProps) => {
             <Form.Submit
               disabled={!isDirty}
               submit={async (values) => {
-                updateTimeseries.mutate(values, {
-                  onSuccess: () => needsProgress && hasAssessed(),
-                });
+                updateTimeseries.mutate(values);
               }}
             />
           </Grid2>

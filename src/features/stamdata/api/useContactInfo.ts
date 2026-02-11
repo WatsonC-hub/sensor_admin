@@ -104,7 +104,12 @@ export const useContactInfo = (loc_id: number) => {
       toast.success('Kontakt information tilføjet');
     },
     meta: {
-      invalidates: [queryKeys.Location.contacts(loc_id), [queryKeys.Location.info(loc_id)]],
+      invalidates: [
+        queryKeys.Location.contacts(loc_id),
+        queryKeys.StationProgress(),
+        queryKeys.Itineraries.itineraryCollection(null),
+        queryKeys.Location.info(loc_id),
+      ],
       optOutGeneralInvalidations: true,
     },
   });
@@ -115,7 +120,11 @@ export const useContactInfo = (loc_id: number) => {
       toast.success('Kontakt information ændret');
     },
     meta: {
-      invalidates: [queryKeys.Location.contacts(loc_id), [queryKeys.Location.info(loc_id)]],
+      invalidates: [
+        queryKeys.Location.contacts(loc_id),
+        queryKeys.Itineraries.itineraryCollection(null),
+        queryKeys.Location.info(loc_id),
+      ],
       optOutGeneralInvalidations: true,
     },
   });
@@ -126,7 +135,11 @@ export const useContactInfo = (loc_id: number) => {
       toast.success('Kontakt information slettet');
     },
     meta: {
-      invalidates: [queryKeys.Location.contacts(loc_id), [queryKeys.Location.info(loc_id)]],
+      invalidates: [
+        queryKeys.Location.contacts(loc_id),
+        queryKeys.Itineraries.itineraryCollection(null),
+        queryKeys.Location.info(loc_id),
+      ],
       optOutGeneralInvalidations: true,
     },
   });

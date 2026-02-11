@@ -12,7 +12,6 @@ import {
   useLocationSLAConfigurationMutation,
 } from '~/features/station/api/useLocationSLAConfiguration';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
@@ -32,7 +31,6 @@ const SLAConfiguration = () => {
   const {data: values, isPending} = useLocationSLAConfiguration(loc_id);
   const {mutate} = useLocationSLAConfigurationMutation(loc_id);
   const {isMobile} = useBreakpoints();
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'sla', -1);
   const {location_permissions} = usePermissions(loc_id);
 
   const formMethods = useForm<SLAForm, unknown, SLASubmit>({
@@ -94,13 +92,7 @@ const SLAConfiguration = () => {
         <Button
           bttype="primary"
           disabled={isSubmitting || !isDirty || location_permissions !== 'edit'}
-          onClick={handleSubmit((data) =>
-            mutate(data, {
-              onSuccess: () => {
-                if (needsProgress) hasAssessed();
-              },
-            })
-          )}
+          onClick={handleSubmit((data) => mutate(data))}
           startIcon={<Save />}
         >
           <Typography variant="body2">Gem</Typography>

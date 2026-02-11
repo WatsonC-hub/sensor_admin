@@ -3,7 +3,6 @@ import {Controller, UseFormReturn} from 'react-hook-form';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {initialWatlevmpData} from '~/features/stamdata/components/stamdata/const';
 import {WatlevMPFormValues} from '~/features/stamdata/components/stamdata/ReferenceForm';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
@@ -24,7 +23,7 @@ const options = [
 ];
 
 const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
-  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {ts_id} = useAppContext(['ts_id']);
   const [, setShowForm] = useShowFormState();
   const {
     reset,
@@ -32,13 +31,11 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
   } = formMethods;
 
   const {post: postWatlevmp, put: putWatlevmp} = useMaalepunkt(ts_id);
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'watlevmp', ts_id);
   const handleMaalepunktSubmit = (values: WatlevMPFormValues) => {
     const mutationOptions = {
       onSuccess: () => {
         reset(initialWatlevmpData());
         setShowForm(null);
-        if (needsProgress) hasAssessed();
       },
     };
 

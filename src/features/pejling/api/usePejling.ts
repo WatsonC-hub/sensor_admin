@@ -82,7 +82,7 @@ export const usePejling = () => {
       toast.success('Pejling gemt');
     },
     meta: {
-      invalidates: [['kontrol']],
+      invalidates: [queryKeys.Timeseries.pejling(ts_id)],
     },
   });
 
@@ -92,7 +92,7 @@ export const usePejling = () => {
       toast.success('Pejling ændret');
     },
     meta: {
-      invalidates: [['kontrol']],
+      invalidates: [queryKeys.Timeseries.pejling(ts_id)],
     },
   });
 
@@ -102,7 +102,7 @@ export const usePejling = () => {
       toast.success('Pejling slettet');
     },
     meta: {
-      invalidates: [['kontrol']],
+      invalidates: [queryKeys.Timeseries.pejling(ts_id)],
     },
   });
 

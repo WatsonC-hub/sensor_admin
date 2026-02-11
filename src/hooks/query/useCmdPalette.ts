@@ -1,4 +1,4 @@
-import {queryOptions, useQuery, UseQueryOptions} from '@tanstack/react-query';
+import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
@@ -19,11 +19,9 @@ const getCMDOptions = queryOptions<Array<CommandPalette>>({
   },
 });
 
-type CommandPaletteOptions<T> = Partial<
-  Omit<UseQueryOptions<CommandPalette[], Error, T>, 'queryKey' | 'queryFn'>
->;
+type CommandPaletteOptions = Omit<typeof getCMDOptions, 'queryKey' | 'queryFn'>;
 
-const useCmdPalette = <T = Array<CommandPalette>>(options?: CommandPaletteOptions<T>) => {
+const useCmdPalette = <T = Array<CommandPalette>>(options?: CommandPaletteOptions) => {
   const get = useQuery({
     ...getCMDOptions,
     ...options,

@@ -82,7 +82,7 @@ export const useMaalepunkt = (ts_id: number | undefined) => {
       toast.success('Målepunkt gemt');
     },
     meta: {
-      invalidates: [['watlevmp']],
+      invalidates: [queryKeys.Timeseries.maalepunkt(ts_id), queryKeys.StationProgress()],
     },
   });
 
@@ -93,7 +93,7 @@ export const useMaalepunkt = (ts_id: number | undefined) => {
       toast.success('Målepunkt ændret');
     },
     meta: {
-      invalidates: [['watlevmp']],
+      invalidates: [queryKeys.Timeseries.maalepunkt(ts_id)],
     },
   });
 
@@ -104,7 +104,7 @@ export const useMaalepunkt = (ts_id: number | undefined) => {
       toast.success('Målepunkt slettet');
     },
     meta: {
-      invalidates: [['watlevmp']],
+      invalidates: [queryKeys.Timeseries.maalepunkt(ts_id)],
     },
   });
 

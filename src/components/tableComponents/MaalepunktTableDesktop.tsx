@@ -38,16 +38,6 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
     setDialogOpen(true);
   };
 
-  // const {
-  //   get: {data: jupiterData},
-  // } = useJupiterMaalepunkt();
-
-  // const merged_data = useMemo(() => {
-  //   if (!data) return jupiterData || [];
-  //   if (!jupiterData) return data || [];
-  //   return [...jupiterData, ...data];
-  // }, [data, jupiterData]);
-
   const unit = timeseries?.tstype_id === 1 ? 'Kote [m (DVR90)]' : `Måling [${timeseries?.unit}]`;
 
   const columns = useMemo<MRT_ColumnDef<Maalepunkt | MaalepunktTableData>[]>(
