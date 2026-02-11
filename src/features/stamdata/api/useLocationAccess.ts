@@ -98,7 +98,7 @@ export const useLocationAccess = (loc_id: number) => {
         queryKeys.Location.keys(loc_id),
         queryKeys.Location.info(loc_id),
         queryKeys.StationProgress(),
-        queryKeys.Itineraries.itineraryCollection(null),
+        ['collection'],
       ],
       optOutGeneralInvalidations: true,
     },
@@ -113,7 +113,7 @@ export const useLocationAccess = (loc_id: number) => {
       invalidates: [
         queryKeys.Location.keys(loc_id),
         queryKeys.Location.info(loc_id),
-        queryKeys.Itineraries.itineraryCollection(null),
+        ['collection'],
       ],
       optOutGeneralInvalidations: true,
     },
@@ -128,7 +128,7 @@ export const useLocationAccess = (loc_id: number) => {
       invalidates: [
         queryKeys.Location.keys(loc_id),
         queryKeys.Location.info(loc_id),
-        queryKeys.Itineraries.itineraryCollection(null),
+        ['collection'],
       ],
       optOutGeneralInvalidations: true,
     },

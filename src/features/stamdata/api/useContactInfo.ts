@@ -107,7 +107,7 @@ export const useContactInfo = (loc_id: number) => {
       invalidates: [
         queryKeys.Location.contacts(loc_id),
         queryKeys.StationProgress(),
-        queryKeys.Itineraries.itineraryCollection(null),
+        ['collection'],
         queryKeys.Location.info(loc_id),
       ],
       optOutGeneralInvalidations: true,
@@ -122,7 +122,7 @@ export const useContactInfo = (loc_id: number) => {
     meta: {
       invalidates: [
         queryKeys.Location.contacts(loc_id),
-        queryKeys.Itineraries.itineraryCollection(null),
+        ['collection'],
         queryKeys.Location.info(loc_id),
       ],
       optOutGeneralInvalidations: true,
@@ -137,7 +137,7 @@ export const useContactInfo = (loc_id: number) => {
     meta: {
       invalidates: [
         queryKeys.Location.contacts(loc_id),
-        queryKeys.Itineraries.itineraryCollection(null),
+        ['collection'],
         queryKeys.Location.info(loc_id),
       ],
       optOutGeneralInvalidations: true,

@@ -61,7 +61,7 @@ export const useRessourcer = () => {
       invalidates: [
         queryKeys.Location.locationRessources(loc_id),
         queryKeys.Location.info(loc_id),
-        queryKeys.Itineraries.itineraryCollection(null),
+        ['collection'],
         queryKeys.StationProgress(),
       ],
       optOutGeneralInvalidations: true,
