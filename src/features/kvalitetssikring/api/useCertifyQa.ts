@@ -64,7 +64,7 @@ export const useCertifyQaMutations = () => {
       toast.success('Kvalitetsstempel gemt');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['certifyQa']],
     },
   });
 
@@ -74,7 +74,7 @@ export const useCertifyQaMutations = () => {
       toast.success('Kvalitetsstempel ændret');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['certifyQa']],
     },
   });
 
@@ -84,7 +84,7 @@ export const useCertifyQaMutations = () => {
       toast.success('Kvalitetsstempel slettet');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['certifyQa']],
     },
   });
   return {post, put, del};

@@ -20,6 +20,7 @@ import useUnitForm from '~/features/station/api/useUnitForm';
 import {EditUnit as EditUnitType, editUnitSchema} from '~/features/station/schema';
 
 import UnitHistoryTable from './UnitHistoryTable';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const EditUnit = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
@@ -46,7 +47,7 @@ const EditUnit = () => {
       toast.success('Udstyr er opdateret');
     },
     meta: {
-      invalidates: [['metadata'], ['register']],
+      invalidates: [queryKeys.Timeseries.unitHistory(ts_id)],
     },
   });
 

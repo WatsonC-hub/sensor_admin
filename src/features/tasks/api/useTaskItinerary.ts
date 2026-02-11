@@ -35,20 +35,20 @@ const completeItineraryOptions = {
   },
 };
 
-const patchItineraryOptions = {
-  mutationKey: ['itinerary_patch'],
-  mutationFn: async (mutation_data: PatchTaskitinerary) => {
-    const {path, data} = mutation_data;
-    const {data: result} = await apiClient.patch(`/sensor_admin/tasks/itineraries/${path}`, data);
-    return result;
-  },
-};
-
 const addLocationToItineraryOptions = {
   mutationKey: ['taskItinerary_move'],
   mutationFn: async (mutation_data: AddLocationToItinerary) => {
     const {path, data} = mutation_data;
     const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}`, data);
+    return result;
+  },
+};
+
+const patchItineraryOptions = {
+  mutationKey: ['itinerary_patch'],
+  mutationFn: async (mutation_data: PatchTaskitinerary) => {
+    const {path, data} = mutation_data;
+    const {data: result} = await apiClient.patch(`/sensor_admin/tasks/itineraries/${path}`, data);
     return result;
   },
 };
@@ -119,7 +119,8 @@ const useTaskItinerary = <T = Taskitinerary[]>(
       toast.success('Tur oprettet');
     },
     meta: {
-      invalidates: [['itineraries']],
+      invalidates: [queryKeys.Itineraries.all()],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -129,7 +130,7 @@ const useTaskItinerary = <T = Taskitinerary[]>(
       toast.success('Tur opdateret');
     },
     meta: {
-      invalidates: [['itineraries']],
+      invalidates: [queryKeys.Itineraries.all()],
     },
   });
 
@@ -139,7 +140,7 @@ const useTaskItinerary = <T = Taskitinerary[]>(
       toast.success('Tur færdiggjort');
     },
     meta: {
-      invalidates: [['itineraries']],
+      invalidates: [queryKeys.Itineraries.all()],
     },
   });
 
@@ -149,7 +150,7 @@ const useTaskItinerary = <T = Taskitinerary[]>(
       toast.success('Lokationer flyttet til tur');
     },
     meta: {
-      invalidates: [['itineraries']],
+      invalidates: [queryKeys.Itineraries.all()],
     },
   });
 
@@ -159,7 +160,7 @@ const useTaskItinerary = <T = Taskitinerary[]>(
       toast.success('Opgaver tilføjet til tur');
     },
     meta: {
-      invalidates: [['itineraries']],
+      invalidates: [queryKeys.Itineraries.all()],
     },
   });
 

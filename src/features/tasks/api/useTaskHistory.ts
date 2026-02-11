@@ -56,7 +56,8 @@ export const useTaskHistory = (task_id: string) => {
   const addTaskComment = useMutation({
     ...taskCommentPostOptions,
     meta: {
-      invalidates: [['tasks_history', task_id]],
+      invalidates: [queryKeys.Tasks.taskHistory(task_id)],
+      optOutGeneralInvalidations: true,
     },
   });
   const editTaskComment = useMutation({
@@ -69,11 +70,19 @@ export const useTaskHistory = (task_id: string) => {
         queryKey: queryKeys.Tasks.taskHistory(task_id),
       });
     },
+    meta: {
+      invalidates: [queryKeys.Tasks.taskHistory(task_id)],
+      optOutGeneralInvalidations: true,
+    },
   });
   const deleteTaskComment = useMutation({
     ...taskCommentDelOptions,
     onSuccess: () => {
       toast.success('Opgave kommentar slettet');
+    },
+    meta: {
+      invalidates: [queryKeys.Tasks.taskHistory(task_id)],
+      optOutGeneralInvalidations: true,
     },
   });
   return {get, addTaskComment, editTaskComment, deleteTaskComment};
