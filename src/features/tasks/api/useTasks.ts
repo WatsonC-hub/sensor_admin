@@ -156,7 +156,10 @@ const useTaskStatus = () => {
 
 const useTaskMutations = () => {
   const queryClient = useQueryClient();
-  const [setSelectedTask] = useDisplayState((state) => [state.setSelectedTask]);
+  const [selectedTask, setSelectedTask] = useDisplayState((state) => [
+    state.selectedTask,
+    state.setSelectedTask,
+  ]);
 
   const post = useMutation({
     ...tasksPostOptions,
@@ -170,6 +173,7 @@ const useTaskMutations = () => {
     onMutate: async (mutation_data) => {
       const {path, data} = mutation_data;
       const previous = queryClient.getQueryData<Task[]>(queryKeys.Tasks.all());
+
       queryClient.setQueryData<Task[]>(
         queryKeys.Tasks.all(),
         previous?.map((task) => {
@@ -190,18 +194,24 @@ const useTaskMutations = () => {
       const {path} = variables;
       if (path != data.id) {
         const previous = queryClient.getQueryData<Task[]>(queryKeys.Tasks.all());
+
         queryClient.setQueryData<Task[]>(
           queryKeys.Tasks.all(),
           previous?.map((task) => {
             if (task.id === path) {
-              const updated = {...task, ...data};
+              const updated = {
+                ...task,
+                ...data,
+                due_date: data?.due_date ? dayjs(data.due_date) : null,
+              };
               return updated;
             }
+
             return task;
           })
         );
 
-        setSelectedTask(data.id);
+        if (path == selectedTask) setSelectedTask(data.id);
       }
     },
     onError: () => {

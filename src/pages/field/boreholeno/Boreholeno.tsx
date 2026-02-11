@@ -91,7 +91,7 @@ const Boreholeno = () => {
     type: boreholeno,
     comment: '',
     public: false,
-    date: dayjs(),
+    date: dayjs().startOf('minute'),
   });
 
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData<BoreholeMaalepunkt>({
@@ -300,7 +300,7 @@ const Boreholeno = () => {
       type: boreholeno,
       comment: '',
       public: false,
-      date: dayjs(),
+      date: dayjs().startOf('minute'),
     });
     setOpenSave(true);
   };

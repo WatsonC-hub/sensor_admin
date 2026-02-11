@@ -22,7 +22,7 @@ const ImagePage = () => {
     type: loc_id?.toString(),
     comment: '',
     public: false,
-    date: dayjs(),
+    date: dayjs().startOf('minute'),
   });
 
   const changeActiveImageData = (field: string, value: string) => {
@@ -36,7 +36,7 @@ const ImagePage = () => {
       type: loc_id?.toString(),
       comment: '',
       public: false,
-      date: dayjs(),
+      date: dayjs().startOf('minute'),
     });
     setOpenSave(true);
   };
