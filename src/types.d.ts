@@ -11,7 +11,7 @@ export interface Image {
   type: string;
   gid: number;
   loc_id?: number;
-  boreholeno: number;
+  boreholeno?: number;
   title: string;
   date: Dayjs;
   public: boolean;

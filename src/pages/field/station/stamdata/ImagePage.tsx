@@ -68,7 +68,7 @@ const ImagePage = () => {
       <StationPageBoxLayout>
         <Images
           type={'station'}
-          typeId={loc_id ?? ''}
+          typeId={loc_id}
           setOpenSave={setOpenSave}
           setActiveImage={setActiveImage}
           setShowForm={setShowForm}

@@ -32,6 +32,7 @@ type ErrorResponse = {
 
 declare module '@tanstack/react-query' {
   interface Register {
+    defaultError: APIError;
     mutationMeta: {
       invalidates?: Array<QueryKey>;
       optOutGeneralInvalidations?: boolean;

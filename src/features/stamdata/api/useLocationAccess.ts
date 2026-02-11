@@ -51,7 +51,7 @@ const locationAccessDelOptions = {
   },
 };
 
-export const LocationAccessGetOptions = (loc_id: number) =>
+export const locationAccessGetOptions = (loc_id: number) =>
   queryOptions<Array<AccessTable>, APIError>({
     queryKey: queryKeys.Location.keys(loc_id),
     queryFn: async () => {
@@ -86,7 +86,7 @@ export const useSearchLocationAccess = (loc_id: number, searchString: string) =>
 };
 
 export const useLocationAccess = (loc_id: number) => {
-  const get = useQuery(LocationAccessGetOptions(loc_id));
+  const get = useQuery(locationAccessGetOptions(loc_id));
 
   const post = useMutation({
     ...locationAccessPostOptions,

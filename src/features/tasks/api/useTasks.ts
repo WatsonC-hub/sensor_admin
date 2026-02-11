@@ -22,7 +22,7 @@ import {
 } from '../types';
 import {useDisplayState} from '~/hooks/ui';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import dayjs, {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
 import {useUser} from '~/features/auth/useUser';
 
 type Mutation<TData> = {
@@ -107,13 +107,10 @@ const deleteTaskFromItineraryOptions = {
 };
 
 const getNextDueDateOptions = (ts_id: number | undefined) =>
-  queryOptions<string, APIError, Dayjs>({
+  queryOptions({
     queryKey: queryKeys.Tasks.nextDueDate(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<string>(`/sensor_admin/tasks/next_due_date/${ts_id}`);
-      return data;
-    },
-    select: (data): Dayjs => {
       return dayjs(data);
     },
     enabled: ts_id !== undefined && ts_id !== null,

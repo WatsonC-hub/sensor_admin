@@ -2,6 +2,7 @@ import {useQuery, queryOptions, UseQueryOptions} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {Group} from '~/types';
 
@@ -69,7 +70,7 @@ type LocationMetadata = {
 };
 //
 type MetadataQueryOptions<T> = Partial<
-  Omit<UseQueryOptions<Metadata, Error, T>, 'queryKey' | 'queryFn'>
+  Omit<UseQueryOptions<Metadata, APIError, T>, 'queryKey' | 'queryFn'>
 >;
 
 export const metadataQueryOptions = <T extends Partial<Metadata>>(

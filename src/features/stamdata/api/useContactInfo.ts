@@ -54,8 +54,8 @@ const contactInfoDelOptions = {
   },
 };
 
-export const ContactInfoGetOptions = (loc_id: number) =>
-  queryOptions<Array<ContactTable>, APIError>({
+export const contactInfoGetOptions = (loc_id: number) =>
+  queryOptions({
     queryKey: queryKeys.Location.contacts(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<ContactTable>>(
@@ -96,7 +96,7 @@ export const useSearchContact = <T = ContactInfo[]>(
 };
 
 export const useContactInfo = (loc_id: number) => {
-  const get = useQuery(ContactInfoGetOptions(loc_id));
+  const get = useQuery(contactInfoGetOptions(loc_id));
 
   const post = useMutation({
     ...contactInfoPostOptions,
