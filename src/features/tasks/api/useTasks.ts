@@ -156,7 +156,10 @@ const useTaskStatus = () => {
 
 const useTaskMutations = () => {
   const queryClient = useQueryClient();
-  const [setSelectedTask] = useDisplayState((state) => [state.setSelectedTask]);
+  const [selectedTask, setSelectedTask] = useDisplayState((state) => [
+    state.selectedTask,
+    state.setSelectedTask,
+  ]);
 
   const post = useMutation({
     ...tasksPostOptions,
@@ -206,6 +209,9 @@ const useTaskMutations = () => {
     },
     onError: () => {
       queryClient.invalidateQueries({queryKey: queryKeys.Tasks.all()});
+    },
+    meta: {
+      invalidates: [queryKeys.Tasks.taskHistory(selectedTask ?? '')],
     },
   });
   const del = useMutation({
