@@ -113,9 +113,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     Jupiter: hideJupiterIfNotRelevant,
   };
 
-  const {
-    get: {data: certifedData},
-  } = useCertifyQa();
+  const {data: certifedData} = useCertifyQa();
   const {
     get: {data: controlData},
   } = usePejling();

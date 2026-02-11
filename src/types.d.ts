@@ -3,6 +3,7 @@ import {Dayjs} from 'dayjs';
 import {ReactNode} from 'react';
 // import type {FeatureCollection, Geometry} from 'leaflet';
 import * as geojson from 'geojson';
+import {CertifyQa} from './features/kvalitetssikring/api/useCertifyQa';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -339,6 +340,28 @@ export type QaAllData = {
   min_max_cutoff: MinMaxCutoff;
   dataexclude: Array<DataExclude>;
 };
+
+export type AdjustmentData =
+  | {
+      type: AdjustmentTypes.LEVELCORRECTION;
+      data: LevelCorrection;
+    }
+  | {
+      type: AdjustmentTypes.MINMAX;
+      data: MinMaxCutoff;
+    }
+  | {
+      type: AdjustmentTypes.EXLUDETIME;
+      data: DataExclude;
+    }
+  | {
+      type: AdjustmentTypes.EXLUDEPOINTS;
+      data: DataExclude;
+    }
+  | {
+      type: AdjustmentTypes.APPROVED;
+      data: CertifyQa;
+    };
 
 export type GraphData = {
   x: Array<string>;

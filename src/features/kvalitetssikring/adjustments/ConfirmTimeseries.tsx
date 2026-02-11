@@ -14,7 +14,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {qaSelection} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
 
-import {useCertifyQa} from '../api/useCertifyQa';
+import {useCertifyQa, useCertifyQaMutations} from '../api/useCertifyQa';
 import {zodDayjs} from '~/helpers/schemas';
 import dayjs from 'dayjs';
 import FormDateTime from '~/components/FormDateTime';
@@ -47,10 +47,8 @@ const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTi
   const {isMobile} = useBreakpoints();
   const selection = useAtomValue(qaSelection);
 
-  const {
-    get: {data: qaData},
-    post: postQaData,
-  } = useCertifyQa();
+  const {post: postQaData} = useCertifyQaMutations();
+  const {data: qaData} = useCertifyQa();
 
   // const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
