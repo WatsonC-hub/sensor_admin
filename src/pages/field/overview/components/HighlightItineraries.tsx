@@ -1,9 +1,10 @@
 import {Autocomplete, Chip, TextField, Typography} from '@mui/material';
-import React from 'react';
+import React, {useCallback} from 'react';
 import {Noop} from 'react-hook-form';
 import {ItineraryColors} from '~/features/notifications/consts';
-import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
+import {useItineraries} from '~/features/tasks/api/useItinerary';
 import {useTasks} from '~/features/tasks/api/useTasks';
+import {Taskitinerary} from '~/features/tasks/types';
 import {SimpleItinerary} from '~/types';
 
 type Props = {
@@ -17,17 +18,18 @@ const HighlightItineraries = ({setValue, value, onBlur, label = 'Itineraries'}: 
   const {
     getUsers: {data: users},
   } = useTasks();
-  const {
-    get: {data: options},
-  } = useTaskItinerary(undefined, {
-    select: (data) =>
-      data.map((itinerary) => ({
-        name: itinerary.name,
-        id: itinerary.id,
-        assigned_to_name:
-          users?.find((user) => user.id === itinerary.assigned_to)?.display_name ?? '',
-        due_date: itinerary.due_date ?? '',
-      })) as SimpleItinerary[],
+  const {data: options} = useItineraries({
+    select: useCallback(
+      (data: Taskitinerary[]) =>
+        data.map((itinerary) => ({
+          name: itinerary.name,
+          id: itinerary.id,
+          assigned_to_name:
+            users?.find((user) => user.id === itinerary.assigned_to)?.display_name ?? '',
+          due_date: itinerary.due_date ?? '',
+        })) as SimpleItinerary[],
+      [users]
+    ),
   });
 
   return (

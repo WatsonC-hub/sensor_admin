@@ -12,13 +12,11 @@ interface Props {
 }
 
 function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props) {
-  const imageType = type === 'borehole' ? 'image' : 'images';
   const {
     get: {data: images, error},
-  } = useImages(typeId, imageType, type);
+  } = useImages(typeId, type);
 
-  const endpoint = type === 'borehole' ? 'borehole' : 'station';
-  const {del: deleteImage} = useImageUpload(endpoint, typeId);
+  const {del: deleteImage} = useImageUpload(type, typeId);
 
   if (error) {
     return;
@@ -35,7 +33,7 @@ function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props)
       deleteMutation={deleteImage}
       handleEdit={handleEdit}
       images={images}
-      type={endpoint}
+      type={type}
       id={typeId}
     />
   );

@@ -5,7 +5,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import {useTaskState} from '~/features/tasks/api/useTaskState';
 
-import useTaskItinerary from '../api/useTaskItinerary';
+import {useItineraries, useItineraryMutations} from '../api/useItinerary';
 
 import {useTasks} from '../api/useTasks';
 import {Taskitinerary} from '../types';
@@ -83,9 +83,7 @@ const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
   const {user_id} = useUser();
-  const {
-    get: {data},
-  } = useTaskItinerary(undefined, {
+  const {data} = useItineraries({
     select: useCallback((data: Taskitinerary[]) => selectData(data, user_id), [user_id]),
   });
 
@@ -107,7 +105,7 @@ const TaskItiniaries = () => {
     getUsers: {data: users},
   } = useTasks();
   const {tasks} = useTaskState();
-  const {patch: updateItinerary} = useTaskItinerary();
+  const {patch: updateItinerary} = useItineraryMutations();
 
   return (
     <Box display="flex" maxHeight={'100%'} gap={1} flexDirection={'column'}>

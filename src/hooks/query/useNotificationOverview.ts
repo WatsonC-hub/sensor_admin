@@ -1,11 +1,11 @@
-import {queryOptions, useQuery, type UseQueryOptions} from '@tanstack/react-query';
+import {queryOptions, useQuery} from '@tanstack/react-query';
 import {Dayjs} from 'dayjs';
 
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {FlagEnum, NotificationIDEnum} from '~/features/notifications/consts';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {Group} from '~/types';
+import {Group, QueryType} from '~/types';
 
 export interface MapOverview {
   loc_id: number;
@@ -31,31 +31,30 @@ export interface MapOverview {
   mapicontype: 'notification' | 'task' | 'trip';
 }
 
-const mapOverviewOptions = queryOptions<MapOverview[]>({
-  queryKey: queryKeys.Map.all(),
-  queryFn: async () => {
-    const {data} = await apiClient.get<MapOverview[]>(`/sensor_field/map_data`);
-    return data;
-  },
-  staleTime: 30 * 1000, // Data is fresh for 30 seconds
-  refetchInterval: 60 * 1000, // Background refresh every 1 min
-  refetchOnWindowFocus: false,
-  refetchOnMount: false,
-});
+const mapOverviewOptions = <TData = MapOverview[]>(select?: (data: MapOverview[]) => TData) =>
+  queryOptions({
+    queryKey: queryKeys.Map.all(),
+    queryFn: async () => {
+      const {data} = await apiClient.get<MapOverview[]>(`/sensor_field/map_data`);
+      return data;
+    },
+    staleTime: 30 * 1000, // Data is fresh for 30 seconds
+    refetchInterval: 60 * 1000, // Background refresh every 1 min
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    select,
+  });
 
-type MapOverviewOptions<T> = Partial<
-  Omit<UseQueryOptions<MapOverview[], Error, T>, 'queryKey' | 'queryFn'>
->;
-
-export const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T>) => {
+export const useMapOverview = <T = MapOverview[]>(
+  options?: QueryType<typeof mapOverviewOptions<T>>
+) => {
   const {
     features: {iotAccess},
   } = useUser();
 
   return useQuery({
-    ...mapOverviewOptions,
+    ...mapOverviewOptions(options?.select),
     ...options,
-    select: options?.select as (data: MapOverview[]) => T,
     enabled: iotAccess,
   });
 };

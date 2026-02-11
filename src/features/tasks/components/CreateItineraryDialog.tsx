@@ -3,7 +3,7 @@ import React from 'react';
 
 import Button from '~/components/Button';
 
-import useTaskItinerary from '../api/useTaskItinerary';
+import {useItineraryMutations} from '../api/useItinerary';
 
 import TaskForm from './TaskForm';
 import FormInput from '~/components/FormInput';
@@ -32,7 +32,7 @@ const zodSchema = z.object({
 type FormValues = z.infer<typeof zodSchema>;
 
 const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialogProps) => {
-  const {createItinerary} = useTaskItinerary();
+  const {createItinerary} = useItineraryMutations();
 
   const onClose = () => {
     setDialogOpen(false);

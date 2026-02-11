@@ -1,6 +1,7 @@
 import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {QueryType} from '~/types';
 
 export type ProgressStatus = {
   images: boolean;
@@ -37,7 +38,7 @@ const getQueryOptions = <TData = ProgressStatus>(
 const useProgress = <TData = ProgressStatus>(
   loc_id: number | undefined,
   ts_id?: number,
-  options?: Omit<ReturnType<typeof getQueryOptions<TData>>, 'queryKey' | 'queryFn'>
+  options?: QueryType<typeof getQueryOptions<TData>>
 ) => {
   return useQuery({
     ...getQueryOptions(loc_id, ts_id, options?.select),

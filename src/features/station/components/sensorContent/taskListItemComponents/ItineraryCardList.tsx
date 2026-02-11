@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
-import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
+import {useItinerary} from '~/features/tasks/api/useItinerary';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {useAppContext} from '~/state/contexts';
 import {useTasks} from '~/features/tasks/api/useTasks';
@@ -45,11 +45,7 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
     deleteTaskFromItinerary,
   } = useTasks();
 
-  const {
-    get: {data: itineraries},
-  } = useTaskItinerary();
-
-  const itinerary = itineraries?.find((itinerary) => itinerary.id === itinerary_id);
+  const {data: itinerary} = useItinerary(itinerary_id);
 
   const handleDelete = () => {
     const payload = {

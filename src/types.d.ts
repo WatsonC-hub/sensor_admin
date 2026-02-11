@@ -461,3 +461,5 @@ export type DmpSyncValidCombination = {
   loctype_id: number;
   tstype_id: number;
 };
+
+export type QueryType<F> = Omit<ReturnType<F>, 'queryKey' | 'queryFn'>;

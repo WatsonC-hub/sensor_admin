@@ -1,22 +1,21 @@
-import {useQuery, useMutation, UseQueryOptions} from '@tanstack/react-query';
+import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 // import {Notification} from '~/hooks/query/useNotificationOverview';
-import {APIError} from '~/queryClient';
 
 import {
   type completeItinerary,
   type AddLocationToItinerary,
   type PatchTaskitinerary,
   type PostTaskitinerary,
-  type Task,
   type Taskitinerary,
   TaskPermission,
   MergeItinerary,
 } from '../types';
 import {useUser} from '~/features/auth/useUser';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {QueryType} from '~/types';
 
 const itineraryPostOptions = {
   mutationKey: ['itinerary_post'],
@@ -65,54 +64,78 @@ const mergeTripsOptions = {
   },
 };
 
-type ItineraryOptions<T> = Partial<
-  Omit<UseQueryOptions<Taskitinerary[], APIError, T>, 'queryKey' | 'queryFn'>
->;
+const getItinerariesOptions = <T = Taskitinerary[]>(select?: (data: Taskitinerary[]) => T) =>
+  queryOptions({
+    queryKey: queryKeys.Itineraries.all(),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Taskitinerary[]>('/sensor_admin/tasks/itineraries');
+      return data;
+    },
+    staleTime: 1000 * 60 * 10,
+    select,
+  });
 
-const useTaskItinerary = <T = Taskitinerary[]>(
-  id?: string | null,
-  options?: ItineraryOptions<T>
+const useItineraries = <T = Taskitinerary[]>(
+  options?: QueryType<typeof getItinerariesOptions<T>>
 ) => {
   const {
     features: {tasks},
   } = useUser();
-
-  const idRequired = id !== null && id !== undefined;
   const permissionRequired = tasks === TaskPermission.advanced;
-  const enabled = idRequired && permissionRequired;
 
-  const get = useQuery({
-    queryKey: queryKeys.Itineraries.all(),
-    queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_admin/tasks/itineraries');
-      return data;
-    },
-    staleTime: 1000 * 60 * 10,
-    enabled: permissionRequired,
+  return useQuery({
+    ...getItinerariesOptions(options?.select),
     ...options,
-    select: options?.select as (data: Taskitinerary[]) => T,
+    enabled: permissionRequired,
   });
+};
 
-  const getItinerary = useQuery<Taskitinerary, APIError>({
+const getItineraryOptions = (id: string | null) =>
+  queryOptions({
     queryKey: queryKeys.Itineraries.byId(id ?? null),
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_admin/tasks/itineraries/${id}`);
+      const {data} = await apiClient.get<Taskitinerary>(`/sensor_admin/tasks/itineraries/${id}`);
       return data;
     },
-    staleTime: 1000 * 60 * 2,
-    enabled: enabled,
+    enabled: id !== null,
+    staleTime: 1000 * 60 * 10,
   });
 
-  const getItineraryTasks = useQuery<Task[], APIError>({
-    queryKey: queryKeys.Itineraries.itineraryTasks(id ?? undefined),
+const useItinerary = (id: string | null) => {
+  const {
+    features: {tasks},
+  } = useUser();
+  const permissionRequired = tasks === TaskPermission.advanced;
+
+  return useQuery({
+    ...getItineraryOptions(id),
+    enabled: permissionRequired,
+  });
+};
+
+const getItineraryTasksOptions = (id: string) =>
+  queryOptions({
+    queryKey: queryKeys.Itineraries.itineraryTasks(id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/tasks/itineraries/${id}/tasks`);
       return data;
     },
-    staleTime: 1000 * 60 * 2,
-    enabled: enabled,
+    staleTime: 1000 * 60 * 10,
   });
 
+const useItineraryTasks = (id: string) => {
+  const {
+    features: {tasks},
+  } = useUser();
+  const permissionRequired = tasks === TaskPermission.advanced;
+
+  return useQuery({
+    ...getItineraryTasksOptions(id),
+    enabled: permissionRequired,
+  });
+};
+
+const useItineraryMutations = () => {
   const createItinerary = useMutation({
     ...itineraryPostOptions,
     onSuccess: () => {
@@ -165,15 +188,12 @@ const useTaskItinerary = <T = Taskitinerary[]>(
   });
 
   return {
-    get,
-    getItinerary,
     createItinerary,
     patch,
-    getItineraryTasks,
     complete,
     addLocationToTrip,
     mergeTrips,
   };
 };
 
-export default useTaskItinerary;
+export {useItineraries, useItinerary, useItineraryTasks, useItineraryMutations};

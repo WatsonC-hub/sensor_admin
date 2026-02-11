@@ -11,7 +11,7 @@ import TripTaskTable from './TripTaskTable';
 import Button from '~/components/Button';
 import {Check} from '@mui/icons-material';
 import AlertDialog from '~/components/AlertDialog';
-import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
+import {useItinerary, useItineraryMutations} from '~/features/tasks/api/useItinerary';
 import {useDisplayState} from '~/hooks/ui';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import TripLocationAccess from './TripLocationAccess';
@@ -34,8 +34,8 @@ const TripPreparation = ({data}: TripPreparationProps) => {
     state.itinerary_id,
     state.setItineraryId,
   ]);
-  const {complete, patch: updateItinerary, getItinerary} = useTaskItinerary(itinerary_id);
-  const {data: itinerary} = getItinerary;
+  const {complete, patch: updateItinerary} = useItineraryMutations();
+  const {data: itinerary} = useItinerary(itinerary_id);
 
   if (!itinerary) {
     return <LoadingSkeleton />;
@@ -190,7 +190,7 @@ const TripPreparation = ({data}: TripPreparationProps) => {
           Afslut tur
         </Button>
       </Box>
-      <TripMergeDialog itinerary_id={itinerary_id} open={mergeOpen} setOpen={setMergeOpen} />
+      <TripMergeDialog itinerary_id={itinerary_id!} open={mergeOpen} setOpen={setMergeOpen} />
 
       <AlertDialog
         open={completeOpen}
