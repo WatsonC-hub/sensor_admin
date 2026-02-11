@@ -148,9 +148,7 @@ const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTi
               bttype="primary"
               startIcon={<Save />}
               disabled={parsedData?.date.isAfter(enddateWatch) && parsedData?.date != undefined}
-              onClick={handleSubmit(handleSave, (e) => {
-                console.log(e);
-              })}
+              onClick={handleSubmit(handleSave)}
             >
               Godkend
             </Button>

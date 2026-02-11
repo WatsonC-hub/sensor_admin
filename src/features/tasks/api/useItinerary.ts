@@ -106,10 +106,10 @@ const useItinerary = (id: string | null) => {
     features: {tasks},
   } = useUser();
   const permissionRequired = tasks === TaskPermission.advanced;
-
+  const options = getItineraryOptions(id);
   return useQuery({
-    ...getItineraryOptions(id),
-    enabled: permissionRequired,
+    ...options,
+    enabled: permissionRequired && options.enabled,
   });
 };
 
