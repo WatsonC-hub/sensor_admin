@@ -217,6 +217,9 @@ const useTaskMutations = () => {
     onError: () => {
       queryClient.invalidateQueries({queryKey: queryKeys.Tasks.all()});
     },
+    meta: {
+      invalidates: [queryKeys.Tasks.taskHistory(selectedTask ?? '')],
+    },
   });
   const del = useMutation({
     ...tasksDelOptions,
