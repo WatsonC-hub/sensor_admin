@@ -27,7 +27,7 @@ const SlaForm = ({setValues}: SlaFormProps) => {
   const formMethods = useForm({
     resolver: zodResolver(SLASchema),
     defaultValues: sla ?? {
-      days_to_visitation: undefined,
+      days_to_visitation: 30,
     },
   });
 
