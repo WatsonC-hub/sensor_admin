@@ -152,7 +152,7 @@ const CreateStation = () => {
   const unitFormMethods = useUnitForm<AddUnit>({
     mode: 'Add',
     defaultValues: {
-      startdate: dayjs(),
+      startdate: dayjs().startOf('minute'),
       unit_uuid: '',
     },
   });

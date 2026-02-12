@@ -43,13 +43,13 @@ import {
   useTimeseriesData,
 } from '~/hooks/query/useMetadata';
 import {useUser} from '~/features/auth/useUser';
-import {UseQueryOptions} from '@tanstack/react-query';
+import {QueryKey, UseQueryOptions} from '@tanstack/react-query';
 import {queryClient} from '~/queryClient';
 import {pejlingGetOptions} from '~/features/pejling/api/usePejling';
 import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
 import {getMaalepunktOptions} from '~/hooks/query/useMaalepunkt';
-import {ContactInfoGetOptions} from '~/features/stamdata/api/useContactInfo';
-import {LocationAccessGetOptions} from '~/features/stamdata/api/useLocationAccess';
+import {contactInfoGetOptions} from '~/features/stamdata/api/useContactInfo';
+import {locationAccessGetOptions} from '~/features/stamdata/api/useLocationAccess';
 import {getRessourcerOptions} from '~/features/stamdata/api/useRessourcer';
 import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory';
 import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
@@ -126,8 +126,8 @@ const StationDrawer = () => {
   } = useUser();
   const {createStamdata} = useNavigationFunctions();
 
-  const handlePrefetch = <TData extends object, TError extends Error>(
-    options: UseQueryOptions<TData, TError>
+  const handlePrefetch = <TData, TError, TSelectData, TKey extends QueryKey>(
+    options: UseQueryOptions<TData, TError, TSelectData, TKey>
   ) => {
     queryClient.prefetchQuery({...options, staleTime: 1000 * 10});
   };
@@ -269,7 +269,7 @@ const StationDrawer = () => {
           page: stationPages.BILLEDER,
           icon: <PhotoLibraryRounded />,
           requiredTsId: false,
-          onHover: () => handlePrefetch(getImageOptions(loc_id, 'images', 'station')),
+          onHover: () => handlePrefetch(getImageOptions(loc_id, 'station')),
           progress: progress?.images == false ? 0 : undefined,
         },
 
@@ -279,7 +279,7 @@ const StationDrawer = () => {
           icon: <PersonIcon />,
           requiredTsId: false,
           disabled: !contacts,
-          onHover: () => handlePrefetch(ContactInfoGetOptions(loc_id)),
+          onHover: () => handlePrefetch(contactInfoGetOptions(loc_id)),
           progress: progress?.kontakter == false ? 0 : undefined,
         },
         {
@@ -288,7 +288,7 @@ const StationDrawer = () => {
           icon: <KeyIcon />,
           requiredTsId: false,
           disabled: !accessKeys,
-          onHover: () => handlePrefetch(LocationAccessGetOptions(loc_id)),
+          onHover: () => handlePrefetch(locationAccessGetOptions(loc_id)),
           progress: progress?.adgangsforhold == false ? 0 : undefined,
         },
         {

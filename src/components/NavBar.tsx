@@ -313,9 +313,7 @@ const OwnTaskList = () => {
     state.setOwnTaskList,
   ]);
   const user = useUser();
-  const {
-    get: {data: tasks},
-  } = useTasks();
+  const {data: tasks} = useTasks();
 
   const task_list = tasks?.filter(
     (task) => task.assigned_to === user.user_id.toString() && task.status_id !== 2

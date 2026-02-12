@@ -3,7 +3,6 @@ import {Controller, UseFormReturn} from 'react-hook-form';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {initialWatlevmpData} from '~/features/stamdata/components/stamdata/const';
 import {WatlevMPFormValues} from '~/features/stamdata/components/stamdata/ReferenceForm';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
@@ -24,7 +23,7 @@ const options = [
 ];
 
 const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
-  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {ts_id} = useAppContext(['ts_id']);
   const [, setShowForm] = useShowFormState();
   const {
     reset,
@@ -32,20 +31,17 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
   } = formMethods;
 
   const {post: postWatlevmp, put: putWatlevmp} = useMaalepunkt(ts_id);
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'watlevmp', ts_id);
   const handleMaalepunktSubmit = (values: WatlevMPFormValues) => {
     const mutationOptions = {
       onSuccess: () => {
         reset(initialWatlevmpData());
         setShowForm(null);
-        if (needsProgress) hasAssessed();
       },
     };
 
     const data = {
       ...values,
     };
-
     if (values.gid === undefined) {
       const payload = {
         data: data,
@@ -60,7 +56,6 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
       putWatlevmp.mutate(payload, mutationOptions);
     }
   };
-
   return (
     <Box maxWidth={600} margin="auto">
       <Form
@@ -97,8 +92,8 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
                   disableClearable
                   slotProps={{}}
                   options={options}
-                  inputValue={value}
-                  value={value}
+                  inputValue={value ?? ''}
+                  value={value ?? ''}
                   ref={ref}
                   fullWidth
                   onBlur={onBlur}
@@ -140,6 +135,7 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
           ml="auto"
         >
           <Form.Cancel
+            disabled={false}
             cancel={() => {
               if (defaultValues?.gid) reset(initialWatlevmpData());
               else reset();

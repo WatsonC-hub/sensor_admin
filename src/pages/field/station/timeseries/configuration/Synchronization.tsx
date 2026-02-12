@@ -9,7 +9,6 @@ import {Box, Grid2} from '@mui/material';
 import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 
@@ -87,8 +86,6 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
     },
   });
 
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'sync', ts_id);
-
   const {
     reset: resetSync,
     watch,
@@ -115,11 +112,7 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
       },
     };
 
-    postSync.mutate(syncPayload, {
-      onSuccess: () => {
-        if (needsProgress) hasAssessed();
-      },
-    });
+    postSync.mutate(syncPayload);
 
     if (data.sync_dmp == false && dirtyFields.sync_dmp !== undefined) {
       deleteSync.mutate({path: ts_id.toString()});
@@ -139,7 +132,7 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
               }
             >
               <Form.Checkbox
-                disabled={location_permissions !== 'edit' || metadata?.intakeno == null}
+                disabled={location_permissions !== 'edit' || metadata?.intakeno == null || disabled}
                 name="jupiter"
                 label="Jupiter"
               />
@@ -186,7 +179,10 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
                 ts_id={ts_id}
                 progressKey="sync"
               />
-              <Form.Cancel disabled={location_permissions !== 'edit'} cancel={() => resetSync()} />
+              <Form.Cancel
+                disabled={location_permissions !== 'edit' || !isDirty}
+                cancel={() => resetSync()}
+              />
               <Form.Submit disabled={location_permissions !== 'edit'} submit={submit} />
             </Grid2>
           )}

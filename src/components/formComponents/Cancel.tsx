@@ -3,10 +3,7 @@ import Button from '../Button';
 import {Typography} from '@mui/material';
 
 const Cancel = ({cancel, disabled}: {cancel: () => void; disabled?: boolean}) => {
-  const {
-    reset,
-    formState: {isDirty},
-  } = useFormContext();
+  const {reset} = useFormContext();
   return (
     <Button
       bttype="tertiary"
@@ -15,7 +12,7 @@ const Cancel = ({cancel, disabled}: {cancel: () => void; disabled?: boolean}) =>
         reset();
         cancel();
       }}
-      disabled={disabled || !isDirty}
+      disabled={disabled}
     >
       <Typography variant="body2">Annuller</Typography>
     </Button>

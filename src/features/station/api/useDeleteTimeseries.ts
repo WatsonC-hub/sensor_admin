@@ -14,7 +14,7 @@ const deleteTimeseriesMutationOptions = makeAppMutationOptions({
     return res.data;
   },
   meta: {
-    invalidates: [['register'], ['metadata']],
+    invalidates: [['metadata']],
   },
 });
 

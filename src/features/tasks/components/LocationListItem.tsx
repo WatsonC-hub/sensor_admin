@@ -6,7 +6,7 @@ import {useTaskState} from '../api/useTaskState';
 import {convertDate} from '~/helpers/dateConverter';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import {Person} from '@mui/icons-material';
-import useTaskItinerary from '../api/useTaskItinerary';
+import {useItinerary} from '../api/useItinerary';
 import {getIcon} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
 import {useUser} from '~/features/auth/useUser';
@@ -30,9 +30,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
   const filteredTasks = tasks?.filter((task) => task.loc_id === itemData.loc_id);
   const {superUser} = useUser();
 
-  const {
-    getItinerary: {data: itinerary},
-  } = useTaskItinerary(itemData.itinerary_id);
+  const {data: itinerary} = useItinerary(itemData.itinerary_id);
 
   return (
     <Box

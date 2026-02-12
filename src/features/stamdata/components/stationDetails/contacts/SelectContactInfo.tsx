@@ -19,7 +19,6 @@ import {initialContactData} from '~/consts';
 import {useContactInfo, useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
 import {InferContactInfo} from '~/features/stamdata/components/stationDetails/zodSchemas';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
 import {useAppContext} from '~/state/contexts';
 import {ContactInfo} from '~/types';
@@ -33,8 +32,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   const [selectedContactInfo, setSelectedContactInfo] = useState<ContactInfo | null>(null);
   const [search, setSearch] = useState<string>('');
   const deboundedSearch = useDebouncedValue(search, 500);
-  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'kontakter', ts_id);
+  const {loc_id} = useAppContext(['loc_id']);
   const {reset, handleSubmit} = useFormContext<InferContactInfo>();
   const [createNew, setCreateNew] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -60,7 +58,6 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
         reset();
         setSelectedContactInfo(null);
         setCreateNew(false);
-        if (needsProgress) hasAssessed();
       },
     });
 
