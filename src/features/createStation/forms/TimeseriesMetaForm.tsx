@@ -10,10 +10,11 @@ import {TimeseriesMeta} from '../types';
 type TimeseriesMetaFormProps = {
   uuid: string;
   setTstype: (tstype_id: number) => void;
+  setIntakeno: (intakeno: number) => void;
   setValues: (values: TimeseriesMeta) => void;
 };
 
-const TimeseriesMetaForm = ({uuid, setValues, setTstype}: TimeseriesMetaFormProps) => {
+const TimeseriesMetaForm = ({uuid, setValues, setTstype, setIntakeno}: TimeseriesMetaFormProps) => {
   const [timeseries, locationMeta, registerSubmitter, removeSubmitter] = useCreateStationStore(
     (state) => [
       state.formState.timeseries?.[uuid],
@@ -40,10 +41,17 @@ const TimeseriesMetaForm = ({uuid, setValues, setTstype}: TimeseriesMetaFormProp
   const {handleSubmit, watch} = timeseriesFormMethods;
 
   const tstype_id = watch('tstype_id');
+  const intakeno = watch('intakeno');
 
   useEffect(() => {
     if (tstype_id !== timeseries?.meta?.tstype_id) setTstype(tstype_id);
   }, [tstype_id]);
+
+  useEffect(() => {
+    if (intakeno !== timeseries?.meta?.intakeno && intakeno !== undefined) {
+      setIntakeno(intakeno);
+    }
+  }, [intakeno]);
 
   useEffect(() => {
     registerSubmitter(id, async () => {

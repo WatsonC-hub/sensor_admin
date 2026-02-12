@@ -140,7 +140,7 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
         }
         message={dialogMessage}
         handleOpret={() => {
-          if (superUser) setShowDialog(true);
+          if (superUser && loc_id === undefined) setShowDialog(true);
           else {
             if (!formState) return;
             const submitState: CreateStationPayload = {

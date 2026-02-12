@@ -17,12 +17,11 @@ type Props = {
 };
 
 const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
-  const [submitters, location, timeseries] = useCreateStationStore((state) => [
+  const [submitters, timeseries] = useCreateStationStore((state) => [
     state.submitters,
-    state.formState.location,
     state.formState.timeseries,
   ]);
-  const [showVisibility, setShowVisibility] = useState(!!location?.visibility);
+  const [showVisibility, setShowVisibility] = useState(true);
   const [showSla, setShowSla] = useState(true);
   const {superUser} = useUser();
 

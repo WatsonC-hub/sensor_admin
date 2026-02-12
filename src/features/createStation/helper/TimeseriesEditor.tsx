@@ -46,6 +46,7 @@ const TimeseriesEditor = ({index, onRemove}: Props) => {
   const [showUnit, setShowUnit] = useState(!!timeseries.unit);
 
   const meta_tstype_id = timeseries.meta?.tstype_id;
+  const meta_intakeno = timeseries?.meta?.intakeno;
 
   const {data: dmpAllowedList} = useDMPAllowedList();
 
@@ -63,6 +64,9 @@ const TimeseriesEditor = ({index, onRemove}: Props) => {
         uuid={index}
         setValues={(meta) => {
           setState(`timeseries.${index}.meta`, meta);
+        }}
+        setIntakeno={(intakeno) => {
+          if (intakeno !== meta_intakeno) setState(`timeseries.${index}.meta.intakeno`, intakeno);
         }}
         setTstype={(tstype_id) => {
           setState(`timeseries.${index}.meta.tstype_id`, tstype_id);

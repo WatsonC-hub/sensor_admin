@@ -34,8 +34,10 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
     state.registerSubmitter,
     state.removeSubmitter,
   ]);
+
   const [helperText, setHelperText] = useState('');
   const {isMobile} = useBreakpoints();
+
   const {data: watlevmp} = useQuery({
     queryKey: queryKeys.Borehole.lastMP(location_meta?.boreholeno, intakeno),
     queryFn: async () => {
@@ -52,8 +54,8 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
   });
 
   const watlevmpFormMethods = useWatlevmpForm<Watlevmp>({
-    defaultValues: values,
-    values: watlevmp,
+    defaultValues: values ?? watlevmp,
+    values: values ?? watlevmp,
   });
 
   const {watch, handleSubmit} = watlevmpFormMethods;

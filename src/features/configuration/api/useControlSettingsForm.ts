@@ -9,11 +9,7 @@ const controlSettingsSchema = z.object({
       invalid_type_error: 'Antal kontroller er påkrævet',
     })
     .nullable(),
-  lead_time: z
-    .number({
-      invalid_type_error: 'Forvarsling skal være et tal',
-    })
-    .nullable(),
+  lead_time: z.number().nullable(),
   dummy: z.number().nullish().optional(),
   selectValue: z.literal(1).or(z.literal(2)).default(1),
   from_unit: z.boolean().optional(),

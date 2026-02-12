@@ -39,6 +39,7 @@ type SyncFormProps<T extends FieldValues> = {
   defaultValues?: DefaultValues<T>;
   values?: SyncFormValues;
   context: SyncContext;
+  schema?: z.ZodType<T>;
 };
 
 const useSyncForm = <T extends FieldValues>({
@@ -46,6 +47,7 @@ const useSyncForm = <T extends FieldValues>({
   defaultValues,
   values,
   context,
+  schema,
 }: SyncFormProps<T>) => {
   const isJupiterType = [1, 11, 12, 16].includes(context?.tstype_id || 0);
   const isBorehole = context?.loctype_id === 9;
@@ -76,8 +78,21 @@ const useSyncForm = <T extends FieldValues>({
   const owners: Array<{cvr: string; name: string}> = result.data;
   const owner = owners?.find((owner) => owner.cvr === values?.owner_cvr?.toString());
 
+  let refined = schema;
+  if (isDmpAllowed) {
+    refined = schema?.refine(
+      (data) => {
+        return data.owner_cvr !== undefined && data.owner_cvr !== null;
+      },
+      {
+        path: ['owner_cvr'],
+        message: 'Data ejer skal være udfyldt',
+      }
+    );
+  }
+
   const syncFormMethods = useForm<T>({
-    resolver: zodResolver(mode === 'mass_edit' ? syncArraySchema : syncSchema),
+    resolver: zodResolver(refined ? refined : syncSchema),
     defaultValues: defaultValues,
     mode: 'onTouched',
     values: {

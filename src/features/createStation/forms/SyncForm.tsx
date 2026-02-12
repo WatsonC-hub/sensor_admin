@@ -2,32 +2,46 @@ import {Box} from '@mui/material';
 import React, {useEffect} from 'react';
 import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import useSyncForm, {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
+import useSyncForm from '~/features/synchronization/api/useSyncForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
+import {z} from 'zod';
 
 type SyncFormProps = {
   id: string;
   mode: 'add' | 'edit' | 'mass_edit';
   loctype_id?: number;
   tstype_id?: number;
-  values: SyncFormValues | undefined;
-  setValues: (values: SyncFormValues) => void;
+  values: SyncFormSchema | undefined;
+  setValues: (values: SyncFormSchema) => void;
 };
 
-const Form = createTypedForm<SyncFormValues>();
+const syncSchema = z.object({
+  owner_cvr: z.number().optional(),
+  owner_name: z.union([z.string(), z.literal('')]).optional(),
+  jupiter: z.boolean().optional(),
+});
+
+type SyncFormSchema = z.infer<typeof syncSchema>;
+
+export type SyncFormData = SyncFormSchema & {
+  sync_dmp: boolean;
+};
+
+const Form = createTypedForm<SyncFormSchema>();
 
 const SyncForm = ({id, mode, loctype_id, tstype_id, values, setValues}: SyncFormProps) => {
   const [registerSubmitter, removeSubmitter] = useCreateStationStore((state) => [
     state.registerSubmitter,
     state.removeSubmitter,
   ]);
-  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm<SyncFormValues>({
+  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm<SyncFormSchema>({
     mode: mode,
     context: {
       loctype_id,
       tstype_id,
     },
     values: values,
+    schema: syncSchema,
   });
 
   const {setValue, handleSubmit} = syncFormMethods;

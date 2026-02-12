@@ -1,14 +1,20 @@
 import {Watlevmp} from '~/features/station/schema';
-import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
 import {AddUnitType} from './forms/UnitForm';
 import {AccessTable, ContactTable, Group} from '~/types';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
+import {SyncFormData} from './forms/SyncForm';
 
 /*  FORMSTATE */
 export type ControlSettingsFormState = {
   controls_per_year: number;
   lead_time: number | null;
   selectValue: 1 | 2;
+};
+
+export type SyncFormState = {
+  owner_cvr?: number;
+  owner_name?: string;
+  jupiter?: boolean;
 };
 
 export type CreateLocationData = {
@@ -49,9 +55,17 @@ type LocationFormState = {
   sla?: SLA;
 };
 
+type TimeseriesFormState = {
+  meta?: TimeseriesMeta;
+  watlevmp?: Watlevmp;
+  control_settings?: ControlSettingsFormState;
+  sync?: SyncFormState;
+  unit?: AddUnitType;
+};
+
 export type CreateStationFormState = {
   location: LocationFormState;
-  timeseries: Record<string, TimeseriesPayload>;
+  timeseries: Record<string, TimeseriesFormState>;
 };
 
 export type SimpleContact = {
@@ -79,7 +93,7 @@ export type TimeseriesPayload = {
   meta?: TimeseriesMeta;
   watlevmp?: Watlevmp;
   control_settings?: ControlSettingsFormState;
-  sync?: SyncFormValues;
+  sync?: SyncFormData;
   unit?: AddUnitType;
 };
 
