@@ -127,6 +127,7 @@ const TimeseriesEditor = ({index, onRemove}: Props) => {
           bttype="tertiary"
           startIcon={<RemoveCircleOutline fontSize="small" />}
           onClick={() => {
+            if (Object.keys(timeseries).length === 1) deleteState(`location.visibility`);
             onRemove();
           }}
         >
