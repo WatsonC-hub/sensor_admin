@@ -14,7 +14,6 @@ import useControlSettingsForm, {
 } from '~/features/configuration/api/useControlSettingsForm';
 import {useUser} from '~/features/auth/useUser';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 import usePermissions from '~/features/permissions/api/usePermissions';
 
 const YearlyControlsConfig = () => {
@@ -24,8 +23,6 @@ const YearlyControlsConfig = () => {
   const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
   const {superUser} = useUser();
   const {location_permissions} = usePermissions(loc_id);
-
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'kontrolhyppighed', ts_id);
 
   const disabled =
     (values?.isCustomerService && superUser) ||
@@ -62,7 +59,6 @@ const YearlyControlsConfig = () => {
       {
         onSuccess: () => {
           reset();
-          if (needsProgress) hasAssessed();
         },
       }
     );

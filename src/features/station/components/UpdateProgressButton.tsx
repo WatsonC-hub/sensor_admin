@@ -20,7 +20,6 @@ const UpdateProgressButton = ({progressKey, loc_id, ts_id, disabled, alterStyle}
   } = useUser();
   const {needsProgress, hasAssessed} = useStationProgress(loc_id, progressKey, ts_id);
   const {isMobile} = useBreakpoints();
-
   return (
     <>
       {needsProgress && stationProgress ? (

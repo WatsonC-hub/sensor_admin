@@ -1,4 +1,4 @@
-import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -51,7 +51,7 @@ const locationAccessDelOptions = {
   },
 };
 
-export const LocationAccessGetOptions = (loc_id: number | undefined) =>
+export const locationAccessGetOptions = (loc_id: number | undefined) =>
   queryOptions<Array<AccessTable>, APIError>({
     queryKey: queryKeys.Location.keys(loc_id),
     queryFn: async () => {
@@ -88,28 +88,36 @@ export const useSearchLocationAccess = (loc_id: number | undefined, searchString
 };
 
 export const useLocationAccess = (loc_id: number | undefined) => {
-  const queryClient = useQueryClient();
-  const get = useQuery(LocationAccessGetOptions(loc_id));
+  const get = useQuery(locationAccessGetOptions(loc_id));
 
   const post = useMutation({
     ...locationAccessPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.keys(loc_id),
-      });
-
       toast.success('Adgangsinformation gemt');
+    },
+    meta: {
+      invalidates: [
+        queryKeys.Location.keys(loc_id),
+        queryKeys.Location.info(loc_id),
+        queryKeys.StationProgress(),
+        ['collection'],
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 
   const put = useMutation({
     ...locationAccessPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.keys(loc_id),
-      });
-
       toast.success('Adgangsinformation ændret');
+    },
+    meta: {
+      invalidates: [
+        queryKeys.Location.keys(loc_id),
+        queryKeys.Location.info(loc_id),
+        ['collection'],
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -117,9 +125,14 @@ export const useLocationAccess = (loc_id: number | undefined) => {
     ...locationAccessDelOptions,
     onSuccess: () => {
       toast.success('Adgangsinformation slettet');
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.keys(loc_id),
-      });
+    },
+    meta: {
+      invalidates: [
+        queryKeys.Location.keys(loc_id),
+        queryKeys.Location.info(loc_id),
+        ['collection'],
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 

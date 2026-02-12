@@ -37,14 +37,14 @@ import {
   routeStyle,
 } from '../mapConsts';
 import {useUser} from '~/features/auth/useUser';
-import {useMapFilterStore} from '../store';
 import {setIconSize} from '../utils';
 import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {usedHeightAtom, usedWidthAtom} from '~/state/atoms';
+import {highlightedItinerariesAtom, usedHeightAtom, usedWidthAtom} from '~/state/atoms';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useMapFilterStore} from '../hooks/useMapFilterStore';
 
 const useMap = <TData extends object>(
   id: string,
@@ -66,6 +66,7 @@ const useMap = <TData extends object>(
   const usedHeight = useAtomValue(usedHeightAtom);
   const {isMobile} = useBreakpoints();
 
+  const highlightedItineraries = useAtomValue(highlightedItinerariesAtom);
   const [doneRendering, setDoneRendering] = useState(false);
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
@@ -111,17 +112,10 @@ const useMap = <TData extends object>(
     {
       text: 'Google Maps',
       callback: function (e: L.ContextMenuItemClickEvent) {
-        if (e.relatedTarget && 'data' in e.relatedTarget.options) {
-          window.open(
-            `https://www.google.com/maps/search/?api=1&query=${e.relatedTarget.options.data.latitude},${e.relatedTarget.options.data.longitude}`,
-            '_blank'
-          );
-        } else {
-          window.open(
-            `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
-            '_blank'
-          );
-        }
+        window.open(
+          `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
+          '_blank'
+        );
       },
       icon: '/leaflet-images/directions.png',
     },
@@ -620,12 +614,11 @@ const useMap = <TData extends object>(
   }, [leafletMapRoutes, parkings]);
 
   useEffect(() => {
-    if (mapRef.current && filters && filters.itineraries.length > 0) {
+    if (mapRef.current && filters && highlightedItineraries.length > 0) {
       const markers = markerLayerRef.current?.getLayers().filter((marker) => {
         if (marker instanceof L.Marker) {
-          return filters.itineraries
-            .map((itinerary) => itinerary.id)
-            .includes((marker.options.data as MapOverview).itinerary_id);
+          const itinerary_id = (marker.options.data as MapOverview).itinerary_id;
+          if (itinerary_id !== null) return highlightedItineraries.includes(itinerary_id);
         }
         return false;
       });
@@ -649,7 +642,7 @@ const useMap = <TData extends object>(
 
       fg.clearLayers();
     }
-  }, [filters.itineraries.length]);
+  }, [highlightedItineraries.length]);
 
   useEffect(() => {
     if (mapRef.current && doneRendering) {

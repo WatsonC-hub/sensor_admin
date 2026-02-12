@@ -3,6 +3,7 @@ import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 type ImageData = {
   comment: string;
@@ -97,21 +98,24 @@ export const useImageUpload = (endpoint: string, id: string | number) => {
   const post = useMutation({
     ...postImageMutationOptions(endpoint, id),
     meta: {
-      invalidates: [['register']],
+      invalidates: [['images'], queryKeys.StationProgress()],
+      optOutGeneralInvalidations: true,
     },
   });
 
   const put = useMutation({
     ...putImageMutationOptions(endpoint, id),
     meta: {
-      invalidates: [['register']],
+      invalidates: [['images']],
+      optOutGeneralInvalidations: true,
     },
   });
 
   const del = useMutation({
     ...deleteImageMutationOptions(endpoint, id),
     meta: {
-      invalidates: [['register']],
+      invalidates: [['images']],
+      optOutGeneralInvalidations: true,
     },
   });
 

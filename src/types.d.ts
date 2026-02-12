@@ -3,6 +3,7 @@ import {Dayjs} from 'dayjs';
 import {ReactNode} from 'react';
 // import type {FeatureCollection, Geometry} from 'leaflet';
 import * as geojson from 'geojson';
+import {CertifyQa} from './features/kvalitetssikring/api/useCertifyQa';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -10,7 +11,7 @@ export interface Image {
   type: string;
   gid: number;
   loc_id?: number;
-  boreholeno: number;
+  boreholeno?: number;
   title: string;
   date: Dayjs;
   public: boolean;
@@ -346,6 +347,28 @@ export type QaAllData = {
   dataexclude: Array<DataExclude>;
 };
 
+export type AdjustmentData =
+  | {
+      type: AdjustmentTypes.LEVELCORRECTION;
+      data: LevelCorrection;
+    }
+  | {
+      type: AdjustmentTypes.MINMAX;
+      data: MinMaxCutoff;
+    }
+  | {
+      type: AdjustmentTypes.EXLUDETIME;
+      data: DataExclude;
+    }
+  | {
+      type: AdjustmentTypes.EXLUDEPOINTS;
+      data: DataExclude;
+    }
+  | {
+      type: AdjustmentTypes.APPROVED;
+      data: CertifyQa;
+    };
+
 export type GraphData = {
   x: Array<string>;
   y: Array<number>;
@@ -444,3 +467,5 @@ export type DmpSyncValidCombination = {
   loctype_id: number;
   tstype_id: number;
 };
+
+export type QueryType<F> = Omit<ReturnType<F>, 'queryKey' | 'queryFn'>;

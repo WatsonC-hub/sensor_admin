@@ -34,7 +34,7 @@ const schema = z
       .refine((val) => val !== null && val !== undefined, {
         message: 'Pejlepunkt skal være udfyldt',
       }),
-    mp_description: z.string().optional(),
+    mp_description: z.string().nullish(),
   })
   .superRefine(({enddate, startdate}, ctx) => {
     if (enddate && startdate && enddate.isBefore(startdate)) {
@@ -80,7 +80,10 @@ export default function ReferenceForm() {
   };
 
   const handleEdit = (data: Maalepunkt) => {
-    const {data: parsedData} = schema.safeParse(data);
+    const {data: parsedData} = schema.safeParse({
+      ...data,
+      mp_description: data.mp_description ?? '',
+    });
     reset(parsedData);
     setShowForm(true);
   };

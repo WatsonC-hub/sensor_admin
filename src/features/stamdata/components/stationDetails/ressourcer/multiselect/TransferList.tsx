@@ -18,7 +18,6 @@ import type {
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {CategoryType} from '~/helpers/EnumHelper';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 
 function not(a: Ressourcer[], b: Ressourcer[]) {
   return a.filter((value) => b.map((option) => option.navn).indexOf(value.navn) === -1);
@@ -65,7 +64,6 @@ export default function TranserList({loc_id, value, setValue}: TransferListProps
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
   const [collapsed, setCollapsed] = useState<Array<string>>([]);
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'ressourcer');
   const {
     get: {data: options},
     post: postRessourcer,
@@ -149,11 +147,7 @@ export default function TranserList({loc_id, value, setValue}: TransferListProps
         ressourcer: ressourcer,
       },
     };
-    postRessourcer.mutate(payload, {
-      onSuccess: () => {
-        if (needsProgress) hasAssessed();
-      },
-    });
+    postRessourcer.mutate(payload);
   };
 
   const handleClick = (collapsedCategory: string) => {

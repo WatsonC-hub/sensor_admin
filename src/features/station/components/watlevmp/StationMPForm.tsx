@@ -3,7 +3,6 @@ import {UseFormReturn} from 'react-hook-form';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {initialWatlevmpData} from '~/features/stamdata/components/stamdata/const';
 import {WatlevMPFormValues} from '~/features/stamdata/components/stamdata/ReferenceForm';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
@@ -24,20 +23,17 @@ const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
   } = formMethods;
 
   const {post: postWatlevmp, put: putWatlevmp} = useMaalepunkt(ts_id);
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'watlevmp', ts_id);
   const handleMaalepunktSubmit = (values: WatlevMPFormValues) => {
     const mutationOptions = {
       onSuccess: () => {
         reset(initialWatlevmpData());
         setShowForm(null);
-        if (needsProgress) hasAssessed();
       },
     };
 
     const data = {
       ...values,
     };
-
     if (values.gid === undefined) {
       const payload = {
         data: data,
@@ -52,7 +48,6 @@ const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
       putWatlevmp.mutate(payload, mutationOptions);
     }
   };
-
   return (
     <Box maxWidth={600} margin="auto">
       <Form
@@ -94,6 +89,7 @@ const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
           ml="auto"
         >
           <Form.Cancel
+            disabled={false}
             cancel={() => {
               if (defaultValues?.gid) reset(initialWatlevmpData());
               else reset();

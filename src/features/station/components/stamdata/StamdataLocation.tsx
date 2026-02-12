@@ -1,6 +1,6 @@
 import {Typography, InputAdornment, TextField} from '@mui/material';
 import {RefetchOptions, useQuery} from '@tanstack/react-query';
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 import {apiClient} from '~/apiClient';
 import FormInput, {FormInputProps} from '~/components/FormInput';
@@ -21,7 +21,7 @@ import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {useAppContext} from '~/state/contexts';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {queryClient} from '~/queryClient';
-import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
 
 type Props = {
   children: React.ReactNode;
@@ -473,8 +473,12 @@ const InitialProjectNo = (
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
   const {loc_id} = useAppContext(undefined, ['loc_id']);
+
   const {data} = useMapOverview({
-    select: (data) => data.find((loc) => loc.loc_id === loc_id),
+    select: useCallback(
+      (data: MapOverview[]) => data.find((loc) => loc.loc_id === loc_id),
+      [loc_id]
+    ),
   }); // Preload location data for better performance when opening projects dialog
 
   const disable = data?.no_unit === false;

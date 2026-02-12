@@ -57,7 +57,7 @@ const BoreholeStamdata = () => {
       return out;
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['borehole_stamdata']],
     },
   });
 

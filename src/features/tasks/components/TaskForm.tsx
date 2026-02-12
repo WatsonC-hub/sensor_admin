@@ -8,7 +8,7 @@ import {z} from 'zod';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import {useNextDueDate, useTasks} from '~/features/tasks/api/useTasks';
+import {useNextDueDate, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import {TaskUser} from '~/features/tasks/types';
 
 import {useTaskState} from '../api/useTaskState';
@@ -149,9 +149,7 @@ interface StatusSelectProps extends Omit<FormInputProps<FormValues>, 'name'> {
 
 const StatusSelect = ({disableClosedStatus = false, ...props}: StatusSelectProps) => {
   const {disabled} = React.useContext(TaskFormContext);
-  const {
-    getStatus: {data: task_status},
-  } = useTasks();
+  const {data: task_status} = useTaskStatus();
 
   return (
     <FormInput
@@ -173,9 +171,7 @@ const StatusSelect = ({disableClosedStatus = false, ...props}: StatusSelectProps
 
 const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
   const {disabled} = React.useContext(TaskFormContext);
-  const {
-    getUsers: {data: taskUsers},
-  } = useTasks();
+  const {data: taskUsers} = useTaskUsers();
   const {control} = useFormContext<FormValues>();
 
   const textfieldProps = {
@@ -237,9 +233,7 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
 
 const AssignedToSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   const {disabled} = React.useContext(TaskFormContext);
-  const {
-    getUsers: {data: taskUsers},
-  } = useTasks();
+  const {data: taskUsers} = useTaskUsers();
 
   return (
     <FormInput

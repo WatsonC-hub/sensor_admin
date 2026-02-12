@@ -3,16 +3,14 @@ import {useAtom} from 'jotai';
 import React from 'react';
 import ExtendedAutocomplete from '~/components/Autocomplete';
 import {assignedToAtom} from '~/state/atoms';
-import {useTasks} from '../api/useTasks';
+import {useTaskUsers} from '../api/useTasks';
 import {TaskUser} from '../types';
 import TooltipWrapper from '~/components/TooltipWrapper';
 
 const LocationListFilter = () => {
   const [selectedUser, setSelectedUser] = useAtom<TaskUser | null>(assignedToAtom);
 
-  const {
-    getUsers: {data: taskUsers},
-  } = useTasks();
+  const {data: taskUsers} = useTaskUsers();
 
   const expandedUserList = [
     ...(taskUsers !== undefined ? taskUsers : []),

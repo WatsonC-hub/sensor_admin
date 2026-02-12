@@ -65,7 +65,7 @@ export default function AddUnitForm({
   const [unitData, setUnitData] = useState({
     calypso_id: '',
     uuid: '',
-    fra: dayjs(),
+    fra: dayjs().startOf('minute'),
   });
 
   const [openCaptureDialog, setOpenCaptureDialog] = useState(false);
@@ -210,7 +210,7 @@ export default function AddUnitForm({
 
   const handleClose = () => {
     setUdstyrDialogOpen(false);
-    setUnitData({calypso_id: '', uuid: '', fra: dayjs()});
+    setUnitData({calypso_id: '', uuid: '', fra: dayjs().startOf('minute')});
     trigger();
     reset();
   };
@@ -231,7 +231,7 @@ export default function AddUnitForm({
   };
 
   useEffect(() => {
-    if (udstyrDialogOpen) setUnitData((prev) => ({...prev, fra: dayjs()}));
+    if (udstyrDialogOpen) setUnitData((prev) => ({...prev, fra: dayjs().startOf('minute')}));
   }, [udstyrDialogOpen]);
 
   return (

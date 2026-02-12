@@ -11,17 +11,15 @@ import LocationAccessFormDialog from '~/features/stamdata/components/stationDeta
 import LocationAccessTable from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessTable';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 import {useAppContext} from '~/state/contexts';
 import useLocationAccessForm from './api/useLocationAccessForm';
 import {Access} from '~/types';
 import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
 
 const LocationAccess = () => {
-  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {loc_id} = useAppContext(['loc_id']);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'adgangsforhold', ts_id);
   const {
     features: {keys: accessKeys},
   } = useUser();
@@ -54,7 +52,6 @@ const LocationAccess = () => {
       onSuccess: () => {
         reset();
         setOpenDialog(false);
-        if (needsProgress) hasAssessed();
       },
     });
   };

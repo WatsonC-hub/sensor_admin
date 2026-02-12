@@ -1,4 +1,4 @@
-import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -17,35 +17,11 @@ interface RessourcerPost extends RessourcerBase {
   };
 }
 
-interface RessourcerPut extends RessourcerBase {
-  data: {
-    ressourcer: Array<Ressourcer>;
-  };
-}
-
 const ressourcerPostOptions = {
   mutationKey: ['ressourcer_post'],
   mutationFn: async (mutation_data: RessourcerPost) => {
     const {path, data} = mutation_data;
     const {data: result} = await apiClient.post(`/sensor_field/stamdata/ressourcer/${path}`, data);
-    return result;
-  },
-};
-
-const ressourcerPutOptions = {
-  mutationKey: ['ressourcer_put'],
-  mutationFn: async (mutation_data: RessourcerPut) => {
-    const {path, data} = mutation_data;
-    const {data: result} = await apiClient.put(`/sensor_field/stamdata/ressourcer/${path}`, data);
-    return result;
-  },
-};
-
-const ressourcerDelOptions = {
-  mutationKey: ['ressourcer_del'],
-  mutationFn: async (mutation_data: RessourcerBase) => {
-    const {path} = mutation_data;
-    const {data: result} = await apiClient.delete(`/sensor_field/stamdata/ressourcer/${path}`);
     return result;
   },
 };
@@ -62,7 +38,6 @@ export const getRessourcerOptions = (loc_id?: number) =>
   });
 
 export const useRessourcer = (loc_id?: number) => {
-  const queryClient = useQueryClient();
   const get = useQuery({
     queryKey: queryKeys.Location.ressources(),
     queryFn: async () => {
@@ -78,41 +53,18 @@ export const useRessourcer = (loc_id?: number) => {
   const post = useMutation({
     ...ressourcerPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.locationRessources(loc_id),
-      });
       toast.success('Huskeliste gemt');
     },
     meta: {
-      invalidates: [['metadata'], ['register']],
+      invalidates: [
+        queryKeys.Location.locationRessources(loc_id),
+        queryKeys.Location.info(loc_id),
+        ['collection'],
+        queryKeys.StationProgress(),
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 
-  const put = useMutation({
-    ...ressourcerPutOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.locationRessources(loc_id),
-      });
-      toast.success('Huskeliste ændret');
-    },
-    meta: {
-      invalidates: [['metadata'], ['register']],
-    },
-  });
-
-  const del = useMutation({
-    ...ressourcerDelOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.locationRessources(loc_id),
-      });
-      toast.success('Huskeliste slettet');
-    },
-    meta: {
-      invalidates: [['metadata'], ['register']],
-    },
-  });
-
-  return {get, relation, post, put, del};
+  return {get, relation, post};
 };

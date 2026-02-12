@@ -13,7 +13,9 @@ const TaskInfo = () => {
 
   const {selectedTask} = useTaskState();
   const {data: taskHistoryList} = useLocationTaskHistory(loc_id ?? undefined);
+
   let task = selectedTask;
+
   if (selectedTask === undefined && selectedTaskId !== undefined) {
     task = taskHistoryList?.find((task) => task.id === selectedTaskId);
   }

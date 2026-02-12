@@ -33,11 +33,7 @@ const Synchronization = () => {
       },
     };
 
-    postSync.mutate(syncPayload, {
-      onSuccess: () => {
-        if (needsProgress) hasAssessed();
-      },
-    });
+    postSync.mutate(syncPayload);
   };
 
   return (

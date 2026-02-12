@@ -37,7 +37,6 @@ import {useUser} from '~/features/auth/useUser';
 import {toast} from 'react-toastify';
 import CaptureDialog from './CaptureDialog';
 import {useTasks} from '~/features/tasks/api/useTasks';
-import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
@@ -314,9 +313,7 @@ const OwnTaskList = () => {
     state.setOwnTaskList,
   ]);
   const user = useUser();
-  const {
-    get: {data: tasks},
-  } = useTasks();
+  const {data: tasks} = useTasks();
 
   const task_list = tasks?.filter(
     (task) => task.assigned_to === user.user_id.toString() && task.status_id !== 2

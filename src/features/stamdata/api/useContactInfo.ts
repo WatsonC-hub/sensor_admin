@@ -54,8 +54,8 @@ const contactInfoDelOptions = {
   },
 };
 
-export const ContactInfoGetOptions = (loc_id: number | undefined) =>
-  queryOptions<Array<ContactTable>, APIError>({
+export const contactInfoGetOptions = (loc_id: number | undefined) =>
+  queryOptions({
     queryKey: queryKeys.Location.contacts(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<ContactTable>>(
@@ -97,7 +97,7 @@ export const useSearchContact = <T = ContactInfo[]>(
 };
 
 export const useContactInfo = (loc_id: number | undefined) => {
-  const get = useQuery(ContactInfoGetOptions(loc_id));
+  const get = useQuery(contactInfoGetOptions(loc_id));
 
   const post = useMutation({
     ...contactInfoPostOptions,
@@ -105,7 +105,13 @@ export const useContactInfo = (loc_id: number | undefined) => {
       toast.success('Kontakt information tilføjet');
     },
     meta: {
-      invalidates: [['metadata']],
+      invalidates: [
+        queryKeys.Location.contacts(loc_id),
+        queryKeys.StationProgress(),
+        ['collection'],
+        queryKeys.Location.info(loc_id),
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -115,7 +121,12 @@ export const useContactInfo = (loc_id: number | undefined) => {
       toast.success('Kontakt information ændret');
     },
     meta: {
-      invalidates: [['metadata']],
+      invalidates: [
+        queryKeys.Location.contacts(loc_id),
+        ['collection'],
+        queryKeys.Location.info(loc_id),
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -125,7 +136,12 @@ export const useContactInfo = (loc_id: number | undefined) => {
       toast.success('Kontakt information slettet');
     },
     meta: {
-      invalidates: [['metadata']],
+      invalidates: [
+        queryKeys.Location.contacts(loc_id),
+        ['collection'],
+        queryKeys.Location.info(loc_id),
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 

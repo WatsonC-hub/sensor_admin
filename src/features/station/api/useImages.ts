@@ -2,26 +2,26 @@ import {queryOptions, useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import {Image} from '~/types';
 
-export const getImageOptions = (typeId: string | number, imageType: string, type: string) =>
-  queryOptions<any, APIError>({
+export const getImageOptions = (typeId: string | number, type: 'station' | 'borehole') =>
+  queryOptions({
     queryKey: queryKeys.imagesById(typeId),
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/${type}/${imageType}/${typeId}`);
-      return data;
-    },
-    select: (data) => {
-      return data.map((image: any) => ({
+      const endpointName = type === 'borehole' ? 'image' : 'images';
+      const {data} = await apiClient.get<Image[]>(
+        `/sensor_field/${type}/${endpointName}/${typeId}`
+      );
+      return data.map((image) => ({
         ...image,
-        date: image.date ? dayjs(image.date) : null, // Ensure date is a Date object
+        date: dayjs(image.date), // Ensure date is a Date object
       }));
     },
     enabled: !!typeId,
   });
 
-const useImages = (typeId: string | number, imageType: string, type: string) => {
-  const get = useQuery(getImageOptions(typeId, imageType, type));
+const useImages = (typeId: string | number, type: 'station' | 'borehole') => {
+  const get = useQuery(getImageOptions(typeId, type));
 
   return {get};
 };

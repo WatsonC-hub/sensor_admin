@@ -12,9 +12,7 @@ const OwnTaskList = () => {
   const insertionDirection = useRef<'forward' | 'backward'>('forward');
   const getScrollElement = useCallback(() => parentRef.current, []);
   const {user_id} = useUser();
-  const {
-    get: {data: tasks},
-  } = useTasks();
+  const {data: tasks} = useTasks();
 
   const scrollToFn = useCallback(
     () => createSmoothScrollToFn(getScrollElement, 800),

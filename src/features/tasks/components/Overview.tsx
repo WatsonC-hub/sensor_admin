@@ -21,7 +21,7 @@ import LocationList from './LocationList';
 import TaskItiniaries from './TaskItiniaries';
 import LocationRouter from '~/features/station/components/LocationRouter';
 import Trip from '~/pages/admin/opgaver/Trip';
-import useTaskItinerary from '../api/useTaskItinerary';
+import {useItineraryMutations} from '../api/useItinerary';
 import {useAtomValue} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
@@ -79,7 +79,7 @@ const Overview = () => {
 
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
-  const {addLocationToTrip} = useTaskItinerary();
+  const {addLocationToTrip} = useItineraryMutations();
 
   const {simpleTaskPermission} = useUser();
   const {isMobile, isTouch} = useBreakpoints();

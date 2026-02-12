@@ -1,9 +1,8 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useMutation} from '@tanstack/react-query';
 import {Dayjs} from 'dayjs';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {useAppContext} from '~/state/contexts';
 
 export interface Unit {
   terminal_type: string;
@@ -14,7 +13,6 @@ export interface Unit {
   batteriskift: string;
   startdato: string;
   slutdato: string;
-  // uuid: string;
   unit_uuid: string;
   gid: number;
   channel: string;
@@ -37,9 +35,7 @@ interface UnitBase {
 export interface UnitPost extends UnitBase {
   data: TypeUnitPost;
 }
-// interface UnitPut extends UnitBase {
-//   data: TypeUnitPost;
-// }
+
 const unitPostOptions = {
   mutationKey: ['unit_post'],
   mutationFn: async (mutation_data: UnitPost) => {
@@ -51,31 +47,8 @@ const unitPostOptions = {
     return result;
   },
 };
-// const unitPutOptions = {
-//   mutationKey: ['unit_put'],
-//   mutationFn: async (mutation_data: UnitPut) => {
-//     const {path, data} = mutation_data;
-//     const {data: result} = await apiClient.put(
-//       `//${path}`,
-//       data
-//     ); /* Write the url for the endpoint  */
-//     return result;
-//   },
-// };
-// const unitDelOptions = {
-//   mutationKey: ['unit_del'],
-//   mutationFn: async (mutation_data: UnitBase) => {
-//     const {path} = mutation_data;
-//     const {data: result} = await apiClient.delete(
-//       `//${path}`
-//     ); /* Write the url for the endpoint  */
-//     return result;
-//   },
-// };
 
 export const useUnit = () => {
-  const {ts_id} = useAppContext([], ['ts_id']);
-  const queryClient = useQueryClient();
   const get = useQuery({
     queryKey: queryKeys.AvailableUnits.all(),
     queryFn: async () => {
@@ -86,36 +59,10 @@ export const useUnit = () => {
   });
   const post = useMutation({
     ...unitPostOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.AvailableUnits.all(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['register', ts_id],
-      });
-    },
+    onSuccess: () => {},
     meta: {
-      invalidates: [['metadata']],
+      invalidates: [queryKeys.AvailableUnits.all(), ['udstyr']],
     },
   });
-  // const put = useMutation({
-  //   ...unitPutOptions,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: queryKeys.AvailableUnits.all(),
-  //     });
-  //     toast.success('Enhed ændret');
-  //   },
-  // });
-  // const del = useMutation({
-  //   ...unitDelOptions,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: queryKeys.AvailableUnits.all(),
-  //     });
-  //     toast.success('Enhed slettet');
-  //   },
-  // });
-  // return {get, post, put, del};
   return {get, post};
 };
