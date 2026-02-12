@@ -28,17 +28,14 @@ const Router = () => {
   } = useCmdPalette({
     select: (data) => {
       // remove duplicate ts_id and ts_name
-
       const uniqueTsIds = new Set();
-      const uniqueData = data
-        .filter((item) => item.active && item.calypso_id != null)
-        .filter((item) => {
-          if (item.ts_id === -1 || uniqueTsIds.has(item.ts_id)) {
-            return false; // Exclude items with ts_id -1 or duplicates
-          }
-          uniqueTsIds.add(item.ts_id);
-          return true;
-        });
+      const uniqueData = data.filter((item) => {
+        if (item.ts_id === -1 || uniqueTsIds.has(item.ts_id)) {
+          return false; // Exclude items with ts_id -1 or duplicates
+        }
+        uniqueTsIds.add(item.ts_id);
+        return true;
+      });
       return uniqueData;
     },
   });
@@ -63,10 +60,12 @@ const Router = () => {
       },
       icon: <QueryStats />,
       shortcut: 'C',
-      options: calypsoIDData?.map((item) => ({
-        label: `${item.calypso_id} (${item.ts_name})`,
-        value: item,
-      })), // This will be populated dynamically
+      options: calypsoIDData
+        ?.filter((item) => item.active && item.calypso_id != null)
+        ?.map((item) => ({
+          label: `${item.calypso_id} (${item.ts_name})`,
+          value: item,
+        })), // This will be populated dynamically
       filter: (value, search) => {
         // Filter function to match calypso_id with search term
         return value.calypso_id?.toString().includes(search.toLowerCase()) ? 1 : 0;
