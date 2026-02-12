@@ -45,7 +45,7 @@ const EditLocation = () => {
       return out;
     },
     meta: {
-      invalidates: [queryKeys.Location.info(loc_id)],
+      invalidates: [queryKeys.Location.info(loc_id), queryKeys.Location.metadata(loc_id)],
       optOutGeneralInvalidations: true,
     },
   });
