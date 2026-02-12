@@ -4,11 +4,11 @@ import LocationInfo from '~/features/station/components/sensorContent/LocationIn
 import TaskList from '~/features/station/components/sensorContent/TaskList';
 import TimeseriesList from '~/features/station/components/sensorContent/TimeseriesList';
 import {useAppContext} from '~/state/contexts';
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
 import TaskHistoryList from '~/features/station/components/sensorContent/TaskHistoryList';
-import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -26,9 +26,12 @@ const SensorContent = () => {
   const {advancedTaskPermission, simpleTaskPermission} = useUser();
   const {tasks} = useTaskState();
   const {data: location} = useMapOverview({
-    select: (data) => {
-      return data.find((location) => location.loc_id === loc_id);
-    },
+    select: useCallback(
+      (data: MapOverview[]) => {
+        return data.find((location) => location.loc_id === loc_id);
+      },
+      [loc_id]
+    ),
   });
 
   const enableDragToTrip =

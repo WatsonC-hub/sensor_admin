@@ -4,8 +4,8 @@ import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import FormInput from '~/components/FormInput';
-import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {useTaskHistory, useTaskHistoryMutations} from '~/features/tasks/api/useTaskHistory';
+import {useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import TaskInfoChanges from '~/features/tasks/components/TaskInfoChanges';
 import TaskInfoComment from '~/features/tasks/components/TaskInfoComment';
 
@@ -31,14 +31,10 @@ interface TaskInfoCommentFormProps {
 }
 
 const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
-  const {
-    get: {data: taskHistory},
-    addTaskComment,
-  } = useTaskHistory(selectedTaskId);
-  const {
-    getUsers: {data: taskUsers},
-    getStatus: {data: taskStatus},
-  } = useTasks();
+  const {data: taskHistory} = useTaskHistory(selectedTaskId);
+  const {addTaskComment} = useTaskHistoryMutations(selectedTaskId);
+  const {data: taskUsers} = useTaskUsers();
+  const {data: taskStatus} = useTaskStatus();
 
   const {selectedTask} = useTaskState();
 

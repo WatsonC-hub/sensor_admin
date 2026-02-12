@@ -35,7 +35,7 @@ export default function Tilsyn() {
   const [showForm, setShowForm] = useShowFormState();
   const {isTouch, isLaptop} = useBreakpoints();
   const initialData: TilsynSchemaType = {
-    dato: dayjs(),
+    dato: dayjs().startOf('minute'),
     gid: -1,
     batteriskift: false,
     kommentar: '',

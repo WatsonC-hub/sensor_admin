@@ -6,12 +6,16 @@ import {z} from 'zod';
 import AlertDialog from '~/components/AlertDialog';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
-import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
+import {
+  useItineraryMutations,
+  useItineraries,
+  useItinerary,
+} from '~/features/tasks/api/useItinerary';
 import {useDisplayState} from '~/hooks/ui';
 import MoveUpIcon from '@mui/icons-material/MoveUp';
 
 type Props = {
-  itinerary_id: string | null;
+  itinerary_id: string;
   open: boolean;
   setOpen: (open: boolean) => void;
 };
@@ -23,11 +27,10 @@ type FormValues = {
 const TripMergeDialog = ({itinerary_id, open, setOpen}: Props) => {
   const [openDialog, setOpenDialog] = React.useState<boolean>(false);
   const setItineraryId = useDisplayState((state) => state.setItineraryId);
-  const {
-    mergeTrips,
-    get: {data: itineraries},
-    getItinerary: {data: itinerary},
-  } = useTaskItinerary(itinerary_id);
+  const {data: itinerary} = useItinerary(itinerary_id);
+  const {data: itineraries} = useItineraries();
+
+  const {mergeTrips} = useItineraryMutations();
 
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(

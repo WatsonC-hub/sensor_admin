@@ -2,7 +2,6 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {APIError} from '~/queryClient';
 
 import {DBTaskComment, PostComment, TaskChanges, TaskComment} from '../types';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
@@ -40,9 +39,9 @@ const taskCommentDelOptions = {
     return result;
   },
 };
-export const useTaskHistory = (task_id: string) => {
-  const queryClient = useQueryClient();
-  const get = useQuery<Array<TaskComment | TaskChanges>, APIError>({
+
+const useTaskHistory = (task_id: string) => {
+  return useQuery({
     queryKey: queryKeys.Tasks.taskHistory(task_id),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<TaskComment | TaskChanges>>(
@@ -53,10 +52,16 @@ export const useTaskHistory = (task_id: string) => {
     staleTime: 1000 * 60 * 1, // 1 minute
     enabled: task_id !== undefined && !task_id.includes(':'),
   });
+};
+
+const useTaskHistoryMutations = (task_id: string) => {
+  const queryClient = useQueryClient();
+
   const addTaskComment = useMutation({
     ...taskCommentPostOptions,
     meta: {
-      invalidates: [['tasks_history', task_id]],
+      invalidates: [queryKeys.Tasks.taskHistory(task_id)],
+      optOutGeneralInvalidations: true,
     },
   });
   const editTaskComment = useMutation({
@@ -69,12 +74,22 @@ export const useTaskHistory = (task_id: string) => {
         queryKey: queryKeys.Tasks.taskHistory(task_id),
       });
     },
+    meta: {
+      invalidates: [queryKeys.Tasks.taskHistory(task_id)],
+      optOutGeneralInvalidations: true,
+    },
   });
   const deleteTaskComment = useMutation({
     ...taskCommentDelOptions,
     onSuccess: () => {
       toast.success('Opgave kommentar slettet');
     },
+    meta: {
+      invalidates: [queryKeys.Tasks.taskHistory(task_id)],
+      optOutGeneralInvalidations: true,
+    },
   });
-  return {get, addTaskComment, editTaskComment, deleteTaskComment};
+  return {addTaskComment, editTaskComment, deleteTaskComment};
 };
+
+export {useTaskHistory, useTaskHistoryMutations};

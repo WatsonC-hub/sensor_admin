@@ -5,7 +5,7 @@ import React, {useState} from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {useTaskMutations, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {Task} from '~/features/tasks/types';
 import {useDisplayState} from '~/hooks/ui';
@@ -25,12 +25,11 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   // const removeFromItineraryTitle = !selectedTask.itinerary_id
   //   ? 'Opgaven er ikke tilknyttet en tur'
   //   : '';
-  const {
-    patch,
-    del,
-    getStatus: {data: taskStatus},
-    getUsers: {data: taskUsers},
-  } = useTasks();
+  const {patch, del} = useTaskMutations();
+
+  const {data: taskStatus} = useTaskStatus();
+  const {data: taskUsers} = useTaskUsers();
+
   const {
     trigger,
     getValues,

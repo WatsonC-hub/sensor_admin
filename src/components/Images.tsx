@@ -4,7 +4,7 @@ import {useImageUpload} from '~/hooks/query/useImageUpload';
 import {Image} from '~/types';
 
 interface Props {
-  type: string;
+  type: 'station' | 'borehole';
   typeId: string | number;
   setOpenSave: (openSave: boolean) => void;
   setActiveImage: (image: Image) => void;
@@ -12,13 +12,11 @@ interface Props {
 }
 
 function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props) {
-  const imageType: string = type === 'borehole' ? 'image' : 'images';
   const {
     get: {data: images, error},
-  } = useImages(typeId, imageType, type);
+  } = useImages(typeId, type);
 
-  const endpoint = type === 'borehole' ? 'borehole' : 'station';
-  const {del: deleteImage} = useImageUpload(endpoint, typeId);
+  const {del: deleteImage} = useImageUpload(type, typeId);
 
   if (error) {
     return;
@@ -35,7 +33,7 @@ function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props)
       deleteMutation={deleteImage}
       handleEdit={handleEdit}
       images={images}
-      type={endpoint}
+      type={type}
       id={typeId}
     />
   );

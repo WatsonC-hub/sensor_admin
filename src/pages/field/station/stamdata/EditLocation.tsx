@@ -17,6 +17,7 @@ import useLocationForm from '~/features/station/api/useLocationForm';
 import ConfirmDeleteDialog from '~/features/station/components/ConfirmDeleteDialog';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
 import {BaseLocation} from '~/features/station/schema';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -44,7 +45,8 @@ const EditLocation = () => {
       return out;
     },
     meta: {
-      invalidates: [['metadata']],
+      invalidates: [queryKeys.Location.info(loc_id), queryKeys.Location.metadata(loc_id)],
+      optOutGeneralInvalidations: true,
     },
   });
 

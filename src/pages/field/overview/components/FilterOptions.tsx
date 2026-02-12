@@ -1,27 +1,29 @@
 import {CloseOutlined, RestartAlt} from '@mui/icons-material';
-import {Box, Typography, Grid} from '@mui/material';
+import {Box, Typography, Grid2} from '@mui/material';
 import React from 'react';
 import {useForm, FormProvider, Controller} from 'react-hook-form';
 
 import Button from '~/components/Button';
-import FormToggleSwitch from '~/components/FormToggleSwitch';
 import {useUser} from '~/features/auth/useUser';
-import {useMapFilterStore} from '~/features/map/store';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
-import HighlightItineraries from './HighlightItineraries';
 import NotificationTypeFilter from './NotificationTypeFilter';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import ProjectsFilter from './ProjectsFilter';
+import LocationFilter from './LocationFilter';
+import FormToggleButton from '~/components/formComponents/FormToggleButton';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
 
 interface FilterOptionsProps {
+  isParentClosed: boolean;
   onClose: () => void;
 }
 
-const FilterOptions = ({onClose}: FilterOptionsProps) => {
+const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
+  const {isMobile} = useBreakpoints();
   const {
     superUser,
-    advancedTaskPermission,
     features: {boreholeAccess, iotAccess},
   } = useUser();
   const [filters, setMapFilter, setLocIds] = useMapFilterStore((state) => [
@@ -42,11 +44,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
   const resetFilters = () => {
     const mapFilter: Filter = {
       ...defaultMapFilter(superUser),
-      sensor: {
-        ...defaultMapFilter(superUser).sensor,
-        showCustomerService: superUser ? false : true,
-        showWatsonCService: superUser ? true : false,
-      },
+      showService: superUser ? 'watsonc' : 'kunde',
     };
 
     reset(mapFilter);
@@ -61,219 +59,109 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       >
         <Typography variant="h6">Filtrer lokationer</Typography>
       </TooltipWrapper>
-      {/* <FormInput
-        name="freeText"
-        label="Fritekst filtrering"
-        placeholder="Indtast filtreringstekst..."
-        onBlurCallback={() => handleSubmit(submit)()}
-      /> */}
-      {/* <Divider /> */}
-      <Grid container spacing={0}>
-        {boreholeAccess && (
-          <Grid
-            item
-            sm={iotAccess ? 6 : 12}
-            display="flex"
-            flexDirection="column"
-            flexGrow={1}
-            gap={1}
-          >
-            {/* <TooltipWrapper
-              description="Boring filtre anvendes til at filtrere lokationer som er en del af et pejleprogram. Tryk på link ikonet for at læse mere om hvad pejleprogrammet er."
-              url="https://watsonc.dk/guides/filter-boreholes"
-            > */}
-            <Typography variant="subtitle1">Borings filtre</Typography>
-            {/* </TooltipWrapper> */}
-
-            <TooltipWrapper
-              description="Vis boringer som har et pejleprogram tilknyttet. "
-              withIcon={false}
-            >
-              <FormToggleSwitch
-                name="borehole.showHasControlProgram"
-                label="Har kontrolprogram"
-                sx={{mr: 0}}
-                onChangeCallback={handleSubmit(submit)}
-              />
-            </TooltipWrapper>
-            <TooltipWrapper
-              description="Vis boringer som ikke har et pejleprogram tilknyttet. "
-              withIcon={false}
-            >
-              <FormToggleSwitch
-                name="borehole.showNoControlProgram"
-                label="Har ikke kontrolprogram"
-                sx={{mr: 0}}
-                onChangeCallback={handleSubmit(submit)}
-              />
-            </TooltipWrapper>
-          </Grid>
-        )}
+      <Grid2 container spacing={0}>
         {iotAccess && (
-          <Grid
-            item
-            sm={boreholeAccess ? 6 : 12}
+          <Grid2
+            size={boreholeAccess ? 6 : 12}
             display="flex"
             flexDirection="column"
             flexGrow={1}
             gap={1}
           >
-            {/* <TooltipWrapper
-              description="IoT filtre anvendes til at filtrere lokationer baseret på forskellige parametre som f.eks. om de er serviceret af kunden, om de er inaktive, eller om de har notifikationer. Tryk på link ikonet for at læse mere om filtrering."
-              url="https://watsonc.dk/guides/filter-iot"
-            > */}
-            <Typography variant="subtitle1">IoT filtre</Typography>
-            {/* </TooltipWrapper> */}
-
-            {/* </TooltipWrapper> */}
-            <TooltipWrapper
-              description="Vis lokationer som serviceres af kunden. "
-              withIcon={false}
-            >
-              <FormToggleSwitch
-                name="sensor.showCustomerService"
-                label="Serviceres af kunden"
-                sx={{mr: 0}}
-                onChangeCallback={handleSubmit(submit)}
-              />
-            </TooltipWrapper>
-            <TooltipWrapper
-              description="Vis lokationer som serviceres af WatsonC. "
-              withIcon={false}
-            >
-              <FormToggleSwitch
-                name="sensor.showWatsonCService"
-                label="Serviceres af WatsonC"
-                sx={{mr: 0}}
-                onChangeCallback={handleSubmit(submit)}
-              />
-            </TooltipWrapper>
-            <TooltipWrapper
-              description="Vis lokaliteter der er inactive, men hvor der tidligere er indsamlet kontinuerte data"
-              withIcon={false}
-            >
-              <FormToggleSwitch
-                name="sensor.showInactive"
-                label="Inaktive målestationer"
-                sx={{mr: 0}}
-                onChangeCallback={handleSubmit(submit)}
-              />
-            </TooltipWrapper>
-
-            <TooltipWrapper
-              description="Skjuler lokationer som ikke har udstyr tilknyttet"
-              withIcon={false}
-            >
-              <FormToggleSwitch
-                name="sensor.hideSingleMeasurements"
-                label="Skjul lokationer uden udstyr"
-                sx={{mr: 0}}
-                onChangeCallback={handleSubmit(submit)}
-              />
-            </TooltipWrapper>
-
-            <TooltipWrapper
-              withIcon={false}
-              description="Viser kun lokaliteter hvor der er notifikationer eller opgaver"
-            >
-              <FormToggleSwitch
-                name="sensor.hideLocationsWithoutNotifications"
-                label="Skjul lokationer uden notifikationer"
-                sx={{mr: 0}}
-                onChangeCallback={handleSubmit(submit)}
-              />
-            </TooltipWrapper>
-            <TooltipWrapper
-              withIcon={false}
-              description="Viser kun lokationer som er nyopsætninger, dvs. hvor der ikke er tilknyttet en måleenhed"
-            >
-              <FormToggleSwitch
-                name="sensor.nyOpsætning"
-                label="Vis kun nyopsætninger"
-                sx={{mr: 0}}
-                onChangeCallback={handleSubmit(submit)}
-              />
-            </TooltipWrapper>
-          </Grid>
+            <FormToggleButton
+              gridSizes={12}
+              name="showService"
+              label="Serviceres af"
+              size="small"
+              gridDirection="row"
+              onChangeCallback={() => {
+                handleSubmit(submit)();
+              }}
+              direction="row"
+            />
+          </Grid2>
         )}
-      </Grid>
-      <Grid item xs={12}>
-        {/* <TooltipWrapper description="Lokationer kan filtreres baseret på forskellige notifikationstyper, såsom data sender ikke, lav iltindhold, eller andre specifikke notifikationstyper. Dette giver dig mulighed for at fokusere på de notifikationer, der er mest relevante for dig."> */}
-        <Controller
-          name="notificationTypes"
-          control={control}
-          render={({field: {onChange, value}}) => (
-            <NotificationTypeFilter
-              value={value}
-              setValue={(value) => {
-                onChange(value);
-                handleSubmit(submit)();
-              }}
-              label="Vis notifikationer"
-            />
-          )}
-        />
-        {/* </TooltipWrapper> */}
-      </Grid>
-      <Grid item xs={12}>
-        {/* <TooltipWrapper
-          description="Grupper kan filtrere lokationer som har samme gruppe tilknyttet. Dette kan være nyttigt for at organisere og sortere lokationer baseret på deres tilhørsforhold til specifikke grupper. Du kan vælge en eller flere grupper for at filtrere lokationer, der er en del af disse grupper."
-          // url="https://watsonc.dk/guides/filter-groups"
-        > */}
-        <Controller
-          name="groups"
-          control={control}
-          render={({field: {onChange, value}}) => (
-            <LocationGroups
-              value={value}
-              setValue={(value) => {
-                onChange(value);
-                handleSubmit(submit)();
-              }}
-              label="Vis grupper"
-              disableLink
-              creatable={false}
-            />
-          )}
-        />
-        {/* </TooltipWrapper> */}
-      </Grid>
-      {advancedTaskPermission && (
-        <Grid item xs={12}>
+      </Grid2>
+      <Grid2 container spacing={0.5} mt={1}>
+        <Grid2 size={12} display="flex">
           <Controller
-            name="itineraries"
+            name="locationFilter"
+            control={control}
+            render={({field: {onChange, value}}) => {
+              const unique = Array.from(new Set(value));
+              return (
+                <LocationFilter
+                  isParentClosed={isParentClosed}
+                  value={unique}
+                  setValue={(value) => {
+                    onChange(value);
+                    handleSubmit(submit)();
+                  }}
+                  label="Vis lokationer der er/har"
+                  disabled={
+                    filters.groups.length > 0 ||
+                    filters.projects.length > 0 ||
+                    filters.notificationTypes.length > 0
+                  }
+                />
+              );
+            }}
+          />
+        </Grid2>
+        <Grid2 size={isMobile ? 12 : 6}>
+          <Controller
+            name="groups"
             control={control}
             render={({field: {onChange, value}}) => (
-              <HighlightItineraries
+              <LocationGroups
                 value={value}
                 setValue={(value) => {
                   onChange(value);
                   handleSubmit(submit)();
                 }}
-                label="Vis serviceture"
+                label="Vis fra grupper"
+                disableLink
+                creatable={false}
               />
             )}
           />
-        </Grid>
-      )}
-      {superUser && (
-        <Grid item xs={12}>
+        </Grid2>
+        {superUser && (
+          <Grid2 size={isMobile ? 12 : 6}>
+            <Controller
+              name="projects"
+              control={control}
+              render={({field: {onChange, value}}) => (
+                <ProjectsFilter
+                  value={value}
+                  setValue={(value) => {
+                    onChange(value);
+                    handleSubmit(submit)();
+                  }}
+                  label="Vis fra projekter"
+                />
+              )}
+            />
+          </Grid2>
+        )}
+        <Grid2 size={12}>
           <Controller
-            name="projects"
+            name="notificationTypes"
             control={control}
             render={({field: {onChange, value}}) => (
-              <ProjectsFilter
+              <NotificationTypeFilter
                 value={value}
                 setValue={(value) => {
                   onChange(value);
                   handleSubmit(submit)();
                 }}
-                label="Vis projekter"
+                label="Filtrer på notifikationer"
               />
             )}
           />
-        </Grid>
-      )}
+          {/* </TooltipWrapper> */}
+        </Grid2>
+      </Grid2>
 
       <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: 1}}>
         <Button bttype="tertiary" onClick={resetFilters} startIcon={<RestartAlt />}>

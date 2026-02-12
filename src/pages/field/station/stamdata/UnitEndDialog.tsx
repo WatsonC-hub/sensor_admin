@@ -48,7 +48,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
 
   const {data: parsed} = unitEndSchema.safeParse({
     ...unit,
-    enddate: dayjs(),
+    enddate: dayjs().startOf('minute'),
   });
 
   if (!superUser) {
@@ -111,7 +111,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       toast.success('Udstyret er hjemtaget');
     },
     meta: {
-      invalidates: [['register'], ['metadata']],
+      invalidates: [queryKeys.Timeseries.unitHistory(ts_id)],
     },
   });
 

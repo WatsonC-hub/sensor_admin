@@ -9,8 +9,8 @@ import {
 } from '@mui/material';
 import React from 'react';
 import Button from '~/components/Button';
-import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {useItineraryMutations, useItineraries} from '~/features/tasks/api/useItinerary';
+import {useTaskUsers} from '~/features/tasks/api/useTasks';
 
 type AddToTripDialogProps = {
   open: boolean;
@@ -20,14 +20,10 @@ type AddToTripDialogProps = {
 
 const AddToTripDialog = ({open, onClose, loc_id}: AddToTripDialogProps) => {
   const [itineraryId, setItineraryId] = React.useState<string | null>(null);
-  const {
-    get: {data: itineraries},
-    addLocationToTrip,
-  } = useTaskItinerary();
+  const {data: itineraries} = useItineraries();
+  const {addLocationToTrip} = useItineraryMutations();
 
-  const {
-    getUsers: {data: taskUsers},
-  } = useTasks();
+  const {data: taskUsers} = useTaskUsers();
 
   const handleClose = () => {
     onClose();
