@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import React, {useMemo, useState} from 'react';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {useTaskMutations, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import {Task} from '~/features/tasks/types';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
@@ -37,11 +37,9 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
   const [showAllComments, setShowAllComments] = useState<boolean>(false);
   const {location, station} = useNavigationFunctions();
   const {superUser} = useUser();
-  const {
-    patch: updateTask,
-    getUsers: {data: taskUsers},
-    getStatus: {data: taskStatus},
-  } = useTasks();
+  const {patch: updateTask} = useTaskMutations();
+  const {data: taskStatus} = useTaskStatus();
+  const {data: taskUsers} = useTaskUsers();
 
   const [selectedTask, setSelectedTask] = useDisplayState((state) => [
     state.selectedTask,
@@ -79,9 +77,7 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
     updateTask.mutate(payload);
   };
 
-  const {
-    get: {data: comments},
-  } = useTaskHistory(task.id);
+  const {data: comments} = useTaskHistory(task.id);
 
   const defaultValues = useMemo(() => {
     if (!task) return;

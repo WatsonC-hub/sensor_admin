@@ -48,7 +48,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
 
   const {data: parsed} = unitEndSchema.safeParse({
     ...unit,
-    enddate: dayjs(),
+    enddate: dayjs().startOf('minute'),
   });
 
   if (!superUser) {

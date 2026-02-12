@@ -1,13 +1,13 @@
 import {Box, Typography, Card, IconButton, Link} from '@mui/material';
-import React, {ReactNode, useRef, useState} from 'react';
+import React, {ReactNode, useCallback, useRef, useState} from 'react';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import {useTaskState} from '~/features/tasks/api/useTaskState';
 
-import useTaskItinerary from '../api/useTaskItinerary';
+import {useItineraries, useItineraryMutations} from '../api/useItinerary';
 
-import {useTasks} from '../api/useTasks';
+import {useTaskUsers} from '../api/useTasks';
 import {Taskitinerary} from '../types';
 import {convertDate} from '~/helpers/dateConverter';
 import {useDisplayState} from '~/hooks/ui';
@@ -22,7 +22,7 @@ import {FlagEnum, ItineraryColors, sensorColors} from '~/features/notifications/
 import {useUser} from '~/features/auth/useUser';
 import {Edit, ExpandLess, ExpandMore, Person} from '@mui/icons-material';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useAtom} from 'jotai';
 import {highlightedItinerariesAtom} from '~/state/atoms';
 
@@ -77,20 +77,19 @@ function Droppable({id, children, color}: {id: string; children: ReactNode; colo
   );
 }
 
+const filterMapOverview = (data: MapOverview[]) =>
+  data.filter((location) => location.itinerary_id !== null);
+
 const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
   const {user_id} = useUser();
-  const {
-    get: {data},
-  } = useTaskItinerary(undefined, {
-    select: (itineraries) => selectData(itineraries, user_id),
+  const {data} = useItineraries({
+    select: useCallback((data: Taskitinerary[]) => selectData(data, user_id), [user_id]),
   });
 
   const {data: mapOverview} = useMapOverview({
-    select: (data) => {
-      return data.filter((location) => location.itinerary_id !== null);
-    },
+    select: filterMapOverview,
   });
 
   const [openItineraryDialog, setOpenItineraryDialog] = useState<string | undefined>(undefined);
@@ -103,11 +102,9 @@ const TaskItiniaries = () => {
     state.setLocId,
   ]);
 
-  const {
-    getUsers: {data: users},
-  } = useTasks();
+  const {data: users} = useTaskUsers();
   const {tasks} = useTaskState();
-  const {patch: updateItinerary} = useTaskItinerary();
+  const {patch: updateItinerary} = useItineraryMutations();
 
   return (
     <Box display="flex" maxHeight={'100%'} gap={1} flexDirection={'column'}>

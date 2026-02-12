@@ -37,7 +37,6 @@ import {
   routeStyle,
 } from '../mapConsts';
 import {useUser} from '~/features/auth/useUser';
-import {useMapFilterStore} from '../store';
 import {setIconSize} from '../utils';
 import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
@@ -45,6 +44,7 @@ import {useDisplayState} from '~/hooks/ui';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {highlightedItinerariesAtom, usedHeightAtom, usedWidthAtom} from '~/state/atoms';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useMapFilterStore} from '../hooks/useMapFilterStore';
 
 const useMap = <TData extends object>(
   id: string,

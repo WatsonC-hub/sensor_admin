@@ -53,7 +53,7 @@ const alarmNotificationGetOptions = {
 
 export const alarmGetOptions = (ts_id: number | undefined) =>
   queryOptions<Array<AlarmTableType>, APIError>({
-    queryKey: ['alarm', ts_id],
+    queryKey: queryKeys.Timeseries.AlarmList(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/alarms/${ts_id}`);
       return data;
@@ -85,7 +85,7 @@ export const useAlarm = () => {
   const post = useMutation({
     ...alarmPostOptions,
     meta: {
-      invalidates: [queryKeys.Timeseries.AlarmList(ts_id)],
+      invalidates: [queryKeys.Timeseries.AlarmList(ts_id), queryKeys.StationProgress()],
       optOutGeneralInvalidations: true,
     },
   });

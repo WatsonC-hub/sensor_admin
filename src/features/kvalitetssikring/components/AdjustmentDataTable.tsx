@@ -20,14 +20,9 @@ import {useTable} from '~/hooks/useTable';
 import ExcludeRow from '~/pages/admin/kvalitetssikring/components/ExcludeRow';
 import LevelCorrectionRow from '~/pages/admin/kvalitetssikring/components/LevelCorrectionRow';
 import YRangeRow from '~/pages/admin/kvalitetssikring/components/YRangeRow';
-import {DataExclude, LevelCorrection, MinMaxCutoff} from '~/types';
+import {AdjustmentData, DataExclude, LevelCorrection, MinMaxCutoff} from '~/types';
 
 import {CertifyQa} from '../api/useCertifyQa';
-
-type AdjustmentData = {
-  type: AdjustmentTypes;
-  data: DataExclude | LevelCorrection | MinMaxCutoff | CertifyQa;
-};
 
 type Props = {
   data: Array<AdjustmentData> | undefined;

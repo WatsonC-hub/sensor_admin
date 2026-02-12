@@ -1,5 +1,4 @@
 import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
-import {useMapFilterStore} from '../store';
 import {Filter, locationFilterOptions} from '~/pages/field/overview/components/filter_consts';
 import {BoreholeMapData} from '~/types';
 import {useMemo, useState} from 'react';
@@ -11,6 +10,7 @@ import {isEmptyObject} from '~/helpers/guardHelper';
 import dayjs, {Dayjs} from 'dayjs';
 import {useUser} from '~/features/auth/useUser';
 import {Task} from '~/features/tasks/types';
+import {useMapFilterStore} from './useMapFilterStore';
 
 const searchValue = (value: any, search_string: string): boolean => {
   if (typeof value === 'string') {
@@ -87,7 +87,7 @@ const showElement = (elem: MapOverview, filter: Filter, tasks: Task[], user_id: 
     if (filterName === 'Fejlfri' && isFaultLess) return true;
     if (filterName === 'Tildelt til mig' && isAssignedToMe) return true;
     if (filterName === 'Notifikationer' && hasNotifications) return true;
-    if (filterName === 'Enkeltmålestationer' && isInService) return true;
+    if (filterName === 'Enkeltmålestationer og pejleboringer' && isInService) return true;
     if (filterName === 'Nyopsætninger' && isNewInstallation) return true;
     if (filterName === 'Inaktive' && isInactive) return true;
     if (filterName === 'Uplanlagte opgaver' && not_handled_tasks && elem.itinerary_id === null)
@@ -105,7 +105,7 @@ const showElement = (elem: MapOverview, filter: Filter, tasks: Task[], user_id: 
 };
 
 const filterBorehole = (data: BoreholeMapData, filter: Filter) => {
-  if (filter.locationFilter?.includes('Enkeltmålestationer')) return true;
+  if (filter.locationFilter?.includes('Enkeltmålestationer og pejleboringer')) return true;
   // if (filter.showHasControlProgram && filter.showNoControlProgram) return true;
 
   // const hasControlProgram = data.num_controls_in_a_year.some((num) => num > 0);

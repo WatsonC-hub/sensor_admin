@@ -51,7 +51,7 @@ const locationAccessDelOptions = {
   },
 };
 
-export const LocationAccessGetOptions = (loc_id: number) =>
+export const locationAccessGetOptions = (loc_id: number) =>
   queryOptions<Array<AccessTable>, APIError>({
     queryKey: queryKeys.Location.keys(loc_id),
     queryFn: async () => {
@@ -86,7 +86,7 @@ export const useSearchLocationAccess = (loc_id: number, searchString: string) =>
 };
 
 export const useLocationAccess = (loc_id: number) => {
-  const get = useQuery(LocationAccessGetOptions(loc_id));
+  const get = useQuery(locationAccessGetOptions(loc_id));
 
   const post = useMutation({
     ...locationAccessPostOptions,
@@ -94,7 +94,12 @@ export const useLocationAccess = (loc_id: number) => {
       toast.success('Adgangsinformation gemt');
     },
     meta: {
-      invalidates: [queryKeys.Location.keys(loc_id), [queryKeys.Location.info(loc_id)]],
+      invalidates: [
+        queryKeys.Location.keys(loc_id),
+        queryKeys.Location.info(loc_id),
+        queryKeys.StationProgress(),
+        ['collection'],
+      ],
       optOutGeneralInvalidations: true,
     },
   });
@@ -105,7 +110,11 @@ export const useLocationAccess = (loc_id: number) => {
       toast.success('Adgangsinformation ændret');
     },
     meta: {
-      invalidates: [queryKeys.Location.keys(loc_id), [queryKeys.Location.info(loc_id)]],
+      invalidates: [
+        queryKeys.Location.keys(loc_id),
+        queryKeys.Location.info(loc_id),
+        ['collection'],
+      ],
       optOutGeneralInvalidations: true,
     },
   });
@@ -116,7 +125,11 @@ export const useLocationAccess = (loc_id: number) => {
       toast.success('Adgangsinformation slettet');
     },
     meta: {
-      invalidates: [queryKeys.Location.keys(loc_id), [queryKeys.Location.info(loc_id)]],
+      invalidates: [
+        queryKeys.Location.keys(loc_id),
+        queryKeys.Location.info(loc_id),
+        ['collection'],
+      ],
       optOutGeneralInvalidations: true,
     },
   });

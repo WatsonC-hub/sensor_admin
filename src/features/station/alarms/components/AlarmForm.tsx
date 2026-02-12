@@ -16,7 +16,6 @@ import AlarmContactFormDialog from './AlarmContactFormDialog';
 import AlarmGroup from './AlarmGroup';
 import DeleteAlert from '~/components/DeleteAlert';
 import Button from '~/components/Button';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 
 type AlarmFormProps = {
   setOpen: (open: boolean) => void;
@@ -26,7 +25,7 @@ type AlarmFormProps = {
 const Form = createTypedForm<AlarmsFormValues>();
 
 const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
-  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {ts_id} = useAppContext(['ts_id']);
   const [onGroup, setOnGroup] = useState(alarm?.group_id ? true : false);
 
   const [contactsCollapsed, setContactsCollapsed] = useState(false);
@@ -36,7 +35,6 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [mode, setMode] = useState<'add' | 'edit' | 'view'>('view');
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'alarm', ts_id);
   const alarmMethods = useForm<AlarmsFormValues>({
     resolver: zodResolver(alarmsSchema),
     defaultValues: {
@@ -78,7 +76,6 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
           setOpen(false);
           reset();
           toast.success('Alarm oprettet');
-          if (needsProgress) hasAssessed();
         },
       });
     } else {

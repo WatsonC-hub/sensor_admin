@@ -12,7 +12,7 @@ import IconButton from '@mui/material/IconButton';
 
 import React, {useState, useRef, SyntheticEvent, MouseEventHandler} from 'react';
 import {useUser} from '~/features/auth/useUser';
-import {useMapFilterStore} from '~/features/map/store';
+import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
 
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';

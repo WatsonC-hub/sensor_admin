@@ -57,20 +57,7 @@ const certifyQaDelOptions = {
   },
 };
 
-export const useCertifyQa = () => {
-  const {ts_id} = useAppContext(['ts_id']);
-  const get = useQuery({
-    queryKey: queryKeys.Timeseries.certifyQa(ts_id),
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<CertifyQa>>(
-        `/sensor_admin/certified_quality/${ts_id}`
-      );
-      return data;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    enabled: ts_id !== undefined,
-  });
-
+export const useCertifyQaMutations = () => {
   const post = useMutation({
     ...certifyQaPostOptions,
     onSuccess: () => {
@@ -100,6 +87,20 @@ export const useCertifyQa = () => {
       invalidates: [['certifyQa']],
     },
   });
+  return {post, put, del};
+};
 
-  return {get, post, put, del};
+export const useCertifyQa = () => {
+  const {ts_id} = useAppContext(['ts_id']);
+  return useQuery({
+    queryKey: queryKeys.Timeseries.certifyQa(ts_id),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<CertifyQa>>(
+        `/sensor_admin/certified_quality/${ts_id}`
+      );
+      return data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled: ts_id !== undefined,
+  });
 };

@@ -8,6 +8,7 @@ import AddLocationAlt from '@mui/icons-material/AddLocationAlt';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {Box} from '@mui/material';
 import Overview from '~/features/tasks/components/Overview';
+import {MapFilterContextProvider} from '~/features/map/MapFilterProvider';
 
 const Home = () => {
   const {isMobile} = useBreakpoints();
@@ -47,8 +48,9 @@ const Home = () => {
           />
         </Box>
       </NavBar>
-
-      <Overview />
+      <MapFilterContextProvider>
+        <Overview />
+      </MapFilterContextProvider>
     </>
   );
 };

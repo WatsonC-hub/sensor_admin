@@ -5,7 +5,7 @@ export const locationFilterOptions = [
   {name: 'Fejlfri'},
   {name: 'Tildelt til mig'},
   {name: 'Notifikationer'},
-  {name: 'Enkeltmålestationer'},
+  {name: 'Enkeltmålestationer og pejleboringer'},
   {name: 'Inaktive'},
   {name: 'Nyopsætninger'},
   {name: 'Uplanlagte opgaver'},
@@ -25,7 +25,7 @@ interface Filter {
   projects: Project[];
 }
 
-const defaultMapFilter = (superUser?: boolean): Required<Filter> => ({
+const defaultMapFilter = (superUser: boolean): Required<Filter> => ({
   freeText: '',
   borehole: {
     showHasControlProgram: true,
@@ -40,7 +40,7 @@ const defaultMapFilter = (superUser?: boolean): Required<Filter> => ({
           (option.name === 'Notifikationer' || option.name === 'Nyopsætninger')) ||
         (superUser === false &&
           (option.name === 'Fejlfri' ||
-            option.name === 'Enkeltmålestationer' ||
+            option.name === 'Enkeltmålestationer og pejleboringer' ||
             option.name === 'Notifikationer' ||
             option.name === 'Nyopsætninger'))
     )

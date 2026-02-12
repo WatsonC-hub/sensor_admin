@@ -30,16 +30,19 @@ type ErrorResponse = {
   detail: ErrorDetail | string;
 };
 
+export interface APIError extends Error {
+  response?: AxiosError<ErrorResponse>['response'];
+}
+
 declare module '@tanstack/react-query' {
   interface Register {
+    defaultError: APIError;
     mutationMeta: {
       invalidates?: Array<QueryKey>;
       optOutGeneralInvalidations?: boolean;
     };
   }
 }
-
-export type APIError = AxiosError<ErrorResponse>;
 
 type AppMutationOptions<TData, TVariables> = Omit<
   UseMutationOptions<TData, APIError, TVariables>,
@@ -106,39 +109,36 @@ const queryClient = new QueryClient({
         });
     },
     onError: (error) => {
-      if (axios.isAxiosError(error)) {
-        const localError = error as APIError;
-        const detail = localError.response?.data.detail;
+      const detail = error.response?.data.detail;
 
-        if (detail) {
-          if (typeof detail === 'string') {
-            toast.error(detail);
-            return;
-          }
+      if (detail) {
+        if (typeof detail === 'string') {
+          toast.error(detail);
+          return;
+        }
 
-          if (Array.isArray(detail)) {
-            let errorString = 'Valideringsfejl:\n';
-            (detail as ErrorDetail[]).forEach((item) => {
-              errorString += `${item.loc.join('.')} - ${item.msg}\n`;
-            });
-            toast.error(errorString, {
-              style: {whiteSpace: 'pre-line'},
-            });
-
-            return;
-          }
+        if (Array.isArray(detail)) {
+          let errorString = 'Valideringsfejl:\n';
+          (detail as ErrorDetail[]).forEach((item) => {
+            errorString += `${item.loc.join('.')} - ${item.msg}\n`;
+          });
+          toast.error(errorString, {
+            style: {whiteSpace: 'pre-line'},
+          });
 
           return;
         }
 
-        const status = localError.response?.status.toString();
-
-        if (status && status in httpStatusDescriptions) {
-          toast.error(httpStatusDescriptions[status as keyof typeof httpStatusDescriptions]);
-          return;
-        }
-        toast.error('Der skete en fejl');
+        return;
       }
+
+      const status = error.response?.status.toString();
+
+      if (status && status in httpStatusDescriptions) {
+        toast.error(httpStatusDescriptions[status as keyof typeof httpStatusDescriptions]);
+        return;
+      }
+      toast.error('Der skete en fejl');
     },
     onMutate: async (_, mutation) => {
       if (mutation.state.isPaused) {

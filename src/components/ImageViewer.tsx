@@ -8,10 +8,10 @@ import Button from './Button';
 import {ImagePayload} from '~/hooks/query/useImageUpload';
 
 type ImageViewerProps = {
-  images: Array<Image>;
+  images: Array<Image> | undefined;
   deleteMutation: any;
   handleEdit: any;
-  type: string | number;
+  type: 'station' | 'borehole';
   id: string | number;
 };
 

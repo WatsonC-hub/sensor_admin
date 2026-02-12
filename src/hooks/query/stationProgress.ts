@@ -1,6 +1,7 @@
-import {queryOptions, useMutation, useQuery, UseQueryOptions} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {QueryType} from '~/types';
 
 export type ProgressStatus = {
   images: boolean;
@@ -16,9 +17,13 @@ export type ProgressStatus = {
   visibility: boolean;
 };
 
-const getQueryOptions = (loc_id: number | undefined, ts_id?: number) =>
-  queryOptions<ProgressStatus>({
-    queryKey: queryKeys.metadataProgress(loc_id, ts_id),
+const getQueryOptions = <TData = ProgressStatus>(
+  loc_id: number | undefined,
+  ts_id?: number,
+  select?: (data: ProgressStatus) => TData
+) =>
+  queryOptions({
+    queryKey: queryKeys.StationProgress(),
     queryFn: async () => {
       const tsParam = ts_id ?? -1;
       const {data} = await apiClient.get<ProgressStatus>(
@@ -26,43 +31,22 @@ const getQueryOptions = (loc_id: number | undefined, ts_id?: number) =>
       );
       return data;
     },
-    enabled: loc_id != undefined || ts_id != undefined,
+    select,
+    enabled:
+      (loc_id != -1 && ts_id === -1) ||
+      (loc_id === -1 && ts_id != -1) ||
+      (loc_id != -1 && ts_id != -1),
   });
 
-type ProgressStatusOptions<T> = Partial<
-  Omit<UseQueryOptions<ProgressStatus, Error, T>, 'queryKey' | 'queryFn'>
->;
-
-const useProgress = <T = ProgressStatus>(
+const useProgress = <TData = ProgressStatus>(
   loc_id: number | undefined,
   ts_id?: number,
-  options?: ProgressStatusOptions<T>
+  options?: QueryType<typeof getQueryOptions<TData>>
 ) => {
-  const query = useQuery({
-    ...getQueryOptions(loc_id, ts_id),
+  return useQuery({
+    ...getQueryOptions(loc_id, ts_id, options?.select),
     ...options,
-    select: options?.select as (data: ProgressStatus) => T,
   });
-
-  return query;
-};
-
-const useUpdateProgress = (loc_id: number | undefined, ts_id?: number) => {
-  const mutation = useMutation({
-    mutationFn: async (data: Partial<ProgressStatus>) => {
-      const {data: res} = await apiClient.put(
-        `/sensor_field/stamdata/progress/${loc_id}/${ts_id}`,
-        data
-      );
-      return res;
-    },
-    meta: {
-      invalidates: [queryKeys.Timeseries.StationProgress(loc_id, ts_id)],
-      optOutGeneralInvalidations: true,
-    },
-  });
-
-  return mutation;
 };
 
 const useStationProgress = (
@@ -85,6 +69,24 @@ const useStationProgress = (
     needsProgress: progress == false ? true : false,
     hasAssessed,
   };
+};
+
+const useUpdateProgress = (loc_id: number | undefined, ts_id?: number) => {
+  const mutation = useMutation({
+    mutationFn: async (data: Partial<ProgressStatus>) => {
+      const {data: res} = await apiClient.put(
+        `/sensor_field/stamdata/progress/${loc_id}/${ts_id}`,
+        data
+      );
+      return res;
+    },
+    meta: {
+      invalidates: [queryKeys.StationProgress()],
+      optOutGeneralInvalidations: true,
+    },
+  });
+
+  return mutation;
 };
 
 export {useProgress, useStationProgress};

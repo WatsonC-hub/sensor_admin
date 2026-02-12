@@ -1,6 +1,7 @@
 import {useMutation} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const updateTimeseriesMutationOptions = (ts_id: number) => ({
   mutationFn: async (data: any) => {
@@ -11,7 +12,7 @@ const updateTimeseriesMutationOptions = (ts_id: number) => ({
     return out;
   },
   meta: {
-    invalidates: [['metadata']],
+    invalidates: [queryKeys.Timeseries.metadata(ts_id), queryKeys.StationProgress()],
     optOutGeneralInvalidations: true,
   },
   onSuccess: () => {

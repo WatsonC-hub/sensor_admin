@@ -14,7 +14,7 @@ import {navIconStyle, qaHistorySkeletonHeight} from '~/consts';
 import {AdjustmentTypes, qaAdjustment} from '~/helpers/EnumHelper';
 import {useAppContext} from '~/state/contexts';
 
-import {useCertifyQa} from '../api/useCertifyQa';
+import {useCertifyQa, useCertifyQaMutations} from '../api/useCertifyQa';
 
 import AdjustmentDataTable from './AdjustmentDataTable';
 import CustomSpeedDial, {CustomTooltip} from '~/components/CustomSpeedDial';
@@ -44,10 +44,9 @@ export default function QAHistory() {
   const setInitiateConfirmTimeseries = useSetAtom(initiateConfirmTimeseriesAtom);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const speedDialActions: Array<DialAction> = [];
-  const {
-    get: {data: certify},
-    post: postQaData,
-  } = useCertifyQa();
+
+  const {post: postQaData} = useCertifyQaMutations();
+  const {data: certify} = useCertifyQa();
 
   const {data, isPending} = useQAHistory(ts_id);
 
@@ -97,15 +96,13 @@ export default function QAHistory() {
       toastTip: 'Klik på et datapunkt på grafen',
     }
   );
-
-  if (certify) {
-    certify.forEach((item) => {
-      data?.push({
-        data: item,
-        type: AdjustmentTypes.APPROVED,
-      });
-    });
-  }
+  const adjustmentData = [
+    ...(data || []),
+    ...(certify?.map((item) => ({
+      data: item,
+      type: AdjustmentTypes.APPROVED,
+    })) || []),
+  ];
 
   const showConfirmWizard = () => {
     setConfirmDialogOpen(false);
@@ -211,7 +208,7 @@ export default function QAHistory() {
               <Typography variant="h5">Aktive justeringer</Typography>
             </TooltipWrapper>
           </Box>
-          <AdjustmentDataTable data={data} />
+          <AdjustmentDataTable data={adjustmentData} />
         </Box>
       </StationPageBoxLayout>
       <CustomSpeedDial actions={speedDialActions} />

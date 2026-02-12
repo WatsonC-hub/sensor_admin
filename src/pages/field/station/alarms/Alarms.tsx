@@ -33,7 +33,7 @@ const Alarms = ({ts_id, loc_id}: AlarmsProps) => {
       <AlarmTable alarms={alarms} />
       <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
         <UpdateProgressButton
-          loc_id={loc_id}
+          loc_id={-1}
           disabled={location_permissions !== 'edit'}
           ts_id={ts_id}
           progressKey="alarm"

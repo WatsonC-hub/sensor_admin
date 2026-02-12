@@ -5,9 +5,7 @@ import {useDisplayState} from '~/hooks/ui';
 
 export const useTaskState = () => {
   const selectedTaskId = useDisplayState((state) => state.selectedTask);
-  const {
-    get: {data: tasks},
-  } = useTasks();
+  const {data: tasks} = useTasks();
 
   const {selectedTask} = useMemo(() => {
     if (!tasks) {
