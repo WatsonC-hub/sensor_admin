@@ -5,7 +5,6 @@ import {useForm, FormProvider, Controller} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
-import {useMapFilterStore} from '~/features/map/store';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import NotificationTypeFilter from './NotificationTypeFilter';
@@ -14,6 +13,7 @@ import ProjectsFilter from './ProjectsFilter';
 import LocationFilter from './LocationFilter';
 import FormToggleButton from '~/components/formComponents/FormToggleButton';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
 
 interface FilterOptionsProps {
   isParentClosed: boolean;
