@@ -5,12 +5,10 @@ import {Box, Typography} from '@mui/material';
 import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
 import JupiterDmpSync from '~/features/synchronization/components/JupiterDmpSync';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
-import {useStationProgress} from '~/hooks/query/stationProgress';
 
 const Synchronization = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData(ts_id);
-  const {hasAssessed, needsProgress} = useStationProgress(loc_id, 'sync', ts_id);
   const {data: location_data} = useLocationData(loc_id);
 
   const {

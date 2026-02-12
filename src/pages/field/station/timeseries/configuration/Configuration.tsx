@@ -8,6 +8,7 @@ import TooltipWrapper from '~/components/TooltipWrapper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useDMPAllowed from '~/features/station/api/useDmpAllowedMapList';
 import VisibilityConfig from './VisibilityConfig';
+import {useUser} from '~/features/auth/useUser';
 
 type ConfigurationProps = {
   loc_id: number;
@@ -15,6 +16,7 @@ type ConfigurationProps = {
 };
 
 const Configuration = ({loc_id, ts_id}: ConfigurationProps) => {
+  const {superUser} = useUser();
   const {data: metadata} = useTimeseriesData(ts_id);
   const isJupiterType = [1, 11, 12, 16].includes(metadata?.tstype_id || 0);
   const isBorehole = metadata?.loctype_id === 9;
@@ -22,6 +24,10 @@ const Configuration = ({loc_id, ts_id}: ConfigurationProps) => {
   const isDmpAllowed = useDMPAllowed(ts_id);
 
   const canSyncJupiter = isBorehole && isJupiterType;
+
+  const disabled =
+    (superUser && metadata?.is_customer_service) || (!superUser && !metadata?.is_customer_service);
+
   return (
     <>
       <Layout>

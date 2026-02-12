@@ -15,7 +15,7 @@ interface WatlevMPFormProps {
 const Form = createTypedForm<WatlevMPFormValues>();
 
 const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
-  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {ts_id} = useAppContext(['ts_id']);
   const [, setShowForm] = useShowFormState();
   const {
     reset,
@@ -76,7 +76,7 @@ const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
           <Form.Controller
             name="mp_description"
             render={({field}) => {
-              return <MPDescription {...field} />;
+              return <MPDescription {...field} value={field.value ?? ''} />;
             }}
           />
         </Grid2>
