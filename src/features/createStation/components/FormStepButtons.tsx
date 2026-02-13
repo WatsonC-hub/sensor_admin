@@ -1,7 +1,15 @@
 import React, {useState} from 'react';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {ArrowBack, Save} from '@mui/icons-material';
-import {Grid2, Typography} from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid2,
+  Typography,
+} from '@mui/material';
 import Button from '~/components/Button';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AlertDialog from '~/components/AlertDialog';
@@ -65,6 +73,53 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
   const dialogMessage = loc_id
     ? `Du er i gang med at tilføje tidsserier til lokationen: ${formState?.location?.meta.loc_name}. \n\n Der er blevet tilføjet ${timeseries.length} ${timeseries.length > 1 ? 'tidsserier' : 'tidsserie'} (${withEquipment} med udstyr). \n\n Er du sikker på, at du vil færdiggøre oprettelsen?`
     : `Du er i gang med at oprette en ny lokation med dette navn: ${formState?.location?.meta.loc_name}. \n\n Der er blevet tilføjet ${timeseries.length}  ${timeseries.length > 1 ? 'tidsserier' : 'tidsserie'} (${withEquipment} med udstyr). \n\n Er du sikker på, at du vil færdiggøre oprettelsen?`;
+
+  const handleSubmit = (confirmed?: boolean) => {
+    if (!formState) return;
+    let submitState: CreateStationPayload;
+    if (!confirmed) {
+      submitState = {
+        location: {
+          ...(state.loc_id
+            ? {loc_id: state.loc_id}
+            : ({
+                ...formState.location,
+                contacts:
+                  formState.location?.contacts !== undefined ? formState.location.contacts : [],
+                location_access:
+                  formState.location?.location_access !== undefined
+                    ? formState.location.location_access
+                    : [],
+                ressourcer:
+                  formState.location?.ressourcer !== undefined ? formState.location.ressourcer : [],
+              } as CreateStationPayload['location'])),
+        },
+        timeseries: Object.values(formState.timeseries || {}).map((ts) => ({
+          ...ts,
+          sync: ts.sync && {
+            ...ts.sync,
+            sync_dmp: ts.sync?.owner_cvr ? true : false,
+          },
+        })),
+      };
+    } else {
+      submitState = {
+        location: state.loc_id
+          ? {loc_id: state.loc_id}
+          : ((formState.location || {}) as CreateStationPayload['location']),
+        timeseries: Object.values(formState.timeseries || {}).map((ts) => ({
+          ...ts,
+          sync: ts.sync && {
+            ...ts.sync,
+            sync_dmp: ts.sync?.owner_cvr ? true : false,
+          },
+        })),
+      };
+    }
+
+    setShowDialog(false);
+    stamdataNewMutation.mutate(submitState);
+  };
 
   return (
     <Grid2 size={12} gap={0.5} pr={0.5}>
@@ -141,48 +196,26 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
         message={dialogMessage}
         handleOpret={() => {
           if (superUser && loc_id === undefined) setShowDialog(true);
-          else {
-            if (!formState) return;
-            const submitState: CreateStationPayload = {
-              location: state.loc_id
-                ? {loc_id: state.loc_id}
-                : ((formState.location || {}) as CreateStationPayload['location']),
-              timeseries: Object.values(formState.timeseries || {}).map((ts) => ({
-                ...ts,
-                sync: {
-                  ...ts.sync,
-                  sync_dmp: ts.sync?.owner_cvr ? true : false,
-                },
-              })),
-            };
-            stamdataNewMutation.mutate(submitState);
-          }
+          else handleSubmit();
         }}
       />
-      <AlertDialog
-        open={showDialog}
-        setOpen={setShowDialog}
-        title="Har du taget stilling til alle felter?"
-        closeTitle="Nej"
-        saveTitle="Ja"
-        message="Stationen vil blive oprettet uanset dit valg. Hvis du vælger “Nej”, kan du efterfølgende tage stilling til felterne på stationssiden"
-        handleOpret={() => {
-          if (!formState) return;
-          const submitState: CreateStationPayload = {
-            location: state.loc_id
-              ? {loc_id: state.loc_id}
-              : ((formState.location || {}) as CreateStationPayload['location']),
-            timeseries: Object.values(formState.timeseries || {}).map((ts) => ({
-              ...ts,
-              sync: {
-                ...ts.sync,
-                sync_dmp: ts.sync?.owner_cvr ? true : false,
-              },
-            })),
-          };
-          stamdataNewMutation.mutate(submitState);
-        }}
-      />
+      <Dialog open={showDialog} onClose={() => handleSubmit(false)}>
+        <DialogTitle id="alert-dialog-title">Har du taget stilling til alle felter?</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{whiteSpace: 'pre-line'}}>
+            Stationen vil blive oprettet uanset dit valg. Hvis du vælger “Nej”, kan du efterfølgende
+            tage stilling til felterne på stationssiden
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button bttype="tertiary" onClick={() => handleSubmit(false)}>
+            Nej
+          </Button>
+          <Button bttype="primary" onClick={() => handleSubmit(true)}>
+            Ja
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid2>
   );
 };
