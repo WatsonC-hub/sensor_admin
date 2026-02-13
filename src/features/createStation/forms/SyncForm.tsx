@@ -8,7 +8,6 @@ import {z} from 'zod';
 
 type SyncFormProps = {
   id: string;
-  mode: 'add' | 'edit' | 'mass_edit';
   loctype_id?: number;
   tstype_id?: number;
   values: SyncFormSchema | undefined;
@@ -24,18 +23,17 @@ const syncSchema = z.object({
 type SyncFormSchema = z.infer<typeof syncSchema>;
 
 export type SyncFormData = SyncFormSchema & {
-  sync_dmp: boolean;
+  sync_dmp?: boolean;
 };
 
 const Form = createTypedForm<SyncFormSchema>();
 
-const SyncForm = ({id, mode, loctype_id, tstype_id, values, setValues}: SyncFormProps) => {
+const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps) => {
   const [registerSubmitter, removeSubmitter] = useCreateStationStore((state) => [
     state.registerSubmitter,
     state.removeSubmitter,
   ]);
   const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm<SyncFormSchema>({
-    mode: mode,
     context: {
       loctype_id,
       tstype_id,

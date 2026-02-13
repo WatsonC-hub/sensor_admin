@@ -4,27 +4,11 @@ import {DefaultValues, FieldValues, useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
 
-const syncSchema = z
-  .object({
-    sync_dmp: z.boolean().optional(),
-    owner_cvr: z.number().optional(),
-    owner_name: z.union([z.string(), z.literal('')]).optional(),
-    jupiter: z.boolean().optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.sync_dmp) {
-        return data.owner_name !== undefined && data.owner_name !== null && data.owner_name !== '';
-      }
-      return true;
-    },
-    {
-      message: 'Data ejer skal være udfyldt, når DMP synkronisering er aktiveret',
-      path: ['owner_name'],
-    }
-  );
-
-const syncArraySchema = z.array(syncSchema);
+const syncSchema = z.object({
+  owner_cvr: z.number().optional(),
+  owner_name: z.union([z.string(), z.literal('')]).optional(),
+  jupiter: z.boolean().optional(),
+});
 
 export type SyncFormValues = z.infer<typeof syncSchema>;
 
@@ -35,7 +19,6 @@ type SyncContext = {
 };
 
 type SyncFormProps<T extends FieldValues> = {
-  mode: 'add' | 'edit' | 'mass_edit';
   defaultValues?: DefaultValues<T>;
   values?: SyncFormValues;
   context: SyncContext;
@@ -43,7 +26,6 @@ type SyncFormProps<T extends FieldValues> = {
 };
 
 const useSyncForm = <T extends FieldValues>({
-  mode,
   defaultValues,
   values,
   context,

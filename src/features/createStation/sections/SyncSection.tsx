@@ -66,7 +66,6 @@ const SyncSection = ({uuid, show, setShow, tstype_id}: Props) => {
           <Grid2 container size={12} spacing={1}>
             <Grid2 size={12}>
               <SyncForm
-                mode="add"
                 loctype_id={meta?.loctype_id}
                 tstype_id={tstype_id ?? undefined}
                 id={id}

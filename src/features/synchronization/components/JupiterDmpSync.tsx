@@ -4,28 +4,28 @@ import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {Grid2, Box} from '@mui/material';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 
 const Form = createTypedForm<SyncFormValues>();
 
 type JupiterDmpSyncProps = {
-  mode: 'add' | 'edit' | 'mass_edit';
   loctype_id?: number;
   tstype_id?: number;
   values: SyncFormValues | undefined;
   submit: (data: SyncFormValues) => void;
   intakeno?: number | null;
+  ts_id: number;
 };
 
 const JupiterDmpSync = ({
   loctype_id,
   tstype_id,
-  mode,
   values,
   submit,
   intakeno,
+  ts_id,
 }: JupiterDmpSyncProps) => {
   const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm<SyncFormValues>({
-    mode: mode,
     context: {
       loctype_id,
       tstype_id,
@@ -33,9 +33,14 @@ const JupiterDmpSync = ({
     values: values,
   });
 
-  const {watch, trigger, setValue, reset} = syncFormMethods;
+  const {
+    setValue,
+    reset,
+    formState: {isDirty},
+  } = syncFormMethods;
   const {location_permissions} = usePermissions();
-  const sync_dmp = watch('sync_dmp');
+
+  const disabled = location_permissions !== 'edit';
 
   return (
     <>
@@ -50,7 +55,7 @@ const JupiterDmpSync = ({
               }
             >
               <Form.Checkbox
-                disabled={location_permissions !== 'edit' || intakeno == null}
+                disabled={disabled || intakeno == null}
                 name="jupiter"
                 label="Jupiter"
               />
@@ -58,24 +63,12 @@ const JupiterDmpSync = ({
           )}
           {isDmpAllowed && (
             <Box>
-              <Form.Checkbox
-                name={'sync_dmp'}
-                label="DMP"
-                disabled={sync_dmp && mode === 'edit'}
-                onChangeCallback={(value) => {
-                  if (!value) {
-                    trigger('owner_cvr');
-                    setValue('owner_cvr', undefined);
-                    setValue('owner_name', undefined);
-                  }
-                }}
-              />
               <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til DMP">
                 <Form.Input
                   select
                   name="owner_cvr"
                   label="Data ejer"
-                  disabled={!sync_dmp && mode === 'edit'}
+                  disabled={disabled}
                   placeholder="Vælg data ejer"
                   options={owners?.map((owner) => ({
                     [owner.cvr]: owner.name + ` (${owner.cvr})`,
@@ -86,8 +79,8 @@ const JupiterDmpSync = ({
                     ).target.value;
                     const owner = owners?.find((owner) => owner.cvr === owner_cvr);
                     if (owner) {
-                      setValue('owner_cvr', parseInt(owner.cvr));
-                      setValue('owner_name', owner.name);
+                      setValue('owner_cvr', parseInt(owner.cvr), {shouldDirty: true});
+                      setValue('owner_name', owner.name, {shouldDirty: true});
                     }
                   }}
                 />
@@ -96,7 +89,13 @@ const JupiterDmpSync = ({
           )}
 
           <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">
-            <Form.Cancel cancel={() => reset()} />
+            <UpdateProgressButton
+              progressKey="sync"
+              loc_id={-1}
+              ts_id={ts_id}
+              disabled={disabled || isDirty}
+            />
+            <Form.Cancel cancel={() => reset()} disabled={disabled || !isDirty} />
             <Form.Submit submit={submit} />
           </Grid2>
         </Form>

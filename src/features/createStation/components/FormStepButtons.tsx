@@ -96,10 +96,13 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
         },
         timeseries: Object.values(formState.timeseries || {}).map((ts) => ({
           ...ts,
-          sync: ts.sync && {
-            ...ts.sync,
-            sync_dmp: ts.sync?.owner_cvr ? true : false,
-          },
+          sync:
+            ts.sync !== undefined
+              ? {
+                  ...ts.sync,
+                  sync_dmp: ts.sync?.owner_cvr ? true : false,
+                }
+              : undefined,
         })),
       };
     } else {
@@ -109,13 +112,12 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
           : ((formState.location || {}) as CreateStationPayload['location']),
         timeseries: Object.values(formState.timeseries || {}).map((ts) => ({
           ...ts,
-          sync: ts.sync && {
-            ...ts.sync,
-            sync_dmp: ts.sync?.owner_cvr ? true : false,
-          },
+          ...(ts.sync && {sync: {...ts.sync, sync_dmp: ts.sync?.owner_cvr ? true : false}}),
         })),
       };
     }
+
+    console.log(submitState);
 
     setShowDialog(false);
     stamdataNewMutation.mutate(submitState);

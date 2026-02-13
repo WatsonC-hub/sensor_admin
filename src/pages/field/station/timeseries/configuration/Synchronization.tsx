@@ -19,16 +19,7 @@ const Synchronization = () => {
   const submit = (data: SyncFormValues) => {
     const syncPayload = {
       path: `${ts_id}`,
-      data: {
-        ...(data.sync_dmp && sync_data?.sync_dmp === false
-          ? {
-              sync_dmp: data.sync_dmp,
-              owner_cvr: data.owner_cvr,
-              owner_name: data.owner_name,
-            }
-          : {}),
-        jupiter: data.jupiter,
-      },
+      data: data,
     };
 
     postSync.mutate(syncPayload);
@@ -40,11 +31,11 @@ const Synchronization = () => {
         Synkronisering
       </Typography>
       <JupiterDmpSync
-        mode="edit"
         loctype_id={location_data?.loctype_id}
         tstype_id={metadata?.tstype_id}
         values={sync_data}
         submit={submit}
+        ts_id={ts_id}
       />
     </Box>
   );
