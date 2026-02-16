@@ -1,15 +1,18 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {Box, InputAdornment} from '@mui/material';
+import {InputAdornment} from '@mui/material';
 import React, {useEffect} from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import {z} from 'zod';
 import FormInput from '~/components/FormInput';
 import {} from '~/features/station/api/useLocationSLAConfiguration';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 
 const SLASchema = z.object({
-  days_to_visitation: z.number({required_error: 'SLA frist er påkrævet'}),
+  days_to_visitation: z
+    .number({
+      message: 'Løsningsfrist skal være et tal',
+    })
+    .min(1, {message: 'Løsningsfrist skal være 1 eller flere dage'}),
 });
 
 type SlaFormProps = {
@@ -22,13 +25,10 @@ const SlaForm = ({setValues}: SlaFormProps) => {
     state.registerSubmitter,
     state.removeSubmitter,
   ]);
-  const {isMobile} = useBreakpoints();
 
   const formMethods = useForm({
     resolver: zodResolver(SLASchema),
-    defaultValues: sla ?? {
-      days_to_visitation: 30,
-    },
+    defaultValues: sla,
   });
 
   const {handleSubmit} = formMethods;
@@ -48,20 +48,22 @@ const SlaForm = ({setValues}: SlaFormProps) => {
 
   return (
     <FormProvider {...formMethods}>
-      <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} alignItems={'center'}>
-        <FormInput
-          name="days_to_visitation"
-          label="Løsningsfrist"
-          type="number"
-          placeholder="Indtast antal dage..."
-          slotProps={{
-            input: {
-              endAdornment: <InputAdornment position="end">dage</InputAdornment>,
-            },
-          }}
-          fullWidth
-        />
-      </Box>
+      <FormInput
+        name="days_to_visitation"
+        label="Løsningsfrist"
+        type="number"
+        required
+        placeholder="Indtast antal dage..."
+        slotProps={{
+          input: {
+            endAdornment: <InputAdornment position="end">dage</InputAdornment>,
+          },
+        }}
+        sx={{
+          width: 'fit-content',
+        }}
+        fullWidth
+      />
     </FormProvider>
   );
 };

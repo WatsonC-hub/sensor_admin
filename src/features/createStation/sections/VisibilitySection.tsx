@@ -7,12 +7,7 @@ import FormFieldset from '~/components/formComponents/FormFieldset';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import VisibilityForm from '../forms/VisibilityForm';
 
-type Props = {
-  show: boolean;
-  setShow: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-const VisibilitySection = ({show, setShow}: Props) => {
+const VisibilitySection = () => {
   const {isMobile} = useBreakpoints();
   const [setState, visibility, deleteState] = useCreateStationStore((state) => [
     state.setState,
@@ -20,9 +15,22 @@ const VisibilitySection = ({show, setShow}: Props) => {
     state.deleteState,
   ]);
 
-  return (
-    <>
-      {show && (
+  const show = visibility !== undefined;
+
+  if (show)
+    return (
+      <Box display="flex" flexDirection="row" alignItems={'start'}>
+        {!isMobile && (
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={() => {
+              deleteState(`location.visibility`);
+            }}
+          >
+            <RemoveCircleOutline fontSize="small" />
+          </IconButton>
+        )}
         <FormFieldset
           label={
             isMobile ? (
@@ -31,7 +39,6 @@ const VisibilitySection = ({show, setShow}: Props) => {
                 sx={{p: 0, m: 0}}
                 startIcon={<RemoveCircleOutline color="primary" />}
                 onClick={() => {
-                  setShow(false);
                   deleteState(`location.visibility`);
                 }}
               >
@@ -46,53 +53,39 @@ const VisibilitySection = ({show, setShow}: Props) => {
           labelPosition={isMobile ? -22 : -20}
           sx={{width: '100%', p: 1}}
         >
-          <Box display="flex" flexDirection="row" gap={1} alignItems={'center'}>
-            {!isMobile && (
-              <IconButton
-                color="primary"
-                size="small"
-                onClick={() => {
-                  setShow(false);
-                  deleteState(`location.visibility`);
-                }}
-              >
-                <RemoveCircleOutline fontSize="small" />
-              </IconButton>
-            )}
-            <VisibilityForm
-              visibility={visibility}
-              setValues={(value) => {
-                setState(`location.visibility`, value);
-              }}
-            />
-          </Box>
+          <VisibilityForm
+            visibility={visibility}
+            setValues={(value) => {
+              setState(`location.visibility`, value);
+            }}
+          />
         </FormFieldset>
-      )}
-      {!show && (
-        <Box alignItems={'center'}>
-          <Button
-            bttype="primary"
-            startIcon={<AddCircleOutline color="primary" />}
-            sx={{
-              width: 'fit-content',
-              backgroundColor: 'transparent',
-              border: 'none',
-              px: 1,
-              ':hover': {
-                backgroundColor: 'grey.200',
-              },
-            }}
-            onClick={() => {
-              setShow(true);
-            }}
-          >
-            <Typography variant="body1" color="primary">
-              Tilføj tilgængelighed
-            </Typography>
-          </Button>
-        </Box>
-      )}
-    </>
+      </Box>
+    );
+
+  return (
+    <Box alignItems={'center'}>
+      <Button
+        bttype="primary"
+        startIcon={<AddCircleOutline color="primary" />}
+        sx={{
+          width: 'fit-content',
+          backgroundColor: 'transparent',
+          border: 'none',
+          px: 1,
+          ':hover': {
+            backgroundColor: 'grey.200',
+          },
+        }}
+        onClick={() => {
+          setState('location.visibility', {});
+        }}
+      >
+        <Typography variant="body1" color="primary">
+          Tilføj tilgængelighed
+        </Typography>
+      </Button>
+    </Box>
   );
 };
 

@@ -7,7 +7,7 @@ import {devtools} from 'zustand/middleware';
 function setByPath<T extends object, P extends Path<T>>(
   obj: T,
   path: P,
-  value: PathValue<T, P>
+  value: Partial<PathValue<T, P>>
 ): T {
   const tokens = path
     .replace(/\[(\d+)\]/g, '.$1')
@@ -32,6 +32,29 @@ function setByPath<T extends object, P extends Path<T>>(
   }
 
   return update(obj, 0);
+}
+
+function getByPath<T extends object, P extends Path<T>>(
+  obj: T,
+  path: P
+): PathValue<T, P> | undefined {
+  const tokens = path
+    .replace(/\[(\d+)\]/g, '.$1')
+    .split('.')
+    .filter(Boolean);
+
+  function get(current: any, index: number): any {
+    const key = tokens[index];
+    if (current == null) {
+      return undefined;
+    }
+    if (index === tokens.length - 1) {
+      return current[key];
+    }
+    return get(current[key], index + 1);
+  }
+
+  return get(obj, 0);
 }
 
 function deleteByPath<T extends object, P extends Path<T>>(obj: T, path: P): T {
@@ -100,28 +123,46 @@ export type CreateStationStoreState = {
   submitters: Submitters;
   setState: <P extends Path<Partial<CreateStationFormState>>>(
     path: P,
-    data: PathValue<Partial<CreateStationFormState>, P>
+    data: Partial<PathValue<Partial<CreateStationFormState>, P>>
   ) => void;
   setIsFormError: (val: boolean) => void;
   deleteState: <P extends Path<Partial<CreateStationFormState>>>(path: P) => void;
+  resetState: <P extends Path<Partial<CreateStationFormState>>>(path: P) => void;
   registerSubmitter: (id: string, callback: () => Promise<boolean>) => void;
   removeSubmitter: (id: string) => void;
   runSubmitters: () => boolean;
   clearSubmitters: () => void;
 };
 
-const createStationStore = (defaultValues?: Partial<CreateStationFormState>) =>
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
+// const defaultState: DeepPartial<CreateStationFormState> = {
+//   location: {
+//     contacts: [],
+//     location_access: [],
+//   },
+// };
+
+const createStationStore = (defaultValues?: DeepPartial<CreateStationFormState>) =>
   createStore<CreateStationStoreState>()(
     devtools((set) => ({
-      formState: {
-        ...defaultValues,
-      },
+      formState: defaultValues,
       submitters: {},
       isFormError: false,
       setState: (path, data) =>
         set((state) => ({
           formState: setByPath(state.formState, path, data),
         })),
+      resetState: (path) =>
+        set((state) => {
+          const value = getByPath(defaultValues ?? {}, path) ?? {};
+
+          return {
+            formState: setByPath(state.formState, path, value),
+          };
+        }),
       setIsFormError: (value) => set(() => ({isFormError: value})),
       deleteState: (path) =>
         set((state) => ({
@@ -153,7 +194,7 @@ export const CreateStationStoreContext = React.createContext<ReturnType<
 
 interface CreateStationStoreProviderProps {
   children: React.ReactNode;
-  defaultValues?: Partial<CreateStationFormState>;
+  defaultValues?: DeepPartial<CreateStationFormState>;
 }
 
 const CreateStationStoreProvider = ({children, defaultValues}: CreateStationStoreProviderProps) => {

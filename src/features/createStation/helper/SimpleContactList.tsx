@@ -11,6 +11,13 @@ type Props = {
 const SimpleContactList = ({values, onRemove}: Props) => {
   return (
     <List sx={{maxWidth: 320, bgcolor: 'background.paper'}}>
+      {values.length === 0 && (
+        <SimpleTextView
+          key="nocontact"
+          primaryText={'Ingen kontakter tilføjet'}
+          secondaryText={'Der er taget stilling til kontakter ikke er relevante'}
+        />
+      )}
       {values.map((contact, index) => (
         <SimpleTextView
           key={index}

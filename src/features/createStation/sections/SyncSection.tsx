@@ -9,12 +9,10 @@ import SyncForm from '../forms/SyncForm';
 
 type Props = {
   uuid: string;
-  show: boolean;
-  setShow: React.Dispatch<React.SetStateAction<boolean>>;
   tstype_id?: number;
 };
 
-const SyncSection = ({uuid, show, setShow, tstype_id}: Props) => {
+const SyncSection = ({uuid, tstype_id}: Props) => {
   const [meta, setState, deleteState, sync] = useCreateStationStore((state) => [
     state.formState.location?.meta,
     state.setState,
@@ -25,44 +23,44 @@ const SyncSection = ({uuid, show, setShow, tstype_id}: Props) => {
   const {isMobile} = useBreakpoints();
   const id = `timeseries.${uuid}.sync`;
 
+  const show = sync !== undefined;
+
   if (show)
     return (
-      <FormFieldset
-        label={
-          isMobile ? (
-            <Button
-              bttype="borderless"
-              sx={{p: 0, m: 0}}
-              startIcon={<RemoveCircleOutline color="primary" />}
-              onClick={() => {
-                setShow(false);
-                deleteState(`timeseries.${uuid}.sync`);
-              }}
-            >
-              <Typography variant="body2" color="grey.700">
-                Synkronisering
-              </Typography>
-            </Button>
-          ) : (
-            'Synkronisering'
-          )
-        }
-        labelPosition={isMobile ? -22 : -20}
-        sx={{width: '100%', p: 1}}
-      >
-        <Box display="flex" flexDirection="row" gap={1} alignItems={'center'}>
-          {!isMobile && (
-            <IconButton
-              color="primary"
-              size="small"
-              onClick={() => {
-                setShow(false);
-                deleteState(`timeseries.${uuid}.sync`);
-              }}
-            >
-              <RemoveCircleOutline fontSize="small" />
-            </IconButton>
-          )}
+      <Box display="flex" flexDirection="row" alignItems={'start'}>
+        {!isMobile && (
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={() => {
+              deleteState(`timeseries.${uuid}.sync`);
+            }}
+          >
+            <RemoveCircleOutline fontSize="small" />
+          </IconButton>
+        )}
+        <FormFieldset
+          label={
+            isMobile ? (
+              <Button
+                bttype="borderless"
+                sx={{p: 0, m: 0}}
+                startIcon={<RemoveCircleOutline color="primary" />}
+                onClick={() => {
+                  deleteState(`timeseries.${uuid}.sync`);
+                }}
+              >
+                <Typography variant="body2" color="grey.700">
+                  Synkronisering
+                </Typography>
+              </Button>
+            ) : (
+              'Synkronisering'
+            )
+          }
+          labelPosition={isMobile ? -22 : -20}
+          sx={{width: '100%', p: 1}}
+        >
           <Grid2 container size={12} spacing={1}>
             <Grid2 size={12}>
               <SyncForm
@@ -74,8 +72,8 @@ const SyncSection = ({uuid, show, setShow, tstype_id}: Props) => {
               />
             </Grid2>
           </Grid2>
-        </Box>
-      </FormFieldset>
+        </FormFieldset>
+      </Box>
     );
 
   return (
@@ -93,7 +91,7 @@ const SyncSection = ({uuid, show, setShow, tstype_id}: Props) => {
           },
         }}
         onClick={() => {
-          setShow(true);
+          setState(`timeseries.${uuid}.sync`, {});
         }}
       >
         <Typography variant="body1" color="primary">

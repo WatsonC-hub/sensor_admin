@@ -1,5 +1,5 @@
 import {Box} from '@mui/material';
-import React, {useState} from 'react';
+import React from 'react';
 import FormStepButtons from './FormStepButtons';
 
 import RessourceSection from '../sections/RessourceSection';
@@ -21,8 +21,6 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
     state.submitters,
     state.formState.timeseries,
   ]);
-  const [showVisibility, setShowVisibility] = useState(true);
-  const [showSla, setShowSla] = useState(true);
   const {superUser} = useUser();
 
   return (
@@ -34,11 +32,9 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
             sx={{width: '100%', p: 1}}
             labelPosition={-20}
           >
-            {Object.values(timeseries ?? {}).length > 0 && (
-              <VisibilitySection show={showVisibility} setShow={setShowVisibility} />
-            )}
+            {Object.values(timeseries ?? {}).length > 0 && <VisibilitySection />}
 
-            {superUser && <SlaSection show={showSla} setShow={setShowSla} />}
+            {superUser && <SlaSection />}
             <ContactForm />
             <LocationAccessForm />
             {superUser && <RessourceSection />}

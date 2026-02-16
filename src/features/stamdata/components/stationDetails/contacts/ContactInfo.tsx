@@ -8,7 +8,7 @@ import {initialContactData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
-import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddtContactInfo';
+import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddContactInfo';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useAppContext} from '~/state/contexts';

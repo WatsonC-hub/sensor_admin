@@ -29,7 +29,18 @@ const CreateStation = () => {
   if (!data && state?.loc_id !== undefined) return null;
 
   return (
-    <CreateStationStoreProvider defaultValues={{location: {meta: {...data, ...state}}}}>
+    <CreateStationStoreProvider
+      defaultValues={{
+        location: {
+          meta: {...data, ...state},
+          contacts: [],
+          location_access: [],
+          sla: {
+            days_to_visitation: 20,
+          },
+        },
+      }}
+    >
       <NavBar>
         <NavBar.GoBack />
         <NavBar.Logo />

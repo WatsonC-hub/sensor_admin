@@ -71,8 +71,8 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
   const withEquipment = timeseries.filter((ts) => ts.unit !== undefined).length;
 
   const dialogMessage = loc_id
-    ? `Du er i gang med at tilføje tidsserier til lokationen: ${formState?.location?.meta.loc_name}. \n\n Der er blevet tilføjet ${timeseries.length} ${timeseries.length > 1 ? 'tidsserier' : 'tidsserie'} (${withEquipment} med udstyr). \n\n Er du sikker på, at du vil færdiggøre oprettelsen?`
-    : `Du er i gang med at oprette en ny lokation med dette navn: ${formState?.location?.meta.loc_name}. \n\n Der er blevet tilføjet ${timeseries.length}  ${timeseries.length > 1 ? 'tidsserier' : 'tidsserie'} (${withEquipment} med udstyr). \n\n Er du sikker på, at du vil færdiggøre oprettelsen?`;
+    ? `Du er i gang med at tilføje tidsserier til lokationen: ${formState?.location?.meta?.loc_name}. \n\n Der er blevet tilføjet ${timeseries.length} ${timeseries.length > 1 ? 'tidsserier' : 'tidsserie'} (${withEquipment} med udstyr). \n\n Er du sikker på, at du vil færdiggøre oprettelsen?`
+    : `Du er i gang med at oprette en ny lokation med dette navn: ${formState?.location?.meta?.loc_name}. \n\n Der er blevet tilføjet ${timeseries.length}  ${timeseries.length > 1 ? 'tidsserier' : 'tidsserie'} (${withEquipment} med udstyr). \n\n Er du sikker på, at du vil færdiggøre oprettelsen?`;
 
   const handleSubmit = (confirmed?: boolean) => {
     if (!formState) return;

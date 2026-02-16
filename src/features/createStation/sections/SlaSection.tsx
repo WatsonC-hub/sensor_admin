@@ -7,22 +7,32 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import Button from '~/components/Button';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 
-type Props = {
-  show: boolean;
-  setShow: (show: boolean) => void;
-};
-
-const SlaSection = ({show, setShow}: Props) => {
+const SlaSection = () => {
   const {isMobile} = useBreakpoints();
 
-  const [deleteState, setState] = useCreateStationStore((state) => [
+  const [deleteState, setState, resetState, sla] = useCreateStationStore((state) => [
     state.deleteState,
     state.setState,
+    state.resetState,
+    state.formState.location?.sla,
   ]);
 
-  return (
-    <>
-      {show && (
+  const show = sla !== undefined;
+
+  if (show)
+    return (
+      <Box display="flex" flexDirection="row" alignItems={'start'}>
+        {!isMobile && (
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={() => {
+              deleteState(`location.sla`);
+            }}
+          >
+            <RemoveCircleOutline fontSize="small" />
+          </IconButton>
+        )}
         <FormFieldset
           label={
             isMobile ? (
@@ -31,7 +41,6 @@ const SlaSection = ({show, setShow}: Props) => {
                 sx={{p: 0, m: 0}}
                 startIcon={<RemoveCircleOutline color="primary" />}
                 onClick={() => {
-                  setShow(false);
                   deleteState(`location.sla`);
                 }}
               >
@@ -46,52 +55,38 @@ const SlaSection = ({show, setShow}: Props) => {
           labelPosition={isMobile ? -22 : -20}
           sx={{width: '100%', p: 1}}
         >
-          <Box display="flex" flexDirection="row" gap={1} alignItems={'center'}>
-            {!isMobile && (
-              <IconButton
-                color="primary"
-                size="small"
-                onClick={() => {
-                  setShow(false);
-                  deleteState(`location.sla`);
-                }}
-              >
-                <RemoveCircleOutline fontSize="small" />
-              </IconButton>
-            )}
-            <SlaForm
-              setValues={(values) => {
-                setState('location.sla', values);
-              }}
-            />
-          </Box>
+          <SlaForm
+            setValues={(values) => {
+              setState('location.sla', values);
+            }}
+          />
         </FormFieldset>
-      )}
-      {!show && (
-        <Box alignItems={'center'}>
-          <Button
-            bttype="primary"
-            startIcon={<AddCircleOutline color="primary" />}
-            sx={{
-              width: 'fit-content',
-              backgroundColor: 'transparent',
-              border: 'none',
-              px: 1,
-              ':hover': {
-                backgroundColor: 'grey.200',
-              },
-            }}
-            onClick={() => {
-              setShow(true);
-            }}
-          >
-            <Typography variant="body1" color="primary">
-              Tilføj SLA (Service Level Agreement)
-            </Typography>
-          </Button>
-        </Box>
-      )}
-    </>
+      </Box>
+    );
+
+  return (
+    <Box alignItems={'center'}>
+      <Button
+        bttype="primary"
+        startIcon={<AddCircleOutline color="primary" />}
+        sx={{
+          width: 'fit-content',
+          backgroundColor: 'transparent',
+          border: 'none',
+          px: 1,
+          ':hover': {
+            backgroundColor: 'grey.200',
+          },
+        }}
+        onClick={() => {
+          resetState('location.sla');
+        }}
+      >
+        <Typography variant="body1" color="primary">
+          Tilføj SLA (Service Level Agreement)
+        </Typography>
+      </Button>
+    </Box>
   );
 };
 

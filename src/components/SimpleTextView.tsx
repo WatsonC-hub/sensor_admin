@@ -6,20 +6,13 @@ type Props = {
   primaryText: ReactNode | string;
   secondaryText?: ReactNode | string;
   icon?: ReactNode;
-  withRemoveIcon?: boolean;
-  onRemove: () => void;
+  onRemove?: () => void;
 };
 
-const SimpleTextView = ({
-  primaryText,
-  secondaryText,
-  icon,
-  onRemove,
-  withRemoveIcon = true,
-}: Props) => {
+const SimpleTextView = ({primaryText, secondaryText, icon, onRemove}: Props) => {
   return (
     <ListItem disableGutters sx={{p: 0}}>
-      {withRemoveIcon && (
+      {onRemove && (
         <IconButton aria-label="remove contact" size="small" edge="start">
           <RemoveCircleOutline
             color="primary"

@@ -8,6 +8,10 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 import {AddUnitType} from '../forms/UnitForm';
 import dayjs from 'dayjs';
 import {TransformedUnit} from '../types';
+import {apiClient} from '~/apiClient';
+import {Tstype} from '~/types';
+import {useQuery} from '@tanstack/react-query';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 function TimeseriesList() {
   const [unitDialog, setUnitDialog] = useState(false);
@@ -29,6 +33,29 @@ function TimeseriesList() {
     removeSubmitter(`timeseries.${index}.meta`);
   };
 
+  const {data: timeseries_types} = useQuery({
+    queryKey: queryKeys.timeseriesTypes(),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<Tstype>>(`/sensor_field/timeseries_types`);
+      return data;
+    },
+    staleTime: Infinity, // Cache indefinitely
+    refetchInterval: 1000 * 60 * 60 * 24, // Refetch every 24 hours
+  });
+
+  const setControlSettings = (tstype_id: number, index: string) => {
+    const service_interval = timeseries_types?.find(
+      (type) => type.tstype_id === tstype_id
+    )?.service_interval;
+    if (service_interval !== null && service_interval !== undefined) {
+      setState(`timeseries.${index}.control_settings`, {
+        controls_per_year: 12 / service_interval,
+        lead_time: null,
+        selectValue: 1,
+      });
+    }
+  };
+
   return (
     <>
       <Box display="flex" gap={1} flexWrap="wrap" alignSelf={'center'}>
@@ -47,7 +74,12 @@ function TimeseriesList() {
             sx={{width: '100%', p: 1, mb: 2}}
             labelPosition={-20}
           >
-            <TimeseriesEditor key={id} index={id} onRemove={() => remove(id)} />
+            <TimeseriesEditor
+              key={id}
+              index={id}
+              onRemove={() => remove(id)}
+              setControlSettings={(tstype_id) => setControlSettings(tstype_id, id)}
+            />
           </FormFieldset>
         );
       })}
@@ -71,6 +103,9 @@ function TimeseriesList() {
             const uuid = add();
             setState(`timeseries.${uuid}.meta`, {tstype_id: unit.tstype_id});
             setState(`timeseries.${uuid}.unit`, unit);
+
+            if (unit.tstype_id === 1) setState(`timeseries.${uuid}.watlevmp`, {});
+            setControlSettings(unit.tstype_id, uuid);
           });
         }}
       />

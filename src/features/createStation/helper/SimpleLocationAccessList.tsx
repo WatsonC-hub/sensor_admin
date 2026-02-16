@@ -11,6 +11,13 @@ type Props = {
 const SimpleLocationAccessList = ({values, onRemove}: Props) => {
   return (
     <List sx={{maxWidth: 320, bgcolor: 'background.paper'}}>
+      {values.length === 0 && (
+        <SimpleTextView
+          key="nokeys"
+          primaryText={'Ingen adgangsnøgler tilføjet'}
+          secondaryText={'Der er taget stilling til adgangsnøgler ikke er relevante'}
+        />
+      )}
       {values.map((contact, index) => (
         <SimpleTextView
           key={index}

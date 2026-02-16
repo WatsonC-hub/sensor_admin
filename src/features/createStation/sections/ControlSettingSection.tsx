@@ -9,23 +9,34 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 
 type Props = {
   uuid: string;
-  show: boolean;
-  setShow: React.Dispatch<React.SetStateAction<boolean>>;
+  setShow: (show: boolean) => void;
 };
 
-const ControlSettingSection = ({uuid, show, setShow}: Props) => {
+const ControlSettingSection = ({uuid, setShow}: Props) => {
   const {isMobile} = useBreakpoints();
-  const [setState, deleteState, control_settings] = useCreateStationStore((state) => [
+  const [setState, control_settings] = useCreateStationStore((state) => [
     state.setState,
-    state.deleteState,
     state.formState.timeseries?.[uuid]?.control_settings,
   ]);
 
   const id = `timeseries.${uuid}.control_settings`;
 
-  return (
-    <>
-      {show && (
+  const show = control_settings !== undefined;
+
+  if (show)
+    return (
+      <Box display="flex" flexDirection="row" alignItems={'start'}>
+        {!isMobile && (
+          <IconButton
+            color="primary"
+            size="small"
+            onClick={() => {
+              setShow(false);
+            }}
+          >
+            <RemoveCircleOutline fontSize="small" />
+          </IconButton>
+        )}
         <FormFieldset
           label={
             isMobile ? (
@@ -35,7 +46,6 @@ const ControlSettingSection = ({uuid, show, setShow}: Props) => {
                 startIcon={<RemoveCircleOutline color="primary" />}
                 onClick={() => {
                   setShow(false);
-                  deleteState(`timeseries.${uuid}.control_settings`);
                 }}
               >
                 <Typography variant="body2" color="grey.700">
@@ -49,52 +59,38 @@ const ControlSettingSection = ({uuid, show, setShow}: Props) => {
           labelPosition={isMobile ? -22 : -20}
           sx={{width: '100%', p: 1}}
         >
-          <Box display="flex" flexDirection="row" gap={1} alignItems={'center'}>
-            {!isMobile && (
-              <IconButton
-                color="primary"
-                size="small"
-                onClick={() => {
-                  setShow(false);
-                  deleteState(`timeseries.${uuid}.control_settings`);
-                }}
-              >
-                <RemoveCircleOutline fontSize="small" />
-              </IconButton>
-            )}
-            <ControlSettingForm
-              id={id}
-              values={control_settings}
-              setValues={(value) => setState(`timeseries.${uuid}.control_settings`, value)}
-            />
-          </Box>
+          <ControlSettingForm
+            id={id}
+            values={control_settings}
+            setValues={(value) => setState(`timeseries.${uuid}.control_settings`, value)}
+          />
         </FormFieldset>
-      )}
-      {!show && (
-        <Box alignItems={'center'}>
-          <Button
-            bttype="primary"
-            startIcon={<AddCircleOutline color="primary" />}
-            sx={{
-              width: 'fit-content',
-              backgroundColor: 'transparent',
-              border: 'none',
-              px: 1,
-              ':hover': {
-                backgroundColor: 'grey.200',
-              },
-            }}
-            onClick={() => {
-              setShow(true);
-            }}
-          >
-            <Typography variant="body1" color="primary">
-              Tilføj kontrolhyppighed
-            </Typography>
-          </Button>
-        </Box>
-      )}
-    </>
+      </Box>
+    );
+
+  return (
+    <Box alignItems={'center'}>
+      <Button
+        bttype="primary"
+        startIcon={<AddCircleOutline color="primary" />}
+        sx={{
+          width: 'fit-content',
+          backgroundColor: 'transparent',
+          border: 'none',
+          px: 1,
+          ':hover': {
+            backgroundColor: 'grey.200',
+          },
+        }}
+        onClick={() => {
+          setShow(true);
+        }}
+      >
+        <Typography variant="body1" color="primary">
+          Tilføj kontrolhyppighed
+        </Typography>
+      </Button>
+    </Box>
   );
 };
 
