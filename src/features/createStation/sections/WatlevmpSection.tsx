@@ -49,9 +49,9 @@ const WatlevmpSection = ({show, setShow, index}: Props) => {
         labelPosition={isMobile ? -22 : -20}
         sx={{width: '100%', p: 1}}
       >
-        <Box display={'flex'} flexDirection="row" gap={1}>
+        <Box display={'flex'} flexDirection="row">
           <Grid2 container size={12} alignItems={'center'}>
-            <Grid2 size={0.5}>
+            <Grid2 size={0.4}>
               {!isMobile && (
                 <IconButton
                   color="primary"

@@ -62,14 +62,13 @@ const AddContactInfo = ({open, setOpen, loc_id, onValidate}: SelectContactInfoPr
           reset(initialContactData);
         },
       });
+      setOpen(false);
     } else {
       if (onValidate) {
         onValidate(contact_info);
         reset(initialContactData);
       }
     }
-
-    setOpen(false);
   };
 
   return (

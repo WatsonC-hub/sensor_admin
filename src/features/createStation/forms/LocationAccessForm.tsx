@@ -31,7 +31,12 @@ const LocationAccessForm = () => {
   };
 
   const removeLocationAccess = (index: number) => {
-    onValidChange(location_access?.filter((_: AccessTable, i: number) => i !== index) ?? []);
+    const filteredLocationAccess =
+      location_access?.filter((_: AccessTable, i: number) => i !== index) ?? [];
+    if (filteredLocationAccess.length === 0) {
+      setShow(false);
+    }
+    onValidChange(filteredLocationAccess);
   };
 
   if (!show)
@@ -133,6 +138,7 @@ const LocationAccessForm = () => {
             <LocationAccessFormDialog
               openDialog={locationAccessDialogOpen}
               setOpenDialog={(close) => {
+                if (location_access === undefined || location_access.length === 0) setShow(false);
                 setLocationAccessDialogOpen(close);
               }}
               handleSave={(data) => {

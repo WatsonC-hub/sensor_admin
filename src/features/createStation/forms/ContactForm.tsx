@@ -33,6 +33,9 @@ const ContactForm = () => {
 
   const removeContact = (index: number) => {
     const filteredContacts = (contacts || []).filter((_, i) => i !== index);
+    if (filteredContacts.length === 0) {
+      setShow(false);
+    }
     onValidChange(filteredContacts);
   };
 
@@ -134,7 +137,10 @@ const ContactForm = () => {
           {contactDialogOpen && (
             <AddContactInfo
               open={contactDialogOpen}
-              setOpen={setContactDialogOpen}
+              setOpen={(open) => {
+                setContactDialogOpen(open);
+                if (contacts === undefined || contacts.length === 0) setShow(open);
+              }}
               onValidate={(data) => {
                 data.contact_type = lowerCase(data.contact_type || '');
 
@@ -146,6 +152,7 @@ const ContactForm = () => {
                     mobile: data.mobile ?? null,
                   },
                 ]);
+                setContactDialogOpen(false);
               }}
             />
           )}

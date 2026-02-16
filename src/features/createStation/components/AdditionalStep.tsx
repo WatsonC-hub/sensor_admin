@@ -41,7 +41,7 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
             {superUser && <SlaSection show={showSla} setShow={setShowSla} />}
             <ContactForm />
             <LocationAccessForm />
-            <RessourceSection />
+            {superUser && <RessourceSection />}
           </FormFieldset>
           <Box display={'flex'} flexDirection={'column'} gap={1.5}>
             <FormStepButtons

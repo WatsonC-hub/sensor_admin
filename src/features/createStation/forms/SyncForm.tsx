@@ -83,8 +83,8 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
                   ).target.value;
                   const owner = owners?.find((owner) => owner.cvr === owner_cvr);
                   if (owner) {
-                    setValue('owner_cvr', parseInt(owner.cvr));
-                    setValue('owner_name', owner.name);
+                    setValue('owner_cvr', parseInt(owner.cvr), {shouldValidate: true});
+                    setValue('owner_name', owner.name, {shouldValidate: true});
                   }
                 }}
               />
