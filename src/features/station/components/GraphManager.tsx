@@ -651,31 +651,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     }
   }, [watlevmp, measurements !== undefined]);
 
-  useEffect(() => {
-    let ctrls = [];
-    if (measurements !== undefined) {
-      if (watlevmp && watlevmp.length > 0) {
-        ctrls = measurements?.map((e) => {
-          const elev = watlevmp.filter((e2) => {
-            return (
-              e.timeofmeas.isSameOrAfter(e2.startdate) && e.timeofmeas.isSameOrBefore(e2.enddate)
-            );
-          })[0].elevation;
-
-          return {
-            ...e,
-            waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
-          };
-        });
-      } else {
-        ctrls = measurements?.map((elem) => {
-          return {...elem, waterlevel: elem.disttowatertable_m};
-        });
-      }
-      setcontrol(ctrls);
-    }
-  }, [watlevmp, measurements !== undefined]);
-
   if (pageToShow === 'justeringer') {
     const handlePlotlySelected = (eventData: any) => {
       if (eventData === undefined) {
