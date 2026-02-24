@@ -9,12 +9,7 @@ import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle, setTableBoxStyle} from '~/consts';
-import {
-  convertDate,
-  checkEndDateIsUnset,
-  convertDateWithTimeStamp,
-  limitDecimalNumbers,
-} from '~/helpers/dateConverter';
+import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
@@ -74,16 +69,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
               </Typography>
             </Box>
             <Typography margin={'0 auto'} alignSelf={'center'} variant="caption">
-              <b>Start: </b> {convertDate(row.original.startdate)}
-              {row.original.enddate && (
-                <>
-                  <br />
-                  <b>Slut: </b>
-                  {checkEndDateIsUnset(row.original.enddate)
-                    ? 'Nu'
-                    : convertDate(row.original.enddate)}
-                </>
-              )}
+              <b>Gældende fra: </b> {convertDate(row.original.startdate)}
             </Typography>
             <Box marginLeft={'auto'}>
               <RenderActions
@@ -108,16 +94,8 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         <Typography>
-          <b>Start dato: </b> {convertDateWithTimeStamp(row.original.startdate)}
+          <b>Gældende fra: </b> {convertDateWithTimeStamp(row.original.startdate)}
         </Typography>
-        {row.original.enddate && (
-          <Typography>
-            <b>Slut dato: </b>
-            {checkEndDateIsUnset(row.original.enddate)
-              ? 'Nu'
-              : convertDateWithTimeStamp(row.original.enddate)}
-          </Typography>
-        )}
         {(row.original.display_name || row.index === 0) && (
           <Typography>
             <b>Oprettet af:</b> {row.original.display_name ?? 'Jupiter'}

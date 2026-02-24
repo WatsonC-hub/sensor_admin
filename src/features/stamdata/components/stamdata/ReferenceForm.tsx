@@ -15,7 +15,6 @@ import {useAppContext} from '~/state/contexts';
 import {initialWatlevmpData} from './const';
 import {Maalepunkt} from '~/types';
 import {zodDayjs} from '~/helpers/schemas';
-import dayjs from 'dayjs';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useEffect} from 'react';
 import {stationPages} from '~/helpers/EnumHelper';
@@ -23,33 +22,18 @@ import JupiterMPTable from './JupiterMPTable';
 import {Box} from '@mui/material';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 
-const schema = z
-  .object({
-    gid: z.number().optional(),
-    startdate: zodDayjs('Start dato skal være udfyldt'),
-    enddate: zodDayjs('Slut dato skal være udfyldt').default(dayjs('2099-01-01')),
-    elevation: z
-      .number({required_error: 'Pejlepunkt skal være udfyldt'})
-      .optional()
-      .refine((val) => val !== null && val !== undefined, {
-        message: 'Pejlepunkt skal være udfyldt',
-      }),
-    mp_description: z.string().nullish(),
-  })
-  .superRefine(({enddate, startdate}, ctx) => {
-    if (enddate && startdate && enddate.isBefore(startdate)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Slut dato skal være efter start dato',
-        path: ['enddate'],
-      });
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Start dato skal være før slut dato',
-        path: ['startdate'],
-      });
-    }
-  });
+const schema = z.object({
+  gid: z.number().optional(),
+  startdate: zodDayjs('Start dato skal være udfyldt'),
+  elevation: z
+    .number({required_error: 'Pejlepunkt skal være udfyldt'})
+    .optional()
+    .refine((val) => val !== null && val !== undefined, {
+      message: 'Pejlepunkt skal være udfyldt',
+    }),
+  mp_description: z.string().nullish(),
+});
+
 export type WatlevMPFormValues = z.infer<typeof schema>;
 
 export default function ReferenceForm() {

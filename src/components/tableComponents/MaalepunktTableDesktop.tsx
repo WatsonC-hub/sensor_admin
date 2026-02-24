@@ -5,11 +5,7 @@ import {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
-import {
-  checkEndDateIsUnset,
-  convertDateWithTimeStamp,
-  limitDecimalNumbers,
-} from '~/helpers/dateConverter';
+import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
@@ -43,24 +39,17 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
   const columns = useMemo<MRT_ColumnDef<Maalepunkt | MaalepunktTableData>[]>(
     () => [
       {
-        header: 'Dato',
+        header: 'Gældende fra',
         id: 'startdate',
-        accessorFn: (row) =>
-          convertDateWithTimeStamp(row.startdate) +
-          ' - ' +
-          (checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDateWithTimeStamp(row.enddate)),
+        accessorFn: (row) => convertDateWithTimeStamp(row.startdate),
         sortingFn: (a, b) => (a.original.startdate > b.original.startdate ? 1 : -1),
         enableHide: false,
         Cell: ({row}) => {
           const startDate: string = convertDateWithTimeStamp(row.original.startdate);
-          const endDate: string = convertDateWithTimeStamp(row.original.enddate);
 
           return (
             <>
               <span style={{display: 'inline-block'}}>{startDate}</span>
-              {endDate && ' - '}
-              {/* <span style={{display: 'block'}}>-</span> */}
-              <span style={{display: 'inline-block'}}> {endDate}</span>
             </>
           );
         },
