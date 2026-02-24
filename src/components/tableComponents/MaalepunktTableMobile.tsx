@@ -16,10 +16,10 @@ import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
 import {useAppContext} from '~/state/contexts';
-import {Maalepunkt, MaalepunktTableData} from '~/types';
+import {MaalepunktAsDayjs} from '~/types';
 
 interface Props {
-  handleEdit: (maalepunkt: Maalepunkt) => void;
+  handleEdit: (maalepunkt: MaalepunktAsDayjs) => void;
   handleDelete: (gid: number | undefined) => void;
   disabled: boolean;
 }
@@ -41,7 +41,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
 
   const unit = timeseries?.tstype_id === 1 ? ' m' : ` [${timeseries?.unit}]`;
 
-  const columns = useMemo<MRT_ColumnDef<Maalepunkt | MaalepunktTableData>[]>(
+  const columns = useMemo<MRT_ColumnDef<MaalepunktAsDayjs>[]>(
     () => [
       {
         accessorFn: (row) => row,
@@ -74,7 +74,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
             <Box marginLeft={'auto'}>
               <RenderActions
                 handleEdit={() => {
-                  handleEdit(row.original as Maalepunkt);
+                  handleEdit(row.original);
                 }}
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
@@ -89,7 +89,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
     [unit, disabled, handleEdit]
   );
 
-  const options: Partial<MRT_TableOptions<Maalepunkt | MaalepunktTableData>> = {
+  const options: Partial<MRT_TableOptions<MaalepunktAsDayjs>> = {
     localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
@@ -110,7 +110,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
     ),
   };
 
-  const table = useTable<Maalepunkt | MaalepunktTableData>(
+  const table = useTable<MaalepunktAsDayjs>(
     columns,
     data,
     options,

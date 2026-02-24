@@ -23,7 +23,7 @@ import React, {useEffect, useState} from 'react';
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {alertHeight} from '~/consts';
-import {MaalepunktTableData} from '~/types';
+import {BoreholeMaalepunktTableData, MaalepunktTableData} from '~/types';
 import {OmittedKontrol} from '../Boreholeno';
 
 interface BoreholePejlingFormProps {
@@ -31,7 +31,7 @@ interface BoreholePejlingFormProps {
   changeFormData: (key: keyof OmittedKontrol, value: any) => void;
   handleSubmit: () => void;
   resetFormData: () => void;
-  mpData: Array<MaalepunktTableData> | undefined;
+  mpData: Array<BoreholeMaalepunktTableData> | undefined;
   openAddMP: () => void;
   lastMeasurementPump: boolean;
 }

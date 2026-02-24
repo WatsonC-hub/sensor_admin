@@ -20,7 +20,7 @@ import Button from '~/components/Button';
 import {Save} from '@mui/icons-material';
 import {useAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
-import {LatestMeasurement, Maalepunkt} from '~/types';
+import {LatestMeasurement, MaalepunktAsDayjs} from '~/types';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {get} from 'lodash';
 import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
@@ -41,7 +41,7 @@ interface CompoundPejlingProps extends PejlingProps {
   hide: boolean;
   isWaterLevel?: boolean;
   isFlow?: boolean;
-  currentMP?: Maalepunkt | null;
+  currentMP?: MaalepunktAsDayjs | null;
   elevationDiff?: number;
   notPossible: boolean;
   setNotPossible: (notPossible: boolean) => void;
@@ -81,7 +81,7 @@ const CompoundPejling = ({
   const isFlow = timeseries?.tstype_id === 2;
   const [elevationDiff, setElevationDiff] = useState<number | undefined>(undefined);
   const [hide, setHide] = useState<boolean>(false);
-  const [currentMP, setCurrentMP] = useState<Maalepunkt | null>(null);
+  const [currentMP, setCurrentMP] = useState<MaalepunktAsDayjs | null>(null);
   const tstype_id = timeseries?.tstype_id;
   const {
     get: {data: mpData},
@@ -100,11 +100,14 @@ const CompoundPejling = ({
 
     const formattedTimeofMeas = timeofmeas.format('YYYY-MM-DD HH:mm');
     if (isWaterLevel && mpData !== undefined && mpData.length > 0) {
-      const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
-        if (timeofmeas.isSameOrAfter(elem.startdate) && timeofmeas.isBefore(elem.enddate)) {
-          return true;
-        }
-      });
+      const mp = mpData
+        .filter((elem) => {
+          if (timeofmeas.isSameOrAfter(elem.startdate)) {
+            return true;
+          }
+        })
+        .sort((a, b) => b.startdate.diff(a.startdate));
+
       const internalCurrentMP = mp.length > 0 ? mp[0] : null;
       setCurrentMP(internalCurrentMP);
 

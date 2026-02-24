@@ -13,7 +13,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 import {initialWatlevmpData} from './const';
-import {Maalepunkt} from '~/types';
+import {MaalepunktAsDayjs} from '~/types';
 import {zodDayjs} from '~/helpers/schemas';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useEffect} from 'react';
@@ -63,7 +63,7 @@ export default function ReferenceForm() {
     deleteWatlevmp.mutate({path: `${ts_id}/${gid}`});
   };
 
-  const handleEdit = (data: Maalepunkt) => {
+  const handleEdit = (data: MaalepunktAsDayjs) => {
     const {data: parsedData} = schema.safeParse({
       ...data,
       mp_description: data.mp_description ?? '',

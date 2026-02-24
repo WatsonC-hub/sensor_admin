@@ -1,11 +1,19 @@
 import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
-import {Dayjs} from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
-import {Maalepunkt} from '~/types';
+
+export type Maalepunkt = {
+  startdate: string;
+  elevation: number;
+  mp_description: string;
+  gid: number;
+  ts_id: number;
+  userid: string;
+  display_name?: string;
+};
 
 interface MaalepunktBase {
   path: string;
@@ -57,14 +65,17 @@ const maalepunktDelOptions = {
 };
 
 export const getMaalepunktOptions = (ts_id: number | undefined) =>
-  queryOptions<Array<Maalepunkt>, APIError>({
+  queryOptions({
     queryKey: queryKeys.Timeseries.maalepunkt(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Maalepunkt>>(
         `/sensor_field/station/watlevmp/${ts_id}`
       );
 
-      return data;
+      return data.map((mp) => ({
+        ...mp,
+        startdate: dayjs(mp.startdate),
+      }));
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
     enabled: ts_id !== null && ts_id !== undefined,

@@ -13,10 +13,10 @@ import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {useAppContext} from '~/state/contexts';
-import {Maalepunkt, MaalepunktTableData} from '~/types';
+import {MaalepunktAsDayjs} from '~/types';
 
 interface Props {
-  handleEdit: (maalepunkt: Maalepunkt) => void;
+  handleEdit: (maalepunkt: MaalepunktAsDayjs) => void;
   handleDelete: (gid: number | undefined) => void;
   disabled: boolean;
 }
@@ -36,7 +36,7 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
 
   const unit = timeseries?.tstype_id === 1 ? 'Kote [m (DVR90)]' : `Måling [${timeseries?.unit}]`;
 
-  const columns = useMemo<MRT_ColumnDef<Maalepunkt | MaalepunktTableData>[]>(
+  const columns = useMemo<MRT_ColumnDef<MaalepunktAsDayjs>[]>(
     () => [
       {
         header: 'Gældende fra',
@@ -72,18 +72,16 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
     [unit]
   );
 
-  const [tableState, reset] = useStatefullTableAtom<Maalepunkt | MaalepunktTableData>(
-    'MaalepunktTableState'
-  );
+  const [tableState, reset] = useStatefullTableAtom<MaalepunktAsDayjs>('MaalepunktTableState');
 
-  const options: Partial<MRT_TableOptions<Maalepunkt | MaalepunktTableData>> = {
+  const options: Partial<MRT_TableOptions<MaalepunktAsDayjs>> = {
     localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
     enableFullScreenToggle: false,
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          handleEdit(row.original as Maalepunkt);
+          handleEdit(row.original);
         }}
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
@@ -96,7 +94,7 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
     },
   };
 
-  const table = useTable<Maalepunkt | MaalepunktTableData>(
+  const table = useTable<MaalepunktAsDayjs>(
     columns,
     data || [],
     options,
