@@ -6,6 +6,7 @@ import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import GraphManager from '~/features/station/components/GraphManager';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import React, {useEffect} from 'react';
 
 const Algorithms = () => {
   const {isMobile} = useBreakpoints();
@@ -13,6 +14,25 @@ const Algorithms = () => {
     get: {data},
   } = useAlgorithms();
 
+  const [columns, setColumns] = React.useState(6);
+  const [mobileRatio, setMobileRatio] = React.useState(false);
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver((event) => {
+      const width = event[0].contentRect.width;
+      const mobileRatio = width < 800;
+      const size = mobileRatio ? 300 : 480;
+      setMobileRatio(mobileRatio);
+      if (!mobileRatio && data && data.length > 2) {
+        const calculatedColumns = Math.floor(12 / Math.floor(width / size));
+        setColumns(calculatedColumns);
+      }
+    });
+    const main_content = document.getElementById('main_content');
+    if (resizeObserver && main_content !== null) resizeObserver.observe(main_content);
+
+    return () => resizeObserver.disconnect();
+  }, [data]);
   return (
     <>
       <Box display="flex" flexDirection={isMobile ? 'column-reverse' : 'row'}>
@@ -43,16 +63,7 @@ const Algorithms = () => {
           justifyContent={data && data.length < 4 ? 'center' : 'start'}
         >
           {data?.map((algorithm) => (
-            <Grid
-              key={algorithm.name}
-              size={{
-                mobile: 12,
-                tablet: 6,
-                laptop: 4,
-                desktop: 4,
-                xl: 4,
-              }}
-            >
+            <Grid key={algorithm.name} size={mobileRatio || data.length === 1 ? 12 : columns}>
               <AlgorithmCard qaAlgorithm={algorithm} />
             </Grid>
           ))}

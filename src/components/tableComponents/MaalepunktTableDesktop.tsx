@@ -5,11 +5,7 @@ import {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
-import {
-  checkEndDateIsUnset,
-  convertDateWithTimeStamp,
-  limitDecimalNumbers,
-} from '~/helpers/dateConverter';
+import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
@@ -17,10 +13,10 @@ import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {useAppContext} from '~/state/contexts';
-import {Maalepunkt, MaalepunktTableData} from '~/types';
+import {MaalepunktAsDayjs} from '~/types';
 
 interface Props {
-  handleEdit: (maalepunkt: Maalepunkt) => void;
+  handleEdit: (maalepunkt: MaalepunktAsDayjs) => void;
   handleDelete: (gid: number | undefined) => void;
   disabled: boolean;
 }
@@ -40,27 +36,20 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
 
   const unit = timeseries?.tstype_id === 1 ? 'Kote [m (DVR90)]' : `Måling [${timeseries?.unit}]`;
 
-  const columns = useMemo<MRT_ColumnDef<Maalepunkt | MaalepunktTableData>[]>(
+  const columns = useMemo<MRT_ColumnDef<MaalepunktAsDayjs>[]>(
     () => [
       {
-        header: 'Dato',
+        header: 'Gældende fra',
         id: 'startdate',
-        accessorFn: (row) =>
-          convertDateWithTimeStamp(row.startdate) +
-          ' - ' +
-          (checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDateWithTimeStamp(row.enddate)),
+        accessorFn: (row) => convertDateWithTimeStamp(row.startdate),
         sortingFn: (a, b) => (a.original.startdate > b.original.startdate ? 1 : -1),
         enableHide: false,
         Cell: ({row}) => {
           const startDate: string = convertDateWithTimeStamp(row.original.startdate);
-          const endDate: string = convertDateWithTimeStamp(row.original.enddate);
 
           return (
             <>
               <span style={{display: 'inline-block'}}>{startDate}</span>
-              {endDate && ' - '}
-              {/* <span style={{display: 'block'}}>-</span> */}
-              <span style={{display: 'inline-block'}}> {endDate}</span>
             </>
           );
         },
@@ -83,18 +72,16 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
     [unit]
   );
 
-  const [tableState, reset] = useStatefullTableAtom<Maalepunkt | MaalepunktTableData>(
-    'MaalepunktTableState'
-  );
+  const [tableState, reset] = useStatefullTableAtom<MaalepunktAsDayjs>('MaalepunktTableState');
 
-  const options: Partial<MRT_TableOptions<Maalepunkt | MaalepunktTableData>> = {
+  const options: Partial<MRT_TableOptions<MaalepunktAsDayjs>> = {
     localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
     enableFullScreenToggle: false,
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          handleEdit(row.original as Maalepunkt);
+          handleEdit(row.original);
         }}
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
@@ -107,7 +94,7 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
     },
   };
 
-  const table = useTable<Maalepunkt | MaalepunktTableData>(
+  const table = useTable<MaalepunktAsDayjs>(
     columns,
     data || [],
     options,

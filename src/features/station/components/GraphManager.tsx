@@ -33,14 +33,7 @@ import {
   tempHorizontalAtom,
 } from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {
-  BoreholeMeasurement,
-  BoreholeMeasurementAPI,
-  DataToShow,
-  HorizontalLine,
-  MaalepunktTableData,
-  QaGraphLabel,
-} from '~/types';
+import {DataToShow, HorizontalLine, QaGraphLabel} from '~/types';
 
 interface GraphManagerProps {
   dynamicMeasurement?: Array<string | number>;
@@ -70,7 +63,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const [initiateSelect, setInitiateSelect] = useAtom(initiateSelectAtom);
   const levelCorrection = useAtomValue(levelCorrectionAtom);
   const initiateConfirmTimeseries = useAtomValue(initiateConfirmTimeseriesAtom);
-  const [control, setcontrol] = useState<Array<BoreholeMeasurement> | undefined>();
 
   const tempLines = useAtomValue(tempHorizontalAtom);
   const [pageToShow] = useStationPages();
@@ -117,34 +109,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const {
     get: {data: controlData},
   } = usePejling();
-
-  const {data: measurements} = useQuery({
-    queryKey: queryKeys.Borehole.measurementsWithIntake(boreholeno, intakeno),
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<BoreholeMeasurementAPI>>(
-        `/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`
-      );
-      return data.map((e) => ({
-        ...e,
-        timeofmeas: dayjs(e.timeofmeas),
-        pumpstop: e.pumpstop ? dayjs(e.pumpstop) : null,
-      }));
-    },
-    enabled: boreholeno !== undefined && intakeno !== undefined && intakeno !== -1,
-    placeholderData: [],
-  });
-
-  const {data: watlevmp} = useQuery({
-    queryKey: queryKeys.Borehole.watlevmpWithIntake(boreholeno, intakeno),
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<MaalepunktTableData>>(
-        `/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`
-      );
-      return data;
-    },
-    enabled: boreholeno !== undefined && intakeno !== undefined,
-    placeholderData: [],
-  });
 
   const {data: adjustmentData} = useAdjustmentData(ts_id);
 
@@ -258,21 +222,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     };
     return trace;
   });
-
-  const xOurData = control?.map((d) => d.timeofmeas.toISOString());
-  const yOurData = control?.map((d) => (d.waterlevel ? d.waterlevel : null));
-
-  const plotOurData: Partial<PlotData> = {
-    x: xOurData,
-    y: yOurData,
-    name: 'Calypso data',
-    type: 'scattergl',
-    mode: 'markers',
-    marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
-    uid: 'calypso-data',
-  };
-
-  const borehole_data: Array<Partial<PlotData>> = [...jupiterTraces, plotOurData];
 
   const xControl = controlData?.map((d) => d.timeofmeas);
   const yControl = controlData?.map((d) => d.referenced_measurement);
@@ -561,7 +510,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
           },
         ]
       : []),
-    ...(dataToShow?.Jupiter ? borehole_data : []),
+    ...(dataToShow?.Jupiter ? jupiterTraces : []),
     {
       x: dynamicMeasurement ? [dynamicMeasurement?.[0]] : [],
       y: dynamicMeasurement ? [dynamicMeasurement?.[1]] : [],
@@ -625,56 +574,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       ]);
     }
   }, [dynamicMeasurement?.[0]]);
-
-  useEffect(() => {
-    let ctrls = [];
-    if (measurements !== undefined) {
-      if (watlevmp && watlevmp.length > 0) {
-        ctrls = measurements?.map((e) => {
-          const elev = watlevmp.filter((e2) => {
-            return (
-              e.timeofmeas.isSameOrAfter(e2.startdate) && e.timeofmeas.isSameOrBefore(e2.enddate)
-            );
-          })[0].elevation;
-
-          return {
-            ...e,
-            waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
-          };
-        });
-      } else {
-        ctrls = measurements?.map((elem) => {
-          return {...elem, waterlevel: elem.disttowatertable_m};
-        });
-      }
-      setcontrol(ctrls);
-    }
-  }, [watlevmp, measurements !== undefined]);
-
-  useEffect(() => {
-    let ctrls = [];
-    if (measurements !== undefined) {
-      if (watlevmp && watlevmp.length > 0) {
-        ctrls = measurements?.map((e) => {
-          const elev = watlevmp.filter((e2) => {
-            return (
-              e.timeofmeas.isSameOrAfter(e2.startdate) && e.timeofmeas.isSameOrBefore(e2.enddate)
-            );
-          })[0].elevation;
-
-          return {
-            ...e,
-            waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
-          };
-        });
-      } else {
-        ctrls = measurements?.map((elem) => {
-          return {...elem, waterlevel: elem.disttowatertable_m};
-        });
-      }
-      setcontrol(ctrls);
-    }
-  }, [watlevmp, measurements !== undefined]);
 
   if (pageToShow === 'justeringer') {
     const handlePlotlySelected = (eventData: any) => {
