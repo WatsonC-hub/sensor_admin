@@ -29,7 +29,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
 
   const {isMobile} = useBreakpoints();
   const xOurData = ourData?.map((d) => d.timeofmeas.toISOString());
-  const yOurData = ourData?.map((d) => (d.waterlevel ? d.waterlevel : null));
+  const yOurData = ourData?.map((d) => (typeof d.waterlevel == 'number' ? d.waterlevel : null));
 
   const [xDynamicMeasurement, setXDynamicMeasurement] = useState<Array<string>>([]);
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState<Array<number>>([]);

@@ -10,11 +10,11 @@ import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import LastMPCard from '~/pages/field/boreholeno/components/LastMPCard';
 import {useAppContext} from '~/state/contexts';
-import {MaalepunktPost, MaalepunktTableData} from '~/types';
+import {BoreholeMaalepunktPost, MaalepunktTableData} from '~/types';
 
 interface JupiterMPProps {
   lastOurMP: MaalepunktTableData | undefined;
-  watlevmpMutate?: UseMutationResult<void, Error, MaalepunktPost, unknown>;
+  watlevmpMutate?: UseMutationResult<void, Error, BoreholeMaalepunktPost, unknown>;
   setAddMPOpen: (open: boolean | null) => void;
   ts_id?: number;
 }
@@ -77,7 +77,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
         onError: () => toast.error('Der skete en fejl'),
       });
     } else {
-      const payload: MaalepunktPost = {
+      const payload: BoreholeMaalepunktPost = {
         gid: -1,
         startdate: data.startdate,
         enddate: dayjs('2099-01-01'),

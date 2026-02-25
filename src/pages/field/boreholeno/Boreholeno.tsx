@@ -25,10 +25,10 @@ import PejlingMeasurements from '~/pages/field/boreholeno/PejlingMeasurements';
 import {useAppContext} from '~/state/contexts';
 import {
   Kontrol,
-  MaalepunktPost,
+  BoreholeMaalepunktPost,
   BoreholeMeasurement,
   BoreholeMeasurementAPI,
-  MaalepunktTableData,
+  BoreholeMaalepunktTableData,
 } from '~/types';
 
 const dateUpdated = () => {
@@ -125,7 +125,7 @@ const Boreholeno = () => {
   const {data: watlevmp} = useQuery({
     queryKey: queryKeys.Borehole.watlevmpWithIntake(boreholeno, intakeno),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<MaalepunktTableData>>(
+      const {data} = await apiClient.get<Array<BoreholeMaalepunktTableData>>(
         `/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`
       );
       return data;
@@ -213,7 +213,7 @@ const Boreholeno = () => {
     });
   };
   const addOrEditWatlevmp = useMutation({
-    mutationFn: async (data: MaalepunktPost) => {
+    mutationFn: async (data: BoreholeMaalepunktPost) => {
       if (data.gid === -1) {
         await apiClient.post(`/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`, data);
       } else {

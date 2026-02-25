@@ -3,11 +3,11 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import MaalepunktTableDesktop from '~/pages/field/boreholeno/components/tableComponents/MaalepunktTableDesktop';
 import MaalepunktTableMobile from '~/pages/field/boreholeno/components/tableComponents/MaalepunktTableMobile';
 import {useAppContext} from '~/state/contexts';
-import {MaalepunktTableData} from '~/types';
+import {BoreholeMaalepunktTableData} from '~/types';
 import {BoreholeMaalepunkt} from './Boreholeno';
 
 interface MaalepunktTableProps {
-  watlevmp: Array<MaalepunktTableData> | undefined;
+  watlevmp: Array<BoreholeMaalepunktTableData> | undefined;
   handleEdit: (Maalepunkt: BoreholeMaalepunkt) => void;
   handleDelete: (gid: number) => void;
 }

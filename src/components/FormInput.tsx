@@ -99,12 +99,7 @@ const FormInput = <TFieldValues extends FieldValues>({
                   displayEmpty: true,
                   ...slotProps?.select,
                   renderValue: (selected) => {
-                    if (
-                      selected === '' ||
-                      selected === null ||
-                      selected === undefined ||
-                      selected === -1
-                    ) {
+                    if (selected === '' || selected === undefined || selected === null) {
                       return otherProps.placeholder ?? 'Vælg...';
                     }
                     if (selected === 'false' && name === 'block_on_location') return 'tidsserie';
@@ -183,20 +178,16 @@ const FormInput = <TFieldValues extends FieldValues>({
               error={!!errorMessage}
               helperText={errorMessage || warningMessage || (helperText ?? '')}
             >
-              {options !== undefined && options !== null && options.length > 0 ? (
-                options?.map((option) => {
-                  const key =
-                    keyType === 'number' ? Number(Object.keys(option)[0]) : Object.keys(option)[0];
-                  const value = option[key];
-                  return (
-                    <MenuItem key={key} value={key}>
-                      {value as string}
-                    </MenuItem>
-                  );
-                })
-              ) : (
-                <div></div>
-              )}
+              {options?.map((option) => {
+                const key =
+                  keyType === 'number' ? Number(Object.keys(option)[0]) : Object.keys(option)[0];
+                const value = option[key];
+                return (
+                  <MenuItem key={key} value={key}>
+                    {value as string}
+                  </MenuItem>
+                );
+              })}
             </TextField>
           </Wrapper>
         );

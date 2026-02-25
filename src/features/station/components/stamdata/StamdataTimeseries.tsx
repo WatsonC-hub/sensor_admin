@@ -116,10 +116,14 @@ const Intakeno = (
       label="Indtag"
       select
       required
-      infoText="Vælg først et DGU nummer først"
+      infoText={boreholeno ? undefined : 'Vælg først et DGU nummer'}
       disabled={props.disabled || !boreholeno}
       placeholder="Vælg indtag"
-      options={intake_list?.map((item) => ({[item.intakeno]: item.intakeno}))}
+      options={
+        intake_list && intake_list.filter((item) => item.intakeno !== null).length > 0
+          ? intake_list.map((item) => ({[item.intakeno]: item.intakeno}))
+          : [{[-1]: 'Ingen indtag'}]
+      }
       keyType="number"
       fullWidth
       {...props}
