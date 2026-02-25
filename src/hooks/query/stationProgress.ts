@@ -8,6 +8,7 @@ export type ProgressStatus = {
   adgangsforhold: boolean;
   ressourcer: boolean;
   kontakter: boolean;
+  watlevmp: boolean;
   sync: boolean;
   kontrolhyppighed: boolean;
   alarm: boolean;
