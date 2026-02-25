@@ -21,7 +21,6 @@ import {useEffect} from 'react';
 import {stationPages} from '~/helpers/EnumHelper';
 import JupiterMPTable from './JupiterMPTable';
 import {Box} from '@mui/material';
-import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 
 const schema = z
   .object({
@@ -114,7 +113,6 @@ export default function ReferenceForm() {
         />
       )}
       <Box display="flex" justifyContent="flex-end" alignItems="center" gap={2} mt={2}>
-        <UpdateProgressButton loc_id={loc_id} ts_id={ts_id} progressKey="watlevmp" alterStyle />
         <FabWrapper
           icon={<AddCircle />}
           text="Tilføj målepunkt"
