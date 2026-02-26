@@ -64,6 +64,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
   const {
     features: {boreholeAccess},
     superUser,
+    has_own_service,
   } = useUser();
 
   const elasticSearch = (
@@ -114,7 +115,10 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
     setAnchorEl(null);
   };
 
-  const numFilters = getNumberOfNonDefaultFilters(mapFilter, defaultMapFilter(superUser));
+  const numFilters = getNumberOfNonDefaultFilters(
+    mapFilter,
+    defaultMapFilter(superUser, has_own_service)
+  );
   return (
     <>
       <Autocomplete

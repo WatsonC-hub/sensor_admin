@@ -15,13 +15,13 @@ export type MapFilterState = {
   setLocIds: (locIds: (number | string)[]) => void;
 };
 
-const createMapFilterStore = (superUser: boolean) => {
+const createMapFilterStore = (superUser: boolean, has_own_service: boolean) => {
   return createStore<MapFilterState>()(
     persist(
       devtools((set) => ({
         search: '',
         setSearch: (search) => set({search}),
-        filters: {...defaultMapFilter(superUser)},
+        filters: {...defaultMapFilter(superUser, has_own_service)},
         setFilters: (filters) => set({filters}),
         locIds: [],
         setLocIds: (locIds) => set({locIds}),
@@ -32,7 +32,7 @@ const createMapFilterStore = (superUser: boolean) => {
         version: 4,
         merge: (persistedState, currentState) => {
           const merged = merge(
-            {filters: {...defaultMapFilter(superUser)}},
+            {filters: {...defaultMapFilter(superUser, has_own_service)}},
             currentState,
             persistedState
           );
@@ -52,8 +52,8 @@ interface MapFilterContextProviderProps {
 }
 
 export const MapFilterContextProvider = ({children}: MapFilterContextProviderProps) => {
-  const {superUser} = useUser();
-  const [store] = useState(() => createMapFilterStore(superUser));
+  const {superUser, has_own_service} = useUser();
+  const [store] = useState(() => createMapFilterStore(superUser, has_own_service));
 
   return <MapFilterContext.Provider value={store}>{children}</MapFilterContext.Provider>;
 };

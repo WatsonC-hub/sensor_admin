@@ -25,6 +25,7 @@ const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
   const {
     superUser,
     features: {boreholeAccess, iotAccess},
+    has_own_service,
   } = useUser();
   const [filters, setMapFilter, setLocIds] = useMapFilterStore((state) => [
     state.filters,
@@ -43,8 +44,7 @@ const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
 
   const resetFilters = () => {
     const mapFilter: Filter = {
-      ...defaultMapFilter(superUser),
-      showService: superUser ? 'watsonc' : 'kunde',
+      ...defaultMapFilter(superUser, has_own_service),
     };
 
     reset(mapFilter);

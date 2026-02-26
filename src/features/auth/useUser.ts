@@ -8,6 +8,7 @@ type User = {
   user_id: number;
   org_id: number | null;
   superUser: boolean;
+  has_own_service: boolean;
   features: Features;
 };
 
@@ -27,6 +28,7 @@ const defaultUser: UserAccessControl = {
   user_id: -1,
   org_id: null,
   superUser: false,
+  has_own_service: false,
   features: {
     iotAccess: false,
     boreholeAccess: false,
