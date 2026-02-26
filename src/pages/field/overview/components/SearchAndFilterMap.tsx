@@ -64,7 +64,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
   const {
     features: {boreholeAccess},
     superUser,
-    has_own_service,
+    attributes: {has_own_service},
   } = useUser();
 
   const elasticSearch = (

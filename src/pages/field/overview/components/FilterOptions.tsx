@@ -25,7 +25,7 @@ const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
   const {
     superUser,
     features: {boreholeAccess, iotAccess},
-    has_own_service,
+    attributes: {has_own_service},
   } = useUser();
   const [filters, setMapFilter, setLocIds] = useMapFilterStore((state) => [
     state.filters,

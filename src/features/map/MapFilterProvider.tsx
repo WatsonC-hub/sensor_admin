@@ -52,7 +52,10 @@ interface MapFilterContextProviderProps {
 }
 
 export const MapFilterContextProvider = ({children}: MapFilterContextProviderProps) => {
-  const {superUser, has_own_service} = useUser();
+  const {
+    superUser,
+    attributes: {has_own_service},
+  } = useUser();
   const [store] = useState(() => createMapFilterStore(superUser, has_own_service));
 
   return <MapFilterContext.Provider value={store}>{children}</MapFilterContext.Provider>;
