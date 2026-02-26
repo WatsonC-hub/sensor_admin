@@ -57,9 +57,7 @@ const TypeSelect = ({...props}: TypeSelectProps) => {
       label="Tidsserietype"
       select
       placeholder="Vælg type"
-      options={timeseries_types
-        ?.filter((type) => type.tstype_id !== 0)
-        .map((type) => ({[type.tstype_id]: type.tstype_name}))}
+      options={timeseries_types?.map((type) => ({[type.tstype_id]: type.tstype_name}))}
       keyType="number"
       fullWidth
       {...props}
@@ -112,10 +110,15 @@ const Intakeno = ({...props}: IntakenoProps) => {
       name={`intakeno`}
       label="Indtag"
       select
-      infoText="Vælg først et DGU nummer for at hente indtag"
+      required
+      infoText={boreholeno ? undefined : 'Vælg først et DGU nummer'}
       disabled={props.disabled || !boreholeno}
       placeholder="Vælg indtag"
-      options={intake_list?.map((item) => ({[item.intakeno]: item.intakeno}))}
+      options={
+        intake_list && intake_list.filter((item) => item.intakeno !== null).length > 0
+          ? intake_list.map((item) => ({[item.intakeno]: item.intakeno}))
+          : [{[-1]: 'Ingen indtag'}]
+      }
       keyType="number"
       fullWidth
       {...props}

@@ -59,18 +59,13 @@ const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
           label="Målepunkt [m DVR90]"
           required
           type="number"
-          gridSizes={defaultValues?.gid !== undefined ? 12 : undefined}
           slotProps={{
             input: {
               endAdornment: <Typography variant="body2">m</Typography>,
             },
           }}
         />
-        <Form.DateTime
-          name="startdate"
-          label={defaultValues?.gid !== undefined ? 'Start dato' : 'Dato'}
-        />
-        {defaultValues?.gid !== undefined && <Form.DateTime name="enddate" label="Slut dato" />}
+        <Form.DateTime name="startdate" label={'Gældende fra'} />
 
         <Grid2 size={12}>
           <Form.Controller
