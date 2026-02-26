@@ -25,13 +25,13 @@ interface Filter {
   projects: Project[];
 }
 
-const defaultMapFilter = (superUser: boolean): Required<Filter> => ({
+const defaultMapFilter = (superUser: boolean, has_own_service: boolean): Required<Filter> => ({
   freeText: '',
   borehole: {
     showHasControlProgram: true,
     showNoControlProgram: true,
   },
-  showService: superUser ? 'watsonc' : 'kunde',
+  showService: superUser ? 'watsonc' : has_own_service ? 'kunde' : 'begge',
   notificationTypes: [],
   locationFilter: locationFilterOptions
     .filter(
