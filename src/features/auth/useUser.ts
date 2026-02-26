@@ -8,7 +8,12 @@ type User = {
   user_id: number;
   org_id: number | null;
   superUser: boolean;
+  attributes: Attributes;
   features: Features;
+};
+
+type Attributes = {
+  has_own_service: boolean;
 };
 
 type Features = {
@@ -27,6 +32,7 @@ const defaultUser: UserAccessControl = {
   user_id: -1,
   org_id: null,
   superUser: false,
+
   features: {
     iotAccess: false,
     boreholeAccess: false,
@@ -37,6 +43,9 @@ const defaultUser: UserAccessControl = {
     routesAndParking: false,
     alarms: false,
     stationProgress: false,
+  },
+  attributes: {
+    has_own_service: false,
   },
   advancedTaskPermission: false,
   simpleTaskPermission: false,
