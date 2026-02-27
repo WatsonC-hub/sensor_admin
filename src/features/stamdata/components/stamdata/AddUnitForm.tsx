@@ -25,7 +25,7 @@ import OwnDatePicker from '~/components/OwnDatePicker';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {useAppContext} from '~/state/contexts';
-import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
+import {UnitPost, useUnit} from '~/features/stamdata/api/useUnit';
 import {AddUnit} from '~/features/station/schema';
 
 interface AddUnitFormProps {
@@ -75,9 +75,27 @@ export default function AddUnitForm({
     ...new Set(
       availableUnits
         ?.filter((unit) => unit.sensortypeid === tstype_id)
-        ?.map((x) => (x.calypso_id === 0 ? x.terminal_id.toString() : x.calypso_id.toString()))
+        ?.map((x) => (x.calypso_id === 0 ? x.terminal_id.toString() : x.calypso_id))
     ),
-  ].sort();
+  ]
+    .sort((a, b) => {
+      if (typeof a == 'number' && typeof b == 'number') {
+        return a - b;
+      } else if (typeof a == 'string' && typeof b == 'string') {
+        if (a < b) {
+          return -1;
+        }
+        if (a > b) {
+          return 1;
+        }
+      } else if (typeof a == 'string') {
+        return 1;
+      } else {
+        return -1;
+      }
+      return 0;
+    })
+    .map((id) => id.toString());
 
   const sensorsForCalyspoId = (id: string | number) =>
     availableUnits?.filter(
@@ -251,7 +269,7 @@ export default function AddUnitForm({
                 <MenuItem value="">Vælg Sensor ID</MenuItem>
                 {sensorsForCalyspoId(unitData.calypso_id)?.map((option) => (
                   <MenuItem key={option.unit_uuid} value={option.unit_uuid}>
-                    {option.signal_id} - {option.sensortypename}
+                    {option.channel} - {option.sensortypename}
                   </MenuItem>
                 ))}
               </TextField>

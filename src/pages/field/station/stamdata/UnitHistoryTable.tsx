@@ -5,7 +5,7 @@ import {
   MRT_ExpandButton,
   MRT_TableOptions,
 } from 'material-react-table';
-import React, {useEffect, useMemo} from 'react';
+import React, {useMemo} from 'react';
 import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import usePermissions from '~/features/permissions/api/usePermissions';
@@ -16,29 +16,34 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
-import {useAppContext} from '~/state/contexts';
 import SaveIcon from '@mui/icons-material/Save';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {renderDetailStyle} from '~/consts';
 import {editUnitSchema} from '~/features/station/schema';
+import {useUnitMutations} from '~/features/stamdata/api/useUnit';
+import DeleteAlert from '~/components/DeleteAlert';
 
 interface UnitHistoryTableProps {
   submit: (data: any) => void;
   setSelectedUnit: (ugid: number | '') => void;
+  ts_id: number;
+  loc_id: number;
 }
 
-const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
-  const {loc_id} = useAppContext(['loc_id']);
+const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryTableProps) => {
   const {data} = useUnitHistory();
   const {
     handleSubmit,
     reset,
     formState: {isDirty},
   } = useFormContext();
+  const {deleteUnit} = useUnitMutations(ts_id);
   const {isMobile} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
+  const [deleteAlertOpen, setDeleteAlertOpen] = React.useState(false);
+  const [gid, setGid] = React.useState<number | undefined>(undefined);
 
   const resetToDefault = (unit: UnitHistory) => {
     const {data: parsedData} = editUnitSchema.safeParse({
@@ -134,7 +139,10 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
                   resetToDefault(row.original);
                   table.setEditingRow(row);
                 }}
-                onDeleteBtnClick={() => {}}
+                onDeleteBtnClick={() => {
+                  setGid(row.original.gid);
+                  setDeleteAlertOpen(true);
+                }}
                 size="small"
               />
             </Box>
@@ -156,6 +164,10 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
             setSelectedUnit(row.original.gid);
             resetToDefault(row.original);
             table.setEditingRow(row);
+          }}
+          onDeleteBtnClick={() => {
+            setGid(row.original.gid);
+            setDeleteAlertOpen(true);
           }}
         />
       ),
@@ -220,6 +232,9 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
               Sensor ID:
             </Typography>
             <Typography variant="body2" fontWeight={'bold'}>
+              Signal ID:
+            </Typography>
+            <Typography variant="body2" fontWeight={'bold'}>
               Sensor:
             </Typography>
           </Box>
@@ -236,6 +251,7 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
             <Typography variant="body2">{row.original.terminal_id}</Typography>
             <Typography variant="body2">{row.original.terminal_type}</Typography>
             <Typography variant="body2">{row.original.sensor_id}</Typography>
+            <Typography variant="body2">{row.original.signal_id}</Typography>
             <Typography variant="body2">{row.original.sensorinfo}</Typography>
           </Box>
         </Box>
@@ -274,13 +290,26 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
     MergeType.RECURSIVEMERGE
   );
 
-  useEffect(() => {}, [isMobile]);
-
   return (
     <Box key={isMobile ? 'mobile' : 'desktop'}>
       <MaterialReactTable
         key={isMobile ? 'mobile' : 'desktop'}
         table={isMobile ? tableMobile : tableDesktop}
+      />
+      <DeleteAlert
+        measurementId={gid}
+        dialogOpen={deleteAlertOpen}
+        setDialogOpen={setDeleteAlertOpen}
+        title="Er du sikker på at slette udstyr historikken?"
+        onOkDelete={() => {
+          if (gid)
+            deleteUnit.mutate(`${ts_id}/${gid}`, {
+              onSuccess: () => {
+                setGid(undefined);
+                setDeleteAlertOpen(false);
+              },
+            });
+        }}
       />
     </Box>
   );
