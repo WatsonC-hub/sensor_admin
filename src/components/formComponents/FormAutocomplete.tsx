@@ -4,7 +4,11 @@ import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 import {FormContext} from './const';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '../Autocomplete';
 
-type FormAutocompleteProps<T extends FieldValues, K extends object, M extends boolean = false> = {
+export type FormAutocompleteProps<
+  T extends FieldValues,
+  K extends object,
+  M extends boolean = false,
+> = {
   name: Path<T>;
   gridSizes?: GridBaseProps['size'];
   valueKey: keyof K;

@@ -2,7 +2,7 @@ import {Watlevmp} from '~/features/station/schema';
 import {AddUnitType} from './forms/UnitForm';
 import {AccessTable, ContactTable, Group} from '~/types';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
-import {SyncFormData} from './forms/SyncForm';
+import {LocationMetadata} from '~/hooks/query/useMetadata';
 
 /*  FORMSTATE */
 export type ControlSettingsFormState = {
@@ -12,8 +12,12 @@ export type ControlSettingsFormState = {
 };
 
 export type SyncFormState = {
-  owner_cvr?: number;
-  owner_name?: string;
+  dmp?:
+    | {
+        owner_cvr: number;
+        owner_name: string;
+      }
+    | false;
   jupiter?: boolean;
 };
 
@@ -31,12 +35,7 @@ export type CreateLocationData = {
   groups?: Array<Group>;
 };
 
-type AddTimeseriesLocationData = {
-  loc_id: number;
-  loctype_id: number;
-  boreholeno?: string;
-  loc_name: string;
-};
+type AddTimeseriesLocationData = LocationMetadata;
 
 type VisibilityFormState = {
   requires_auth: boolean;
@@ -93,7 +92,7 @@ export type TimeseriesPayload = {
   meta?: TimeseriesMeta;
   watlevmp?: Watlevmp;
   control_settings?: ControlSettingsFormState;
-  sync?: SyncFormData;
+  sync?: SyncFormState;
   unit?: AddUnitType;
 };
 

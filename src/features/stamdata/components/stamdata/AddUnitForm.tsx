@@ -80,9 +80,27 @@ export default function AddUnitForm({
     ...new Set(
       availableUnits
         ?.filter((unit) => unit.sensortypeid === tstype_id)
-        ?.map((x) => (x.calypso_id === 0 ? x.terminal_id.toString() : x.calypso_id.toString()))
+        ?.map((x) => (x.calypso_id === 0 ? x.terminal_id.toString() : x.calypso_id))
     ),
-  ].sort();
+  ]
+    .sort((a, b) => {
+      if (typeof a == 'number' && typeof b == 'number') {
+        return a - b;
+      } else if (typeof a == 'string' && typeof b == 'string') {
+        if (a < b) {
+          return -1;
+        }
+        if (a > b) {
+          return 1;
+        }
+      } else if (typeof a == 'string') {
+        return 1;
+      } else {
+        return -1;
+      }
+      return 0;
+    })
+    .map((val) => (typeof val == 'number' ? val.toString() : val));
 
   const sensorsForCalyspoId = (id: string | number) =>
     availableUnits?.filter(

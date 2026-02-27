@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
 import {useUnit} from '~/features/stamdata/api/useAddUnit';
 import FormInput, {FormInputProps} from '~/components/FormInput';
@@ -6,9 +6,12 @@ import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
 import {toast} from 'react-toastify';
 import CaptureDialog from '~/components/CaptureDialog';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
-import {IconButton, InputAdornment} from '@mui/material';
+import {Box, IconButton} from '@mui/material';
 import dayjs from 'dayjs';
 import {AddUnitType} from '~/features/createStation/forms/UnitForm';
+import FormAutocomplete, {
+  FormAutocompleteProps,
+} from '~/components/formComponents/FormAutocomplete';
 
 type StamdataUnitProps = {
   children: React.ReactNode;
@@ -17,80 +20,80 @@ type StamdataUnitProps = {
 
 type UnitContextType = {
   tstype_id: number | undefined;
+  ids: {id: string}[];
 };
 
 const UnitContext = React.createContext<UnitContextType>({
   tstype_id: undefined,
+  ids: [],
 });
 
 const StamdataUnit = ({children, tstype_id}: StamdataUnitProps) => {
-  return <UnitContext.Provider value={{tstype_id}}>{children}</UnitContext.Provider>;
-};
-
-type BaseInputProps = Omit<FormInputProps<AddUnitType>, 'name'>;
-
-const CalypsoID = ({required, ...rest}: BaseInputProps) => {
   const {
     get: {data: availableUnits},
   } = useUnit();
-  const {tstype_id} = React.useContext(UnitContext);
-  const {setValue} = useFormContext();
-  const ids = Array.from(
-    new Set(
+  const ids = [
+    ...new Set(
       availableUnits
-        ?.filter((unit) => unit.sensortypeid === tstype_id)
-        ?.map((unit) => (unit.calypso_id == 0 ? unit.terminal_id : unit.calypso_id))
-    )
-  );
+        ?.filter((unit) => unit.sensortypeid === tstype_id || tstype_id == undefined)
+        ?.map((x) => (x.calypso_id === 0 ? x.terminal_id.toString() : x.calypso_id))
+    ),
+  ]
+    .sort((a, b) => {
+      if (typeof a == 'number' && typeof b == 'number') {
+        return a - b;
+      } else if (typeof a == 'string' && typeof b == 'string') {
+        if (a < b) {
+          return -1;
+        }
+        if (a > b) {
+          return 1;
+        }
+      } else if (typeof a == 'string') {
+        return 1;
+      } else {
+        return -1;
+      }
+      return 0;
+    })
+    .map((val) => ({
+      id: typeof val == 'number' ? val.toString() : val,
+    }));
+  return <UnitContext.Provider value={{tstype_id, ids}}>{children}</UnitContext.Provider>;
+};
+
+type BaseInputProps = Omit<FormInputProps<AddUnitType>, 'name'>;
+type AutocompleteInputProps = Omit<
+  FormAutocompleteProps<AddUnitType, {id: string}, false>,
+  'name' | 'labelKey' | 'valueKey' | 'options'
+>;
+
+const CalypsoID = ({textFieldsProps, ...rest}: AutocompleteInputProps) => {
+  const {ids} = React.useContext(UnitContext);
 
   return (
-    <FormInput
-      name="calypso_id"
-      label="Calypso ID"
-      select
-      options={ids.map((id) => {
-        return {
-          [id]: id.toString(),
-        };
-      })}
-      required={required}
-      onChangeCallback={(value) => {
-        const calypso_id = (value as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)
-          .target.value;
-        const unit = Array.from(
-          new Set(
-            availableUnits?.filter(
-              (unit) =>
-                unit.sensortypeid === tstype_id &&
-                (unit.calypso_id.toString() === calypso_id || unit.terminal_id === calypso_id)
-            )
-          )
-        );
-
-        if (unit.length === 1) {
-          setValue('unit_uuid', unit[0].unit_uuid);
-          setValue('startdate', dayjs());
-        } else {
-          setValue('unit_uuid', '');
-          setValue('startdate', dayjs());
-        }
-      }}
-      slotProps={{
-        input: {
-          endAdornment: (
-            <InputAdornment position="start" sx={{pr: 1}}>
-              <StamdataUnit.Scanner />
-            </InputAdornment>
-          ),
-        },
-      }}
-      {...rest}
-    />
+    <Box display="flex" alignItems="center" width="100%">
+      <FormAutocomplete<AddUnitType, {id: string}, false>
+        labelKey="id"
+        name="calypso_id"
+        valueKey="id"
+        fullWidth
+        gridSizes={12}
+        options={ids}
+        textFieldsProps={{
+          label: 'Calypso ID',
+          placeholder: 'Søg efter calypso id',
+          ...textFieldsProps,
+        }}
+        {...rest}
+      />
+      <StamdataUnit.Scanner onChangeCallback={rest.onChangeCallback} />
+    </Box>
   );
 };
 
 const SensorID = ({required, ...rest}: BaseInputProps) => {
-  const {watch} = useFormContext();
+  const {watch, setValue} = useFormContext();
   const {tstype_id} = React.useContext(UnitContext);
   const {
     get: {data: availableUnits},
@@ -108,11 +111,19 @@ const SensorID = ({required, ...rest}: BaseInputProps) => {
     )
   );
 
+  useEffect(() => {
+    if (uniqueAvailableUnits.length == 1) {
+      setValue('unit_uuid', uniqueAvailableUnits[0].unit_uuid, {shouldValidate: true});
+      setValue('startdate', dayjs());
+    }
+  }, [calypso_id]);
+
   return (
     <FormInput
       name="unit_uuid"
       label="Sensor ID"
       select
+      placeholder="Vælg sensor id"
       options={uniqueAvailableUnits?.map((unit) => {
         return {
           [unit.unit_uuid]: `${unit.signal_id} - ${unit.sensortypename}`,
@@ -124,21 +135,17 @@ const SensorID = ({required, ...rest}: BaseInputProps) => {
   );
 };
 
-const Scanner = () => {
+interface ScannerProps {
+  onChangeCallback?: (option: {id: string} | null) => void;
+}
+
+const Scanner = ({onChangeCallback}: ScannerProps) => {
   const [openCaptureDialog, setOpenCaptureDialog] = React.useState(false);
   const {setValue} = useFormContext();
-  const {tstype_id} = React.useContext(UnitContext);
+  const {tstype_id, ids} = React.useContext(UnitContext);
   const {
     get: {data: availableUnits},
   } = useUnit();
-
-  const ids = Array.from(
-    new Set(
-      availableUnits
-        ?.filter((unit) => unit.sensortypeid === tstype_id)
-        ?.map((unit) => (unit.calypso_id == 0 ? unit.terminal_id : unit.calypso_id))
-    )
-  );
 
   return (
     <>
@@ -156,7 +163,7 @@ const Scanner = () => {
               return;
             }
 
-            if (!ids.includes(calypso_id.toString())) {
+            if (!ids.find((val) => val.id == calypso_id.toString())) {
               toast.error(`Ingen tilgængelige enheder med Calypso ID: ${calypso_id}`);
               setOpenCaptureDialog(false);
               return;
@@ -164,12 +171,12 @@ const Scanner = () => {
             const unit = Array.from(
               new Set(
                 availableUnits?.filter(
-                  (unit) =>
-                    unit.sensortypeid === tstype_id &&
-                    (unit.calypso_id === calypso_id || unit.terminal_id === calypso_id.toString())
+                  (unit) => unit.sensortypeid === tstype_id && unit.calypso_id === calypso_id
                 )
               )
             );
+
+            if (onChangeCallback) onChangeCallback({id: calypso_id.toString()});
             setValue('calypso_id', calypso_id.toString());
 
             if (unit.length === 1) {

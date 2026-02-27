@@ -29,15 +29,16 @@ const UnitSection = ({uuid, tstype_id}: UnitStepProps) => {
     get: {data: availableUnits},
   } = useUnit();
 
-  const uniqueUnit = availableUnits?.find(
-    (data) =>
-      data.sensortypeid === tstype_id &&
-      (data.calypso_id.toString() === unit?.calypso_id || data.terminal_id === unit?.calypso_id)
-  );
+  const uniqueUnit = availableUnits?.find((data) => data.unit_uuid == unit?.unit_uuid);
 
   const sensor_id = `${uniqueUnit?.signal_id} - ${uniqueUnit?.sensor_id} (${uniqueUnit?.sensortypename})`;
 
   const show = unit !== undefined;
+
+  const handleCloseDialog = () => {
+    deleteState(`timeseries.${uuid}.unit`);
+    setOpen(false);
+  };
 
   if (show)
     return (
@@ -91,19 +92,12 @@ const UnitSection = ({uuid, tstype_id}: UnitStepProps) => {
               }
             />
           )}
-          <Dialog
-            open={open}
-            onClose={() => {
-              setOpen(false);
-            }}
-          >
+          <Dialog open={open} onClose={handleCloseDialog}>
             <DialogTitle>Tilføj udstyr</DialogTitle>
             <DialogContent>
               <UnitForm
                 unit={unit}
-                onClose={() => {
-                  setOpen(false);
-                }}
+                onClose={handleCloseDialog}
                 setValues={(values) => {
                   setState(`timeseries.${uuid}.unit`, values);
                   setOpen(false);

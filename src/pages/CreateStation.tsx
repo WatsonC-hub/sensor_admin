@@ -66,8 +66,8 @@ const CreateStation = () => {
             >
               <Typography variant="h5" textAlign={'center'} fontWeight={'bold'}>
                 {state?.loc_id === undefined
-                  ? 'Opret ny station'
-                  : `Tilføj til station: ${state.loc_name}`}
+                  ? 'Oprettelse'
+                  : `Tilføj tidsserier til: ${state.loc_name}`}
               </Typography>
             </TooltipWrapper>
           </Box>

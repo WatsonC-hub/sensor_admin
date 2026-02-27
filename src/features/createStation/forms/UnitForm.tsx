@@ -36,9 +36,7 @@ const UnitForm = ({setValues, unit, tstype_id, onClose}: Props) => {
       <StamdataUnit tstype_id={tstype_id}>
         <Grid2 container size={12} spacing={1} direction={'column'}>
           <Grid2 size={12}>
-            <Box display="flex" alignItems="center" height="100%" gap={1}>
-              <StamdataUnit.CalypsoID required />
-            </Box>
+            <StamdataUnit.CalypsoID />
           </Grid2>
           <Grid2 size={12}>
             <StamdataUnit.SensorID required />

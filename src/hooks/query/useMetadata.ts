@@ -27,9 +27,9 @@ export type Metadata = {
   projectno: string | undefined;
   batteriskift: string;
   calculated: boolean;
-  boreholeno: string;
+  boreholeno: string | null;
   suffix: string | undefined;
-  intakeno: number;
+  intakeno: number | null;
   groups: Group[];
   unit: string;
   prefix: string | null;
@@ -42,7 +42,7 @@ export type Metadata = {
   is_customer_service: boolean;
 };
 
-type LocationMetadata = {
+export type LocationMetadata = {
   loc_id: number;
   boreholeno: string | undefined;
   loc_name: string;
@@ -64,7 +64,7 @@ type LocationMetadata = {
     calculated: boolean;
     prefix: string | null;
     tstype_name: string;
-    intakeno: number;
+    intakeno: number | null;
     timeseries_calypso_id?: number | null;
     unit_uuid: string | null;
   }>;

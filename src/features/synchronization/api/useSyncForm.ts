@@ -1,16 +1,26 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useQuery} from '@tanstack/react-query';
-import {DefaultValues, FieldValues, useForm} from 'react-hook-form';
+import {DefaultValues, useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
 
 const syncSchema = z.object({
-  owner_cvr: z.number().optional(),
-  owner_name: z.union([z.string(), z.literal('')]).optional(),
-  jupiter: z.boolean().optional(),
+  dmp: z
+    .union([
+      z.object({
+        owner_cvr: z.number({
+          required_error: 'Data ejer skal vælges',
+          message: 'Data ejer skal vælges',
+        }),
+        owner_name: z.union([z.string(), z.literal('')]),
+      }),
+      z.literal(false),
+    ])
+    .nullish(),
+  jupiter: z.boolean().nullish(),
 });
 
-export type SyncFormValues = z.infer<typeof syncSchema>;
+export type SyncFormSchema = z.infer<typeof syncSchema>;
 
 type SyncContext = {
   tstype_id?: number;
@@ -18,19 +28,13 @@ type SyncContext = {
   ts_id?: number;
 };
 
-type SyncFormProps<T extends FieldValues> = {
-  defaultValues?: DefaultValues<T>;
-  values?: SyncFormValues;
+type SyncFormProps = {
+  defaultValues?: DefaultValues<SyncFormSchema>;
+  values?: SyncFormSchema;
   context: SyncContext;
-  schema?: z.ZodType<T>;
 };
 
-const useSyncForm = <T extends FieldValues>({
-  defaultValues,
-  values,
-  context,
-  schema,
-}: SyncFormProps<T>) => {
+const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
   const isJupiterType = [1, 11, 12, 16].includes(context?.tstype_id || 0);
   const isBorehole = context?.loctype_id === 9;
 
@@ -58,30 +62,12 @@ const useSyncForm = <T extends FieldValues>({
   });
 
   const owners: Array<{cvr: string; name: string}> = result.data;
-  const owner = owners?.find((owner) => owner.cvr === values?.owner_cvr?.toString());
 
-  let refined = schema;
-  if (isDmpAllowed) {
-    refined = schema?.refine(
-      (data) => {
-        return data.owner_cvr !== undefined && data.owner_cvr !== null;
-      },
-      {
-        path: ['owner_cvr'],
-        message: 'Data ejer skal være udfyldt',
-      }
-    );
-  }
-
-  const syncFormMethods = useForm<T>({
-    resolver: zodResolver(refined ? refined : syncSchema),
+  const syncFormMethods = useForm<SyncFormSchema>({
+    resolver: zodResolver(syncSchema),
     defaultValues: defaultValues,
     mode: 'onTouched',
-    values: {
-      ...values,
-      owner_name: owner?.name,
-      owner_cvr: values?.owner_cvr ? Number(values.owner_cvr) : undefined,
-    } as unknown as T,
+    values: values,
   });
 
   return {syncFormMethods, isDmpAllowed, canSyncJupiter, owners};

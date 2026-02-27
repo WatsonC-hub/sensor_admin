@@ -12,6 +12,8 @@ import {apiClient} from '~/apiClient';
 import {Tstype} from '~/types';
 import {useQuery} from '@tanstack/react-query';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {useUser} from '~/features/auth/useUser';
+import {Router, Timeline} from '@mui/icons-material';
 
 function TimeseriesList() {
   const [unitDialog, setUnitDialog] = useState(false);
@@ -21,6 +23,10 @@ function TimeseriesList() {
     state.deleteState,
     state.removeSubmitter,
   ]);
+
+  const {
+    features: {iotAccess},
+  } = useUser();
 
   const add = () => {
     const uuid = crypto.randomUUID();
@@ -56,14 +62,18 @@ function TimeseriesList() {
     }
   };
 
+  console.log('Ttimeseries', timeseries);
+
   return (
     <>
       <Box display="flex" gap={1} flexWrap="wrap" alignSelf={'center'}>
-        <Button bttype="primary" onClick={() => add()}>
+        {iotAccess && (
+          <Button bttype="primary" onClick={() => setUnitDialog(true)} startIcon={<Router />}>
+            Tilføj fra udstyr
+          </Button>
+        )}
+        <Button bttype="tertiary" onClick={() => add()} startIcon={<Timeline />}>
           Tilføj tidsserie
-        </Button>
-        <Button bttype="primary" onClick={() => setUnitDialog(true)}>
-          Tilføj fra udstyr
         </Button>
       </Box>
       {Object.entries(timeseries ?? {})?.map(([id], index) => {
@@ -83,32 +93,34 @@ function TimeseriesList() {
           </FormFieldset>
         );
       })}
-      <UnitDialog
-        open={unitDialog}
-        onClose={() => setUnitDialog(false)}
-        onAddUnitList={(units) => {
-          const transformedUnit: TransformedUnit[] = units.map((unit) => {
-            const transformedUnit: AddUnitType = {
-              unit_uuid: unit.unit_uuid,
-              startdate: dayjs(),
-              calypso_id: unit.calypso_id.toString(),
-            };
-            return {
-              ...transformedUnit,
-              tstype_id: unit.sensortypeid,
-            };
-          });
+      {unitDialog && (
+        <UnitDialog
+          open={unitDialog}
+          onClose={() => setUnitDialog(false)}
+          onAddUnitList={(units) => {
+            const transformedUnit: TransformedUnit[] = units.map((unit) => {
+              const transformedUnit: AddUnitType = {
+                unit_uuid: unit.unit_uuid,
+                startdate: dayjs(),
+                calypso_id: unit.calypso_id.toString(),
+              };
+              return {
+                ...transformedUnit,
+                tstype_id: unit.sensortypeid,
+              };
+            });
 
-          transformedUnit.forEach((unit) => {
-            const uuid = add();
-            setState(`timeseries.${uuid}.meta`, {tstype_id: unit.tstype_id});
-            setState(`timeseries.${uuid}.unit`, unit);
+            transformedUnit.forEach((unit) => {
+              const uuid = add();
+              setState(`timeseries.${uuid}.meta`, {tstype_id: unit.tstype_id});
+              setState(`timeseries.${uuid}.unit`, unit);
 
-            if (unit.tstype_id === 1) setState(`timeseries.${uuid}.watlevmp`, {});
-            setControlSettings(unit.tstype_id, uuid);
-          });
-        }}
-      />
+              if (unit.tstype_id === 1) setState(`timeseries.${uuid}.watlevmp`, {});
+              setControlSettings(unit.tstype_id, uuid);
+            });
+          }}
+        />
+      )}
     </>
   );
 }

@@ -6,19 +6,18 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
-  IconButton,
+  Grid2,
   List,
   Typography,
 } from '@mui/material';
-import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 
 import React, {useState} from 'react';
-import ExtendedAutocomplete from '~/components/Autocomplete';
 import {Unit, useUnit} from '~/features/stamdata/api/useAddUnit';
-import CaptureDialog from '~/components/CaptureDialog';
-import {toast} from 'react-toastify';
-import Button from '~/components/Button';
 
+import Button from '~/components/Button';
+import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
+import useUnitForm from '~/features/station/api/useUnitForm';
+import {FormProvider} from 'react-hook-form';
 type UnitDialogProps = {
   open: boolean;
   onClose: () => void;
@@ -26,49 +25,41 @@ type UnitDialogProps = {
 };
 
 const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
-  const [selectedUnit, setSelectedUnit] = React.useState<Unit | null>(null);
   const [selectedSensors, setSelectedSensors] = React.useState<Unit[]>([]);
   const [checkedSensors, setCheckedSensors] = useState<Unit[]>([]);
-  const [openCaptureDialog, setOpenCaptureDialog] = useState(false);
+
   const {
     get: {data: availableUnits},
   } = useUnit();
 
-  const uniqueUnitsByCalypsoId = () => {
-    const uniqueMap: {[key: string]: Unit} = {};
-    availableUnits?.forEach((unit) => {
-      if (!uniqueMap[unit.calypso_id == 0 ? unit.terminal_id : unit.calypso_id]) {
-        uniqueMap[unit.calypso_id == 0 ? unit.terminal_id : unit.calypso_id] = unit;
-      }
-    });
-    return Object.values(uniqueMap);
-  };
+  const formMethods = useUnitForm<{calypso_id: string}>({
+    mode: 'Add',
+  });
 
-  const sensorsForCalyspoId = (id: string | number) =>
-    availableUnits?.filter(
-      (unit) => unit.calypso_id.toString() === id.toString() || unit.terminal_id === id
-    );
-
-  const handleCalypsoIdChange = (option: Unit | null) => {
-    if (!option) {
-      setSelectedUnit(null);
+  const handleCalypsoIdChange = (option: {id: string} | null) => {
+    if (option == null) {
+      setCheckedSensors([]);
       setSelectedSensors([]);
       return;
     }
 
-    setSelectedUnit(option);
-
-    const sensors = sensorsForCalyspoId(option.calypso_id);
-
+    const sensors = availableUnits
+      ?.filter((unit) => unit.calypso_id.toString() === option.id || unit.terminal_id === option.id)
+      .sort((a, b) => {
+        if (a.sensor_id > b.sensor_id) {
+          return 1;
+        }
+        if (a.sensor_id < b.sensor_id) {
+          return -1;
+        }
+        return a.signal_id - b.signal_id;
+      });
     setSelectedSensors(sensors || []);
     setCheckedSensors(sensors || []);
   };
 
   const handleClose = () => {
     onClose();
-    setSelectedSensors([]);
-    setCheckedSensors([]);
-    setSelectedUnit(null);
   };
 
   return (
@@ -76,34 +67,13 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Tilføj tidsserier på baggrund af udstyr</DialogTitle>
         <DialogContent>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <ExtendedAutocomplete<Unit, false>
-              id="unit_uuid"
-              labelKey="calypso_id"
-              textFieldsProps={{label: 'Calypso ID', placeholder: 'Søg Calypso ID'}}
-              getOptionLabel={(option) =>
-                option.calypso_id == 0
-                  ? option.terminal_id.toString()
-                  : option.calypso_id.toString()
-              }
-              isOptionEqualToValue={(option, value) => option.unit_uuid === value.unit_uuid}
-              options={uniqueUnitsByCalypsoId() || []}
-              selectValue={selectedUnit}
-              onChange={handleCalypsoIdChange}
-              renderOption={(props, option) => {
-                return (
-                  <li {...props} key={option.unit_uuid}>
-                    <Typography>
-                      {option.calypso_id == 0 ? option.terminal_id : option.calypso_id}
-                    </Typography>
-                  </li>
-                );
-              }}
-            />
-            <IconButton onClick={() => setOpenCaptureDialog(true)} size="large">
-              <QrCodeScannerIcon />
-            </IconButton>
-          </Box>
+          <FormProvider {...formMethods}>
+            <StamdataUnit tstype_id={undefined}>
+              <Grid2 container>
+                <StamdataUnit.CalypsoID onChangeCallback={handleCalypsoIdChange} />
+              </Grid2>
+            </StamdataUnit>
+          </FormProvider>
 
           <Box>
             {selectedSensors.length > 0 && (
@@ -135,7 +105,7 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
                       }
                       label={
                         <Typography>
-                          {sensor.channel} - {sensor.sensor_id} ({sensor.sensortypename})
+                          {sensor.signal_id} - {sensor.sensor_id} ({sensor.sensortypename})
                         </Typography>
                       }
                     />
@@ -153,7 +123,6 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
             bttype="primary"
             disabled={checkedSensors.length === 0}
             onClick={() => {
-              if (selectedUnit === null) return;
               onAddUnitList(checkedSensors);
               handleClose();
             }}
@@ -162,7 +131,7 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
           </Button>
         </DialogActions>
       </Dialog>
-      {openCaptureDialog && (
+      {/* {openCaptureDialog && (
         <CaptureDialog
           open={openCaptureDialog}
           handleClose={() => setOpenCaptureDialog(false)}
@@ -189,7 +158,7 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
             setOpenCaptureDialog(false);
           }}
         />
-      )}
+      )} */}
     </>
   );
 };

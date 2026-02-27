@@ -2,9 +2,9 @@ import React from 'react';
 import useSync from '~/features/station/components/stamdata/dmpSynkronisering/api/useSync';
 import {useAppContext} from '~/state/contexts';
 import {Box, Typography} from '@mui/material';
-import {SyncFormValues} from '~/features/synchronization/api/useSyncForm';
 import JupiterDmpSync from '~/features/synchronization/components/JupiterDmpSync';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
+import {SyncFormSchema} from '~/features/synchronization/api/useSyncForm';
 
 const Synchronization = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
@@ -16,7 +16,7 @@ const Synchronization = () => {
     post: postSync,
   } = useSync();
 
-  const submit = (data: SyncFormValues) => {
+  const submit = (data: SyncFormSchema) => {
     const syncPayload = {
       path: `${ts_id}`,
       data: data,
@@ -25,18 +25,23 @@ const Synchronization = () => {
     postSync.mutate(syncPayload);
   };
 
+  console.log('metadata', metadata);
+
   return (
     <Box display={'flex'} flexGrow={1} flexDirection="column" justifyContent={'space-between'}>
-      <Typography variant="subtitle1" marginBottom={1}>
+      <Typography variant="h6" marginBottom={1}>
         Synkronisering
       </Typography>
-      <JupiterDmpSync
-        loctype_id={location_data?.loctype_id}
-        tstype_id={metadata?.tstype_id}
-        values={sync_data}
-        submit={submit}
-        ts_id={ts_id}
-      />
+      {sync_data && (
+        <JupiterDmpSync
+          loctype_id={location_data?.loctype_id}
+          tstype_id={metadata?.tstype_id}
+          values={sync_data}
+          submit={submit}
+          intakeno={metadata?.boreholeno ? metadata.intakeno : undefined}
+          ts_id={ts_id}
+        />
+      )}
     </Box>
   );
 };

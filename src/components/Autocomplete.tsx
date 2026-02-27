@@ -21,7 +21,7 @@ export type AutoCompleteFieldProps<T extends object, M extends boolean = false> 
   labelKey: keyof T;
   options: T[];
   error?: string | undefined;
-  textFieldsProps: Partial<TextFieldProps>;
+  textFieldsProps?: Partial<TextFieldProps>;
   fieldDescriptionText?: string;
 };
 
@@ -99,7 +99,7 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
           },
         };
 
-        if (textFieldsProps.sx) {
+        if (textFieldsProps?.sx) {
           sx = merge(sx, textFieldsProps.sx);
         }
         return (
