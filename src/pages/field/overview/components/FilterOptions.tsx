@@ -78,11 +78,9 @@ const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
                 handleSubmit(submit)();
               }}
               direction="row"
-              options={{
-                kunde: "Kunde",
-                watsonc: "WatsonC",
-                begge: "Begge",
-              }}
+              options={
+                [{value: 'kunde', label: 'Kunde'}, {value: 'watsonc', label: 'WatsonC'}, {value: 'begge', label: 'Begge'}]
+              }
             />
           </Grid2>
         )}
