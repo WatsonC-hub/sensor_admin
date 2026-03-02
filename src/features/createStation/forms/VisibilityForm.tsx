@@ -14,7 +14,7 @@ type Form = z.infer<typeof schema>;
 const Form = createTypedForm<Form>();
 
 type VisibilityFormProps = {
-  visibility?: Form;
+  visibility: Form | object;
   setValues: (values: Form) => void;
 };
 
@@ -23,10 +23,12 @@ const VisibilityForm = ({visibility, setValues}: VisibilityFormProps) => {
     state.registerSubmitter,
     state.removeSubmitter,
   ]);
+
   const methods = useForm<Form>({
     resolver: zodResolver(schema),
-    defaultValues: visibility ?? {
+    defaultValues: {
       requires_auth: false,
+      ...visibility,
     },
   });
 

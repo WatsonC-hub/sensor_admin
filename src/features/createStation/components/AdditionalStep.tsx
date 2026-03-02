@@ -1,4 +1,4 @@
-import {Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import React from 'react';
 import FormStepButtons from './FormStepButtons';
 
@@ -21,12 +21,18 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
     state.submitters,
     state.formState.timeseries,
   ]);
-  const {superUser} = useUser();
+  const {
+    superUser,
+    features: {ressources},
+  } = useUser();
 
   return (
     <>
       {activeStep === 2 && (
         <>
+          <Typography variant="caption" alignContent={'center'}>
+            Felter markeret med en stjerne (*) er obligatoriske.
+          </Typography>
           <FormFieldset
             label="Yderligere oplysninger"
             sx={{width: '100%', p: 1}}
@@ -37,7 +43,7 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
             {superUser && <SlaSection />}
             <ContactForm />
             <LocationAccessForm />
-            {superUser && <RessourceSection />}
+            {ressources && <RessourceSection />}
           </FormFieldset>
           <Box display={'flex'} flexDirection={'column'} gap={1.5}>
             <FormStepButtons

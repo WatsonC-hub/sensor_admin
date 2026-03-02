@@ -3,6 +3,7 @@ import FormStepButtons from './FormStepButtons';
 
 import TimeseriesList from '../helper/TimeseriesList';
 import {useCreateStationStore} from '../state/useCreateStationStore';
+import {Typography} from '@mui/material';
 
 type Props = {
   activeStep: number;
@@ -17,6 +18,9 @@ const TimeseriesStep = ({activeStep, setActiveStep, loc_id}: Props) => {
     <>
       {activeStep === 1 && (
         <>
+          <Typography variant="caption" alignContent={'center'}>
+            Felter markeret med en stjerne (*) er obligatoriske.
+          </Typography>
           <TimeseriesList />
           <FormStepButtons
             activeStep={activeStep}

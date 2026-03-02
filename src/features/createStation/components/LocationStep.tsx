@@ -3,6 +3,7 @@ import React from 'react';
 import FormStepButtons from './FormStepButtons';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import LocationForm from '../forms/LocationForm';
+import {Typography} from '@mui/material';
 
 type Props = {
   activeStep: number;
@@ -16,6 +17,9 @@ const LocationStep = ({activeStep, setActiveStep}: Props) => {
     <>
       {activeStep === 0 && (
         <>
+          <Typography variant="caption" alignContent={'center'}>
+            Felter markeret med en stjerne (*) er obligatoriske.
+          </Typography>
           <LocationForm />
           <FormStepButtons
             activeStep={activeStep}

@@ -427,7 +427,7 @@ const BoreholeSuffix = (
           ),
         },
       }}
-      placeholder="f.eks. A"
+      placeholder="f.eks. et lokalnummer"
       fullWidth
       {...props}
     />

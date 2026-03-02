@@ -71,6 +71,7 @@ const CreateStation = () => {
               </Typography>
             </TooltipWrapper>
           </Box>
+
           {state.loc_id === undefined && (
             <>
               <FormSteps activeStep={activeStep} loc_id={state.loc_id} />

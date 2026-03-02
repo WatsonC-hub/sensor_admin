@@ -4,7 +4,7 @@ import {watlevmpAddSchema} from '../schema';
 
 type UseWatlevmpFormProps<T> = {
   defaultValues?: DefaultValues<T>;
-  values: T | undefined;
+  values?: T | undefined;
 };
 
 const useWatlevmpForm = <T extends Record<string, any>>({

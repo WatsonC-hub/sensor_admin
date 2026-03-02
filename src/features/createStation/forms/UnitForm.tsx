@@ -1,4 +1,4 @@
-import {Box, Grid2} from '@mui/material';
+import {Grid2} from '@mui/material';
 import React from 'react';
 import {FormProvider} from 'react-hook-form';
 import useUnitForm from '~/features/station/api/useUnitForm';

@@ -17,7 +17,7 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 type WatlevmpFormProps = {
   intakeno?: number;
   id: string;
-  values: Watlevmp | undefined;
+  values: Watlevmp;
   setValues: (values: Watlevmp) => void;
 };
 
@@ -54,8 +54,10 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
   });
 
   const watlevmpFormMethods = useWatlevmpForm<Watlevmp>({
-    defaultValues: values ?? watlevmp,
-    values: values ?? watlevmp,
+    defaultValues: {
+      ...watlevmp,
+      ...values,
+    },
   });
 
   const {watch, handleSubmit} = watlevmpFormMethods;

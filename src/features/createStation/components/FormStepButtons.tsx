@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {ArrowBack, Save} from '@mui/icons-material';
-import {Grid2, Typography} from '@mui/material';
+import {Grid2} from '@mui/material';
 import Button from '~/components/Button';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AlertDialog from '~/components/AlertDialog';
@@ -79,13 +79,6 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
 
   return (
     <Grid2 size={12} gap={0.5} pr={0.5}>
-      <Grid2 size={isMobile ? 12 : 'auto'} sx={{alignItems: 'center', display: 'flex'}}>
-        {(activeStep === 0 || activeStep === 1) && (
-          <Typography variant="caption" alignContent={'center'}>
-            Felter markeret med en stjerne (*) er obligatoriske.
-          </Typography>
-        )}
-      </Grid2>
       <Grid2 size={isMobile ? 12 : 'auto'} sx={{display: 'flex', justifyContent: 'flex-end'}}>
         {loc_id === undefined && (
           <>
@@ -110,6 +103,7 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
               endIcon={!isMobile && <ArrowForwardIcon fontSize="small" />}
               onClick={async () => {
                 const isStepValid = await onFormIsValid();
+
                 if (!isStepValid) return;
                 setActiveStep(activeStep + 1);
               }}
@@ -127,6 +121,8 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
             startIcon={!isMobile && <Save fontSize="small" />}
             onClick={async () => {
               const isStepValid = await onFormIsValid();
+              // console.log('isValid', isStepValid);
+              // console.log('formstate', formState);
               if (isStepValid) {
                 setShowAlert(true);
               }
