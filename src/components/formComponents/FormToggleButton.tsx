@@ -13,9 +13,14 @@ import {merge} from 'lodash';
 import React from 'react';
 import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 
+type FormToggleButtonOption = {
+  value: string;
+  label: string;
+};
+
 type FormToggleButtonProps<T extends FieldValues> = {
   name: Path<T>;
-  options: Record<string, string>;
+  options: FormToggleButtonOption[];
   label?: string;
   gridSizes?: GridBaseProps['size'];
   gridProps?: Grid2Props;
@@ -85,10 +90,10 @@ const FormToggleButton = <T extends FieldValues>({
                   sx={sx}
                   {...rest}
                 >
-                  {Object.entries(options).map(([key, value]) => {
+                  {options.map((option) => {
                     return (
-                      <ToggleButton key={key} value={key} size="small">
-                        <Typography textTransform={'initial'}>{value}</Typography>
+                      <ToggleButton key={option.value} value={option.value} size="small">
+                        <Typography textTransform={'initial'}>{option.label}</Typography>
                       </ToggleButton>
                     );
                   })}
