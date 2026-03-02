@@ -7,12 +7,20 @@ import {
   GridBaseProps,
   Grid2,
   ToggleButtonGroupProps,
+  SxProps,
 } from '@mui/material';
+import {merge} from 'lodash';
 import React from 'react';
 import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 
+type FormToggleButtonOption = {
+  value: string;
+  label: string;
+};
+
 type FormToggleButtonProps<T extends FieldValues> = {
   name: Path<T>;
+  options: FormToggleButtonOption[];
   label?: string;
   gridSizes?: GridBaseProps['size'];
   gridProps?: Grid2Props;
@@ -31,6 +39,7 @@ const FormToggleButton = <T extends FieldValues>({
   direction,
   gridDirection,
   warning,
+  options,
   ...rest
 }: FormToggleButtonProps<T>) => {
   const {control} = useFormContext<T>();
@@ -49,31 +58,49 @@ const FormToggleButton = <T extends FieldValues>({
         <Controller
           name={name}
           control={control}
-          render={({field: {value, onChange}}) => (
-            <Stack direction={direction} spacing={4}>
-              <ToggleButtonGroup
-                value={value}
-                exclusive
-                color="primary"
-                onChange={(event, newValue) => {
-                  if (newValue === null) return;
-                  onChange(newValue);
-                  if (onChangeCallback) onChangeCallback(newValue);
-                }}
-                {...rest}
-              >
-                <ToggleButton value="kunde" size="small">
-                  <Typography textTransform={'initial'}>Kunde</Typography>
-                </ToggleButton>
-                <ToggleButton value="watsonc" size="small">
-                  <Typography textTransform={'initial'}>WatsonC</Typography>
-                </ToggleButton>
-                <ToggleButton value="begge" size="small">
-                  <Typography textTransform={'initial'}>Begge</Typography>
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </Stack>
-          )}
+          render={({field: {value, onChange}}) => {
+            const internal_sx: SxProps = {
+              borderColor: 'primary.main',
+              '& .MuiToggleButton-root': {
+                borderColor: 'primary.main',
+              },
+              '& .MuiToggleButtonGroup-firstButton': {
+                borderRightColor: 'grey.700',
+              },
+              '& .MuiToggleButtonGroup-lastButton': {
+                borderLeftColor: 'grey.700',
+              },
+              '& .MuiToggleButtonGroup-middleButton': {
+                borderLeftColor: 'grey.700',
+                borderRightColor: 'grey.700',
+              },
+            };
+            const sx = merge({}, rest.sx, internal_sx);
+            return (
+              <Stack direction={direction} spacing={4}>
+                <ToggleButtonGroup
+                  value={value}
+                  exclusive
+                  color="primary"
+                  onChange={(event, newValue) => {
+                    if (newValue === null) return;
+                    onChange(newValue);
+                    if (onChangeCallback) onChangeCallback(newValue);
+                  }}
+                  sx={sx}
+                  {...rest}
+                >
+                  {options.map((option) => {
+                    return (
+                      <ToggleButton key={option.value} value={option.value} size="small">
+                        <Typography textTransform={'initial'}>{option.label}</Typography>
+                      </ToggleButton>
+                    );
+                  })}
+                </ToggleButtonGroup>
+              </Stack>
+            );
+          }}
         />
         {warning && (
           <Typography color="warning.main" variant="caption" sx={{mt: 0.5}}>
