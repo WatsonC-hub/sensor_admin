@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useQuery} from '@tanstack/react-query';
-import {DefaultValues, useForm} from 'react-hook-form';
+import {DefaultValues, FieldValues, useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
 
@@ -16,8 +16,8 @@ const syncSchema = z.object({
       }),
       z.literal(false),
     ])
-    .nullish(),
-  jupiter: z.boolean().nullish(),
+    .optional(),
+  jupiter: z.boolean({required_error: 'Vælg venligst om der skal synkroniseres til Jupiter'}),
 });
 
 export type SyncFormSchema = z.infer<typeof syncSchema>;
@@ -28,13 +28,13 @@ type SyncContext = {
   ts_id?: number;
 };
 
-type SyncFormProps = {
-  defaultValues?: DefaultValues<SyncFormSchema>;
-  values?: SyncFormSchema;
+type SyncFormProps<T extends FieldValues> = {
+  defaultValues?: DefaultValues<T>;
+  values?: T;
   context: SyncContext;
 };
 
-const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
+const useSyncForm = <T extends FieldValues>({defaultValues, values, context}: SyncFormProps<T>) => {
   const isJupiterType = [1, 11, 12, 16].includes(context?.tstype_id || 0);
   const isBorehole = context?.loctype_id === 9;
 
@@ -63,7 +63,7 @@ const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
 
   const owners: Array<{cvr: string; name: string}> = result.data;
 
-  const syncFormMethods = useForm<SyncFormSchema>({
+  const syncFormMethods = useForm<T>({
     resolver: zodResolver(syncSchema),
     defaultValues: defaultValues,
     mode: 'onTouched',

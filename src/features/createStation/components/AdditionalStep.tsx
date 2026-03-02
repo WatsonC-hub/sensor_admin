@@ -1,4 +1,4 @@
-import {Box, Typography} from '@mui/material';
+import {Typography} from '@mui/material';
 import React from 'react';
 import FormStepButtons from './FormStepButtons';
 
@@ -45,20 +45,18 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
             <LocationAccessForm />
             {ressources && <RessourceSection />}
           </FormFieldset>
-          <Box display={'flex'} flexDirection={'column'} gap={1.5}>
-            <FormStepButtons
-              activeStep={activeStep}
-              setActiveStep={setActiveStep}
-              key={'additional'}
-              onFormIsValid={async () => {
-                const valid = (
-                  await Promise.all(Object.values(submitters).map(async (cb) => await cb()))
-                ).every(Boolean);
+          <FormStepButtons
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            key={'additional'}
+            onFormIsValid={async () => {
+              const valid = (
+                await Promise.all(Object.values(submitters).map(async (cb) => await cb()))
+              ).every(Boolean);
 
-                return valid;
-              }}
-            />
-          </Box>
+              return valid;
+            }}
+          />
         </>
       )}
     </>

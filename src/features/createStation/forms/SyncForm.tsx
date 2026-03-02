@@ -1,10 +1,10 @@
 import {Box, Checkbox, FormControlLabel} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {createTypedForm} from '~/components/formComponents/Form';
-import TooltipWrapper from '~/components/TooltipWrapper';
-import useSyncForm, {SyncFormSchema} from '~/features/synchronization/api/useSyncForm';
+import useSyncForm from '~/features/synchronization/api/useSyncForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import {SyncFormState} from '../types';
+import FormToggleButton from '~/components/formComponents/FormToggleButton';
 
 type SyncFormProps = {
   id: string;
@@ -14,7 +14,7 @@ type SyncFormProps = {
   setValues: (values: SyncFormState) => void;
 };
 
-const Form = createTypedForm<SyncFormSchema>();
+const Form = createTypedForm<SyncFormState>();
 
 const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps) => {
   const [dmpActive, setDmpActive] = useState(!!values?.dmp);
@@ -22,19 +22,22 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     state.registerSubmitter,
     state.removeSubmitter,
   ]);
-  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm({
+  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm<SyncFormState>({
     context: {
       loctype_id,
       tstype_id,
     },
     values: {
-      dmp: false,
-      jupiter: false,
       ...values,
     },
   });
 
-  const {setValue, handleSubmit, reset} = syncFormMethods;
+  const {
+    setValue,
+    handleSubmit,
+    reset,
+    formState: {errors},
+  } = syncFormMethods;
 
   useEffect(() => {
     registerSubmitter(id, async () => {
@@ -57,13 +60,62 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
       {(canSyncJupiter || isDmpAllowed) && (
         <Form formMethods={syncFormMethods} gridSizes={12}>
           {canSyncJupiter && (
-            <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til Jupiter">
-              <Form.Checkbox name="jupiter" label="Jupiter" />
-            </TooltipWrapper>
+            <FormToggleButton<SyncFormState>
+              name="jupiter"
+              options={[
+                {value: true, label: 'Ja'},
+                {value: false, label: 'Nej'},
+              ]}
+              gridSizes={12}
+              label="Synkronisere til jupiter?"
+              size="small"
+              direction="row"
+              toggleButtonProps={{
+                sx: {px: 2},
+                size: 'small',
+              }}
+              onChangeCallback={(val) => val}
+              gridDirection="row"
+              warning={() => {
+                if (errors.jupiter) {
+                  return errors.jupiter.message;
+                }
+                return '';
+              }}
+            />
           )}
           {isDmpAllowed && (
             <Box>
-              <FormControlLabel
+              <FormToggleButton<SyncFormState>
+                name="dmp"
+                options={[
+                  {value: false, label: 'Nej'},
+                  {value: "ghehj", label: 'Ja'},
+                ]}
+                gridSizes={12}
+                label="Synkronisere til DMP?"
+                size="small"
+                direction="row"
+                toggleButtonProps={{
+                  sx: {px: 2},
+                  size: 'small',
+                }}
+                gridDirection="row"
+                warning={() => {
+                  if (errors.dmp) {
+                    return errors.dmp.message;
+                  }
+                  return '';
+                }}
+                onChangeCallback={(value) => {
+                  const isActive = value !== false && value !== undefined;
+                  setDmpActive(isActive);
+                  if (!isActive) {
+                    setValue('dmp', false);
+                  }
+                }}
+              />
+              {/* <FormControlLabel
                 control={
                   <Checkbox
                     checked={dmpActive}
@@ -81,7 +133,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
                   />
                 }
                 label={'DMP'}
-              />
+              /> */}
               {dmpActive && (
                 <Form.Input
                   select

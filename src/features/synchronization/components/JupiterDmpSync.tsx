@@ -65,7 +65,7 @@ const JupiterDmpSync = ({
                 <Form.Checkbox
                   disabled={disabled || intakeno == null}
                   name="jupiter"
-                  label="Jupiter"
+                  label="Synkronisere til jupiter"
                 />
               </TooltipWrapper>
             )}

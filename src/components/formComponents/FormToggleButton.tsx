@@ -8,29 +8,38 @@ import {
   Grid2,
   ToggleButtonGroupProps,
   SxProps,
+  ToggleButtonProps,
 } from '@mui/material';
 import {merge} from 'lodash';
 import React from 'react';
-import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
+import {
+  Controller,
+  FieldPathValue,
+  FieldValues,
+  Path,
+  PathValue,
+  useFormContext,
+} from 'react-hook-form';
 
-type FormToggleButtonOption = {
-  value: string;
+type FormToggleButtonOption<T> = {
+  value: T;
   label: string;
 };
 
-type FormToggleButtonProps<T extends FieldValues> = {
-  name: Path<T>;
-  options: FormToggleButtonOption[];
+type FormToggleButtonProps<T extends FieldValues, P extends Path<T> = Path<T>> = {
+  name: P;
+  options: FormToggleButtonOption<FieldPathValue<T, P>>[];
   label?: string;
   gridSizes?: GridBaseProps['size'];
   gridProps?: Grid2Props;
   direction?: 'row' | 'column';
   gridDirection?: 'row' | 'column';
-  onChangeCallback?: (value: string) => void;
-  warning?: (value: boolean) => string | undefined;
+  onChangeCallback?: (value: FieldPathValue<T, P>) => void;
+  warning?: (value: FieldPathValue<T, P>) => string | undefined;
+  toggleButtonProps?: Omit<ToggleButtonProps, 'value' | 'key'>;
 } & Omit<ToggleButtonGroupProps, 'name' | 'value' | 'onChange'>;
 
-const FormToggleButton = <T extends FieldValues>({
+const FormToggleButton = <T extends FieldValues, P extends Path<T> = Path<T>>({
   name,
   label,
   gridSizes,
@@ -40,8 +49,9 @@ const FormToggleButton = <T extends FieldValues>({
   gridDirection,
   warning,
   options,
+  toggleButtonProps,
   ...rest
-}: FormToggleButtonProps<T>) => {
+}: FormToggleButtonProps<T, P>) => {
   const {control} = useFormContext<T>();
 
   return (
@@ -53,7 +63,6 @@ const FormToggleButton = <T extends FieldValues>({
       spacing={1}
       alignItems="center"
     >
-      <Grid2 alignContent={'center'}>{label && <Typography>{label}</Typography>}</Grid2>
       <Grid2 size={9}>
         <Controller
           name={name}
@@ -77,7 +86,8 @@ const FormToggleButton = <T extends FieldValues>({
             };
             const sx = merge({}, rest.sx, internal_sx);
             return (
-              <Stack direction={direction} spacing={4}>
+              <Stack direction={direction} spacing={1} alignItems={'center'}>
+                {label && <Typography>{label}</Typography>}
                 <ToggleButtonGroup
                   value={value}
                   exclusive
@@ -92,7 +102,7 @@ const FormToggleButton = <T extends FieldValues>({
                 >
                   {options.map((option) => {
                     return (
-                      <ToggleButton key={option.value} value={option.value} size="small">
+                      <ToggleButton key={option.label} value={option.value} {...toggleButtonProps}>
                         <Typography textTransform={'initial'}>{option.label}</Typography>
                       </ToggleButton>
                     );
@@ -103,7 +113,7 @@ const FormToggleButton = <T extends FieldValues>({
           }}
         />
         {warning && (
-          <Typography color="warning.main" variant="caption" sx={{mt: 0.5}}>
+          <Typography color="error.main" variant="caption" sx={{mt: 0.5}}>
             {warning(control._formValues[name])}
           </Typography>
         )}

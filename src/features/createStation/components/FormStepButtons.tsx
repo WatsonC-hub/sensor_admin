@@ -78,7 +78,7 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
   };
 
   return (
-    <Grid2 size={12} gap={0.5} pr={0.5}>
+    <Grid2 size={12} gap={0.5} pr={0.5} position={'sticky'} bottom={0}>
       <Grid2 size={isMobile ? 12 : 'auto'} sx={{display: 'flex', justifyContent: 'flex-end'}}>
         {loc_id === undefined && (
           <>
