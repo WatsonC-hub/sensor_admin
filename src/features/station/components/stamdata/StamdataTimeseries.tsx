@@ -58,9 +58,7 @@ const TypeSelect = (
       label="Tidsserietype"
       select
       placeholder="Vælg type"
-      options={timeseries_types
-        ?.filter((type) => type.tstype_id !== 0)
-        .map((type) => ({[type.tstype_id]: type.tstype_name}))}
+      options={timeseries_types?.map((type) => ({[type.tstype_id]: type.tstype_name}))}
       keyType="number"
       required
       fullWidth
