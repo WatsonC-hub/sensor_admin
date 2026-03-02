@@ -25,7 +25,7 @@ import OwnDatePicker from '~/components/OwnDatePicker';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {useAppContext} from '~/state/contexts';
-import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
+import {UnitPost, useUnit} from '~/features/stamdata/api/useUnit';
 import AddSensorDialog from './AddSensorDialog';
 import {AddUnitType} from '~/features/createStation/forms/UnitForm';
 
@@ -100,7 +100,7 @@ export default function AddUnitForm({
       }
       return 0;
     })
-    .map((val) => (typeof val == 'number' ? val.toString() : val));
+    .map((id) => id.toString());
 
   const sensorsForCalyspoId = (id: string | number) =>
     availableUnits?.filter(
@@ -333,7 +333,7 @@ export default function AddUnitForm({
                 <MenuItem value="">Vælg Sensor ID</MenuItem>
                 {sensorsForCalyspoId(unitData.calypso_id)?.map((option) => (
                   <MenuItem key={option.unit_uuid} value={option.unit_uuid}>
-                    {option.signal_id} - {option.sensortypename}
+                    {option.channel} - {option.sensortypename}
                   </MenuItem>
                 ))}
               </TextField>
