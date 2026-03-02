@@ -78,6 +78,11 @@ const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
                 handleSubmit(submit)();
               }}
               direction="row"
+              options={{
+                kunde: "Kunde",
+                watsonc: "WatsonC",
+                begge: "Begge",
+              }}
             />
           </Grid2>
         )}
