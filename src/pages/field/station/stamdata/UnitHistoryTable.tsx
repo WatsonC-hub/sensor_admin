@@ -35,7 +35,7 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
   const {
     handleSubmit,
     reset,
-    formState: {isDirty},
+    formState: {isDirty, errors},
   } = useFormContext();
   const {deleteUnit} = useUnitMutations(ts_id);
   const {isMobile} = useBreakpoints();
@@ -192,7 +192,9 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
             </Button>
             <Button
               bttype="primary"
-              disabled={!isDirty || !metadata?.unit_uuid || disabled}
+              disabled={
+                !isDirty || !metadata?.unit_uuid || disabled || Object.keys(errors).length > 0
+              }
               onClick={async () => {
                 await handleSubmit(submit, (e) => {
                   console.log('Form submitted:', e);

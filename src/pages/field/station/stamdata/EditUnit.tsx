@@ -44,8 +44,8 @@ const EditUnit = () => {
   });
 
   const formMethods = useUnitForm<EditUnitType>({
-    mode: unit?.gid && !openAddUdstyr ? 'Edit' : 'Add',
-    defaultValues: defaultValues,
+    mode: selectedUnit !== '' && !openAddUdstyr ? 'Edit' : 'Add',
+    values: defaultValues,
   });
 
   const Submit = async (data: z.infer<typeof editUnitSchema>) => {
