@@ -1,12 +1,9 @@
 import {Box} from '@mui/material';
-import {useMutation} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useState} from 'react';
 import {FormProvider} from 'react-hook-form';
-import {toast} from 'react-toastify';
 import {z} from 'zod';
 
-import {apiClient} from '~/apiClient';
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
@@ -20,7 +17,7 @@ import useUnitForm from '~/features/station/api/useUnitForm';
 import {EditUnit as EditUnitType, editUnitSchema} from '~/features/station/schema';
 
 import UnitHistoryTable from './UnitHistoryTable';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {useUnitMutations} from '~/features/stamdata/api/useUnit';
 
 const EditUnit = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
@@ -29,7 +26,7 @@ const EditUnit = () => {
   const [selectedUnit, setSelectedUnit] = useState<number | ''>(unit_history?.[0]?.gid ?? '');
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
-
+  const {editUnit} = useUnitMutations(ts_id);
   const {location_permissions} = usePermissions(loc_id);
   const tstype_id = metadata?.tstype_id;
   const disabled = location_permissions !== 'edit';
@@ -37,19 +34,6 @@ const EditUnit = () => {
   const mode =
     unit_history && unit_history.length > 0 && moment(unit_history?.[0].slutdato) > moment();
   const fabText = mode ? 'Hjemtag udstyr' : 'Tilføj udstyr';
-
-  const metadataEditUnitMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const {data: out} = await apiClient.put(`/sensor_field/stamdata/update_unit/${ts_id}`, data);
-      return out;
-    },
-    onSuccess: () => {
-      toast.success('Udstyr er opdateret');
-    },
-    meta: {
-      invalidates: [queryKeys.Timeseries.unitHistory(ts_id)],
-    },
-  });
 
   const unit = unit_history?.find((item) => item.gid == selectedUnit);
 
@@ -69,7 +53,7 @@ const EditUnit = () => {
       gid: selectedUnit,
       ...data,
     };
-    metadataEditUnitMutation.mutate(payload);
+    editUnit.mutate(payload);
   };
 
   return (
@@ -83,7 +67,12 @@ const EditUnit = () => {
           }}
         >
           <FormProvider {...formMethods}>
-            <UnitHistoryTable submit={Submit} setSelectedUnit={setSelectedUnit} />
+            <UnitHistoryTable
+              submit={Submit}
+              setSelectedUnit={setSelectedUnit}
+              ts_id={ts_id}
+              loc_id={loc_id}
+            />
             {openDialog && (
               <UnitEndDateDialog
                 openDialog={openDialog}

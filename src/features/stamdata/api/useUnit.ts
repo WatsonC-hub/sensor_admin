@@ -1,5 +1,6 @@
 import {useQuery, useMutation} from '@tanstack/react-query';
 import {Dayjs} from 'dayjs';
+import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
@@ -46,6 +47,44 @@ const unitPostOptions = {
     );
     return result;
   },
+};
+
+const editUnitMutation = (ts_id: number) =>
+  useMutation({
+    mutationKey: ['edit_unit'],
+    mutationFn: async (data: any) => {
+      const {data: out} = await apiClient.put(`/sensor_field/stamdata/update_unit/${ts_id}`, data);
+      return out;
+    },
+    onSuccess: () => {
+      toast.success('Udstyr er opdateret');
+    },
+    meta: {
+      invalidates: [queryKeys.Timeseries.unitHistory(ts_id), queryKeys.AvailableUnits.all()],
+    },
+  });
+
+const deleteUnitMutation = (ts_id: number) =>
+  useMutation({
+    mutationKey: ['delete_unit'],
+    mutationFn: async (path: string) => {
+      const {data: out} = await apiClient.delete(
+        `/sensor_field/stamdata/delete_unit_history/${path}`
+      );
+      return out;
+    },
+    onSuccess: () => {
+      toast.success('Udstyr er slettet');
+    },
+    meta: {
+      invalidates: [queryKeys.Timeseries.unitHistory(ts_id), queryKeys.AvailableUnits.all()],
+    },
+  });
+
+export const useUnitMutations = (ts_id: number) => {
+  const editUnit = editUnitMutation(ts_id);
+  const deleteUnit = deleteUnitMutation(ts_id);
+  return {editUnit, deleteUnit};
 };
 
 export const useUnit = () => {

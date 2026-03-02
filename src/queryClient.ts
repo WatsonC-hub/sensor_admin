@@ -113,7 +113,10 @@ const queryClient = new QueryClient({
 
       if (detail) {
         if (typeof detail === 'string') {
-          toast.error(detail);
+          toast.error(detail, {
+            autoClose: false,
+            closeOnClick: true,
+          });
           return;
         }
 
@@ -124,6 +127,8 @@ const queryClient = new QueryClient({
           });
           toast.error(errorString, {
             style: {whiteSpace: 'pre-line'},
+            autoClose: false,
+            closeOnClick: true,
           });
 
           return;
