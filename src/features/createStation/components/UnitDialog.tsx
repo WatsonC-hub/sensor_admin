@@ -17,7 +17,7 @@ import Button from '~/components/Button';
 import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
 import useUnitForm from '~/features/station/api/useUnitForm';
 import {FormProvider} from 'react-hook-form';
-import { Unit, useUnit } from '~/features/stamdata/api/useUnit';
+import {Unit, useUnit} from '~/features/stamdata/api/useUnit';
 type UnitDialogProps = {
   open: boolean;
   onClose: () => void;
@@ -45,15 +45,7 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
 
     const sensors = availableUnits
       ?.filter((unit) => unit.calypso_id.toString() === option.id || unit.terminal_id === option.id)
-      .sort((a, b) => {
-        if (a.sensor_id > b.sensor_id) {
-          return 1;
-        }
-        if (a.sensor_id < b.sensor_id) {
-          return -1;
-        }
-        return a.signal_id - b.signal_id;
-      });
+      .sort((a, b) => a.signal_id - b.signal_id);
     setSelectedSensors(sensors || []);
     setCheckedSensors(sensors || []);
   };

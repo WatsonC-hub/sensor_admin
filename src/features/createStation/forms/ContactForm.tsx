@@ -66,6 +66,7 @@ const ContactForm = () => {
             size="small"
             onClick={() => {
               deleteState('location.contacts');
+              setError(undefined);
             }}
           >
             <RemoveCircleOutline fontSize="small" />
@@ -80,6 +81,7 @@ const ContactForm = () => {
                 startIcon={<RemoveCircleOutline color="primary" />}
                 onClick={() => {
                   deleteState('location.contacts');
+                  setError(undefined);
                 }}
               >
                 <Typography variant="body2" color="grey.700">
