@@ -123,34 +123,6 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
           </Button>
         </DialogActions>
       </Dialog>
-      {/* {openCaptureDialog && (
-        <CaptureDialog
-          open={openCaptureDialog}
-          handleClose={() => setOpenCaptureDialog(false)}
-          handleScan={(data: any, calypso_id: number | null) => {
-            if (calypso_id === null) {
-              toast.error('Ugyldigt Calypso ID');
-              setOpenCaptureDialog(false);
-              return;
-            }
-
-            if (
-              !uniqueUnitsByCalypsoId()?.some(
-                (unit) => unit.calypso_id.toString() === calypso_id.toString()
-              )
-            ) {
-              toast.error(`Ingen tilgængelige enheder med Calypso ID: ${calypso_id}`);
-              setOpenCaptureDialog(false);
-              return;
-            }
-
-            handleCalypsoIdChange(
-              uniqueUnitsByCalypsoId()?.find((unit) => unit.calypso_id === calypso_id) || null
-            );
-            setOpenCaptureDialog(false);
-          }}
-        />
-      )} */}
     </>
   );
 };

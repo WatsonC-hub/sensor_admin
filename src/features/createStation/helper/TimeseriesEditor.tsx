@@ -65,7 +65,7 @@ const TimeseriesEditor = ({index, onRemove, setControlSettings}: Props) => {
         }}
       />
 
-      {meta_tstype_id && (
+      {meta_tstype_id !== undefined && (
         <>
           {meta_tstype_id === 1 && <WatlevmpSection index={index} />}
           <UnitSection key={meta_tstype_id} uuid={index} tstype_id={meta_tstype_id} />
