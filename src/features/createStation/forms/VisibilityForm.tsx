@@ -4,18 +4,19 @@ import {createTypedForm} from '~/components/formComponents/Form';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm} from 'react-hook-form';
+import FormToggleButton from '~/components/formComponents/FormToggleButton';
 
 const schema = z.object({
-  requires_auth: z.boolean(),
+  requires_auth: z.boolean({required_error: 'Vælg om data skal kræve login'}),
 });
 
-type Form = z.infer<typeof schema>;
+type VisibilityFormState = z.infer<typeof schema>;
 
-const Form = createTypedForm<Form>();
+const Form = createTypedForm<VisibilityFormState>();
 
 type VisibilityFormProps = {
-  visibility: Form | object;
-  setValues: (values: Form) => void;
+  visibility: VisibilityFormState | object;
+  setValues: (values: VisibilityFormState) => void;
 };
 
 const VisibilityForm = ({visibility, setValues}: VisibilityFormProps) => {
@@ -24,15 +25,17 @@ const VisibilityForm = ({visibility, setValues}: VisibilityFormProps) => {
     state.removeSubmitter,
   ]);
 
-  const methods = useForm<Form>({
+  const methods = useForm<VisibilityFormState>({
     resolver: zodResolver(schema),
     defaultValues: {
-      requires_auth: false,
       ...visibility,
     },
   });
 
-  const {handleSubmit} = methods;
+  const {
+    handleSubmit,
+    formState: {errors},
+  } = methods;
 
   useEffect(() => {
     registerSubmitter('location.visibility', async () => {
@@ -49,7 +52,28 @@ const VisibilityForm = ({visibility, setValues}: VisibilityFormProps) => {
 
   return (
     <Form gridSizes={12} formMethods={methods}>
-      <Form.Checkbox name="requires_auth" label="Data tilgængelighed kræver login" />
+      <FormToggleButton<VisibilityFormState, 'requires_auth'>
+        name="requires_auth"
+        options={[
+          {value: true, label: 'Ja'},
+          {value: false, label: 'Nej'},
+        ]}
+        direction="row"
+        size="small"
+        gridSizes={12}
+        toggleButtonProps={{
+          sx: {px: 2},
+          size: 'small',
+        }}
+        gridDirection="row"
+        label="Skal data kræve login?"
+        warning={(value) => {
+          if (value === undefined && errors.requires_auth) {
+            return errors.requires_auth.message;
+          }
+          return '';
+        }}
+      />
     </Form>
   );
 };

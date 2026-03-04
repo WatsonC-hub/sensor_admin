@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import useContactForm from '~/features/stamdata/components/stationDetails/contacts/api/useContactForm';
 import {ContactTable} from '~/types';
 import {FormProvider} from 'react-hook-form';
@@ -8,7 +8,7 @@ import {setRoleName} from '~/features/stamdata/components/stationDetails/contact
 import SimpleContactList from '../helper/SimpleContactList';
 import {Box, IconButton, Typography} from '@mui/material';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
+import {AddCircleOutline, Check, RemoveCircleOutline} from '@mui/icons-material';
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -16,26 +16,46 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 const ContactForm = () => {
   const {isMobile} = useBreakpoints();
   const [contactDialogOpen, setContactDialogOpen] = useState<boolean>(false);
-  const [contacts, setState, deleteState] = useCreateStationStore((state) => [
-    state.formState.location?.contacts,
-    state.setState,
-    state.deleteState,
-  ]);
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [contacts, location, setState, deleteState, registerSubmitter, removeSubmitter] =
+    useCreateStationStore((state) => [
+      state.formState.location?.contacts,
+      state.formState.location,
+      state.setState,
+      state.deleteState,
+      state.registerSubmitter,
+      state.removeSubmitter,
+    ]);
   const contactInfoMethods = useContactForm<ContactTable>({
     defaultValues: undefined,
     mode: 'add',
   });
 
-  const onValidChange = (value: ContactTable[]) => {
+  const notRelevant = Array.isArray(contacts) && contacts.length === 0;
+
+  const onValidChange = (value: ContactTable[] | undefined) => {
     setState('location.contacts', value);
   };
 
   const removeContact = (index: number) => {
     const filteredContacts = (contacts || []).filter((_, i) => i !== index);
-    onValidChange(filteredContacts);
+    if (filteredContacts.length === 0) onValidChange(undefined);
+    else onValidChange(filteredContacts);
   };
 
-  const show = contacts !== undefined;
+  useEffect(() => {
+    registerSubmitter('location.contacts', () => {
+      if (Array.isArray(contacts) || !Object.keys(location || {}).includes('contacts')) {
+        return Promise.resolve(true);
+      }
+      setError('Tilføj en kontakt eller tryk på "Ikke relevant"');
+      return Promise.resolve(false);
+    });
+
+    return () => removeSubmitter('location.contacts');
+  }, [contacts, location]);
+
+  const show = Object.keys(location || {}).includes('contacts');
 
   if (show)
     return (
@@ -75,34 +95,64 @@ const ContactForm = () => {
         >
           <FormProvider {...contactInfoMethods}>
             <Box width={'100%'} display={'flex'} flexDirection={'column'}>
-              {contacts && (
-                <SimpleContactList
-                  values={contacts.map((item) => {
-                    return {name: item.name, email: item.email ?? ''};
-                  })}
-                  onRemove={removeContact}
-                />
-              )}
-              <Button
-                bttype="primary"
-                startIcon={<AddCircleOutline color="primary" />}
-                sx={{
-                  width: 'fit-content',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  px: '6.5px',
-                  ':hover': {
-                    backgroundColor: 'grey.200',
-                  },
-                }}
-                onClick={() => {
-                  setContactDialogOpen(true);
-                }}
-              >
-                <Typography variant="body1" color="primary">
-                  Tilføj kontakt
-                </Typography>
-              </Button>
+              <SimpleContactList
+                values={(contacts || []).map((item) => {
+                  return {name: item.name, email: item.email ?? ''};
+                })}
+                onRemove={removeContact}
+                warning={
+                  error &&
+                  contacts == undefined && (
+                    <Typography variant="caption" color="error">
+                      {error}
+                    </Typography>
+                  )
+                }
+              />
+              <Box display="flex" flexDirection="row" justifyContent={'flex-start'} gap={1}>
+                {!notRelevant && (
+                  <Button
+                    bttype="primary"
+                    startIcon={<AddCircleOutline />}
+                    sx={{
+                      width: 'fit-content',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      px: '6.5px',
+                      color: 'primary.main',
+                      ':hover': {
+                        backgroundColor: 'grey.200',
+                      },
+                    }}
+                    onClick={() => {
+                      setContactDialogOpen(true);
+                    }}
+                  >
+                    <Typography variant="body1">Tilføj kontakt</Typography>
+                  </Button>
+                )}
+                {contacts === undefined && (
+                  <Button
+                    bttype="tertiary"
+                    startIcon={<Check />}
+                    sx={{
+                      width: 'fit-content',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      color: 'primary.main',
+                      px: '6.5px',
+                      ':hover': {
+                        backgroundColor: 'grey.200',
+                      },
+                    }}
+                    onClick={() => {
+                      setState('location.contacts', []);
+                    }}
+                  >
+                    <Typography variant="body1">Ikke relevant</Typography>
+                  </Button>
+                )}
+              </Box>
             </Box>
             {contactDialogOpen && (
               <AddContactInfo
@@ -114,7 +164,7 @@ const ContactForm = () => {
                   data.contact_type = lowerCase(data.contact_type || '');
 
                   onValidChange([
-                    ...contacts,
+                    ...(contacts || []),
                     {
                       ...data,
                       contact_role_name: setRoleName(data.contact_role || 0),
@@ -145,7 +195,7 @@ const ContactForm = () => {
           },
         }}
         onClick={() => {
-          setState('location.contacts', []);
+          setState('location.contacts', undefined);
         }}
       >
         <Typography variant="body1" color="primary">

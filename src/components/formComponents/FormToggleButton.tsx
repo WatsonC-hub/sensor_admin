@@ -10,36 +10,29 @@ import {
   SxProps,
   ToggleButtonProps,
 } from '@mui/material';
-import {merge} from 'lodash';
+import {isEqual, merge} from 'lodash';
 import React from 'react';
-import {
-  Controller,
-  FieldPathValue,
-  FieldValues,
-  Path,
-  PathValue,
-  useFormContext,
-} from 'react-hook-form';
+import {Controller, FieldPath, FieldPathValue, FieldValues, useFormContext} from 'react-hook-form';
 
 type FormToggleButtonOption<T> = {
   value: T;
   label: string;
 };
 
-type FormToggleButtonProps<T extends FieldValues, P extends Path<T> = Path<T>> = {
-  name: P;
-  options: FormToggleButtonOption<FieldPathValue<T, P>>[];
+type FormToggleButtonProps<T extends FieldValues, K extends FieldPath<T>> = {
+  name: K;
+  options: FormToggleButtonOption<FieldPathValue<T, K>>[];
   label?: string;
   gridSizes?: GridBaseProps['size'];
   gridProps?: Grid2Props;
   direction?: 'row' | 'column';
   gridDirection?: 'row' | 'column';
-  onChangeCallback?: (value: FieldPathValue<T, P>) => void;
-  warning?: (value: FieldPathValue<T, P>) => string | undefined;
+  onChangeCallback?: (value: FieldPathValue<T, K>) => void;
+  warning?: (value: FieldPathValue<T, K>) => string | undefined;
   toggleButtonProps?: Omit<ToggleButtonProps, 'value' | 'key'>;
 } & Omit<ToggleButtonGroupProps, 'name' | 'value' | 'onChange'>;
 
-const FormToggleButton = <T extends FieldValues, P extends Path<T> = Path<T>>({
+const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
   name,
   label,
   gridSizes,
@@ -51,8 +44,8 @@ const FormToggleButton = <T extends FieldValues, P extends Path<T> = Path<T>>({
   options,
   toggleButtonProps,
   ...rest
-}: FormToggleButtonProps<T, P>) => {
-  const {control} = useFormContext<T>();
+}: FormToggleButtonProps<T, K>) => {
+  const {control} = useFormContext<T, K>();
 
   return (
     <Grid2
@@ -102,7 +95,12 @@ const FormToggleButton = <T extends FieldValues, P extends Path<T> = Path<T>>({
                 >
                   {options.map((option) => {
                     return (
-                      <ToggleButton key={option.label} value={option.value} {...toggleButtonProps}>
+                      <ToggleButton
+                        key={option.label}
+                        selected={isEqual(option.value, value)}
+                        value={option.value}
+                        {...toggleButtonProps}
+                      >
                         <Typography textTransform={'initial'}>{option.label}</Typography>
                       </ToggleButton>
                     );

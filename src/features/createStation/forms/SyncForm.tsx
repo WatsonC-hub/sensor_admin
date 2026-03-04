@@ -1,4 +1,3 @@
-import {Box, Checkbox, FormControlLabel} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {createTypedForm} from '~/components/formComponents/Form';
 import useSyncForm from '~/features/synchronization/api/useSyncForm';
@@ -35,7 +34,6 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
   const {
     setValue,
     handleSubmit,
-    reset,
     formState: {errors},
   } = syncFormMethods;
 
@@ -60,7 +58,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
       {(canSyncJupiter || isDmpAllowed) && (
         <Form formMethods={syncFormMethods} gridSizes={12}>
           {canSyncJupiter && (
-            <FormToggleButton<SyncFormState>
+            <FormToggleButton<SyncFormState, 'jupiter'>
               name="jupiter"
               options={[
                 {value: true, label: 'Ja'},
@@ -74,10 +72,9 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
                 sx: {px: 2},
                 size: 'small',
               }}
-              onChangeCallback={(val) => val}
               gridDirection="row"
-              warning={() => {
-                if (errors.jupiter) {
+              warning={(value) => {
+                if (value === undefined && errors.jupiter) {
                   return errors.jupiter.message;
                 }
                 return '';
@@ -85,12 +82,12 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
             />
           )}
           {isDmpAllowed && (
-            <Box>
-              <FormToggleButton<SyncFormState>
+            <>
+              <FormToggleButton<SyncFormState, 'dmp'>
                 name="dmp"
                 options={[
+                  {value: {}, label: 'Ja'},
                   {value: false, label: 'Nej'},
-                  {value: "ghehj", label: 'Ja'},
                 ]}
                 gridSizes={12}
                 label="Synkronisere til DMP?"
@@ -101,46 +98,28 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
                   size: 'small',
                 }}
                 gridDirection="row"
-                warning={() => {
-                  if (errors.dmp) {
-                    return errors.dmp.message;
+                warning={(value) => {
+                  if (value === undefined && errors.dmp) {
+                    return 'Vælg om der skal synkroniseres til DMP';
                   }
                   return '';
                 }}
                 onChangeCallback={(value) => {
-                  const isActive = value !== false && value !== undefined;
+                  const isActive = value !== false;
                   setDmpActive(isActive);
                   if (!isActive) {
                     setValue('dmp', false);
                   }
                 }}
               />
-              {/* <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={dmpActive}
-                    sx={{
-                      width: 'fit-content',
-                    }}
-                    onChange={(e) => {
-                      setDmpActive(e.target.checked);
-                      if (e.target.checked) {
-                        reset({dmp: {}});
-                      } else {
-                        reset({dmp: false});
-                      }
-                    }}
-                  />
-                }
-                label={'DMP'}
-              /> */}
+
               {dmpActive && (
                 <Form.Input
                   select
                   name="dmp.owner_cvr"
                   label="Data ejer"
                   required
-                  disabled={!dmpActive}
+                  fullWidth={false}
                   placeholder="Vælg data ejer"
                   options={owners?.map((owner) => ({
                     [owner.cvr]: owner.name + ` (${owner.cvr})`,
@@ -157,7 +136,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
                   }}
                 />
               )}
-            </Box>
+            </>
           )}
         </Form>
       )}

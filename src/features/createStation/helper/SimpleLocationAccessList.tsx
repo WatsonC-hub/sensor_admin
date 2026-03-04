@@ -6,16 +6,17 @@ import SimpleTextView from '~/components/SimpleTextView';
 type Props = {
   values: SimpleLocationAccess[];
   onRemove: (index: number) => void;
+  warning?: React.ReactNode;
 };
 
-const SimpleLocationAccessList = ({values, onRemove}: Props) => {
+const SimpleLocationAccessList = ({values, onRemove, warning}: Props) => {
   return (
     <List sx={{maxWidth: 320, bgcolor: 'background.paper'}}>
       {values.length === 0 && (
         <SimpleTextView
           key="nokeys"
           primaryText={'Ingen adgangsnøgler tilføjet'}
-          secondaryText={'Der er taget stilling til adgangsnøgler ikke er relevante'}
+          secondaryText={warning}
         />
       )}
       {values.map((contact, index) => (

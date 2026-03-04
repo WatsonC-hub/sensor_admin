@@ -5,18 +5,16 @@ import {z} from 'zod';
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
 
 const syncSchema = z.object({
-  dmp: z
-    .union([
-      z.object({
-        owner_cvr: z.number({
-          required_error: 'Data ejer skal vælges',
-          message: 'Data ejer skal vælges',
-        }),
-        owner_name: z.union([z.string(), z.literal('')]),
+  dmp: z.union([
+    z.object({
+      owner_cvr: z.number({
+        required_error: 'Data ejer skal vælges',
+        message: 'Data ejer skal vælges',
       }),
-      z.literal(false),
-    ])
-    .optional(),
+      owner_name: z.union([z.string(), z.literal('')]),
+    }),
+    z.literal(false),
+  ]),
   jupiter: z.boolean({required_error: 'Vælg venligst om der skal synkroniseres til Jupiter'}),
 });
 
@@ -61,10 +59,25 @@ const useSyncForm = <T extends FieldValues>({defaultValues, values, context}: Sy
     enabled: isDmpAllowed,
   });
 
+  let conditionalSchema = z.object({});
+  if (!canSyncJupiter) {
+    conditionalSchema = syncSchema.extend({
+      ...syncSchema.shape,
+      jupiter: syncSchema.shape.jupiter.optional(),
+    });
+  }
+
+  if (!isDmpAllowed) {
+    conditionalSchema = conditionalSchema.extend({
+      ...syncSchema.shape,
+      dmp: syncSchema.shape.dmp.optional(),
+    });
+  }
+
   const owners: Array<{cvr: string; name: string}> = result.data;
 
   const syncFormMethods = useForm<T>({
-    resolver: zodResolver(syncSchema),
+    resolver: zodResolver(conditionalSchema),
     defaultValues: defaultValues,
     mode: 'onTouched',
     values: values,

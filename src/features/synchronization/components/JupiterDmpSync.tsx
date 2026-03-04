@@ -75,8 +75,8 @@ const JupiterDmpSync = ({
                   <Controller
                     name="dmp"
                     control={control}
-                    render={({field: {value, onChange}}) => (
-                      <FormControlLabel
+                    render={({field: {value, onChange}}) => {
+                      return <FormControlLabel
                         disabled={disabled}
                         control={
                           <Checkbox
@@ -89,14 +89,14 @@ const JupiterDmpSync = ({
                                 onChange({});
                               }
                               if (!e.target.checked) {
-                                onChange(false);
+                                reset()
                               }
                             }}
                           />
                         }
                         label={'DMP'}
                       />
-                    )}
+                    }}
                   />
                 </TooltipWrapper>
                 {showInput && (
@@ -133,6 +133,7 @@ const JupiterDmpSync = ({
           <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">
             <UpdateProgressButton
               progressKey="sync"
+              key={ts_id}
               loc_id={-1}
               ts_id={ts_id}
               disabled={disabled || isDirty}

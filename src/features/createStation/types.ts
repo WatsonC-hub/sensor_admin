@@ -14,8 +14,8 @@ export type ControlSettingsFormState = {
 export type SyncFormState = {
   dmp?:
     | {
-        owner_cvr: number;
-        owner_name: string;
+        owner_cvr?: number;
+        owner_name?: string;
       }
     | false;
   jupiter?: boolean;
@@ -88,10 +88,15 @@ export type TimeseriesMeta = {
   prefix?: string;
 };
 
+export type ControlSettingsPayload = {
+  controls_per_year: number;
+  lead_time: number | null;
+};
+
 export type TimeseriesPayload = {
   meta?: TimeseriesMeta;
   watlevmp?: Watlevmp;
-  control_settings?: ControlSettingsFormState;
+  control_settings?: ControlSettingsPayload;
   sync?: SyncFormState;
   unit?: AddUnitType;
 };

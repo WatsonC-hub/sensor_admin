@@ -7,7 +7,7 @@ import {devtools} from 'zustand/middleware';
 function setByPath<T extends object, P extends Path<T>>(
   obj: T,
   path: P,
-  value: Partial<PathValue<T, P>>
+  value: Partial<PathValue<T, P>> | undefined
 ): T {
   const tokens = path
     .replace(/\[(\d+)\]/g, '.$1')
@@ -123,7 +123,7 @@ export type CreateStationStoreState = {
   submitters: Submitters;
   setState: <P extends Path<Partial<CreateStationFormState>>>(
     path: P,
-    data: Partial<PathValue<Partial<CreateStationFormState>, P>>
+    data: Partial<PathValue<Partial<CreateStationFormState>, P>> | undefined
   ) => void;
   setIsFormError: (val: boolean) => void;
   deleteState: <P extends Path<Partial<CreateStationFormState>>>(path: P) => void;
