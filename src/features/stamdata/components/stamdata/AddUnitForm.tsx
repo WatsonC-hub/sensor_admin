@@ -333,7 +333,7 @@ export default function AddUnitForm({
                 <MenuItem value="">Vælg Sensor ID</MenuItem>
                 {sensorsForCalyspoId(unitData.calypso_id)?.map((option) => (
                   <MenuItem key={option.unit_uuid} value={option.unit_uuid}>
-                    {option.channel} - {option.sensortypename}
+                    {option.signal_id} - {option.sensortypename}
                   </MenuItem>
                 ))}
               </TextField>
