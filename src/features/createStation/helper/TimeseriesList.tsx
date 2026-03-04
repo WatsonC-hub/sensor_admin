@@ -17,12 +17,15 @@ import {Router, Timeline} from '@mui/icons-material';
 
 function TimeseriesList() {
   const [unitDialog, setUnitDialog] = useState(false);
-  const [timeseries, setState, deleteState, removeSubmitter] = useCreateStationStore((state) => [
-    state.formState.timeseries,
-    state.setState,
-    state.deleteState,
-    state.removeSubmitter,
-  ]);
+  const [formState, timeseries, setState, deleteState, removeSubmitter] = useCreateStationStore(
+    (state) => [
+      state.formState,
+      state.formState.timeseries,
+      state.setState,
+      state.deleteState,
+      state.removeSubmitter,
+    ]
+  );
 
   const {
     features: {iotAccess},
@@ -37,6 +40,8 @@ function TimeseriesList() {
   const remove = (index: string) => {
     deleteState(`timeseries.${index}`);
     removeSubmitter(`timeseries.${index}.meta`);
+    if (formState.location?.visibility !== undefined && Object.keys(timeseries || {}).length === 1)
+      deleteState('location.visibility');
   };
 
   const {data: timeseries_types} = useQuery({
@@ -62,7 +67,7 @@ function TimeseriesList() {
     }
   };
 
-  console.log('Ttimeseries', timeseries);
+  console.log('Timeseries', timeseries);
 
   return (
     <>
