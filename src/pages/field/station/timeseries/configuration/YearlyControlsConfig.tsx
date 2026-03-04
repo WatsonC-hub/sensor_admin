@@ -51,7 +51,6 @@ const YearlyControlsConfig = () => {
   } = formMethods;
 
   const onSubmit = (data: ControlSettingsFormValues) => {
-    console.log(data);
     mutate(
       {
         controls_per_year: data.controls_per_year,

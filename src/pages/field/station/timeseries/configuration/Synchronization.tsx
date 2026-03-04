@@ -25,8 +25,6 @@ const Synchronization = () => {
     postSync.mutate(syncPayload);
   };
 
-  console.log('metadata', metadata);
-
   return (
     <Box display={'flex'} flexGrow={1} flexDirection="column" justifyContent={'space-between'}>
       <Typography variant="h6" marginBottom={1}>

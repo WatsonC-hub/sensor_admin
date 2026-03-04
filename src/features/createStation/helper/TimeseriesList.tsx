@@ -60,6 +60,8 @@ function TimeseriesList() {
         lead_time: null,
         selectValue: 1,
       });
+    } else {
+      setState(`timeseries.${index}.control_settings`, {});
     }
   };
 
