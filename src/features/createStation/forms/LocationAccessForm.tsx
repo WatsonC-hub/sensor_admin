@@ -68,6 +68,7 @@ const LocationAccessForm = () => {
             size="small"
             onClick={() => {
               deleteState('location.location_access');
+              setError(undefined);
             }}
           >
             <RemoveCircleOutline fontSize="small" />
@@ -82,6 +83,7 @@ const LocationAccessForm = () => {
                 startIcon={<RemoveCircleOutline color="primary" />}
                 onClick={() => {
                   deleteState('location.location_access');
+                  setError(undefined);
                 }}
               >
                 <Typography variant="body2" color="grey.700">

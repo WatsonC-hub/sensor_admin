@@ -9,24 +9,20 @@ const controlSettingsSchema = z.object({
       invalid_type_error: 'Antal kontroller er påkrævet',
     })
     .nullable(),
-  lead_time: z.number().nullable(),
+  lead_time: z.number().nullish(),
   dummy: z.number().nullish().optional(),
   selectValue: z.literal(1).or(z.literal(2)).default(1),
   from_unit: z.boolean().optional(),
 });
 
-// const controlSettingsArraySchema = z.array(controlSettingsSchema);
-
 export type ControlSettingsFormValues = z.infer<typeof controlSettingsSchema>;
 
 type ControlSettingsProps<T extends FieldValues> = {
-  // mode: 'add' | 'edit' | 'mass_edit';
   defaultValues: DefaultValues<T> | undefined;
   values?: T;
 };
 
 const useControlSettingsForm = <T extends FieldValues>({
-  // mode,
   defaultValues,
   values,
 }: ControlSettingsProps<T>) => {

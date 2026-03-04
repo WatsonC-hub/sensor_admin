@@ -17,7 +17,7 @@ import Button from '~/components/Button';
 import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
 import useUnitForm from '~/features/station/api/useUnitForm';
 import {FormProvider} from 'react-hook-form';
-import { Unit, useUnit } from '~/features/stamdata/api/useUnit';
+import {Unit, useUnit} from '~/features/stamdata/api/useUnit';
 type UnitDialogProps = {
   open: boolean;
   onClose: () => void;
@@ -45,15 +45,7 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
 
     const sensors = availableUnits
       ?.filter((unit) => unit.calypso_id.toString() === option.id || unit.terminal_id === option.id)
-      .sort((a, b) => {
-        if (a.sensor_id > b.sensor_id) {
-          return 1;
-        }
-        if (a.sensor_id < b.sensor_id) {
-          return -1;
-        }
-        return a.signal_id - b.signal_id;
-      });
+      .sort((a, b) => a.signal_id - b.signal_id);
     setSelectedSensors(sensors || []);
     setCheckedSensors(sensors || []);
   };
@@ -131,34 +123,6 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
           </Button>
         </DialogActions>
       </Dialog>
-      {/* {openCaptureDialog && (
-        <CaptureDialog
-          open={openCaptureDialog}
-          handleClose={() => setOpenCaptureDialog(false)}
-          handleScan={(data: any, calypso_id: number | null) => {
-            if (calypso_id === null) {
-              toast.error('Ugyldigt Calypso ID');
-              setOpenCaptureDialog(false);
-              return;
-            }
-
-            if (
-              !uniqueUnitsByCalypsoId()?.some(
-                (unit) => unit.calypso_id.toString() === calypso_id.toString()
-              )
-            ) {
-              toast.error(`Ingen tilgængelige enheder med Calypso ID: ${calypso_id}`);
-              setOpenCaptureDialog(false);
-              return;
-            }
-
-            handleCalypsoIdChange(
-              uniqueUnitsByCalypsoId()?.find((unit) => unit.calypso_id === calypso_id) || null
-            );
-            setOpenCaptureDialog(false);
-          }}
-        />
-      )} */}
     </>
   );
 };
