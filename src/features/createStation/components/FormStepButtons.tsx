@@ -6,7 +6,7 @@ import Button from '~/components/Button';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AlertDialog from '~/components/AlertDialog';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {CreateStationPayload, TimeseriesPayload} from '../types';
+import {CreateStationPayload} from '../types';
 import {useMutation} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
@@ -71,15 +71,9 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
 
     const submitState: CreateStationPayload = {
       location: loc_id ? {loc_id: loc_id} : formState.location!,
-      timeseries: Object.values(formState.timeseries || {}).map<TimeseriesPayload>((ts) => ({
-        ...ts,
-        control_settings: (ts.control_settings && {
-            controls_per_year: ts.control_settings.controls_per_year,
-            lead_time: ts.control_settings.lead_time,
-        })
-        })),
+      timeseries: Object.values(formState.timeseries || {}),
     };
-    // console.log('Submitting with state', submitState);
+
     stamdataNewMutation.mutate(submitState);
   };
 
@@ -127,8 +121,6 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
             startIcon={!isMobile && <Save fontSize="small" />}
             onClick={async () => {
               const isStepValid = await onFormIsValid();
-              // console.log('isValid', isStepValid);
-              // console.log('formstate', formState);
               if (isStepValid) {
                 setShowAlert(true);
               }

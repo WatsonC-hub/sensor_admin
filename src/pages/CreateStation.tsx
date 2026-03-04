@@ -13,9 +13,11 @@ import {CreateLocationData} from '~/features/createStation/types';
 import {useLocation} from 'react-router-dom';
 import CreateStationStoreProvider from '~/features/createStation/state/CreateStationStoreProvider';
 import {useLocationData} from '~/hooks/query/useMetadata';
+import {useUser} from '~/features/auth/useUser';
 
 const CreateStation = () => {
   let {state} = useLocation();
+  const {superUser} = useUser();
   const [activeStep, setActiveStep] = useState(state?.loc_id ? 1 : 0);
   state = {
     ...state,
@@ -35,9 +37,11 @@ const CreateStation = () => {
           meta: {...data, ...state},
           contacts: undefined,
           location_access: undefined,
-          sla: {
-            days_to_visitation: 20,
-          },
+          sla: superUser
+            ? {
+                days_to_visitation: 20,
+              }
+            : undefined,
         },
       }}
     >

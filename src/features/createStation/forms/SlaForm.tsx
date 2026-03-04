@@ -15,8 +15,10 @@ const SLASchema = z.object({
     .min(1, {message: 'Løsningsfrist skal være 1 eller flere dage'}),
 });
 
+type SLA = z.infer<typeof SLASchema>;
+
 type SlaFormProps = {
-  setValues: (values: z.infer<typeof SLASchema>) => void;
+  setValues: (values: SLA) => void;
 };
 
 const SlaForm = ({setValues}: SlaFormProps) => {
@@ -26,7 +28,7 @@ const SlaForm = ({setValues}: SlaFormProps) => {
     state.removeSubmitter,
   ]);
 
-  const formMethods = useForm({
+  const formMethods = useForm<SLA>({
     resolver: zodResolver(SLASchema),
     defaultValues: sla,
   });

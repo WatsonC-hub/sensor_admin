@@ -27,9 +27,7 @@ const VisibilityForm = ({visibility, setValues}: VisibilityFormProps) => {
 
   const methods = useForm<VisibilityFormState>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      ...visibility,
-    },
+    defaultValues: visibility,
   });
 
   const {
