@@ -9,7 +9,6 @@ import VisibilityConfig from './VisibilityConfig';
 import {useAppContext} from '~/state/contexts';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import useDmpAllowedMapList from '~/features/station/api/useDmpAllowedMapList';
-import {useUser} from '~/features/auth/useUser';
 
 type ConfigurationProps = {
   ts_id: number;
@@ -17,15 +16,11 @@ type ConfigurationProps = {
 
 const Configuration = ({ts_id}: ConfigurationProps) => {
   const {loc_id} = useAppContext(['loc_id']);
-  const {superUser} = useUser();
   const {data: location_data} = useLocationData(loc_id);
   const {data: metadata} = useTimeseriesData(ts_id);
   const isJupiterType = [1, 11, 12, 16].includes(metadata?.tstype_id || 0);
   const isBorehole = location_data?.loctype_id === 9;
   const isDmpAllowed = useDmpAllowedMapList(ts_id);
-
-  const disabled =
-    (superUser && metadata?.is_customer_service) || (!superUser && !metadata?.is_customer_service);
 
   return (
     <>
@@ -54,7 +49,6 @@ const Configuration = ({ts_id}: ConfigurationProps) => {
           <Synchronization
             canSyncJupiter={isJupiterType && isBorehole}
             isDmpAllowed={isDmpAllowed ?? false}
-            disabled={disabled}
           />
         </Layout>
       )}
@@ -62,7 +56,7 @@ const Configuration = ({ts_id}: ConfigurationProps) => {
         <Typography variant="h6" gutterBottom>
           Tilgængelighed
         </Typography>
-        <VisibilityConfig loc_id={loc_id} ts_id={ts_id} disabled={disabled} />
+        <VisibilityConfig loc_id={loc_id} ts_id={ts_id} />
       </Layout>
     </>
   );

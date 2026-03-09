@@ -39,10 +39,9 @@ const Form = createTypedForm<SyncFormValues>();
 type SynchronizationProps = {
   canSyncJupiter?: boolean;
   isDmpAllowed?: boolean;
-  disabled?: boolean;
 };
 
-const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: SynchronizationProps) => {
+const Synchronization = ({canSyncJupiter, isDmpAllowed}: SynchronizationProps) => {
   const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const {location_permissions} = usePermissions(loc_id);
 
@@ -132,7 +131,7 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
               }
             >
               <Form.Checkbox
-                disabled={location_permissions !== 'edit' || metadata?.intakeno == null || disabled}
+                disabled={location_permissions !== 'edit' || metadata?.intakeno == null}
                 name="jupiter"
                 label="Jupiter"
               />
@@ -171,21 +170,19 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed, disabled}: Synchronizati
             </>
           )}
 
-          {!disabled && (
-            <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
-              <UpdateProgressButton
-                loc_id={loc_id}
-                disabled={isDirty || location_permissions !== 'edit'}
-                ts_id={ts_id}
-                progressKey="sync"
-              />
-              <Form.Cancel
-                disabled={location_permissions !== 'edit' || !isDirty}
-                cancel={() => resetSync()}
-              />
-              <Form.Submit disabled={location_permissions !== 'edit'} submit={submit} />
-            </Grid2>
-          )}
+          <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+            <UpdateProgressButton
+              loc_id={loc_id}
+              disabled={isDirty || location_permissions !== 'edit'}
+              ts_id={ts_id}
+              progressKey="sync"
+            />
+            <Form.Cancel
+              disabled={location_permissions !== 'edit' || !isDirty}
+              cancel={() => resetSync()}
+            />
+            <Form.Submit disabled={location_permissions !== 'edit'} submit={submit} />
+          </Grid2>
         </Form>
       )}
     </Box>
