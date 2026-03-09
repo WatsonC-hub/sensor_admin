@@ -44,7 +44,8 @@ const TypeSelect = (
     queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<{tstype_id: number; tstype_name: string}>>(
-        `/sensor_field/timeseries_types`
+        `/sensor_field/timeseries_types`,
+        {params: {filtered: true}}
       );
       return data;
     },
