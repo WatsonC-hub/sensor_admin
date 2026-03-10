@@ -1,11 +1,37 @@
 import {z} from 'zod';
+import {validatePhoneNumberLength} from 'libphonenumber-js';
 
 import {AccessType} from '~/helpers/EnumHelper';
+import {matchIsValidTel} from 'mui-tel-input';
 
 const contact_info = z.object({
   id: z.string().nullish(),
   name: z.string({required_error: 'Navn på kontakten skal udfyldes'}),
-  mobile: z.string().nullish(),
+  mobile: z
+    .string()
+    .nullish()
+    .superRefine((val, ctx) => {
+      if (val !== null && val !== undefined && val !== '') {
+        const phoneNumberLength = validatePhoneNumberLength(val);
+        console.log(phoneNumberLength);
+        if (phoneNumberLength !== undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              phoneNumberLength === 'TOO_SHORT'
+                ? 'Telefonnummeret er for kort'
+                : 'Telefonnummeret er for langt',
+          });
+        } else {
+          if (!matchIsValidTel(val)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Telefonnummeret skal være gyldigt',
+            });
+          }
+        }
+      }
+    }),
   email: z.union([z.string().email('Det skal være en valid email'), z.literal('')]).nullable(),
   comment: z.string().optional(),
   contact_role: z
