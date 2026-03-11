@@ -29,6 +29,8 @@ type ImagePayloadEdit = {
   data: EditImageData;
 };
 
+type Endpoint = 'station' | 'borehole';
+
 const dataURLtoFile = (dataurl: string | ArrayBuffer | null, filename?: string) => {
   if (typeof dataurl !== 'string') {
     throw new Error('Invalid dataurl: must be a non-null string');
@@ -47,9 +49,9 @@ const dataURLtoFile = (dataurl: string | ArrayBuffer | null, filename?: string) 
 };
 
 export const postImageMutationOptions = (
-  endpoint: string,
+  endpoint: Endpoint,
   id?: string | number
-): MutationOptions<{endpoint: string; id: string | number}, unknown, ImagePayload> => ({
+): MutationOptions<{endpoint: Endpoint; id: string | number}, unknown, ImagePayload> => ({
   mutationKey: ['image_post', endpoint, id],
   mutationFn: async (mutation_data: ImagePayload) => {
     const {path, data} = mutation_data;
@@ -70,10 +72,12 @@ export const postImageMutationOptions = (
     );
     return res;
   },
+  retry: 1,
+  gcTime: Infinity,
   retryDelay: (attemptIndex: number) => Math.min(10000 * 2 ** attemptIndex, 30000),
 });
 
-export const putImageMutationOptions = (endpoint: string, id?: string | number) => ({
+export const putImageMutationOptions = (endpoint: Endpoint, id?: string | number) => ({
   mutationKey: ['image_put', endpoint, id],
   mutationFn: async (mutation_data: ImagePayloadEdit) => {
     const {path, data} = mutation_data;
@@ -85,7 +89,7 @@ export const putImageMutationOptions = (endpoint: string, id?: string | number) 
   },
 });
 
-export const deleteImageMutationOptions = (endpoint: string, id?: string | number) => ({
+export const deleteImageMutationOptions = (endpoint: Endpoint, id?: string | number) => ({
   mutationKey: ['image_del', endpoint, id],
   mutationFn: async (mutation_data: ImagePayload) => {
     const {path} = mutation_data;
@@ -94,7 +98,7 @@ export const deleteImageMutationOptions = (endpoint: string, id?: string | numbe
   },
 });
 
-export const useImageUpload = (endpoint: string, id: string | number) => {
+export const useImageUpload = (endpoint: Endpoint, id: string | number) => {
   const post = useMutation({
     ...postImageMutationOptions(endpoint, id),
     meta: {

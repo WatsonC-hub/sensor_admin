@@ -13,14 +13,10 @@ interface Props {
 
 function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props) {
   const {
-    get: {data: images, error},
+    get: {data: images},
   } = useImages(typeId, type);
 
   const {del: deleteImage} = useImageUpload(type, typeId);
-
-  if (error) {
-    return;
-  }
 
   const handleEdit = (image: Image) => {
     setActiveImage(image);
