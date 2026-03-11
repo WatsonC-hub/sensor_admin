@@ -12,7 +12,7 @@ type Props = {
 };
 
 const WatlevmpSection = ({index}: Props) => {
-  const {isMobile} = useBreakpoints();
+  // const {isMobile} = useBreakpoints();
   const [intakeno, watlevmp, setState, deleteState] = useCreateStationStore((state) => [
     state.formState.timeseries?.[index]?.meta?.intakeno,
     state.formState.timeseries?.[index]?.watlevmp,
@@ -23,51 +23,58 @@ const WatlevmpSection = ({index}: Props) => {
   const id = `timeseries.${index}.watlevmp`;
   const show = watlevmp !== undefined;
 
-  if (show)
-    return (
-      <Box display={'flex'} flexDirection="row" alignItems={'start'}>
-        {!isMobile && (
-          <IconButton
-            color="primary"
-            size="small"
+  return (
+    // <Box display={'flex'} flexDirection="row" alignItems={'start'}>
+
+    <FormFieldset label="Målepunkt" labelPosition={-12} sx={{width: '100%', px: 1, py: 0}}>
+      {/* <Typography color="grey.700">Målepunkt</Typography> */}
+
+      {show ? (
+        <>
+          <Button
+            bttype="tertiary"
+            startIcon={<RemoveCircleOutline color="primary" />}
+            sx={{
+              width: 'fit-content',
+              borderWidth: 0,
+            }}
             onClick={() => {
               deleteState(`timeseries.${index}.watlevmp`);
             }}
           >
-            <RemoveCircleOutline fontSize="small" />
-          </IconButton>
-        )}
-        <FormFieldset
-          label={
-            isMobile ? (
-              <Button
-                bttype="borderless"
-                sx={{p: 0, m: 0}}
-                startIcon={<RemoveCircleOutline color="primary" fontSize="small" />}
-                onClick={() => {
-                  deleteState(`timeseries.${index}.watlevmp`);
-                }}
-              >
-                <Typography variant="body2" color="grey.700">
-                  Målepunkt
-                </Typography>
-              </Button>
-            ) : (
-              'Målepunkt'
-            )
-          }
-          labelPosition={isMobile ? -22 : -20}
-          sx={{width: '100%', p: 1}}
-        >
+            <Typography variant="body1" color="primary">
+              Registrer senere
+            </Typography>
+          </Button>
+
           <WatlevmpForm
             id={id}
             intakeno={intakeno}
             values={watlevmp}
             setValues={(values) => setState(`timeseries.${index}.watlevmp`, values)}
           />
-        </FormFieldset>
-      </Box>
-    );
+        </>
+      ) : (
+        <Box>
+          <Button
+            bttype="tertiary"
+            startIcon={<AddCircleOutline color="primary" />}
+            sx={{
+              width: 'fit-content',
+              borderWidth: 0,
+            }}
+            onClick={() => {
+              setState(`timeseries.${index}.watlevmp`, {});
+            }}
+          >
+            <Typography variant="body1" color="primary">
+              Tilføj
+            </Typography>
+          </Button>
+        </Box>
+      )}
+    </FormFieldset>
+  );
 
   return (
     <Box>

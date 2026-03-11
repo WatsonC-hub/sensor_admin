@@ -25,40 +25,32 @@ const ControlSettingSection = ({uuid, setShow}: Props) => {
 
   if (show)
     return (
-      <Box display="flex" flexDirection="row" alignItems={'start'}>
-        {!isMobile && (
-          <IconButton
-            color="primary"
-            size="small"
+      <Box display="flex" flexDirection="column" alignItems={'start'}>
+        <FormFieldset
+          label="Kontrolhyppighed"
+          labelPosition={isMobile ? -22 : -20}
+          sx={{width: '100%', p: 1}}
+        >
+          <Button
+            bttype="primary"
+            startIcon={<RemoveCircleOutline color="primary" />}
+            sx={{
+              width: 'fit-content',
+              backgroundColor: 'transparent',
+              border: 'none',
+              px: 1,
+              ':hover': {
+                backgroundColor: 'grey.200',
+              },
+            }}
             onClick={() => {
               setShow(false);
             }}
           >
-            <RemoveCircleOutline fontSize="small" />
-          </IconButton>
-        )}
-        <FormFieldset
-          label={
-            isMobile ? (
-              <Button
-                bttype="borderless"
-                sx={{p: 0, m: 0}}
-                startIcon={<RemoveCircleOutline color="primary" />}
-                onClick={() => {
-                  setShow(false);
-                }}
-              >
-                <Typography variant="body2" color="grey.700">
-                  Kontrolhyppighed
-                </Typography>
-              </Button>
-            ) : (
-              'Kontrolhyppighed'
-            )
-          }
-          labelPosition={isMobile ? -22 : -20}
-          sx={{width: '100%', p: 1}}
-        >
+            <Typography variant="body1" color={'primary'}>
+              Senere
+            </Typography>
+          </Button>
           <ControlSettingForm
             id={id}
             values={control_settings}
@@ -87,7 +79,7 @@ const ControlSettingSection = ({uuid, setShow}: Props) => {
         }}
       >
         <Typography variant="body1" color="primary">
-          Tilføj kontrolhyppighed
+          Registrer kontrolhyppighed
         </Typography>
       </Button>
     </Box>

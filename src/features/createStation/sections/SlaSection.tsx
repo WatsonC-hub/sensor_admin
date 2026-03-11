@@ -22,45 +22,28 @@ const SlaSection = () => {
   if (show)
     return (
       <Box display="flex" flexDirection="row" alignItems={'start'}>
-        {!isMobile && (
-          <IconButton
-            color="primary"
-            size="small"
-            onClick={() => {
-              deleteState(`location.sla`);
-            }}
-          >
-            <RemoveCircleOutline fontSize="small" />
-          </IconButton>
-        )}
-        <FormFieldset
-          label={
-            isMobile ? (
-              <Button
-                bttype="borderless"
-                sx={{p: 0, m: 0}}
-                startIcon={<RemoveCircleOutline color="primary" />}
-                onClick={() => {
-                  deleteState(`location.sla`);
-                }}
-              >
-                <Typography variant="body2" color="grey.700">
-                  SLA (Service Level Agreement)
-                </Typography>
-              </Button>
-            ) : (
-              'SLA (Service Level Agreement)'
-            )
-          }
-          labelPosition={isMobile ? -22 : -20}
-          sx={{width: '100%', p: 1}}
-        >
+        <Box display="flex">
           <SlaForm
             setValues={(values) => {
               setState('location.sla', values);
             }}
           />
-        </FormFieldset>
+          <Button
+            bttype="tertiary"
+            startIcon={<RemoveCircleOutline color="primary" />}
+            sx={{
+              width: 'fit-content',
+              borderWidth: 0,
+            }}
+            onClick={() => {
+              deleteState('location.sla');
+            }}
+          >
+            <Typography variant="body1" color="primary">
+              Senere
+            </Typography>
+          </Button>
+        </Box>
       </Box>
     );
 

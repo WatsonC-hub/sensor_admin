@@ -26,6 +26,10 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
       loctype_id,
       tstype_id,
     },
+    defaultValues: {
+      dmp: null,
+      jupiter: null,
+    },
     values: {
       ...values,
     },
@@ -63,9 +67,10 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
               options={[
                 {value: true, label: 'Ja'},
                 {value: false, label: 'Nej'},
+                {value: null, label: 'Senere'},
               ]}
               gridSizes={12}
-              label="Synkronisere til jupiter?"
+              label="Synkroniser til jupiter?"
               size="small"
               direction="row"
               toggleButtonProps={{
@@ -88,9 +93,10 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
                 options={[
                   {value: {}, label: 'Ja'},
                   {value: false, label: 'Nej'},
+                  {value: null, label: 'Senere'},
                 ]}
                 gridSizes={12}
-                label="Synkronisere til DMP?"
+                label="Synkroniser til DMP?"
                 size="small"
                 direction="row"
                 toggleButtonProps={{
@@ -98,18 +104,14 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
                   size: 'small',
                 }}
                 gridDirection="row"
-                warning={(value) => {
-                  if (value === undefined && errors.dmp) {
-                    return 'Vælg om der skal synkroniseres til DMP';
-                  }
-                  return '';
-                }}
                 onChangeCallback={(value) => {
-                  const isActive = value !== false;
+                  const isActive = value != false && value != undefined;
                   setDmpActive(isActive);
-                  if (!isActive) {
-                    setValue('dmp', false);
-                  }
+                  console.log('value', value);
+                  setValue('dmp', value);
+                  // if (!isActive) {
+                  //   setValue('dmp', false);
+                  // }
                 }}
               />
 

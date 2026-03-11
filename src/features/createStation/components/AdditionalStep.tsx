@@ -17,8 +17,8 @@ type Props = {
 };
 
 const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
-  const [submitters, timeseries] = useCreateStationStore((state) => [
-    state.submitters,
+  const [validateSubmitters, timeseries] = useCreateStationStore((state) => [
+    state.validateSubmitters,
     state.formState.timeseries,
   ]);
   const {
@@ -33,29 +33,19 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
           <Typography variant="caption" alignContent={'center'}>
             Felter markeret med en stjerne (*) er obligatoriske.
           </Typography>
-          <FormFieldset
-            label="Yderligere oplysninger"
-            sx={{width: '100%', p: 1}}
-            labelPosition={-20}
-          >
-            {Object.values(timeseries ?? {}).length > 0 && <VisibilitySection />}
 
-            {superUser && <SlaSection />}
-            <ContactForm />
-            <LocationAccessForm />
-            {ressources && <RessourceSection />}
-          </FormFieldset>
+          {Object.values(timeseries ?? {}).length > 0 && <VisibilitySection />}
+
+          {superUser && <SlaSection />}
+          <ContactForm />
+          <LocationAccessForm />
+          {ressources && <RessourceSection />}
+
           <FormStepButtons
             activeStep={activeStep}
             setActiveStep={setActiveStep}
             key={'additional'}
-            onFormIsValid={async () => {
-              const valid = (
-                await Promise.all(Object.values(submitters).map(async (cb) => await cb()))
-              ).every(Boolean);
-
-              return valid;
-            }}
+            onFormIsValid={validateSubmitters}
           />
         </>
       )}

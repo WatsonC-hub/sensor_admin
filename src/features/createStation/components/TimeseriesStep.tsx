@@ -12,7 +12,7 @@ type Props = {
 };
 
 const TimeseriesStep = ({activeStep, setActiveStep, loc_id}: Props) => {
-  const submitters = useCreateStationStore((state) => state.submitters);
+  const validateSubmitters = useCreateStationStore((state) => state.validateSubmitters);
 
   return (
     <>
@@ -27,13 +27,7 @@ const TimeseriesStep = ({activeStep, setActiveStep, loc_id}: Props) => {
             setActiveStep={setActiveStep}
             key={'timeseries'}
             loc_id={loc_id}
-            onFormIsValid={async () => {
-              const valid = (
-                await Promise.all(Object.values(submitters).map(async (cb) => await cb()))
-              ).every(Boolean);
-
-              return valid;
-            }}
+            onFormIsValid={validateSubmitters}
           />
         </>
       )}

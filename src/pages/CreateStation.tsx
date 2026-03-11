@@ -35,8 +35,11 @@ const CreateStation = () => {
       defaultValues={{
         location: {
           meta: {...data, ...state},
-          contacts: undefined,
+          contacts: [],
           location_access: undefined,
+          visibility: {
+            requires_auth: false,
+          },
           sla: superUser
             ? {
                 days_to_visitation: 20,

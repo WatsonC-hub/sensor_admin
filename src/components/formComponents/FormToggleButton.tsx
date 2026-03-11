@@ -56,7 +56,7 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
       spacing={1}
       alignItems="center"
     >
-      <Grid2 size={9}>
+      <Grid2 size={12}>
         <Controller
           name={name}
           control={control}
@@ -86,7 +86,6 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
                   exclusive
                   color="primary"
                   onChange={(event, newValue) => {
-                    if (newValue === null) return;
                     onChange(newValue);
                     if (onChangeCallback) onChangeCallback(newValue);
                   }}

@@ -129,6 +129,7 @@ export type CreateStationStoreState = {
   deleteState: <P extends Path<Partial<CreateStationFormState>>>(path: P) => void;
   resetState: <P extends Path<Partial<CreateStationFormState>>>(path: P) => void;
   registerSubmitter: (id: string, callback: () => Promise<boolean>) => void;
+  validateSubmitters: () => Promise<boolean>;
   removeSubmitter: (id: string) => void;
   runSubmitters: () => boolean;
   clearSubmitters: () => void;
@@ -147,7 +148,7 @@ type DeepPartial<T> = {
 
 const createStationStore = (defaultValues?: DeepPartial<CreateStationFormState>) =>
   createStore<CreateStationStoreState>()(
-    devtools((set) => ({
+    devtools((set, get) => ({
       formState: defaultValues,
       submitters: {},
       isFormError: false,
@@ -173,7 +174,21 @@ const createStationStore = (defaultValues?: DeepPartial<CreateStationFormState>)
         set((state) => ({
           submitters: {...state.submitters, [id]: callback},
         })),
-
+      validateSubmitters: async () => {
+        const state = get();
+        const valid = (
+          await Promise.all(
+            Object.entries(state.submitters).map(async ([id, cb]) => {
+              const isValid = await cb();
+              if (!isValid) {
+                console.log(id, isValid);
+              }
+              return isValid;
+            })
+          )
+        ).every(Boolean);
+        return valid;
+      },
       removeSubmitter: (id) =>
         set((state) => {
           const submitters = {
@@ -183,6 +198,7 @@ const createStationStore = (defaultValues?: DeepPartial<CreateStationFormState>)
 
           return {submitters: submitters};
         }),
+
       clearSubmitters: () => set(() => ({submitters: {}})),
       runValidators: () => true,
     }))

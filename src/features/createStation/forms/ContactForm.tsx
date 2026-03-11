@@ -8,7 +8,7 @@ import {setRoleName} from '~/features/stamdata/components/stationDetails/contact
 import SimpleContactList from '../helper/SimpleContactList';
 import {Box, IconButton, Typography} from '@mui/material';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {AddCircleOutline, Check, RemoveCircleOutline} from '@mui/icons-material';
+import {AddCircleOutline, Check, DoNotDisturb, RemoveCircleOutline} from '@mui/icons-material';
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -16,7 +16,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 const ContactForm = () => {
   const {isMobile} = useBreakpoints();
   const [contactDialogOpen, setContactDialogOpen] = useState<boolean>(false);
-  const [error, setError] = useState<string | undefined>(undefined);
+  // const [error, setError] = useState<string | undefined>(undefined);
   const [contacts, location, setState, deleteState, registerSubmitter, removeSubmitter] =
     useCreateStationStore((state) => [
       state.formState.location?.contacts,
@@ -31,15 +31,13 @@ const ContactForm = () => {
     mode: 'add',
   });
 
-  const notRelevant = Array.isArray(contacts) && contacts.length === 0;
-
   const onValidChange = (value: ContactTable[] | undefined) => {
     setState('location.contacts', value);
   };
 
   const removeContact = (index: number) => {
     const filteredContacts = (contacts || []).filter((_, i) => i !== index);
-    if (filteredContacts.length === 0) onValidChange(undefined);
+    if (filteredContacts.length === 0) onValidChange([]);
     else onValidChange(filteredContacts);
   };
 
@@ -48,164 +46,135 @@ const ContactForm = () => {
       if (Array.isArray(contacts) || !Object.keys(location || {}).includes('contacts')) {
         return Promise.resolve(true);
       }
-      setError('Tilføj en kontakt eller tryk på "Ikke relevant"');
+      // setError('Tilføj en kontakt eller tryk på "Ikke relevant"');
       return Promise.resolve(false);
     });
 
     return () => removeSubmitter('location.contacts');
   }, [contacts, location]);
 
-  const show = Object.keys(location || {}).includes('contacts');
+  // if (show)
+  return (
+    <Box display="flex" flexDirection="row" alignItems={'start'}>
+      <FormFieldset label={'Kontakter'} labelPosition={-20} sx={{width: '100%', p: 1}}>
+        <FormProvider {...contactInfoMethods}>
+          <Box width={'100%'} display={'flex'} flexDirection={'column'}>
+            <SimpleContactList values={contacts} onRemove={removeContact} />
 
-  if (show)
-    return (
-      <Box display="flex" flexDirection="row" alignItems={'start'}>
-        {!isMobile && (
-          <IconButton
-            color="primary"
-            size="small"
-            onClick={() => {
-              deleteState('location.contacts');
-              setError(undefined);
-            }}
-          >
-            <RemoveCircleOutline fontSize="small" />
-          </IconButton>
-        )}
-        <FormFieldset
-          label={
-            isMobile ? (
+            <Box display="flex" flexDirection="row" justifyContent={'flex-start'} gap={1}>
               <Button
-                bttype="borderless"
-                sx={{p: 0, m: 0}}
-                startIcon={<RemoveCircleOutline color="primary" />}
+                bttype="primary"
+                startIcon={<AddCircleOutline />}
+                sx={{
+                  width: 'fit-content',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  px: '6.5px',
+                  color: 'primary.main',
+                  ':hover': {
+                    backgroundColor: 'grey.200',
+                  },
+                }}
+                // disabled={contacts === undefined}
                 onClick={() => {
-                  deleteState('location.contacts');
-                  setError(undefined);
+                  setContactDialogOpen(true);
                 }}
               >
-                <Typography variant="body2" color="grey.700">
-                  Kontakter
-                </Typography>
+                <Typography variant="body1">Tilføj</Typography>
               </Button>
-            ) : (
-              'Kontakter'
-            )
-          }
-          labelPosition={-20}
-          sx={{width: '100%', p: 1}}
-        >
-          <FormProvider {...contactInfoMethods}>
-            <Box width={'100%'} display={'flex'} flexDirection={'column'}>
-              <SimpleContactList
-                values={(contacts || []).map((item) => {
-                  return {name: item.name, email: item.email ?? ''};
-                })}
-                onRemove={removeContact}
-                warning={
-                  error &&
-                  contacts == undefined && (
-                    <Typography variant="caption" color="error">
-                      {error}
-                    </Typography>
-                  )
-                }
-              />
-              <Box display="flex" flexDirection="row" justifyContent={'flex-start'} gap={1}>
-                {!notRelevant && (
-                  <Button
-                    bttype="primary"
-                    startIcon={<AddCircleOutline />}
-                    sx={{
-                      width: 'fit-content',
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      px: '6.5px',
-                      color: 'primary.main',
-                      ':hover': {
-                        backgroundColor: 'grey.200',
-                      },
-                    }}
-                    onClick={() => {
-                      setContactDialogOpen(true);
-                    }}
-                  >
-                    <Typography variant="body1">Tilføj kontakt</Typography>
-                  </Button>
-                )}
-                {contacts === undefined && (
-                  <Button
-                    bttype="tertiary"
-                    startIcon={<Check />}
-                    sx={{
-                      width: 'fit-content',
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      color: 'primary.main',
-                      px: '6.5px',
-                      ':hover': {
-                        backgroundColor: 'grey.200',
-                      },
-                    }}
-                    onClick={() => {
-                      setState('location.contacts', []);
-                    }}
-                  >
-                    <Typography variant="body1">Ikke relevant</Typography>
-                  </Button>
-                )}
-              </Box>
+              <Button
+                bttype="primary"
+                startIcon={<DoNotDisturb />}
+                sx={{
+                  width: 'fit-content',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  px: '6.5px',
+                  color: 'primary.main',
+                  ':hover': {
+                    backgroundColor: 'grey.200',
+                  },
+                }}
+                disabled={Array.isArray(contacts)}
+                onClick={() => {
+                  setState('location.contacts', []);
+                }}
+              >
+                <Typography variant="body1">Ingen kontakter</Typography>
+              </Button>
+
+              <Button
+                bttype="primary"
+                startIcon={<RemoveCircleOutline />}
+                sx={{
+                  width: 'fit-content',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  px: '6.5px',
+                  color: 'primary.main',
+                  ':hover': {
+                    backgroundColor: 'grey.200',
+                  },
+                }}
+                disabled={(Array.isArray(contacts) && contacts.length > 0) || contacts == undefined}
+                onClick={() => {
+                  deleteState('location.contacts');
+                }}
+              >
+                <Typography variant="body1">Registrer senere</Typography>
+              </Button>
             </Box>
-            {contactDialogOpen && (
-              <AddContactInfo
-                open={contactDialogOpen}
-                setOpen={(open) => {
-                  setContactDialogOpen(open);
-                }}
-                onValidate={(data) => {
-                  data.contact_type = lowerCase(data.contact_type || '');
+          </Box>
+          {contactDialogOpen && (
+            <AddContactInfo
+              open={contactDialogOpen}
+              setOpen={(open) => {
+                setContactDialogOpen(open);
+              }}
+              onValidate={(data) => {
+                data.contact_type = lowerCase(data.contact_type || '');
 
-                  onValidChange([
-                    ...(contacts || []),
-                    {
-                      ...data,
-                      contact_role_name: setRoleName(data.contact_role || 0),
-                      mobile: data.mobile ?? null,
-                    },
-                  ]);
-                  setContactDialogOpen(false);
-                }}
-              />
-            )}
-          </FormProvider>
-        </FormFieldset>
-      </Box>
-    );
-
-  return (
-    <Box alignItems={'center'}>
-      <Button
-        bttype="primary"
-        startIcon={<AddCircleOutline color="primary" />}
-        sx={{
-          width: 'fit-content',
-          backgroundColor: 'transparent',
-          border: 'none',
-          px: 1,
-          ':hover': {
-            backgroundColor: 'grey.200',
-          },
-        }}
-        onClick={() => {
-          setState('location.contacts', undefined);
-        }}
-      >
-        <Typography variant="body1" color="primary">
-          Tilføj kontakter
-        </Typography>
-      </Button>
+                onValidChange([
+                  ...(contacts || []),
+                  {
+                    ...data,
+                    contact_role_name: setRoleName(data.contact_role || 0),
+                    mobile: data.mobile ?? null,
+                  },
+                ]);
+                setContactDialogOpen(false);
+              }}
+            />
+          )}
+        </FormProvider>
+      </FormFieldset>
     </Box>
   );
+
+  // return (
+  //   <Box alignItems={'center'}>
+  //     <Button
+  //       bttype="primary"
+  //       startIcon={<AddCircleOutline color="primary" />}
+  //       sx={{
+  //         width: 'fit-content',
+  //         backgroundColor: 'transparent',
+  //         border: 'none',
+  //         px: 1,
+  //         ':hover': {
+  //           backgroundColor: 'grey.200',
+  //         },
+  //       }}
+  //       onClick={() => {
+  //         setState('location.contacts', undefined);
+  //       }}
+  //     >
+  //       <Typography variant="body1" color="primary">
+  //         Tilføj kontakter
+  //       </Typography>
+  //     </Button>
+  //   </Box>
+  // );
 };
 
 export default ContactForm;

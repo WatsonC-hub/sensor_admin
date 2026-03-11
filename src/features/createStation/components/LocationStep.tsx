@@ -11,7 +11,7 @@ type Props = {
 };
 
 const LocationStep = ({activeStep, setActiveStep}: Props) => {
-  const submitters = useCreateStationStore((state) => state.submitters);
+  const validateSubmitters = useCreateStationStore((state) => state.validateSubmitters);
 
   return (
     <>
@@ -25,13 +25,7 @@ const LocationStep = ({activeStep, setActiveStep}: Props) => {
             activeStep={activeStep}
             setActiveStep={setActiveStep}
             key={'location'}
-            onFormIsValid={async () => {
-              const valid = (
-                await Promise.all(Object.values(submitters).map(async (cb) => await cb()))
-              ).every(Boolean);
-
-              return valid;
-            }}
+            onFormIsValid={validateSubmitters}
           />
         </>
       )}

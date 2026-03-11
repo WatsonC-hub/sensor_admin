@@ -17,8 +17,9 @@ export type SyncFormState = {
         owner_cvr?: number;
         owner_name?: string;
       }
-    | false;
-  jupiter?: boolean;
+    | false
+    | null;
+  jupiter?: boolean | null;
 };
 
 export type CreateLocationData = {
@@ -69,7 +70,7 @@ export type CreateStationFormState = {
 
 export type SimpleContact = {
   name: string;
-  email: string;
+  email: string | null;
 };
 
 export type SimpleLocationAccess = {
