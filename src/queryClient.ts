@@ -107,6 +107,7 @@ const queryClient = new QueryClient({
             return false;
           },
         });
+      queryClient.getMutationCache().remove(mutation);
     },
     onError: (error) => {
       const detail = error.response?.data.detail;

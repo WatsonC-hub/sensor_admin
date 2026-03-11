@@ -1,7 +1,6 @@
 import {Call, Email} from '@mui/icons-material';
 import {Grid, InputAdornment, IconButton, Checkbox, FormControlLabel} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {matchIsValidTel} from 'mui-tel-input';
 import {useEffect} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 import {isValidPhoneNumber} from 'libphonenumber-js';
