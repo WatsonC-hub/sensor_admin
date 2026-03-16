@@ -7,6 +7,8 @@ import {Image} from '~/types';
 import Button from './Button';
 import {ImagePayload, useImageUpload} from '~/hooks/query/useImageUpload';
 import {APIError} from '~/queryClient';
+import {useLocationData} from '~/hooks/query/useMetadata';
+import {useFindBorehole} from '~/features/station/api/useBorehole';
 
 type ImageViewerProps = {
   images: Array<Image> | undefined;
@@ -35,7 +37,8 @@ function downloadDataUri(dataUri: string, filename: string) {
   // --- Desktop browsers (Chrome, Edge, Firefox, etc.) ---
   const link = document.createElement('a');
   link.href = url;
-  link.download = `${filename.replace(/\.[^/.]+$/, '')}.${imageFormat}`;
+  // link.download = `${filename.replace(/\.[^/.]+$/, '')}.${imageFormat}`;
+  link.download = `${filename}.${imageFormat}`;
   document.body.appendChild(link);
 
   // Safari (iOS) ignores .click() on hidden links unless in user gesture
@@ -51,7 +54,8 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
   const [size, setSize] = React.useState(480);
   const [mobileRatio, setMobileRatio] = React.useState(false);
   useMutationState({filters: {exact: true, mutationKey: ['image_post', type, id]}});
-
+  const {data} = useLocationData(typeof id === 'number' ? id : undefined);
+  const {data: boreholeData} = useFindBorehole(typeof id === 'string' ? id : undefined);
   const queryClient = useQueryClient();
 
   const mutationCache = queryClient.getMutationCache();
@@ -90,7 +94,7 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
       }}
     >
       <Grid2 container spacing={2}>
-        {mutations.map((m) => {
+        {mutations.map((m, index) => {
           return (
             <Grid2
               key={m.mutationId}
@@ -149,7 +153,10 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
                     bttype="primary"
                     onClick={async () => {
                       try {
-                        downloadDataUri(m.state.variables?.data.uri as string, 'image');
+                        const filename = data?.loc_name
+                          ? `${data.loc_name}_${index + (images?.length ?? 0)}`
+                          : `${boreholeData?.boreholeno}_${index + (images?.length ?? 0)}`;
+                        downloadDataUri(m.state.variables?.data.uri as string, filename);
                         mutationCache.remove(m);
                       } catch (err) {
                         console.error('Failed to download image:', err);
@@ -158,15 +165,17 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
                   >
                     Gem billede lokalt
                   </Button>
-                  <Button
-                    bttype="tertiary"
-                    onClick={() => {
-                      mutationCache.remove(m);
-                      post.mutate(m.state.variables as ImagePayload);
-                    }}
-                  >
-                    Genupload
-                  </Button>
+                  {m.state.status === 'error' && (
+                    <Button
+                      bttype="tertiary"
+                      onClick={() => {
+                        mutationCache.remove(m);
+                        post.mutate(m.state.variables as ImagePayload);
+                      }}
+                    >
+                      Genupload
+                    </Button>
+                  )}
                 </Box>
               </Box>
             </Grid2>
