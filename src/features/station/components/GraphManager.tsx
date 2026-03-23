@@ -234,11 +234,12 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
 
     let alarm_lines: Array<{name: string; level: number}> = [];
     if (
+      Array.isArray(algorithms) &&
       algorithms?.find(
         (algorithm) => algorithm.algorithm === 'ThresholdAlarm' && algorithm.disabled === false
       ) !== undefined
     ) {
-      const algorithm = algorithms.find(
+      const algorithm = algorithms?.find(
         (algorithm) => algorithm.algorithm === 'ThresholdAlarm' && algorithm.disabled === false
       );
       alarm_lines = Object.entries(algorithm?.parameter_values ?? {})
