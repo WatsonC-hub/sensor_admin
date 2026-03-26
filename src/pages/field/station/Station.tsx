@@ -49,13 +49,14 @@ export default function Station() {
   useEffect(() => {
     if (
       metadata?.calculated &&
-      (pageToShow == 'tilsyn' ||
-        pageToShow === 'gu' ||
-        pageToShow === 'målepunkt' ||
-        pageToShow === 'gt' ||
-        pageToShow === 'justeringer')
+      (pageToShow == stationPages.TILSYN ||
+        pageToShow === stationPages.UDSTYR ||
+        pageToShow === stationPages.JUSTERINGER)
     )
-      setPageToShow('pejling');
+      setPageToShow(stationPages.PEJLING);
+
+    if (metadata?.tstype_id != 1 && pageToShow === stationPages.MAALEPUNKT)
+      setPageToShow(stationPages.PEJLING);
     setShowForm(null);
   }, [ts_id, pageToShow]);
 
@@ -104,23 +105,21 @@ export default function Station() {
         {pageToShow === stationPages.JUSTERINGER && iotAccess && (
           <QAHistory key={`justeringer-${ts_id}`} />
         )}
-        {pageToShow === stationPages.MAALEPUNKT &&
-          metadata?.tstype_id === 1 &&
-          metadata.calculated === false && (
-            <>
-              <Box key={`graph-${ts_id}`}>
-                <GraphManager
-                  defaultDataToShow={{
-                    Kontrolmålinger: true,
-                  }}
-                />
-              </Box>
-              <Divider />
-              <StationPageBoxLayout key={`timeseries-${ts_id}`}>
-                <ReferenceForm />
-              </StationPageBoxLayout>
-            </>
-          )}
+        {pageToShow === stationPages.MAALEPUNKT && metadata?.tstype_id === 1 && (
+          <>
+            <Box key={`graph-${ts_id}`}>
+              <GraphManager
+                defaultDataToShow={{
+                  Kontrolmålinger: true,
+                }}
+              />
+            </Box>
+            <Divider />
+            <StationPageBoxLayout key={`timeseries-${ts_id}`}>
+              <ReferenceForm />
+            </StationPageBoxLayout>
+          </>
+        )}
         {pageToShow === stationPages.ALARM && (
           <>
             <Box key={`graph-${ts_id}`}>
