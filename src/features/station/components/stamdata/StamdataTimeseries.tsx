@@ -44,7 +44,8 @@ const TypeSelect = ({...props}: TypeSelectProps) => {
   const {data: timeseries_types} = useQuery({
     queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<Tstype>>(`/sensor_field/timeseries_types`);
+      const {data} = await apiClient.get<Array<Tstype>>(`/sensor_field/timeseries_types`,
+        {params: {filtered: true}});
       return data;
     },
     staleTime: Infinity, // Cache indefinitely

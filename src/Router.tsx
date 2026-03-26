@@ -62,7 +62,7 @@ const Router = () => {
       shortcut: 'C',
       options: calypsoIDData
         ?.filter((item) => item.active && item.calypso_id != null)
-        ?.map((item) => ({
+        .map((item) => ({
           label: `${item.calypso_id} (${item.ts_name})`,
           value: item,
         })), // This will be populated dynamically

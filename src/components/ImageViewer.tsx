@@ -1,11 +1,14 @@
 import {Box, CircularProgress, Grid2, Skeleton, Typography} from '@mui/material';
-import {MutationState, useMutationState} from '@tanstack/react-query';
+import {Mutation, useMutationState, useQueryClient} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 
 import ImageCard from '~/components/ImageCard';
 import {Image} from '~/types';
 import Button from './Button';
-import {ImagePayload} from '~/hooks/query/useImageUpload';
+import {ImagePayload, useImageUpload} from '~/hooks/query/useImageUpload';
+import {APIError} from '~/queryClient';
+import {useLocationData} from '~/hooks/query/useMetadata';
+import {useFindBorehole} from '~/features/station/api/useBorehole';
 
 type ImageViewerProps = {
   images: Array<Image> | undefined;
@@ -34,7 +37,8 @@ function downloadDataUri(dataUri: string, filename: string) {
   // --- Desktop browsers (Chrome, Edge, Firefox, etc.) ---
   const link = document.createElement('a');
   link.href = url;
-  link.download = `${filename.replace(/\.[^/.]+$/, '')}.${imageFormat}`;
+  // link.download = `${filename.replace(/\.[^/.]+$/, '')}.${imageFormat}`;
+  link.download = `${filename}.${imageFormat}`;
   document.body.appendChild(link);
 
   // Safari (iOS) ignores .click() on hidden links unless in user gesture
@@ -49,10 +53,19 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
   const [columns, setColumns] = React.useState(6);
   const [size, setSize] = React.useState(480);
   const [mobileRatio, setMobileRatio] = React.useState(false);
+  useMutationState({filters: {exact: true, mutationKey: ['image_post', type, id]}});
+  const {data} = useLocationData(typeof id === 'number' ? id : undefined);
+  const {data: boreholeData} = useFindBorehole(typeof id === 'string' ? id : undefined);
+  const queryClient = useQueryClient();
 
-  const image_cache = useMutationState<MutationState<unknown, unknown, ImagePayload>>({
-    filters: {exact: true, mutationKey: ['image_post', type, id]},
-  }).filter((m) => m.status === 'error' || m.status === 'pending');
+  const mutationCache = queryClient.getMutationCache();
+  const mutations = mutationCache
+    .findAll({exact: true, mutationKey: ['image_post', type, id]})
+    .filter((m) => m.state.status === 'error' || m.state.status === 'pending') as Mutation<
+    unknown,
+    APIError,
+    ImagePayload
+  >[];
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver((event) => {
@@ -72,6 +85,7 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
     return () => resizeObserver.disconnect();
   }, [images]);
 
+  const {post} = useImageUpload(type, id);
   return (
     <Box
       sx={{
@@ -80,79 +94,100 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
       }}
     >
       <Grid2 container spacing={2}>
-        {image_cache.map((m, index) => (
-          <Grid2
-            key={`pending-${index}`}
-            size={mobileRatio ? 12 : columns}
-            display={'flex'}
-            justifyContent={'center'}
-          >
-            <Box
+        {mutations.map((m, index) => {
+          return (
+            <Grid2
+              key={m.mutationId}
+              size={mobileRatio || (images || []).length + mutations.length === 1 ? 12 : columns}
               display={'flex'}
-              sx={{
-                position: 'relative',
-                width: size,
-                height: size,
-                borderRadius: 2,
-              }}
+              justifyContent={'center'}
             >
-              <Skeleton
-                variant="rectangular"
+              <Box
+                display={'flex'}
                 sx={{
                   position: 'relative',
-                  width: '100%',
-                  height: '100%',
+                  width: size,
+                  height: size,
                   borderRadius: 2,
-                  zIndex: 1,
-                }}
-              />
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  alignContent: 'center',
-                  gap: 1,
-                  zIndex: 2,
                 }}
               >
-                <CircularProgress size={48} thickness={4} sx={{color: 'primary.main'}} />
-                {m.isPaused && (
+                <Skeleton
+                  variant="rectangular"
+                  sx={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 2,
+                    zIndex: 1,
+                  }}
+                />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    alignContent: 'center',
+                    gap: 1,
+                    zIndex: 2,
+                  }}
+                >
+                  {!m.state.error && (
+                    <CircularProgress size={48} thickness={4} sx={{color: 'primary.main'}} />
+                  )}
                   <Typography
                     variant="body2"
                     sx={{color: 'primary.main', width: 300, mx: 'auto'}}
                     textAlign={'center'}
                   >
-                    Upload afventer at blive genoptaget...
+                    {m.state.status === 'error'
+                      ? 'Upload fejlede...'
+                      : m.state.isPaused
+                        ? 'Afventer at blive genoptaget...'
+                        : 'Uploader...'}
                   </Typography>
-                )}
-                <Button
-                  bttype="primary"
-                  onClick={async () => {
-                    try {
-                      downloadDataUri(m.variables?.data.uri as string, 'image');
-                    } catch (err) {
-                      console.error('Failed to download image:', err);
-                    }
-                  }}
-                >
-                  Gem billede lokalt
-                </Button>
+                  <Button
+                    bttype="primary"
+                    onClick={async () => {
+                      try {
+                        const filename = data?.loc_name
+                          ? `${data.loc_name}_${index + (images?.length ?? 0)}`
+                          : `${boreholeData?.boreholeno}_${index + (images?.length ?? 0)}`;
+                        downloadDataUri(m.state.variables?.data.uri as string, filename);
+                        mutationCache.remove(m);
+                      } catch (err) {
+                        console.error('Failed to download image:', err);
+                      }
+                    }}
+                  >
+                    Gem billede lokalt
+                  </Button>
+                  {m.state.status === 'error' && (
+                    <Button
+                      bttype="tertiary"
+                      onClick={() => {
+                        mutationCache.remove(m);
+                        post.mutate(m.state.variables as ImagePayload);
+                      }}
+                    >
+                      Genupload
+                    </Button>
+                  )}
+                </Box>
               </Box>
-            </Box>
-          </Grid2>
-        ))}
+            </Grid2>
+          );
+        })}
 
         {images?.map((elem) => (
           <Grid2
             key={elem.gid}
             display={'flex'}
             flexWrap={'wrap'}
-            size={mobileRatio || images.length + image_cache.length === 1 ? 12 : columns}
+            size={mobileRatio || images.length + mutations.length === 1 ? 12 : columns}
             justifyContent={'center'}
           >
             <ImageCard

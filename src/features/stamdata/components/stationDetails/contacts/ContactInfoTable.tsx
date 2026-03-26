@@ -4,7 +4,6 @@ import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-reac
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
-
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {initialContactData} from '~/consts';
@@ -149,8 +148,8 @@ const ContactInfoTable = ({loc_id}: Props) => {
       },
       {
         header: 'Tlf.',
-        accessorKey: 'mobile',
-        size: 20,
+        id: 'mobile',
+        accessorFn: (row) => row.mobile ?? '',
         enableColumnActions: false,
       },
       {

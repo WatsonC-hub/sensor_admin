@@ -27,7 +27,7 @@ import {useAppContext} from '~/state/contexts';
 const EditLocation = () => {
   const setLocId = useDisplayState((state) => state.setLocId);
   const [, setPage] = useStationPages();
-  const {loc_id} = useAppContext(['loc_id']);
+  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const [assertDeletion, setAssertDeletion] = React.useState(false);
   const mutation = useDeleteLocation();
   const {data: metadata} = useLocationData();
@@ -45,7 +45,7 @@ const EditLocation = () => {
       return out;
     },
     meta: {
-      invalidates: [queryKeys.Location.info(loc_id), queryKeys.Location.metadata(loc_id)],
+      invalidates: [queryKeys.Location.info(loc_id), queryKeys.Location.metadata(loc_id), queryKeys.Timeseries.metadata(ts_id)],
       optOutGeneralInvalidations: true,
     },
   });

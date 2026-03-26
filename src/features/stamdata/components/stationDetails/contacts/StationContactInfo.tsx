@@ -3,12 +3,14 @@ import {Grid, InputAdornment, IconButton, Checkbox, FormControlLabel} from '@mui
 import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
-
+import {isValidPhoneNumber} from 'libphonenumber-js';
 import {apiClient} from '~/apiClient';
+import {FormPhoneInput} from '~/components/formComponents/FormPhoneInput';
 import FormInput from '~/components/FormInput';
 import {ContactInfoType} from '~/helpers/EnumHelper';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {InferContactInfo} from './api/useContactForm';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 interface ModalProps {
   isEditing: boolean;
@@ -30,7 +32,7 @@ export default function StationContactInfo({
   tableModal = false,
 }: ModalProps) {
   const {setValue, getValues, watch, control} = useFormContext<InferContactInfo>();
-  const regEx = new RegExp(/(?:(?:00|\+)?45)?\d{8}/);
+  const {isMobile} = useBreakpoints();
   const {data: contactRoles} = useQuery({
     queryKey: queryKeys.contactRoles(),
     queryFn: async () => {
@@ -74,41 +76,48 @@ export default function StationContactInfo({
           type={'email'}
           fullWidth
           disabled={(!isEditing && isUser) || (isUser && isEditing)}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => {
-                    window.location.href = `mailto:${getValues('email')}`;
-                  }}
-                >
-                  {tableModal && <Email />}
-                </IconButton>
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => {
+                      window.location.href = `mailto:${getValues('email')}`;
+                    }}
+                  >
+                    <Email />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
           }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
-        <FormInput
+        <FormPhoneInput
           name="mobile"
-          label="Tlf. nummer"
+          control={control}
           placeholder="Telefonnummer..."
           fullWidth
           disabled={(!isEditing && isUser) || (isUser && isEditing)}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  disabled={!mobile || !regEx.test(mobile.toString())}
-                  onClick={() => {
-                    window.location.href = `tel:${getValues('mobile')}`;
-                  }}
-                >
-                  {tableModal && <Call />}
-                </IconButton>
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              multiline: false,
+              endAdornment: isMobile && mobile && isValidPhoneNumber(mobile) && (
+                <InputAdornment position="end">
+                  <IconButton
+                    sx={{
+                      p: 0,
+                    }}
+                    onClick={() => {
+                      window.location.href = `tel:${getValues('mobile')}`;
+                    }}
+                  >
+                    <Call />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
           }}
         />
       </Grid>

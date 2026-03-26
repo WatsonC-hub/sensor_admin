@@ -107,7 +107,7 @@ export default function AddUnitForm({
       (unit) =>
         (unit.calypso_id.toString() === id.toString() || unit.terminal_id === id) &&
         unit.sensortypeid === tstype_id
-    );
+    ).sort((a, b) => a.signal_id - b.signal_id);
 
   const handleCalypsoIdChange = (
     option: {value: string; label: string} | SyntheticEvent<Element> | null

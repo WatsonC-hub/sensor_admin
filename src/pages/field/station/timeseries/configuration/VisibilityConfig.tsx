@@ -13,7 +13,6 @@ import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
 type VisibilityConfigProps = {
   loc_id: number;
   ts_id: number;
-  disabled: boolean;
 };
 
 const schema = z.object({
@@ -30,7 +29,7 @@ const metadataSelector = (data: Metadata) => ({
   hide_public: data.hide_public,
 });
 
-const VisibilityConfig = ({loc_id, ts_id, disabled}: VisibilityConfigProps) => {
+const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
   const {location_permissions} = usePermissions(loc_id);
   const {data: timeseries} = useQuery(
     metadataQueryOptions<Form>(ts_id, {
@@ -60,30 +59,28 @@ const VisibilityConfig = ({loc_id, ts_id, disabled}: VisibilityConfigProps) => {
         <Form.Checkbox
           name="requires_auth"
           label="Data tilgængelighed kræver login"
-          disabled={location_permissions !== 'edit' || disabled}
+          disabled={location_permissions !== 'edit'}
         />
         <Form.Checkbox
           name="hide_public"
           label="Skjul i offentlige visninger"
-          disabled={location_permissions !== 'edit' || disabled}
+          disabled={location_permissions !== 'edit'}
         />
-        {(location_permissions !== 'edit' || !disabled) && (
-          <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
-            <UpdateProgressButton
-              loc_id={loc_id}
-              disabled={isDirty}
-              ts_id={ts_id}
-              progressKey="visibility"
-            />
-            <Form.Cancel disabled={!isDirty} cancel={() => reset()} />
-            <Form.Submit
-              disabled={!isDirty}
-              submit={async (values) => {
-                updateTimeseries.mutate(values);
-              }}
-            />
-          </Grid2>
-        )}
+        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+          <UpdateProgressButton
+            loc_id={loc_id}
+            disabled={isDirty}
+            ts_id={ts_id}
+            progressKey="visibility"
+          />
+          <Form.Cancel disabled={!isDirty} cancel={() => reset()} />
+          <Form.Submit
+            disabled={!isDirty}
+            submit={async (values) => {
+              updateTimeseries.mutate(values);
+            }}
+          />
+        </Grid2>
       </Form>
     </Box>
   );

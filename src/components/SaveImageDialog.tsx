@@ -27,7 +27,7 @@ interface SaveImageDialogProps {
   };
   changeData: (field: string, value: any) => void;
   id: string | number;
-  type: string;
+  type: 'station' | 'borehole';
   open: boolean;
   dataUri: string | ArrayBuffer | null;
   handleCloseSave: () => void;

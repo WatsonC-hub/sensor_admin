@@ -657,11 +657,12 @@ const useMap = <TData extends object>(
           position: 'absolute',
           top: `${top}px`,
           left: `${left}px`,
-          right: `${right}px`,
+          right: `${right / 2}px`,
           bottom: `${bottom}px`,
         },
         true
       );
+      // console.log(mapRef.current.activeArea);
     }
   }, [usedWidth, usedHeight, doneRendering, isMobile]);
 
