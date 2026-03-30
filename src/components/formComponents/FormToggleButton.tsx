@@ -10,9 +10,9 @@ import {
   SxProps,
   ToggleButtonProps,
 } from '@mui/material';
-import {isEqual, merge} from 'lodash';
+import { isEqual, merge } from 'lodash';
 import React from 'react';
-import {Controller, FieldPath, FieldPathValue, FieldValues, useFormContext} from 'react-hook-form';
+import { Controller, FieldPath, FieldPathValue, FieldValues, useFormContext } from 'react-hook-form';
 
 type FormToggleButtonOption<T> = {
   value: T;
@@ -45,7 +45,7 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
   toggleButtonProps,
   ...rest
 }: FormToggleButtonProps<T, K>) => {
-  const {control} = useFormContext<T, K>();
+  const { control } = useFormContext<T, K>();
 
   return (
     <Grid2
@@ -60,7 +60,7 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
         <Controller
           name={name}
           control={control}
-          render={({field: {value, onChange}}) => {
+          render={({ field: { value, onChange } }) => {
             const internal_sx: SxProps = {
               borderColor: 'primary.main',
               '& .MuiToggleButton-root': {
@@ -86,6 +86,7 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
                   exclusive
                   color="primary"
                   onChange={(event, newValue) => {
+                    if (newValue === null) return;
                     onChange(newValue);
                     if (onChangeCallback) onChangeCallback(newValue);
                   }}
@@ -110,7 +111,7 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
           }}
         />
         {warning && (
-          <Typography color="error.main" variant="caption" sx={{mt: 0.5}}>
+          <Typography color="error.main" variant="caption" sx={{ mt: 0.5 }}>
             {warning(control._formValues[name])}
           </Typography>
         )}
