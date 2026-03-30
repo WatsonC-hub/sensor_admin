@@ -194,7 +194,7 @@ const StationDrawer = () => {
           page: stationPages.MAALEPUNKT,
           icon: <StraightenRounded />,
           requiredTsId: true,
-          disabled: metadata?.tstype_id != 1 || metadata?.calculated,
+          disabled: metadata?.tstype_id != 1,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id!)),
           progress: progress?.watlevmp == false ? 0 : undefined,
         },
