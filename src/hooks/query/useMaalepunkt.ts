@@ -91,7 +91,7 @@ export const useMaalepunkt = (ts_id: number | undefined) => {
       toast.success('Målepunkt gemt');
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.maalepunkt(ts_id), queryKeys.StationProgress()],
+      invalidates: [queryKeys.Timeseries.maalepunkt(ts_id), queryKeys.StationProgress(ts_id)],
     },
   });
 

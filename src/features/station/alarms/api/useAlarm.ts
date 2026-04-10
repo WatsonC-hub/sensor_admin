@@ -85,7 +85,7 @@ export const useAlarm = () => {
   const post = useMutation({
     ...alarmPostOptions,
     meta: {
-      invalidates: [queryKeys.Timeseries.AlarmList(ts_id), queryKeys.StationProgress()],
+      invalidates: [queryKeys.Timeseries.AlarmList(ts_id), queryKeys.StationProgress(ts_id)],
       optOutGeneralInvalidations: true,
     },
   });
