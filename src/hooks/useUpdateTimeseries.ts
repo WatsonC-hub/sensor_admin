@@ -12,7 +12,7 @@ const updateTimeseriesMutationOptions = (ts_id: number) => ({
     return out;
   },
   meta: {
-    invalidates: [queryKeys.Timeseries.metadata(ts_id), queryKeys.StationProgress()],
+    invalidates: [queryKeys.Timeseries.metadata(ts_id), queryKeys.StationProgress(ts_id)],
     optOutGeneralInvalidations: true,
   },
   onSuccess: () => {

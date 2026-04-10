@@ -23,7 +23,7 @@ const getQueryOptions = <TData = ProgressStatus>(
   select?: (data: ProgressStatus) => TData
 ) =>
   queryOptions({
-    queryKey: queryKeys.StationProgress(),
+    queryKey: queryKeys.StationProgress(ts_id),
     queryFn: async () => {
       const tsParam = ts_id ?? -1;
       const {data} = await apiClient.get<ProgressStatus>(
@@ -81,7 +81,7 @@ const useUpdateProgress = (loc_id: number | undefined, ts_id?: number) => {
       return res;
     },
     meta: {
-      invalidates: [queryKeys.StationProgress()],
+      invalidates: [queryKeys.StationProgress(ts_id)],
       optOutGeneralInvalidations: true,
     },
   });

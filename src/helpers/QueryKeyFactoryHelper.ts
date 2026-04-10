@@ -123,5 +123,5 @@ export const queryKeys = {
   actions: (unit_uuid: string | undefined) => ['actions', unit_uuid] as const,
   cmdOptions: () => ['cmd_options'] as const,
   dmpAllowedMapList: () => ['dmp_allowed_map_list'] as const,
-  StationProgress: () => ['station_progress'] as const,
+  StationProgress: (ts_id?: number) => ['station_progress', ts_id] as const,
 };
