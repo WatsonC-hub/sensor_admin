@@ -125,13 +125,13 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed}: SynchronizationProps) =
           {canSyncJupiter && (
             <TooltipWrapper
               description={
-                metadata?.intakeno == null
+                (metadata?.intakeno == null || metadata?.intakeno === -1)
                   ? 'Indtagsnummer mangler før du kan synkronisere til Jupiter. Indtast det under rediger tidsserie.'
                   : 'Aktiverer synkronisering af denne tidsserie til Jupiter'
               }
             >
               <Form.Checkbox
-                disabled={location_permissions !== 'edit' || metadata?.intakeno == null}
+                disabled={location_permissions !== 'edit' || metadata?.intakeno == null || metadata?.intakeno === -1}
                 name="jupiter"
                 label="Jupiter"
               />
