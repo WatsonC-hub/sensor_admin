@@ -1,9 +1,6 @@
-import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
-import {Box, IconButton, Typography} from '@mui/material';
+import {Box} from '@mui/material';
 import React from 'react';
-import Button from '~/components/Button';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import FormFieldset from '~/components/formComponents/FormFieldset';
+
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import VisibilityForm from '../forms/VisibilityForm';
 

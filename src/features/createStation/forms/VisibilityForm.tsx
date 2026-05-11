@@ -15,7 +15,7 @@ type VisibilityFormState = z.infer<typeof schema>;
 const Form = createTypedForm<VisibilityFormState>();
 
 type VisibilityFormProps = {
-  visibility: VisibilityFormState | object;
+  visibility: VisibilityFormState | object | undefined;
   setValues: (values: VisibilityFormState) => void;
 };
 
