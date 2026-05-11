@@ -74,7 +74,7 @@ const useSync = () => {
   const {ts_id} = useAppContext(['ts_id']);
 
   const meta = {
-    invalidates: [queryKeys.Timeseries.SyncData(ts_id), queryKeys.StationProgress()],
+    invalidates: [queryKeys.Timeseries.SyncData(ts_id), queryKeys.StationProgress(ts_id)],
     optOutGeneralInvalidations: true,
   };
 
