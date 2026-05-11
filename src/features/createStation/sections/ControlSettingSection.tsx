@@ -1,8 +1,7 @@
 import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
-import {Box, IconButton, Typography} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import React from 'react';
 import Button from '~/components/Button';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import ControlSettingForm from '../forms/ControlSettingForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
@@ -13,7 +12,6 @@ type Props = {
 };
 
 const ControlSettingSection = ({uuid, setShow}: Props) => {
-  const {isMobile} = useBreakpoints();
   const [setState, control_settings] = useCreateStationStore((state) => [
     state.setState,
     state.formState.timeseries?.[uuid]?.control_settings,
@@ -28,7 +26,7 @@ const ControlSettingSection = ({uuid, setShow}: Props) => {
       <Box display="flex" flexDirection="column" alignItems={'start'}>
         <FormFieldset
           label="Kontrolhyppighed"
-          labelPosition={isMobile ? -22 : -20}
+          labelPosition={ -20}
           sx={{width: '100%', p: 1}}
         >
           <Button

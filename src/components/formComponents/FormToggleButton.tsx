@@ -86,7 +86,6 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
                   exclusive
                   color="primary"
                   onChange={(event, newValue) => {
-                    if (newValue === null) return;
                     onChange(newValue);
                     if (onChangeCallback) onChangeCallback(newValue);
                   }}

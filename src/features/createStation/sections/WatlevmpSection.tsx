@@ -1,8 +1,7 @@
 import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
-import {Box, Typography, IconButton} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import React from 'react';
 import WatlevmpForm from '../forms/WatlevmpForm';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import {useCreateStationStore} from '../state/useCreateStationStore';
@@ -26,7 +25,7 @@ const WatlevmpSection = ({index}: Props) => {
   return (
     // <Box display={'flex'} flexDirection="row" alignItems={'start'}>
 
-    <FormFieldset label="Målepunkt" labelPosition={-12} sx={{width: '100%', px: 1, py: 0}}>
+    <FormFieldset label="Målepunkt" labelPosition={-20} sx={{width: '100%', px: 1, py: 1}}>
       {/* <Typography color="grey.700">Målepunkt</Typography> */}
 
       {show ? (

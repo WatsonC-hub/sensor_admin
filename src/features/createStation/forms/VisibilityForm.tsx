@@ -33,6 +33,7 @@ const VisibilityForm = ({ visibility, setValues }: VisibilityFormProps) => {
   const {
     handleSubmit,
     formState: { errors },
+    setValue
   } = methods;
 
   useEffect(() => {
@@ -65,6 +66,9 @@ const VisibilityForm = ({ visibility, setValues }: VisibilityFormProps) => {
         }}
         gridDirection="row"
         label="Skal data kræve login?"
+        onChangeCallback={(value) => {
+          if(value === null) setValue('requires_auth', false);
+        }}
         warning={(value) => {
           if (value === undefined && errors.requires_auth) {
             return errors.requires_auth.message;
