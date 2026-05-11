@@ -54,10 +54,8 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
   });
 
   const watlevmpFormMethods = useWatlevmpForm<Watlevmp>({
-    defaultValues: {
-      ...watlevmp,
-      ...values,
-    },
+    defaultValues: values,
+    values: watlevmp
   });
 
   const {watch, handleSubmit} = watlevmpFormMethods;
@@ -81,7 +79,7 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
     if (elevation === watlevmp?.elevation && watlevmp?.elevation !== undefined) {
       setHelperText(`${watlevmp?.startdate.isValid() ? 'Målepunkt' : 'Terrænkote'} fra Jupiter`);
     }
-  }, [elevation, intakeno]);
+  }, [intakeno, elevation]);
 
   return (
     <Form formMethods={watlevmpFormMethods} gridSizes={isMobile ? 12 : 6}>

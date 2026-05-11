@@ -72,7 +72,7 @@ const boreholeAddTimeseriesSchema = baseAddTimeseriesSchema.extend({
 
 const watlevmpAddSchema = z.object({
   elevation: z.number({required_error: 'Målepunkt skal udfyldes'}),
-  description: z.string({required_error: 'Beskrivelse skal udfyldes'}).min(3, {
+  description: z.string({message: 'Beskrivelse skal udfyldes'}).min(3, {
     message: 'Beskrivelse skal være mindst 3 tegn',
   }),
 });
