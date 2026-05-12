@@ -29,7 +29,7 @@ type SLASubmit = z.infer<typeof SLASchema>;
 const SLAConfiguration = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const {data: values, isPending} = useLocationSLAConfiguration(loc_id);
-  const {mutate} = useLocationSLAConfigurationMutation(loc_id);
+  const {mutateAsync} = useLocationSLAConfigurationMutation(loc_id);
   const {isMobile} = useBreakpoints();
   const {location_permissions} = usePermissions(loc_id);
 
@@ -92,8 +92,9 @@ const SLAConfiguration = () => {
         <Button
           bttype="primary"
           disabled={isSubmitting || !isDirty || location_permissions !== 'edit'}
-          onClick={handleSubmit((data) => mutate(data))}
-          startIcon={<Save />}
+          onClick={handleSubmit(async (data) => await mutateAsync(data))}
+          loading={isSubmitting}
+          startIcon={isSubmitting ? undefined : <Save />}
         >
           <Typography variant="body2">Gem</Typography>
         </Button>

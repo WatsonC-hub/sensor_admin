@@ -17,21 +17,29 @@ import {MaalepunktAsDayjs} from '~/types';
 
 interface Props {
   handleEdit: (maalepunkt: MaalepunktAsDayjs) => void;
-  handleDelete: (gid: number | undefined) => void;
   disabled: boolean;
 }
 
-export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabled}: Props) {
+export default function MaalepunktTableDesktop({handleEdit, disabled}: Props) {
   const {ts_id} = useAppContext(['ts_id']);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const {data: timeseries} = useTimeseriesData();
   const {
     get: {data},
+    del: deleteWatlevmp,
   } = useMaalepunkt(ts_id);
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
+  };
+
+ const handleDeleteMaalepunkt = (gid: number | undefined) => {
+    deleteWatlevmp.mutate({path: `${ts_id}/${gid}`}, {
+      onSuccess: () => {
+        setDialogOpen(false);
+      }
+    });
   };
 
   const unit = timeseries?.tstype_id === 1 ? 'Kote [m (DVR90)]' : `Måling [${timeseries?.unit}]`;
@@ -108,7 +116,8 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={() => handleDelete(mpId)}
+        onOkDelete={() => handleDeleteMaalepunkt(mpId)}
+        loading={deleteWatlevmp.isPending}
       />
       <MaterialReactTable table={table} />
     </Box>

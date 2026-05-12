@@ -29,14 +29,14 @@ const EditLocation = () => {
   const [, setPage] = useStationPages();
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const [assertDeletion, setAssertDeletion] = React.useState(false);
-  const mutation = useDeleteLocation();
+  const {mutate: deleteLocation, isPending} = useDeleteLocation();
   const {data: metadata} = useLocationData();
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
   const {superUser} = useUser();
 
-  const metadataEditLocationMutation = useMutation({
+  const {mutateAsync: updateLocationAsync} = useMutation({
     mutationFn: async (data: any) => {
       const {data: out} = await apiClient.put(
         `/sensor_field/stamdata/update_location/${loc_id}`,
@@ -45,7 +45,11 @@ const EditLocation = () => {
       return out;
     },
     meta: {
-      invalidates: [queryKeys.Location.info(loc_id), queryKeys.Location.metadata(loc_id), queryKeys.Timeseries.metadata(ts_id)],
+      invalidates: [
+        queryKeys.Location.info(loc_id),
+        queryKeys.Location.metadata(loc_id),
+        queryKeys.Timeseries.metadata(ts_id),
+      ],
       optOutGeneralInvalidations: true,
     },
   });
@@ -62,7 +66,7 @@ const EditLocation = () => {
   });
 
   const {
-    formState: {isDirty, isValid},
+    formState: {isDirty, isValid, isSubmitting},
     reset,
     handleSubmit,
   } = formMethods;
@@ -73,13 +77,16 @@ const EditLocation = () => {
     }
   }, [metadata]);
 
-  const Submit: (data: z.infer<typeof locationSchema>) => void = (data) => {
+  const Submit: (data: z.infer<typeof locationSchema>) => Promise<void> = async (data) => {
     const payload = {
       ...data,
     };
-    metadataEditLocationMutation.mutate(payload, {
+    await updateLocationAsync(payload, {
       onSuccess: () => {
-        toast.success('Location er opdateret');
+        toast.success('Lokation opdateret');
+      },
+      onError: () => {
+        toast.error('Der skete en fejl ved opdatering af lokationen');
       },
     });
   };
@@ -124,8 +131,9 @@ const EditLocation = () => {
           <Button
             bttype="primary"
             disabled={!isDirty || !isValid || location_permissions !== 'edit'}
+            loading={isSubmitting}
             onClick={handleSubmit(Submit)}
-            startIcon={<SaveIcon />}
+            startIcon={isSubmitting ? undefined : <SaveIcon />}
             sx={{marginRight: 1}}
           >
             Gem
@@ -136,10 +144,10 @@ const EditLocation = () => {
         open={assertDeletion}
         description="Sletter du lokationen, vil alle tilknyttede nøgler, kontakter, huskeliste og billeder også blive slettet. Denne handling kan ikke fortrydes."
         onClose={() => setAssertDeletion(false)}
-        isPending={mutation.isPending}
+        isPending={isPending}
         onDelete={() => {
           const payload = {path: loc_id};
-          mutation.mutate(payload, {
+          deleteLocation(payload, {
             onSuccess: () => {
               setAssertDeletion(false);
               setLocId(null);

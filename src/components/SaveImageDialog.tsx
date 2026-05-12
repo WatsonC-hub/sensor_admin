@@ -46,7 +46,10 @@ function SaveImageDialog({
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const imageUrl = `/static/images/${activeImage.imageurl}`;
 
-  const {post: uploadImage, put: editImage} = useImageUpload(type, id);
+  const {
+    post: {mutate: uploadImage, isPending: isUploading},
+    put: {mutate: editImage, isPending: isEditing},
+  } = useImageUpload(type, id);
 
   function saveImage() {
     if (activeImage.gid === -1) {
@@ -60,9 +63,10 @@ function SaveImageDialog({
         },
       };
 
-      uploadImage.mutate(payload, {
+      uploadImage(payload, {
         onSuccess: () => {
           toast.success('Billedet er uploadet');
+          handleCloseSave();
         },
       });
     } else {
@@ -75,13 +79,12 @@ function SaveImageDialog({
         },
       };
 
-      editImage.mutateAsync(payload, {
+      editImage(payload, {
         onSuccess: () => {
-          toast.success('Billedet er opdateret');
+          handleCloseSave();
         },
       });
     }
-    handleCloseSave();
   }
 
   return (
@@ -156,7 +159,7 @@ function SaveImageDialog({
         <Button onClick={handleCloseSave} bttype="tertiary">
           Annuller
         </Button>
-        <Button onClick={saveImage} bttype="primary">
+        <Button onClick={saveImage} loading={isUploading || isEditing} bttype="primary">
           {activeImage.gid == -1 ? (
             <Box display={'flex'} gap={1} alignItems={'center'}>
               <Save />
