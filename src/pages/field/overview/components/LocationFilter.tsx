@@ -8,9 +8,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React, {useEffect, useMemo} from 'react';
 import {Noop} from 'react-hook-form';
+import React, {useEffect, useMemo, useState} from 'react';
 import {locationFilterOptions} from './filter_consts';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 type Props = {
   value: Array<string> | undefined | null;
@@ -22,9 +23,9 @@ type Props = {
 };
 
 const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disabled}: Props) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const {isMobile} = useBreakpoints();
   const optionsWithAlle = useMemo(() => [{name: 'Alle'}, ...locationFilterOptions], []);
-
   useEffect(() => {
     if (value && value.length > 1 && value.includes('Alle')) {
       setValue(value.filter((item) => item == 'Alle'));
@@ -37,12 +38,24 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
     }
   }, [isParentClosed]);
 
+  useEffect(() => {
+    if (isMobile) {
+      const close = () => {
+        setOpen(false);
+      };
+
+      document.addEventListener('touchstart', close);
+
+      return () => {
+        document.removeEventListener('touchstart', close);
+      };
+    }
+  }, [isMobile]);
+
   return (
     <Autocomplete
-      open={open && !isParentClosed}
-      onOpen={() => {
-        setOpen(true);
-      }}
+      open={open}
+      onOpen={() => setOpen(true)}
       onClose={() => {
         setOpen(false);
       }}
@@ -51,10 +64,11 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
         marginBottom: '4px',
         pb: 1.5,
       }}
+      onTouchStart={(e) => {
+        if (isMobile) e.stopPropagation();
+      }}
+      openOnFocus
       disabled={disabled}
-      // freeSolo
-      // openOnFocus
-      // autoHighlight
       forcePopupIcon={false}
       multiple
       fullWidth
@@ -134,11 +148,25 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
         <TextField
           {...params}
           fullWidth
-          InputLabelProps={{shrink: true}}
           variant="outlined"
           label={label}
           placeholder="Vælg visning..."
           onBlur={onBlur}
+          onTouchStart={() => {
+            if (isMobile) {
+              setOpen(true);
+            }
+          }}
+          onKeyDown={() => {
+            if (!open) setOpen(true);
+          }}
+          focused={open}
+          slotProps={{
+            inputLabel: {
+              ...params.InputLabelProps,
+              shrink: true,
+            },
+          }}
           sx={{
             '& .MuiInputBase-input.Mui-disabled': {
               WebkitTextFillColor: '#000000',
@@ -151,9 +179,26 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
           }}
         />
       )}
+      slotProps={{
+        popper: {
+          onTouchStart: (e) => {
+            if (isMobile) e.stopPropagation();
+          },
+          onClick: (e) => {
+            if (isMobile) e.stopPropagation();
+          },
+        },
+        listbox: {
+          onTouchStart: (e) => {
+            if (isMobile) e.stopPropagation();
+          },
+          onClick: (e) => {
+            if (isMobile) e.stopPropagation();
+          },
+        },
+      }}
       disableCloseOnSelect
       selectOnFocus
-      // clearOnBlur
       handleHomeEndKeys
     />
   );
