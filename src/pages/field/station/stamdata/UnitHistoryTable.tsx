@@ -35,9 +35,11 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
   const {
     handleSubmit,
     reset,
-    formState: {isDirty, errors},
+    formState: {isDirty, errors, isSubmitting},
   } = useFormContext();
-  const {deleteUnit} = useUnitMutations(ts_id);
+  const {
+    deleteUnit: {mutate: deleteUnit, isPending: isDeletingUnit},
+  } = useUnitMutations(ts_id);
   const {isMobile} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
   const {location_permissions} = usePermissions(loc_id);
@@ -202,7 +204,8 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
                 setSelectedUnit('');
                 table.setEditingRow(null);
               }}
-              startIcon={<SaveIcon />}
+              loading={isSubmitting}
+              startIcon={isSubmitting ? undefined : <SaveIcon />}
               sx={{marginRight: 1}}
             >
               Gem
@@ -305,13 +308,14 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
         title="Er du sikker på at slette udstyr historikken?"
         onOkDelete={() => {
           if (gid)
-            deleteUnit.mutate(`${ts_id}/${gid}`, {
+            deleteUnit(`${ts_id}/${gid}`, {
               onSuccess: () => {
                 setGid(undefined);
                 setDeleteAlertOpen(false);
               },
             });
         }}
+        loading={isDeletingUnit}
       />
     </Box>
   );

@@ -73,9 +73,16 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
     defaultValues: parsed,
   });
 
+  const {
+    reset,
+    setValue,
+    handleSubmit,
+    formState: {isSubmitting},
+  } = formMethods;
+
   const handleClose = () => {
     setOpenDialog(false);
-    formMethods.reset({enddate: moment().toISOString()});
+    reset({enddate: moment().toISOString()});
   };
 
   const {data: changeReasons} = useQuery<ChangeReason[]>({
@@ -98,7 +105,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
     staleTime: 1000 * 60 * 60,
   });
 
-  const takeHomeMutation = useMutation({
+  const {mutateAsync: takeHomeMutation} = useMutation({
     mutationFn: async (payload: UnitEndFormValues) => {
       const {data} = await apiClient.post(
         `/sensor_field/stamdata/unit_history/end/${ts_id}/${unit?.gid}`,
@@ -115,8 +122,8 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
     },
   });
 
-  const submit = (values: UnitEndFormValues) => {
-    takeHomeMutation.mutate(values);
+  const submit = async (values: UnitEndFormValues) => {
+    await takeHomeMutation(values);
   };
 
   return (
@@ -145,10 +152,10 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                     if (reason.default_actions?.includes('CLOSE')) {
                       const action = actions?.find((action) => action.action.includes('CLOSE'));
                       if (action) {
-                        formMethods.setValue('action', action.action);
+                        setValue('action', action.action);
                       }
                     } else {
-                      formMethods.setValue('action', reason.default_actions ?? 'DO_NOTHING');
+                      setValue('action', reason.default_actions ?? 'DO_NOTHING');
                     }
                   }
                 }}
@@ -181,7 +188,8 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
           <Button
             bttype="primary"
             startIcon={<SaveIcon />}
-            onClick={formMethods.handleSubmit(submit, (errors) => {
+            loading={isSubmitting}
+            onClick={handleSubmit(submit, (errors) => {
               console.log(errors);
             })}
           >

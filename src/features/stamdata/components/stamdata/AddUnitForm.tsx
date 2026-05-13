@@ -46,7 +46,7 @@ export default function AddUnitForm({
 
   const {
     get: {data: availableUnits, isLoading},
-    post: addUnit,
+    post: {mutate: addUnit, isPending: isAddingUnit},
   } = useUnit();
 
   const {
@@ -54,7 +54,7 @@ export default function AddUnitForm({
     handleSubmit,
     reset,
     trigger,
-    formState: {isSubmitting},
+    formState: {isSubmitting, errors, isDirty},
   } = useFormContext<AddUnit>();
 
   const [unitData, setUnitData] = useState({
@@ -98,11 +98,13 @@ export default function AddUnitForm({
     .map((id) => id.toString());
 
   const sensorsForCalyspoId = (id: string | number) =>
-    availableUnits?.filter(
-      (unit) =>
-        (unit.calypso_id.toString() === id.toString() || unit.terminal_id === id) &&
-        unit.sensortypeid === tstype_id
-    ).sort((a, b) => a.signal_id - b.signal_id);
+    availableUnits
+      ?.filter(
+        (unit) =>
+          (unit.calypso_id.toString() === id.toString() || unit.terminal_id === id) &&
+          unit.sensortypeid === tstype_id
+      )
+      .sort((a, b) => a.signal_id - b.signal_id);
 
   const handleCalypsoIdChange = (
     option: {value: string; label: string} | SyntheticEvent<Element> | null
@@ -139,7 +141,7 @@ export default function AddUnitForm({
   };
 
   const handleAddUnit = (payload: UnitPost) => {
-    addUnit.mutate(payload, {
+    addUnit(payload, {
       onSuccess: () => {
         toast.success('Udstyr tilføjet');
         setUdstyrDialogOpen(false);
@@ -294,11 +296,10 @@ export default function AddUnitForm({
                       })
                     : handleSaveOnAdd
                 }
+                loading={isAddingUnit}
                 bttype="primary"
                 startIcon={mode === 'edit' ? <Save /> : undefined}
-                disabled={
-                  !unitData.calypso_id || !unitData.uuid || !unitData.fra.isValid() || isSubmitting
-                }
+                disabled={isSubmitting || Object.keys(errors).length > 0 || !isDirty}
               >
                 {mode === 'edit' ? 'Gem' : 'Tilføj'}
               </Button>
@@ -338,6 +339,7 @@ export default function AddUnitForm({
               })
             }
             bttype="tertiary"
+            loading={isAddingUnit}
           >
             Nej
           </Button>
@@ -354,6 +356,7 @@ export default function AddUnitForm({
               })
             }
             bttype="primary"
+            loading={isAddingUnit}
           >
             Ja
           </Button>
