@@ -3,7 +3,9 @@ import {createTypedForm} from '~/components/formComponents/Form';
 import useSyncForm from '~/features/synchronization/api/useSyncForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import {SyncFormState} from '../types';
-import FormToggleButton from '~/components/formComponents/FormToggleButton';
+import Button from '~/components/Button';
+import {button_sx} from '../common_style';
+import {Stack, Typography} from '@mui/material';
 
 type SyncFormProps = {
   id: string;
@@ -16,7 +18,7 @@ type SyncFormProps = {
 const Form = createTypedForm<SyncFormState>();
 
 const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps) => {
-  const [dmpActive, setDmpActive] = useState(!!values?.dmp && values.dmp !== '__NULL__');
+  const [dmpActive, setDmpActive] = useState(!!values?.dmp && values.dmp !== null);
   const [registerSubmitter, removeSubmitter] = useCreateStationStore((state) => [
     state.registerSubmitter,
     state.removeSubmitter,
@@ -27,20 +29,19 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
       tstype_id,
     },
     defaultValues: {
-      dmp: '__NULL__',
-      jupiter: '__NULL__',
+      dmp: null,
+      jupiter: null,
     },
     values: {
-      dmp: values?.dmp ?? '__NULL__',
-      jupiter: values?.jupiter ?? '__NULL__',
+      dmp: values?.dmp ?? null,
+      jupiter: values?.jupiter ?? null,
     },
   });
 
-  const {
-    setValue,
-    handleSubmit,
-    formState: {errors},
-  } = syncFormMethods;
+  const {setValue, handleSubmit, watch} = syncFormMethods;
+
+  const watchedDmp = watch('dmp');
+  const watchedJupiter = watch('jupiter');
 
   useEffect(() => {
     registerSubmitter(id, async () => {
@@ -58,57 +59,95 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     return () => removeSubmitter(id);
   }, [handleSubmit, isDmpAllowed, canSyncJupiter]);
 
+  const toggleJupiterOptions = [
+    {
+      selected: (val: SyncFormState['jupiter']) => val === true,
+      onChange: () => {
+        setValue('jupiter', true);
+      },
+      label: 'Ja',
+    },
+    {
+      selected: (val: SyncFormState['jupiter']) => val === false,
+      onChange: () => {
+        setValue('jupiter', false);
+      },
+      label: 'Nej',
+    },
+    {
+      selected: (val: SyncFormState['jupiter']) => val === null,
+      onChange: () => {
+        setValue('jupiter', null);
+      },
+      label: 'Registrer senere',
+    },
+  ];
+
+  const toggleDmpOptions = [
+    {
+      selected: (val: SyncFormState['dmp']) => val !== null && typeof val === 'object',
+      onChange: () => {
+        setValue('dmp', {});
+        setDmpActive(true);
+      },
+      label: 'Ja',
+    },
+    {
+      selected: (val: SyncFormState['dmp']) => val === false,
+      onChange: () => {
+        setValue('dmp', false);
+        setDmpActive(false);
+      },
+      label: 'Nej',
+    },
+    {
+      selected: (val: SyncFormState['dmp']) => val === null,
+      onChange: () => {
+        setValue('dmp', null);
+        setDmpActive(false);
+      },
+      label: 'Registrer senere',
+    },
+  ];
+
   return (
     <>
       {(canSyncJupiter || isDmpAllowed) && (
         <Form formMethods={syncFormMethods} gridSizes={12}>
           {canSyncJupiter && (
-            <FormToggleButton<SyncFormState, 'jupiter'>
-              name="jupiter"
-              options={[
-                {value: true, label: 'Ja'},
-                {value: false, label: 'Nej'},
-                {value: '__NULL__', label: 'Registrer senere'},
-              ]}
-              label="Synkroniser til jupiter?"
-              size="small"
-              direction={'column'}
-              toggleButtonProps={{
-                sx: {px: 2},
-                size: 'small',
-              }}
-              gridDirection={'row'}
-              warning={(value) => {
-                if (value === undefined && errors.jupiter) {
-                  return errors.jupiter.message;
-                }
-                return '';
-              }}
-            />
+            <Stack direction={'column'}>
+              <Typography gutterBottom>Synkroniser til Jupiter?</Typography>
+              <Stack direction={'row'} spacing={1}>
+                {toggleJupiterOptions.map((option) => (
+                  <Button
+                    key={option.label}
+                    onClick={option.onChange}
+                    size="small"
+                    bttype={option.selected(watchedJupiter) ? 'primary' : 'tertiary'}
+                  >
+                    {option.label}
+                  </Button>
+                ))}
+              </Stack>
+            </Stack>
           )}
           {isDmpAllowed && (
             <>
-              <FormToggleButton<SyncFormState, 'dmp'>
-                name="dmp"
-                options={[
-                  {value: {}, label: 'Ja'},
-                  {value: false, label: 'Nej'},
-                  {value: '__NULL__', label: 'Registrer senere'},
-                ]}
-                size="small"
-                direction={'column'}
-                toggleButtonProps={{
-                  sx: {px: 2},
-                  size: 'small',
-                }}
-                label="Synkroniser til DMP?"
-                gridDirection={'row'}
-                onChangeCallback={(value) => {
-                  const isActive = value != false && value != undefined && value !== '__NULL__';
-                  setDmpActive(isActive);
-                  setValue('dmp', value);
-                }}
-              />
+              <Stack direction={'column'}>
+                <Typography>Skal stationen synkroniseres med DMP?</Typography>
+                <Stack direction={'row'} spacing={1}>
+                  {toggleDmpOptions.map((option) => (
+                    <Button
+                      key={option.label}
+                      onClick={option.onChange}
+                      bttype={option.selected(watchedDmp) ? 'primary' : 'tertiary'}
+                      sx={{...button_sx(option.selected(watchedDmp))}}
+                    >
+                      {option.label}
+                    </Button>
+                  ))}
+                </Stack>
+              </Stack>
 
               {dmpActive && (
                 <Form.Input

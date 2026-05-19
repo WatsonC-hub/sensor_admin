@@ -10,7 +10,7 @@ import {
   SxProps,
   ToggleButtonProps,
 } from '@mui/material';
-import {merge} from 'lodash';
+import {isEqual, merge} from 'lodash';
 import React from 'react';
 import {Controller, FieldPath, FieldPathValue, FieldValues, useFormContext} from 'react-hook-form';
 
@@ -111,7 +111,7 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
                         {...toggleButtonProps}
                         key={option.label}
                         color="primary"
-                        // selected={isEqual(option.value, value)}
+                        selected={isEqual(option.value, value)}
                         sx={merged_sx}
                         value={option.value}
                       >

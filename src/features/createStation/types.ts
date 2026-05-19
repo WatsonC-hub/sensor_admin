@@ -18,9 +18,8 @@ export type SyncFormState = {
         owner_name?: string;
       }
     | false
-    | '__NULL__'
     | null;
-  jupiter?: boolean | '__NULL__' | null;
+  jupiter?: boolean | null;
 };
 
 export type CreateLocationData = {
