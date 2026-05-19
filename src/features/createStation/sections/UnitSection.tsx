@@ -42,19 +42,19 @@ const UnitSection = ({uuid, tstype_id}: UnitStepProps) => {
       {unit === undefined && (
         <Button
           bttype="primary"
-          startIcon={<AddCircleOutline color="primary" />}
+          startIcon={<AddCircleOutline />}
           sx={{
-            backgroundColor: 'transparent',
-            width: 'fit-content',
-            border: 'none',
-            px: 1,
-            ':hover': {backgroundColor: 'grey.200'},
+            backgroundColor: 'primary.main',
+            borderColor: 'primary.main',
+            color: 'primary.contrastText',
+            '&:hover': {
+              color: 'white',
+              backgroundColor: 'primary.dark',
+            },
           }}
           onClick={() => setOpen(true)}
         >
-          <Typography variant="body1" color="primary">
-            Tilføj udstyr
-          </Typography>
+          Tilføj udstyr
         </Button>
       )}
       {Object.keys(unit || {}).length > 0 && (
