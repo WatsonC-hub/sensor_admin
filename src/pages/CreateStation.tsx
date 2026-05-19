@@ -36,7 +36,7 @@ const CreateStation = () => {
         location: {
           meta: {...data, ...state},
           contacts: [],
-          location_access: undefined,
+          location_access: [],
           visibility: {
             requires_auth: false,
           },
@@ -60,7 +60,7 @@ const CreateStation = () => {
           display={'flex'}
           flexDirection={'column'}
           spacing={1.5}
-          sx={{maxWidth: 1200, width: '100%'}}
+          sx={{maxWidth: 1000, width: '100%'}}
           mx={'auto'}
           px={1}
           size={size}

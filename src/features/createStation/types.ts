@@ -6,7 +6,7 @@ import {LocationMetadata} from '~/hooks/query/useMetadata';
 
 /*  FORMSTATE */
 export type ControlSettingsFormState = {
-  controls_per_year: number;
+  controls_per_year: number | null;
   lead_time: number | null;
   selectValue: 1 | 2;
 };
@@ -18,8 +18,9 @@ export type SyncFormState = {
         owner_name?: string;
       }
     | false
+    | '__NULL__'
     | null;
-  jupiter?: boolean | null;
+  jupiter?: boolean | '__NULL__' | null;
 };
 
 export type CreateLocationData = {
@@ -43,7 +44,7 @@ type VisibilityFormState = {
 };
 
 type SLA = {
-  days_to_visitation: number;
+  days_to_visitation: number | null;
 };
 
 type LocationFormState = {

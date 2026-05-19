@@ -16,7 +16,7 @@ type SyncFormProps = {
 const Form = createTypedForm<SyncFormState>();
 
 const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps) => {
-  const [dmpActive, setDmpActive] = useState(!!values?.dmp);
+  const [dmpActive, setDmpActive] = useState(!!values?.dmp && values.dmp !== '__NULL__');
   const [registerSubmitter, removeSubmitter] = useCreateStationStore((state) => [
     state.registerSubmitter,
     state.removeSubmitter,
@@ -27,11 +27,12 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
       tstype_id,
     },
     defaultValues: {
-      dmp: null,
-      jupiter: null,
+      dmp: '__NULL__',
+      jupiter: '__NULL__',
     },
     values: {
-      ...values,
+      dmp: values?.dmp ?? '__NULL__',
+      jupiter: values?.jupiter ?? '__NULL__',
     },
   });
 
@@ -67,17 +68,16 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
               options={[
                 {value: true, label: 'Ja'},
                 {value: false, label: 'Nej'},
-                {value: null, label: 'Senere'},
+                {value: '__NULL__', label: 'Registrer senere'},
               ]}
-              gridSizes={12}
               label="Synkroniser til jupiter?"
               size="small"
-              direction="row"
+              direction={'column'}
               toggleButtonProps={{
                 sx: {px: 2},
                 size: 'small',
               }}
-              gridDirection="row"
+              gridDirection={'row'}
               warning={(value) => {
                 if (value === undefined && errors.jupiter) {
                   return errors.jupiter.message;
@@ -93,25 +93,20 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
                 options={[
                   {value: {}, label: 'Ja'},
                   {value: false, label: 'Nej'},
-                  {value: null, label: 'Senere'},
+                  {value: '__NULL__', label: 'Registrer senere'},
                 ]}
-                gridSizes={12}
-                label="Synkroniser til DMP?"
                 size="small"
-                direction="row"
+                direction={'column'}
                 toggleButtonProps={{
                   sx: {px: 2},
                   size: 'small',
                 }}
-                gridDirection="row"
+                label="Synkroniser til DMP?"
+                gridDirection={'row'}
                 onChangeCallback={(value) => {
-                  const isActive = value != false && value != undefined;
+                  const isActive = value != false && value != undefined && value !== '__NULL__';
                   setDmpActive(isActive);
-                  console.log('value', value);
                   setValue('dmp', value);
-                  // if (!isActive) {
-                  //   setValue('dmp', false);
-                  // }
                 }}
               />
 

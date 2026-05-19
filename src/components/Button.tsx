@@ -24,7 +24,7 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
     p: '0.5rem 1rem',
     borderRadius: 9999,
     '&:hover': {
-      filter: 'brightness(90%)',
+      // filter: 'brightness(90%)',
       transition: '0.3s',
     },
   };

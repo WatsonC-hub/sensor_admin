@@ -291,19 +291,21 @@ export default function TranserList({loc_id, value, setValue}: TransferListProps
           {customList(selected ?? [], selectedCategory ?? [], 'Udvalgt')}
         </Box>
       )}
-      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
-        <UpdateProgressButton
-          loc_id={loc_id}
-          ts_id={-1}
-          disabled={
-            checked.length > 0 ||
-            (selected.length === value.length && selected.length > 0) ||
-            disabled
-          }
-          progressKey="ressourcer"
-          alterStyle
-        />
-      </Box>
+      {loc_id !== undefined && (
+        <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+          <UpdateProgressButton
+            loc_id={loc_id}
+            ts_id={-1}
+            disabled={
+              checked.length > 0 ||
+              (selected.length === value.length && selected.length > 0) ||
+              disabled
+            }
+            progressKey="ressourcer"
+            alterStyle
+          />
+        </Box>
+      )}
     </Box>
   );
 }

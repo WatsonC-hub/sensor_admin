@@ -3,7 +3,6 @@ import React from 'react';
 import FormStepButtons from './FormStepButtons';
 
 import RessourceSection from '../sections/RessourceSection';
-import FormFieldset from '~/components/formComponents/FormFieldset';
 import ContactForm from '../forms/ContactForm';
 import LocationAccessForm from '../forms/LocationAccessForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
@@ -30,7 +29,7 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
     <>
       {activeStep === 2 && (
         <>
-          <Typography variant="caption" alignContent={'center'}>
+          <Typography variant="caption" alignContent={'center'} width={'fit-content'}>
             Felter markeret med en stjerne (*) er obligatoriske.
           </Typography>
 

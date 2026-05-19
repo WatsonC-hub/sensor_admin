@@ -6,19 +6,14 @@ import SimpleTextView from '~/components/SimpleTextView';
 type Props = {
   values: SimpleContact[] | undefined;
   onRemove: (index: number) => void;
-  warning?: React.ReactNode;
 };
 
-const SimpleContactList = ({values, onRemove, warning}: Props) => {
+const SimpleContactList = ({values, onRemove}: Props) => {
   return (
-    <List sx={{maxWidth: 320, bgcolor: 'background.paper'}}>
+    <List disablePadding>
       {values === undefined && <SimpleTextView primaryText={'Kontakter registreres senere'} />}
       {Array.isArray(values) && values.length === 0 && (
-        <SimpleTextView
-          key="nocontact"
-          primaryText={'Ingen kontakter tilføjet'}
-          secondaryText={warning}
-        />
+        <SimpleTextView key="nocontact" primaryText={'Ingen kontakter tilføjet'} />
       )}
       {Array.isArray(values) &&
         values.map((contact, index) => (

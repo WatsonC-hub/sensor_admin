@@ -1,18 +1,23 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {InputAdornment} from '@mui/material';
+import {Box, InputAdornment} from '@mui/material';
 import React, {useEffect} from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import {z} from 'zod';
 import FormInput from '~/components/FormInput';
 import {} from '~/features/station/api/useLocationSLAConfiguration';
 import {useCreateStationStore} from '../state/useCreateStationStore';
+import Button from '~/components/Button';
+import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {button_sx} from '../common_style';
 
 const SLASchema = z.object({
   days_to_visitation: z
     .number({
       message: 'Løsningsfrist skal være et tal',
     })
-    .min(1, {message: 'Løsningsfrist skal være 1 eller flere dage'}),
+    .min(1, {message: 'Løsningsfrist skal være 1 eller flere dage'})
+    .nullable(),
 });
 
 type SLA = z.infer<typeof SLASchema>;
@@ -22,10 +27,12 @@ type SlaFormProps = {
 };
 
 const SlaForm = ({setValues}: SlaFormProps) => {
-  const [sla, registerSubmitter, removeSubmitter] = useCreateStationStore((state) => [
+  const {isMobile} = useBreakpoints();
+  const [sla, registerSubmitter, removeSubmitter, deleteState] = useCreateStationStore((state) => [
     state.formState.location?.sla,
     state.registerSubmitter,
     state.removeSubmitter,
+    state.deleteState,
   ]);
 
   const formMethods = useForm<SLA>({
@@ -33,9 +40,11 @@ const SlaForm = ({setValues}: SlaFormProps) => {
     defaultValues: sla,
   });
 
-  const {handleSubmit} = formMethods;
+  const {handleSubmit, reset, getValues} = formMethods;
 
-  useEffect(() => {
+  const onChangeCallback = () => {
+    const values = getValues();
+    setValues(values);
     registerSubmitter('location.sla', async () => {
       let valid: boolean = false;
       await handleSubmit((values) => {
@@ -44,29 +53,69 @@ const SlaForm = ({setValues}: SlaFormProps) => {
       })();
       return valid;
     });
+  };
+
+  useEffect(() => {
+    if (sla !== undefined)
+      registerSubmitter('location.sla', async () => {
+        let valid: boolean = false;
+        await handleSubmit((values) => {
+          setValues(values);
+          valid = true;
+        })();
+        return valid;
+      });
 
     return () => removeSubmitter('location.sla');
   }, [handleSubmit]);
 
   return (
-    <FormProvider {...formMethods}>
-      <FormInput
-        name="days_to_visitation"
-        label="Løsningsfrist"
-        type="number"
-        required
-        placeholder="Indtast antal dage..."
-        slotProps={{
-          input: {
-            endAdornment: <InputAdornment position="end">dage</InputAdornment>,
-          },
-        }}
+    <Box
+      display="flex"
+      gap={1}
+      flexDirection={isMobile ? 'column' : 'row'}
+      alignContent={isMobile ? 'end' : 'center'}
+    >
+      <FormProvider {...formMethods}>
+        <FormInput
+          name="days_to_visitation"
+          label="Løsningsfrist"
+          type="number"
+          disabled={sla === undefined}
+          required
+          placeholder="Indtast antal dage..."
+          slotProps={{
+            input: {
+              endAdornment: <InputAdornment position="end">dage</InputAdornment>,
+            },
+          }}
+          onChangeCallback={onChangeCallback}
+          fullWidth={false}
+        />
+      </FormProvider>
+      <Button
+        bttype="primary"
+        startIcon={
+          sla === undefined ? <RadioButtonCheckedOutlined /> : <RadioButtonUncheckedOutlined />
+        }
         sx={{
-          width: 'fit-content',
+          ...button_sx(sla === undefined),
+          alignSelf: isMobile ? 'start' : 'center',
         }}
-        fullWidth
-      />
-    </FormProvider>
+        onClick={() => {
+          if (sla === undefined) onChangeCallback();
+          else {
+            deleteState('location.sla');
+            reset({
+              days_to_visitation: null,
+            });
+            removeSubmitter('location.sla');
+          }
+        }}
+      >
+        Registrer senere
+      </Button>
+    </Box>
   );
 };
 

@@ -4,29 +4,26 @@ import {List} from '@mui/material';
 import SimpleTextView from '~/components/SimpleTextView';
 
 type Props = {
-  values: SimpleLocationAccess[];
+  values: SimpleLocationAccess[] | undefined;
   onRemove: (index: number) => void;
-  warning?: React.ReactNode;
 };
 
-const SimpleLocationAccessList = ({values, onRemove, warning}: Props) => {
+const SimpleLocationAccessList = ({values, onRemove}: Props) => {
   return (
-    <List sx={{maxWidth: 320, bgcolor: 'background.paper'}}>
-      {values.length === 0 && (
-        <SimpleTextView
-          key="nokeys"
-          primaryText={'Ingen adgangsnøgler tilføjet'}
-          secondaryText={warning}
-        />
+    <List disablePadding>
+      {values === undefined && <SimpleTextView primaryText={'Adgangsnøgler registreres senere'} />}
+      {Array.isArray(values) && values.length === 0 && (
+        <SimpleTextView key="nokeys" primaryText={'Ingen adgangsnøgler tilføjet'} />
       )}
-      {values.map((contact, index) => (
-        <SimpleTextView
-          key={index}
-          primaryText={contact.name}
-          secondaryText={contact.type}
-          onRemove={() => onRemove(index)}
-        />
-      ))}
+      {Array.isArray(values) &&
+        values.map((contact, index) => (
+          <SimpleTextView
+            key={index}
+            primaryText={contact.name}
+            secondaryText={contact.type}
+            onRemove={() => onRemove(index)}
+          />
+        ))}
     </List>
   );
 };

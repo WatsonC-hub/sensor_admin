@@ -10,9 +10,9 @@ import {
   SxProps,
   ToggleButtonProps,
 } from '@mui/material';
-import { isEqual, merge } from 'lodash';
+import {merge} from 'lodash';
 import React from 'react';
-import { Controller, FieldPath, FieldPathValue, FieldValues, useFormContext } from 'react-hook-form';
+import {Controller, FieldPath, FieldPathValue, FieldValues, useFormContext} from 'react-hook-form';
 
 type FormToggleButtonOption<T> = {
   value: T;
@@ -45,60 +45,75 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
   toggleButtonProps,
   ...rest
 }: FormToggleButtonProps<T, K>) => {
-  const { control } = useFormContext<T, K>();
+  const {control} = useFormContext<T, K>();
 
   return (
     <Grid2
       container
-      {...gridProps}
       flexDirection={gridDirection}
+      {...gridProps}
       size={gridSizes}
       spacing={1}
       alignItems="center"
     >
-      <Grid2 size={12}>
+      <Grid2>
         <Controller
           name={name}
           control={control}
-          render={({ field: { value, onChange } }) => {
+          render={({field: {value, onChange}}) => {
             const internal_sx: SxProps = {
-              borderColor: 'primary.main',
+              gap: 1,
               '& .MuiToggleButton-root': {
                 borderColor: 'primary.main',
-              },
-              '& .MuiToggleButtonGroup-firstButton': {
-                borderRightColor: 'grey.700',
-              },
-              '& .MuiToggleButtonGroup-lastButton': {
-                borderLeftColor: 'grey.700',
-              },
-              '& .MuiToggleButtonGroup-middleButton': {
-                borderLeftColor: 'grey.700',
-                borderRightColor: 'grey.700',
+                borderRadius: 999,
               },
             };
             const sx = merge({}, rest.sx, internal_sx);
             return (
-              <Stack direction={direction} spacing={1} alignItems={'center'}>
+              <Stack direction={direction} spacing={1}>
                 {label && <Typography>{label}</Typography>}
                 <ToggleButtonGroup
+                  {...rest}
+                  sx={sx}
                   value={value}
                   exclusive
-                  color="primary"
+                  // color="primary"
                   onChange={(event, newValue) => {
+                    console.log('Selected value:', newValue);
+                    if (newValue === null) {
+                      return;
+                    }
+
                     onChange(newValue);
                     if (onChangeCallback) onChangeCallback(newValue);
                   }}
-                  sx={sx}
-                  {...rest}
                 >
                   {options.map((option) => {
+                    const sx = toggleButtonProps?.sx || {};
+
+                    const merged_sx = merge({}, sx, {
+                      '&:hover': {
+                        color: 'white',
+                        backgroundColor: 'primary.light',
+                        '&.Mui-selected': {
+                          backgroundColor: 'primary.dark',
+                          color: 'primary.contrastText',
+                        },
+                      },
+                      '&.Mui-selected': {
+                        backgroundColor: 'primary.main',
+                        color: 'primary.contrastText',
+                      },
+                    });
+
                     return (
                       <ToggleButton
-                        key={option.label}
-                        selected={isEqual(option.value, value)}
-                        value={option.value}
                         {...toggleButtonProps}
+                        key={option.label}
+                        color="primary"
+                        // selected={isEqual(option.value, value)}
+                        sx={merged_sx}
+                        value={option.value}
                       >
                         <Typography textTransform={'initial'}>{option.label}</Typography>
                       </ToggleButton>
@@ -110,7 +125,7 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
           }}
         />
         {warning && (
-          <Typography color="error.main" variant="caption" sx={{ mt: 0.5 }}>
+          <Typography color="error.main" variant="caption" sx={{mt: 0.5}}>
             {warning(control._formValues[name])}
           </Typography>
         )}

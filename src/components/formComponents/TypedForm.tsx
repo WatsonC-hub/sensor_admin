@@ -14,7 +14,7 @@ type Props<T extends FieldValues> = {
 
 const Wrapper = ({children, wrap}: {children: React.ReactNode; wrap: boolean}) => {
   return wrap ? (
-    <Grid2 container spacing={1}>
+    <Grid2 container size={12} spacing={1}>
       {children}
     </Grid2>
   ) : (

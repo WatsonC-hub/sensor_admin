@@ -31,6 +31,8 @@ function TimeseriesList() {
   const add = () => {
     const uuid = crypto.randomUUID();
     setState(`timeseries.${uuid}`, {});
+    setState(`timeseries.${uuid}.control_settings`, {});
+
     return uuid;
   };
 
@@ -60,8 +62,6 @@ function TimeseriesList() {
         lead_time: null,
         selectValue: 1,
       });
-    } else {
-      setState(`timeseries.${index}.control_settings`, {});
     }
   };
 
@@ -82,8 +82,8 @@ function TimeseriesList() {
           <FormFieldset
             key={id}
             label={`Tidsserie ${index + 1}`}
-            sx={{width: '100%', p: 1, mb: 2}}
-            labelPosition={-20}
+            sx={{width: '100%', p: 1, borderColor: 'primary.light'}}
+            legendProps={{color: 'primary.light'}}
           >
             <TimeseriesEditor
               key={id}

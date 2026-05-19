@@ -8,11 +8,11 @@ type Props = {
 
 const FormSteps = ({activeStep, loc_id}: Props) => {
   return (
-    <Stepper activeStep={activeStep} alternativeLabel>
+    <Stepper activeStep={activeStep} sx={{width: '100%'}} alternativeLabel>
       {loc_id === undefined && (
         <Step key={'lokation'} completed={activeStep > 0} active={activeStep === 0}>
           <StepLabel optional={<Typography variant="caption">Obligatorisk</Typography>}>
-            <Typography variant="body1">Lokation</Typography>
+            Lokation
           </StepLabel>
         </Step>
       )}
@@ -26,12 +26,12 @@ const FormSteps = ({activeStep, loc_id}: Props) => {
             )
           }
         >
-          <Typography variant="body1">Tidsserie</Typography>
+          Tidsserie
         </StepLabel>
       </Step>
       <Step key={'additional'} active={activeStep === 2}>
-        <StepLabel optional={<Typography variant="caption">Valgfrit</Typography>}>
-          <Typography variant="body1">Yderligere oplysninger</Typography>
+        <StepLabel optional={loc_id === undefined ? 'Valgfrit' : 'Obligatorisk'}>
+          Yderligere oplysninger
         </StepLabel>
       </Step>
     </Stepper>

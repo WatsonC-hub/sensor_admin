@@ -14,11 +14,14 @@ const syncSchema = z.object({
       owner_name: z.union([z.string(), z.literal('')]),
     }),
     z.literal(false),
+    z.literal('__NULL__'),
     z.literal(null),
   ]),
-  jupiter: z
-    .boolean({required_error: 'Vælg venligst om der skal synkroniseres til Jupiter'})
-    .nullable(),
+  jupiter: z.union([
+    z.boolean({required_error: 'Vælg venligst om der skal synkroniseres til Jupiter'}),
+    z.literal('__NULL__'),
+    z.literal(null),
+  ]),
 });
 
 export type SyncFormSchema = z.infer<typeof syncSchema>;

@@ -11,7 +11,7 @@ type Props = {
 
 const SimpleTextView = ({primaryText, secondaryText, icon, onRemove}: Props) => {
   return (
-    <ListItem disableGutters sx={{p: 0}}>
+    <ListItem disableGutters disablePadding>
       {onRemove && (
         <IconButton aria-label="remove contact" size="small" edge="start">
           <RemoveCircleOutline
@@ -24,7 +24,7 @@ const SimpleTextView = ({primaryText, secondaryText, icon, onRemove}: Props) => 
         </IconButton>
       )}
       {icon}
-      <ListItemText sx={{pl: 1}} primary={primaryText} secondary={secondaryText} />
+      <ListItemText primary={primaryText} secondary={secondaryText} />
     </ListItem>
   );
 };

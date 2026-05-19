@@ -138,9 +138,9 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         <AlarmNotificationForm />
 
         <FormFieldset
-          label="Kontakter"
+          label={`Kontakter ${contacts && contacts.length > 0 ? `(${contacts.length})` : ''}`}
           sx={{width: '100%', px: 1}}
-          icon={contactsCollapsed ? <ExpandMore /> : <ExpandLess />}
+          icon={!contactsCollapsed ? <ExpandMore /> : <ExpandLess />}
           onClick={() => setContactsCollapsed(!contactsCollapsed)}
         >
           {!contactsCollapsed && (

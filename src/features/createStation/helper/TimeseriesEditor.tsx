@@ -26,9 +26,7 @@ const TimeseriesEditor = ({index, onRemove, setControlSettings}: Props) => {
     state.setState,
     state.deleteState,
   ]);
-
   const meta_tstype_id = timeseries.meta?.tstype_id;
-  const meta_intakeno = timeseries?.meta?.intakeno;
 
   const {data: dmpAllowedList} = useDMPAllowedList();
 
@@ -48,14 +46,14 @@ const TimeseriesEditor = ({index, onRemove, setControlSettings}: Props) => {
           setState(`timeseries.${index}.meta`, meta);
         }}
         setIntakeno={(intakeno) => {
-          if (intakeno !== meta_intakeno) setState(`timeseries.${index}.meta.intakeno`, intakeno);
+          setState(`timeseries.${index}.meta.intakeno`, intakeno);
         }}
         setTstype={(tstype_id) => {
           setState(`timeseries.${index}.meta.tstype_id`, tstype_id);
           deleteState(`timeseries.${index}.unit`);
           deleteState(`timeseries.${index}.watlevmp`);
 
-          if (tstype_id !== meta_tstype_id) {
+          if (tstype_id !== meta_tstype_id && timeseries.control_settings !== undefined) {
             setControlSettings(tstype_id);
           }
 
@@ -70,13 +68,7 @@ const TimeseriesEditor = ({index, onRemove, setControlSettings}: Props) => {
           {meta_tstype_id === 1 && <WatlevmpSection index={index} />}
           <UnitSection key={meta_tstype_id} uuid={index} tstype_id={meta_tstype_id} />
 
-          <ControlSettingSection
-            uuid={index}
-            setShow={(show) => {
-              if (!show) deleteState(`timeseries.${index}.control_settings`);
-              if (show) setControlSettings(meta_tstype_id);
-            }}
-          />
+          <ControlSettingSection uuid={index} />
 
           {isSyncAllowed && <SyncSection uuid={index} tstype_id={meta_tstype_id} />}
         </>

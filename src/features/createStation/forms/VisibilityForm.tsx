@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
-import { z } from 'zod';
-import { createTypedForm } from '~/components/formComponents/Form';
-import { useCreateStationStore } from '../state/useCreateStationStore';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import React, {useEffect} from 'react';
+import {z} from 'zod';
+import {createTypedForm} from '~/components/formComponents/Form';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useForm} from 'react-hook-form';
 import FormToggleButton from '~/components/formComponents/FormToggleButton';
 
 const schema = z.object({
-  requires_auth: z.boolean({ required_error: 'Vælg om data skal kræve login' }),
+  requires_auth: z.boolean({required_error: 'Vælg om data skal kræve login'}),
 });
 
 type VisibilityFormState = z.infer<typeof schema>;
@@ -19,7 +19,7 @@ type VisibilityFormProps = {
   setValues: (values: VisibilityFormState) => void;
 };
 
-const VisibilityForm = ({ visibility, setValues }: VisibilityFormProps) => {
+const VisibilityForm = ({visibility, setValues}: VisibilityFormProps) => {
   const [registerSubmitter, removeSubmitter] = useCreateStationStore((state) => [
     state.registerSubmitter,
     state.removeSubmitter,
@@ -27,13 +27,15 @@ const VisibilityForm = ({ visibility, setValues }: VisibilityFormProps) => {
 
   const methods = useForm<VisibilityFormState>({
     resolver: zodResolver(schema),
-    defaultValues: visibility,
+    defaultValues: {
+      requires_auth: visibility && 'requires_auth' in visibility ? visibility.requires_auth : false,
+    },
   });
 
   const {
     handleSubmit,
-    formState: { errors },
-    setValue
+    formState: {errors},
+    setValue,
   } = methods;
 
   useEffect(() => {
@@ -54,20 +56,23 @@ const VisibilityForm = ({ visibility, setValues }: VisibilityFormProps) => {
       <FormToggleButton<VisibilityFormState, 'requires_auth'>
         name="requires_auth"
         options={[
-          { value: true, label: 'Ja' },
-          { value: false, label: 'Nej' },
+          {value: true, label: 'Ja'},
+          {value: false, label: 'Nej'},
         ]}
-        direction="row"
+        direction="column"
         size="small"
         gridSizes={12}
         toggleButtonProps={{
-          sx: { px: 2 },
+          sx: {
+            px: 2,
+          },
           size: 'small',
         }}
         gridDirection="row"
         label="Skal data kræve login?"
         onChangeCallback={(value) => {
-          if(value === null) setValue('requires_auth', false);
+          console.log(value);
+          if (value === null) setValue('requires_auth', value);
         }}
         warning={(value) => {
           if (value === undefined && errors.requires_auth) {

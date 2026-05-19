@@ -3,12 +3,10 @@ import {DefaultValues, FieldValues, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 const controlSettingsSchema = z.object({
-  controls_per_year: z
-    .number({
-      required_error: 'Antal kontroller er påkrævet',
-      invalid_type_error: 'Antal kontroller er påkrævet',
-    })
-    .nullable(),
+  controls_per_year: z.number({
+    required_error: 'Antal kontroller er påkrævet',
+    invalid_type_error: 'Antal kontroller er påkrævet',
+  }),
   lead_time: z.number().nullish(),
   dummy: z.number().nullish().optional(),
   selectValue: z.literal(1).or(z.literal(2)).default(1),

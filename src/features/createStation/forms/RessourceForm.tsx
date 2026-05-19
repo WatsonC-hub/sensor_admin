@@ -7,6 +7,9 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
+import Button from '~/components/Button';
+import {DoNotDisturb} from '@mui/icons-material';
+import {button_sx} from '../common_style';
 
 const ressourceSchema = z.object({
   ressourcer: z
@@ -35,14 +38,14 @@ const ressourceSchema = z.object({
 const RessourceForm = () => {
   const {isMobile} = useBreakpoints();
   const id = 'location.ressourcer';
-  const [ressourcer, setState, registerSubmitter, removeSubmitter] = useCreateStationStore(
-    (state) => [
+  const [ressourcer, setState, registerSubmitter, removeSubmitter, deleteState] =
+    useCreateStationStore((state) => [
       state.formState.location?.ressourcer,
       state.setState,
       state.registerSubmitter,
       state.removeSubmitter,
-    ]
-  );
+      state.deleteState,
+    ]);
 
   const formMethods = useForm<{ressourcer: Ressourcer[]}>({
     resolver: zodResolver(ressourceSchema),
@@ -52,7 +55,7 @@ const RessourceForm = () => {
     mode: 'onTouched',
   });
 
-  const {control, handleSubmit} = formMethods;
+  const {control, handleSubmit, watch} = formMethods;
 
   useEffect(() => {
     registerSubmitter(id, async () => {
@@ -67,33 +70,49 @@ const RessourceForm = () => {
     return () => removeSubmitter(id);
   }, [handleSubmit]);
 
+  const watchedRessourcer = watch('ressourcer');
   return (
-    <FormProvider {...formMethods}>
-      <Controller
-        key={'ressourcer'}
-        name="ressourcer"
-        control={control}
-        render={({field: {onChange, value}}) => {
-          return (
-            <>
-              {!isMobile ? (
-                <TranserList
-                  loc_id={undefined}
-                  value={value ?? []}
-                  setValue={(ressourcer) => onChange(ressourcer)}
-                />
-              ) : (
-                <CheckboxesTags
-                  loc_id={undefined}
-                  value={value ?? []}
-                  setValue={(ressourcer) => onChange(ressourcer)}
-                />
-              )}
-            </>
-          );
-        }}
-      />
-    </FormProvider>
+    <>
+      <FormProvider {...formMethods}>
+        <Button
+          bttype="primary"
+          startIcon={<DoNotDisturb />}
+          onClick={() => {
+            deleteState('location.ressourcer');
+          }}
+          sx={{
+            ...button_sx(watchedRessourcer.length === 0),
+            alignSelf: 'start',
+          }}
+        >
+          Ingen ressourcer
+        </Button>
+        <Controller
+          key={'ressourcer'}
+          name="ressourcer"
+          control={control}
+          render={({field: {onChange, value}}) => {
+            return (
+              <>
+                {!isMobile ? (
+                  <TranserList
+                    loc_id={undefined}
+                    value={value ?? []}
+                    setValue={(ressourcer) => onChange(ressourcer)}
+                  />
+                ) : (
+                  <CheckboxesTags
+                    loc_id={undefined}
+                    value={value ?? []}
+                    setValue={(ressourcer) => onChange(ressourcer)}
+                  />
+                )}
+              </>
+            );
+          }}
+        />
+      </FormProvider>
+    </>
   );
 };
 

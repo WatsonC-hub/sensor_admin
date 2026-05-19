@@ -2,12 +2,14 @@ import {Grid2} from '@mui/material';
 import React from 'react';
 import ControlSettings, {
   ControlSettingsProps,
+  LeadTimeProps,
 } from '~/features/configuration/components/ControlSettings';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 type Props = {
   slotProps?: {
     controlFrequency?: ControlSettingsProps;
+    leadTime?: LeadTimeProps;
   };
   containerGridSize?: number;
 };
@@ -24,7 +26,7 @@ const CreateControlSettings = ({slotProps, containerGridSize = 12}: Props) => {
         />
       </Grid2>
       <Grid2 size={isMobile ? 12 : 6}>
-        <ControlSettings.LeadTime />
+        <ControlSettings.LeadTime {...slotProps?.leadTime} />
       </Grid2>
     </Grid2>
   );

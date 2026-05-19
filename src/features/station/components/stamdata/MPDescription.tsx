@@ -4,12 +4,14 @@ import React from 'react';
 type Props = {
   value: string | undefined;
   onChange: (value: string) => void;
+  onChangeCallback?: (value: string) => void;
   onBlur: () => void;
   ref: React.Ref<any>;
   slots?: {
     autocomplete?: AutocompleteProps<any, any, any, any>;
     textfield?: TextFieldProps;
   };
+  disabled?: boolean;
 };
 const options = [
   {label: 'Top rør'},
@@ -20,12 +22,21 @@ const options = [
   {label: 'Skal indmåles'},
 ];
 
-const MPDescription = ({value, onChange, onBlur, ref, slots}: Props) => {
+const MPDescription = ({
+  value,
+  onChange,
+  onBlur,
+  ref,
+  slots,
+  onChangeCallback,
+  disabled,
+}: Props) => {
   return (
     <Autocomplete
       disablePortal
       freeSolo
       disableClearable
+      disabled={disabled}
       slotProps={{
         listbox: {
           sx: {
@@ -42,8 +53,20 @@ const MPDescription = ({value, onChange, onBlur, ref, slots}: Props) => {
       ref={ref}
       fullWidth
       onBlur={onBlur}
-      onInputChange={(e, value) => onChange(value)}
-      onChange={(e, value) => onChange(typeof value == 'string' ? value : value.label)}
+      onInputChange={(e, value) => {
+        onChange(value);
+
+        if (onChangeCallback) {
+          onChangeCallback(value);
+        }
+      }}
+      onChange={(e, value) => {
+        const newValue = typeof value == 'string' ? value : value.label;
+        onChange(newValue);
+        if (onChangeCallback) {
+          onChangeCallback(newValue);
+        }
+      }}
       renderInput={(params) => (
         <TextField
           {...params}

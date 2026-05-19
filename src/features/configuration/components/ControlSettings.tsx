@@ -37,12 +37,19 @@ function intervalFromFrequencyPerYear(timesPerYear: number): string {
 type IntervalTypeProps = {
   value: 1 | 2;
   setValue: (value: 1 | 2) => void;
+  disabled?: boolean;
 };
 
-const IntervalType = ({value, setValue}: IntervalTypeProps) => {
+const IntervalType = ({value, setValue, disabled = false}: IntervalTypeProps) => {
   return (
     <>
-      <Select value={value} variant="standard" sx={{width: 125}} disableUnderline>
+      <Select
+        value={value}
+        variant="standard"
+        sx={{width: 125}}
+        disableUnderline
+        disabled={disabled}
+      >
         <MenuItem value={1} onClick={() => setValue(1)}>
           kontrol/år
         </MenuItem>
@@ -58,12 +65,14 @@ export type ControlSettingsProps = {
   selectValue?: 1 | 2;
   setSelectValue?: (value: 1 | 2) => void;
   disabled?: boolean;
+  onChangeCallback?: () => void;
 } & Omit<FormTextFieldProps, 'label' | 'value'>;
 
 const ControlFrequency = ({
   selectValue,
   setSelectValue,
   disabled = false,
+  onChangeCallback,
   ...rest
 }: ControlSettingsProps) => {
   const {control} = useFormContext();
@@ -97,13 +106,18 @@ const ControlFrequency = ({
                 }
 
                 onChange(newValue);
+
+                if (onChangeCallback) {
+                  onChangeCallback();
+                }
               }}
               disabled={disabled}
               slotProps={{
                 input: {
                   endAdornment: (
-                    <InputAdornment position="end">
+                    <InputAdornment position="end" disableTypography={disabled}>
                       <IntervalType
+                        disabled={disabled}
                         value={intervalType}
                         setValue={(value) => {
                           if (setSelectValue) setSelectValue(value);
@@ -140,9 +154,9 @@ const ControlFrequency = ({
   );
 };
 
-type LeadTimeProps = Omit<FormInputProps<ControlSettingsFormValues>, 'name'>;
+export type LeadTimeProps = Omit<FormInputProps<ControlSettingsFormValues>, 'name'>;
 
-const LeadTime = ({onChangeCallback, ...rest}: LeadTimeProps) => {
+const LeadTime = ({onChangeCallback, disabled, ...rest}: LeadTimeProps) => {
   return (
     <FormInput
       {...rest}
@@ -150,9 +164,15 @@ const LeadTime = ({onChangeCallback, ...rest}: LeadTimeProps) => {
       label="Forvarsling"
       type="number"
       fullWidth
+      disabled={disabled}
       slotProps={{
         input: {
-          endAdornment: <InputAdornment position="end">dage før kontrol</InputAdornment>,
+          disabled: disabled,
+          endAdornment: (
+            <InputAdornment position="end" disableTypography={disabled}>
+              <Typography>dage før kontrol</Typography>
+            </InputAdornment>
+          ),
         },
       }}
       onChangeCallback={onChangeCallback}
