@@ -16,11 +16,14 @@ const SLASchema = z.object({
     .number({
       message: 'Løsningsfrist skal være et tal',
     })
-    .min(1, {message: 'Løsningsfrist skal være 1 eller flere dage'})
-    .nullable(),
+    .min(1, {message: 'Løsningsfrist skal være 1 eller flere dage'}),
 });
 
 type SLA = z.infer<typeof SLASchema>;
+
+type SLAFormState = {
+  days_to_visitation: number | null;
+};
 
 type SlaFormProps = {
   setValues: (values: SLA) => void;
@@ -35,7 +38,7 @@ const SlaForm = ({setValues}: SlaFormProps) => {
     state.deleteState,
   ]);
 
-  const formMethods = useForm<SLA>({
+  const formMethods = useForm<SLAFormState, unknown, SLA>({
     resolver: zodResolver(SLASchema),
     defaultValues: sla,
   });
@@ -44,7 +47,7 @@ const SlaForm = ({setValues}: SlaFormProps) => {
 
   const onChangeCallback = () => {
     const values = getValues();
-    setValues(values);
+    setValues(values as SLA);
     registerSubmitter('location.sla', async () => {
       let valid: boolean = false;
       await handleSubmit((values) => {

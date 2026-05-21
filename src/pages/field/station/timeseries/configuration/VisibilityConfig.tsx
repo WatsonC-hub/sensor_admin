@@ -39,7 +39,7 @@ const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
 
   const {updateTimeseries} = useUpdateTimeseries(ts_id);
 
-  const methods = useForm<Form>({
+  const methods = useForm<Form, unknown, Form>({
     resolver: zodResolver(schema),
     defaultValues: {
       requires_auth: false,

@@ -4,8 +4,7 @@ import {z} from 'zod';
 
 const controlSettingsSchema = z.object({
   controls_per_year: z.number({
-    required_error: 'Antal kontroller er påkrævet',
-    invalid_type_error: 'Antal kontroller er påkrævet',
+    message: 'Antal kontroller er påkrævet',
   }),
   lead_time: z.number().nullish(),
   dummy: z.number().nullish().optional(),
@@ -20,11 +19,11 @@ type ControlSettingsProps<T extends FieldValues> = {
   values?: T;
 };
 
-const useControlSettingsForm = <T extends FieldValues>({
+const useControlSettingsForm = <T extends FieldValues, S extends FieldValues = T>({
   defaultValues,
   values,
 }: ControlSettingsProps<T>) => {
-  const controlSettingsFormMethods = useForm<T>({
+  const controlSettingsFormMethods = useForm<T, unknown, S>({
     resolver: zodResolver(controlSettingsSchema),
     defaultValues: defaultValues,
     mode: 'onTouched',

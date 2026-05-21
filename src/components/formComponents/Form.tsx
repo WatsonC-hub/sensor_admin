@@ -10,8 +10,8 @@ import FormRadio from './FormRadio';
 import FormDateTimeWrapper from './FormDateTimeWrapper';
 import FormController from './FormController';
 
-type TypedFormComponent<T extends FieldValues> = React.FC<
-  React.ComponentProps<typeof TypedForm<T>>
+type TypedFormComponent<T extends FieldValues, S extends Record<string, any> = T> = React.FC<
+  React.ComponentProps<typeof TypedForm<T, S>>
 > & {
   Input: React.FC<React.ComponentProps<typeof FormInputWrapper<T>>>;
   Checkbox: React.FC<React.ComponentProps<typeof FormCheckbox<T>>>;
@@ -36,8 +36,11 @@ function wrap<TProps extends object>(
   return Wrapped;
 }
 
-export function createTypedForm<T extends FieldValues = never>(): TypedFormComponent<T> {
-  const Form = ((props) => <TypedForm<T> {...props} />) as TypedFormComponent<T>;
+export function createTypedForm<
+  T extends FieldValues = never,
+  S extends Record<string, any> = T,
+>(): TypedFormComponent<T, S> {
+  const Form = ((props) => <TypedForm<T, S> {...props} />) as TypedFormComponent<T, S>;
 
   Form.displayName = 'TypedForm';
   Form.Input = wrap(FormInputWrapper<T>, 'TypedForm.Input');

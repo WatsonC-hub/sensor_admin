@@ -37,16 +37,13 @@ const LocationAccessForm = () => {
   const removeLocationAccess = (index: number) => {
     const filteredLocationAccess =
       location_access?.filter((_: AccessTable, i: number) => i !== index) ?? [];
-    if (filteredLocationAccess.length === 0) onValidChange(undefined);
+    if (filteredLocationAccess.length === 0) onValidChange([]);
     else onValidChange(filteredLocationAccess);
   };
 
   useEffect(() => {
     registerSubmitter('location.location_access', () => {
-      if (
-        Array.isArray(location_access) ||
-        !Object.keys(location || {}).includes('location_access')
-      ) {
+      if (location_access === undefined || Array.isArray(location_access)) {
         return Promise.resolve(true);
       }
       return Promise.resolve(false);

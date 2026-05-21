@@ -19,11 +19,7 @@ const CreateControlSettings = ({slotProps, containerGridSize = 12}: Props) => {
   return (
     <Grid2 container size={containerGridSize} spacing={1}>
       <Grid2 size={isMobile ? 12 : 6}>
-        <ControlSettings.ControlFrequency
-          required
-          disabled={false}
-          {...slotProps?.controlFrequency}
-        />
+        <ControlSettings.ControlFrequency required {...slotProps?.controlFrequency} />
       </Grid2>
       <Grid2 size={isMobile ? 12 : 6}>
         <ControlSettings.LeadTime {...slotProps?.leadTime} />

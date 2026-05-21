@@ -43,7 +43,7 @@ export default function ReferenceForm() {
   const {data: metadata} = useTimeseriesData(ts_id);
   const {del: deleteWatlevmp} = useMaalepunkt(ts_id);
 
-  const formMethods = useForm<WatlevMPFormValues>({
+  const formMethods = useForm<WatlevMPFormValues, unknown, WatlevMPFormValues>({
     resolver: zodResolver(schema),
     defaultValues: initialWatlevmpData(),
     mode: 'onTouched',

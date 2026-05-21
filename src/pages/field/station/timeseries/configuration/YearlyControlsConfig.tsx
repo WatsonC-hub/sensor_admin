@@ -16,6 +16,13 @@ import {useUser} from '~/features/auth/useUser';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import usePermissions from '~/features/permissions/api/usePermissions';
 
+type FormValues = {
+  controls_per_year: number | null;
+  lead_time: number | null;
+  dummy: number | null;
+  selectValue: 1 | 2;
+};
+
 const YearlyControlsConfig = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: values} = useTimeseriesServiceInterval(ts_id);
@@ -29,7 +36,7 @@ const YearlyControlsConfig = () => {
     (!values?.isCustomerService && !superUser) ||
     location_permissions !== 'edit';
 
-  const formMethods = useControlSettingsForm<ControlSettingsFormValues>({
+  const formMethods = useControlSettingsForm<FormValues, ControlSettingsFormValues>({
     defaultValues: {
       controls_per_year: null,
       lead_time: null,

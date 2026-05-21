@@ -37,9 +37,6 @@ const CreateStation = () => {
           meta: {...data, ...state},
           contacts: [],
           location_access: [],
-          visibility: {
-            requires_auth: false,
-          },
           sla: superUser
             ? {
                 days_to_visitation: 20,
@@ -59,7 +56,7 @@ const CreateStation = () => {
           alignSelf={'center'}
           display={'flex'}
           flexDirection={'column'}
-          spacing={1.5}
+          spacing={0.5}
           sx={{maxWidth: 1000, width: '100%'}}
           mx={'auto'}
           px={1}

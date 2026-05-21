@@ -19,9 +19,10 @@ const Form = createTypedForm<SyncFormState>();
 
 const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps) => {
   const [dmpActive, setDmpActive] = useState(!!values?.dmp && values.dmp !== null);
-  const [registerSubmitter, removeSubmitter] = useCreateStationStore((state) => [
+  const [registerSubmitter, removeSubmitter, deleteState] = useCreateStationStore((state) => [
     state.registerSubmitter,
     state.removeSubmitter,
+    state.deleteState,
   ]);
   const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm<SyncFormState>({
     context: {
@@ -32,10 +33,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
       dmp: null,
       jupiter: null,
     },
-    values: {
-      dmp: values?.dmp ?? null,
-      jupiter: values?.jupiter ?? null,
-    },
+    values: values,
   });
 
   const {setValue, handleSubmit, watch} = syncFormMethods;
@@ -47,9 +45,13 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     registerSubmitter(id, async () => {
       let valid: boolean = false;
       await handleSubmit((values) => {
-        if (!isDmpAllowed) delete values.dmp;
-        if (!canSyncJupiter) delete values.jupiter;
-
+        if (!isDmpAllowed || values.dmp === null) delete values.dmp;
+        if (!canSyncJupiter || values.jupiter === null) delete values.jupiter;
+        if (Object.keys(values).length === 0) {
+          deleteState(id as `timeseries.${string}.sync`);
+          valid = true;
+          return;
+        }
         setValues(values);
         valid = true;
       })();
@@ -122,7 +124,6 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
                   <Button
                     key={option.label}
                     onClick={option.onChange}
-                    size="small"
                     bttype={option.selected(watchedJupiter) ? 'primary' : 'tertiary'}
                   >
                     {option.label}

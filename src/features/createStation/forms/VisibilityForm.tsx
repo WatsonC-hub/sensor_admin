@@ -25,7 +25,7 @@ const VisibilityForm = ({visibility, setValues}: VisibilityFormProps) => {
     state.removeSubmitter,
   ]);
 
-  const methods = useForm<VisibilityFormState>({
+  const methods = useForm<VisibilityFormState, unknown, VisibilityFormState>({
     resolver: zodResolver(schema),
     defaultValues: {
       requires_auth: visibility && 'requires_auth' in visibility ? visibility.requires_auth : false,

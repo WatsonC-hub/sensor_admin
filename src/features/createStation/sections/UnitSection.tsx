@@ -43,15 +43,7 @@ const UnitSection = ({uuid, tstype_id}: UnitStepProps) => {
         <Button
           bttype="primary"
           startIcon={<AddCircleOutline />}
-          sx={{
-            backgroundColor: 'primary.main',
-            borderColor: 'primary.main',
-            color: 'primary.contrastText',
-            '&:hover': {
-              color: 'white',
-              backgroundColor: 'primary.dark',
-            },
-          }}
+          sx={button_sx(unit !== undefined)}
           onClick={() => setOpen(true)}
         >
           Tilføj udstyr

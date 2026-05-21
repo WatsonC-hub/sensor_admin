@@ -6,7 +6,7 @@ import {LocationMetadata} from '~/hooks/query/useMetadata';
 
 /*  FORMSTATE */
 export type ControlSettingsFormState = {
-  controls_per_year: number | null;
+  controls_per_year: number;
   lead_time: number | null;
   selectValue: 1 | 2;
 };

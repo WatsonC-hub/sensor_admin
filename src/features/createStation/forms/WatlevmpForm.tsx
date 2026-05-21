@@ -17,16 +17,23 @@ import Button from '~/components/Button';
 import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
 import {button_sx} from '../common_style';
 
+type EmptyObject = Record<string, never>;
+
 type WatlevmpFormProps = {
   intakeno?: number;
   id: string;
   values: Watlevmp | undefined;
-  setValues: (values: Watlevmp) => void;
+  setValues: (values: ValidateWatlevmp | EmptyObject) => void;
 };
 
 type Watlevmp = {
   description: string;
   elevation: number | null;
+};
+
+type ValidateWatlevmp = {
+  description: string;
+  elevation: number;
 };
 
 const Form = createTypedForm<Watlevmp>();
@@ -59,11 +66,11 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
     enabled: !!location_meta?.boreholeno && intakeno !== undefined,
   });
 
-  const watlevmpFormMethods = useWatlevmpForm<Watlevmp>({
+  const watlevmpFormMethods = useWatlevmpForm<Watlevmp, ValidateWatlevmp>({
     defaultValues: values,
   });
 
-  const {watch, handleSubmit, reset, getValues} = watlevmpFormMethods;
+  const {watch, handleSubmit, reset} = watlevmpFormMethods;
 
   const elevation = watch('elevation');
 
@@ -97,8 +104,7 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
   }, [watlevmp, intakeno]);
 
   const onChangeCallback = () => {
-    const currentValues = getValues();
-    setValues(currentValues);
+    setValues({});
     registerSubmitter(id, async () => {
       let valid: boolean = false;
       await handleSubmit((values) => {
@@ -114,7 +120,7 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
       <Form.Input
         name="elevation"
         label="Målepunktskote"
-        required
+        required={values !== undefined}
         fullWidth
         disabled={values === undefined}
         type="number"
@@ -142,7 +148,7 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
             slots={{
               textfield: {
                 error: !!error,
-                required: true,
+                required: values !== undefined,
                 helperText: error?.message,
               },
             }}

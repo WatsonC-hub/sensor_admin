@@ -14,12 +14,10 @@ const syncSchema = z.object({
       owner_name: z.union([z.string(), z.literal('')]),
     }),
     z.literal(false),
-    z.literal('__NULL__'),
     z.literal(null),
   ]),
   jupiter: z.union([
     z.boolean({required_error: 'Vælg venligst om der skal synkroniseres til Jupiter'}),
-    z.literal('__NULL__'),
     z.literal(null),
   ]),
 });
@@ -38,7 +36,11 @@ type SyncFormProps<T extends FieldValues> = {
   context: SyncContext;
 };
 
-const useSyncForm = <T extends FieldValues>({defaultValues, values, context}: SyncFormProps<T>) => {
+const useSyncForm = <T extends FieldValues, S extends Record<string, any> = T>({
+  defaultValues,
+  values,
+  context,
+}: SyncFormProps<T>) => {
   const isJupiterType = [1, 11, 12, 16].includes(context?.tstype_id || 0);
   const isBorehole = context?.loctype_id === 9;
 
@@ -82,7 +84,7 @@ const useSyncForm = <T extends FieldValues>({defaultValues, values, context}: Sy
 
   const owners: Array<{cvr: string; name: string}> = result.data;
 
-  const syncFormMethods = useForm<T>({
+  const syncFormMethods = useForm<T, unknown, S>({
     resolver: zodResolver(conditionalSchema),
     defaultValues: defaultValues,
     mode: 'onTouched',

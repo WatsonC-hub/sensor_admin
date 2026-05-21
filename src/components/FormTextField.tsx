@@ -5,7 +5,7 @@ import {FieldError} from 'react-hook-form';
 export type FormTextFieldProps = {
   value: string;
   label: string;
-  disabled: boolean;
+  disabled?: boolean;
   formError?: FieldError;
   type?: string;
   margin?: 'none' | 'dense' | 'normal';
@@ -101,11 +101,11 @@ const FormTextField = ({
 
           sx: {
             '& .Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'},
-            color: 'primary.main',
             zIndex: 0,
           },
         },
       }}
+      error={!!formError}
       {...rest}
     />
   );

@@ -9,7 +9,7 @@ import {useAppContext} from '~/state/contexts';
 import MPDescription from '../stamdata/MPDescription';
 
 interface WatlevMPFormProps {
-  formMethods: UseFormReturn<WatlevMPFormValues>;
+  formMethods: UseFormReturn<WatlevMPFormValues, unknown, WatlevMPFormValues>;
 }
 
 const Form = createTypedForm<WatlevMPFormValues>();

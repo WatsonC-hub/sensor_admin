@@ -5,17 +5,25 @@ import useControlSettingsForm from '~/features/configuration/api/useControlSetti
 import ControlSettings from '~/features/configuration/components/ControlSettings';
 import CreateControlSettings from '~/features/configuration/components/CreateControlSettings';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {ControlSettingsFormState as ControlSettingsType} from '../types';
+import {ControlSettingsFormState} from '../types';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
 
 import Button from '~/components/Button';
 import {button_sx} from '../common_style';
 
+type EmptyObject = Record<string, never>;
+
 type Props = {
   id: string;
-  values: ControlSettingsType | undefined;
-  setValues: (values: ControlSettingsType) => void;
+  values: ControlSettingsFormState | EmptyObject | undefined;
+  setValues: (values: ControlSettingsFormState | EmptyObject) => void;
+};
+
+type ValidateControlSettings = {
+  controls_per_year: number | null;
+  lead_time: number | null;
+  selectValue: 1 | 2;
 };
 
 const ControlSettingForm = ({id, values, setValues}: Props) => {
@@ -29,7 +37,10 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
     ]
   );
 
-  const controlSettingsFormMethods = useControlSettingsForm<ControlSettingsType>({
+  const controlSettingsFormMethods = useControlSettingsForm<
+    ValidateControlSettings,
+    ControlSettingsFormState
+  >({
     defaultValues: values,
   });
 
@@ -55,7 +66,7 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
 
   const onChangeCallback = () => {
     const currentValues = getValues();
-    setValues(currentValues);
+    setValues(currentValues as ControlSettingsFormState);
     registerSubmitter(id, async () => {
       let valid: boolean = false;
       await handleSubmit((values) => {

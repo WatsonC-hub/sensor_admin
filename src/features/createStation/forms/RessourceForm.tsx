@@ -81,7 +81,7 @@ const RessourceForm = () => {
             deleteState('location.ressourcer');
           }}
           sx={{
-            ...button_sx(watchedRessourcer.length === 0),
+            ...button_sx(watchedRessourcer === undefined),
             alignSelf: 'start',
           }}
         >

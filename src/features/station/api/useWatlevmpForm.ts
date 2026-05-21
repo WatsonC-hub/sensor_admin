@@ -7,11 +7,15 @@ type UseWatlevmpFormProps<T> = {
   values?: T | undefined;
 };
 
-const useWatlevmpForm = <T extends Record<string, any>>({
+const useWatlevmpForm = <
+  T extends Record<string, any>,
+  S extends Record<string, any> = T,
+  U = unknown,
+>({
   defaultValues,
   values,
 }: UseWatlevmpFormProps<T>) => {
-  const formMethods = useForm<T>({
+  const formMethods = useForm<T, U, S>({
     resolver: zodResolver(watlevmpAddSchema),
     defaultValues,
     mode: 'onTouched',

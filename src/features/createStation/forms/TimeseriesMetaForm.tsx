@@ -57,6 +57,8 @@ const TimeseriesMetaForm = ({uuid, setValues, setTstype, setIntakeno}: Timeserie
     registerSubmitter(id, async () => {
       let valid: boolean = false;
       await handleSubmit((values) => {
+        if (locationMeta?.boreholeno) delete values.prefix;
+
         setValues(values);
         valid = true;
       })();

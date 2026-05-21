@@ -42,29 +42,32 @@ type IntervalTypeProps = {
 
 const IntervalType = ({value, setValue, disabled = false}: IntervalTypeProps) => {
   return (
-    <>
-      <Select
-        value={value}
-        variant="standard"
-        sx={{width: 125}}
-        disableUnderline
-        disabled={disabled}
-      >
-        <MenuItem value={1} onClick={() => setValue(1)}>
-          kontrol/år
-        </MenuItem>
-        <MenuItem value={2} onClick={() => setValue(2)}>
-          mdr. mellem kontrol
-        </MenuItem>
-      </Select>
-    </>
+    <Select
+      value={value}
+      disabled={disabled}
+      variant="standard"
+      sx={{
+        width: 125,
+        '&.Mui-disabled .MuiSelect-select': {
+          WebkitTextFillColor: disabled ? 'GrayText' : 'inherit',
+          color: disabled ? 'GrayText' : 'inherit',
+        },
+      }}
+      disableUnderline
+    >
+      <MenuItem value={1} onClick={() => setValue(1)}>
+        kontrol/år
+      </MenuItem>
+      <MenuItem value={2} onClick={() => setValue(2)}>
+        mdr. mellem kontrol
+      </MenuItem>
+    </Select>
   );
 };
 
 export type ControlSettingsProps = {
   selectValue?: 1 | 2;
   setSelectValue?: (value: 1 | 2) => void;
-  disabled?: boolean;
   onChangeCallback?: () => void;
 } & Omit<FormTextFieldProps, 'label' | 'value'>;
 
@@ -84,9 +87,8 @@ const ControlFrequency = ({
       <Controller
         name="controls_per_year"
         control={control}
-        render={({field: {onChange, value}, fieldState: {error}}) => {
+        render={({field: {onChange, onBlur, value}, fieldState: {error}}) => {
           let innerValue = undefined;
-
           if (value !== undefined && value !== null && value !== '')
             innerValue = intervalType === 1 ? value : Number((12 / value).toFixed(3));
 
@@ -111,11 +113,12 @@ const ControlFrequency = ({
                   onChangeCallback();
                 }
               }}
+              onBlur={onBlur}
               disabled={disabled}
               slotProps={{
                 input: {
                   endAdornment: (
-                    <InputAdornment position="end" disableTypography={disabled}>
+                    <InputAdornment position="end">
                       <IntervalType
                         disabled={disabled}
                         value={intervalType}
@@ -143,7 +146,6 @@ const ControlFrequency = ({
                   )
                 ) : null
               }
-              error={!!error}
               formError={error}
               {...rest}
             />

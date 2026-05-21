@@ -50,7 +50,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
 
   const currentContact = values && currentIndex !== -1 ? values[currentIndex] : undefined;
 
-  const alarmContactFormMethods = useForm<AlarmContactFormType>({
+  const alarmContactFormMethods = useForm<AlarmContactFormType, unknown, AlarmContactFormType>({
     resolver: zodResolver(alarmContactSchema),
     defaultValues: {
       contact_id: '',

@@ -35,7 +35,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [mode, setMode] = useState<'add' | 'edit' | 'view'>('view');
-  const alarmMethods = useForm<AlarmsFormValues>({
+  const alarmMethods = useForm<AlarmsFormValues, unknown, AlarmsFormValues>({
     resolver: zodResolver(alarmsSchema),
     defaultValues: {
       name: alarm?.name || '',
