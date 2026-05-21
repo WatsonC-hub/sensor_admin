@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 
 import {createStore} from 'zustand';
-import {CreateStationFormState} from '../types';
+import {CreateStationFormState, TimeseriesMeta} from '../types';
 import {devtools} from 'zustand/middleware';
 
 function setByPath<T extends object, P extends Path<T>>(
@@ -120,18 +120,21 @@ type PathValue<T, P extends Path<T>> = P extends `${infer K}.${infer Rest}`
 export type CreateStationStoreState = {
   formState: Partial<CreateStationFormState>;
   isFormError: boolean;
+  uniqueTimeseriesError: Record<string, TimeseriesMeta> | null;
   submitters: Submitters;
   setState: <P extends Path<Partial<CreateStationFormState>>>(
     path: P,
     data: Partial<PathValue<Partial<CreateStationFormState>, P>> | undefined
   ) => void;
   setIsFormError: (val: boolean) => void;
+  setUniqueTimeseriesError: (metas: Record<string, TimeseriesMeta> | null) => void;
   deleteState: <P extends Path<Partial<CreateStationFormState>>>(path: P) => void;
   resetState: <P extends Path<Partial<CreateStationFormState>>>(path: P) => void;
   registerSubmitter: (id: string, callback: () => Promise<boolean>) => void;
-  validateSubmitters: () => Promise<boolean>;
+  validateSubmitters: (
+    cb?: (formstate?: Partial<CreateStationFormState>) => Promise<boolean>
+  ) => Promise<boolean>;
   removeSubmitter: (id: string) => void;
-  runSubmitters: () => boolean;
   clearSubmitters: () => void;
 };
 
@@ -152,6 +155,7 @@ const createStationStore = (defaultValues?: DeepPartial<CreateStationFormState>)
       formState: defaultValues,
       submitters: {},
       isFormError: false,
+      uniqueTimeseriesError: null,
       setState: (path, data) =>
         set((state) => ({
           formState: setByPath(state.formState, path, data),
@@ -174,7 +178,7 @@ const createStationStore = (defaultValues?: DeepPartial<CreateStationFormState>)
         set((state) => ({
           submitters: {...state.submitters, [id]: callback},
         })),
-      validateSubmitters: async () => {
+      validateSubmitters: async (cb = async () => true) => {
         const state = get();
         const valid = (
           await Promise.all(
@@ -187,7 +191,8 @@ const createStationStore = (defaultValues?: DeepPartial<CreateStationFormState>)
             })
           )
         ).every(Boolean);
-        return valid;
+        const cbValid = await cb(get().formState);
+        return valid && cbValid;
       },
       removeSubmitter: (id) =>
         set((state) => {
@@ -200,7 +205,7 @@ const createStationStore = (defaultValues?: DeepPartial<CreateStationFormState>)
         }),
 
       clearSubmitters: () => set(() => ({submitters: {}})),
-      runValidators: () => true,
+      setUniqueTimeseriesError: (metas) => set(() => ({uniqueTimeseriesError: metas})),
     }))
   );
 

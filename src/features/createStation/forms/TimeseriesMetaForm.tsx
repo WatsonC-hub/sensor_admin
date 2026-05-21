@@ -15,18 +15,20 @@ type TimeseriesMetaFormProps = {
 };
 
 const TimeseriesMetaForm = ({uuid, setValues, setTstype, setIntakeno}: TimeseriesMetaFormProps) => {
-  const [timeseries, locationMeta, registerSubmitter, removeSubmitter] = useCreateStationStore(
-    (state) => [
+  const [timeseries, locationMeta, registerSubmitter, removeSubmitter, uniqueTimeseriesError] =
+    useCreateStationStore((state) => [
       state.formState.timeseries?.[uuid],
       state.formState.location?.meta,
       state.registerSubmitter,
       state.removeSubmitter,
-    ]
-  );
+      state.uniqueTimeseriesError,
+    ]);
 
   const id = `timeseries.${uuid}.meta`;
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
+  const hasUniqueTimeseriesError = Boolean(uniqueTimeseriesError?.[uuid]);
+  const duplicateField = locationMeta?.boreholeno ? 'intakeno' : 'prefix';
 
   const [timeseriesFormMethods, TimeseriesForm] = useTimeseriesForm({
     formProps: {
@@ -38,10 +40,27 @@ const TimeseriesMetaForm = ({uuid, setValues, setTstype, setIntakeno}: Timeserie
     mode: 'Add',
   });
 
-  const {handleSubmit, watch} = timeseriesFormMethods;
+  const {
+    handleSubmit,
+    watch,
+    setError,
+    clearErrors,
+    formState: {errors},
+  } = timeseriesFormMethods;
 
   const tstype_id = watch('tstype_id');
   const intakeno = watch('intakeno');
+
+  useEffect(() => {
+    if (hasUniqueTimeseriesError) {
+      setError(duplicateField, {
+        type: 'duplicate',
+        message: `Kombination af ${duplicateField === 'intakeno' ? 'indtag' : 'navn'} og tidsserietype findes allerede`,
+      });
+    } else {
+      clearErrors(duplicateField);
+    }
+  }, [hasUniqueTimeseriesError, duplicateField, setError, clearErrors, errors]);
 
   useEffect(() => {
     if (tstype_id !== timeseries?.meta?.tstype_id) setTstype(tstype_id);
