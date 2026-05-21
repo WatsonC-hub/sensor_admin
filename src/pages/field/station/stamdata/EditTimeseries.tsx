@@ -30,7 +30,7 @@ const EditTimeseries = () => {
   const [, setPage] = useStationPages();
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData(ts_id);
-  const mutation = useDeleteTimeseries();
+  const {mutate: deleteTimeseries, isPending} = useDeleteTimeseries();
   const [assertDeletion, setAssertDeletion] = React.useState(false);
   const {superUser} = useUser();
 
@@ -38,7 +38,9 @@ const EditTimeseries = () => {
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
 
-  const {updateTimeseries} = useUpdateTimeseries(ts_id);
+  const {
+    updateTimeseries: {mutateAsync},
+  } = useUpdateTimeseries(ts_id);
 
   let schema;
 
@@ -68,7 +70,7 @@ const EditTimeseries = () => {
   });
 
   const {
-    formState: {isDirty, isValid},
+    formState: {isDirty, isValid, isSubmitting},
     reset,
     trigger,
     handleSubmit,
@@ -80,12 +82,12 @@ const EditTimeseries = () => {
     }
   }, []);
 
-  const Submit = (data: BoreholeEditTimeseries | DefaultEditTimeseries) => {
+  const Submit = async (data: BoreholeEditTimeseries | DefaultEditTimeseries) => {
     if (isValid && isDirty) {
       const payload = {
         ...data,
       };
-      updateTimeseries.mutate(payload);
+      await mutateAsync(payload);
     }
   };
 
@@ -136,7 +138,8 @@ const EditTimeseries = () => {
             bttype="primary"
             disabled={!isDirty || !isValid || location_permissions !== 'edit'}
             onClick={handleSubmit(Submit)}
-            startIcon={<SaveIcon />}
+            loading={isSubmitting}
+            startIcon={isSubmitting ? undefined : <SaveIcon />}
             sx={{marginRight: 1}}
           >
             Gem
@@ -147,12 +150,12 @@ const EditTimeseries = () => {
         open={assertDeletion}
         description="Dette vil slette alle kontrolmålinger, opgaver, målepunkter og konfigurationer knyttet til denne tidsserie. Denne handling kan ikke fortrydes."
         onClose={() => setAssertDeletion(false)}
-        isPending={mutation.isPending}
+        isPending={isPending}
         onDelete={() => {
           const payload = {
             path: ts_id.toString(),
           };
-          mutation.mutate(payload, {
+          deleteTimeseries(payload, {
             onSuccess: () => {
               setAssertDeletion(false);
               setTsId(null);

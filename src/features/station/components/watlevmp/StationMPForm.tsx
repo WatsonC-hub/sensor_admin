@@ -22,8 +22,11 @@ const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
     formState: {defaultValues},
   } = formMethods;
 
-  const {post: postWatlevmp, put: putWatlevmp} = useMaalepunkt(ts_id);
-  const handleMaalepunktSubmit = (values: WatlevMPFormValues) => {
+  const {
+    post: {mutateAsync: postWatlevmpAsync},
+    put: {mutateAsync: putWatlevmpAsync},
+  } = useMaalepunkt(ts_id);
+  const handleMaalepunktSubmit = async (values: WatlevMPFormValues) => {
     const mutationOptions = {
       onSuccess: () => {
         reset(initialWatlevmpData());
@@ -39,13 +42,13 @@ const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
         data: data,
         path: `${ts_id}`,
       };
-      postWatlevmp.mutate(payload, mutationOptions);
+      await postWatlevmpAsync(payload, mutationOptions);
     } else {
       const payload = {
         data: data,
         path: `${ts_id}/${values.gid}`,
       };
-      putWatlevmp.mutate(payload, mutationOptions);
+      await putWatlevmpAsync(payload, mutationOptions);
     }
   };
   return (

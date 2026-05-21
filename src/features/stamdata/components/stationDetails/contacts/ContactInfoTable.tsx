@@ -35,22 +35,27 @@ const ContactInfoTable = ({loc_id}: Props) => {
   const {
     features: {contacts: contactsFeature},
   } = useUser();
-  const [removeId, setRemoveId] = useState<number>(-1);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const {
     reset,
     handleSubmit,
-    formState: {dirtyFields},
+    formState: {dirtyFields, isSubmitting, isDirty},
   } = useFormContext<ContactTable>();
+
+  const [contactID, setContactID] = useState<number>(-1);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const [isUser, setIsUser] = useState<boolean>(false);
   const {isMobile} = useBreakpoints();
 
   const {
+    
     get: {data},
-    del: deleteContact,
-    put: editContact,
+    put: {mutateAsync: editContact, isPending: isEditing},
+  ,
+    del: {mutate: delContact, isPending},
   } = useContactInfo(loc_id);
+
 
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
@@ -60,10 +65,10 @@ const ContactInfoTable = ({loc_id}: Props) => {
       path: `${relation_id}`,
     };
 
-    deleteContact.mutate(payload);
+    delContact(payload);
   };
 
-  const handleEdit = (contactInfo: ContactTable) => {
+  const handleEdit = async (contactInfo: ContactTable) => {
     const email = contactInfo.email !== '' ? contactInfo.email : null;
     const payload = {
       path: `${loc_id}`,
@@ -82,11 +87,9 @@ const ContactInfoTable = ({loc_id}: Props) => {
       },
     };
 
-    editContact.mutate(payload, {
-      onSuccess: () => {
-        reset(initialContactData);
-      },
-    });
+    await editContact(payload);
+
+    reset(initialContactData);
   };
 
   const handleSave: SubmitHandler<ContactTable> = async (details) => {
@@ -98,6 +101,20 @@ const ContactInfoTable = ({loc_id}: Props) => {
 
     setOpenContactInfoDialog(false);
     setIsUser(false);
+  };
+
+  const handleDelete = (relation_id: number) => {
+    const payload = {
+      path: `${relation_id}`,
+    };
+
+    delContact(payload, {
+      onSuccess: () => {
+        setDialogOpen(false);
+        setContactID(-1);
+        setOpenContactInfoDialog(false);
+      },
+    });
   };
 
   const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
@@ -284,15 +301,17 @@ const ContactInfoTable = ({loc_id}: Props) => {
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={() => {
-          handleDelete(removeId);
+          handleDelete(contactID);
         }}
+        loading={isPending}
       />
 
       <EditContactInfo
         openContactInfoDialog={openContactInfoDialog}
         handleClose={handleClose}
         handleSave={() => handleSubmit(handleSave, (e) => console.log(e))()}
-        isDisabled={Object.keys(dirtyFields).length === 0}
+        isDisabled={Object.keys(dirtyFields).length === 0 || !isDirty}
+            loading={isSubmitting}
         isUser={isUser}
       />
       <MaterialReactTable table={table} />

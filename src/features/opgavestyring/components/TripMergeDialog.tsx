@@ -30,7 +30,9 @@ const TripMergeDialog = ({itinerary_id, open, setOpen}: Props) => {
   const {data: itinerary} = useItinerary(itinerary_id);
   const {data: itineraries} = useItineraries();
 
-  const {mergeTrips} = useItineraryMutations();
+  const {
+    mergeTrips: {mutateAsync: mergeTripsAsync},
+  } = useItineraryMutations();
 
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(
@@ -41,25 +43,27 @@ const TripMergeDialog = ({itinerary_id, open, setOpen}: Props) => {
     mode: 'onTouched',
   });
 
-  const {handleSubmit, reset} = formMethods;
+  const {
+    handleSubmit,
+    reset,
+    formState: {isSubmitting},
+  } = formMethods;
 
   const onClose = () => {
     reset();
     setOpen(false);
   };
 
-  const handleSave: SubmitHandler<FormValues> = (data) => {
+  const handleSave: SubmitHandler<FormValues> = async (data) => {
     const payload = {
       path: `${itinerary_id}`,
       data: data,
     };
 
-    mergeTrips.mutate(payload, {
-      onSuccess: () => {
-        onClose();
-        setItineraryId(null);
-      },
-    });
+    await mergeTripsAsync(payload);
+
+    setItineraryId(null);
+    setOpenDialog(false);
   };
 
   return (
@@ -96,6 +100,7 @@ const TripMergeDialog = ({itinerary_id, open, setOpen}: Props) => {
           message="Er du sikker på, at du vil flytte alle lokationer fra denne tur til den valgte tur?"
           setOpen={setOpenDialog}
           handleOpret={handleSubmit(handleSave)}
+          loading={isSubmitting}
         />
       </FormProvider>
     </Dialog>

@@ -32,33 +32,30 @@ const zodSchema = z.object({
 type FormValues = z.infer<typeof zodSchema>;
 
 const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialogProps) => {
-  const {createItinerary} = useItineraryMutations();
+  const {
+    createItinerary: {mutateAsync: createItineraryAsync},
+  } = useItineraryMutations();
 
   const onClose = () => {
     setDialogOpen(false);
   };
 
-  const onSubmit = (data: FormValues) => {
-    createItinerary.mutate(
-      {
-        loc_ids: [],
-        due_date: data.due_date?.format('YYYY-MM-DD'),
-        assigned_to: data.assigned_to,
-        name: data.name ?? '',
-        comment: data.comment ?? '',
-      },
-      {
-        onSuccess: () => {
-          setDialogOpen(false);
-        },
-      }
-    );
+  const onSubmit = async (data: FormValues) => {
+    await createItineraryAsync({
+      loc_ids: [],
+      due_date: data.due_date?.format('YYYY-MM-DD'),
+      assigned_to: data.assigned_to,
+      name: data.name ?? '',
+      comment: data.comment ?? '',
+    });
+
+    setDialogOpen(false);
   };
   return (
     <Dialog open={dialogOpen} onClose={onClose}>
       <DialogTitle>Lav ny tur</DialogTitle>
       <TaskForm
-        onSubmit={onSubmit}
+        onSubmit={async (data) => await onSubmit(data)}
         defaultValues={{
           name: '',
           assigned_to: null,

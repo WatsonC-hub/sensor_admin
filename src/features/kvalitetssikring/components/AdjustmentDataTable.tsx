@@ -52,19 +52,23 @@ const AdjustmentDataTable = ({data}: Props) => {
   const tstype_id = metadata?.tstype_id;
   const unit = tstype_id === 1 ? ' m' : metadata?.unit;
 
+  const onSuccess = () => {
+    setDialogOpen(false);
+  }
+
   const handleDelete = (ts_id: number | undefined, gid: number | undefined, type: string) => {
     if (type === AdjustmentTypes.EXLUDEPOINTS || type === AdjustmentTypes.EXLUDETIME)
       delExclude.mutate({
         path: `${ts_id}/${gid}`,
-      });
+      }, {onSuccess});
     else if (type === AdjustmentTypes.LEVELCORRECTION)
       delCorrection.mutate({
         path: `${ts_id}/${gid}`,
-      });
+      }, {onSuccess});
     else if (type === AdjustmentTypes.MINMAX)
       delMinMax.mutate({
         path: `${ts_id}`,
-      });
+      }, {onSuccess});
   };
 
   const result = data?.sort((a, b) => {
@@ -232,7 +236,7 @@ const AdjustmentDataTable = ({data}: Props) => {
                   data={row.original.data as DataExclude}
                   index={index}
                   isWithYValues={(row.original.data as ExcludeData).min_value !== null}
-                  setOpen={() => {
+                  onClose={() => {
                     setEditDialogOpen(false);
                     table.setEditingRow(null);
                   }}
@@ -242,7 +246,7 @@ const AdjustmentDataTable = ({data}: Props) => {
                 <LevelCorrectionRow
                   data={row.original.data as LevelCorrection}
                   index={index}
-                  setOpen={() => {
+                  onClose={() => {
                     setEditDialogOpen(false);
                     table.setEditingRow(null);
                   }}
@@ -251,7 +255,7 @@ const AdjustmentDataTable = ({data}: Props) => {
               {row.original.type === AdjustmentTypes.MINMAX && (
                 <YRangeRow
                   data={row.original.data as MinMaxCutoff}
-                  setOpen={() => {
+                  onClose={() => {
                     setEditDialogOpen(false);
                     table.setEditingRow(null);
                   }}
@@ -299,6 +303,7 @@ const AdjustmentDataTable = ({data}: Props) => {
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={() => handleDelete(id, gid, type)}
+        loading={delMinMax.isPending || delCorrection.isPending || delExclude.isPending}
       />
       <MaterialReactTable table={table} />
     </>

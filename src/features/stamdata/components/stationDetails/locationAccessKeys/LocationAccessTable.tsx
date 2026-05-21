@@ -53,7 +53,22 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
     get: {data},
     put: editLocationAccess,
     del: delLocationAccess,
+    del: {mutate: delLocationAccess, isPending},
   } = useLocationAccess(loc_id);
+
+  const handleDelete = (location_access_id: number | undefined) => {
+    const payload = {
+      path: `${loc_id}/${location_access_id}`,
+    };
+
+    delLocationAccess(payload, {
+      onSuccess: () => {
+        setDialogOpen(false);
+        setLocationAccessID(-1);
+        setOpenLocationAccessDialog(false);
+      },
+    });
+  };
 
   const navnLabel = watch('type');
   const columns = useMemo<MRT_ColumnDef<AccessTable>[]>(
@@ -226,6 +241,7 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
   const handleClose = () => {
     reset(initialLocationAccessData);
     setOpenLocationAccessDialog(false);
+    setOpenLocationAccessDialog(false);
   };
 
   const handleSave: SubmitHandler<AccessTable> = async (details) => {
@@ -269,6 +285,7 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={() => handleDelete(removeId)}
+        loading={isPending}
       />
 
       <Dialog
@@ -292,7 +309,8 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
             Annuller
           </Button>
           <Button
-            disabled={JSON.stringify(dirtyFields) === '{}'}
+            disabled={JSON.stringify(dirtyFields) === '{}' || !isDirty}
+            loading={isSubmitting}
             onClick={handleSubmit(handleSave, (error) => console.log(error))}
             bttype="primary"
           >

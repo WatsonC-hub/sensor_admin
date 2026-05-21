@@ -45,7 +45,7 @@ const zodSchema = z.object({
 export type FormValues = z.infer<typeof zodSchema>;
 
 type Props = {
-  onSubmit: (data: FormValues, formMethods?: UseFormReturn<FormValues>) => void;
+  onSubmit: (data: FormValues, formMethods?: UseFormReturn<FormValues>) => Promise<void> | void;
   onError?: (error: any) => void;
   defaultValues?: Partial<FormValues>;
   children?: React.ReactNode;
@@ -55,7 +55,7 @@ type Props = {
 
 const TaskFormContext = React.createContext(
   {} as {
-    onSubmit: (data: FormValues) => void;
+    onSubmit: (data: FormValues) => Promise<void> | void;
     onError?: (error: any) => void;
     disabled?: boolean;
   }
@@ -78,8 +78,8 @@ const TaskForm = ({
     reset(defaultValues);
   }, [JSON.stringify(defaultValues), reset]);
 
-  const innerSubmit = (data: FormValues) => {
-    onSubmit(data, formMethods);
+  const innerSubmit = async (data: FormValues) => {
+    await onSubmit(data, formMethods);
   };
 
   return (
@@ -92,10 +92,18 @@ const TaskForm = ({
 const TaskSubmitButton = () => {
   const {onSubmit, onError} = React.useContext(TaskFormContext);
 
-  const {handleSubmit} = useFormContext<FormValues>();
+  const {
+    handleSubmit,
+    formState: {isSubmitting},
+  } = useFormContext<FormValues>();
 
   return (
-    <Button bttype="primary" onClick={handleSubmit(onSubmit, onError)} startIcon={<Save />}>
+    <Button
+      bttype="primary"
+      onClick={handleSubmit(onSubmit, onError)}
+      loading={isSubmitting}
+      startIcon={isSubmitting ? undefined : <Save />}
+    >
       Gem
     </Button>
   );

@@ -25,7 +25,10 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   // const removeFromItineraryTitle = !selectedTask.itinerary_id
   //   ? 'Opgaven er ikke tilknyttet en tur'
   //   : '';
-  const {patch, del} = useTaskMutations();
+  const {
+    patch,
+    del: {mutate: deleteTask, isPending: isDeletePending},
+  } = useTaskMutations();
 
   const {data: taskStatus} = useTaskStatus();
   const {data: taskUsers} = useTaskUsers();
@@ -86,10 +89,18 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     }
   };
 
-  const deleteTask = () => {
-    del.mutate({
-      path: `${selectedTask.id}`,
-    });
+  const handleDeleteTask = () => {
+    deleteTask(
+      {
+        path: `${selectedTask.id}`,
+      },
+      {
+        onSuccess: () => {
+          setDialogOpen(false);
+          setSelectedTask(null);
+        },
+      }
+    );
   };
 
   return (
@@ -205,6 +216,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
                 selectedTask.status_category === 'closed'
               }
               onClick={() => setDialogOpen(true)}
+              loading={isDeletePending}
               startIcon={<Delete />}
             >
               Slet
@@ -235,9 +247,9 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         setDialogOpen={setDialogOpen}
         measurementId={selectedTask.id}
         onOkDelete={() => {
-          deleteTask();
-          setSelectedTask(null);
+          handleDeleteTask();
         }}
+        loading={isDeletePending}
       />
       {/* <TaskForm.DueDateDialog
         ts_id={selectedTask.ts_id}

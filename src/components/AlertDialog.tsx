@@ -10,23 +10,30 @@ interface AlertProps {
   saveTitle?: string;
   message: string;
   handleOpret: () => void;
+  loading?: boolean;
 }
 
 export default function AlertDialog({
+  
   open,
+ 
   setOpen,
+ 
   title,
   closeTitle,
   saveTitle,
+ 
   message,
+ 
   handleOpret,
+,
+  loading,
 }: AlertProps) {
   const handleClose = () => {
     setOpen(false);
   };
 
   const handleContinue = () => {
-    setOpen(false);
     handleOpret();
   };
 
@@ -45,11 +52,14 @@ export default function AlertDialog({
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button bttype="tertiary" onClick={handleClose}>
+          <Button bttype="tertiary" bttype="tertiary" onClick={handleClose}>
             {closeTitle ?? 'Annuller'}
+          
           </Button>
-          <Button bttype="primary" onClick={handleContinue}>
+          <Button bttype="primary" bttype="primary" onClick={handleContinue} loading={loading}>
+            
             {saveTitle ?? 'Fortsæt'}
+          
           </Button>
         </DialogActions>
       </Dialog>

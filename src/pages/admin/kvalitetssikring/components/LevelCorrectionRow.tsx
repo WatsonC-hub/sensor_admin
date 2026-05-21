@@ -15,10 +15,10 @@ import {LevelCorrection} from '~/types';
 interface LevelCorrectionRowProps {
   data: LevelCorrection;
   index: number | undefined;
-  setOpen: () => void;
+  onClose: () => void;
 }
 
-const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => {
+const LevelCorrectionRow = ({data, index, onClose}: LevelCorrectionRowProps) => {
   const {put} = useLevelCorrection();
 
   const schema = z.object({
@@ -41,7 +41,7 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
   const {
     reset,
     handleSubmit,
-    formState: {dirtyFields},
+    formState: {dirtyFields, isDirty},
   } = formMethods;
 
   const submit = (values: z.infer<typeof schema>) => {
@@ -49,9 +49,12 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
       put.mutate({
         path: `${data.ts_id}/${data.gid}`,
         data: values,
+      }, {
+        onSuccess: () => {
+          onClose();
+        }
       });
     }
-    setOpen();
   };
 
   return (
@@ -86,7 +89,7 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
                 size="small"
                 onClick={() => {
                   reset(data);
-                  setOpen();
+                  onClose();
                 }}
               >
                 Annuller
@@ -96,6 +99,8 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
                 size="small"
                 onClick={handleSubmit(submit, (values) => console.log(values))}
                 startIcon={<SaveIcon />}
+                disabled={!isDirty}
+                loading={put.isPending}
               >
                 Gem
               </Button>
