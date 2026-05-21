@@ -6,7 +6,7 @@ import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 import {AppContext} from './state/contexts';
 import ScanComponent from './components/ScanComponent';
 import GuardedHome from './pages/Home';
-import GuardedCreateStation from './features/station/components/CreateStation';
+import GuardedCreateStation from './pages/CreateStation';
 import {useUser} from './features/auth/useUser';
 import AccessDenied from './accessDenied';
 import {QueryStats, LocationOn, Timeline, Home as HomeIcon} from '@mui/icons-material';
@@ -28,7 +28,6 @@ const Router = () => {
   } = useCmdPalette({
     select: (data) => {
       // remove duplicate ts_id and ts_name
-
       const uniqueTsIds = new Set();
       const uniqueData = data.filter((item) => {
         if (item.ts_id === -1 || uniqueTsIds.has(item.ts_id)) {

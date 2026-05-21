@@ -18,7 +18,6 @@ import type {
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {CategoryType} from '~/helpers/EnumHelper';
-import {useAppContext} from '~/state/contexts';
 
 function not(a: Ressourcer[], b: Ressourcer[]) {
   return a.filter((value) => b.map((option) => option.navn).indexOf(value.navn) === -1);
@@ -47,13 +46,14 @@ function categoryNot(a: Array<Ressourcer>, b: Array<Ressourcer>) {
 }
 
 interface TransferListProps extends MultiSelectProps {
+  loc_id: number | undefined;
   value: Array<Ressourcer>;
   setValue: (ressourcer: Array<Ressourcer>) => void;
 }
 
-export default function TranserList({value, setValue}: TransferListProps) {
+export default function TranserList({loc_id, value, setValue}: TransferListProps) {
   const [checked, setChecked] = useState<Ressourcer[]>([]);
-  const [selected, setSelected] = useState<Ressourcer[]>(value);
+  const [selected, setSelected] = useState<Ressourcer[]>(value ?? []);
   const [selectedCategory, setSelectedCategory] = useState<Array<string>>([]);
   const [categories] = useState<Array<string>>(
     Object.keys(CategoryType).splice(
@@ -61,7 +61,6 @@ export default function TranserList({value, setValue}: TransferListProps) {
       Object.keys(CategoryType).length
     )
   );
-  const {loc_id} = useAppContext(['loc_id']);
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
   const [collapsed, setCollapsed] = useState<Array<string>>([]);
@@ -130,7 +129,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
     setSelectedCategory([
       ...new Set(selectedCategory.concat(leftChecked.map((ressource) => ressource.kategori))),
     ]);
-    handleSave(selected.concat(leftChecked));
+    if (loc_id !== undefined) handleSave(selected.concat(leftChecked));
   };
 
   const handleCheckedLeft = () => {
@@ -138,7 +137,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
     setValue(not(selected, rightChecked));
     setChecked(not(checked, rightChecked));
     setSelectedCategory(categoryNot(selected, rightChecked));
-    handleSave(not(selected, rightChecked));
+    if (loc_id !== undefined) handleSave(not(selected, rightChecked));
   };
 
   const handleSave = async (ressourcer: Array<Ressourcer>) => {
@@ -155,7 +154,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
     if (!collapsed.includes(collapsedCategory)) {
       setCollapsed([...collapsed, collapsedCategory]);
     } else {
-      setCollapsed(...[collapsed.filter((category) => category !== collapsedCategory)]);
+      setCollapsed([...collapsed.filter((category) => category !== collapsedCategory)]);
     }
   };
 
@@ -263,9 +262,9 @@ export default function TranserList({value, setValue}: TransferListProps) {
   };
 
   return (
-    <>
+    <Box display="flex" flexDirection={'column'}>
       {options && options.length > 0 && categories && categories.length > 0 && (
-        <Box my={1} gap={1} display={'flex'} flexDirection={'row'}>
+        <Box my={1} gap={1} display={'flex'} flexDirection={'row'} justifyContent="center">
           {customList(left ?? [], leftCategory ?? [], 'Valgbare')}
           <Box display={'flex'} flexDirection="column" justifyContent="center">
             <Button
@@ -292,19 +291,21 @@ export default function TranserList({value, setValue}: TransferListProps) {
           {customList(selected ?? [], selectedCategory ?? [], 'Udvalgt')}
         </Box>
       )}
-      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
-        <UpdateProgressButton
-          loc_id={loc_id}
-          ts_id={-1}
-          disabled={
-            checked.length > 0 ||
-            (selected.length === value.length && selected.length > 0) ||
-            disabled
-          }
-          progressKey="ressourcer"
-          alterStyle
-        />
-      </Box>
-    </>
+      {loc_id !== undefined && (
+        <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+          <UpdateProgressButton
+            loc_id={loc_id}
+            ts_id={-1}
+            disabled={
+              checked.length > 0 ||
+              (selected.length === value.length && selected.length > 0) ||
+              disabled
+            }
+            progressKey="ressourcer"
+            alterStyle
+          />
+        </Box>
+      )}
+    </Box>
   );
 }

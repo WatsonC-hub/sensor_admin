@@ -68,7 +68,11 @@ const FormInput = <TFieldValues extends FieldValues>({
         const warningMessage = warning && warning(value);
 
         return (
-          <Wrapper description={infoText} width={'100%'} sx={{position: 'relative'}}>
+          <Wrapper
+            description={infoText}
+            width={infoText !== undefined ? '100%' : undefined}
+            sx={{position: 'relative'}}
+          >
             <TextField
               {...otherProps}
               key={name}

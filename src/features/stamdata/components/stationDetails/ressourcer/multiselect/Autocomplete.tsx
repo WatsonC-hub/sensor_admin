@@ -1,5 +1,5 @@
 import {ExpandLess, ExpandMore, Save} from '@mui/icons-material';
-import {Box, Collapse, List, ListItemText, Popper, Typography} from '@mui/material';
+import {Box, Collapse, List, ListItemText, Typography} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import * as React from 'react';
@@ -14,15 +14,14 @@ import type {
   Ressourcer,
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {useAppContext} from '~/state/contexts';
 
 interface CheckboxesTagsProps extends MultiSelectProps {
+  loc_id: number | undefined;
   value: Array<Ressourcer>;
   setValue: (value: Array<Ressourcer>) => void;
 }
 
-export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
-  const {loc_id} = useAppContext(['loc_id']);
+export default function CheckboxesTags({loc_id, value, setValue}: CheckboxesTagsProps) {
   const {
     get: {data: options},
     post: postRessourcer,
@@ -86,7 +85,7 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
   return (
     <>
       {options && options.length > 0 && (
-        <Box display={'flex'} flexDirection={'column'}>
+        <Box display={'flex'} flexDirection={'column'} flexGrow={1}>
           <Autocomplete
             multiple
             disabled={disabled}
@@ -98,9 +97,9 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
             value={selected}
             filterSelectedOptions
             groupBy={(option) => option.kategori}
-            PopperComponent={(props) => <Popper {...props} placement="bottom" />}
-            componentsProps={{
+            slotProps={{
               popper: {
+                placement: 'bottom',
                 modifiers: [
                   {
                     name: 'flip',
@@ -142,33 +141,41 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
             disableCloseOnSelect
             getOptionLabel={(option) => option.navn}
             isOptionEqualToValue={(option, value) => option.id === value.id}
-            sx={{
-              minWidth: 300,
-            }}
             renderInput={(params) => (
-              <TextField {...params} label="Huskeliste" placeholder="Udvalgt" />
+              <TextField
+                {...params}
+                fullWidth
+                slotProps={{
+                  select: {displayEmpty: true, fullWidth: true},
+                  inputLabel: {shrink: true},
+                }}
+                label="Ressourcer"
+                placeholder="Vælg ressourcer"
+              />
             )}
             onChange={(event, newValue: Ressourcer[]) => {
               setSelected(newValue);
               setValue(newValue);
             }}
           />
-          <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} gap={1} mt={2}>
-            <UpdateProgressButton
-              loc_id={loc_id}
-              ts_id={-1}
-              disabled={disabled || isDirty}
-              progressKey="ressourcer"
-            />
-            <Button
-              bttype="primary"
-              disabled={disabled || !isDirty}
-              onClick={handleSave}
-              startIcon={<Save />}
-            >
-              Gem
-            </Button>
-          </Box>
+          {loc_id !== undefined && (
+            <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} gap={1} mt={2}>
+              <UpdateProgressButton
+                loc_id={loc_id}
+                ts_id={-1}
+                disabled={disabled || isDirty}
+                progressKey="ressourcer"
+              />
+              <Button
+                bttype="primary"
+                disabled={disabled || !isDirty}
+                onClick={handleSave}
+                startIcon={<Save />}
+              >
+                Gem
+              </Button>
+            </Box>
+          )}
         </Box>
       )}
     </>

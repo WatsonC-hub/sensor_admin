@@ -20,8 +20,8 @@ interface JupiterMPProps {
 }
 
 export type LastJupiterMPData = {
-  descriptio: string | undefined;
-  elevation: number | null;
+  description: string;
+  elevation: number;
   startdate: Dayjs;
 };
 
@@ -41,7 +41,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
         `/sensor_field/borehole/last_mp/${boreholeno}/${intakeno}`
       );
       return {
-        descriptio: data.descriptio,
+        description: data.descriptio,
         elevation: data.elevation,
         startdate: dayjs(data.startdate),
       } as LastJupiterMPData;
@@ -66,7 +66,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
           startdate: data.startdate,
           enddate: dayjs('2099-01-01'),
           elevation: data.elevation,
-          mp_description: data.descriptio ?? '',
+          mp_description: data.description ?? '',
         },
       };
       addWatlevmp.mutate(payload, {
@@ -82,7 +82,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
         startdate: data.startdate,
         enddate: dayjs('2099-01-01'),
         elevation: data.elevation,
-        mp_description: data.descriptio ?? '',
+        mp_description: data.description ?? '',
       };
       watlevmpMutate.mutate(payload, {
         onSuccess: () => {
@@ -157,7 +157,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
               <Typography variant="body2" color="white">
                 {data.startdate.format('L')}
               </Typography>
-              <Typography variant="body2">Placering: {data.descriptio}</Typography>
+              <Typography variant="body2">Placering: {data.description}</Typography>
             </>
           )}
         </Box>

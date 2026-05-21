@@ -22,12 +22,14 @@ type useLocationFormProps<T> =
       defaultValues?: DefaultValues<T>;
       initialLocTypeId?: number;
       context: {loc_id: number | undefined};
+      values?: T;
     }
   | {
       mode: 'Edit';
       defaultValues?: DefaultValues<T>;
       initialLocTypeId?: number;
       context: {loc_id: number};
+      values?: T;
     };
 
 const getSchemaAndForm = <T extends FieldValues>(
@@ -76,21 +78,27 @@ const useLocationForm = <T extends Record<string, any>>({
   mode,
   context,
   initialLocTypeId = -1,
+  values,
 }: useLocationFormProps<T>) => {
   const {superUser} = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
   const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, superUser, context.loc_id);
 
-  const {data, success} = schema.safeParse({
-    ...defaultValues,
-  });
-  const defaultValuesData = data as unknown as DefaultValues<T>;
+  let parsed_data = undefined;
+
+  if (context.loc_id !== undefined) {
+    const {data} = schema.safeParse({
+      ...defaultValues,
+    });
+    parsed_data = data as unknown as DefaultValues<T>;
+  }
 
   const formMethods = useForm<T>({
     resolver: zodResolver(schema),
-    defaultValues: success ? defaultValuesData : defaultValues,
+    defaultValues: parsed_data !== undefined ? parsed_data : defaultValues,
     mode: 'onTouched',
+    values: values ?? (parsed_data as T | undefined),
   });
 
   const {watch} = formMethods;

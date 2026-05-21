@@ -13,8 +13,9 @@ import DefaultTimeseriesEditForm from '../components/stamdata/stamdataComponents
 import BoreholeTimeseriesEditForm from '../components/stamdata/stamdataComponents/BoreholeTimeseriesEditForm';
 
 type useTimeseriesFormProps<T extends FieldValues> = {
-  formProps: UseFormProps<T, {loctype_id: number | undefined}>;
+  formProps: UseFormProps<T, {loctype_id: number | undefined; loc_id?: number | undefined}>;
   mode: 'Add' | 'Edit';
+  validate_mode?: 'onBlur' | 'onChange' | 'onSubmit' | 'onTouched' | 'all';
 };
 
 const getSchemaAndForm = (loctype_id: number | undefined, mode: 'Add' | 'Edit') => {
@@ -46,9 +47,9 @@ const getSchemaAndForm = (loctype_id: number | undefined, mode: 'Add' | 'Edit') 
 const useTimeseriesForm = <T extends Record<string, any>>({
   formProps,
   mode,
+  validate_mode = 'onTouched',
 }: useTimeseriesFormProps<T>) => {
   const loctype_id = formProps.context?.loctype_id;
-
   if (mode === undefined) {
     throw new Error('mode is required');
   }
@@ -58,7 +59,7 @@ const useTimeseriesForm = <T extends Record<string, any>>({
   const formMethods = useForm<T, {loctype_id: number | undefined}>({
     resolver: zodResolver(schema),
     ...formProps,
-    mode: 'onTouched',
+    mode: validate_mode,
   });
 
   return [formMethods, form] as const;

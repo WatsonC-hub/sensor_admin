@@ -7,9 +7,9 @@ import {isValidPhoneNumber} from 'libphonenumber-js';
 import {apiClient} from '~/apiClient';
 import {FormPhoneInput} from '~/components/formComponents/FormPhoneInput';
 import FormInput from '~/components/FormInput';
-import {InferContactInfo} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {ContactInfoType} from '~/helpers/EnumHelper';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {InferContactInfo} from './api/useContactForm';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 interface ModalProps {
@@ -142,12 +142,11 @@ export default function StationContactInfo({
             if (role?.id === 1 && getValues('notify_required') === true)
               setValue('notify_required', false);
 
-            console.log(role);
-            if (role) {
-              if (role.default_type !== null)
-                setValue('contact_type', role.default_type ?? undefined);
+            if (role && role.default_type !== null) {
+              setValue('contact_type', role.default_type);
             } else {
-              setValue('contact_type', undefined);
+              const contact_type = getValues('contact_type');
+              if (contact_type === undefined) setValue('contact_type', 'lokation');
             }
           }}
         />
@@ -173,7 +172,7 @@ export default function StationContactInfo({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={value}
+                  checked={value ?? false}
                   disabled={tableModal || contact_role === 1}
                   onChange={(checked) => onChange(checked)}
                   name="notify_required"

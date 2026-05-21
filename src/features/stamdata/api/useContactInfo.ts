@@ -5,7 +5,7 @@ import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {ContactInfo, ContactTable} from '~/types';
-import {InferContactInfo} from '../components/stationDetails/zodSchemas';
+import {InferContactInfo} from '../components/stationDetails/contacts/api/useContactForm';
 
 interface ContactInfoBase {
   path: string;
@@ -54,7 +54,7 @@ const contactInfoDelOptions = {
   },
 };
 
-export const contactInfoGetOptions = (loc_id: number) =>
+export const contactInfoGetOptions = (loc_id: number | undefined) =>
   queryOptions({
     queryKey: queryKeys.Location.contacts(loc_id),
     queryFn: async () => {
@@ -91,11 +91,12 @@ export const useSearchContact = <T = ContactInfo[]>(
     },
     staleTime: 10 * 1000,
     select,
+    enabled: loc_id !== undefined || searchString !== '',
   });
   return searched_contacts;
 };
 
-export const useContactInfo = (loc_id: number) => {
+export const useContactInfo = (loc_id: number | undefined) => {
   const get = useQuery(contactInfoGetOptions(loc_id));
 
   const post = useMutation({

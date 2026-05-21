@@ -38,7 +38,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [mode, setMode] = useState<'add' | 'edit' | 'view'>('view');
-  const alarmMethods = useForm<AlarmsFormValues>({
+  const alarmMethods = useForm<AlarmsFormValues, unknown, AlarmsFormValues>({
     resolver: zodResolver(alarmsSchema),
     defaultValues: {
       name: alarm?.name || '',
@@ -141,9 +141,9 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         <AlarmNotificationForm />
 
         <FormFieldset
-          label="Kontakter"
+          label={`Kontakter ${contacts && contacts.length > 0 ? `(${contacts.length})` : ''}`}
           sx={{width: '100%', px: 1}}
-          icon={contactsCollapsed ? <ExpandMore /> : <ExpandLess />}
+          icon={!contactsCollapsed ? <ExpandMore /> : <ExpandLess />}
           onClick={() => setContactsCollapsed(!contactsCollapsed)}
         >
           {!contactsCollapsed && (

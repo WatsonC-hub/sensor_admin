@@ -6,6 +6,8 @@ interface AlertProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   title: string;
+  closeTitle?: string;
+  saveTitle?: string;
   message: string;
   handleOpret: () => void;
   loading?: boolean;
@@ -15,6 +17,8 @@ export default function AlertDialog({
   open,
   setOpen,
   title,
+  closeTitle,
+  saveTitle,
   message,
   handleOpret,
   loading,
@@ -37,14 +41,16 @@ export default function AlertDialog({
       >
         <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">{message}</DialogContentText>
+          <DialogContentText id="alert-dialog-description" sx={{whiteSpace: 'pre-line'}}>
+            {message}
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button bttype="tertiary" onClick={handleClose}>
-            Annuller
+            {closeTitle ?? 'Annuller'}
           </Button>
           <Button bttype="primary" onClick={handleContinue} loading={loading}>
-            Fortsæt
+            {saveTitle ?? 'Fortsæt'}
           </Button>
         </DialogActions>
       </Dialog>

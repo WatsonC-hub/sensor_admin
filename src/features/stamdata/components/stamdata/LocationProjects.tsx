@@ -7,10 +7,11 @@ import {FieldError, Noop} from 'react-hook-form';
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
 import useLocationProject, {Project} from '../../api/useLocationProject';
+import {AddCircleOutline} from '@mui/icons-material';
 
 interface LocationProjectsProps {
   value: string | undefined | null;
-  setValue: (value: string | undefined) => void;
+  setValue: (value: string | null) => void;
   onBlur: Noop;
   error: FieldError | undefined;
   disable?: boolean;
@@ -42,7 +43,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
           forcePopupIcon={false}
           value={selectedValue}
           onChange={(event, newValue) => {
-            setValue(newValue ? newValue.project_no : undefined);
+            setValue(newValue ? newValue.project_no : null);
           }}
           id="tags-standard"
           options={options ?? []}
@@ -53,7 +54,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
               {...params}
               fullWidth
               onBlur={onBlur}
-              required={true}
+              required
               slotProps={{
                 inputLabel: {
                   shrink: true,
@@ -73,7 +74,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
                         rel="noopener"
                         sx={{textTransform: 'none'}}
                       >
-                        <OpenInNewIcon />
+                        {selectedValue ? <OpenInNewIcon /> : <AddCircleOutline />}
                       </Button>
                       {params.InputProps.endAdornment}
                     </>
@@ -95,7 +96,6 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
               }}
             />
           )}
-          selectOnFocus
           clearOnBlur
           handleHomeEndKeys
         />
@@ -103,6 +103,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
       {disable == true && (
         <TextField
           fullWidth
+          required
           slotProps={{
             inputLabel: {
               shrink: true,

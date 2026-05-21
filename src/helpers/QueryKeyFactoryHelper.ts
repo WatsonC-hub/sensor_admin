@@ -14,12 +14,12 @@ export const queryKeys = {
       ] as const,
     metadata: (loc_id: number | undefined) => ['location_metadata', 'metadata', loc_id] as const,
     timeseries_status: (loc_id: number | undefined) => ['timeseries_status', loc_id] as const,
-    contacts: (loc_id: number) => ['contact_info', loc_id] as const,
+    contacts: (loc_id: number | undefined) => ['contact_info', loc_id] as const,
     searchContacts: (search: string) => ['search_contact_info', search] as const,
-    keys: (loc_id: number) => ['location_access', loc_id] as const,
+    keys: (loc_id: number | undefined) => ['location_access', loc_id] as const,
     searchKeys: (search: string) => ['search_location_access', search] as const,
     ressources: () => ['ressourcer'] as const,
-    locationRessources: (loc_id: number) => ['ressourcer', loc_id] as const,
+    locationRessources: (loc_id: number | undefined) => ['ressourcer', loc_id] as const,
     permissions: (loc_id: number | undefined) =>
       ['location_permissions', 'tsList', loc_id] as const,
     minimalSelectList: (loc_id: number | undefined) =>

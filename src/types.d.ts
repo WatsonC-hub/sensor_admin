@@ -194,6 +194,12 @@ export type Parking = {
   y: number;
 };
 
+export type Tstype = {
+  tstype_id: number;
+  tstype_name: string;
+  service_interval: number | null;
+};
+
 type RouteProperties = {loc_id: number; id: number; comment: string | null; type: 'walk' | 'drive'};
 
 export type RouteFeature = geojson.Feature<geojson.Geometry, RouteProperties>;

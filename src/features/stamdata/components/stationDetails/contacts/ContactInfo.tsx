@@ -1,73 +1,47 @@
-import {zodResolver} from '@hookform/resolvers/zod';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import {Box} from '@mui/material';
 import React, {useState} from 'react';
-import {FormProvider, useForm} from 'react-hook-form';
+import {FormProvider} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
 import {initialContactData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
-import SelectContactInfo from '~/features/stamdata/components/stationDetails/contacts/SelectContactInfo';
-import {contact_info} from '~/features/stamdata/components/stationDetails/zodSchemas';
+import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddContactInfo';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useAppContext} from '~/state/contexts';
-import {ContactTable} from '~/types';
+import useContactForm from './api/useContactForm';
 
 const ContactInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
-  const {
-    put: {mutateAsync: editContact},
-  } = useContactInfo(loc_id);
   const {location_permissions} = usePermissions(loc_id);
 
   const {
     features: {contacts},
   } = useUser();
 
-  const formMethods = useForm({
-    resolver: zodResolver(contact_info),
+  const contactFormMethods = useContactForm({
     defaultValues: initialContactData,
-    mode: 'onSubmit',
+    mode: 'edit',
   });
 
-  const {reset} = formMethods;
-
-  const handleEdit = async (contactInfo: ContactTable) => {
-    const email = contactInfo.email !== '' ? contactInfo.email : null;
-    const payload = {
-      path: `${loc_id}`,
-      data: {
-        id: contactInfo.id,
-        name: contactInfo.name,
-        mobile: contactInfo.mobile,
-        email: email,
-        contact_role: contactInfo.contact_role,
-        comment: contactInfo.comment,
-        org: contactInfo.org,
-        user_id: contactInfo.user_id ?? null,
-        relation_id: contactInfo.relation_id,
-        contact_type: contactInfo.contact_type,
-        notify_required: contactInfo.notify_required ?? false,
-      },
-    };
-
-    await editContact(payload);
-    reset(initialContactData);
-  };
+  const {reset} = contactFormMethods;
 
   return (
     <>
       <StationPageBoxLayout>
-        <FormProvider {...formMethods}>
+        <FormProvider {...contactFormMethods}>
           {openContactInfoDialog && (
-            <SelectContactInfo open={openContactInfoDialog} setOpen={setOpenContactInfoDialog} />
+            <AddContactInfo
+              open={openContactInfoDialog}
+              setOpen={setOpenContactInfoDialog}
+              loc_id={loc_id}
+            />
           )}
-          <ContactInfoTable editContact={handleEdit} />
+          <ContactInfoTable loc_id={loc_id} />
         </FormProvider>
         <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
           <UpdateProgressButton progressKey="kontakter" loc_id={loc_id} ts_id={-1} alterStyle />

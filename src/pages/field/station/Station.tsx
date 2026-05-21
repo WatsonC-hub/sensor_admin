@@ -96,7 +96,7 @@ export default function Station() {
         )}
         {pageToShow === stationPages.TIDSSERIEKONFIGURATION && (
           <StationPageBoxLayout>
-            <TimeseriesConfiguration ts_id={ts_id} />
+            <TimeseriesConfiguration loc_id={loc_id} ts_id={ts_id} />
           </StationPageBoxLayout>
         )}
         {pageToShow === stationPages.ALGORITHMS && iotAccess && (
@@ -147,7 +147,7 @@ export default function Station() {
         )}
         {pageToShow === stationPages.HUSKELISTE && ressources && (
           <StationPageBoxLayout key={loc_id}>
-            <Huskeliste />
+            <Huskeliste loc_id={loc_id} />
           </StationPageBoxLayout>
         )}
         {pageToShow === stationPages.BILLEDER && (

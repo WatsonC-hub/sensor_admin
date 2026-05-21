@@ -5,22 +5,23 @@ import UnitMeasurementConfig from './UnitMeasurementConfig';
 import YearlyControlsConfig from './YearlyControlsConfig';
 import Synchronization from './Synchronization';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import useDMPAllowed from '~/features/station/api/useDmpAllowedMapList';
 import VisibilityConfig from './VisibilityConfig';
-import {useAppContext} from '~/state/contexts';
-import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
-import useDmpAllowedMapList from '~/features/station/api/useDmpAllowedMapList';
 
 type ConfigurationProps = {
+  loc_id: number;
   ts_id: number;
 };
 
-const Configuration = ({ts_id}: ConfigurationProps) => {
-  const {loc_id} = useAppContext(['loc_id']);
-  const {data: location_data} = useLocationData(loc_id);
+const Configuration = ({loc_id, ts_id}: ConfigurationProps) => {
   const {data: metadata} = useTimeseriesData(ts_id);
   const isJupiterType = [1, 11, 12, 16].includes(metadata?.tstype_id || 0);
-  const isBorehole = location_data?.loctype_id === 9;
-  const isDmpAllowed = useDmpAllowedMapList(ts_id);
+  const isBorehole = metadata?.loctype_id === 9;
+
+  const isDmpAllowed = useDMPAllowed(ts_id);
+
+  const canSyncJupiter = isBorehole && isJupiterType;
 
   return (
     <>
@@ -41,15 +42,9 @@ const Configuration = ({ts_id}: ConfigurationProps) => {
         </Box>
         <YearlyControlsConfig />
       </Layout>
-      {(isDmpAllowed || (isJupiterType && isBorehole)) && (
+      {(isDmpAllowed || canSyncJupiter) && (
         <Layout>
-          <Typography variant="h6" gutterBottom>
-            Synkronisering
-          </Typography>
-          <Synchronization
-            canSyncJupiter={isJupiterType && isBorehole}
-            isDmpAllowed={isDmpAllowed ?? false}
-          />
+          <Synchronization />
         </Layout>
       )}
       <Layout>

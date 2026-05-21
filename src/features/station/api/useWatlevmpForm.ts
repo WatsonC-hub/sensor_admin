@@ -1,25 +1,25 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {DefaultValues, useForm} from 'react-hook-form';
-import {ZodType} from 'zod';
 import {watlevmpAddSchema} from '../schema';
 
 type UseWatlevmpFormProps<T> = {
-  schema?: ZodType<T>;
   defaultValues?: DefaultValues<T>;
+  values?: T | undefined;
 };
 
-const useWatlevmpForm = <T extends Record<string, any>>({
+const useWatlevmpForm = <
+  T extends Record<string, any>,
+  S extends Record<string, any> = T,
+  U = unknown,
+>({
   defaultValues,
-  schema,
+  values,
 }: UseWatlevmpFormProps<T>) => {
-  const formMethods = useForm({
-    resolver: (...opts) => {
-      if (schema) return zodResolver(schema)(...opts);
-
-      return zodResolver(watlevmpAddSchema)(...opts);
-    },
+  const formMethods = useForm<T, U, S>({
+    resolver: zodResolver(watlevmpAddSchema),
     defaultValues,
     mode: 'onTouched',
+    values: values,
   });
 
   return formMethods;

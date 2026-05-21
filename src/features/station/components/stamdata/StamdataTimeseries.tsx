@@ -19,6 +19,7 @@ import Button from '~/components/Button';
 import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
 import CaptureDialog from '~/components/CaptureDialog';
 import {toast} from 'react-toastify';
+import {Tstype} from '~/types';
 
 type Props = {
   children: React.ReactNode;
@@ -37,16 +38,14 @@ const StamdataTimeseries = ({children, boreholeno}: Props) => {
   return <TimeseriesContext.Provider value={{boreholeno}}>{children}</TimeseriesContext.Provider>;
 };
 
-const TypeSelect = (
-  props: Omit<FormInputProps<DefaultAddTimeseries | BoreholeAddTimeseries>, 'name'>
-) => {
+type TypeSelectProps = Omit<FormInputProps<DefaultAddTimeseries | BoreholeAddTimeseries>, 'name'>;
+
+const TypeSelect = ({...props}: TypeSelectProps) => {
   const {data: timeseries_types} = useQuery({
     queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<{tstype_id: number; tstype_name: string}>>(
-        `/sensor_field/timeseries_types`,
-        {params: {filtered: true}}
-      );
+      const {data} = await apiClient.get<Array<Tstype>>(`/sensor_field/timeseries_types`,
+        {params: {filtered: true}});
       return data;
     },
     staleTime: Infinity, // Cache indefinitely
@@ -55,13 +54,12 @@ const TypeSelect = (
 
   return (
     <FormInput
-      name="tstype_id"
+      name={`tstype_id`}
       label="Tidsserietype"
       select
       placeholder="Vælg type"
       options={timeseries_types?.map((type) => ({[type.tstype_id]: type.tstype_name}))}
       keyType="number"
-      required
       fullWidth
       {...props}
     />
@@ -72,7 +70,7 @@ const TimeseriesTypeField = ({tstype_id}: {tstype_id: number | undefined}) => {
   const {data: timeseries_types} = useQuery({
     queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/timeseries_types`);
+      const {data} = await apiClient.get<Array<Tstype>>(`/sensor_field/timeseries_types`);
       return data;
     },
     staleTime: Infinity, // Cache indefinitely
@@ -83,18 +81,17 @@ const TimeseriesTypeField = ({tstype_id}: {tstype_id: number | undefined}) => {
     <FormTextField
       disabled
       label="Tidsserie type"
-      value={
-        timeseries_types?.filter(
-          (elem: {tstype_id: number; tstype_name: string}) => elem.tstype_id == tstype_id
-        )[0]?.tstype_name
-      }
+      value={timeseries_types?.filter((elem) => elem.tstype_id == tstype_id)[0]?.tstype_name ?? ''}
     />
   );
 };
 
-const Intakeno = (
-  props: Omit<FormInputProps<BoreholeAddTimeseries | BoreholeEditTimeseries>, 'name'>
-) => {
+type IntakenoProps = Omit<
+  FormInputProps<BoreholeAddTimeseries | BoreholeEditTimeseries>,
+  'name'
+> & {};
+
+const Intakeno = ({...props}: IntakenoProps) => {
   const {boreholeno} = React.useContext(TimeseriesContext);
 
   const {data: intake_list} = useQuery({
@@ -110,8 +107,8 @@ const Intakeno = (
   });
 
   return (
-    <FormInput<BoreholeAddTimeseries | BoreholeEditTimeseries>
-      name="intakeno"
+    <FormInput
+      name={`intakeno`}
       label="Indtag"
       select
       required
@@ -130,12 +127,11 @@ const Intakeno = (
   );
 };
 
-const Prefix = ({
-  loc_name,
-  ...props
-}: Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'> & {
+type PrefixProps = Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'> & {
   loc_name: string | undefined;
-}) => {
+};
+
+const Prefix = ({loc_name, ...props}: PrefixProps) => {
   return (
     <FormInput
       name="prefix"
@@ -149,33 +145,8 @@ const Prefix = ({
           ),
         },
       }}
-      placeholder="f.eks. indtag 1"
+      placeholder="Evt. supplerende beskrivelse..."
       fullWidth
-      {...props}
-    />
-  );
-};
-
-const SensorDepth = (
-  props: Omit<
-    FormInputProps<
-      DefaultAddTimeseries | DefaultEditTimeseries | BoreholeAddTimeseries | BoreholeEditTimeseries
-    >,
-    'name'
-  >
-) => {
-  return (
-    <FormInput
-      type="number"
-      label="Evt. loggerdybde under målepunkt"
-      name="sensor_depth_m"
-      disabled={props.disabled}
-      fullWidth
-      slotProps={{
-        input: {
-          endAdornment: <InputAdornment position="start">m</InputAdornment>,
-        },
-      }}
       {...props}
     />
   );
@@ -310,9 +281,8 @@ const TimeseriesID = () => {
 };
 
 StamdataTimeseries.TypeSelect = TypeSelect;
-StamdataTimeseries.TimeriesTypeField = TimeseriesTypeField;
+StamdataTimeseries.TimeseriesTypeField = TimeseriesTypeField;
 StamdataTimeseries.Prefix = Prefix;
-StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;
 StamdataTimeseries.ScanCalypsoLabel = ScanCalypsoLabel;
 StamdataTimeseries.TimeseriesID = TimeseriesID;

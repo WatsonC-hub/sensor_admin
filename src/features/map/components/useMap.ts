@@ -264,7 +264,6 @@ const useMap = <TData extends object>(
     const parkingLayer = parkingLayerRef.current;
 
     const geoJsonLayer = geoJsonRef.current;
-
     const tooltipLayer = tooltipRef.current;
 
     if (geoJsonLayer) {

@@ -7,7 +7,7 @@ import FabWrapper from '~/components/FabWrapper';
 import MaalepunktTableDesktop from '~/components/tableComponents/MaalepunktTableDesktop';
 import MaalepunktTableMobile from '~/components/tableComponents/MaalepunktTableMobile';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import WatlevMPForm from '~/features/station/components/watlevmp/WatlevMPForm';
+import StationMPForm from '~/features/station/components/watlevmp/StationMPForm';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
@@ -41,7 +41,7 @@ export default function ReferenceForm() {
   const [showForm, setShowForm] = useShowFormState();
   const {data: metadata} = useTimeseriesData(ts_id);
 
-  const formMethods = useForm<WatlevMPFormValues>({
+  const formMethods = useForm<WatlevMPFormValues, unknown, WatlevMPFormValues>({
     resolver: zodResolver(schema),
     defaultValues: initialWatlevmpData(),
     mode: 'onTouched',
@@ -76,17 +76,11 @@ export default function ReferenceForm() {
   return (
     <>
       {metadata?.loctype_id === 9 && <JupiterMPTable />}
-      {showForm === true && <WatlevMPForm formMethods={formMethods} />}
+      {showForm === true && <StationMPForm formMethods={formMethods} />}
       {isMobile ? (
-        <MaalepunktTableMobile
-          handleEdit={handleEdit}
-          disabled={disabled}
-        />
+        <MaalepunktTableMobile handleEdit={handleEdit} disabled={disabled} />
       ) : (
-        <MaalepunktTableDesktop
-          handleEdit={handleEdit}
-          disabled={disabled}
-        />
+        <MaalepunktTableDesktop handleEdit={handleEdit} disabled={disabled} />
       )}
       <Box display="flex" justifyContent="flex-end" alignItems="center" gap={2} mt={2}>
         <FabWrapper

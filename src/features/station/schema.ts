@@ -45,7 +45,6 @@ const boreholeEditLocationSchema = boreholeAddLocationSchema.extend({
 });
 
 const baseTimeseriesSchema = z.object({
-  sensor_depth_m: z.number().nullish(),
   prefix: z.string().nullish(),
   calypso_id: z.number().optional(),
 });
@@ -72,15 +71,21 @@ const boreholeAddTimeseriesSchema = baseAddTimeseriesSchema.extend({
 });
 
 const watlevmpAddSchema = z.object({
-  elevation: z.number({required_error: 'Målepunkt skal udfyldes'}).nullable(),
-  description: z
-    .string({required_error: 'Beskrivelse skal udfyldes'})
-    .min(3, {message: 'Beskrivelse skal være mindst 3 tegn'}),
+  elevation: z.number({message: 'Målepunkt skal udfyldes'}),
+  description: z.string({message: 'Beskrivelse skal udfyldes'}).min(3, {
+    message: 'Beskrivelse skal være mindst 3 tegn',
+  }),
 });
 
-const addUnitSchema = z
+const addUnitSchema = z.object({
+  calypso_id: z.string().optional(),
+  unit_uuid: z.string().optional(),
+  startdate: zodDayjs('Startdato skal udfyldes'),
+});
+
+const editAddUnitSchema = z
   .object({
-    unit_uuid: z.string({required_error: 'Vælg calypso ID'}).min(1, {message: 'Vælg calypso ID'}),
+    unit_uuid: z.string().optional(),
     startdate: zodDayjs('Startdato skal udfyldes'),
   })
   .refine((unit) => unit.startdate !== undefined, {
@@ -111,6 +116,7 @@ const editUnitSchema = z
 export {
   baseLocationSchema,
   addUnitSchema,
+  editAddUnitSchema,
   editUnitSchema,
   baseTimeseriesSchema,
   defaultAddLocationSchema,

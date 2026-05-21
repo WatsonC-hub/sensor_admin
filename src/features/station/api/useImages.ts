@@ -17,6 +17,7 @@ export const getImageOptions = (typeId: string | number, type: 'station' | 'bore
         date: dayjs(image.date), // Ensure date is a Date object
       }));
     },
+    enabled: !!typeId,
   });
 
 const useImages = (typeId: string | number, type: 'station' | 'borehole') => {

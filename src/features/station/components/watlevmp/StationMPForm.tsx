@@ -1,28 +1,20 @@
-import {Autocomplete, Box, Grid2, TextField, Typography} from '@mui/material';
-import {Controller, UseFormReturn} from 'react-hook-form';
+import {Box, Grid2, Typography} from '@mui/material';
+import {UseFormReturn} from 'react-hook-form';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {initialWatlevmpData} from '~/features/stamdata/components/stamdata/const';
 import {WatlevMPFormValues} from '~/features/stamdata/components/stamdata/ReferenceForm';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
+import MPDescription from '../stamdata/MPDescription';
 
 interface WatlevMPFormProps {
-  formMethods: UseFormReturn<WatlevMPFormValues>;
+  formMethods: UseFormReturn<WatlevMPFormValues, unknown, WatlevMPFormValues>;
 }
 
 const Form = createTypedForm<WatlevMPFormValues>();
 
-const options = [
-  {label: 'Top rør'},
-  {label: 'Top WatsonC-prop'},
-  {label: 'Pejlestuds'},
-  {label: 'Bund af v-overløb'},
-  {label: 'Overløbskant'},
-  {label: 'Skal indmåles'},
-];
-
-const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
+const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
   const {ts_id} = useAppContext(['ts_id']);
   const [, setShowForm] = useShowFormState();
   const {
@@ -79,51 +71,13 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
         <Form.DateTime name="startdate" label={'Gældende fra'} />
 
         <Grid2 size={12}>
-          <Controller
+          <Form.Controller
             name="mp_description"
-            control={formMethods.control}
-            render={({field: {value, onChange, onBlur, ref}}) => {
-              return (
-                <Autocomplete
-                  disablePortal
-                  freeSolo
-                  disableClearable
-                  slotProps={{}}
-                  options={options}
-                  inputValue={value ?? ''}
-                  value={value ?? ''}
-                  ref={ref}
-                  fullWidth
-                  onBlur={onBlur}
-                  onInputChange={(e, value) => onChange(value)}
-                  onChange={(e, value) => onChange(typeof value == 'string' ? value : value.label)}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      placeholder="F.eks. Top rør"
-                      multiline
-                      slotProps={{
-                        inputLabel: {
-                          shrink: true,
-
-                          sx: {
-                            '& .Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'},
-                            color: 'primary.main',
-                            zIndex: 0,
-                          },
-                        },
-                      }}
-                      rows={3}
-                      label="Beskrivelse"
-                    />
-                  )}
-                />
-              );
+            render={({field}) => {
+              return <MPDescription {...field} value={field.value ?? ''} />;
             }}
           />
         </Grid2>
-
         <Box
           display={'flex'}
           gap={1}
@@ -147,4 +101,4 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
   );
 };
 
-export default WatlevMPForm;
+export default StationMPForm;

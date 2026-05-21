@@ -110,7 +110,6 @@ export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops
               <Button
                 bttype="primary"
                 onClick={handleSubmit((onvalid) => {
-                  console.log('onvalid', onvalid);
                   handleServiceSubmit(onvalid);
                 })}
                 startIcon={<SaveIcon />}
