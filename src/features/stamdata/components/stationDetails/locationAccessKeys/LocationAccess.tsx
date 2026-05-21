@@ -33,9 +33,8 @@ const LocationAccess = () => {
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
   const {
-    post: postLocationAccess,
-    put: editLocationAccess,
-    del: delLocationAccess,
+    post: {mutateAsync: postLocationAccessAsync},
+    put: {mutateAsync: editLocationAccessAsync},
   } = useLocationAccess(loc_id);
 
   const formMethods = useForm({
@@ -44,7 +43,12 @@ const LocationAccess = () => {
     mode: 'onSubmit',
   });
 
-  const {clearErrors, handleSubmit, reset} = formMethods;
+  const {
+    clearErrors,
+    handleSubmit,
+    reset,
+    formState: {isSubmitting},
+  } = formMethods;
 
   const handleClose = () => {
     reset(initialLocationAccessData);
@@ -67,21 +71,11 @@ const LocationAccess = () => {
       path: `${loc_id}`,
       data: test,
     };
-    postLocationAccess.mutate(payload, {
-      onSuccess: () => {
-        reset();
-        setOpenDialog(false);
-        setCreateNew(false);
-      },
-    });
-  };
+    await postLocationAccessAsync(payload);
 
-  const handleDelete = (location_access_id: number | undefined) => {
-    const payload = {
-      path: `${loc_id}/${location_access_id}`,
-    };
-
-    delLocationAccess.mutate(payload);
+    reset();
+    setOpenDialog(false);
+    setCreateNew(false);
   };
 
   const handleEdit = async (locationAccess: AccessTable) => {
@@ -98,18 +92,15 @@ const LocationAccess = () => {
       },
     };
 
-    editLocationAccess.mutate(payload, {
-      onSuccess: () => {
-        reset();
-      },
-    });
+    await editLocationAccessAsync(payload);
+    reset();
   };
 
   return (
     <>
       <StationPageBoxLayout>
         <FormProvider {...formMethods}>
-          <LocationAccessTable editLocationAccess={handleEdit} delLocationAccess={handleDelete} />
+          <LocationAccessTable editLocationAccess={handleEdit} />
           {openDialog && (
             <Dialog
               open={openDialog}
@@ -138,7 +129,8 @@ const LocationAccess = () => {
                 <Button
                   onClick={handleSubmit(handleSave, (error) => console.log(error))}
                   bttype="primary"
-                  startIcon={<Save />}
+                  loading={isSubmitting}
+                  startIcon={isSubmitting ? undefined : <Save />}
                 >
                   Gem
                 </Button>

@@ -39,9 +39,8 @@ const Pejling = () => {
   const [pageToShow, setPageToShow] = useStationPages();
   const {
     get: {data: measurements},
-    post: postPejling,
-    put: putPejling,
-    del: delPejling,
+    post: {mutateAsync: postPejlingAsync},
+    put: {mutateAsync: putPejlingAsync},
   } = usePejling();
 
   const {
@@ -76,7 +75,7 @@ const Pejling = () => {
     setIsPump(measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false);
   }, [measurements]);
 
-  const handlePejlingSubmit = (values: PejlingSchemaType | PejlingBoreholeSchemaType) => {
+  const handlePejlingSubmit = async (values: PejlingSchemaType | PejlingBoreholeSchemaType) => {
     const payload = {
       path: `${ts_id}`,
       data: {
@@ -86,22 +85,17 @@ const Pejling = () => {
     };
 
     if (gid === undefined) {
-      postPejling.mutate(payload, {
-        onSuccess: () => {
-          reset(getInitialData());
-          setDynamic([]);
-          setShowForm(null);
-        },
-      });
+      await postPejlingAsync(payload);
+      reset(getInitialData());
+      setDynamic([]);
+      setShowForm(null);
     } else {
       payload.path = `${ts_id}/${gid}`;
-      putPejling.mutate(payload, {
-        onSuccess: () => {
-          reset(getInitialData());
-          setShowForm(null);
-          setGid(undefined);
-        },
-      });
+      await putPejlingAsync(payload);
+
+      reset(getInitialData());
+      setShowForm(null);
+      setGid(undefined);
     }
   };
 
@@ -112,20 +106,14 @@ const Pejling = () => {
   };
 
   const handleEdit = (data: PejlingItem) => {
-    // data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
     const {data: parsedData} = schema.safeParse(data);
     reset(parsedData);
     setShowForm(true);
     setGid(data.gid);
   };
 
-  const handleDelete = (gid: number | undefined) => {
-    const payload = {path: `${ts_id}/${gid}`};
-    delPejling.mutate(payload);
-  };
-
-  const openAddMP = async () => {
-    await setShowForm(null);
+  const openAddMP = () => {
+    setShowForm(null);
     setPageToShow(stationPages.MAALEPUNKT);
   };
 
@@ -192,7 +180,6 @@ const Pejling = () => {
         <Box display={'flex'} flexDirection={'column'}>
           <Table
             handleEdit={handleEdit}
-            handleDelete={handleDelete}
             disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           />
         </Box>

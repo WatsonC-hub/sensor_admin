@@ -28,10 +28,15 @@ interface AlgorithCardProps {
 
 const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
   const {ts_id} = useAppContext(['ts_id']);
-  const {mutation: rerunQAMutation} = useRunQA(ts_id);
+  const {
+    mutation: {mutateAsync: rerunQAMutation, isPending: isRerunPending},
+  } = useRunQA(ts_id);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const {put: submitData, revert: revertToDefaults} = useAlgorithms();
+  const {
+    put: {mutate: submitData, isPending: isSubmitPending},
+    revert: {mutate: revertToDefaults, isPending: isRevertPending},
+  } = useAlgorithms();
 
   const handleRevert = () => {
     setDeleteDialogOpen(true);
@@ -46,10 +51,10 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
         disabled: data.disabled,
       },
     };
-    submitData.mutate(payload, {
+    submitData(payload, {
       onSuccess: () => {
         if (qaAlgorithm.runs_as_qa_algorithm) {
-          rerunQAMutation.mutate();
+          rerunQAMutation();
         }
       },
     });
@@ -60,11 +65,13 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
       path: `${ts_id}/${qaAlgorithm.algorithm}`,
       data: {algorithm: qaAlgorithm.algorithm},
     };
-    revertToDefaults.mutate(payload, {
+    revertToDefaults(payload, {
       onSuccess: () => {
         if (qaAlgorithm.runs_as_qa_algorithm) {
-          rerunQAMutation.mutate();
+          rerunQAMutation();
         }
+
+        setDeleteDialogOpen(false);
       },
     });
   };
@@ -121,7 +128,11 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
     defaultValues: defaultValues,
   });
 
-  const {reset, handleSubmit} = formMethods;
+  const {
+    reset,
+    handleSubmit,
+    formState: {isDirty},
+  } = formMethods;
 
   useEffect(() => {
     const schemaData =
@@ -140,6 +151,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
         dialogOpen={deleteDialogOpen}
         setDialogOpen={setDeleteDialogOpen}
         onOkDelete={handleOkDelete}
+        loading={isRerunPending || isRevertPending}
       />
       <GenericCard
         id={qaAlgorithm.name ?? ''}
@@ -231,16 +243,15 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           </FormProvider>
         </CardContent>
         <CardActions sx={{justifyContent: 'center', marginTop: 'auto', p: 1, m: 0}}>
-          <Button bttype="tertiary" onClick={handleRevert}>
+          <Button bttype="tertiary" loading={isRevertPending} onClick={handleRevert}>
             Tilbage til standard
           </Button>
           <Button
             bttype="primary"
+            loading={isSubmitPending || isRerunPending}
             onClick={handleSubmit(submit)}
-            startIcon={<Save />}
-            disabled={
-              submitData.isPending || revertToDefaults.isPending || !formMethods.formState.isDirty
-            }
+            startIcon={isSubmitPending || isRerunPending ? undefined : <Save />}
+            disabled={!isDirty}
           >
             Gem
           </Button>

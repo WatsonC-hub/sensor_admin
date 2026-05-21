@@ -31,7 +31,10 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
   const [contactsCollapsed, setContactsCollapsed] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const {post: postAlarm, put: putAlarm} = useAlarm();
+  const {
+    post: {mutateAsync: postAlarmAsync},
+    put: {mutateAsync: putAlarmAsync},
+  } = useAlarm();
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [mode, setMode] = useState<'add' | 'edit' | 'view'>('view');
@@ -65,13 +68,13 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     setDeleteDialogOpen(false);
   };
 
-  const submit = (data: AlarmsFormValues) => {
+  const submit = async (data: AlarmsFormValues) => {
     if (alarm === undefined) {
       const payload = {
         path: `${ts_id}`,
         data: data,
       };
-      postAlarm.mutate(payload, {
+      await postAlarmAsync(payload, {
         onSuccess: () => {
           setOpen(false);
           reset();
@@ -83,7 +86,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         path: `${alarm.id}`,
         data: data,
       };
-      putAlarm.mutate(payload, {
+      await putAlarmAsync(payload, {
         onSuccess: () => {
           setOpen(false);
           reset();
@@ -93,7 +96,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     }
   };
 
-  const handleSave = (data: AlarmsFormValues) => {
+  const handleSave = async (data: AlarmsFormValues) => {
     if (
       alarm?.group_id !== undefined &&
       alarm?.group_id !== '' &&
@@ -103,7 +106,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
       setDeleteDialogOpen(true);
       return;
     }
-    submit(data);
+    await submit(data);
   };
 
   return (

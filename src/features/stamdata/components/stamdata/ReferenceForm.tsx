@@ -8,7 +8,6 @@ import MaalepunktTableDesktop from '~/components/tableComponents/MaalepunktTable
 import MaalepunktTableMobile from '~/components/tableComponents/MaalepunktTableMobile';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import WatlevMPForm from '~/features/station/components/watlevmp/WatlevMPForm';
-import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
@@ -41,7 +40,6 @@ export default function ReferenceForm() {
   const {isMobile} = useBreakpoints();
   const [showForm, setShowForm] = useShowFormState();
   const {data: metadata} = useTimeseriesData(ts_id);
-  const {del: deleteWatlevmp} = useMaalepunkt(ts_id);
 
   const formMethods = useForm<WatlevMPFormValues>({
     resolver: zodResolver(schema),
@@ -57,10 +55,6 @@ export default function ReferenceForm() {
   } = usePermissions(loc_id);
 
   const disabled = permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit';
-
-  const handleDeleteMaalepunkt = (gid: number | undefined) => {
-    deleteWatlevmp.mutate({path: `${ts_id}/${gid}`});
-  };
 
   const handleEdit = (data: MaalepunktAsDayjs) => {
     const {data: parsedData} = schema.safeParse({
@@ -86,13 +80,11 @@ export default function ReferenceForm() {
       {isMobile ? (
         <MaalepunktTableMobile
           handleEdit={handleEdit}
-          handleDelete={handleDeleteMaalepunkt}
           disabled={disabled}
         />
       ) : (
         <MaalepunktTableDesktop
           handleEdit={handleEdit}
-          handleDelete={handleDeleteMaalepunkt}
           disabled={disabled}
         />
       )}

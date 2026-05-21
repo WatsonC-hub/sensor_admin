@@ -165,19 +165,20 @@ const CancelButton = () => {
   );
 };
 
+
 const SubmitButton = () => {
   const {submit} = React.useContext(CompoundPejlingContext);
   const {
     handleSubmit,
-    formState: {errors},
+    formState: {errors, isDirty, isSubmitting},
   } = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
-
   return (
     <Button
       bttype="primary"
       fullWidth={false}
-      startIcon={<Save />}
-      disabled={Object.keys(errors).length > 0}
+      startIcon={isSubmitting ? undefined : <Save />}
+      disabled={Object.keys(errors).length > 0 || !isDirty}
+      loading={isSubmitting}
       onClick={handleSubmit(submit, (errors) => console.log(errors))}
     >
       Gem

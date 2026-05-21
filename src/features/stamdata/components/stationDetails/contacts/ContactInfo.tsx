@@ -20,7 +20,9 @@ import {ContactTable} from '~/types';
 const ContactInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
-  const {del: deleteContact, put: editContact} = useContactInfo(loc_id);
+  const {
+    put: {mutateAsync: editContact},
+  } = useContactInfo(loc_id);
   const {location_permissions} = usePermissions(loc_id);
 
   const {
@@ -35,15 +37,7 @@ const ContactInfo = () => {
 
   const {reset} = formMethods;
 
-  const handleDelete = (relation_id: number) => {
-    const payload = {
-      path: `${relation_id}`,
-    };
-
-    deleteContact.mutate(payload);
-  };
-
-  const handleEdit = (contactInfo: ContactTable) => {
+  const handleEdit = async (contactInfo: ContactTable) => {
     const email = contactInfo.email !== '' ? contactInfo.email : null;
     const payload = {
       path: `${loc_id}`,
@@ -62,11 +56,8 @@ const ContactInfo = () => {
       },
     };
 
-    editContact.mutate(payload, {
-      onSuccess: () => {
-        reset(initialContactData);
-      },
-    });
+    await editContact(payload);
+    reset(initialContactData);
   };
 
   return (
@@ -76,7 +67,7 @@ const ContactInfo = () => {
           {openContactInfoDialog && (
             <SelectContactInfo open={openContactInfoDialog} setOpen={setOpenContactInfoDialog} />
           )}
-          <ContactInfoTable delContact={handleDelete} editContact={handleEdit} />
+          <ContactInfoTable editContact={handleEdit} />
         </FormProvider>
         <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
           <UpdateProgressButton progressKey="kontakter" loc_id={loc_id} ts_id={-1} alterStyle />

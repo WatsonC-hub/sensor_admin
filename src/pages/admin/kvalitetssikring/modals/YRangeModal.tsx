@@ -39,26 +39,28 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
     mode: 'onTouched',
   });
 
-  const {handleSubmit, setValue, reset} = formMethods;
+  const {
+    handleSubmit,
+    setValue,
+    reset,
+    formState: {isSubmitting},
+  } = formMethods;
 
   const unit = timeseries_data?.unit ?? '';
 
-  const {post: yRangeMutation} = useYRangeMutations();
+  const {
+    post: {mutateAsync: yRangeMutationAsync},
+  } = useYRangeMutations();
 
-  const onAccept: SubmitHandler<YRangeValues> = (values) => {
-    yRangeMutation.mutate(
-      {
-        path: `${timeseries_data?.ts_id}`,
-        data: {mincutoff: Number(values.min), maxcutoff: Number(values.max)},
-      },
-      {
-        onSuccess: () => {
-          reset();
-          setDataAdjustment(null);
-          onClose();
-        },
-      }
-    );
+  const onAccept: SubmitHandler<YRangeValues> = async (values) => {
+    await yRangeMutationAsync({
+      path: `${timeseries_data?.ts_id}`,
+      data: {mincutoff: Number(values.min), maxcutoff: Number(values.max)},
+    });
+
+    reset();
+    setDataAdjustment(null);
+    onClose();
   };
 
   useEffect(() => {
@@ -122,7 +124,8 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
         </Button>
         <Button
           bttype="primary"
-          startIcon={<Save />}
+          loading={isSubmitting}
+          startIcon={isSubmitting ? undefined : <Save />}
           onClick={handleSubmit(onAccept, (e) => console.log(e))}
           color="secondary"
         >

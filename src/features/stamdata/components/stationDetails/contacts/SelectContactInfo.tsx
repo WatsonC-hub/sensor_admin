@@ -33,11 +33,17 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   const [search, setSearch] = useState<string>('');
   const deboundedSearch = useDebouncedValue(search, 500);
   const {loc_id} = useAppContext(['loc_id']);
-  const {reset, handleSubmit} = useFormContext<InferContactInfo>();
+  const {
+    reset,
+    handleSubmit,
+    formState: {isSubmitting},
+  } = useFormContext<InferContactInfo>();
   const [createNew, setCreateNew] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const {post: postContact} = useContactInfo(loc_id);
+  const {
+    post: {mutateAsync: postContactAsync},
+  } = useContactInfo(loc_id);
 
   const {data, isFetching} = useSearchContact(loc_id, deboundedSearch);
 
@@ -53,14 +59,10 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
       path: `${loc_id}`,
       data: contact_info,
     };
-    postContact.mutate(payload, {
-      onSuccess: () => {
-        reset();
-        setSelectedContactInfo(null);
-        setCreateNew(false);
-      },
-    });
-
+    await postContactAsync(payload);
+    reset();
+    setSelectedContactInfo(null);
+    setCreateNew(false);
     setOpen(false);
   };
 
@@ -164,7 +166,8 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
             <Button
               onClick={handleSubmit(handleSave, (error) => console.log(error))}
               bttype="primary"
-              startIcon={<Save />}
+              loading={isSubmitting}
+              startIcon={isSubmitting ? null : <Save />}
             >
               Gem
             </Button>

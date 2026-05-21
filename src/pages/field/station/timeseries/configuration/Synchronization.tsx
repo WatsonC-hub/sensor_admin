@@ -48,8 +48,8 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed}: SynchronizationProps) =
   const {data: metadata} = useTimeseriesData(ts_id);
   const {
     get: {data: sync_data},
-    post: postSync,
-    del: deleteSync,
+    post: {mutateAsync: postSync},
+    del: {mutateAsync: deleteSync},
   } = useSync();
 
   const result = useQuery({
@@ -95,7 +95,7 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed}: SynchronizationProps) =
 
   const syncDmp = watch('sync_dmp');
 
-  const submit = (data: SyncFormValues) => {
+  const submit = async (data: SyncFormValues) => {
     const cvr = owners?.find((owner) => owner.name === data.owner_name)?.cvr;
     const syncPayload = {
       path: `${ts_id}`,
@@ -111,10 +111,10 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed}: SynchronizationProps) =
       },
     };
 
-    postSync.mutate(syncPayload);
+    await postSync(syncPayload);
 
     if (data.sync_dmp == false && dirtyFields.sync_dmp !== undefined) {
-      deleteSync.mutate({path: ts_id.toString()});
+      await deleteSync({path: ts_id.toString()});
     }
   };
 
@@ -125,13 +125,17 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed}: SynchronizationProps) =
           {canSyncJupiter && (
             <TooltipWrapper
               description={
-                (metadata?.intakeno == null || metadata?.intakeno === -1)
+                metadata?.intakeno == null || metadata?.intakeno === -1
                   ? 'Indtagsnummer mangler før du kan synkronisere til Jupiter. Indtast det under rediger tidsserie.'
                   : 'Aktiverer synkronisering af denne tidsserie til Jupiter'
               }
             >
               <Form.Checkbox
-                disabled={location_permissions !== 'edit' || metadata?.intakeno == null || metadata?.intakeno === -1}
+                disabled={
+                  location_permissions !== 'edit' ||
+                  metadata?.intakeno == null ||
+                  metadata?.intakeno === -1
+                }
                 name="jupiter"
                 label="Jupiter"
               />
@@ -181,7 +185,7 @@ const Synchronization = ({canSyncJupiter, isDmpAllowed}: SynchronizationProps) =
               disabled={location_permissions !== 'edit' || !isDirty}
               cancel={() => resetSync()}
             />
-            <Form.Submit disabled={location_permissions !== 'edit'} submit={submit} />
+            <Form.Submit submit={submit} />
           </Grid2>
         </Form>
       )}

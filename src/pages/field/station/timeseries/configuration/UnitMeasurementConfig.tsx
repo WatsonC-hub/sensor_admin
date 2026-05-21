@@ -65,7 +65,7 @@ const UnitMeasurementConfig = () => {
   const {data: currentLocation} = useMapOverview({
     select: (data) => data.find((loc) => loc.loc_id === loc_id),
   });
-  const {mutate} = useTimeseriesMeasureSampleSendMutation(ts_id);
+  const {mutateAsync} = useTimeseriesMeasureSampleSendMutation(ts_id);
   const [options, setOptions] = useState<Array<Record<number, string>>>([]);
   const {isMobile} = useBreakpoints();
   const {superUser} = useUser();
@@ -190,7 +190,7 @@ const UnitMeasurementConfig = () => {
       <ConfigAlert
         status={data?.configState || null}
         timeseriesStatus={data?.currentPendingTimeseries || null}
-        handleResend={handleSubmit((data) => mutate(data))}
+        handleResend={handleSubmit(async (data) => await mutateAsync(data))}
       />
       <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} mb={-3}>
         <FormInput
@@ -280,7 +280,7 @@ const UnitMeasurementConfig = () => {
           <Button
             bttype="primary"
             disabled={isSubmitting || !isDirty || disabled}
-            onClick={handleSubmit((data) => mutate(data))}
+            onClick={handleSubmit(async (data) => await mutateAsync(data))}
             startIcon={<Save />}
           >
             <Typography variant="body2">Gem</Typography>
