@@ -13,16 +13,16 @@ const Synchronization = () => {
 
   const {
     get: {data: sync_data},
-    post: postSync,
+    post: {mutateAsync: postSync},
   } = useSync();
 
-  const submit = (data: SyncFormSchema) => {
+  const submit = async (data: SyncFormSchema) => {
     const syncPayload = {
       path: `${ts_id}`,
       data: data,
     };
 
-    postSync.mutate(syncPayload);
+    await postSync(syncPayload);
   };
 
   return (

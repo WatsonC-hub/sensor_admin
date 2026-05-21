@@ -39,11 +39,15 @@ const LocationAccessFormDialog = ({
 }: Props) => {
   const [selectedContactInfo, setSelectedContactInfo] = useState<ContactInfo | null>(null);
   const [createNew, setCreateNew] = useState<boolean>(false);
-  const {control, watch, reset, setValue, clearErrors, handleSubmit} = useFormContext<
-    Access,
-    unknown,
-    AccessTable
-  >();
+  const {
+    control,
+    watch,
+    reset,
+    setValue,
+    clearErrors,
+    handleSubmit,
+    formState: {isSubmitting},
+  } = useFormContext<Access, unknown, AccessTable>();
   const [search, setSearch] = useState<string>('');
   const {data} = useSearchContact(loc_id, search);
 
@@ -243,13 +247,14 @@ const LocationAccessFormDialog = ({
           Annuller
         </Button>
         <Button
-          onClick={() => {
-            handleSubmit(handleSave, (error) => console.log(error))();
+          onClick={async () => {
+            await handleSubmit(handleSave, (error) => console.log(error))();
             reset(initialLocationAccessData);
             setCreateNew(false);
           }}
           bttype="primary"
-          startIcon={<Save />}
+          startIcon={isSubmitting ? undefined : <Save />}
+          loading={isSubmitting}
         >
           Gem
         </Button>

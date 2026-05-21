@@ -39,7 +39,7 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
     watch,
     reset,
     handleSubmit,
-    formState: {dirtyFields},
+    formState: {dirtyFields, isSubmitting, isDirty},
   } = useFormContext<AccessTable>();
   const [openLocationAccessDialog, setOpenLocationAccessDialog] = useState<boolean>(false);
   const {location_permissions} = usePermissions(loc_id);
@@ -51,8 +51,7 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
 
   const {
     get: {data},
-    put: editLocationAccess,
-    del: delLocationAccess,
+    put: {mutateAsync: editLocationAccess},
     del: {mutate: delLocationAccess, isPending},
   } = useLocationAccess(loc_id);
 
@@ -64,7 +63,7 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
     delLocationAccess(payload, {
       onSuccess: () => {
         setDialogOpen(false);
-        setLocationAccessID(-1);
+        setRemoveId(-1);
         setOpenLocationAccessDialog(false);
       },
     });
@@ -245,7 +244,7 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
   };
 
   const handleSave: SubmitHandler<AccessTable> = async (details) => {
-    handleEdit(details);
+    await handleEdit(details);
     setOpenLocationAccessDialog(false);
     // reset(initialLocationAccessData);
   };
@@ -264,19 +263,9 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
       },
     };
 
-    editLocationAccess.mutate(payload, {
-      onSuccess: () => {
-        reset();
-      },
-    });
-  };
+    await editLocationAccess(payload);
 
-  const handleDelete = (location_access_id: number | undefined) => {
-    const payload = {
-      path: `${loc_id}/${location_access_id}`,
-    };
-
-    delLocationAccess.mutate(payload);
+    reset();
   };
 
   return (

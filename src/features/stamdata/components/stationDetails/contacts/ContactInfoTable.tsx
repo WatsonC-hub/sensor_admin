@@ -9,7 +9,6 @@ import RenderInternalActions from '~/components/tableComponents/RenderInternalAc
 import {initialContactData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import {ContactInfoType, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -17,6 +16,7 @@ import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {ContactTable} from '~/types';
 import EditContactInfo from './EditContactInfo';
+import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 
 type Props = {
   loc_id?: number;
@@ -49,24 +49,13 @@ const ContactInfoTable = ({loc_id}: Props) => {
   const {isMobile} = useBreakpoints();
 
   const {
-    
     get: {data},
-    put: {mutateAsync: editContact, isPending: isEditing},
-  ,
+    put: {mutateAsync: editContact},
     del: {mutate: delContact, isPending},
   } = useContactInfo(loc_id);
 
-
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
-
-  const handleDelete = (relation_id: number) => {
-    const payload = {
-      path: `${relation_id}`,
-    };
-
-    delContact(payload);
-  };
 
   const handleEdit = async (contactInfo: ContactTable) => {
     const email = contactInfo.email !== '' ? contactInfo.email : null;
@@ -93,7 +82,7 @@ const ContactInfoTable = ({loc_id}: Props) => {
   };
 
   const handleSave: SubmitHandler<ContactTable> = async (details) => {
-    handleEdit({
+    await handleEdit({
       ...details,
       email: details.email ?? '',
       mobile: details.mobile ? details.mobile.toString() : null,
@@ -251,7 +240,7 @@ const ContactInfoTable = ({loc_id}: Props) => {
           setOpenContactInfoDialog(true);
         }}
         onDeleteBtnClick={() => {
-          onDeleteBtnClick(row.original.relation_id, setDialogOpen, setRemoveId);
+          onDeleteBtnClick(row.original.relation_id, setDialogOpen, setContactID);
         }}
         disabled={!contactsFeature || disabled}
       />
@@ -309,9 +298,9 @@ const ContactInfoTable = ({loc_id}: Props) => {
       <EditContactInfo
         openContactInfoDialog={openContactInfoDialog}
         handleClose={handleClose}
-        handleSave={() => handleSubmit(handleSave, (e) => console.log(e))()}
+        handleSave={async () => await handleSubmit(handleSave, (e) => console.log(e))()}
         isDisabled={Object.keys(dirtyFields).length === 0 || !isDirty}
-            loading={isSubmitting}
+        loading={isSubmitting}
         isUser={isUser}
       />
       <MaterialReactTable table={table} />

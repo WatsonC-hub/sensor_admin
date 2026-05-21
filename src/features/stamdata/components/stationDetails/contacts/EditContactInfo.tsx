@@ -9,6 +9,7 @@ type Props = {
   handleSave: () => void;
   isDisabled: boolean;
   isUser: boolean;
+  loading?: boolean;
 };
 
 const EditContactInfo = ({
@@ -17,6 +18,7 @@ const EditContactInfo = ({
   handleSave,
   isDisabled,
   isUser,
+  loading,
 }: Props) => {
   return (
     <Dialog open={openContactInfoDialog} onClose={handleClose} aria-labelledby="form-dialog-title">
@@ -28,7 +30,7 @@ const EditContactInfo = ({
         <Button onClick={handleClose} bttype="tertiary">
           Annuller
         </Button>
-        <Button disabled={isDisabled} onClick={handleSave} bttype="primary">
+        <Button disabled={isDisabled} onClick={handleSave} bttype="primary" loading={loading}>
           Ændre kontakt
         </Button>
       </DialogActions>

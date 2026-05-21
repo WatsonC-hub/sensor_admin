@@ -76,26 +76,28 @@ const JupiterDmpSync = ({
                     name="dmp"
                     control={control}
                     render={({field: {value, onChange}}) => {
-                      return <FormControlLabel
-                        disabled={disabled}
-                        control={
-                          <Checkbox
-                            checked={value != false && value != undefined}
-                            sx={{
-                              width: 'fit-content',
-                            }}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                onChange({});
-                              }
-                              if (!e.target.checked) {
-                                reset()
-                              }
-                            }}
-                          />
-                        }
-                        label={'DMP'}
-                      />
+                      return (
+                        <FormControlLabel
+                          disabled={disabled}
+                          control={
+                            <Checkbox
+                              checked={value != false && value != undefined}
+                              sx={{
+                                width: 'fit-content',
+                              }}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  onChange({});
+                                }
+                                if (!e.target.checked) {
+                                  reset();
+                                }
+                              }}
+                            />
+                          }
+                          label={'DMP'}
+                        />
+                      );
                     }}
                   />
                 </TooltipWrapper>

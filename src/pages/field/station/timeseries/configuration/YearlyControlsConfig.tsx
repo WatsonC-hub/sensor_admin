@@ -58,17 +58,12 @@ const YearlyControlsConfig = () => {
   } = formMethods;
 
   const onSubmit = async (data: ControlSettingsFormValues) => {
-    await mutateAsync(
-      {
-        controls_per_year: data.controls_per_year,
-        lead_time: data.lead_time,
-      },
-      {
-        onSuccess: () => {
-          reset();
-        },
-      }
-    );
+    await mutateAsync({
+      controls_per_year: data.controls_per_year,
+      lead_time: data.lead_time,
+    });
+
+    reset();
   };
 
   return (
@@ -98,9 +93,9 @@ const YearlyControlsConfig = () => {
               Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0 ||
               !isDirty
             }
-            loading={isSubmitting ?? null}
+            loading={isSubmitting}
             onClick={handleSubmit(onSubmit, (error) => console.log(error))}
-            startIcon={<Save />}
+            startIcon={isSubmitting ? undefined : <Save />}
           >
             <Typography variant="body2">Gem</Typography>
           </Button>

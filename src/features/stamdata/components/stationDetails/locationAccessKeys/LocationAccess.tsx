@@ -32,7 +32,9 @@ const LocationAccess = () => {
   });
 
   const {reset} = formMethods;
-  const {post: postLocationAccess} = useLocationAccess(loc_id);
+  const {
+    post: {mutateAsync: postLocationAccessAsync},
+  } = useLocationAccess(loc_id);
 
   const handleSave: SubmitHandler<Access> = async (values) => {
     const test: Access = {
@@ -48,12 +50,10 @@ const LocationAccess = () => {
       path: `${loc_id}`,
       data: test,
     };
-    postLocationAccess.mutate(payload, {
-      onSuccess: () => {
-        reset();
-        setOpenDialog(false);
-      },
-    });
+    await postLocationAccessAsync(payload);
+
+    reset();
+    setOpenDialog(false);
   };
 
   return (
@@ -66,7 +66,7 @@ const LocationAccess = () => {
               loc_id={loc_id}
               openDialog={openDialog}
               setOpenDialog={setOpenDialog}
-              handleSave={handleSave}
+              handleSave={async (data) => await handleSave(data)}
             />
           )}
         </FormProvider>
