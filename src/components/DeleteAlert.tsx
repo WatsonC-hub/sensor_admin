@@ -13,6 +13,7 @@ type DeleteAlertProps = {
   setDialogOpen: (dialogOpen: boolean) => void;
   title?: string;
   onCancel?: () => void;
+  loading?: boolean;
 };
 
 export default function DeleteAlert({
@@ -22,6 +23,7 @@ export default function DeleteAlert({
   setDialogOpen,
   title,
   onCancel,
+  loading,
 }: DeleteAlertProps) {
   const handleClose = () => {
     if (onCancel) onCancel();
@@ -30,7 +32,6 @@ export default function DeleteAlert({
 
   const handleOk = () => {
     onOkDelete(measurementId);
-    setDialogOpen(false);
   };
 
   return (
@@ -47,7 +48,7 @@ export default function DeleteAlert({
           <Button onClick={handleClose} bttype="tertiary">
             <Typography>Nej</Typography>
           </Button>
-          <Button onClick={handleOk} bttype="primary">
+          <Button onClick={handleOk} loading={loading} bttype="primary">
             <Typography>Ja</Typography>
           </Button>
         </DialogActions>

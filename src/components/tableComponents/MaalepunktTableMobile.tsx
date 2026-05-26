@@ -20,11 +20,10 @@ import {MaalepunktAsDayjs} from '~/types';
 
 interface Props {
   handleEdit: (maalepunkt: MaalepunktAsDayjs) => void;
-  handleDelete: (gid: number | undefined) => void;
   disabled: boolean;
 }
 
-export default function MaalepunktTableMobile({handleEdit, handleDelete, disabled}: Props) {
+export default function MaalepunktTableMobile({handleEdit, disabled }: Props) {
   const {ts_id} = useAppContext(['ts_id']);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
@@ -32,6 +31,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
 
   const {
     get: {data},
+    del: deleteWatlevmp,
   } = useMaalepunkt(ts_id);
 
   const onDeleteBtnClick = (id: number) => {
@@ -39,6 +39,14 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
     setDialogOpen(true);
   };
 
+ const handleDeleteMaalepunkt = (gid: number | undefined) => {
+    deleteWatlevmp.mutate({path: `${ts_id}/${gid}`}, {
+      onSuccess: () => {
+        setDialogOpen(false);
+      }
+    });
+  };
+  
   const unit = timeseries?.tstype_id === 1 ? ' m' : ` [${timeseries?.unit}]`;
 
   const columns = useMemo<MRT_ColumnDef<MaalepunktAsDayjs>[]>(
@@ -124,7 +132,8 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={() => handleDelete(mpId)}
+        onOkDelete={() => handleDeleteMaalepunkt(mpId)}
+        loading={deleteWatlevmp.isPending}
       />
       <MaterialReactTable table={table} />
     </Box>

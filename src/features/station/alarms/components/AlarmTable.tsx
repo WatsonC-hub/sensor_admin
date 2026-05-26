@@ -26,11 +26,19 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
   const {data: location_data} = useLocationData();
   const {
     getHistory: {data: alarmHistory},
-    del: deleteAlarm,
+    del: {mutate: deleteAlarm, isPending},
   } = useAlarm();
 
   const handleDelete = async () => {
-    deleteAlarm.mutate({path: `${ts_id}/delete/${selectedAlarm?.id}`});
+    deleteAlarm(
+      {path: `${ts_id}/delete/${selectedAlarm?.id}`},
+      {
+        onSuccess: () => {
+          setOpenDeleteDialog(false);
+          setSelectedAlarm(null);
+        },
+      }
+    );
   };
 
   const [alarmHistoryOpen, setAlarmHistoryOpen] = React.useState<boolean>(false);
@@ -217,6 +225,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
             ? `Dette sletter alarmen på en hel gruppe og det har derfor konsekvenser for alle tilknyttede lokationer på gruppen. Vil du fortsætte?`
             : undefined
         }
+        loading={isPending}
       />
       <MaterialReactTable table={table} />
     </Box>

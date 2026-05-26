@@ -43,7 +43,7 @@ const YearlyControlsConfig = () => {
   const {superUser} = useUser();
   const {data: values} = useTimeseriesServiceInterval(ts_id);
 
-  const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
+  const {mutateAsync} = useTimeseriesServiceIntervalMutation(ts_id);
   const {isMobile} = useBreakpoints();
   const {location_permissions} = usePermissions(loc_id);
 
@@ -79,8 +79,8 @@ const YearlyControlsConfig = () => {
   const controlsPerYear = watch('controls_per_year');
   const selectValue = watch('selectValue');
 
-  const onSubmit = (data: ServiceIntervalSubmit) => {
-    mutate(
+  const onSubmit = async (data: ServiceIntervalSubmit) => {
+    await mutateAsync(
       {
         controls_per_year: data.dummy !== null ? data.controls_per_year : null,
         lead_time: data.lead_time,
@@ -197,10 +197,10 @@ const YearlyControlsConfig = () => {
           <Button
             bttype="primary"
             disabled={
-              isSubmitting ||
               Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0 ||
               !isDirty
             }
+            loading={isSubmitting ?? null}
             onClick={handleSubmit(onSubmit, (error) => console.log(error))}
             startIcon={<Save />}
           >

@@ -12,20 +12,20 @@ import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
+import { useAppContext } from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
-  handleDelete: (gid: number) => void;
   disabled: boolean;
 }
 
 export default function PejlingMeasurementsTableDesktop({
   handleEdit,
-  handleDelete,
   disabled,
 }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const {ts_id} = useAppContext(['ts_id']);
   const [mpId, setMpId] = useState(-1);
   const {data: timeseries} = useTimeseriesData();
   const tstype_id = timeseries?.tstype_id;
@@ -34,12 +34,24 @@ export default function PejlingMeasurementsTableDesktop({
 
   const unit = tstype_id === 1 ? 'Nedstik [m]' : `Kontrol [${stationUnit}]`;
 
-  const {get} = usePejling();
+  const {get, del: delPejling} = usePejling();
+
+  const {isPending, mutate} = delPejling;
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
   };
+
+  const handleDelete = (gid: number | undefined) => {
+    const payload = {path: `${ts_id}/${gid}`};
+    mutate(payload, {
+      onSuccess: () => {
+        setDialogOpen(false);
+      },
+      });
+  };
+
   const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [
       {
@@ -113,6 +125,7 @@ export default function PejlingMeasurementsTableDesktop({
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={() => handleDelete(mpId)}
+        loading={isPending}
       />
       <MaterialReactTable table={table} />
     </Box>

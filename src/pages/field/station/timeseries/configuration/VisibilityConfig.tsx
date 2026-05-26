@@ -37,7 +37,9 @@ const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
     })
   );
 
-  const {updateTimeseries} = useUpdateTimeseries(ts_id);
+  const {
+    updateTimeseries: {mutateAsync},
+  } = useUpdateTimeseries(ts_id);
 
   const methods = useForm<Form>({
     resolver: zodResolver(schema),
@@ -75,9 +77,8 @@ const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
           />
           <Form.Cancel disabled={!isDirty} cancel={() => reset()} />
           <Form.Submit
-            disabled={!isDirty}
             submit={async (values) => {
-              updateTimeseries.mutate(values);
+              await mutateAsync(values);
             }}
           />
         </Grid2>

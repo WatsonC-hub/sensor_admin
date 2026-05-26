@@ -13,7 +13,9 @@ interface Props {
 }
 
 const CreateManuelTaskModal = ({open, closeModal}: Props) => {
-  const {post: createTask} = useTaskMutations();
+  const {
+    post: {mutateAsync: createTask},
+  } = useTaskMutations();
   const ts_id_display = useDisplayState((state) => state.ts_id);
   const {data: metadata} = useLocationData();
 
@@ -39,7 +41,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
             : true,
       ts_id: values.ts_id,
     };
-    createTask.mutate(submit);
+    await createTask(submit);
     closeModal();
   };
 

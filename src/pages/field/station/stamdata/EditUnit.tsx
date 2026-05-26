@@ -26,7 +26,9 @@ const EditUnit = () => {
   const [selectedUnit, setSelectedUnit] = useState<number | ''>(unit_history?.[0]?.gid ?? '');
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
-  const {editUnit} = useUnitMutations(ts_id);
+  const {
+    editUnit: {mutateAsync: editUnit},
+  } = useUnitMutations(ts_id);
   const {location_permissions} = usePermissions(loc_id);
   const tstype_id = metadata?.tstype_id;
   const disabled = location_permissions !== 'edit';
@@ -53,7 +55,7 @@ const EditUnit = () => {
       gid: selectedUnit,
       ...data,
     };
-    editUnit.mutate(payload);
+    await editUnit(payload);
   };
 
   return (
