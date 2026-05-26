@@ -135,45 +135,45 @@ const filterData = (
 
   filteredData = filteredData.filter((elem) => {
     let showElem = true;
-    let showService = false;
+    // let showService = false;
     const hasLocId = 'loc_id' in elem;
     const hasBoreholeNo = 'boreholeno' in elem;
 
     if (hasLocId) {
-      showService = filterSensor(elem, filter.showService);
+      showElem = showElem && filterSensor(elem, filter.showService);
     } else if (hasBoreholeNo) {
-      showService = filterBorehole(elem, filter);
+      showElem = showElem && filterBorehole(elem, filter);
     }
 
-    if (hasNoFilter) {
-      showElem = showElement(elem as MapOverview, filter, tasks ?? [], user_id.toString());
+    // let matchGroupsAndProjects = filter.groups?.length === 0 && filter.projects?.length === 0;
+    if (hasGroupFilter) {
+      showElem =
+        showElem &&
+        filter.groups?.some((group) => elem.groups?.some((item) => item.id === group.id));
+    }
+
+    if (hasNoFilter && hasLocId) {
+      showElem =
+        showElem && showElement(elem as MapOverview, filter, tasks ?? [], user_id.toString());
     }
 
     if (hasNotificationFilter) {
-      showElem = filter.notificationTypes?.some((type) =>
-        (elem as MapOverview).notification_ids?.includes(type)
-      );
-    }
-
-    let matchGroupsAndProjects = filter.groups?.length === 0 && filter.projects?.length === 0;
-    if (hasGroupFilter) {
-      matchGroupsAndProjects = filter.groups?.some((group) =>
-        elem.groups?.some((item) => item.id === group.id)
-      );
-      showElem = matchGroupsAndProjects;
-    }
-    if (hasProjectFilter && !matchGroupsAndProjects) {
-      if (hasLocId && (elem as MapOverview).projectno) {
-        matchGroupsAndProjects = filter.projects?.some(
-          (project) => (elem as MapOverview).projectno === project.project_no
+      showElem =
+        showElem &&
+        filter.notificationTypes?.some((type) =>
+          (elem as MapOverview).notification_ids?.includes(type)
         );
-        showElem = matchGroupsAndProjects;
-      }
     }
 
-    if (hasBoreholeNo) return showService;
+    if (hasProjectFilter && hasLocId) {
+      showElem =
+        showElem &&
+        filter.projects?.some((project) => (elem as MapOverview).projectno === project.project_no);
+    }
 
-    return showElem && showService;
+    // if (hasBoreholeNo) return showService;
+
+    return showElem;
   });
 
   return filteredData;
