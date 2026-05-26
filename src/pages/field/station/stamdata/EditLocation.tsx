@@ -85,9 +85,6 @@ const EditLocation = () => {
       onSuccess: () => {
         toast.success('Lokation opdateret');
       },
-      onError: () => {
-        toast.error('Der skete en fejl ved opdatering af lokationen');
-      },
     });
   };
 

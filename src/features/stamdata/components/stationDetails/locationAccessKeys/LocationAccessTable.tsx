@@ -18,6 +18,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {AccessTable} from '~/types';
+import LocationAccessForm from './LocationAccessForm';
 
 type LocationAccessTableProps = {
   loc_id?: number;
@@ -35,6 +36,7 @@ const onDeleteBtnClick = (
 const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
   const [removeId, setRemoveId] = useState<number>(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
+
   const {
     watch,
     reset,
@@ -175,23 +177,20 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
         ? {}
         : {
             onClick: (e) => {
-              if ((e.target as HTMLElement).innerText && !disabled) {
+              if (
+                (e.target as HTMLElement).innerText &&
+                (e.target as HTMLElement).innerText !== ''
+              ) {
                 reset(row.original);
+                table.setEditingRow(row);
               }
-              table.setEditingRow(row);
             },
           };
     },
     renderEditRowDialogContent: () => {
       return (
         <Box py={4} px={2} boxShadow={6}>
-          <LocationAccessFormDialog
-            loc_id={loc_id}
-            editMode={true}
-            setOpenDialog={setOpenLocationAccessDialog}
-            openDialog={openLocationAccessDialog}
-            handleSave={handleSave}
-          />
+          <LocationAccessForm loc_id={loc_id} showLocationAccess={true} disabled={true} />
         </Box>
       );
     },
@@ -287,10 +286,11 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
         <DialogContent>
           <LocationAccessFormDialog
             loc_id={loc_id}
-            editMode={false}
+            editMode={'edit'}
             openDialog={openLocationAccessDialog}
             setOpenDialog={setOpenLocationAccessDialog}
             handleSave={handleSave}
+            showLocationAccess={true}
           />
         </DialogContent>
         <DialogActions>

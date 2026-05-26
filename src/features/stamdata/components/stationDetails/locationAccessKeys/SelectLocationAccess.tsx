@@ -10,11 +10,17 @@ import {Access} from '~/types';
 
 type Props = {
   loc_id: number | undefined;
-  createNew: boolean;
-  setCreateNew: (createNew: boolean) => void;
+  showLocationAccessForm: boolean;
+  setShowLocationAccessForm: (showLocationAccessForm: boolean) => void;
+  disabled?: boolean;
 };
 
-const SelectLocationAccess = ({loc_id, createNew, setCreateNew}: Props) => {
+const SelectLocationAccess = ({
+  loc_id,
+  showLocationAccessForm,
+  setShowLocationAccessForm,
+  disabled = false,
+}: Props) => {
   const [selected, setSelected] = useState<Access | null>(null);
   const [search, setSearch] = useState<string>('');
   const debouncedSearch = useDebouncedValue(search, 500);
@@ -23,11 +29,11 @@ const SelectLocationAccess = ({loc_id, createNew, setCreateNew}: Props) => {
   const {data, isFetching} = useSearchLocationAccess(loc_id, debouncedSearch);
 
   useEffect(() => {
-    if (!createNew) {
+    if (!showLocationAccessForm) {
       setSelected(null);
       setSearch('');
     }
-  }, [createNew]);
+  }, [showLocationAccessForm]);
 
   return (
     <>
@@ -39,13 +45,13 @@ const SelectLocationAccess = ({loc_id, createNew, setCreateNew}: Props) => {
           setSelected(option);
           if (option) {
             reset(option);
-            setCreateNew(true);
+            setShowLocationAccessForm(true);
           } else {
-            setCreateNew(false);
+            setShowLocationAccessForm(false);
             reset(initialLocationAccessData);
           }
         }}
-        selectValue={selected ?? null!}
+        selectValue={selected ?? null}
         filterOptions={(options) => {
           return options;
         }}
@@ -67,6 +73,7 @@ const SelectLocationAccess = ({loc_id, createNew, setCreateNew}: Props) => {
         selectOnFocus
         clearOnBlur
         handleHomeEndKeys
+        disabled={disabled}
       />
     </>
   );

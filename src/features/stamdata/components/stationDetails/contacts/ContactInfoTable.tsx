@@ -17,6 +17,7 @@ import {useTable} from '~/hooks/useTable';
 import {ContactTable} from '~/types';
 import EditContactInfo from './EditContactInfo';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
+import StationContactInfo from './StationContactInfo';
 
 type Props = {
   loc_id?: number;
@@ -214,17 +215,26 @@ const ContactInfoTable = ({loc_id}: Props) => {
         ? {}
         : {
             onClick: (e) => {
-              if ((e.target as HTMLElement).innerText) {
+              if (
+                (e.target as HTMLElement).innerText &&
+                (e.target as HTMLElement).innerText !== ''
+              ) {
                 reset({
                   ...row.original,
                   mobile: row.original.mobile ? row.original.mobile : null,
                 });
+                table.setEditingRow(row);
               }
-              table.setEditingRow(row);
             },
           };
     },
-
+    renderEditRowDialogContent: () => {
+      return (
+        <Box py={4} px={2} boxShadow={6}>
+          <StationContactInfo isEditing={true} isUser={true} tableModal={true} />
+        </Box>
+      );
+    },
     onEditingRowCancel: () => {
       reset();
     },
@@ -235,8 +245,7 @@ const ContactInfoTable = ({loc_id}: Props) => {
             ...row.original,
             mobile: row.original.mobile ? row.original.mobile : null,
           });
-
-          setIsUser(row.original.org !== '');
+          setIsUser(!!row.original.org);
           setOpenContactInfoDialog(true);
         }}
         onDeleteBtnClick={() => {
