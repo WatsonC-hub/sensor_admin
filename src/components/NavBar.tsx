@@ -47,7 +47,7 @@ const LogOut = ({children}: {children?: ReactNode}) => {
     await apiClient.get('/auth/logout/secure');
     queryClient.setQueryData(queryKeys.user(), null);
     queryClient.clear();
-    home();
+    home(true);
   };
 
   return (
@@ -69,7 +69,7 @@ const HomeButton = () => {
       <IconButton
         color="inherit"
         onClick={() => {
-          home();
+          home(true);
         }}
         size="large"
       >
