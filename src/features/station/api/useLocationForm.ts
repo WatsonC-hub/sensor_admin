@@ -22,14 +22,12 @@ type useLocationFormProps<T> =
       defaultValues?: DefaultValues<T>;
       initialLocTypeId?: number;
       context: {loc_id: number | undefined};
-      values?: T;
     }
   | {
       mode: 'Edit';
       defaultValues?: DefaultValues<T>;
       initialLocTypeId?: number;
       context: {loc_id: number};
-      values?: T;
     };
 
 const getSchemaAndForm = <T extends FieldValues>(
@@ -78,7 +76,6 @@ const useLocationForm = <T extends Record<string, any>>({
   mode,
   context,
   initialLocTypeId = -1,
-  values,
 }: useLocationFormProps<T>) => {
   const {superUser} = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
@@ -98,7 +95,6 @@ const useLocationForm = <T extends Record<string, any>>({
     resolver: zodResolver(schema),
     defaultValues: parsed_data !== undefined ? parsed_data : defaultValues,
     mode: 'onTouched',
-    values: values ?? (parsed_data as T | undefined),
   });
 
   const {watch} = formMethods;
