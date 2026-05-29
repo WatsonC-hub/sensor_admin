@@ -25,7 +25,7 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
-    .number({required_error: 'Måleinterval er påkrævet'})
+    .number({message: 'Måleinterval er påkrævet'})
     .min(1, 'Måleinterval skal være mindst 1 minut'),
   sendInterval: z
     .number({required_error: 'Sendeinterval er påkrævet'})
@@ -203,10 +203,6 @@ const UnitMeasurementConfig = () => {
             return Math.floor(value);
           }}
           fullWidth
-          // onChangeCallback={() => {
-          //   // reset sendInterval when sampleInterval changes
-          //   formMethods.setValue('sendInterval', undefined);
-          // }}
           onBlurCallback={() => {
             // reset sendInterval when sampleInterval changes
             const sampleInterval = getValues('sampleInterval');
@@ -281,7 +277,8 @@ const UnitMeasurementConfig = () => {
             bttype="primary"
             disabled={isSubmitting || !isDirty || disabled}
             onClick={handleSubmit(async (data) => await mutateAsync(data))}
-            startIcon={<Save />}
+            startIcon={isSubmitting ? undefined : <Save />}
+            loading={isSubmitting}
           >
             <Typography variant="body2">Gem</Typography>
           </Button>
