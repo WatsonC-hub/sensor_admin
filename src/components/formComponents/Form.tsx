@@ -10,7 +10,7 @@ import FormRadio from './FormRadio';
 import FormDateTimeWrapper from './FormDateTimeWrapper';
 import FormController from './FormController';
 
-type TypedFormComponent<T extends FieldValues, S extends Record<string, any> = T> = React.FC<
+export type TypedFormComponent<T extends FieldValues, S extends Record<string, any> = T> = React.FC<
   React.ComponentProps<typeof TypedForm<T, S>>
 > & {
   Input: React.FC<React.ComponentProps<typeof FormInputWrapper<T>>>;

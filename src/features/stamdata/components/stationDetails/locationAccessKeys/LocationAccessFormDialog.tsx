@@ -4,17 +4,19 @@ import {SubmitHandler, useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {initialLocationAccessData} from '~/consts';
-import {Access, AccessTable} from '~/types';
+import {Access} from '~/types';
 import {Save} from '@mui/icons-material';
 import LocationAccessForm from './LocationAccessForm';
+import {TypedFormComponent} from '~/components/formComponents/Form';
 
 type Props = {
   loc_id?: number | undefined;
   editMode?: 'create' | 'edit' | 'modal';
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;
-  handleSave: SubmitHandler<AccessTable>;
+  handleSave: SubmitHandler<Access>;
   showLocationAccess?: boolean;
+  Form: TypedFormComponent<Access, Access>;
 };
 
 const LocationAccessFormDialog = ({
@@ -24,13 +26,14 @@ const LocationAccessFormDialog = ({
   setOpenDialog,
   handleSave,
   showLocationAccess,
+  Form,
 }: Props) => {
   const {
     reset,
     clearErrors,
     handleSubmit,
     formState: {isSubmitting},
-  } = useFormContext<Access, unknown, AccessTable>();
+  } = useFormContext<Access>();
 
   const handleClose = () => {
     reset(initialLocationAccessData);
@@ -46,6 +49,7 @@ const LocationAccessFormDialog = ({
           loc_id={loc_id}
           showLocationAccess={showLocationAccess}
           disabled={editMode === 'modal'}
+          Form={Form}
         />
       </DialogContent>
       <DialogActions>

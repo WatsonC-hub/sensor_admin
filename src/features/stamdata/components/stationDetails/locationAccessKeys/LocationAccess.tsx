@@ -1,7 +1,7 @@
 import KeyIcon from '@mui/icons-material/Key';
 import {Box} from '@mui/material';
 import React, {useState} from 'react';
-import {FormProvider, SubmitHandler} from 'react-hook-form';
+import {SubmitHandler} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
 import {initialLocationAccessData} from '~/consts';
@@ -15,6 +15,9 @@ import {useAppContext} from '~/state/contexts';
 import useLocationAccessForm from './api/useLocationAccessForm';
 import {Access} from '~/types';
 import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
+import {createTypedForm} from '~/components/formComponents/Form';
+
+const Form = createTypedForm<Access>();
 
 const LocationAccess = () => {
   const {loc_id} = useAppContext(['loc_id']);
@@ -26,7 +29,7 @@ const LocationAccess = () => {
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
 
-  const formMethods = useLocationAccessForm({
+  const formMethods = useLocationAccessForm<Access>({
     mode: 'edit',
     defaultValues: initialLocationAccessData,
   });
@@ -59,17 +62,18 @@ const LocationAccess = () => {
   return (
     <>
       <StationPageBoxLayout>
-        <FormProvider {...formMethods}>
-          <LocationAccessTable loc_id={loc_id} />
+        <Form formMethods={formMethods}>
+          <LocationAccessTable loc_id={loc_id} Form={Form} />
           {openDialog && (
             <LocationAccessFormDialog
               loc_id={loc_id}
               openDialog={openDialog}
               setOpenDialog={setOpenDialog}
               handleSave={async (data) => await handleSave(data)}
+              Form={Form}
             />
           )}
-        </FormProvider>
+        </Form>
         <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
           <UpdateProgressButton
             loc_id={loc_id}
