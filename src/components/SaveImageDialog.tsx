@@ -22,8 +22,7 @@ interface SaveImageDialogProps {
     comment: string;
     public: boolean;
     date: Dayjs;
-    imageurl?: string; // Assuming this property exists
-    // Add any other properties as needed
+    imageurl?: string;
   };
   changeData: (field: string, value: any) => void;
   id: string | number;
@@ -66,7 +65,6 @@ function SaveImageDialog({
       uploadImage(payload, {
         onSuccess: () => {
           toast.success('Billedet er uploadet');
-          handleCloseSave();
         },
       });
     } else {
@@ -80,11 +78,10 @@ function SaveImageDialog({
       };
 
       editImage(payload, {
-        onSuccess: () => {
-          handleCloseSave();
-        },
+        onSuccess: () => {},
       });
     }
+    handleCloseSave();
   }
 
   return (
