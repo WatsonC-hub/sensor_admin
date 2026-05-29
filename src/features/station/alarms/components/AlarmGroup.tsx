@@ -42,8 +42,9 @@ const AlarmGroup = ({disableClearable = false}: AlarmGroupProps) => {
           fullWidth
           gridSizes={12}
           textFieldsProps={{
-            label: 'Lokationsgrupper*',
+            label: 'Lokationsgrupper',
             placeholder: ' Vælg lokationsgruppe...',
+            required: true,
           }}
           selectOnFocus
           clearOnBlur

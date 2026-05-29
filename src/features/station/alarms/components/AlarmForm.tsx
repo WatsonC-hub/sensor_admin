@@ -16,6 +16,7 @@ import AlarmContactFormDialog from './AlarmContactFormDialog';
 import AlarmGroup from './AlarmGroup';
 import DeleteAlert from '~/components/DeleteAlert';
 import Button from '~/components/Button';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 type AlarmFormProps = {
   setOpen: (open: boolean) => void;
@@ -51,8 +52,8 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     values: alarm && {
       name: alarm.name,
       group_id: alarm.group_id,
-      notification_ids: alarm.alarm_notifications,
-      contacts: alarm.alarm_contacts,
+      notification_ids: alarm.alarm_notifications || [],
+      contacts: alarm.alarm_contacts || [],
       comment: alarm.comment,
       ts_id: ts_id,
     },
@@ -62,6 +63,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
   const {reset, watch, setValue, handleSubmit} = alarmMethods;
 
   const contacts = watch('contacts');
+  const watched_group_id = watch('group_id');
 
   const handleDelete = () => {
     handleSubmit(submit);
@@ -168,7 +170,15 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
               setOpen(false);
             }}
           />
-          <Form.Submit submit={handleSave} />
+          <TooltipWrapper
+            description={
+              onGroup && !watched_group_id
+                ? 'Vælg en gruppe for at gemme alarmen. Hvis der ikke findes en relevant gruppe, kan du vælge "Tidsserie" eller tilføje en ny gruppe under lokationens indstillinger.'
+                : undefined
+            }
+          >
+            <Form.Submit submit={handleSave} disabled={onGroup && !watched_group_id} />
+          </TooltipWrapper>
         </Box>
       </Form>
       <AlarmContactFormDialog
