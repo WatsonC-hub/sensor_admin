@@ -6,7 +6,6 @@ import FormFieldset from '~/components/formComponents/FormFieldset';
 import UnitDialog from '../components/UnitDialog';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import {AddUnitType} from '../forms/UnitForm';
-import dayjs from 'dayjs';
 import {TransformedUnit} from '../types';
 import {apiClient} from '~/apiClient';
 import {Tstype} from '~/types';
@@ -98,11 +97,11 @@ function TimeseriesList() {
         <UnitDialog
           open={unitDialog}
           onClose={() => setUnitDialog(false)}
-          onAddUnitList={(units) => {
+          onAddUnitList={(units, startdate) => {
             const transformedUnit: TransformedUnit[] = units.map((unit) => {
               const transformedUnit: AddUnitType = {
                 unit_uuid: unit.unit_uuid,
-                startdate: dayjs(),
+                startdate: startdate,
                 calypso_id: unit.calypso_id.toString(),
               };
               return {

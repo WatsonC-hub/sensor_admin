@@ -11,17 +11,18 @@ import {initialLocationAccessData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
-import LocationAccessFormDialog from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
 import {AccessType, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {AccessTable} from '~/types';
+import {Access, AccessTable} from '~/types';
 import LocationAccessForm from './LocationAccessForm';
+import {TypedFormComponent} from '~/components/formComponents/Form';
 
 type LocationAccessTableProps = {
   loc_id?: number;
+  Form: TypedFormComponent<Access, Access>;
 };
 
 const onDeleteBtnClick = (
@@ -33,7 +34,7 @@ const onDeleteBtnClick = (
   setDialogOpen(true);
 };
 
-const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
+const LocationAccessTable = ({loc_id, Form}: LocationAccessTableProps) => {
   const [removeId, setRemoveId] = useState<number>(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -66,7 +67,6 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
       onSuccess: () => {
         setDialogOpen(false);
         setRemoveId(-1);
-        setOpenLocationAccessDialog(false);
       },
     });
   };
@@ -190,7 +190,12 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
     renderEditRowDialogContent: () => {
       return (
         <Box py={4} px={2} boxShadow={6}>
-          <LocationAccessForm loc_id={loc_id} showLocationAccess={true} disabled={true} />
+          <LocationAccessForm
+            loc_id={loc_id}
+            showLocationAccess={true}
+            disabled={true}
+            Form={Form}
+          />
         </Box>
       );
     },
@@ -239,13 +244,11 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
   const handleClose = () => {
     reset(initialLocationAccessData);
     setOpenLocationAccessDialog(false);
-    setOpenLocationAccessDialog(false);
   };
 
   const handleSave: SubmitHandler<AccessTable> = async (details) => {
     await handleEdit(details);
     setOpenLocationAccessDialog(false);
-    // reset(initialLocationAccessData);
   };
 
   const handleEdit = async (locationAccess: AccessTable) => {
@@ -284,13 +287,11 @@ const LocationAccessTable = ({loc_id}: LocationAccessTableProps) => {
       >
         <DialogTitle id="form-dialog-title">Ændre adgangsinformation</DialogTitle>
         <DialogContent>
-          <LocationAccessFormDialog
+          <LocationAccessForm
             loc_id={loc_id}
-            editMode={'edit'}
-            openDialog={openLocationAccessDialog}
-            setOpenDialog={setOpenLocationAccessDialog}
-            handleSave={handleSave}
             showLocationAccess={true}
+            disabled={false}
+            Form={Form}
           />
         </DialogContent>
         <DialogActions>

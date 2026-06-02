@@ -18,9 +18,9 @@ export const useNavigationFunctions = () => {
   });
 
   const homeFunctions = {
-    home: () => {
+    home: (replace?: boolean) => {
       navigate('/', {replace: true});
-      reset();
+      if (replace) reset();
     },
   };
 

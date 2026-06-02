@@ -37,7 +37,7 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
   ]);
 
   const isDisabled = isFormError || (loc_id != undefined && Object.values(submitters).length === 0);
-  const stamdataNewMutation = useMutation({
+  const {mutate: stamdataNewMutation, isPending} = useMutation({
     mutationFn: async (data: CreateStationPayload) => {
       const {data: out} = await apiClient.post(`/sensor_field/stamdata/create_station`, data);
       return out;
@@ -74,7 +74,7 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
       timeseries: Object.values(formState.timeseries || {}),
     };
 
-    stamdataNewMutation.mutate(submitState);
+    stamdataNewMutation(submitState);
   };
 
   return (
@@ -143,6 +143,7 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
         }
         message={dialogMessage}
         handleOpret={handleSubmit}
+        loading={isPending}
       />
     </Grid2>
   );

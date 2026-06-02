@@ -32,7 +32,7 @@ const AccessDenied = (props: Props) => {
             apiClient.get('/auth/logout/secure');
             queryClient.setQueryData(queryKeys.user(), null);
             queryClient.clear();
-            home();
+            home(true);
           }}
         >
           Tilbage

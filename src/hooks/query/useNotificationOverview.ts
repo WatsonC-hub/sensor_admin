@@ -41,7 +41,7 @@ const mapOverviewOptions = <TData = MapOverview[]>(select?: (data: MapOverview[]
     staleTime: 30 * 1000, // Data is fresh for 30 seconds
     refetchInterval: 60 * 1000, // Background refresh every 1 min
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     select,
   });
 

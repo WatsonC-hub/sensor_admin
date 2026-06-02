@@ -44,7 +44,7 @@ const Router = () => {
     {
       id: 'home',
       name: 'Hjem',
-      perform: home,
+      perform: () => home(true),
       icon: <HomeIcon />,
       shortcut: 'H',
       type: 'action',
