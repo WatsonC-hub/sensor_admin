@@ -18,10 +18,11 @@ import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
 import useUnitForm from '~/features/station/api/useUnitForm';
 import {FormProvider} from 'react-hook-form';
 import {Unit, useUnit} from '~/features/stamdata/api/useUnit';
+import dayjs, {Dayjs} from 'dayjs';
 type UnitDialogProps = {
   open: boolean;
   onClose: () => void;
-  onAddUnitList: (units: Unit[]) => void;
+  onAddUnitList: (units: Unit[], startdate: Dayjs) => void;
 };
 
 const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
@@ -32,9 +33,19 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
     get: {data: availableUnits},
   } = useUnit();
 
-  const formMethods = useUnitForm<{calypso_id: string}>({
+  const formMethods = useUnitForm<{calypso_id: string | undefined; startdate: Dayjs}>({
     mode: 'Add',
+    defaultValues: {calypso_id: undefined, startdate: dayjs()},
   });
+
+  const {
+    watch,
+    getValues,
+    handleSubmit,
+    formState: {errors},
+  } = formMethods;
+
+  const watchedCalypsoId = watch('calypso_id');
 
   const handleCalypsoIdChange = (option: {id: string} | null) => {
     if (option == null) {
@@ -63,6 +74,7 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
             <StamdataUnit tstype_id={undefined}>
               <Grid2 container>
                 <StamdataUnit.CalypsoID onChangeCallback={handleCalypsoIdChange} />
+                {watchedCalypsoId && <StamdataUnit.StartDate required />}
               </Grid2>
             </StamdataUnit>
           </FormProvider>
@@ -113,11 +125,11 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
           </Button>
           <Button
             bttype="primary"
-            disabled={checkedSensors.length === 0}
-            onClick={() => {
-              onAddUnitList(checkedSensors);
+            disabled={checkedSensors.length === 0 || Object.keys(errors).length > 0}
+            onClick={handleSubmit((data) => {
+              onAddUnitList(checkedSensors, data.startdate);
               handleClose();
-            }}
+            })}
           >
             Tilføj tidsserier
           </Button>
