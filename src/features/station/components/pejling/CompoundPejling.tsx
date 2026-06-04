@@ -165,7 +165,6 @@ const CancelButton = () => {
   );
 };
 
-
 const SubmitButton = () => {
   const {submit} = React.useContext(CompoundPejlingContext);
   const {
@@ -357,7 +356,11 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
 
 const NotPossible = () => {
   const {notPossible, setNotPossible} = useContext(CompoundPejlingContext);
-  const {setValue} = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
+  const {
+    setValue,
+    resetField,
+    formState: {defaultValues},
+  } = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
 
   return (
     <TooltipWrapper
@@ -369,8 +372,16 @@ const NotPossible = () => {
           <Checkbox
             checked={notPossible}
             onChange={(e) => {
-              setValue('measurement', e.target.checked ? null : 0);
-              setValue('extrema', e.target.checked ? 'A' : undefined);
+              console.log(defaultValues, 'defaultvalues');
+              setValue('measurement', e.target.checked ? null : 0, {shouldDirty: e.target.checked});
+              if (!defaultValues || 'extrema' in defaultValues)
+                setValue('extrema', e.target.checked ? 'A' : undefined, {
+                  shouldDirty: e.target.checked,
+                });
+              if (!e.target.checked) {
+                resetField('measurement');
+                if (!defaultValues || 'extrema' in defaultValues) resetField('extrema');
+              }
               setNotPossible(e.target.checked);
             }}
           />

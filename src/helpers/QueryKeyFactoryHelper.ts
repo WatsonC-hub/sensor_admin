@@ -124,4 +124,5 @@ export const queryKeys = {
   cmdOptions: () => ['cmd_options'] as const,
   dmpAllowedMapList: () => ['dmp_allowed_map_list'] as const,
   StationProgress: (ts_id?: number) => ['station_progress', ts_id] as const,
+  projectContacts: (project_no: string | undefined) => ['project_contacts', project_no] as const,
 };

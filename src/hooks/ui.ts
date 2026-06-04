@@ -14,6 +14,7 @@ interface DisplayState {
   showLocationRouter: boolean;
   own_task_list: boolean;
   hideSensorContent: boolean;
+  baseMap: 'satelite' | 'street';
 
   setTsId: (id: number | null) => void;
   setLocId: (id: number | null) => void;
@@ -27,6 +28,7 @@ interface DisplayState {
   setShowLocationRouter: (showLocationRouter: boolean) => void;
   setOwnTaskList: (own_task_list: boolean) => void;
   setHideSensorContent: (hideSensorContent: boolean) => void;
+  setBaseMap: (baseMap: 'satelite' | 'street') => void;
   reset: () => void;
 }
 
@@ -43,6 +45,7 @@ export const displayStore = create<DisplayState>((set) => ({
   showLocationRouter: false,
   own_task_list: false,
   hideSensorContent: false,
+  baseMap: 'street',
 
   setTsId: (ts_id) => set({ts_id}),
   setLocId: (loc_id) =>
@@ -70,6 +73,7 @@ export const displayStore = create<DisplayState>((set) => ({
   setItineraryId: (itinerary_id) => set({itinerary_id}),
   setShowLocationRouter: (showLocationRouter) => set({showLocationRouter}),
   setOwnTaskList: (own_task_list) => set({own_task_list}),
+  setBaseMap: (baseMap) => set({baseMap}),
   reset: () =>
     set(() => ({
       ts_id: null,

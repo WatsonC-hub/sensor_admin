@@ -73,7 +73,11 @@ const useMap = <TData extends object>(
   const [deleteId, setDeleteId] = useState<number>();
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
-  const [selectedLocId] = useDisplayState((state) => [state.loc_id]);
+  const [selectedLocId, baseMap, setBaseMap] = useDisplayState((state) => [
+    state.loc_id,
+    state.baseMap,
+    state.setBaseMap,
+  ]);
   const [type, setType] = useState<string>('parkering');
   const {
     features: {routesAndParking},
@@ -176,7 +180,10 @@ const useMap = <TData extends object>(
 
     L.basemapControl({
       position: 'bottomleft',
-      layers: [{layer: defaultMapBox}, {layer: satelitemapbox}],
+      layers:
+        baseMap === 'street'
+          ? [{layer: defaultMapBox}, {layer: satelitemapbox}]
+          : [{layer: satelitemapbox}, {layer: defaultMapBox}],
     }).addTo(map);
 
     onMapClickEvent(map);
@@ -246,6 +253,10 @@ const useMap = <TData extends object>(
       }
       layer.remove();
     });
+  };
+
+  const onBaseMapChangeEvent = () => {
+    setBaseMap(baseMap === 'street' ? 'satelite' : 'street');
   };
 
   const onMapMoveEndEvent = (map: L.Map) => {
@@ -587,12 +598,15 @@ const useMap = <TData extends object>(
       pathOptions: drawStyle,
     });
 
+    mapRef.current?.on('baselayerchange', onBaseMapChangeEvent);
+
     setDoneRendering(true);
 
     return () => {
       setDoneRendering(false);
       if (mapRef.current && markerLayerRef.current) {
         mapRef.current.remove();
+        mapRef.current.removeEventListener('baselayerchange', onBaseMapChangeEvent);
       }
     };
   }, [mapRef.current == null, doneRendering]);
@@ -665,6 +679,14 @@ const useMap = <TData extends object>(
       // console.log(mapRef.current.activeArea);
     }
   }, [usedWidth, usedHeight, doneRendering, isMobile]);
+
+  useEffect(() => {
+    if (mapRef.current) mapRef.current.on('baselayerchange', onBaseMapChangeEvent);
+
+    return () => {
+      if (mapRef.current) mapRef.current.removeEventListener('baselayerchange');
+    };
+  }, [baseMap]);
 
   useEffect(() => {
     const handler = (e: CustomEvent) => {

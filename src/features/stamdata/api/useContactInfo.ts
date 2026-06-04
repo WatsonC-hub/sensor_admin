@@ -96,6 +96,19 @@ export const useSearchContact = <T = ContactInfo[]>(
   return searched_contacts;
 };
 
+export const useProjectContacts = (project_no: string | undefined) => {
+  return useQuery({
+    queryKey: queryKeys.projectContacts(project_no),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<ContactTable>>(
+        `/sensor_field/stamdata/contact/project_contact_info/${project_no}`
+      );
+      return data;
+    },
+    enabled: project_no !== undefined,
+  });
+};
+
 export const useContactInfo = (loc_id: number | undefined) => {
   const get = useQuery(contactInfoGetOptions(loc_id));
 
