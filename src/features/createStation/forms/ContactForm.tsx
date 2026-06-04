@@ -13,6 +13,8 @@ import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {button_sx} from '../common_style';
+import {useProjectContacts} from '~/features/stamdata/api/useContactInfo';
+import {CreateLocationData} from '../types';
 
 const ContactForm = () => {
   const {isMobile} = useBreakpoints();
@@ -26,6 +28,29 @@ const ContactForm = () => {
       state.registerSubmitter,
       state.removeSubmitter,
     ]);
+  const {data} = useProjectContacts((location?.meta as CreateLocationData)?.initial_project_no);
+
+  const mergedContacts = React.useMemo(() => {
+    if (!data) return contacts;
+    const projectContacts = data.map((contact) => ({
+      ...contact,
+      contact_role_name: contact.contact_role_name,
+    }));
+    const existingContacts = contacts || [];
+    const merged = [...existingContacts];
+    projectContacts.forEach((projectContact) => {
+      if (!existingContacts.some((existing) => existing.id === projectContact.id)) {
+        merged.push(projectContact);
+      }
+    });
+    return merged.sort((a, b) => {
+      if (a.contact_role && b.contact_role) {
+        return a.contact_role - b.contact_role;
+      }
+      return 0;
+    });
+  }, [data, contacts]);
+
   const contactInfoMethods = useContactForm<ContactTable>({
     defaultValues: undefined,
     mode: 'add',
@@ -35,28 +60,28 @@ const ContactForm = () => {
     setState('location.contacts', value);
   };
 
-  const removeContact = (index: number) => {
-    const filteredContacts = (contacts || []).filter((_, i) => i !== index);
+  const removeContact = (contact_id: string) => {
+    const filteredContacts = (contacts || []).filter((contact) => contact.id !== contact_id);
     if (filteredContacts.length === 0) onValidChange([]);
     else onValidChange(filteredContacts);
   };
 
   useEffect(() => {
     registerSubmitter('location.contacts', () => {
-      if (Array.isArray(contacts) || !Object.keys(location || {}).includes('contacts')) {
+      if (Array.isArray(mergedContacts) || !Object.keys(location || {}).includes('contacts')) {
         return Promise.resolve(true);
       }
       return Promise.resolve(false);
     });
 
     return () => removeSubmitter('location.contacts');
-  }, [contacts, location]);
+  }, [mergedContacts, location]);
 
   return (
     <FormFieldset label={'Kontakter'} sx={{p: 1, width: '100%'}}>
       <FormProvider {...contactInfoMethods}>
         <Box display={'flex'} flexDirection={'column'}>
-          <SimpleContactList values={contacts} onRemove={removeContact} />
+          <SimpleContactList values={mergedContacts} onRemove={removeContact} />
 
           <Box
             display="flex"

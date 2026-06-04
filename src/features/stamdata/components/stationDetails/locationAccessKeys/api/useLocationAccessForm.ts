@@ -51,12 +51,12 @@ type LocationAccessFormProps<T> = {
   values?: T;
 };
 
-const useLocationAccessForm = <T extends FieldValues>({
+const useLocationAccessForm = <T extends FieldValues, U extends FieldValues = T>({
   mode,
   defaultValues,
   values,
 }: LocationAccessFormProps<T>) => {
-  const locationAccessFormMethods = useForm<T>({
+  const locationAccessFormMethods = useForm<T, unknown, U>({
     resolver: zodResolver(mode !== 'mass_edit' ? locationAccessSchema : locationAccessArraySchema),
     mode: 'onTouched',
     defaultValues: defaultValues,

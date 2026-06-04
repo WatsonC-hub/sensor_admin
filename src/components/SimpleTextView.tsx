@@ -7,15 +7,16 @@ type Props = {
   secondaryText?: ReactNode | string;
   icon?: ReactNode;
   onRemove?: () => void;
+  disabled?: boolean;
 };
 
-const SimpleTextView = ({primaryText, secondaryText, icon, onRemove}: Props) => {
+const SimpleTextView = ({primaryText, secondaryText, icon, onRemove, disabled}: Props) => {
   return (
     <ListItem disableGutters disablePadding>
       {onRemove && (
-        <IconButton aria-label="remove contact" size="small" edge="start">
+        <IconButton aria-label="remove contact" size="small" edge="start" disabled={disabled}>
           <RemoveCircleOutline
-            color="primary"
+            color={!disabled ? 'primary' : 'disabled'}
             fontSize="small"
             onClick={() => {
               onRemove();
@@ -24,7 +25,18 @@ const SimpleTextView = ({primaryText, secondaryText, icon, onRemove}: Props) => 
         </IconButton>
       )}
       {icon}
-      <ListItemText primary={primaryText} secondary={secondaryText} />
+      <ListItemText
+        primary={primaryText}
+        secondary={secondaryText}
+        slotProps={{
+          primary: {
+            color: disabled ? 'text.disabled' : undefined,
+          },
+          secondary: {
+            color: disabled ? 'text.disabled' : undefined,
+          },
+        }}
+      />
     </ListItem>
   );
 };

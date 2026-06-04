@@ -5,7 +5,7 @@ import SimpleTextView from '~/components/SimpleTextView';
 
 type Props = {
   values: SimpleContact[] | undefined;
-  onRemove: (index: number) => void;
+  onRemove: (contact_id: string) => void;
 };
 
 const SimpleContactList = ({values, onRemove}: Props) => {
@@ -16,14 +16,17 @@ const SimpleContactList = ({values, onRemove}: Props) => {
         <SimpleTextView key="nocontact" primaryText={'Ingen kontakter tilføjet'} />
       )}
       {Array.isArray(values) &&
-        values.map((contact, index) => (
-          <SimpleTextView
-            key={index}
-            primaryText={contact.name}
-            secondaryText={contact.email}
-            onRemove={() => onRemove(index)}
-          />
-        ))}
+        values.map((contact, index) => {
+          return (
+            <SimpleTextView
+              key={index}
+              primaryText={contact.name}
+              secondaryText={contact.email}
+              onRemove={() => onRemove(contact.id)}
+              disabled={contact.contact_role === 1 && contact.contact_type === 'projekt'}
+            />
+          );
+        })}
     </List>
   );
 };

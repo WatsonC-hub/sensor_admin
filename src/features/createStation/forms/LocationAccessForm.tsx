@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
-import {AccessTable} from '~/types';
-import {FormProvider} from 'react-hook-form';
+import {Access, AccessTable} from '~/types';
 import useLocationAccessForm from '~/features/stamdata/components/stationDetails/locationAccessKeys/api/useLocationAccessForm';
 import LocationAccessFormDialog from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
 import Button from '~/components/Button';
@@ -11,6 +10,9 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {button_sx} from '../common_style';
+import {createTypedForm} from '~/components/formComponents/Form';
+
+const Form = createTypedForm<Access>();
 
 const LocationAccessForm = () => {
   const {isMobile} = useBreakpoints();
@@ -25,7 +27,7 @@ const LocationAccessForm = () => {
       state.removeSubmitter,
     ]);
 
-  const locationAccessMethods = useLocationAccessForm<AccessTable>({
+  const locationAccessMethods = useLocationAccessForm<Access>({
     defaultValues: undefined,
     mode: 'add',
   });
@@ -54,7 +56,7 @@ const LocationAccessForm = () => {
 
   return (
     <FormFieldset label={'Adgangsnøgler'} sx={{p: 1, width: '100%'}}>
-      <FormProvider {...locationAccessMethods}>
+      <Form formMethods={locationAccessMethods}>
         <Box display={'flex'} flexDirection={'column'}>
           <SimpleLocationAccessList
             values={
@@ -115,17 +117,28 @@ const LocationAccessForm = () => {
         </Box>
         {locationAccessDialogOpen && (
           <LocationAccessFormDialog
+            Form={Form}
             openDialog={locationAccessDialogOpen}
             setOpenDialog={(close) => {
               setLocationAccessDialogOpen(close);
             }}
             handleSave={(data) => {
-              onValidChange([...(location_access || []), data]);
+              const newAccess: AccessTable = {
+                contact_id: data.contact_id ?? '',
+                id: data.id ?? -1,
+                kommentar: data.kommentar ?? '',
+                koden: data.koden ?? '',
+                navn: data.navn ?? '',
+                placering: data.placering ?? '',
+                type: data.type as string,
+                contact_name: data.contact_name ?? '',
+              };
+              onValidChange([...(location_access || []), newAccess]);
               setLocationAccessDialogOpen(false);
             }}
           />
         )}
-      </FormProvider>
+      </Form>
     </FormFieldset>
   );
 };
