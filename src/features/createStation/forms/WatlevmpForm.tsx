@@ -1,6 +1,6 @@
 import {Grid2} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import dayjs from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
 import React, {useEffect, useState} from 'react';
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
@@ -29,11 +29,13 @@ type WatlevmpFormProps = {
 type Watlevmp = {
   description: string;
   elevation: number | null;
+  startdate?: Dayjs;
 };
 
 type ValidateWatlevmp = {
   description: string;
   elevation: number;
+  startdate?: Dayjs;
 };
 
 const Form = createTypedForm<Watlevmp>();
@@ -58,11 +60,13 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
         `/sensor_field/borehole/last_mp/${location_meta?.boreholeno}/${intakeno}`
       );
       return {
-        description: data.descriptio,
+        description: data.descriptio || 'Terrænkote',
         elevation: data.elevation,
         startdate: dayjs(data.startdate),
       } as LastJupiterMPData;
     },
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     enabled: !!location_meta?.boreholeno && intakeno !== undefined,
   });
 
@@ -73,30 +77,33 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
   const {watch, handleSubmit, reset} = watlevmpFormMethods;
 
   const elevation = watch('elevation');
+  const description = watch('description');
 
   useEffect(() => {
-    if (values !== undefined)
-      registerSubmitter(id, async () => {
-        let valid: boolean = false;
-        await handleSubmit((values) => {
-          setValues(values);
-          valid = true;
-        })();
-        return valid;
-      });
+    if (values !== undefined) onChangeCallback();
 
     return () => removeSubmitter(id);
   }, [handleSubmit]);
 
   useEffect(() => {
     if (watlevmp !== undefined && values !== undefined) {
-      if (Object.keys(values).length === 0)
+      if (Object.keys(values).length === 0) {
         reset({
           elevation: watlevmp.elevation,
           description: watlevmp.description,
+          ...(watlevmp.startdate ? {startdate: watlevmp.startdate} : {}),
         });
-      if (elevation === watlevmp.elevation) {
-        setHelperText(`${watlevmp?.startdate.isValid() ? 'Målepunkt' : 'Terrænkote'} fra Jupiter`);
+        onChangeCallback();
+      } else {
+        if (watlevmp.elevation === values.elevation && watlevmp.description === values.description)
+          reset((prev) => ({
+            ...prev,
+            ...(watlevmp.startdate ? {startdate: watlevmp.startdate} : {}),
+          }));
+        onChangeCallback();
+      }
+      if (elevation === watlevmp.elevation && description === watlevmp.description) {
+        setHelperText(`Målepunkt er hentet fra Jupiter`);
       } else {
         setHelperText('');
       }
@@ -108,6 +115,11 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
     registerSubmitter(id, async () => {
       let valid: boolean = false;
       await handleSubmit((values) => {
+        if (
+          values.description !== watlevmp?.description ||
+          values.elevation !== watlevmp?.elevation
+        )
+          delete values.startdate;
         setValues(values);
         valid = true;
       })();
@@ -126,10 +138,10 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
         type="number"
         onChangeCallback={(value) => {
           if (watlevmp?.elevation !== undefined) {
-            if (value !== watlevmp.elevation) {
+            if (value !== watlevmp.elevation && description === watlevmp.description) {
               setHelperText('');
             } else {
-              setHelperText('Målepuntsværdi eller terrænkote er hentet fra Jupiter');
+              setHelperText('Målepunkt er hentet fra Jupiter');
             }
           }
 
@@ -152,7 +164,24 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
                 helperText: error?.message,
               },
             }}
-            onChangeCallback={onChangeCallback}
+            onChangeCallback={(value) => {
+              if (watlevmp?.description !== undefined) {
+                if (value !== watlevmp.description && elevation === watlevmp.elevation) {
+                  setHelperText('');
+                } else {
+                  setHelperText('Målepunkt er hentet fra Jupiter');
+                }
+
+                if (value === watlevmp.description && elevation === watlevmp.elevation) {
+                  reset((prev) => ({
+                    ...prev,
+                    ...(watlevmp.startdate ? {startdate: watlevmp.startdate} : {}),
+                  }));
+                }
+              }
+
+              onChangeCallback();
+            }}
           />
         )}
       />

@@ -94,7 +94,6 @@ export const useUnit = () => {
       const {data} = await apiClient.get<Array<Unit>>(`/sensor_field/stamdata/available_units`);
       return data;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
   const post = useMutation({
     ...unitPostOptions,
