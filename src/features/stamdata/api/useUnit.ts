@@ -100,7 +100,7 @@ export const useUnit = () => {
     ...unitPostOptions,
     onSuccess: () => {},
     meta: {
-      invalidates: [queryKeys.AvailableUnits.all(), ['udstyr']],
+      invalidates: [queryKeys.AvailableUnits.all(), ['udstyr'], ['metadata']],
     },
   });
   return {get, post};
