@@ -24,7 +24,7 @@ import {useUnitMutations} from '~/features/stamdata/api/useUnit';
 import DeleteAlert from '~/components/DeleteAlert';
 
 interface UnitHistoryTableProps {
-  submit: (data: any) => void;
+  submit: (data: any) => Promise<void>;
   setSelectedUnit: (ugid: number | '') => void;
   ts_id: number;
   loc_id: number;
@@ -198,9 +198,14 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
                 !isDirty || !metadata?.unit_uuid || disabled || Object.keys(errors).length > 0
               }
               onClick={async () => {
-                await handleSubmit(submit, (e) => {
-                  console.log('Form submitted:', e);
-                })();
+                await handleSubmit(
+                  (data) => {
+                    submit(data);
+                  },
+                  (e) => {
+                    console.log('Form submitted:', e);
+                  }
+                )();
                 setSelectedUnit('');
                 table.setEditingRow(null);
               }}

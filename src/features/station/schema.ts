@@ -75,6 +75,7 @@ const watlevmpAddSchema = z.object({
   description: z.string({message: 'Beskrivelse skal udfyldes'}).min(3, {
     message: 'Beskrivelse skal være mindst 3 tegn',
   }),
+  startdate: zodDayjs('Startdato skal udfyldes').optional(),
 });
 
 const addUnitSchema = z.object({

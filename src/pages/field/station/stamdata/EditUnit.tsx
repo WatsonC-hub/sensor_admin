@@ -23,7 +23,7 @@ const EditUnit = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData();
   const {data: unit_history} = useUnitHistory();
-  const [selectedUnit, setSelectedUnit] = useState<number | ''>(unit_history?.[0]?.gid ?? '');
+  const [selectedGid, setSelectedGid] = useState<number | ''>(unit_history?.[0]?.gid ?? '');
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
   const {
@@ -37,7 +37,7 @@ const EditUnit = () => {
     unit_history && unit_history.length > 0 && moment(unit_history?.[0].slutdato) > moment();
   const fabText = mode ? 'Hjemtag udstyr' : 'Tilføj udstyr';
 
-  const unit = unit_history?.find((item) => item.gid == selectedUnit);
+  const unit = unit_history?.find((item) => item.gid == selectedGid);
 
   const {data: defaultValues} = editUnitSchema.safeParse({
     unit_uuid: unit?.uuid,
@@ -46,15 +46,17 @@ const EditUnit = () => {
   });
 
   const formMethods = useUnitForm<EditUnitType>({
-    mode: selectedUnit !== '' && !openAddUdstyr ? 'Edit' : 'Add',
+    schema: !openAddUdstyr ? editUnitSchema : undefined,
+    mode: selectedGid !== '' && !openAddUdstyr ? 'Edit' : 'Add',
     values: defaultValues,
   });
 
   const Submit = async (data: z.infer<typeof editUnitSchema>) => {
     const payload = {
-      gid: selectedUnit,
+      gid: selectedGid,
       ...data,
     };
+
     await editUnit(payload);
   };
 
@@ -71,7 +73,7 @@ const EditUnit = () => {
           <FormProvider {...formMethods}>
             <UnitHistoryTable
               submit={Submit}
-              setSelectedUnit={setSelectedUnit}
+              setSelectedUnit={setSelectedGid}
               ts_id={ts_id}
               loc_id={loc_id}
             />
