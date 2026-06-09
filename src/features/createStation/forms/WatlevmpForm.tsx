@@ -67,6 +67,7 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
     },
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    refetchOnMount: false,
     enabled: !!location_meta?.boreholeno && intakeno !== undefined,
   });
 
