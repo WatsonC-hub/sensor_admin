@@ -13,11 +13,13 @@ import {usePostHog} from 'posthog-js/react';
 import DisplayStateProvider from './helpers/DisplayStateProvider';
 import {useQuery} from '@tanstack/react-query';
 import CommandPalette from './features/commandpalette/components/CommandPalette';
+import {useNavigate} from 'react-router-dom';
+import {isProduction} from './consts';
 
 function App() {
   const posthog = usePostHog();
   // const user = useUser();
-
+  const navigate = useNavigate();
   const {data: user, isPending, isFetched, isError} = useQuery(userQueryOptions);
 
   useEffect(() => {
@@ -49,14 +51,9 @@ function App() {
   }
 
   if ((!user && isFetched) || isError) {
-    return (
-      <>
-        <NavBar>
-          <NavBar.Logo />
-        </NavBar>
-        <UnAuntenticatedApp />
-      </>
-    );
+    window.location.href = `${isProduction ? 'https://admin.watsonc.dk' : 'http://localhost:5173'}/login?redirect_uri=${encodeURIComponent(window.location.href)}`;
+
+    return null;
   }
   return (
     <ErrorBoundary
