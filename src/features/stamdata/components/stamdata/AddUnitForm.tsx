@@ -137,7 +137,9 @@ export default function AddUnitForm({
 
   const handleDateChange = (date: any) => {
     setUnitData((prev) => ({...prev, fra: dayjs(date)}));
-    if (mode === 'edit') setValue('startdate', dayjs(date), {shouldDirty: true});
+    if (mode === 'edit') {
+      setValue('startdate', dayjs(date), {shouldDirty: true});
+    }
   };
 
   const handleAddUnit = (payload: UnitPost) => {
@@ -280,7 +282,7 @@ export default function AddUnitForm({
                 label="Fra"
                 value={dayjs(unitData.fra)}
                 onChange={handleDateChange}
-                helperText={!unitData.fra.isValid() ? 'Fejl i dato' : ''}
+                helperText={errors.startdate ? errors.startdate.message : ''}
               />
             </DialogContent>
 
@@ -299,7 +301,11 @@ export default function AddUnitForm({
                 loading={isAddingUnit}
                 bttype="primary"
                 startIcon={mode === 'edit' ? <Save /> : undefined}
-                disabled={isSubmitting || Object.keys(errors).length > 0 || !isDirty}
+                disabled={
+                  isSubmitting ||
+                  !unitData.fra.isValid() ||
+                  (mode === 'edit' && (!isDirty || Object.keys(errors).length > 0))
+                }
               >
                 {mode === 'edit' ? 'Gem' : 'Tilføj'}
               </Button>
