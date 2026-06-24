@@ -44,6 +44,9 @@ const ContactForm = () => {
       }
     });
     return merged.sort((a, b) => {
+      if (a.id && !b.id) return -1;
+      if (!a.id && b.id) return 1;
+
       if (a.contact_role && b.contact_role) {
         return a.contact_role - b.contact_role;
       }

@@ -23,7 +23,9 @@ const SimpleContactList = ({values, onRemove}: Props) => {
               primaryText={contact.name}
               secondaryText={contact.email}
               onRemove={() => onRemove(contact.id)}
-              disabled={contact.contact_role === 1 && contact.contact_type === 'projekt'}
+              disabled={
+                contact.contact_role === 1 && contact.contact_type === 'projekt' && !!contact.id
+              }
             />
           );
         })}
