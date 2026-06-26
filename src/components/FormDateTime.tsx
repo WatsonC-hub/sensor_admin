@@ -40,10 +40,10 @@ const FormDateTime = <TFieldValues extends FieldValues>({
           <DateTimePicker
             {...pickerProps}
             label={label}
-            value={value ? dayjs(value) : null}
+            value={value}
             onChange={(newValue) => {
-              onChange(newValue);
-              if (onChangeCallback) onChangeCallback(newValue);
+              onChange(newValue ? dayjs(newValue) : null);
+              if (onChangeCallback) onChangeCallback(newValue ? dayjs(newValue) : null);
             }}
             reduceAnimations
             timeSteps={{

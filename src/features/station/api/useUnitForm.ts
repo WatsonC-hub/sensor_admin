@@ -7,7 +7,7 @@ type UseUnitFormProps<T> = {
   schema?: ZodTypeAny;
   defaultValues?: DefaultValues<T>;
   mode?: 'Add' | 'Edit';
-  values?: T;
+  values?: T | undefined;
 };
 
 function useUnitForm<T extends Record<string, any>>({
@@ -17,15 +17,7 @@ function useUnitForm<T extends Record<string, any>>({
   values,
 }: UseUnitFormProps<T>) {
   const formMethods = useForm({
-    resolver: (...opts) => {
-      if (schema) return zodResolver(schema)(...opts);
-
-      if (mode === 'Add') {
-        return zodResolver(addUnitSchema)(...opts);
-      }
-
-      return zodResolver(editAddUnitSchema)(...opts);
-    },
+    resolver: zodResolver(schema ?? (mode === 'Add' ? addUnitSchema : editAddUnitSchema)),
     defaultValues,
     mode: 'onTouched',
     values,

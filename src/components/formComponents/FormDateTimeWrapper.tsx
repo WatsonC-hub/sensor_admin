@@ -4,7 +4,7 @@ import {FieldValues, Path} from 'react-hook-form';
 import {FormContext} from './const';
 import FormDateTime, {FormDateTimeProps} from '../FormDateTime';
 
-type DatetimeProps<T extends FieldValues> = Omit<FormDateTimeProps<T>, 'name'> & {
+export type DatetimeProps<T extends FieldValues> = Omit<FormDateTimeProps<T>, 'name'> & {
   name: Path<T>;
   gridSizes?: GridBaseProps['size'];
 };

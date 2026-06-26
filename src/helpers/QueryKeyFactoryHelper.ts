@@ -33,6 +33,7 @@ export const queryKeys = {
     tilsyn: (ts_id: number | undefined) => ['service', 'udstyr', ts_id] as const,
     maalepunkt: (ts_id: number | undefined) => ['watlevmp', ts_id] as const,
     unitHistory: (ts_id: number | undefined) => ['udstyr', ts_id] as const,
+    unitHistory2: () => ['udstyr', 'unit_history'] as const,
     algorithms: (ts_id: number) => ['algorithms', ts_id] as const,
     certifyQa: (ts_id: number) => ['certifyQa', ts_id] as const,
     QAWithTsId: (ts_id: number) => ['qa_all', 'algorithms', ts_id] as const,

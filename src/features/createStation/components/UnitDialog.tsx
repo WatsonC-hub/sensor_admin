@@ -23,9 +23,10 @@ type UnitDialogProps = {
   open: boolean;
   onClose: () => void;
   onAddUnitList: (units: Unit[], startdate: Dayjs) => void;
+  tstype_id?: number;
 };
 
-const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
+const UnitDialog = ({open, onClose, onAddUnitList, tstype_id}: UnitDialogProps) => {
   const [selectedSensors, setSelectedSensors] = React.useState<Unit[]>([]);
   const [checkedSensors, setCheckedSensors] = useState<Unit[]>([]);
 
@@ -40,7 +41,6 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
 
   const {
     watch,
-    getValues,
     handleSubmit,
     formState: {errors},
   } = formMethods;
@@ -71,7 +71,7 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
         <DialogTitle>Tilføj tidsserier på baggrund af udstyr</DialogTitle>
         <DialogContent>
           <FormProvider {...formMethods}>
-            <StamdataUnit tstype_id={undefined}>
+            <StamdataUnit tstype_id={tstype_id}>
               <Grid2 container>
                 <StamdataUnit.CalypsoID onChangeCallback={handleCalypsoIdChange} />
                 {watchedCalypsoId && <StamdataUnit.StartDate required />}
