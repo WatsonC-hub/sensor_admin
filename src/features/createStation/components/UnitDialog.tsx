@@ -47,7 +47,7 @@ const UnitDialog = ({open, onClose, onAddUnitList, tstype_id}: UnitDialogProps) 
 
   const watchedCalypsoId = watch('calypso_id');
 
-  const handleCalypsoIdChange = (option: {id: string} | null) => {
+  const handleCalypsoIdChange = (option: {calypso_id: string} | null) => {
     if (option == null) {
       setCheckedSensors([]);
       setSelectedSensors([]);
@@ -55,7 +55,10 @@ const UnitDialog = ({open, onClose, onAddUnitList, tstype_id}: UnitDialogProps) 
     }
 
     const sensors = availableUnits
-      ?.filter((unit) => unit.calypso_id.toString() === option.id || unit.terminal_id === option.id)
+      ?.filter(
+        (unit) =>
+          unit.calypso_id.toString() === option.calypso_id || unit.terminal_id === option.calypso_id
+      )
       .sort((a, b) => a.signal_id - b.signal_id);
     setSelectedSensors(sensors || []);
     setCheckedSensors(sensors || []);
