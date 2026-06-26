@@ -89,14 +89,14 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
   });
 
   const {data: actions} = useQuery<Action[]>({
-    queryKey: queryKeys.actions(unit_history?.[0].uuid),
+    queryKey: queryKeys.actions(checkedSensors?.map((uh) => uh.uuid)),
     queryFn: async () => {
       const {data} = await apiClient.get(
-        `/sensor_field/stamdata/unit-actions/${unit_history?.[0].uuid}`
+        `/sensor_field/stamdata/unit-actions?${checkedSensors?.map((uh) => `uuid=${uh.uuid}`).join('&')}`
       );
       return data;
     },
-    enabled: superUser && unit_history !== undefined && !!unit_history[0]?.uuid,
+    enabled: superUser && checkedSensors !== undefined && checkedSensors.length > 0,
     staleTime: 1000 * 60 * 60,
   });
 
