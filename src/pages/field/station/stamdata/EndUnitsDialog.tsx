@@ -255,8 +255,6 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
             bttype="primary"
             disabled={checkedSensors.length === 0 || Object.keys(errors).length > 0}
             onClick={handleSubmit(async (data) => {
-              console.log(data);
-
               await takeHomeMutation({
                 enddate: data.enddate,
                 change_reason: data.change_reason,
