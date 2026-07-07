@@ -189,7 +189,7 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
                         <Box
                           display="flex"
                           alignItems="center"
-                          width={hasPrefix ? '25%' : singleSensorTimeseries ? 'auto' : '23%'}
+                          width={hasPrefix ? '28%' : singleSensorTimeseries ? 'auto' : '23%'}
                         >
                           <Typography textAlign={hasPrefix ? 'right' : 'left'} flexGrow={1}>
                             {timeseries.prefix
