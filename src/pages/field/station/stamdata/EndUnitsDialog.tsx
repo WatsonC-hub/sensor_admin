@@ -205,7 +205,7 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
           )}
         </FormProvider>
         <Box>
-          {checkedSensors && checkedSensors.length > 0 && (
+          {unit_history && unit_history.length > 0 && (
             <List>
               <Typography variant="subtitle1" sx={{mt: 2}}>
                 Tilgængelige tidsserier:
