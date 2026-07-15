@@ -29,7 +29,13 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
           const {sms} = cell.row.original;
           const smsString = `${sms.from?.slice(0, 5)} - ${sms.to?.slice(0, 5)}`;
           return (
-            <Box display="flex" flexDirection={'column'} alignItems="center">
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
               {!sms.selected ? (
                 <Typography variant="body2">-</Typography>
               ) : (
@@ -48,7 +54,13 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
           const {email} = cell.row.original;
           const emailString = `${email.from?.slice(0, 5)} - ${email.to?.slice(0, 5)}`;
           return (
-            <Box display="flex" flexDirection={'column'} alignItems="center">
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
               {!email.selected ? (
                 <Typography variant="body2">-</Typography>
               ) : (
@@ -67,7 +79,13 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
           const {call} = cell.row.original;
           const callString = `${call.from?.slice(0, 5)} - ${call.to?.slice(0, 5)}`;
           return (
-            <Box display="flex" flexDirection={'column'} alignItems="center">
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
               {!call.selected ? (
                 <Typography variant="body2">-</Typography>
               ) : (
@@ -129,7 +147,11 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
   );
 
   return (
-    <Box alignItems={'center'}>
+    <Box
+      sx={{
+        alignItems: 'center',
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

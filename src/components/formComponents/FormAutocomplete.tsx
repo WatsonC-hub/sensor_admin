@@ -1,4 +1,4 @@
-import {Grid2, GridBaseProps} from '@mui/material';
+import {Grid, GridBaseProps} from '@mui/material';
 import React from 'react';
 import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 import {FormContext} from './const';
@@ -32,7 +32,7 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
   const {gridSizes: contextGridSizes} = React.useContext(FormContext);
 
   return (
-    <Grid2 size={gridSizes ?? contextGridSizes}>
+    <Grid size={gridSizes ?? contextGridSizes}>
       <Controller
         name={name}
         control={control}
@@ -69,7 +69,7 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
           );
         }}
       />
-    </Grid2>
+    </Grid>
   );
 };
 

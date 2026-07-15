@@ -325,10 +325,13 @@ const Boreholeno = () => {
     <>
       {pageToShow !== stationPages.BILLEDER && pageToShow !== stationPages.STAMDATA && (
         <Box
-          display={'flex'}
-          flexDirection={'column'}
-          gap={5}
-          sx={{marginBottom: 0.5, marginTop: 0.2}}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 5,
+            marginBottom: 0.5,
+            marginTop: 0.2,
+          }}
         >
           <PlotGraph
             ourData={control ?? []}
@@ -337,7 +340,6 @@ const Boreholeno = () => {
           <Divider />
         </Box>
       )}
-
       {pageToShow === stationPages.PEJLING && (
         <StationPageBoxLayout>
           {showForm === true && (
@@ -379,6 +381,7 @@ const Boreholeno = () => {
       {pageToShow === stationPages.MAALEPUNKT && (
         <Box
           sx={{
+            gap: 1,
             display: 'flex',
             flexDirection: 'column',
             flexWrap: 'wrap',
@@ -386,7 +389,6 @@ const Boreholeno = () => {
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          gap={1}
         >
           <LastJupiterMP
             lastOurMP={watlevmp?.[0]}
@@ -425,9 +427,7 @@ const Boreholeno = () => {
           />
         </StationPageBoxLayout>
       )}
-
       {pageToShow === stationPages.STAMDATA && <BoreholeStamdata />}
-
       {pageToShow === stationPages.BILLEDER && (
         <StationPageBoxLayout>
           <Images

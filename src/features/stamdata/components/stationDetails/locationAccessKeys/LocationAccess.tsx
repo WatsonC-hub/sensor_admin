@@ -12,12 +12,15 @@ import LocationAccessTable from '~/features/stamdata/components/stationDetails/l
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useAppContext} from '~/state/contexts';
-import useLocationAccessForm from './api/useLocationAccessForm';
+import useLocationAccessForm, {locationAccessSchema} from './api/useLocationAccessForm';
 import {Access} from '~/types';
 import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
 import {createTypedForm} from '~/components/formComponents/Form';
+import {z} from 'zod';
 
-const Form = createTypedForm<Access>();
+export type FormOutput = z.output<typeof locationAccessSchema>;
+export type FormInput = z.input<typeof locationAccessSchema>;
+const Form = createTypedForm<FormInput, FormOutput>();
 
 const LocationAccess = () => {
   const {loc_id} = useAppContext(['loc_id']);
@@ -29,8 +32,8 @@ const LocationAccess = () => {
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
 
-  const formMethods = useLocationAccessForm<Access>({
-    mode: 'edit',
+  const formMethods = useLocationAccessForm<typeof locationAccessSchema>({
+    schema: locationAccessSchema,
     defaultValues: initialLocationAccessData,
   });
 
@@ -39,7 +42,7 @@ const LocationAccess = () => {
     post: {mutateAsync: postLocationAccessAsync},
   } = useLocationAccess(loc_id);
 
-  const handleSave: SubmitHandler<Access> = async (values) => {
+  const handleSave: SubmitHandler<FormOutput> = async (values) => {
     const test: Access = {
       id: values.id ?? -1,
       navn: values.navn,
@@ -74,7 +77,14 @@ const LocationAccess = () => {
             />
           )}
         </Form>
-        <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: 1,
+          }}
+        >
           <UpdateProgressButton
             loc_id={loc_id}
             ts_id={-1}

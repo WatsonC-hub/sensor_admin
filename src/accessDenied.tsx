@@ -13,17 +13,32 @@ type Props = {
 const AccessDenied = (props: Props) => {
   const {home} = useNavigationFunctions();
   return (
-    <Box display={'flex'} flexDirection={'column'} gap={2}>
-      <Typography variant="h3" height={'50%'} alignSelf={'center'} textAlign={'center'}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+      }}
+    >
+      <Typography
+        variant="h3"
+        sx={{
+          height: '50%',
+          alignSelf: 'center',
+          textAlign: 'center',
+        }}
+      >
         {props.message}
       </Typography>
       <Box
-        display={'flex'}
-        flexDirection={'row'}
-        gap={2}
-        justifyContent={'center'}
-        alignContent={'center'}
-        alignItems={'center'}
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 2,
+          justifyContent: 'center',
+          alignContent: 'center',
+          alignItems: 'center',
+        }}
       >
         <Typography variant="h5">Vil du gerne vende tilbage til forsiden?</Typography>
         <Button

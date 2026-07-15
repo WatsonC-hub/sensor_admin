@@ -1,4 +1,4 @@
-/* 
+/*
 Adding one to the month is mainly done because the method date.getMonth return a zero based value, which means it will show the previous month
 */
 

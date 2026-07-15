@@ -57,8 +57,15 @@ export default function StationContactInfo({
   }, [id]);
 
   return (
-    <Grid container spacing={1} my={1} alignItems="center">
-      <Grid item xs={12} sm={6}>
+    <Grid
+      container
+      spacing={1}
+      sx={{
+        my: 1,
+        alignItems: 'center',
+      }}
+    >
+      <Grid size={{xs: 12, sm: 6}}>
         <FormInput
           name="name"
           label="Navn"
@@ -68,7 +75,7 @@ export default function StationContactInfo({
           disabled={(!isEditing && isUser) || (isUser && isEditing)}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormInput
           name="email"
           label="Email"
@@ -93,7 +100,7 @@ export default function StationContactInfo({
           }}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormPhoneInput
           name="mobile"
           control={control}
@@ -121,7 +128,7 @@ export default function StationContactInfo({
           }}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormInput
           name="contact_role"
           label="Rolle"
@@ -151,7 +158,7 @@ export default function StationContactInfo({
           }}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormInput
           name="contact_type"
           label="Tilknyt til"
@@ -163,7 +170,7 @@ export default function StationContactInfo({
           fullWidth
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <Controller
           control={control}
           name="notify_required"
@@ -184,7 +191,7 @@ export default function StationContactInfo({
           )}
         />
       </Grid>
-      <Grid item xs={12} sm={12}>
+      <Grid size={{xs: 12, sm: 12}}>
         <FormInput
           name="comment"
           label="Kommentar"

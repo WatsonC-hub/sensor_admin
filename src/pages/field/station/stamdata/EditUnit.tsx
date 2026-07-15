@@ -14,7 +14,7 @@ import {BuildRounded} from '@mui/icons-material';
 import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import UnitEndDateDialog from './UnitEndDialog';
 import useUnitForm from '~/features/station/api/useUnitForm';
-import {EditUnit as EditUnitType, editUnitSchema} from '~/features/station/schema';
+import {EditUnit as EditUnitType, addUnitSchema, editUnitSchema} from '~/features/station/schema';
 
 import UnitHistoryTable from './UnitHistoryTable';
 import {useUnitMutations} from '~/features/stamdata/api/useUnit';
@@ -45,9 +45,8 @@ const EditUnit = () => {
     enddate: unit?.slutdato,
   });
 
-  const formMethods = useUnitForm<EditUnitType>({
-    schema: !openAddUdstyr ? editUnitSchema : undefined,
-    mode: selectedGid !== '' && !openAddUdstyr ? 'Edit' : 'Add',
+  const formMethods = useUnitForm<typeof editUnitSchema | typeof addUnitSchema>({
+    schema: !openAddUdstyr ? editUnitSchema : addUnitSchema,
     values: defaultValues,
   });
 
@@ -64,8 +63,8 @@ const EditUnit = () => {
     <>
       <StationPageBoxLayout>
         <Box
-          maxWidth={1080}
           sx={{
+            maxWidth: 1080,
             borderRadius: 4,
             padding: '16px',
           }}
@@ -92,7 +91,12 @@ const EditUnit = () => {
             />
           </FormProvider>
         </Box>
-        <Box display="flex" justifyContent={'flex-end'}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
           <FabWrapper
             icon={<BuildRounded />}
             text={fabText}

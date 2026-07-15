@@ -50,13 +50,15 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
   if (isMobile && arrayedChildren.length > 0) {
     return (
       <Box
-        zIndex={1001}
-        height="100%"
         sx={{
+          zIndex: 1001,
+          height: '100%',
           width: '100%',
           pointerEvents: 'none',
+
           // ml: 'auto',
           display: 'flex',
+
           flexDirection: 'column',
           position: 'absolute',
           pt: 1,
@@ -72,9 +74,9 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
   if (fullScreenWindow) {
     return (
       <Box
-        zIndex={1001}
-        height="100%"
         sx={{
+          zIndex: 1001,
+          height: '100%',
           width: '100%',
           pointerEvents: 'none',
           display: 'flex',
@@ -138,10 +140,11 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
 
   return (
     // <WindowContext.Provider value={{columnWidth: minColumnWidth}}>
+    // </WindowContext.Provider>
     <Box
-      zIndex={1001}
-      height="100%"
       sx={{
+        zIndex: 1001,
+        height: '100%',
         width: '100%',
         pointerEvents: 'none',
         display: 'flex',
@@ -153,7 +156,6 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
     >
       {shownChildren}
     </Box>
-    // </WindowContext.Provider>
   );
 };
 
@@ -238,7 +240,14 @@ const Window = ({
           </IconButton>
         )}
       </Box>
-      <Box display="flex" height="100%" flexDirection={'column'} overflow="hidden">
+      <Box
+        sx={{
+          display: 'flex',
+          height: '100%',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+      >
         {children}
       </Box>
     </Box>

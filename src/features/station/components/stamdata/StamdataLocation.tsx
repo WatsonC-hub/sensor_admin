@@ -34,13 +34,13 @@ type locationType = {
 
 const LocationContext = React.createContext(
   {} as {
-    refetchDTM: (options?: RefetchOptions | undefined) => void;
+    refetchDTM: (options?: RefetchOptions) => void;
   }
 );
 
 const StamdataLocation = ({children}: Props) => {
   const {setValue, watch} = useFormContext<
-    DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
 
   const x = watch('x');
@@ -91,9 +91,7 @@ const StamdataLocation = ({children}: Props) => {
 
 const LoctypeSelect = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
@@ -129,15 +127,11 @@ const LoctypeSelect = (
 
 const X = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
-  const {watch} = useFormContext<
-    DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-  >();
+  const {watch} = useFormContext<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>();
   const {refetchDTM} = React.useContext(LocationContext);
   const watchTerrainqual = watch('terrainqual');
 
@@ -165,15 +159,11 @@ const X = (
 
 const Y = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
-  const {watch} = useFormContext<
-    DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-  >();
+  const {watch} = useFormContext<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>();
   const {refetchDTM} = React.useContext(LocationContext);
   const watchTerrainqual = watch('terrainqual');
 
@@ -201,9 +191,7 @@ const Y = (
 
 const TerrainQuote = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
@@ -230,9 +218,7 @@ const TerrainQuote = (
 
 const TerrainQuality = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
@@ -259,9 +245,7 @@ const TerrainQuality = (
 
 const Locname = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
@@ -436,9 +420,7 @@ const BoreholeSuffix = (
 
 const Groups = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
@@ -462,15 +444,13 @@ const Groups = (
 
 const InitialProjectNo = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
   const {superUser} = useUser();
   const {control} = useFormContext<
-    DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
   const {loc_id} = useAppContext(undefined, ['loc_id']);
 
@@ -503,9 +483,7 @@ const InitialProjectNo = (
 
 const Description = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {

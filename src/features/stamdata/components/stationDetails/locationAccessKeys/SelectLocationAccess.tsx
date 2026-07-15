@@ -1,6 +1,8 @@
 import {Typography} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
+import {z} from 'zod';
+import {locationAccessSchema} from './api/useLocationAccessForm';
 
 import {TypedFormComponent} from '~/components/formComponents/Form';
 import {useSearchLocationAccess} from '~/features/stamdata/api/useLocationAccess';
@@ -12,7 +14,10 @@ type Props = {
   showLocationAccessForm?: boolean;
   setShowLocationAccessForm: (showLocationAccessForm: boolean) => void;
   disabled?: boolean;
-  Form: TypedFormComponent<Access, Access>;
+  Form: TypedFormComponent<
+    z.input<typeof locationAccessSchema>,
+    z.output<typeof locationAccessSchema>
+  >;
 };
 
 const SelectLocationAccess = ({

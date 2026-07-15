@@ -53,8 +53,12 @@ const LogOut = ({children}: {children?: ReactNode}) => {
   return (
     <Box
       onClick={handleLogout}
-      width={'100%'}
-      sx={{cursor: 'pointer', display: 'flex', alignItems: 'center'}}
+      sx={{
+        width: '100%',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+      }}
     >
       {children}
     </Box>
@@ -335,7 +339,13 @@ const OwnTaskList = () => {
       <Badge
         badgeContent={
           task_list && task_list.length > 0 ? (
-            <Typography variant="caption" color="white" pr={0.2}>
+            <Typography
+              variant="caption"
+              color="white"
+              sx={{
+                pr: 0.2,
+              }}
+            >
               {task_list.length}
             </Typography>
           ) : null
@@ -432,7 +442,13 @@ const ScannerAsTitle = () => {
 const Title = ({title}: {title: string}) => {
   const {isMobile} = useBreakpoints();
   return (
-    <Box display={'flex'} justifyContent="center" alignContent="center">
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignContent: 'center',
+      }}
+    >
       <Typography sx={{}} variant={isMobile ? 'h6' : 'h4'}>
         {title}
       </Typography>

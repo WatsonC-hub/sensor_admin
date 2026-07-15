@@ -20,7 +20,13 @@ export default function BoreholeRouter() {
     <>
       <CssBaseline />
       <NavBar>
-        <Box display="block" flexGrow={1} overflow="hidden">
+        <Box
+          sx={{
+            display: 'block',
+            flexGrow: 1,
+            overflow: 'hidden',
+          }}
+        >
           <MinimalSelectBorehole />
         </Box>
         {!isMobile && (
@@ -41,7 +47,6 @@ export default function BoreholeRouter() {
           }}
         />
       </NavBar>
-
       <Box
         component="main"
         style={{
@@ -53,12 +58,14 @@ export default function BoreholeRouter() {
         }}
       >
         <Box
-          display="flex"
-          flexGrow={1}
-          minWidth={0}
-          gap={1}
-          flexDirection={'column'}
-          overflow="auto"
+          sx={{
+            display: 'flex',
+            flexGrow: 1,
+            minWidth: 0,
+            gap: 1,
+            flexDirection: 'column',
+            overflow: 'auto',
+          }}
         >
           <Boreholeno />
         </Box>

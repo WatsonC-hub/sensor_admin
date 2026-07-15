@@ -18,16 +18,30 @@ const LocationListFilter = () => {
   ];
 
   return (
-    <Box p={1} display={'flex'} flexDirection={'column'} gap={1}>
-      <Typography variant={'body2'} fontWeight={'bold'}>
+    <Box
+      sx={{
+        p: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1,
+      }}
+    >
+      <Typography
+        variant={'body2'}
+        sx={{
+          fontWeight: 'bold',
+        }}
+      >
         Filtrering
       </Typography>
       <Box
-        display={'flex'}
-        flexDirection={'row'}
-        alignItems={'center'}
-        justifyContent={'space-between'}
-        gap={1}
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 1,
+        }}
       >
         <TooltipWrapper description="Filtrér listen til at vise lokationer med opgaver tildelt en bestemt bruger.">
           <ExtendedAutocomplete<TaskUser>
@@ -46,7 +60,12 @@ const LocationListFilter = () => {
             renderOption={(props, option) => {
               return (
                 <li {...props} key={option.id}>
-                  <Box display={'flex'} flexDirection={'row'}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                    }}
+                  >
                     <Typography variant="body2">{option.display_name}</Typography>
                   </Box>
                 </li>

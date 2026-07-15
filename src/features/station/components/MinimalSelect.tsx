@@ -28,14 +28,6 @@ const MinimalSelect = () => {
   };
   const handleOpen = () => setIsOpen(true);
 
-  const menuProps = {
-    PaperProps: {
-      sx: {
-        backgroundColor: 'primary.main',
-      },
-    },
-  };
-
   useEffect(() => {
     if (ts_id) {
       setIsOpen(false);
@@ -54,7 +46,15 @@ const MinimalSelect = () => {
     <>
       {metadata.timeseries.length > 1 ? (
         <Select
-          MenuProps={menuProps}
+          MenuProps={{
+            slotProps: {
+              paper: {
+                sx: {
+                  backgroundColor: 'primary.main',
+                },
+              },
+            },
+          }}
           value={hasTimeseries && ts_id ? ts_id.toString() : ''}
           onChange={handleChange}
           open={isOpen}
@@ -100,7 +100,12 @@ const MinimalSelect = () => {
           ))}
         </Select>
       ) : (
-        <Typography color="white" fontSize={14}>
+        <Typography
+          color="white"
+          sx={{
+            fontSize: 14,
+          }}
+        >
           {(metadata.timeseries[0].prefix ? metadata.timeseries[0].prefix + ' - ' : '') +
             ' ' +
             metadata.timeseries[0].tstype_name}

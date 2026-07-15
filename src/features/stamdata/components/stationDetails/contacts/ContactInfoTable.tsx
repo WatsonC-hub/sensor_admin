@@ -230,7 +230,13 @@ const ContactInfoTable = ({loc_id}: Props) => {
     },
     renderEditRowDialogContent: () => {
       return (
-        <Box py={4} px={2} boxShadow={6}>
+        <Box
+          sx={{
+            py: 4,
+            px: 2,
+            boxShadow: 6,
+          }}
+        >
           <StationContactInfo isEditing={true} isUser={true} tableModal={true} />
         </Box>
       );

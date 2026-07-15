@@ -122,9 +122,22 @@ export default function PejlingFormBorehole({
           {formData.gid !== -1 ? 'Opdater kontrol' : 'Indberet kontrol'}
         </Typography>
 
-        <Grid container spacing={3} alignItems="center" justifyContent="center">
+        <Grid
+          container
+          spacing={3}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           {mpData && mpData.length < 1 ? (
-            <Grid item xs={12} sm={12} display="flex" justifyContent="center">
+            <Grid
+              size={{xs: 12, sm: 12}}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
               <Alert
                 severity="error"
                 sx={{
@@ -141,7 +154,7 @@ export default function PejlingFormBorehole({
             </Grid>
           ) : (
             <>
-              <Grid item xs={12} sm={12}>
+              <Grid size={{xs: 12, sm: 12}}>
                 <Box
                   sx={{
                     justifyContent: 'center',
@@ -195,7 +208,7 @@ export default function PejlingFormBorehole({
                   </Tooltip>
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={7}>
+              <Grid size={{xs: 12, sm: 7}}>
                 <TextField
                   sx={{
                     '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
@@ -210,10 +223,12 @@ export default function PejlingFormBorehole({
                       Pejling (nedstik)
                     </Typography>
                   }
-                  InputProps={{
-                    endAdornment: <InputAdornment position="start">m</InputAdornment>,
+                  slotProps={{
+                    input: {
+                      endAdornment: <InputAdornment position="start">m</InputAdornment>,
+                    },
+                    inputLabel: {shrink: true},
                   }}
-                  InputLabelProps={{shrink: true}}
                   value={formData.disttowatertable_m}
                   onChange={(e) => changeFormData('disttowatertable_m', e.target.value)}
                   disabled={
@@ -221,7 +236,12 @@ export default function PejlingFormBorehole({
                   }
                 />
               </Grid>
-              <Grid item xs={12} sm={7} mt={-1}>
+              <Grid
+                size={{xs: 12, sm: 7}}
+                sx={{
+                  mt: -1,
+                }}
+              >
                 <Alert
                   severity="info"
                   sx={{
@@ -239,7 +259,7 @@ export default function PejlingFormBorehole({
                   </Typography>
                 </Alert>
               </Grid>
-              <Grid item xs={12} sm={12}>
+              <Grid size={{xs: 12, sm: 12}}>
                 <OwnDatePicker
                   sx={{
                     '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
@@ -303,7 +323,7 @@ export default function PejlingFormBorehole({
                   </>
                 )}
               </Grid>
-              <Grid item xs={12} sm={12}>
+              <Grid size={{xs: 12, sm: 12}}>
                 <TextField
                   sx={{
                     '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
@@ -321,13 +341,21 @@ export default function PejlingFormBorehole({
                   variant="outlined"
                   multiline
                   rows={4}
-                  InputLabelProps={{shrink: true}}
+                  slotProps={{
+                    inputLabel: {shrink: true},
+                  }}
                   fullWidth
                   onChange={(e) => changeFormData('comment', e.target.value)}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
-                <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+              <Grid size={{xs: 12, sm: 4}}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    gap: 1,
+                    justifyContent: {xs: 'flex-end', sm: 'center'},
+                  }}
+                >
                   <Button bttype="tertiary" onClick={resetFormData}>
                     Annuller
                   </Button>

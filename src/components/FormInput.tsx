@@ -70,8 +70,7 @@ const FormInput = <TFieldValues extends FieldValues>({
         return (
           <Wrapper
             description={infoText}
-            width={fullWidth ? '100%' : undefined}
-            sx={{position: 'relative'}}
+            sx={{position: 'relative', width: fullWidth ? '100%' : undefined}}
           >
             <TextField
               {...otherProps}

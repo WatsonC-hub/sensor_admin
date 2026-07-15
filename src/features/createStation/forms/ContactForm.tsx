@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import useContactForm from '~/features/stamdata/components/stationDetails/contacts/api/useContactForm';
+import useContactForm, {
+  contact_info_table,
+} from '~/features/stamdata/components/stationDetails/contacts/api/useContactForm';
 import {ContactTable} from '~/types';
 import {FormProvider} from 'react-hook-form';
 import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddContactInfo';
@@ -8,7 +10,7 @@ import {setRoleName} from '~/features/stamdata/components/stationDetails/contact
 import SimpleContactList from '../helper/SimpleContactList';
 import {Box} from '@mui/material';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {AddCircleOutline, DoNotDisturb, Edit} from '@mui/icons-material';
+import {AddCircleOutlined, DoNotDisturb, Edit} from '@mui/icons-material';
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -54,9 +56,9 @@ const ContactForm = () => {
     });
   }, [data, contacts]);
 
-  const contactInfoMethods = useContactForm<ContactTable>({
+  const contactInfoMethods = useContactForm<typeof contact_info_table>({
+    schema: contact_info_table,
     defaultValues: undefined,
-    mode: 'add',
   });
 
   const onValidChange = (value: ContactTable[] | undefined) => {
@@ -83,18 +85,25 @@ const ContactForm = () => {
   return (
     <FormFieldset label={'Kontakter'} sx={{p: 1, width: '100%'}}>
       <FormProvider {...contactInfoMethods}>
-        <Box display={'flex'} flexDirection={'column'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <SimpleContactList values={mergedContacts} onRemove={removeContact} />
 
           <Box
-            display="flex"
-            flexDirection={isMobile ? 'column' : 'row'}
-            justifyContent={'flex-start'}
-            gap={1}
+            sx={{
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              justifyContent: 'flex-start',
+              gap: 1,
+            }}
           >
             <Button
               bttype="primary"
-              startIcon={<AddCircleOutline />}
+              startIcon={<AddCircleOutlined />}
               sx={{
                 ...button_sx(contacts !== undefined && contacts.length > 0),
                 alignSelf: isMobile ? 'start' : 'center',

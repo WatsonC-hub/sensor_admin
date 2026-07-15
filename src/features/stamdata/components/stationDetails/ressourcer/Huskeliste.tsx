@@ -7,36 +7,39 @@ import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
 import Autocomplete from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/Autocomplete';
 import TransferList from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/TransferList';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {Ressourcer} from './multiselect/types';
 import {z} from 'zod';
 import {Box} from '@mui/material';
 
-const ressourcer = z
-  .array(
-    z.object({
-      id: z.number(),
-      navn: z.string(),
-      kategori: z.string(),
-      tstype_id: z
-        .number()
-        .array()
-        .nullable()
-        .transform((array) => array ?? []),
-      loctype_id: z
-        .number()
-        .array()
-        .nullable()
-        .transform((array) => array ?? []),
-      forudvalgt: z.boolean(),
-    })
-  )
-  .nullish()
-  .transform((ressourcer) => ressourcer ?? []);
+const ressourcer = z.object({
+  ressourcer: z
+    .array(
+      z.object({
+        id: z.number(),
+        navn: z.string(),
+        kategori: z.string(),
+        tstype_id: z
+          .number()
+          .array()
+          .nullable()
+          .transform((array) => array ?? []),
+        loctype_id: z
+          .number()
+          .array()
+          .nullable()
+          .transform((array) => array ?? []),
+        forudvalgt: z.boolean(),
+      })
+    )
+    .nullish()
+    .transform((ressourcer) => ressourcer ?? []),
+});
 
 type HuskelisteProps = {
   loc_id?: number;
-  onValidate?: (ressourcer: Ressourcer[]) => void;
+  onValidate?: (ressourcer: RessourceInput) => void;
 };
+
+type RessourceInput = z.input<typeof ressourcer.shape.ressourcer>;
 
 const Huskeliste = ({loc_id, onValidate}: HuskelisteProps) => {
   const {isMobile} = useBreakpoints();
@@ -46,14 +49,11 @@ const Huskeliste = ({loc_id, onValidate}: HuskelisteProps) => {
 
   const {location_permissions} = usePermissions(loc_id);
 
-  const schema = ressourcer;
-  const result = schema.safeParse(related);
-  const formMethods = useForm<{ressourcer: Ressourcer[]}>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      ressourcer: result.success ? result.data : [],
-    },
-    values: {ressourcer: result.data ?? []},
+  const result = ressourcer.safeParse(related);
+  const formMethods = useForm<z.input<typeof ressourcer>>({
+    resolver: zodResolver(ressourcer),
+    defaultValues: result.data,
+    values: result.data,
     mode: 'onSubmit',
   });
 
@@ -68,7 +68,14 @@ const Huskeliste = ({loc_id, onValidate}: HuskelisteProps) => {
         disabled={location_permissions !== 'edit'}
         render={({field: {onChange, value}}) => {
           return (
-            <Box display={'flex'} flexGrow={1} minWidth={275} maxWidth={1080}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexGrow: 1,
+                minWidth: 275,
+                maxWidth: 1080,
+              }}
+            >
               {!isMobile ? (
                 <TransferList
                   loc_id={loc_id}

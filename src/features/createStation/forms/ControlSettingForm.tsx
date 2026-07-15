@@ -1,4 +1,4 @@
-import {Box, Grid2} from '@mui/material';
+import {Box, Grid} from '@mui/material';
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
 import useControlSettingsForm from '~/features/configuration/api/useControlSettingsForm';
@@ -17,7 +17,7 @@ type EmptyObject = Record<string, never>;
 type Props = {
   id: string;
   values: ControlSettingsFormState | EmptyObject | undefined;
-  setValues: (values: ControlSettingsFormState | EmptyObject) => void;
+  setValues: (values: ControlSettingsFormState) => void;
 };
 
 type ValidateControlSettings = {
@@ -37,10 +37,7 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
     ]
   );
 
-  const controlSettingsFormMethods = useControlSettingsForm<
-    ValidateControlSettings,
-    ControlSettingsFormState
-  >({
+  const controlSettingsFormMethods = useControlSettingsForm({
     defaultValues: values,
   });
 
@@ -78,14 +75,23 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
   };
 
   return (
-    <Grid2
+    <Grid
       container
       size={12}
-      display="flex"
-      direction={isMobile ? 'column' : 'row'}
-      alignItems="center"
+      sx={{
+        direction: isMobile ? 'column' : 'row',
+        display: 'flex',
+        alignItems: 'center',
+      }}
     >
-      <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} alignItems={'center'} gap={1}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: 'center',
+          gap: 1,
+        }}
+      >
         <FormProvider {...controlSettingsFormMethods}>
           <ControlSettings>
             <CreateControlSettings
@@ -108,11 +114,13 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
             />
           </ControlSettings>
         </FormProvider>
-        <Grid2
+        <Grid
           size={isMobile ? 12 : 3}
-          alignContent={'center'}
-          display="flex"
-          justifyContent={isMobile ? 'end' : 'start'}
+          sx={{
+            alignContent: 'center',
+            display: 'flex',
+            justifyContent: isMobile ? 'end' : 'start',
+          }}
         >
           <Button
             bttype="primary"
@@ -142,9 +150,9 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
           >
             Registrer senere
           </Button>
-        </Grid2>
+        </Grid>
       </Box>
-    </Grid2>
+    </Grid>
   );
 };
 

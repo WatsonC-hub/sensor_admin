@@ -29,20 +29,20 @@ const ExcludeRow = ({data, index, isWithYValues = false, onClose}: ExcludeRowPro
     comment: z.string().min(0).max(255, {message: 'Maks 255 tegn'}),
     min_value: isWithYValues
       ? z.number({
-          invalid_type_error: 'Feltet må ikke være tom',
+          message: 'Feltet må ikke være tom',
         })
       : z
           .number({
-            invalid_type_error: 'Feltet må ikke være tom',
+            message: 'Feltet må ikke være tom',
           })
           .nullable(),
     max_value: isWithYValues
       ? z.number({
-          invalid_type_error: 'Feltet må ikke være tom',
+          message: 'Feltet må ikke være tom',
         })
       : z
           .number({
-            invalid_type_error: 'Feltet må ikke være tom',
+            message: 'Feltet må ikke være tom',
           })
           .nullable(),
   });
@@ -62,20 +62,23 @@ const ExcludeRow = ({data, index, isWithYValues = false, onClose}: ExcludeRowPro
 
   const submit = (values: z.infer<typeof schema>) => {
     if (Object.keys(dirtyFields).length > 0) {
-      put.mutate({
-        path: `${data.ts_id}/${data.gid}`,
-        data: {
-          startdate: values.startdate,
-          enddate: values.enddate,
-          comment: values.comment,
-          min_value: values.min_value,
-          max_value: values.max_value,
+      put.mutate(
+        {
+          path: `${data.ts_id}/${data.gid}`,
+          data: {
+            startdate: values.startdate,
+            enddate: values.enddate,
+            comment: values.comment,
+            min_value: values.min_value,
+            max_value: values.max_value,
+          },
         },
-      }, {
-        onSuccess: () => {
-          onClose();
+        {
+          onSuccess: () => {
+            onClose();
+          },
         }
-      });
+      );
     }
   };
 
@@ -83,21 +86,35 @@ const ExcludeRow = ({data, index, isWithYValues = false, onClose}: ExcludeRowPro
     <FormProvider {...formMethods}>
       <Box
         key={index}
-        display="flex"
-        flexDirection={'row'}
-        alignItems="center"
-        borderRadius={1}
-        borderColor="grey.500"
-        p={1}
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          borderRadius: 1,
+          borderColor: 'grey.500',
+          p: 1,
+        }}
       >
-        <Grid container gap={1}>
-          <Grid item xs={12} sm={12} alignSelf={'center'}>
+        <Grid
+          container
+          sx={{
+            gap: 1,
+          }}
+        >
+          <Grid
+            size={{xs: 12, sm: 12}}
+            sx={{
+              alignSelf: 'center',
+            }}
+          >
             <Box
-              alignItems={'center'}
-              alignSelf={'center'}
-              display="flex"
-              flexDirection={isLaptop || isTouch ? 'column' : 'row'}
-              gap={1}
+              sx={{
+                alignItems: 'center',
+                alignSelf: 'center',
+                display: 'flex',
+                flexDirection: isLaptop || isTouch ? 'column' : 'row',
+                gap: 1,
+              }}
             >
               <FormDateTime name="startdate" label="Fra" required />
               <FormDateTime name="enddate" label="Til" required />
@@ -105,8 +122,15 @@ const ExcludeRow = ({data, index, isWithYValues = false, onClose}: ExcludeRowPro
           </Grid>
           {isWithYValues && (
             <>
-              <Grid item xs={12} sm={12}>
-                <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
+              <Grid size={{xs: 12, sm: 12}}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: 1,
+                    alignItems: 'center',
+                  }}
+                >
                   <FormInput
                     name="min_value"
                     label="Min værdi"
@@ -129,18 +153,25 @@ const ExcludeRow = ({data, index, isWithYValues = false, onClose}: ExcludeRowPro
               </Grid>
             </>
           )}
-          <Grid item xs={12} sm={12}>
+          <Grid size={{xs: 12, sm: 12}}>
             <FormInput name="comment" label="Kommentar" multiline rows={2} />
           </Grid>
           <Grid
-            item
-            xs={12}
-            sm={12}
-            display={'flex'}
-            flexDirection={'column'}
-            justifyContent={'end'}
+            size={{xs: 12, sm: 12}}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'end',
+            }}
           >
-            <Box display="flex" flexDirection="row" alignSelf={'end'} gap={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignSelf: 'end',
+                gap: 1,
+              }}
+            >
               <Button
                 bttype="tertiary"
                 size="small"

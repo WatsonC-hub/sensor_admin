@@ -332,7 +332,13 @@ const StationDrawer = () => {
           }}
         >
           <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
-          <Box alignItems={'center'} display="flex" gap={1}>
+          <Box
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+              gap: 1,
+            }}
+          >
             {category.settings &&
               category.settings
                 .filter((setting) => setting?.disabled == false || setting?.disabled == undefined)
@@ -356,7 +362,6 @@ const StationDrawer = () => {
                 ))}
           </Box>
         </ListItem>
-
         {category.items
           .filter((item) => item.disabled == undefined || !item.disabled)
           .map((item) => {
@@ -467,10 +472,22 @@ const Layout = ({children, variant}: LayoutProps) => {
         },
       }}
     >
-      <Box pt={2} px={1}>
+      <Box
+        sx={{
+          pt: 2,
+          px: 1,
+        }}
+      >
         {!isTouch && <MinimalSelect />}
         {isTouch && (
-          <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
+          <Typography
+            color="white"
+            sx={{
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              whiteSpace: 'wrap',
+            }}
+          >
             {locationdata?.loc_name}
           </Typography>
         )}

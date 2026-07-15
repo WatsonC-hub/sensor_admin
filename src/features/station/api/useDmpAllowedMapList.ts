@@ -26,7 +26,7 @@ export const useDMPAllowedList = () => {
   return data;
 };
 
-const useDMPAllowed = (ts_id?: number | undefined) => {
+const useDMPAllowed = (ts_id?: number) => {
   const {data: metadata} = useTimeseriesData(ts_id);
 
   const {data: dmpAllowedMap} = useQuery(getDmpAllowedMapList);

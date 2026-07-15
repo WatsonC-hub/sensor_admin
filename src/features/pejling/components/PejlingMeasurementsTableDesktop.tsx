@@ -12,7 +12,7 @@ import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import { useAppContext } from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
 interface Props {
@@ -20,10 +20,7 @@ interface Props {
   disabled: boolean;
 }
 
-export default function PejlingMeasurementsTableDesktop({
-  handleEdit,
-  disabled,
-}: Props) {
+export default function PejlingMeasurementsTableDesktop({handleEdit, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const {ts_id} = useAppContext(['ts_id']);
   const [mpId, setMpId] = useState(-1);
@@ -49,7 +46,7 @@ export default function PejlingMeasurementsTableDesktop({
       onSuccess: () => {
         setDialogOpen(false);
       },
-      });
+    });
   };
 
   const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(

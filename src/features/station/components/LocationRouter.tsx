@@ -50,7 +50,12 @@ export default function LocationRouter() {
       {metadata != undefined &&
         metadata.timeseries.length === 0 &&
         pageToShow === stationPages.PEJLING && (
-          <Box maxWidth={400} mx={'auto'}>
+          <Box
+            sx={{
+              maxWidth: 400,
+              mx: 'auto',
+            }}
+          >
             <StationPageBoxLayout>
               <Alert
                 severity={'info'}
@@ -119,15 +124,35 @@ const Layout = ({children}: LayoutProps) => {
       <CssBaseline />
       <NavBar>
         {isTouch && <NavBar.StationDrawerMenu />}
-        <Box display="block" flexGrow={1} overflow="hidden">
+        <Box
+          sx={{
+            display: 'block',
+            flexGrow: 1,
+            overflow: 'hidden',
+          }}
+        >
           {!isTouch && (
-            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+            <Typography
+              sx={{
+                pl: 1.7,
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {metadata?.loc_name}
             </Typography>
           )}
           {isTouch && <MinimalSelect />}
         </Box>
-        <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexShrink: 0,
+          }}
+        >
           {metadata?.projectno && (
             <Tooltip title="Vis projektside" arrow>
               <IconButton
@@ -160,7 +185,6 @@ const Layout = ({children}: LayoutProps) => {
           />
         </Box>
       </NavBar>
-
       <Box
         component="main"
         sx={{
@@ -174,12 +198,14 @@ const Layout = ({children}: LayoutProps) => {
         <Box
           key={'main_content'}
           id={'main_content'}
-          display="flex"
-          width={'100%'}
-          flexGrow={1}
-          gap={1}
-          flexDirection={'column'}
-          overflow="auto"
+          sx={{
+            display: 'flex',
+            width: '100%',
+            flexGrow: 1,
+            gap: 1,
+            flexDirection: 'column',
+            overflow: 'auto',
+          }}
         >
           {children}
           {isMobile && <ActionArea />}

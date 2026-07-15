@@ -32,7 +32,13 @@ const EditableField = ({
   };
 
   return (
-    <Box display="flex" alignItems="center" gap={1}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+      }}
+    >
       <IconButton
         onClick={() => {
           if (editing) {
@@ -46,11 +52,12 @@ const EditableField = ({
       >
         {editing ? <CheckIcon fontSize="small" /> : <EditIcon fontSize="small" />}
       </IconButton>
-
       {!editing ? (
         <Typography
-          fontWeight={variant === 'title' ? 'bold' : undefined}
           color={editing ? 'textPrimary' : 'textSecondary'}
+          sx={{
+            fontWeight: variant === 'title' ? 'bold' : undefined,
+          }}
         >
           {label || placeholder}
         </Typography>

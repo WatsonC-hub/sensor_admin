@@ -1,4 +1,4 @@
-import {Grid2} from '@mui/material';
+import {Grid} from '@mui/material';
 import React from 'react';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useAppContext} from '~/state/contexts';
@@ -15,22 +15,27 @@ const DefaultTimeseriesEditForm = ({size, loc_name}: Props) => {
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
   return (
-    <Grid2 container spacing={2}>
-      <Grid2 size={size}>
+    <Grid container spacing={2}>
+      <Grid size={size}>
         <StamdataTimeseries.Prefix loc_name={loc_name} disabled={disabled} />
-      </Grid2>
-      <Grid2 size={size}>
+      </Grid>
+      <Grid size={size}>
         <StamdataTimeseries.TimeseriesTypeField tstype_id={metadata?.tstype_id} />
-      </Grid2>
-      <Grid2 size={size} alignContent={'center'}>
+      </Grid>
+      <Grid
+        size={size}
+        sx={{
+          alignContent: 'center',
+        }}
+      >
         <StamdataTimeseries.TimeseriesID />
-      </Grid2>
+      </Grid>
       {!metadata?.calculated && (
-        <Grid2 size={size}>
+        <Grid size={size}>
           <StamdataTimeseries.ScanCalypsoLabel disabled={disabled} />
-        </Grid2>
+        </Grid>
       )}
-    </Grid2>
+    </Grid>
   );
 };
 

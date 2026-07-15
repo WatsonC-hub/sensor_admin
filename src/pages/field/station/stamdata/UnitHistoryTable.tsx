@@ -87,46 +87,79 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
         Cell: ({row, table, staticRowIndex}) => (
           <Box
             style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}
-            gap={0.5}
-            height={26}
+            sx={{
+              gap: 0.5,
+              height: 26,
+            }}
           >
             <MRT_ExpandButton row={row} table={table} staticRowIndex={staticRowIndex} />
-            <Typography alignSelf={'center'} variant="caption" fontWeight="bold" width="2.5rem">
+            <Typography
+              variant="caption"
+              sx={{
+                alignSelf: 'center',
+                fontWeight: 'bold',
+                width: '2.5rem',
+              }}
+            >
               {row.original.calypso_id}
             </Typography>
-            <Box display={'flex'} flexDirection={'row'} gap={1}>
-              <Box display={'flex'} flexDirection={'column'}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 1,
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
                 <Typography
-                  alignSelf={'start'}
                   variant="caption"
-                  color="grey.700"
-                  fontWeight="bold"
+                  sx={{
+                    alignSelf: 'start',
+                    color: 'grey.700',
+                    fontWeight: 'bold',
+                  }}
                 >
                   Fra:
                 </Typography>
                 <Typography
-                  alignSelf={'start'}
                   variant="caption"
-                  color="grey.700"
-                  fontWeight="bold"
+                  sx={{
+                    alignSelf: 'start',
+                    color: 'grey.700',
+                    fontWeight: 'bold',
+                  }}
                 >
                   Til:
                 </Typography>
               </Box>
-              <Box display={'flex'} flexDirection={'column'}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
                 <Typography
-                  alignSelf={'start'}
                   variant="caption"
-                  color="grey.700"
-                  fontWeight="bold"
+                  sx={{
+                    alignSelf: 'start',
+                    color: 'grey.700',
+                    fontWeight: 'bold',
+                  }}
                 >
                   {convertDateWithTimeStamp(row.original.startdato)}
                 </Typography>
                 <Typography
-                  alignSelf={'start'}
                   variant="caption"
-                  color="grey.700"
-                  fontWeight="bold"
+                  sx={{
+                    alignSelf: 'start',
+                    color: 'grey.700',
+                    fontWeight: 'bold',
+                  }}
                 >
                   {checkEndDateIsUnset(row.original.slutdato)
                     ? 'Nu'
@@ -134,7 +167,11 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
                 </Typography>
               </Box>
             </Box>
-            <Box marginLeft={'auto'}>
+            <Box
+              sx={{
+                marginLeft: 'auto',
+              }}
+            >
               <RenderActions
                 handleEdit={() => {
                   setSelectedUnit(row.original.gid);
@@ -182,7 +219,14 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
       return (
         <Box sx={{p: 2}}>
           <UnitForm mode="edit" />
-          <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              justifyContent: 'flex-end',
+              justifySelf: 'end',
+            }}
+          >
             <Button
               bttype="tertiary"
               onClick={() => {
@@ -221,34 +265,96 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
     },
     renderDetailPanel: ({row}) => {
       return (
-        <Box display={'flex'} flexDirection={'row'} sx={isMobile ? {...renderDetailStyle} : {}}>
-          <Box display={'flex'} flexDirection={'column'} width="150px" gap={0.5}>
-            <Typography variant="body2" fontWeight={'bold'}>
+        <Box
+          sx={[
+            {
+              display: 'flex',
+              flexDirection: 'row',
+            },
+            isMobile ? {...renderDetailStyle} : {},
+          ]}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '150px',
+              gap: 0.5,
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Startdato:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Slutdato:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Calypso ID:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Terminal ID:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Terminal type:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Sensor ID:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Signal ID:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Sensor:
             </Typography>
           </Box>
-          <Box display={'flex'} flexDirection={'column'} width="100%" gap={0.5}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              gap: 0.5,
+            }}
+          >
             <Typography variant="body2">
               {convertDateWithTimeStamp(row.original.startdato)}
             </Typography>

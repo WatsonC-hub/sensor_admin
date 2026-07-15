@@ -90,8 +90,8 @@ const EditLocation = () => {
 
   return (
     <Box
-      maxWidth={1080}
       sx={{
+        maxWidth: 1080,
         borderRadius: 4,
         boxShadow: 3,
         padding: 2,
@@ -101,7 +101,14 @@ const EditLocation = () => {
         <StamdataLocation>
           <LocationForm size={size} loc_id={loc_id} />
         </StamdataLocation>
-        <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            justifyContent: 'flex-end',
+            justifySelf: 'end',
+          }}
+        >
           {superUser && (
             <TooltipWrapper
               description="Slet lokationen kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen"

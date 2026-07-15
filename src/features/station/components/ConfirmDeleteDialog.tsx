@@ -38,7 +38,13 @@ const ConfirmDeleteDialog = ({
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Er du sikker på, at du vil slette?</DialogTitle>
       <DialogContent>
-        <Box display="flex" flexDirection="column" gap={2}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+          }}
+        >
           <Typography>{description}</Typography>
           <Typography>
             <strong>

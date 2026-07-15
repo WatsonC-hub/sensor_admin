@@ -127,6 +127,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         forcePopupIcon={false}
         options={locItems}
         autoHighlight
+        size="small"
         getOptionLabel={(option) => (typeof option == 'object' ? option.name : option)}
         groupBy={(option) => option.group}
         inputValue={typeAhead}
@@ -135,24 +136,26 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
             {...params}
             size="small"
             variant="outlined"
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <InputAdornment sx={{pl: 1}} position="start">
-                  <SearchRoundedIcon />
-                </InputAdornment>
-              ),
-              endAdornment: params.InputProps.endAdornment ? (
-                params.InputProps.endAdornment
-              ) : (
-                <InputAdornment sx={{pr: 1}} position="end">
-                  <IconButton edge="end" onClick={handleOpenFilter}>
-                    <Badge badgeContent={numFilters} color="primary">
-                      <TuneRoundedIcon color={numFilters > 0 ? 'primary' : undefined} />
-                    </Badge>
-                  </IconButton>
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                ...params.slotProps.input,
+                startAdornment: (
+                  <InputAdornment sx={{pl: 1}} position="start">
+                    <SearchRoundedIcon />
+                  </InputAdornment>
+                ),
+                endAdornment: params.slotProps.input.endAdornment ? (
+                  params.slotProps.input.endAdornment
+                ) : (
+                  <InputAdornment sx={{pr: 1}} position="end">
+                    <IconButton edge="end" onClick={handleOpenFilter}>
+                      <Badge badgeContent={numFilters} color="primary">
+                        <TuneRoundedIcon color={numFilters > 0 ? 'primary' : undefined} />
+                      </Badge>
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
             }}
             placeholder="Søg efter lokation..."
             sx={{'& .MuiOutlinedInput-root': {borderRadius: '9999px', backgroundColor: 'white'}}}

@@ -96,7 +96,13 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
 
   return (
     <LastMPCard title="">
-      <Stack direction={'row'} spacing={2} justifyContent="space-between">
+      <Stack
+        direction={'row'}
+        spacing={2}
+        sx={{
+          justifyContent: 'space-between',
+        }}
+      >
         <Box
           sx={{
             flex: 1,
@@ -109,7 +115,13 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
             gap: 0.5,
           }}
         >
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <Typography variant="subtitle2">I app</Typography>
           </Stack>
 
@@ -138,12 +150,24 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
             gap: 0.5,
           }}
         >
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <Typography variant="subtitle2">Jupiter</Typography>
           </Stack>
 
           {isLoading && (
-            <Stack direction="row" alignItems="center" spacing={1}>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <CircularProgress size={16} />
               <Typography variant="body2">Indlæser data...</Typography>
             </Stack>

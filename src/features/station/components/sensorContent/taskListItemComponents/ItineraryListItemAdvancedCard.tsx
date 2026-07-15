@@ -1,12 +1,12 @@
 import {EditOutlined, Warning} from '@mui/icons-material';
-import {Box, Typography, Button, Grid2, TextField, Link} from '@mui/material';
+import {Box, Typography, Button, Grid, TextField, Link} from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import React, {useMemo, useState} from 'react';
 import {useTaskMutations, useTaskStatus} from '~/features/tasks/api/useTasks';
 import {Task} from '~/features/tasks/types';
 import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
 
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutlined';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
@@ -55,43 +55,76 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
 
   return (
     <TaskForm key={task.id} onSubmit={() => {}} defaultValues={defaultValues}>
-      <Grid2 container color="grey.700" spacing={0.5} justifyContent="flex-end">
+      <Grid
+        container
+        spacing={0.5}
+        sx={{
+          color: 'grey.700',
+          justifyContent: 'flex-end',
+        }}
+      >
         {(task.block_all || task.block_on_location) && (
-          <Grid2 size={12} display={'flex'} flexDirection={'row'} gap={1} alignItems="center">
+          <Grid
+            size={12}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 1,
+              alignItems: 'center',
+            }}
+          >
             <Warning fontSize="small" />
             <Typography
               variant="caption"
-              fontSize={12}
-              display={'flex'}
-              flexDirection={'row'}
-              gap={0.5}
-              alignItems="center"
+              sx={{
+                fontSize: 12,
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 0.5,
+                alignItems: 'center',
+              }}
             >
               Dæmper {task.block_all ? 'alle' : 'samme'} notifikationer på{' '}
               {task.block_on_location ? 'lokationen' : 'tidsserien'}
             </Typography>
-          </Grid2>
+          </Grid>
         )}
-        <Grid2
+        <Grid
           size={isMobile ? 6 : 8}
-          display={'flex'}
-          flexDirection={'column'}
-          justifyContent={'space-between'}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
         >
-          <Grid2 size={12} gap={1} display={'flex'} flexDirection={'row'} alignItems="center">
+          <Grid
+            size={12}
+            sx={{
+              gap: 1,
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+          >
             {task.name && (
               <>
                 <DescriptionIcon fontSize="small" />
-                <Box display="flex" flexDirection={'column'} gap={0}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 0,
+                  }}
+                >
                   <Link
                     onClick={() => station(task.ts_id)}
                     color="inherit"
                     variant="caption"
                     underline="always"
-                    display="flex"
-                    flexWrap="wrap"
-                    gap={0.5}
                     sx={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 0.5,
                       cursor: 'pointer',
                       textDecorationColor: 'rgba(97, 97, 97, 0.6)',
                     }}
@@ -105,12 +138,27 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
                 </Box>
               </>
             )}
-          </Grid2>
-          <Grid2 size={12}>
+          </Grid>
+          <Grid size={12}>
             {filteredComments && filteredComments.length > 0 && (
-              <Box display="flex" flexDirection={'row'} gap={1} pt={2} alignItems="start">
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 1,
+                  pt: 2,
+                  alignItems: 'start',
+                }}
+              >
                 <ChatBubbleOutlineIcon fontSize="small" />
-                <Box display="flex" flexDirection={'column'} alignItems={'start'} gap={0.5}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'start',
+                    gap: 0.5,
+                  }}
+                >
                   {!showAllComments && (
                     <>
                       <Typography variant="caption">
@@ -137,9 +185,16 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
                 </Box>
               </Box>
             )}
-          </Grid2>
-        </Grid2>
-        <Grid2 size={isMobile ? 6 : 4} display={'flex'} flexDirection={'row'} gap={1}>
+          </Grid>
+        </Grid>
+        <Grid
+          size={isMobile ? 6 : 4}
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 1,
+          }}
+        >
           {task.can_edit ? (
             <TaskForm.StatusSelect
               onBlurCallback={(event) => {
@@ -175,7 +230,12 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
               }}
             />
           ) : (
-            <Box pt={0.5} alignItems="center">
+            <Box
+              sx={{
+                pt: 0.5,
+                alignItems: 'center',
+              }}
+            >
               <TextField
                 value={task.status_name}
                 disabled
@@ -192,9 +252,16 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
               />
             </Box>
           )}
-        </Grid2>
-        <Grid2 size={6}>
-          <Box display={'flex'} flexDirection={'row'} alignItems="center" justifyContent="end">
+        </Grid>
+        <Grid size={6}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'end',
+            }}
+          >
             {task.can_edit && (
               <EditOutlined
                 fontSize="small"
@@ -212,8 +279,8 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
               {task.can_edit ? 'Rediger opgave' : 'Se opgave'}
             </Button>
           </Box>
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     </TaskForm>
   );
 };

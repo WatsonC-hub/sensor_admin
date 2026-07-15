@@ -621,7 +621,9 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
         style={{
           height: setGraphHeight(isMobile),
         }}
-        my={1}
+        sx={{
+          my: 1,
+        }}
       >
         <PlotlyGraph
           plotEventProps={{
@@ -655,7 +657,9 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       style={{
         height: setGraphHeight(isMobile),
       }}
-      my={1}
+      sx={{
+        my: 1,
+      }}
     >
       <PlotlyGraph
         layout={layout}

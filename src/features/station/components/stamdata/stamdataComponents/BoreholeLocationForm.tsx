@@ -1,6 +1,6 @@
 import React from 'react';
 import StamdataLocation from '../StamdataLocation';
-import {Grid2} from '@mui/material';
+import {Grid} from '@mui/material';
 import {useUser} from '~/features/auth/useUser';
 import {FormInputProps} from '~/components/FormInput';
 import {BoreholeAddLocation} from '~/features/station/schema';
@@ -23,35 +23,49 @@ const BoreholeLocationForm = ({size, loc_id, slotProps}: Props) => {
   const disabled = loc_id !== undefined;
 
   return (
-    <Grid2 container spacing={2}>
-      <Grid2 size={size}>
+    <Grid container spacing={2}>
+      <Grid size={size}>
         <StamdataLocation.LoctypeSelect disabled={disabled} {...slotProps?.loctypeSelect} />
-      </Grid2>
-      <Grid2 size={size}>
+      </Grid>
+      <Grid size={size}>
         <StamdataLocation.Boreholeno disabled={disabled} {...slotProps?.boreholeno} />
-      </Grid2>
+      </Grid>
       {superUser && (
-        <Grid2 size={size}>
+        <Grid size={size}>
           <StamdataLocation.InitialProjectNo disabled={disabled} />
-        </Grid2>
+        </Grid>
       )}
-      <Grid2 display={'flex'} flexDirection={'row'} size={size} gap={2}>
-        <Grid2 size={6}>
+      <Grid
+        size={size}
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 2,
+        }}
+      >
+        <Grid size={6}>
           <StamdataLocation.X disabled={disabled} />
-        </Grid2>
-        <Grid2 size={6}>
+        </Grid>
+        <Grid size={6}>
           <StamdataLocation.Y disabled={disabled} />
-        </Grid2>
-      </Grid2>
-      <Grid2 display={'flex'} flexDirection={'row'} size={size} gap={2}>
-        <Grid2 size={8}>
+        </Grid>
+      </Grid>
+      <Grid
+        size={size}
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 2,
+        }}
+      >
+        <Grid size={8}>
           <StamdataLocation.TerrainQuote disabled={disabled} />
-        </Grid2>
-        <Grid2 size={4}>
+        </Grid>
+        <Grid size={4}>
           <StamdataLocation.TerrainQuality disabled={disabled} />
-        </Grid2>
-      </Grid2>
-    </Grid2>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };
 

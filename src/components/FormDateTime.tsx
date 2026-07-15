@@ -7,7 +7,7 @@ import dayjs, {Dayjs} from 'dayjs';
 import {PickersActionBarAction} from '@mui/x-date-pickers';
 
 export type FormDateTimeProps<TFieldValues extends FieldValues> = Omit<
-  DateTimePickerProps<false>,
+  DateTimePickerProps,
   'value' | 'onChange' | 'renderInput'
 > & {
   name: Path<TFieldValues>;
@@ -74,10 +74,18 @@ const FormDateTime = <TFieldValues extends FieldValues>({
               textField: {
                 ...slotProps?.textField,
                 required: required,
-                InputProps: {
-                  sx: {
-                    '& > fieldset': {
-                      borderColor: 'primary.main',
+                slotProps: {
+                  input: {
+                    sx: {
+                      '& > fieldset': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                  },
+                  inputLabel: {
+                    shrink: true,
+                    sx: {
+                      color: 'primary.main',
                     },
                   },
                 },
@@ -86,12 +94,6 @@ const FormDateTime = <TFieldValues extends FieldValues>({
                 fullWidth: true,
                 error: !!error,
                 helperText: error?.message,
-                InputLabelProps: {
-                  shrink: true,
-                  sx: {
-                    color: 'primary.main',
-                  },
-                },
               },
             }}
           />

@@ -7,7 +7,7 @@ import {DatePicker, DatePickerProps, PickersActionBarAction} from '@mui/x-date-p
 import CustomActionBar from '~/helpers/CustomActionBar';
 
 export type FormDatePickerProps<TFieldValues extends FieldValues> = Omit<
-  DatePickerProps<false>,
+  DatePickerProps,
   'value' | 'onChange' | 'renderInput'
 > & {
   name: Path<TFieldValues>;
@@ -100,10 +100,18 @@ const FormDatePicker = <TFieldValues extends FieldValues>({
               },
               textField: {
                 ...slotProps?.textField,
-                InputProps: {
-                  sx: {
-                    '& > fieldset': {
-                      borderColor: 'primary.main',
+                slotProps: {
+                  input: {
+                    sx: {
+                      '& > fieldset': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                  },
+                  inputLabel: {
+                    shrink: true,
+                    sx: {
+                      color: 'primary.main',
                     },
                   },
                 },
@@ -112,12 +120,6 @@ const FormDatePicker = <TFieldValues extends FieldValues>({
                 fullWidth: true,
                 error: !!error,
                 helperText: error?.message,
-                InputLabelProps: {
-                  shrink: true,
-                  sx: {
-                    color: 'primary.main',
-                  },
-                },
               },
             }}
           />

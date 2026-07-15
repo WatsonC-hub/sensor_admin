@@ -1,6 +1,7 @@
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import {Box} from '@mui/material';
 import React, {useState} from 'react';
+import {contactSchema} from './api/useContactForm';
 import {FormProvider} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
@@ -24,8 +25,8 @@ const ContactInfo = () => {
   } = useUser();
 
   const contactFormMethods = useContactForm({
+    schema: contactSchema,
     defaultValues: initialContactData,
-    mode: 'edit',
   });
 
   const {reset} = contactFormMethods;
@@ -43,7 +44,14 @@ const ContactInfo = () => {
           )}
           <ContactInfoTable loc_id={loc_id} />
         </FormProvider>
-        <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: 1,
+          }}
+        >
           <UpdateProgressButton progressKey="kontakter" loc_id={loc_id} ts_id={-1} alterStyle />
           <FabWrapper
             icon={<PersonAddIcon />}

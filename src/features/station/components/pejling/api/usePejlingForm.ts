@@ -6,7 +6,7 @@ import {
 } from '../PejlingSchema';
 import {useForm} from 'react-hook-form';
 import PejlingForm from '../components/PejlingForm';
-import {z, ZodType} from 'zod';
+import {z, ZodObject, ZodType} from 'zod';
 import PejlingBoreholeForm from '../components/PejlingBoreholeForm';
 import PejlingMeasurementsTableDesktop from '~/features/pejling/components/PejlingMeasurementsTableDesktop';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -48,7 +48,7 @@ const getSchemaAndForm = (loctype_id: number = -1, tstype_id: number = -1) => {
       selectedTable = isMobile ? PejlingMeasurementsTableMobile : PejlingMeasurementsTableDesktop;
   }
 
-  return [selectedSchema, selectedForm, selectedTable] as const;
+  return [selectedSchema as ZodObject<Record<string, any>>, selectedForm, selectedTable] as const;
 };
 
 const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
@@ -76,7 +76,7 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
       };
 
       const mpData = opts[1]?.mpData;
-      const out = await zodResolver(schema)(...opts);
+      const out = await zodResolver(schema)(values, opts[1], opts[2]);
 
       if (values.timeofmeas === null) {
         return out;
@@ -89,12 +89,9 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
       });
 
       if (!mp && tstype_id === 1 && values.timeofmeas != null) {
-        out.errors = {
-          ...out.errors,
-          timeofmeas: {
-            type: 'outOfRange',
-            message: 'Tidspunkt er uden for et målepunkt',
-          },
+        out.errors.timeofmeas = {
+          type: 'outOfRange',
+          message: 'Tidspunkt er uden for et målepunkt',
         };
       }
 

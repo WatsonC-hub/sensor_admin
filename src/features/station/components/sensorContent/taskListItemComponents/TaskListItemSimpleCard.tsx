@@ -59,17 +59,21 @@ const TaskListItemSimpleCard = ({task}: Props) => {
           }}
           title={
             <Box
-              display="flex"
-              flexDirection={'row'}
-              alignItems="center"
-              justifyContent={'space-between'}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
             >
               <Box
-                display={'flex'}
-                flexDirection={'row'}
-                gap={0.5}
-                alignItems="center"
-                fontSize={14}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 0.5,
+                  alignItems: 'center',
+                  fontSize: 14,
+                }}
               >
                 <NotificationIcon
                   iconDetails={{
@@ -80,16 +84,21 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                   }}
                   noCircle={true}
                 />
-                <Box display="flex" flexDirection={'column'}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
                   <Link
                     onClick={() => station(task.ts_id)}
                     color="inherit"
                     variant="caption"
                     underline="always"
-                    display="flex"
-                    flexWrap="wrap"
-                    gap={0.5}
                     sx={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 0.5,
                       cursor: 'pointer',
                       textDecorationColor: 'rgba(255, 255, 255, 0.6)',
                     }}
@@ -99,10 +108,12 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                   </Link>
                   {task.sla && superUser && (
                     <Typography
-                      mt={-0.5}
-                      fontStyle={'italic'}
-                      fontWeight={'bold'}
                       variant={'caption'}
+                      sx={{
+                        mt: -0.5,
+                        fontStyle: 'italic',
+                        fontWeight: 'bold',
+                      }}
                     >
                       Løsningsfrist: {task.sla.format('l')}
                     </Typography>
@@ -110,7 +121,13 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                 </Box>
               </Box>
               {task.due_date && (
-                <Box display="flex" flexDirection={'row'} gap={1}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: 1,
+                  }}
+                >
                   <PendingActionsIcon
                     fontSize="small"
                     sx={{
@@ -130,7 +147,14 @@ const TaskListItemSimpleCard = ({task}: Props) => {
         <CardContent
           sx={{paddingBottom: 0, paddingX: 1, '&.MuiCardContent-root:last-child': {paddingY: 1}}}
         >
-          <Box display={'flex'} flexDirection={'row'} alignItems="center" justifyContent="end">
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'end',
+            }}
+          >
             {task.can_edit && (
               <EditOutlined
                 fontSize="small"

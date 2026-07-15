@@ -7,12 +7,13 @@ import {useForm} from 'react-hook-form';
 import FormToggleButton from '~/components/formComponents/FormToggleButton';
 
 const schema = z.object({
-  requires_auth: z.boolean({required_error: 'Vælg om data skal kræve login'}),
+  requires_auth: z.boolean({message: 'Vælg om data skal kræve login'}),
 });
 
-type VisibilityFormState = z.infer<typeof schema>;
+type VisibilityFormState = z.input<typeof schema>;
+type VisibilityFormStateOutput = z.output<typeof schema>;
 
-const Form = createTypedForm<VisibilityFormState>();
+const Form = createTypedForm<VisibilityFormState, VisibilityFormStateOutput>();
 
 type VisibilityFormProps = {
   visibility: VisibilityFormState | object | undefined;

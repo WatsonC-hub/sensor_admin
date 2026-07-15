@@ -39,14 +39,26 @@ const FormFieldset = ({children, sx = {}, label, icon, onClick, legendProps}: Pr
     <Box component={'fieldset'} sx={fieldset_sx}>
       <Typography
         component={'legend'}
-        display={'flex'}
-        flexDirection={'row'}
-        alignItems={'center'}
         {...legendProps}
-        sx={merged_legend_props}
+        sx={[
+          {
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+          },
+          ...(Array.isArray(merged_legend_props) ? merged_legend_props : [merged_legend_props]),
+          legendProps?.sx,
+        ]}
       >
         {label}
-        <Box onClick={onClick} display={'flex'} alignItems={'center'} sx={{cursor: 'pointer'}}>
+        <Box
+          onClick={onClick}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            cursor: 'pointer',
+          }}
+        >
           {icon}
         </Box>
       </Typography>

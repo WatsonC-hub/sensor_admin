@@ -139,7 +139,12 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
       </IconButton>
     ),
     renderTopToolbar: (
-      <Typography variant="body1" p={1}>
+      <Typography
+        variant="body1"
+        sx={{
+          p: 1,
+        }}
+      >
         Seneste Måling
       </Typography>
     ),
@@ -165,7 +170,11 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
   );
 
   return (
-    <Box mb={1}>
+    <Box
+      sx={{
+        mb: 1,
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

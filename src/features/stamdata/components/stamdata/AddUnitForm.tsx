@@ -285,14 +285,12 @@ export default function AddUnitForm({
           }}
         />
       )}
-
       <AddSensorDialog
         open={addSensors}
         onClose={handleSensorDialogClose}
         isDisassembling={mode !== 'add'}
         disableMatchingParameters={disableMatchingParameters}
       />
-
       <Dialog open={udstyrDialogOpen} onClose={handleClose}>
         {isLoading ? (
           <CircularProgress />
@@ -306,7 +304,13 @@ export default function AddUnitForm({
                 </Typography>
               )}
 
-              <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
                 <Autocomplete
                   id="calypso_id"
                   labelKey="label"
@@ -371,7 +375,6 @@ export default function AddUnitForm({
           </>
         )}
       </Dialog>
-
       <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
         <DialogContent>
           <Typography>Følgende faktureringsinformation findes på tidligere enhed</Typography>

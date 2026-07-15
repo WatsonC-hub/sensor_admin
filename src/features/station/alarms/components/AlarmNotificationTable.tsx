@@ -25,7 +25,15 @@ const AlarmNotificationTable = ({alarm_notifications}: AlarmNotificationTablePro
         },
         Cell: ({cell, row}) => {
           return (
-            <Box display="flex" alignItems="center" flexDirection="row" color="white" gap={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                flexDirection: 'row',
+                color: 'white',
+                gap: 1,
+              }}
+            >
               <NotificationIcon
                 iconDetails={{
                   notification_id: row.original.gid,
@@ -78,7 +86,12 @@ const AlarmNotificationTable = ({alarm_notifications}: AlarmNotificationTablePro
   );
 
   return (
-    <Box alignItems={'center'} width={'fit-content'}>
+    <Box
+      sx={{
+        alignItems: 'center',
+        width: 'fit-content',
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

@@ -123,7 +123,14 @@ export default function CaptureDialog({handleClose, handleScan, open}: CaptureDi
         }}
       >
         {!hasPermission ? (
-          <Typography variant="subtitle2" component="h3" align="center" display="block">
+          <Typography
+            variant="subtitle2"
+            component="h3"
+            align="center"
+            sx={{
+              display: 'block',
+            }}
+          >
             Der skal gives rettigheder til at bruge kameraet. Tjek om du har fået en forespørgsel
             eller ændre indstillinger i din browser.
           </Typography>

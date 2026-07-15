@@ -44,12 +44,22 @@ const TaskListItemNoneCard = ({task}: Props) => {
         }}
         title={
           <Box
-            display="flex"
-            flexDirection={'row'}
-            alignItems="center"
-            justifyContent={'space-between'}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
           >
-            <Box display={'flex'} flexDirection={'row'} gap={0.5} alignItems="center" fontSize={14}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 0.5,
+                alignItems: 'center',
+                fontSize: 14,
+              }}
+            >
               <NotificationIcon
                 iconDetails={{
                   notification_id: task.blocks_notifications[0],
@@ -64,10 +74,10 @@ const TaskListItemNoneCard = ({task}: Props) => {
                 color="inherit"
                 variant="caption"
                 underline="always"
-                display="flex"
-                flexWrap="wrap"
-                gap={0.5}
                 sx={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 0.5,
                   cursor: 'pointer',
                   textDecorationColor: 'rgba(255, 255, 255, 0.6)',
                 }}
@@ -77,7 +87,13 @@ const TaskListItemNoneCard = ({task}: Props) => {
               </Link>
             </Box>
             {task.due_date && (
-              <Box display="flex" flexDirection={'row'} gap={1}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 1,
+                }}
+              >
                 <PendingActionsIcon
                   fontSize="small"
                   sx={{

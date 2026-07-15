@@ -1,4 +1,4 @@
-import {Grid2} from '@mui/material';
+import {Grid} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import dayjs, {Dayjs} from 'dayjs';
 import React, {useEffect, useState} from 'react';
@@ -16,6 +16,8 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 import Button from '~/components/Button';
 import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
 import {button_sx} from '../common_style';
+import {watlevmpAddSchema} from '~/features/station/schema';
+import {z} from 'zod';
 
 type EmptyObject = Record<string, never>;
 
@@ -26,19 +28,28 @@ type WatlevmpFormProps = {
   setValues: (values: ValidateWatlevmp | EmptyObject) => void;
 };
 
-type Watlevmp = {
+export type Watlevmp = {
   description: string;
   elevation: number | null;
   startdate?: Dayjs;
 };
 
-type ValidateWatlevmp = {
+export type ValidateWatlevmp = {
   description: string;
   elevation: number;
   startdate?: Dayjs;
 };
 
-const Form = createTypedForm<Watlevmp>();
+const schema = watlevmpAddSchema.extend({
+  elevation: z
+    .number()
+    .nullable()
+    .refine((val) => val !== null && val !== undefined, {
+      message: 'Målepunkt skal være udfyldt',
+    }),
+});
+
+const Form = createTypedForm<z.input<typeof schema>, z.output<typeof schema>>();
 
 const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
   const [location_meta, registerSubmitter, removeSubmitter, deleteState] = useCreateStationStore(
@@ -71,7 +82,8 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
     enabled: !!location_meta?.boreholeno && intakeno !== undefined,
   });
 
-  const watlevmpFormMethods = useWatlevmpForm<Watlevmp, ValidateWatlevmp>({
+  const watlevmpFormMethods = useWatlevmpForm<typeof schema>({
+    schema: schema,
     defaultValues: values,
   });
 
@@ -186,11 +198,13 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
           />
         )}
       />
-      <Grid2
+      <Grid
         size={isMobile ? 12 : 2.5}
-        alignContent={'center'}
-        display="flex"
-        justifyContent={isMobile ? 'end' : 'start'}
+        sx={{
+          alignContent: 'center',
+          display: 'flex',
+          justifyContent: isMobile ? 'end' : 'start',
+        }}
       >
         <Button
           bttype="primary"
@@ -217,7 +231,7 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
         >
           Registrer senere
         </Button>
-      </Grid2>
+      </Grid>
     </Form>
   );
 };

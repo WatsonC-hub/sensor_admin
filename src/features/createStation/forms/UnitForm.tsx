@@ -1,4 +1,4 @@
-import {Grid2} from '@mui/material';
+import {Grid} from '@mui/material';
 import React from 'react';
 import {FormProvider} from 'react-hook-form';
 import useUnitForm from '~/features/station/api/useUnitForm';
@@ -17,14 +17,14 @@ type Props = {
 
 const addSchema = z.object({
   startdate: zodDayjs().default(dayjs()),
-  unit_uuid: z.string({required_error: 'Udstyrs UUID er påkrævet'}),
+  unit_uuid: z.string({message: 'Udstyrs UUID er påkrævet'}),
   calypso_id: z.string().optional(),
 });
 
 export type AddUnitType = z.infer<typeof addSchema>;
 
 const UnitForm = ({setValues, unit, tstype_id, onClose}: Props) => {
-  const unitFormMethods = useUnitForm<AddUnitType>({
+  const unitFormMethods = useUnitForm<typeof addSchema>({
     schema: addSchema,
     values: unit,
   });
@@ -34,17 +34,25 @@ const UnitForm = ({setValues, unit, tstype_id, onClose}: Props) => {
   return (
     <FormProvider {...unitFormMethods}>
       <StamdataUnit tstype_id={tstype_id}>
-        <Grid2 container size={12} spacing={1} direction={'column'}>
-          <Grid2 size={12}>
+        <Grid container size={12} spacing={1} sx={{flexDirection: 'column'}}>
+          <Grid size={12}>
             <StamdataUnit.CalypsoID />
-          </Grid2>
-          <Grid2 size={12}>
+          </Grid>
+          <Grid size={12}>
             <StamdataUnit.SensorID required />
-          </Grid2>
-          <Grid2 size={12}>
+          </Grid>
+          <Grid size={12}>
             <StamdataUnit.StartDate required />
-          </Grid2>
-          <Grid2 display={'flex'} flexDirection={'row'} justifyContent="flex-end" size={12} gap={1}>
+          </Grid>
+          <Grid
+            size={12}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              gap: 1,
+            }}
+          >
             <Button
               bttype="tertiary"
               onClick={() => {
@@ -63,8 +71,8 @@ const UnitForm = ({setValues, unit, tstype_id, onClose}: Props) => {
             >
               Tilføj udstyr
             </Button>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </StamdataUnit>
     </FormProvider>
   );

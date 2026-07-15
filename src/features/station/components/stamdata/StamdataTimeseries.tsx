@@ -44,8 +44,9 @@ const TypeSelect = ({...props}: TypeSelectProps) => {
   const {data: timeseries_types} = useQuery({
     queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<Tstype>>(`/sensor_field/timeseries_types`,
-        {params: {filtered: true}});
+      const {data} = await apiClient.get<Array<Tstype>>(`/sensor_field/timeseries_types`, {
+        params: {filtered: true},
+      });
       return data;
     },
     staleTime: Infinity, // Cache indefinitely
@@ -207,11 +208,13 @@ const ScanCalypsoLabel = ({disabled}: ScanCalypsoLabelProps) => {
 
   return (
     <Box
-      display="flex"
-      gap={1}
-      flexDirection="row"
-      alignItems="center"
-      justifyContent="space-between"
+      sx={{
+        display: 'flex',
+        gap: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
     >
       <FormInput label="Calypso ID" name="calypso_id" disabled fullWidth />
       <Button

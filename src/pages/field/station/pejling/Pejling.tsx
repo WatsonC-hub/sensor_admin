@@ -169,7 +169,14 @@ const Pejling = () => {
                 setDynamic={setDynamic}
               >
                 <PejlingForm />
-                <Box gap={1} display={'flex'} justifyContent={'center'} mt={2}>
+                <Box
+                  sx={{
+                    gap: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mt: 2,
+                  }}
+                >
                   <CompoundPejling.CancelButton />
                   <CompoundPejling.SubmitButton />
                 </Box>
@@ -177,7 +184,12 @@ const Pejling = () => {
             </Card>
           )}
         </FormProvider>
-        <Box display={'flex'} flexDirection={'column'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <Table
             handleEdit={handleEdit}
             disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}

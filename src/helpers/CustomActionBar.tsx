@@ -9,7 +9,13 @@ type CustomActionBarProps = PickersActionBarProps & {
 function CustomActionBar({customAction, disabled, ...props}: CustomActionBarProps) {
   return (
     <>
-      <Stack direction="column" justifyContent="end" alignItems={'end'}>
+      <Stack
+        direction="column"
+        sx={{
+          justifyContent: 'end',
+          alignItems: 'end',
+        }}
+      >
         <Button
           onClick={customAction}
           sx={{pr: 3.5, py: 0.5, textTransform: 'inherit'}}

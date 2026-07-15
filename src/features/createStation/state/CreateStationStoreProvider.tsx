@@ -149,7 +149,7 @@ type DeepPartial<T> = {
 //   },
 // };
 
-const createStationStore = (defaultValues?: DeepPartial<CreateStationFormState>) =>
+const createStationStore = (defaultValues: Partial<CreateStationFormState>) =>
   createStore<CreateStationStoreState>()(
     devtools((set, get) => ({
       formState: defaultValues,
@@ -215,7 +215,7 @@ export const CreateStationStoreContext = React.createContext<ReturnType<
 
 interface CreateStationStoreProviderProps {
   children: React.ReactNode;
-  defaultValues?: DeepPartial<CreateStationFormState>;
+  defaultValues: Partial<CreateStationFormState>;
 }
 
 const CreateStationStoreProvider = ({children, defaultValues}: CreateStationStoreProviderProps) => {

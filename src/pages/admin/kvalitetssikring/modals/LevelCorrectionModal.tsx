@@ -22,7 +22,8 @@ interface LevelCorrectionModal {
 
 const schema = z.object({date: zodDayjs(), comment: z.string().optional()});
 
-type CorrectionValues = z.infer<typeof schema>;
+type CorrectionValues = z.input<typeof schema>;
+type CorrectionOutput = z.output<typeof schema>;
 
 const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const selection = useAtomValue(qaSelection);
@@ -42,7 +43,10 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
     post: {mutateAsync: levelCorrectionAsync},
   } = useLevelCorrection();
 
-  const formMethods = useForm<CorrectionValues>({resolver: zodResolver(schema), mode: 'onTouched'});
+  const formMethods = useForm<CorrectionValues, unknown, CorrectionOutput>({
+    resolver: zodResolver(schema),
+    mode: 'onTouched',
+  });
 
   const {
     handleSubmit,
@@ -52,7 +56,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
     formState: {isDirty, isSubmitting},
   } = formMethods;
 
-  const onAccept: SubmitHandler<CorrectionValues> = async (values) => {
+  const onAccept: SubmitHandler<CorrectionOutput> = async (values) => {
     await levelCorrectionAsync({
       path: `${timeseries_data?.ts_id}`,
       data: {date: values.date, comment: values.comment},
@@ -75,11 +79,21 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
       </Typography>
       <Box>
         {prevY === undefined ? (
-          <Typography gutterBottom fontWeight={'bold'}>
+          <Typography
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             Ingen forrige datapunkt
           </Typography>
         ) : (
-          <Box display={'flex'} flexDirection={'row'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+          >
             <b style={{width: 150}}>Forrige punkt:</b>
             <Typography gutterBottom>
               {convertToLocalDate(prevX)} - {prevY + ' '}
@@ -87,7 +101,12 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
             </Typography>
           </Box>
         )}
-        <Box display={'flex'} flexDirection={'row'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+          }}
+        >
           <b style={{width: 150}}>Nuværende punkt:</b>
           <Typography gutterBottom>
             {convertToLocalDate(x)} - {y + ' '} {unit}
@@ -104,7 +123,15 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
           rows={3}
         />
       </FormProvider>
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} m={1} gap={1}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'end',
+          m: 1,
+          gap: 1,
+        }}
+      >
         <Button
           bttype="tertiary"
           onClick={() => {

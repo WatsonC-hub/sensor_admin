@@ -20,8 +20,10 @@ const Elevation = (props: Omit<FormInputProps<Watlevmp>, 'name'>) => {
       required
       disabled={props.disabled}
       fullWidth
-      InputProps={{
-        endAdornment: <InputAdornment position="start">m</InputAdornment>,
+      slotProps={{
+        input: {
+          endAdornment: <InputAdornment position="start">m</InputAdornment>,
+        },
       }}
       {...props}
     />

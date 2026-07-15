@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {createTypedForm} from '~/components/formComponents/Form';
-import useSyncForm from '~/features/synchronization/api/useSyncForm';
+import useSyncForm, {
+  SyncFormSchema,
+  SyncFormSchemaOutput,
+} from '~/features/synchronization/api/useSyncForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import {SyncFormState} from '../types';
 import Button from '~/components/Button';
@@ -11,11 +14,11 @@ type SyncFormProps = {
   id: string;
   loctype_id?: number;
   tstype_id?: number;
-  values: SyncFormState | undefined;
-  setValues: (values: SyncFormState) => void;
+  values: SyncFormSchema | undefined;
+  setValues: (values: SyncFormSchema) => void;
 };
 
-const Form = createTypedForm<SyncFormState>();
+const Form = createTypedForm<SyncFormSchema, SyncFormSchemaOutput>();
 
 const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps) => {
   const [dmpActive, setDmpActive] = useState(!!values?.dmp && values.dmp !== null);
@@ -24,7 +27,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     state.removeSubmitter,
     state.deleteState,
   ]);
-  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm<SyncFormState>({
+  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm({
     context: {
       loctype_id,
       tstype_id,
@@ -45,8 +48,9 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     registerSubmitter(id, async () => {
       let valid: boolean = false;
       await handleSubmit((values) => {
-        if (!isDmpAllowed || values.dmp === null) delete values.dmp;
-        if (!canSyncJupiter || values.jupiter === null) delete values.jupiter;
+        if (!isDmpAllowed || values.dmp === null) delete (values as Partial<typeof values>).dmp;
+        if (!canSyncJupiter || values.jupiter === null)
+          delete (values as Partial<typeof values>).jupiter;
         if (Object.keys(values).length === 0) {
           deleteState(id as `timeseries.${string}.sync`);
           valid = true;
@@ -89,7 +93,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     {
       selected: (val: SyncFormState['dmp']) => val !== null && typeof val === 'object',
       onChange: () => {
-        setValue('dmp', {});
+        setValue('dmp', null);
         setDmpActive(true);
       },
       label: 'Ja',

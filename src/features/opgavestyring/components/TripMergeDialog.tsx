@@ -37,7 +37,7 @@ const TripMergeDialog = ({itinerary_id, open, setOpen}: Props) => {
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(
       z.object({
-        target_itinerary_id: z.string({required_error: 'Vælg en tur'}).min(1, 'Vælg en tur'),
+        target_itinerary_id: z.string({message: 'Vælg en tur'}).min(1, 'Vælg en tur'),
       })
     ),
     mode: 'onTouched',

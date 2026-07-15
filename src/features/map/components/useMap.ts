@@ -178,6 +178,7 @@ const useMap = <TData extends object>(
       position: 'bottomright',
     }).addTo(map);
 
+    // @ts-ignore
     L.basemapControl({
       position: 'bottomleft',
       layers:
@@ -613,11 +614,11 @@ const useMap = <TData extends object>(
 
   useEffect(() => {
     plotRoutesInLayer();
-  }, [geoJsonRef.current, leafletMapRoutes, data, zoom > zoomThresholdForParking]);
+  }, [leafletMapRoutes, data, zoom > zoomThresholdForParking]);
 
   useEffect(() => {
     plotParkingsInLayer();
-  }, [parkingLayerRef.current, parkings, data, zoom > zoomThresholdForParking]);
+  }, [parkings, data, zoom > zoomThresholdForParking]);
 
   useEffect(() => {
     if (mapRef.current) onMapMoveEndEvent(mapRef.current);
@@ -695,7 +696,7 @@ const useMap = <TData extends object>(
 
     window.addEventListener('leaflet-pan', handler as EventListener);
     return () => window.removeEventListener('leaflet-pan', handler as EventListener);
-  }, [mapRef.current]);
+  }, []);
 
   return {
     map: mapRef.current,

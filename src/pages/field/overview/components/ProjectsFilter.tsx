@@ -20,11 +20,11 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
       sx={{
         marginTop: '8px',
         marginBottom: '4px',
-        pb: 1.5,
       }}
       freeSolo
       forcePopupIcon={false}
       multiple
+      size="small"
       fullWidth
       value={value ?? []}
       autoHighlight={true}
@@ -50,12 +50,69 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
         }${option.project_info ? ` - ${option.project_info}` : ''}`;
       }}
       isOptionEqualToValue={(option, value) => {
+        if (typeof option === 'string' || typeof value === 'string') {
+          return option === value;
+        }
         return option.project_no === value.project_no;
       }}
-      renderTags={(value, getTagProps) => {
+      // renderTags={(values, getTagProps) => {
+      //   return values.map((option, index) => {
+      //     const content = (
+      //       <Typography
+      //         variant="body2"
+      //         sx={{
+      //           display: 'inline',
+      //         }}
+      //       >
+      //         {/* {option.customer_name ? option.customer_name + ' - ' : ''} */}
+      //         {option.project_info ? ` ${option.project_no} -` : option.project_no}
+      //         {option.project_info ? ` ${option.project_info}` : ''}
+      //       </Typography>
+      //     );
+
+      //     return (
+      //       <Chip
+      //         variant="outlined"
+      //         label={content}
+      //         component={'div'}
+      //         {...getTagProps({index})}
+      //         key={index}
+      //       />
+      //     );
+      //   });
+      // }}
+      renderValue={(value, getItemProps) => {
         return value.map((option, index) => {
+          if (typeof option === 'string') {
+            const content = (
+              <Typography
+                variant="body2"
+                sx={{
+                  display: 'inline',
+                }}
+              >
+                {option}
+              </Typography>
+            );
+
+            return (
+              <Chip
+                variant="outlined"
+                label={content}
+                component={'div'}
+                {...getItemProps({index})}
+                key={index}
+              />
+            );
+          }
+
           const content = (
-            <Typography display="inline" variant="body2">
+            <Typography
+              variant="body2"
+              sx={{
+                display: 'inline',
+              }}
+            >
               {/* {option.customer_name ? option.customer_name + ' - ' : ''} */}
               {option.project_info ? ` ${option.project_no} -` : option.project_no}
               {option.project_info ? ` ${option.project_info}` : ''}
@@ -67,7 +124,7 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
               variant="outlined"
               label={content}
               component={'div'}
-              {...getTagProps({index})}
+              {...getItemProps({index})}
               key={index}
             />
           );
@@ -75,7 +132,12 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
       }}
       renderOption={(props, option) => (
         <li {...props} key={option.project_no}>
-          <Typography display="inline" variant="body2">
+          <Typography
+            variant="body2"
+            sx={{
+              display: 'inline',
+            }}
+          >
             {option.customer_name ? option.customer_name + ' - ' : ''}
             {option.project_info ? ` ${option.project_no} -` : option.project_no}
             {option.project_info ? ` ${option.project_info}` : ''}
@@ -86,7 +148,9 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
         <TextField
           {...params}
           fullWidth
-          InputLabelProps={{shrink: true}}
+          slotProps={{
+            inputLabel: {shrink: true},
+          }}
           variant="outlined"
           label={label}
           placeholder="Vælg projekt(er)..."

@@ -72,7 +72,11 @@ const AlarmHistoryTable = ({alarmHistory}: AlarmHistoryTableProps) => {
   );
 
   return (
-    <Box alignItems={'center'}>
+    <Box
+      sx={{
+        alignItems: 'center',
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

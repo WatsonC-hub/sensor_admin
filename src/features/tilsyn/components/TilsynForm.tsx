@@ -33,11 +33,18 @@ export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops
         <Typography gutterBottom variant="h5" component="h2">
           {getValues('gid') !== -1 ? 'Opdater tilsyn' : 'Indberet tilsyn'}
         </Typography>
-        <Grid container spacing={3} alignItems="center" justifyContent="center">
-          <Grid item xs={12} sm={7}>
+        <Grid
+          container
+          spacing={3}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Grid size={{xs: 12, sm: 7}}>
             <FormDateTime name="dato" label="Dato for tilsyn" sx={{mb: 2}} />
           </Grid>
-          <Grid item xs={12} sm={7}>
+          <Grid size={{xs: 12, sm: 7}}>
             <Controller
               control={control}
               name="batteriskift"
@@ -54,9 +61,19 @@ export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops
                       />
                     }
                     label={
-                      <Box display="flex">
+                      <Box
+                        sx={{
+                          display: 'flex',
+                        }}
+                      >
                         <BatteryAlertRounded sx={{color: 'grey.700'}} />
-                        <Typography alignSelf="center">Batteriskift</Typography>
+                        <Typography
+                          sx={{
+                            alignSelf: 'center',
+                          }}
+                        >
+                          Batteriskift
+                        </Typography>
                       </Box>
                     }
                   />
@@ -79,9 +96,20 @@ export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops
                       />
                     }
                     label={
-                      <Box display="flex" gap={1}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          gap: 1,
+                        }}
+                      >
                         <RemoveRedEyeRounded sx={{color: 'grey.700'}} />
-                        <Typography alignSelf="center">Tilsyn</Typography>
+                        <Typography
+                          sx={{
+                            alignSelf: 'center',
+                          }}
+                        >
+                          Tilsyn
+                        </Typography>
                       </Box>
                     }
                   />
@@ -89,7 +117,7 @@ export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={10}>
+          <Grid size={{xs: 12, sm: 10}}>
             <FormInput
               name="kommentar"
               label="Kommentar"
@@ -102,8 +130,14 @@ export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+          <Grid size={{xs: 12, sm: 4}}>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 1,
+                justifyContent: {xs: 'flex-end', sm: 'center'},
+              }}
+            >
               <Button bttype="tertiary" onClick={cancel}>
                 Annuller
               </Button>

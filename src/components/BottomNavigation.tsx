@@ -41,6 +41,7 @@ const CustomBottomNavigation = <T extends string>({
 
   return (
     // <Box sx={{mt: isMobile ? 15 : 8, zIndex: (theme) => theme.zIndex.drawer + 8}}>
+    // </Box>
     <Box
       sx={{
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
@@ -86,7 +87,6 @@ const CustomBottomNavigation = <T extends string>({
           })}
       </BottomNavigation>
     </Box>
-    // </Box>
   );
 };
 

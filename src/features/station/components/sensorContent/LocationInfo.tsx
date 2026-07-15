@@ -1,4 +1,4 @@
-import {Box, Chip, Grid2, Link, Typography} from '@mui/material';
+import {Box, Chip, Grid, Link, Typography} from '@mui/material';
 import React from 'react';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {getGroupLink} from '~/helpers/links';
@@ -24,8 +24,21 @@ const LocationInfo = () => {
 
   const isDGU = location_data?.loctype_name === 'DGU boring';
   return (
-    <Box display={'flex'} flexDirection={'column'} mt={-2} gap={0.5}>
-      <Typography display={'flex'} flexDirection={'column'} variant={'h6'}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        mt: -2,
+        gap: 0.5,
+      }}
+    >
+      <Typography
+        variant={'h6'}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         {isDGU ? (
           <Link
             color="inherit"
@@ -43,29 +56,79 @@ const LocationInfo = () => {
           location_data?.loc_name
         )}
         {location_data?.sla !== undefined && location_data.sla > 0 && superUser && (
-          <Typography mt={-1} ml={2} fontStyle={'italic'} fontWeight={'bold'} variant={'caption'}>
+          <Typography
+            variant={'caption'}
+            sx={{
+              mt: -1,
+              ml: 2,
+              fontStyle: 'italic',
+              fontWeight: 'bold',
+            }}
+          >
             SLA: {location_data?.sla} {location_data.sla > 1 ? 'dage' : 'dag'}
           </Typography>
         )}
       </Typography>
       {location_data?.customer_name !== null && location_data?.customer_name !== undefined && (
-        <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} gap={1}>
-          <Typography variant={'body2'} height={24} alignContent={'center'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            gap: 1,
+          }}
+        >
+          <Typography
+            variant={'body2'}
+            sx={{
+              height: 24,
+              alignContent: 'center',
+            }}
+          >
             Projektinfo:
           </Typography>
-          <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
+          <Typography
+            variant={'body2'}
+            sx={{
+              minHeight: 24,
+              alignContent: 'center',
+            }}
+          >
             {location_data?.customer_name}
           </Typography>
         </Box>
       )}
-
       {location_data?.projectno !== null && location_data?.projectno !== undefined && (
-        <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-          <Typography variant={'body2'} height={24} alignContent={'center'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography
+            variant={'body2'}
+            sx={{
+              height: 24,
+              alignContent: 'center',
+            }}
+          >
             Projekt nr.:{' '}
           </Typography>
-          <Box display={'flex'} flexDirection={'row'} gap={1}>
-            <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 1,
+            }}
+          >
+            <Typography
+              variant={'body2'}
+              sx={{
+                minHeight: 24,
+                alignContent: 'center',
+              }}
+            >
               {location_data?.projectno}
             </Typography>
             <Link
@@ -87,29 +150,69 @@ const LocationInfo = () => {
         </Box>
       )}
       {location_data?.loctype_name !== undefined && (
-        <Box display={'flex'} flexDirection={'row'} gap={1} justifyContent={'space-between'}>
-          <Typography variant={'body2'} height={24} alignContent={'center'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 1,
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography
+            variant={'body2'}
+            sx={{
+              height: 24,
+              alignContent: 'center',
+            }}
+          >
             Lokationstype:
           </Typography>
-          <Typography variant={'body2'} minHeight={24} alignContent={'center'}>
+          <Typography
+            variant={'body2'}
+            sx={{
+              minHeight: 24,
+              alignContent: 'center',
+            }}
+          >
             {location_data?.loctype_name}
           </Typography>
         </Box>
       )}
       {location_data?.groups && location_data?.groups.length > 0 && (
-        <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-          <Typography variant={'body2'} alignContent={'center'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography
+            variant={'body2'}
+            sx={{
+              alignContent: 'center',
+            }}
+          >
             Grupper:
           </Typography>
-          <Grid2 container gap={0.25} display={'flex'} flexDirection={'row'} justifyContent={'end'}>
+          <Grid
+            container
+            sx={{
+              gap: 0.25,
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'end',
+            }}
+          >
             {location_data.groups.map((group) => {
               return (
-                <Grid2
+                <Grid
                   size={undefined}
-                  display={'flex'}
-                  flexDirection={'row'}
-                  justifyContent={'flex-end'}
                   key={group.id}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                  }}
                 >
                   <Chip
                     variant="outlined"
@@ -125,34 +228,49 @@ const LocationInfo = () => {
                       </Link>
                     }
                   />
-                </Grid2>
+                </Grid>
               );
             })}
-          </Grid2>
+          </Grid>
         </Box>
       )}
       {location_data?.ressources && location_data.ressources.length > 0 && superUser && (
-        <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-          <Typography variant={'body2'} alignContent={'center'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography
+            variant={'body2'}
+            sx={{
+              alignContent: 'center',
+            }}
+          >
             Huskeliste:
           </Typography>
-          <Grid2
+          <Grid
             container
-            gap={0.25}
-            display={'flex'}
-            flexDirection={'row'}
-            justifyContent={'end'}
-            alignItems={'center'}
+            sx={{
+              gap: 0.25,
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'end',
+              alignItems: 'center',
+            }}
           >
             {location_data.ressources.map((ressource) => (
-              <Grid2
+              <Grid
                 size={undefined}
-                display={'flex'}
-                flexDirection={'row'}
-                justifyContent={'flex-end'}
-                alignItems={'center'}
-                alignContent={'center'}
                 key={ressource}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  alignContent: 'center',
+                }}
               >
                 <Chip
                   variant="outlined"
@@ -164,33 +282,48 @@ const LocationInfo = () => {
                     setPageToShow('huskeliste');
                   }}
                 />
-              </Grid2>
+              </Grid>
             ))}
-          </Grid2>
+          </Grid>
         </Box>
       )}
       {location_data?.location_access && location_data.location_access.length > 0 && (
-        <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-          <Typography variant={'body2'} alignContent={'center'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography
+            variant={'body2'}
+            sx={{
+              alignContent: 'center',
+            }}
+          >
             Nøgler:
           </Typography>
-          <Grid2
+          <Grid
             container
-            gap={0.25}
-            display={'flex'}
-            flexDirection={'row'}
-            justifyContent={'end'}
-            alignItems={'center'}
+            sx={{
+              gap: 0.25,
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'end',
+              alignItems: 'center',
+            }}
           >
             {location_data.location_access.map((key) => (
-              <Grid2
+              <Grid
                 size={undefined}
-                display={'flex'}
-                flexDirection={'row'}
-                justifyContent={'flex-end'}
-                alignItems={'center'}
-                alignContent={'center'}
                 key={key}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  alignContent: 'center',
+                }}
               >
                 <Chip
                   variant="outlined"
@@ -202,23 +335,36 @@ const LocationInfo = () => {
                     setPageToShow('nøgler');
                   }}
                 />
-              </Grid2>
+              </Grid>
             ))}
-          </Grid2>
+          </Grid>
         </Box>
       )}
       {location_data?.contact && (
-        <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-          <Typography variant={'body2'} alignContent={'center'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography
+            variant={'body2'}
+            sx={{
+              alignContent: 'center',
+            }}
+          >
             Kontakter:
           </Typography>
-          <Grid2
+          <Grid
             container
-            gap={0.25}
-            display={'flex'}
-            flexDirection={'row'}
-            justifyContent={'end'}
-            alignItems={'center'}
+            sx={{
+              gap: 0.25,
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'end',
+              alignItems: 'center',
+            }}
           >
             <Chip
               variant="outlined"
@@ -230,7 +376,7 @@ const LocationInfo = () => {
                 setPageToShow('kontakter');
               }}
             />
-          </Grid2>
+          </Grid>
         </Box>
       )}
     </Box>

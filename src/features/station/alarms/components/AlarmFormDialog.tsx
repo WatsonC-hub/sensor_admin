@@ -14,7 +14,7 @@ type AlarmFormDialogProps = {
 const AlarmFormDialog = ({open, onClose, setOpen, alarm}: AlarmFormDialogProps) => {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle justifyContent="left" display="flex" gap={1} alignItems="center">
+      <DialogTitle sx={{display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'left'}}>
         <TooltipWrapper description="I denne dialog kan du registrere en alarm på en til flere notifikationer. Herunder meddeler du hvordan kontakter skal adviseres.">
           Alarmer
         </TooltipWrapper>

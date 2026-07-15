@@ -56,7 +56,13 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
   };
 
   return (
-    <Box display="flex" gap={1} flexDirection={'column'}>
+    <Box
+      sx={{
+        display: 'flex',
+        gap: 1,
+        flexDirection: 'column',
+      }}
+    >
       <Card
         sx={{
           borderRadius: 2.5,
@@ -75,7 +81,14 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
             minHeight: 32,
           }}
           title={
-            <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
               <DriveEtaIcon
                 sx={{
                   color:
@@ -84,24 +97,44 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
                       : 'white',
                 }}
               />
-              <Box display={'flex'} flexDirection={'column'}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
                 <Link
-                  sx={{cursor: 'pointer', textDecorationColor: 'rgba(255, 255, 255, 0.5)'}}
                   variant="caption"
                   underline="always"
                   color="inherit"
-                  width={'100%'}
                   onClick={() => setItineraryId(itinerary_id)}
+                  sx={{
+                    width: '100%',
+                    cursor: 'pointer',
+                    textDecorationColor: 'rgba(255, 255, 255, 0.5)',
+                  }}
                 >
                   <Typography variant="body2">{itinerary?.name}</Typography>
                 </Link>
-                <Typography variant="caption" color="grey.300">
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'grey.300',
+                  }}
+                >
                   {itinerary?.due_date}{' '}
                   {taskUsers?.find((user) => user.id === itinerary?.assigned_to) ? ' - ' : ''}
                   {taskUsers?.find((user) => user.id === itinerary?.assigned_to)?.display_name}
                 </Typography>
               </Box>
-              <Box flexGrow={1} alignItems={'center'} display={'flex'} justifyContent={'end'}>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  alignItems: 'center',
+                  display: 'flex',
+                  justifyContent: 'end',
+                }}
+              >
                 <IconButton onClick={() => setOpenDialog(true)}>
                   <CloseIcon sx={{color: 'white'}} fontSize="small" />
                 </IconButton>
@@ -117,7 +150,13 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
             '&.MuiCardContent-root:last-child': {py: 0},
           }}
         >
-          <Box display={'flex'} flexDirection={'column'} gap={0.5}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 0.5,
+            }}
+          >
             {itinerary_tasks?.map((task) => {
               return (
                 <div key={task.id}>
@@ -137,11 +176,22 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
       </Card>
       {openDialog && (
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-          <Box p={2}>
+          <Box
+            sx={{
+              p: 2,
+            }}
+          >
             <Typography variant="body2">
               Er du sikker på at du vil fjerne lokationen fra turen?
             </Typography>
-            <Box display="flex" gap={1} justifyContent={'flex-end'} mt={2}>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 1,
+                justifyContent: 'flex-end',
+                mt: 2,
+              }}
+            >
               <Button bttype="tertiary" onClick={() => setOpenDialog(false)}>
                 Annuller
               </Button>

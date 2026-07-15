@@ -1,8 +1,8 @@
 import React from 'react';
 import TimeseriesMetaForm from '../forms/TimeseriesMetaForm';
 import WatlevmpSection from '../sections/WatlevmpSection';
-import {RemoveCircleOutline} from '@mui/icons-material';
-import {Grid2} from '@mui/material';
+import {RemoveCircleOutlined} from '@mui/icons-material';
+import {Grid} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import Button from '~/components/Button';
 import {isSynchronizationAllowed} from './TimeseriesStepHelper';
@@ -62,7 +62,6 @@ const TimeseriesEditor = ({index, onRemove, setControlSettings}: Props) => {
           }
         }}
       />
-
       {meta_tstype_id !== undefined && (
         <>
           {meta_tstype_id === 1 && <WatlevmpSection index={index} />}
@@ -73,16 +72,18 @@ const TimeseriesEditor = ({index, onRemove, setControlSettings}: Props) => {
           {isSyncAllowed && <SyncSection uuid={index} tstype_id={meta_tstype_id} />}
         </>
       )}
-      <Grid2
+      <Grid
         size={isMobile ? 12 : 1}
-        alignContent={'center'}
-        display={'flex'}
-        width={'100%'}
-        justifyContent={'end'}
+        sx={{
+          alignContent: 'center',
+          display: 'flex',
+          width: '100%',
+          justifyContent: 'end',
+        }}
       >
         <Button
           bttype="tertiary"
-          startIcon={<RemoveCircleOutline fontSize="small" />}
+          startIcon={<RemoveCircleOutlined fontSize="small" />}
           onClick={() => {
             if (Object.keys(timeseries).length === 1) deleteState(`location.visibility`);
             onRemove();
@@ -90,7 +91,7 @@ const TimeseriesEditor = ({index, onRemove, setControlSettings}: Props) => {
         >
           Fjern tidsserie
         </Button>
-      </Grid2>
+      </Grid>
     </>
   );
 };

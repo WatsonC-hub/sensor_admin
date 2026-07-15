@@ -38,7 +38,7 @@ function wrap<TProps extends object>(
 
 export function createTypedForm<
   T extends FieldValues = never,
-  S extends Record<string, any> = T,
+  S extends FieldValues = never,
 >(): TypedFormComponent<T, S> {
   const Form = ((props) => <TypedForm<T, S> {...props} />) as TypedFormComponent<T, S>;
 

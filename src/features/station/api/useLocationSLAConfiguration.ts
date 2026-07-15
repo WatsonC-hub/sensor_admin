@@ -1,4 +1,4 @@
-import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery, useSuspenseQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
@@ -30,9 +30,9 @@ export const useLocationSLAConfiguration = (loc_id: number) => {
   const {
     features: {iotAccess},
   } = useUser();
-  return useQuery({
+  return useSuspenseQuery({
     ...locationSLAConfigurationOptions(loc_id),
-    enabled: iotAccess && loc_id !== undefined,
+    // enabled: iotAccess && loc_id !== undefined,
   });
 };
 

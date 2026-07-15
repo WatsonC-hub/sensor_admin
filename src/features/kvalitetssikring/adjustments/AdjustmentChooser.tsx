@@ -60,7 +60,12 @@ const AdjustmentChooser = () => {
   };
 
   return (
-    <Box height={'fit-content'} alignItems={'center'}>
+    <Box
+      sx={{
+        height: 'fit-content',
+        alignItems: 'center',
+      }}
+    >
       {(selection.range || selection.points) && dataAdjustment !== null && (
         <Card
           raised={true}

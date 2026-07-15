@@ -20,7 +20,12 @@ const TripUnitTable = ({units}: Props) => {
         accessorKey: 'terminal_name',
         size: 20,
         Cell: ({cell, row}) => (
-          <Typography fontSize="0.85rem" display="block">
+          <Typography
+            sx={{
+              fontSize: '0.85rem',
+              display: 'block',
+            }}
+          >
             {row.original.count + 'x ' + cell.getValue<string>()}
           </Typography>
         ),
@@ -32,7 +37,12 @@ const TripUnitTable = ({units}: Props) => {
           <div>
             {(cell.getValue<string[]>() || []).map((sensor_name, index) => (
               <div key={index}>
-                <Typography fontSize="0.85rem" display="block">
+                <Typography
+                  sx={{
+                    fontSize: '0.85rem',
+                    display: 'block',
+                  }}
+                >
                   {sensor_name}
                 </Typography>
               </div>
@@ -49,7 +59,13 @@ const TripUnitTable = ({units}: Props) => {
     () => ({
       ...(sharedTableOptions as Partial<MRT_TableOptions<TaskUnits>>),
       renderTopToolbar: (
-        <Typography variant="body1" pt={1} px={1}>
+        <Typography
+          variant="body1"
+          sx={{
+            pt: 1,
+            px: 1,
+          }}
+        >
           Udstyr
         </Typography>
       ),
@@ -67,7 +83,11 @@ const TripUnitTable = ({units}: Props) => {
   );
 
   return (
-    <Box p={1}>
+    <Box
+      sx={{
+        p: 1,
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

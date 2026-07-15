@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
-import {useForm} from 'react-hook-form';
+import {SubmitHandler, useForm} from 'react-hook-form';
 import {createTypedForm} from '~/components/formComponents/Form';
 import AlarmNotificationForm from './AlarmNotificationForm';
-import {AlarmsFormValues, alarmsSchema} from '../schema';
+import {AlarmFormInput, AlarmFormOutput, alarmsSchema} from '../schema';
 import {Box, ButtonGroup, Typography} from '@mui/material';
 import {ExpandLess, ExpandMore} from '@mui/icons-material';
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -23,7 +23,7 @@ type AlarmFormProps = {
   alarm?: AlarmTableType;
 };
 
-const Form = createTypedForm<AlarmsFormValues>();
+const Form = createTypedForm<AlarmFormInput, AlarmFormOutput>();
 
 const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
   const {ts_id} = useAppContext(['ts_id']);
@@ -39,7 +39,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [mode, setMode] = useState<'add' | 'edit' | 'view'>('view');
-  const alarmMethods = useForm<AlarmsFormValues, unknown, AlarmsFormValues>({
+  const alarmMethods = useForm<AlarmFormInput, unknown, AlarmFormOutput>({
     resolver: zodResolver(alarmsSchema),
     defaultValues: {
       name: alarm?.name || '',
@@ -70,7 +70,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     setDeleteDialogOpen(false);
   };
 
-  const submit = async (data: AlarmsFormValues) => {
+  const submit: SubmitHandler<AlarmFormInput> = async (data) => {
     if (alarm === undefined) {
       const payload = {
         path: `${ts_id}`,
@@ -98,7 +98,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     }
   };
 
-  const handleSave = async (data: AlarmsFormValues) => {
+  const handleSave: SubmitHandler<AlarmFormInput> = async (data) => {
     if (
       alarm?.group_id !== undefined &&
       alarm?.group_id !== '' &&
@@ -121,7 +121,13 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
           gridSizes={{xs: 12}}
         />
 
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+          }}
+        >
           <Typography variant="subtitle1">Hvor skal alarmen tilknyttes?</Typography>
           <ButtonGroup>
             <Button
@@ -164,7 +170,13 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
           placeholder="f.eks. bruger kontaktes hurtigst muligt..."
           gridSizes={{xs: 12}}
         />
-        <Box ml={'auto'} display="flex" gap={1}>
+        <Box
+          sx={{
+            ml: 'auto',
+            display: 'flex',
+            gap: 1,
+          }}
+        >
           <Form.Cancel
             cancel={() => {
               setOpen(false);

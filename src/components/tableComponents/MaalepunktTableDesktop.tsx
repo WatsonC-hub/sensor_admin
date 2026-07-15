@@ -34,12 +34,15 @@ export default function MaalepunktTableDesktop({handleEdit, disabled}: Props) {
     setDialogOpen(true);
   };
 
- const handleDeleteMaalepunkt = (gid: number | undefined) => {
-    deleteWatlevmp.mutate({path: `${ts_id}/${gid}`}, {
-      onSuccess: () => {
-        setDialogOpen(false);
+  const handleDeleteMaalepunkt = (gid: number | undefined) => {
+    deleteWatlevmp.mutate(
+      {path: `${ts_id}/${gid}`},
+      {
+        onSuccess: () => {
+          setDialogOpen(false);
+        },
       }
-    });
+    );
   };
 
   const unit = timeseries?.tstype_id === 1 ? 'Kote [m (DVR90)]' : `Måling [${timeseries?.unit}]`;

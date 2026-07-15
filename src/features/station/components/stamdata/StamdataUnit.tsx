@@ -72,7 +72,13 @@ const CalypsoID = ({textFieldsProps, ...rest}: AutocompleteInputProps) => {
   const {ids} = React.useContext(UnitContext);
 
   return (
-    <Box display="flex" alignItems="center" width="100%">
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+      }}
+    >
       <FormAutocomplete<AddUnitType, {id: string}, false>
         labelKey="id"
         name="calypso_id"

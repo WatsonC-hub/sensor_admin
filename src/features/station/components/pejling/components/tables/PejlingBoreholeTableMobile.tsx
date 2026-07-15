@@ -15,7 +15,7 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useQueryTable} from '~/hooks/useTable';
-import { useAppContext } from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
 interface Props {
@@ -60,28 +60,56 @@ export default function PejlingBoreholeTableMobile({handleEdit, disabled}: Props
         Cell: ({row, table, staticRowIndex}) => (
           <Box
             style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}
-            sx={{width: '100%'}}
-            gap={1}
-            height={26}
+            sx={{
+              gap: 1,
+              height: 26,
+              width: '100%',
+            }}
           >
             <MRT_ExpandButton row={row} table={table} staticRowIndex={staticRowIndex} />
-            <Box display="flex" flexDirection={'column'}>
-              <Typography alignSelf={'center'} variant="caption" fontWeight="bold">
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  alignSelf: 'center',
+                  fontWeight: 'bold',
+                }}
+              >
                 {row.original.measurement === null
                   ? 'Ingen måling'
                   : `${limitDecimalNumbers(row.original.measurement)} ${unit}`}
               </Typography>
-              <Typography alignSelf={'center'} variant="caption" color="grey.700" fontWeight="bold">
+              <Typography
+                variant="caption"
+                sx={{
+                  alignSelf: 'center',
+                  color: 'grey.700',
+                  fontWeight: 'bold',
+                }}
+              >
                 {convertDate(row.original.timeofmeas)}
               </Typography>
             </Box>
 
-            <Typography margin="0 auto">
+            <Typography
+              sx={{
+                margin: '0 auto',
+              }}
+            >
               {correction_map[row.original.useforcorrection] === 'Kontrol'
                 ? correction_map[row.original.useforcorrection]
                 : 'Korrektion'}
             </Typography>
-            <Box marginLeft={'auto'}>
+            <Box
+              sx={{
+                marginLeft: 'auto',
+              }}
+            >
               <RenderActions
                 handleEdit={() => {
                   handleEdit(row.original);

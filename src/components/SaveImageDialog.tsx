@@ -96,9 +96,7 @@ function SaveImageDialog({
       <DialogContent>
         <Grid container spacing={3}>
           <Grid
-            item
-            xs={12}
-            sm={12}
+            size={{xs: 12, sm: 12}}
             sx={{
               display: 'flex',
             }}
@@ -116,7 +114,7 @@ function SaveImageDialog({
               loading="lazy"
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{xs: 12, sm: 6}}>
             <TextField
               label={
                 <Typography variant="h6" component="h3">
@@ -127,12 +125,12 @@ function SaveImageDialog({
               variant="outlined"
               multiline
               rows={4}
-              InputLabelProps={{shrink: true}}
+              slotProps={{inputLabel: {shrink: true}}}
               fullWidth
               onChange={(event) => changeData('comment', event.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{xs: 12, sm: 6}}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -158,16 +156,38 @@ function SaveImageDialog({
         </Button>
         <Button onClick={saveImage} loading={isUploading || isEditing} bttype="primary">
           {activeImage.gid == -1 ? (
-            <Box display={'flex'} gap={1} alignItems={'center'}>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 1,
+                alignItems: 'center',
+              }}
+            >
               <Save />
-              <Typography variant="body2" fontSize={14}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 14,
+                }}
+              >
                 Gem
               </Typography>
             </Box>
           ) : (
-            <Box display="flex" alignItems="center" gap={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
               <Edit />
-              <Typography variant="body2" fontSize={14}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 14,
+                }}
+              >
                 Rediger
               </Typography>
             </Box>

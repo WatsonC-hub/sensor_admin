@@ -102,7 +102,14 @@ const LocationListVirtualizer = () => {
                   transform: `translateY(${virtualRow.start}px)`,
                 }}
               >
-                <Box px={1} py={2} borderTop={2} borderColor="grey.700">
+                <Box
+                  sx={{
+                    px: 1,
+                    py: 2,
+                    borderTop: 2,
+                    borderColor: 'grey.700',
+                  }}
+                >
                   <TooltipWrapper description=" Uden for zoom viser de lokationer som ligger udenfor det nuværende kortudsnit som er tilknyttet den valgte bruger i filtreringen.">
                     <Typography variant="h6">Uden for zoom</Typography>
                   </TooltipWrapper>

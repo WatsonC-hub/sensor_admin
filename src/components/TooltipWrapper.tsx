@@ -32,11 +32,13 @@ const TooltipWrapper = ({
   return (
     <Tooltip title={description} arrow enterTouchDelay={0}>
       <Box
-        display="flex"
-        alignItems="center"
-        alignContent="center"
-        justifyContent={children ? 'space-between' : 'end'}
-        gap={1}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          alignContent: 'center',
+          justifyContent: children ? 'space-between' : 'end',
+          gap: 1,
+        }}
       >
         {children}
         {url ? (
@@ -68,8 +70,8 @@ const TooltipWrapper = ({
           </Link>
         ) : (
           <Box
-            display="flex"
             sx={{
+              display: 'flex',
               cursor: 'help',
             }}
           >

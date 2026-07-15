@@ -29,7 +29,13 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
     <>
       {activeStep === 2 && (
         <>
-          <Typography variant="caption" alignContent={'center'} width={'fit-content'}>
+          <Typography
+            variant="caption"
+            sx={{
+              alignContent: 'center',
+              width: 'fit-content',
+            }}
+          >
             Felter markeret med en stjerne (*) er obligatoriske.
           </Typography>
 

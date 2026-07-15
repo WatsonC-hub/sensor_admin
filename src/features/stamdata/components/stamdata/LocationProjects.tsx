@@ -7,7 +7,7 @@ import {FieldError, Noop} from 'react-hook-form';
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
 import useLocationProject, {Project} from '../../api/useLocationProject';
-import {AddCircleOutline} from '@mui/icons-material';
+import {AddCircleOutlined} from '@mui/icons-material';
 
 interface LocationProjectsProps {
   value: string | undefined | null;
@@ -60,7 +60,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
                   shrink: true,
                 },
                 input: {
-                  ...params.InputProps,
+                  ...params.slotProps.input,
                   endAdornment: (
                     <>
                       <Button
@@ -74,9 +74,9 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
                         rel="noopener"
                         sx={{textTransform: 'none'}}
                       >
-                        {selectedValue ? <OpenInNewIcon /> : <AddCircleOutline />}
+                        {selectedValue ? <OpenInNewIcon /> : <AddCircleOutlined />}
                       </Button>
-                      {params.InputProps.endAdornment}
+                      {params.slotProps.input.endAdornment}
                     </>
                   ),
                 },

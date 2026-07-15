@@ -47,7 +47,12 @@ const TimeseriesStep = ({activeStep, setActiveStep, loc_id}: Props) => {
     <>
       {activeStep === 1 && (
         <>
-          <Typography variant="caption" alignContent={'center'}>
+          <Typography
+            variant="caption"
+            sx={{
+              alignContent: 'center',
+            }}
+          >
             Felter markeret med en stjerne (*) er obligatoriske.
           </Typography>
           <TimeseriesList />

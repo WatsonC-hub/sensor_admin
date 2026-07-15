@@ -43,13 +43,13 @@ const OwnDatePicker = ({
         textField: {
           fullWidth: fullWidth,
           margin: 'dense',
-          InputLabelProps: {
-            shrink: true,
-          },
-          InputProps: {
-            sx: {
-              '& > fieldset': {
-                borderColor: 'primary.main',
+          slotProps: {
+            inputLabel: {shrink: true},
+            input: {
+              sx: {
+                '& > fieldset': {
+                  borderColor: 'primary.main',
+                },
               },
             },
           },

@@ -54,21 +54,30 @@ const AdjustmentDataTable = ({data}: Props) => {
 
   const onSuccess = () => {
     setDialogOpen(false);
-  }
+  };
 
   const handleDelete = (ts_id: number | undefined, gid: number | undefined, type: string) => {
     if (type === AdjustmentTypes.EXLUDEPOINTS || type === AdjustmentTypes.EXLUDETIME)
-      delExclude.mutate({
-        path: `${ts_id}/${gid}`,
-      }, {onSuccess});
+      delExclude.mutate(
+        {
+          path: `${ts_id}/${gid}`,
+        },
+        {onSuccess}
+      );
     else if (type === AdjustmentTypes.LEVELCORRECTION)
-      delCorrection.mutate({
-        path: `${ts_id}/${gid}`,
-      }, {onSuccess});
+      delCorrection.mutate(
+        {
+          path: `${ts_id}/${gid}`,
+        },
+        {onSuccess}
+      );
     else if (type === AdjustmentTypes.MINMAX)
-      delMinMax.mutate({
-        path: `${ts_id}`,
-      }, {onSuccess});
+      delMinMax.mutate(
+        {
+          path: `${ts_id}`,
+        },
+        {onSuccess}
+      );
   };
 
   const result = data?.sort((a, b) => {
@@ -106,25 +115,50 @@ const AdjustmentDataTable = ({data}: Props) => {
               <Box>
                 {row.original.type === AdjustmentTypes.EXLUDEPOINTS && (
                   <Box>
-                    <Typography variant="caption" fontWeight={'bold'}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       Område: {'  '}
                     </Typography>
-                    <Typography variant="caption" display={'inline-block'}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: 'inline-block',
+                      }}
+                    >
                       {limitDecimalNumbers(data.min_value)} {unit}
                     </Typography>
                     {' - '}
-                    <Typography variant="caption" display={'inline-block'}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: 'inline-block',
+                      }}
+                    >
                       {limitDecimalNumbers(data.max_value)}
                       {unit}
                     </Typography>
                   </Box>
                 )}
                 <Box>
-                  <Typography variant="caption" display={'inline-block'}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'inline-block',
+                    }}
+                  >
                     <b>Fra: </b>
                     {convertDateWithTimeStamp(data.startdate)}
                   </Typography>
-                  <Typography variant="caption" display={'inline-block'}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'inline-block',
+                    }}
+                  >
                     <b>Til: </b>
 
                     {convertDateWithTimeStamp(data.enddate)}
@@ -137,7 +171,12 @@ const AdjustmentDataTable = ({data}: Props) => {
             return (
               <Box>
                 <Box>
-                  <Typography variant="caption" display={'inline-block'}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'inline-block',
+                    }}
+                  >
                     <b>Dato: </b>
                     {convertDateWithTimeStamp(data.date)}
                   </Typography>
@@ -150,7 +189,12 @@ const AdjustmentDataTable = ({data}: Props) => {
               <Box>
                 <Box>
                   {row.original.type === AdjustmentTypes.MINMAX && (
-                    <Box display={'flex'} flexDirection={'column'}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
                       <Typography variant="caption">
                         <b>Nedre: </b>
                         {limitDecimalNumbers(data.mincutoff)} {unit}
@@ -169,7 +213,12 @@ const AdjustmentDataTable = ({data}: Props) => {
             return (
               <Box>
                 <Box>
-                  <Typography variant="caption" display={'inline-block'}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'inline-block',
+                    }}
+                  >
                     <b>Til: </b>
                     {convertDateWithTimeStamp(data.date)}
                   </Typography>

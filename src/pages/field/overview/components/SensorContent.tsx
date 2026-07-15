@@ -43,21 +43,36 @@ const SensorContent = () => {
   const {ref} = useDraggable({
     id: 'location' + loc_id,
     data: {loc_id},
-    feedback: 'clone',
+    // feedback: 'clone',
     disabled: !enableDragToTrip,
   });
 
   return (
-    <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        py: 3,
+        px: 2,
+        gap: 3,
+        overflow: 'auto',
+      }}
+    >
       <LocationInfo />
       <TimeseriesList />
       <TaskList setCreateTaskDialog={setCreateTaskDialog} />
       {location?.itinerary_id && advancedTaskPermission && (
         <ItineraryCardList itinerary_id={location.itinerary_id} />
       )}
-
       {advancedTaskPermission && (
-        <Box display="flex" gap={2} flexDirection={'row'} alignSelf={'center'}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+            flexDirection: 'row',
+            alignSelf: 'center',
+          }}
+        >
           <Tooltip
             title={
               !enableDragToTrip
@@ -68,11 +83,13 @@ const SensorContent = () => {
           >
             {!isMobile ? (
               <Box
-                display="flex"
                 ref={ref}
-                flexDirection={'row'}
-                alignItems={'center'}
-                alignSelf={'center'}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                }}
               >
                 <Button
                   bttype="primary"
@@ -83,7 +100,14 @@ const SensorContent = () => {
                 </Button>
               </Box>
             ) : (
-              <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                }}
+              >
                 <Button
                   bttype="primary"
                   onClick={() => setOpenTripDialog(true)}
@@ -97,9 +121,7 @@ const SensorContent = () => {
           </Tooltip>
         </Box>
       )}
-
       {simpleTaskPermission && <TaskHistoryList />}
-
       {simpleTaskPermission && (
         <CreateManuelTaskModal
           open={createTaskDialog}

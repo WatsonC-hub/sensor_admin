@@ -15,16 +15,7 @@ const MinimalSelect = () => {
   const {boreholeIntake} = useNavigationFunctions();
   // const [selectedItem, setSelectedItem] = useState<number | undefined>();
 
-  // moves the menu below the select input
-  const menuProps = {
-    PaperProps: {
-      sx: {
-        backgroundColor: 'primary.main',
-      },
-    },
-  };
-
-  const {data: data} = useQuery({
+  const {data} = useQuery({
     queryKey: queryKeys.Borehole.minimalSelect(boreholeno),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<BoreholeData>>(
@@ -72,7 +63,16 @@ const MinimalSelect = () => {
 
   return (
     <Select
-      MenuProps={menuProps}
+      MenuProps={{
+        slotProps: {
+          paper: {
+            sx: {
+              backgroundColor: 'primary.main',
+            },
+          },
+        },
+      }}
+      // MenuProps={menuProps}
       value={intakeno !== undefined ? intakeno.toString() : ''}
       onChange={handleChange}
       open={isOpen}

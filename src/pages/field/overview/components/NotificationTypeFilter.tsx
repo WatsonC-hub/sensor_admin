@@ -18,15 +18,11 @@ const NotificationTypeFilter = ({setValue, value, onBlur, label = 'Notifikatione
 
   return (
     <Autocomplete
-      sx={{
-        marginTop: '8px',
-        marginBottom: '4px',
-        pb: 1.5,
-      }}
       freeSolo
       forcePopupIcon={false}
       multiple
       fullWidth
+      size="small"
       value={options.filter((item) => value?.includes(item.gid)) ?? []}
       autoHighlight={true}
       onChange={(event, newValue) => {
@@ -43,25 +39,31 @@ const NotificationTypeFilter = ({setValue, value, onBlur, label = 'Notifikatione
         // return `${option.id.slice(0, 4)} - ${option.group_name}`;
       }}
       isOptionEqualToValue={(option, value) => {
+        if (typeof option === 'string' || typeof value === 'string') {
+          return false;
+        }
         return option.gid === value.gid;
       }}
-      renderTags={(value, getTagProps) => {
+      renderValue={(value, getTagProps) => {
         return value.map((option, index) => {
+          if (typeof option === 'string') {
+            return null;
+          }
+
           const content = (
-            <Typography display="inline" variant="body2">
+            <Typography
+              variant="body2"
+              sx={{
+                display: 'inline',
+              }}
+            >
               {option.name}
             </Typography>
           );
-
           return (
             <Chip
               variant="outlined"
               label={content}
-              sx={{
-                backgroundColor: getColor({flag: option.flag}),
-                color: 'HighlightText',
-                opacity: 0.8,
-              }}
               component={'div'}
               {...getTagProps({index})}
               key={index}
@@ -69,9 +71,43 @@ const NotificationTypeFilter = ({setValue, value, onBlur, label = 'Notifikatione
           );
         });
       }}
+      // renderTags={(value, getTagProps) => {
+      //   return value.map((option, index) => {
+      //     const content = (
+      //       <Typography
+      //         variant="body2"
+      //         sx={{
+      //           display: 'inline',
+      //         }}
+      //       >
+      //         {option.name}
+      //       </Typography>
+      //     );
+
+      //     return (
+      //       <Chip
+      //         variant="outlined"
+      //         label={content}
+      //         sx={{
+      //           backgroundColor: getColor({flag: option.flag}),
+      //           color: 'HighlightText',
+      //           opacity: 0.8,
+      //         }}
+      //         component={'div'}
+      //         {...getTagProps({index})}
+      //         key={index}
+      //       />
+      //     );
+      //   });
+      // }}
       renderOption={(props, option) => (
         <li {...props} key={option.gid}>
-          <Typography display="inline" variant="body2">
+          <Typography
+            variant="body2"
+            sx={{
+              display: 'inline',
+            }}
+          >
             {option.name}
           </Typography>
         </li>
@@ -80,7 +116,9 @@ const NotificationTypeFilter = ({setValue, value, onBlur, label = 'Notifikatione
         <TextField
           {...params}
           fullWidth
-          InputLabelProps={{shrink: true}}
+          slotProps={{
+            inputLabel: {shrink: true},
+          }}
           variant="outlined"
           label={label}
           placeholder="Vælg notifikations type(r)"

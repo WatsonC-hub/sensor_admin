@@ -18,7 +18,7 @@ type CreateItineraryDialogProps = {
 
 const zodSchema = z.object({
   name: z
-    .string({required_error: 'Navn skal være angivet'})
+    .string({message: 'Navn skal være angivet'})
     .max(255, 'Navn må maks være 255 tegn')
     .optional(),
   due_date: zodDayjs().nullish(),
@@ -71,7 +71,12 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
             minWidth: 400,
           }}
         >
-          <Box display={'flex'} flexDirection={'row'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+          >
             <FormInput
               name="name"
               size="small"
@@ -80,13 +85,28 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
               required={false}
             />
           </Box>
-          <Box display={'flex'} flexDirection={'row'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+          >
             <TaskForm.DueDate />
           </Box>
-          <Box display={'flex'} flexDirection={'row'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+          >
             <TaskForm.AssignedTo />
           </Box>
-          <Box display={'flex'} flexDirection={'row'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+          >
             <FormInput
               name="comment"
               size="small"

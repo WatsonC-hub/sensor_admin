@@ -1,14 +1,14 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useQuery} from '@tanstack/react-query';
 import {DefaultValues, FieldValues, useForm} from 'react-hook-form';
-import {z} from 'zod';
+import {z, ZodObject} from 'zod';
+import {ZodIssueCode} from 'zod/v3';
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
 
 const syncSchema = z.object({
   dmp: z.union([
     z.object({
       owner_cvr: z.number({
-        required_error: 'Data ejer skal vælges',
         message: 'Data ejer skal vælges',
       }),
       owner_name: z.union([z.string(), z.literal('')]),
@@ -17,12 +17,13 @@ const syncSchema = z.object({
     z.literal(null),
   ]),
   jupiter: z.union([
-    z.boolean({required_error: 'Vælg venligst om der skal synkroniseres til Jupiter'}),
+    z.boolean({message: 'Vælg venligst om der skal synkroniseres til Jupiter'}),
     z.literal(null),
   ]),
 });
 
-export type SyncFormSchema = z.infer<typeof syncSchema>;
+export type SyncFormSchema = z.input<typeof syncSchema>;
+export type SyncFormSchemaOutput = z.output<typeof syncSchema>;
 
 type SyncContext = {
   tstype_id?: number;
@@ -31,12 +32,12 @@ type SyncContext = {
 };
 
 type SyncFormProps<T extends FieldValues> = {
-  defaultValues?: DefaultValues<T>;
-  values?: T;
+  defaultValues?: DefaultValues<SyncFormSchema>;
+  values?: SyncFormSchema;
   context: SyncContext;
 };
 
-const useSyncForm = <T extends FieldValues, S extends Record<string, any> = T>({
+const useSyncForm = <T extends FieldValues, S extends FieldValues = T>({
   defaultValues,
   values,
   context,
@@ -67,24 +68,43 @@ const useSyncForm = <T extends FieldValues, S extends Record<string, any> = T>({
     enabled: isDmpAllowed,
   });
 
-  let conditionalSchema = z.object({});
-  if (!canSyncJupiter) {
-    conditionalSchema = syncSchema.extend({
-      ...syncSchema.shape,
-      jupiter: syncSchema.shape.jupiter.optional(),
-    });
-  }
+  let conditionalSchema = syncSchema.superRefine((data, ctx) => {
+    if (canSyncJupiter && (data.jupiter === undefined || data.jupiter === null)) {
+      ctx.addIssue({
+        code: ZodIssueCode.custom,
+        path: ['jupiter'],
+        message: 'Vælg venligst om der skal synkroniseres til Jupiter',
+      });
+    }
 
-  if (!isDmpAllowed) {
-    conditionalSchema = conditionalSchema.extend({
-      ...syncSchema.shape,
-      dmp: syncSchema.shape.dmp.optional(),
-    });
-  }
+    if (isDmpAllowed && (data.dmp === undefined || data.dmp === null)) {
+      ctx.addIssue({
+        code: ZodIssueCode.custom,
+        path: ['dmp'],
+        message: 'Data ejer skal vælges',
+      });
+    }
+  });
+  // if (!canSyncJupiter) {
+  //   conditionalSchema = syncSchema.extend({
+  //     ...syncSchema.shape,
+  //     jupiter: syncSchema.shape.jupiter.optional(),
+  //   });
+  // }
+
+  // if (!isDmpAllowed) {
+  //   conditionalSchema = conditionalSchema.extend({
+  //     ...syncSchema.shape,
+  //     dmp: syncSchema.shape.dmp.optional(),
+  //   });
+  // }
 
   const owners: Array<{cvr: string; name: string}> = result.data;
 
-  const syncFormMethods = useForm<T, unknown, S>({
+  // type conditionalType = z.infer<typeof conditionalSchema>;
+  // type conditionalOutputType = z.output<typeof conditionalSchema>;
+
+  const syncFormMethods = useForm<SyncFormSchema>({
     resolver: zodResolver(conditionalSchema),
     defaultValues: defaultValues,
     mode: 'onTouched',

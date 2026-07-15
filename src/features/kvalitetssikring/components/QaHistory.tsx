@@ -138,8 +138,19 @@ export default function QAHistory() {
   const dialog = (
     <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
       <DialogContent>
-        <Box display={'flex'} flexDirection="column" gap={1}>
-          <Typography variant="body2" fontWeight={'bold'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             Vil du gerne godkende tidsserien frem til dagens dato? <br />
           </Typography>
         </Box>
@@ -200,7 +211,13 @@ export default function QAHistory() {
       <StationPageBoxLayout>
         <Box>
           <AdjustmentChooser />
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <TooltipWrapper
               description="På denne side kan du se historikken for justeringer af tidsserien. Læs mere om justeringer i guiden."
               url="https://www.watsonc.dk/guides/side-oversigt/#juster-data"

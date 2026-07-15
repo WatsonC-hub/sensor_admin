@@ -78,7 +78,9 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
         if (onInputChange && reason === 'blur') onInputChange(event, newInputValue, reason);
       }}
       renderInput={(params) => {
-        const {InputProps} = params;
+        const {
+          slotProps: {input: InputProps},
+        } = params;
         let sx = {
           pb: 0,
           '& .MuiInputBase-input.Mui-disabled': {

@@ -134,11 +134,13 @@ const Overview = () => {
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      flexGrow={1}
-      alignItems="stretch"
-      position="relative"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        alignItems: 'stretch',
+        position: 'relative',
+      }}
     >
       <Box
         sx={{
@@ -259,7 +261,13 @@ const Overview = () => {
             minSize={2}
             onClose={() => setSelectedTask(null)}
           >
-            <Box key={selectedTask} p={1} overflow="auto">
+            <Box
+              key={selectedTask}
+              sx={{
+                p: 1,
+                overflow: 'auto',
+              }}
+            >
               <TaskInfo />
             </Box>
           </WindowManager.Window>

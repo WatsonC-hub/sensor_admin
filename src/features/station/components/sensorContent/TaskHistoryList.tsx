@@ -40,14 +40,27 @@ const Layout = ({children}: LayoutProps) => {
   const {loc_id} = useAppContext(['loc_id']);
   const {refetch, isFetching} = useLocationTaskHistory(loc_id);
   return (
-    <Box display="flex" gap={1} flexDirection={'column'}>
+    <Box
+      sx={{
+        display: 'flex',
+        gap: 1,
+        flexDirection: 'column',
+      }}
+    >
       <Box
-        display={'flex'}
-        flexDirection={'row'}
-        justifyContent={'space-between'}
-        alignItems={'center'}
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
       >
-        <Typography variant="h6" fontWeight={'bold'}>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           Historik
         </Typography>
         <RestartAltIcon

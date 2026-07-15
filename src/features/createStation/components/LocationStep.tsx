@@ -17,7 +17,12 @@ const LocationStep = ({activeStep, setActiveStep}: Props) => {
     <>
       {activeStep === 0 && (
         <>
-          <Typography variant="caption" alignContent={'center'}>
+          <Typography
+            variant="caption"
+            sx={{
+              alignContent: 'center',
+            }}
+          >
             Felter markeret med en stjerne (*) er obligatoriske.
           </Typography>
           <LocationForm />

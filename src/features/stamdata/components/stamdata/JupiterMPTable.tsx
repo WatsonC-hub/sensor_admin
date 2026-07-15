@@ -132,7 +132,14 @@ const JupiterMPTable = () => {
       return (
         <>
           {isPending ? (
-            <Box display="flex" justifyContent="center" p={0.5} alignItems="center">
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                p: 0.5,
+                alignItems: 'center',
+              }}
+            >
               <CircularProgress size="18px" />
             </Box>
           ) : (
@@ -164,7 +171,12 @@ const JupiterMPTable = () => {
         </TooltipWrapper>
       ),
     renderTopToolbar: (
-      <Typography variant="body1" p={1}>
+      <Typography
+        variant="body1"
+        sx={{
+          p: 1,
+        }}
+      >
         Målepunkt eller terrænkote i Jupiter
       </Typography>
     ),
@@ -190,7 +202,11 @@ const JupiterMPTable = () => {
   );
 
   return (
-    <Box mb={1}>
+    <Box
+      sx={{
+        mb: 1,
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

@@ -66,14 +66,22 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
         mt: 0.5,
       }}
     >
-      <Box px={0.5}>
+      <Box
+        sx={{
+          px: 0.5,
+        }}
+      >
         <TooltipWrapper description="Valg herunder hvilke elementer der skal vises i grafen" />
       </Box>
-
       {items
         .filter((item) => item !== null)
         .map((item) => (
-          <Box key={item.key} mb={1}>
+          <Box
+            key={item.key}
+            sx={{
+              mb: 1,
+            }}
+          >
             <FormControlLabel
               control={
                 <Switch
@@ -89,8 +97,14 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
             />
           </Box>
         ))}
-
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} mt={1}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'end',
+          mt: 1,
+        }}
+      >
         <Button
           sx={{display: 'flex', justifySelf: 'end', mr: 1, textTransform: 'initial'}}
           onClick={() => {

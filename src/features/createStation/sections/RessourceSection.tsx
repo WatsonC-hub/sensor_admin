@@ -1,4 +1,4 @@
-import {AddCircleOutline} from '@mui/icons-material';
+import {AddCircleOutlined} from '@mui/icons-material';
 import React, {ReactNode} from 'react';
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
@@ -18,7 +18,7 @@ const RessourceSection = () => {
       {ressourcer === undefined && (
         <Button
           bttype="primary"
-          startIcon={<AddCircleOutline />}
+          startIcon={<AddCircleOutlined />}
           sx={button_sx(ressourcer !== undefined)}
           onClick={() => {
             setState('location.ressourcer', []);

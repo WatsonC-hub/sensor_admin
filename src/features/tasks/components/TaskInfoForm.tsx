@@ -104,8 +104,19 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   };
 
   return (
-    <Box display={'flex'} flexDirection={'column'}>
-      <Typography variant="h6" fontWeight={600} mb={1}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: 600,
+          mb: 1,
+        }}
+      >
         Opgaveoplysninger
       </Typography>
       <Typography>
@@ -113,7 +124,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         {selectedTask.prefix ? ' - ' + selectedTask.prefix : ''}
       </Typography>
       <Grid container spacing={1}>
-        <Grid item mobile={12} tablet={12} laptop={6}>
+        <Grid size={{xs: 12, sm: 6}}>
           <TaskForm.Input
             sx={{pb: 0}}
             label={'Opgavenavn'}
@@ -121,18 +132,30 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             onBlurCallback={async () => await handlePatch('name')}
           />
         </Grid>
-        <Grid item mobile={12} tablet={12} laptop={6}>
+        <Grid size={{xs: 12, sm: 6}}>
           <TaskForm.StatusSelect
             disableClosedStatus={!selectedTask.is_created}
             onBlurCallback={async () => await handlePatch('status_id')}
           />
         </Grid>
-        <Grid item mobile={12} tablet={12} laptop={6}>
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
+        <Grid size={{xs: 12, sm: 6}}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+          >
             <TaskForm.DueDate onChangeCallback={async () => await handlePatch('due_date')} />
           </Box>
         </Grid>
-        <Grid item mobile={12} tablet={12} laptop={6} alignContent={'center'} pb={0.5}>
+        <Grid
+          size={{xs: 12, sm: 6}}
+          sx={{
+            alignContent: 'center',
+            pb: 0.5,
+          }}
+        >
           {selectedTask.can_edit ? (
             <TaskForm.AssignedTo
               onBlur={async () => {
@@ -157,16 +180,29 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             />
           )}
         </Grid>
-        <Grid item mobile={12} pb={1}>
-          <Grid container display={'flex'} flexDirection={'row'} alignItems={'start'} spacing={0}>
+        <Grid
+          size={{xs: 12}}
+          sx={{
+            pb: 1,
+          }}
+        >
+          <Grid
+            container
+            spacing={0}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'start',
+            }}
+          >
             <Grid
-              item
-              mobile={12}
-              laptop={12}
-              display={'flex'}
-              flexDirection={'row'}
-              alignItems={'center'}
-              gap={1}
+              size={{xs: 12, sm: 12}}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 1,
+              }}
             >
               <Typography>Bloker</Typography>
               <TaskForm.BlockAll
@@ -175,13 +211,13 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
               />
             </Grid>
             <Grid
-              item
-              mobile={12}
-              laptop={12}
-              display={'flex'}
-              flexDirection={'row'}
-              alignItems={'center'}
-              gap={1}
+              size={{xs: 12, sm: 12}}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 1,
+              }}
             >
               <Typography>på</Typography>
               <TaskForm.BlockOnLocation
@@ -191,10 +227,10 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             </Grid>
           </Grid>
         </Grid>
-        {/* <Grid item mobile={12} tablet={12} laptop={6}>
+        {/* <Grid size={{xs: 12, sm: 6}}>
         </Grid> */}
 
-        <Grid item mobile={12} tablet={12} laptop={12}>
+        <Grid size={{xs: 12, sm: 12}}>
           <TaskForm.Input
             label="Beskrivelse"
             name="description"
@@ -205,7 +241,14 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           />
         </Grid>
       </Grid>
-      <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 1,
+        }}
+      >
         <Box>
           <Tooltip arrow title={deleteTaskTitle}>
             <Button

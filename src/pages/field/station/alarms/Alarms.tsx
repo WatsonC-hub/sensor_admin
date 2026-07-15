@@ -28,10 +28,22 @@ const Alarms = ({ts_id, loc_id}: AlarmsProps) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <AlarmFormDialog open={open} onClose={cancel} setOpen={setOpen} />
       <AlarmTable alarms={alarms} />
-      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: 1,
+        }}
+      >
         <UpdateProgressButton
           loc_id={-1}
           disabled={location_permissions !== 'edit'}

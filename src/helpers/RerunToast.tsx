@@ -11,12 +11,14 @@ const RerunToast = ({closeToast, data}: Partial<ToastContentProps<{ts_id: number
 
   return (
     <Box
-      display={'flex'}
-      flexDirection="row"
-      alignItems="center"
-      justifyContent="center"
-      gap={1}
-      sx={{p: 0}}
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 1,
+        p: 0,
+      }}
     >
       <Typography variant="body1" sx={{mb: 1}}>
         Ændringer foretaget...

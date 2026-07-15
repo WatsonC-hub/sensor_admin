@@ -58,24 +58,52 @@ export default function PejlingMeasurementsTableMobile({
               justifyContent: 'space-between',
               alignItems: 'center',
             }}
-            gap={1}
-            height={26}
+            sx={{
+              gap: 1,
+              height: 26,
+            }}
           >
             <MRT_ExpandButton row={row} table={table} staticRowIndex={staticRowIndex} />
-            <Box display="flex" flexDirection={'column'}>
-              <Typography alignSelf={'center'} variant="caption" fontWeight="bold">
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  alignSelf: 'center',
+                  fontWeight: 'bold',
+                }}
+              >
                 {limitDecimalNumbers(row.original.disttowatertable_m)} {unit}
               </Typography>
-              <Typography alignSelf={'center'} variant="caption" color="grey.700" fontWeight="bold">
+              <Typography
+                variant="caption"
+                sx={{
+                  alignSelf: 'center',
+                  color: 'grey.700',
+                  fontWeight: 'bold',
+                }}
+              >
                 {convertDate(row.original.timeofmeas)}
               </Typography>
             </Box>
 
-            <Typography margin="0 auto">
+            <Typography
+              sx={{
+                margin: '0 auto',
+              }}
+            >
               {row.original.organisationid !== null ? row.original.organisationname : '-'}
             </Typography>
 
-            <Box marginLeft={'auto'}>
+            <Box
+              sx={{
+                marginLeft: 'auto',
+              }}
+            >
               <RenderActions
                 handleEdit={() => {
                   handleEdit(row.original);

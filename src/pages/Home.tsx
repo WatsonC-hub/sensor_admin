@@ -29,7 +29,11 @@ const Home = () => {
           description="Læs mere om hvad du kan på kortet i Field appen"
         > */}
         {!isMobile && <NavBar.Title title="Field" />}
-        <Box alignItems={'center'}>
+        <Box
+          sx={{
+            alignItems: 'center',
+          }}
+        >
           {isMobile && <NavBar.Scanner />}
           {/* </TooltipWrapper> */}
           {simpleTaskPermission && <NavBar.OwnTaskList />}
@@ -37,8 +41,8 @@ const Home = () => {
           {advancedTaskPermission && <NavBar.TripList />}
           <NavBar.Menu
             disableProfile={false}
-            items={[
-              ...(iotAccess
+            items={
+              iotAccess
                 ? [
                     {
                       title: 'Opret lokation',
@@ -48,8 +52,8 @@ const Home = () => {
                       },
                     },
                   ]
-                : []),
-            ]}
+                : []
+            }
           />
         </Box>
       </NavBar>

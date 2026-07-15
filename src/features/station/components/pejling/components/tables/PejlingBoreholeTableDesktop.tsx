@@ -17,7 +17,7 @@ import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import { useAppContext } from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
 interface Props {
@@ -49,9 +49,8 @@ export default function PejlingBoreholeTableDesktop({handleEdit, disabled}: Prop
       onSuccess: () => {
         setDialogOpen(false);
       },
-      });
+    });
   };
-
 
   const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [

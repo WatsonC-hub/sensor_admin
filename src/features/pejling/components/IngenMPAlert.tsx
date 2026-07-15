@@ -10,7 +10,14 @@ type Props = {
 const IngenMPAlert = ({openAddMP}: Props) => {
   return (
     <div>
-      <Grid item xs={12} sm={12} display="flex" justifyContent="center" p={2}>
+      <Grid
+        size={{xs: 12, sm: 12}}
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          p: 2,
+        }}
+      >
         <Alert
           severity="error"
           sx={{

@@ -214,8 +214,20 @@ export default function PlotlyGraph({
 
   return (
     <>
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-        <Box pl={isTouch ? 0 : 7} display={'flex'} flexDirection={'row'}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Box
+          sx={{
+            pl: isTouch ? 0 : 7,
+            display: 'flex',
+            flexDirection: 'row',
+          }}
+        >
           <Button
             bttype="link"
             onClick={() => graphLayout('week')}
@@ -250,7 +262,14 @@ export default function PlotlyGraph({
           </Button>
         </Box>
         {((boreholeno !== null && ts_id !== undefined) || boreholeno === null) && (
-          <Box display={'flex'} flexDirection={'row'} pr={1} gap={isTouch ? 0 : 1}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              pr: 1,
+              gap: isTouch ? 0 : 1,
+            }}
+          >
             <Tooltip title={'Genberegn tidsserie data'} arrow placement="top">
               <Button
                 bttype="link"
@@ -295,7 +314,6 @@ export default function PlotlyGraph({
           </Box>
         )}
       </Box>
-
       {isOpen && (
         <ClickAwayListener
           onClickAway={(e) => {
@@ -316,7 +334,6 @@ export default function PlotlyGraph({
           </Box>
         </ClickAwayListener>
       )}
-
       <Plot
         onSelected={(e) => {
           if (plotEventProps?.onSelected) plotEventProps.onSelected(e);

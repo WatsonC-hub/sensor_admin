@@ -3,27 +3,28 @@ import {DefaultValues, FieldValues, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 const controlSettingsSchema = z.object({
-  controls_per_year: z.number({
-    message: 'Antal kontroller er påkrævet',
-  }),
-  lead_time: z.number().nullish(),
+  controls_per_year: z
+    .number({
+      message: 'Antal kontroller er påkrævet',
+    })
+    .nullable(),
+  lead_time: z.number().nullable(),
   dummy: z.number().nullish().optional(),
   selectValue: z.literal(1).or(z.literal(2)).default(1),
   from_unit: z.boolean().optional(),
 });
 
 export type ControlSettingsFormValues = z.infer<typeof controlSettingsSchema>;
+export type ControlSettingsOutput = z.output<typeof controlSettingsSchema>;
+export type ControlSettingsInput = z.input<typeof controlSettingsSchema>;
 
-type ControlSettingsProps<T extends FieldValues> = {
-  defaultValues: DefaultValues<T> | undefined;
-  values?: T;
+type ControlSettingsProps = {
+  defaultValues: DefaultValues<ControlSettingsInput> | undefined;
+  values?: ControlSettingsInput;
 };
 
-const useControlSettingsForm = <T extends FieldValues, S extends FieldValues = T>({
-  defaultValues,
-  values,
-}: ControlSettingsProps<T>) => {
-  const controlSettingsFormMethods = useForm<T, unknown, S>({
+const useControlSettingsForm = ({defaultValues, values}: ControlSettingsProps) => {
+  const controlSettingsFormMethods = useForm<ControlSettingsInput, unknown, ControlSettingsOutput>({
     resolver: zodResolver(controlSettingsSchema),
     defaultValues: defaultValues,
     mode: 'onTouched',

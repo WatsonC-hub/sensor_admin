@@ -66,7 +66,14 @@ function TimeseriesList() {
 
   return (
     <>
-      <Box display="flex" gap={1} flexWrap="wrap" alignSelf={'center'}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 1,
+          flexWrap: 'wrap',
+          alignSelf: 'center',
+        }}
+      >
         {iotAccess && (
           <Button bttype="primary" onClick={() => setUnitDialog(true)} startIcon={<Router />}>
             Tilføj fra udstyr

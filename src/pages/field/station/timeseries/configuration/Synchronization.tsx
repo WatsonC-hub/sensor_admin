@@ -26,8 +26,20 @@ const Synchronization = () => {
   };
 
   return (
-    <Box display={'flex'} flexGrow={1} flexDirection="column" justifyContent={'space-between'}>
-      <Typography variant="h6" marginBottom={1}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexGrow: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          marginBottom: 1,
+        }}
+      >
         Synkronisering
       </Typography>
       {sync_data && (

@@ -1,17 +1,15 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {DefaultValues, FieldValues, useForm} from 'react-hook-form';
-import {z} from 'zod';
+import {z, ZodObject} from 'zod';
 import {AccessType} from '~/helpers/EnumHelper';
 
-const locationAccessSchema = z
+export const locationAccessSchema = z
   .object({
     id: z.number().nullish(),
-    type: z
-      .string({required_error: 'En type skal vælges ud fra listen'})
-      .refine((val) => val !== '', {
-        message: 'En type skal vælges ud fra listen',
-      }),
-    navn: z.string({required_error: 'Feltet skal udfyldes'}).min(1, 'Feltet skal udfyldes'),
+    type: z.string({message: 'En type skal vælges ud fra listen'}).refine((val) => val !== '', {
+      message: 'En type skal vælges ud fra listen',
+    }),
+    navn: z.string({message: 'Feltet skal udfyldes'}).min(1, 'Feltet skal udfyldes'),
     contact_id: z.string().nullish(),
     placering: z.string().optional().nullish(),
     koden: z.string().optional().nullish(),
@@ -21,43 +19,44 @@ const locationAccessSchema = z
       .transform((value) => value ?? ''),
   })
   .refine(
-    ({placering, koden, type}) => {
+    ({placering, type}) => {
       if (type == AccessType.Key) {
         return placering !== '';
       }
+    },
+    {
+      message: 'Udleveres på adresse felt skal udfyldes',
+      path: ['placering'],
+    }
+  )
+  .refine(
+    ({koden, type}) => {
       if (type == AccessType.Code) {
         return koden !== '';
       }
+      return true;
     },
-    ({type}) => {
-      if (type !== '-1' && type === AccessType.Key)
-        return {
-          message: 'Udleveres på adresse felt skal udfyldes',
-          path: ['placering'],
-        };
-      else
-        return {
-          message: 'Kode feltet skal udfyldes',
-          path: ['koden'],
-        };
+    {
+      message: 'Kode feltet skal udfyldes',
+      path: ['koden'],
     }
   );
 
-const locationAccessArraySchema = z.array(locationAccessSchema);
+// const locationAccessArraySchema = z.array(locationAccessSchema);
 
-type LocationAccessFormProps<T> = {
-  mode: 'add' | 'edit' | 'mass_edit';
-  defaultValues: DefaultValues<T> | undefined;
-  values?: T;
+type LocationAccessFormProps<TSchema extends ZodObject<any>> = {
+  schema: TSchema;
+  defaultValues: DefaultValues<z.input<TSchema>> | undefined;
+  values?: z.input<TSchema>;
 };
 
-const useLocationAccessForm = <T extends FieldValues, U extends FieldValues = T>({
-  mode,
+const useLocationAccessForm = <TSchema extends ZodObject<any>>({
+  schema,
   defaultValues,
   values,
-}: LocationAccessFormProps<T>) => {
-  const locationAccessFormMethods = useForm<T, unknown, U>({
-    resolver: zodResolver(mode !== 'mass_edit' ? locationAccessSchema : locationAccessArraySchema),
+}: LocationAccessFormProps<TSchema>) => {
+  const locationAccessFormMethods = useForm<z.input<TSchema>, any, z.output<TSchema>>({
+    resolver: zodResolver(schema),
     mode: 'onTouched',
     defaultValues: defaultValues,
     values: values,

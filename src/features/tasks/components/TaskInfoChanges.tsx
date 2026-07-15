@@ -46,14 +46,20 @@ const TaskInfoChanges = ({taskChanges, taskUsers, taskStatus}: Props) => {
   }
 
   return (
-    <Box display="flex" justifyContent="space-between" key={taskChanges.id} flexDirection={'row'}>
+    <Box
+      key={taskChanges.id}
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+      }}
+    >
       <ChangeText
         old_value={old_value}
         new_value={new_value}
         field_name={field_name}
         taskChanges={taskChanges}
       />
-
       <Typography variant="body2">{convertDateWithTimeStamp(taskChanges.created_at)}</Typography>
     </Box>
   );
@@ -79,7 +85,13 @@ const ChangeText = ({old_value, new_value, field_name, taskChanges}: ChangeTextP
   }
 
   return (
-    <Typography whiteSpace={'pre-line'} variant="body2" sx={{wordWrap: 'break-word'}}>
+    <Typography
+      variant="body2"
+      sx={{
+        whiteSpace: 'pre-line',
+        wordWrap: 'break-word',
+      }}
+    >
       <b>{taskChanges.initials} </b> {text}
     </Typography>
   );

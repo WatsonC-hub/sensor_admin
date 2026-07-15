@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, Typography, TextField, InputAdornment, Alert, Grid2} from '@mui/material';
+import {Box, Typography, TextField, InputAdornment, Alert, Grid} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
@@ -26,18 +26,25 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 const ConfigurationSchema = z.object({
   sampleInterval: z
     .number({message: 'Måleinterval er påkrævet'})
-    .min(1, 'Måleinterval skal være mindst 1 minut'),
+    .min(1, 'Måleinterval skal være mindst 1 minut')
+    .optional(),
   sendInterval: z
-    .number({required_error: 'Sendeinterval er påkrævet'})
-    .min(1, 'Sendingsinterval skal være mindst 1 minut'),
+    .number({message: 'Sendeinterval er påkrævet'})
+    .min(1, 'Sendingsinterval skal være mindst 1 minut')
+    .optional(),
 });
 
-type ConfigForm = {
-  sampleInterval: number | undefined;
-  sendInterval: number | undefined;
-};
+const requiredSchema = ConfigurationSchema.required();
 
-type ConfigSubmit = z.infer<typeof ConfigurationSchema>;
+type ConfigForm = z.input<typeof ConfigurationSchema>;
+type ConfigSubmit = z.infer<typeof requiredSchema>;
+
+// type ConfigForm = {
+//   sampleInterval: number | undefined;
+//   sendInterval: number | undefined;
+// };
+
+// type ConfigSubmit = z.infer<typeof ConfigurationSchema>;
 
 const NUM_OPTIONS = 100;
 
@@ -71,11 +78,11 @@ const UnitMeasurementConfig = () => {
   const {superUser} = useUser();
   const values = data?.savedConfig ? data.savedConfig : undefined;
 
-  const formMethods = useForm<ConfigForm, unknown, ConfigSubmit>({
+  const formMethods = useForm<ConfigForm>({
     resolver: zodResolver(ConfigurationSchema),
     defaultValues: {
-      sampleInterval: values?.sampleInterval || undefined,
-      sendInterval: values?.sendInterval || undefined,
+      sampleInterval: values?.sampleInterval,
+      sendInterval: values?.sendInterval,
     },
     values: values,
   });
@@ -122,7 +129,12 @@ const UnitMeasurementConfig = () => {
 
   if (isLoading) {
     return (
-      <Box minWidth={isMobile ? '70vw' : 500} height={400}>
+      <Box
+        sx={{
+          minWidth: isMobile ? '70vw' : 500,
+          height: 400,
+        }}
+      >
         <Typography>Loading</Typography>
       </Box>
     );
@@ -134,7 +146,12 @@ const UnitMeasurementConfig = () => {
     : 0;
   return (
     <FormProvider {...formMethods}>
-      <Box width="fit-content" alignItems="center">
+      <Box
+        sx={{
+          width: 'fit-content',
+          alignItems: 'center',
+        }}
+      >
         <TooltipWrapper
           color="info"
           description="De aktuelle sendeforhold er det vi har målt på de data vi har modtaget. Det betyder i nogle tilfælde at det er estimerede værdier."
@@ -142,8 +159,14 @@ const UnitMeasurementConfig = () => {
           <Typography variant="body1">Aktuelle sendeforhold</Typography>
         </TooltipWrapper>
       </Box>
-
-      <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} mb={2}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: 2,
+          mb: 2,
+        }}
+      >
         <TextField
           label="Måleinterval"
           disabled
@@ -173,7 +196,12 @@ const UnitMeasurementConfig = () => {
           }}
         />
       </Box>
-      <Box width="fit-content" alignItems="center">
+      <Box
+        sx={{
+          width: 'fit-content',
+          alignItems: 'center',
+        }}
+      >
         <TooltipWrapper
           color="info"
           description="Ændringer i sendeforhold træder først i kraft når de er gemt og udstyret har opsamlet de
@@ -190,9 +218,20 @@ const UnitMeasurementConfig = () => {
       <ConfigAlert
         status={data?.configState || null}
         timeseriesStatus={data?.currentPendingTimeseries || null}
-        handleResend={handleSubmit(async (data) => await mutateAsync(data))}
+        handleResend={handleSubmit(async (data) => {
+          const parsed = requiredSchema.safeParse(data);
+          if (!parsed.success) return;
+          await mutateAsync(parsed.data);
+        })}
       />
-      <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} mb={-3}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: 2,
+          mb: -3,
+        }}
+      >
         <FormInput
           name="sampleInterval"
           label="Måleinterval"
@@ -239,27 +278,32 @@ const UnitMeasurementConfig = () => {
           }
           options={options}
           keyType="number"
-          SelectProps={{
-            MenuProps: {
-              sx: {
-                maxHeight: '300px',
+          slotProps={{
+            select: {
+              MenuProps: {
+                sx: {
+                  maxHeight: '300px',
+                },
               },
             },
-          }}
-          slotProps={{
             input: {
               startAdornment: <InputAdornment position="start">hver</InputAdornment>,
             },
           }}
         />
       </Box>
-
       <Typography variant="body2" color="textSecondary" sx={{mt: 1, mb: 2}}>
         Forventet tidspunkt for omkonfigurering {configChange ? configChange : 'ukendt'}
       </Typography>
-
       {!disabled && (
-        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+        <Grid
+          size={12}
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 1,
+          }}
+        >
           <UpdateProgressButton
             loc_id={loc_id}
             ts_id={ts_id}
@@ -276,13 +320,17 @@ const UnitMeasurementConfig = () => {
           <Button
             bttype="primary"
             disabled={isSubmitting || !isDirty || disabled}
-            onClick={handleSubmit(async (data) => await mutateAsync(data))}
+            onClick={handleSubmit(async (data) => {
+              const parsed = requiredSchema.safeParse(data);
+              if (!parsed.success) return;
+              await mutateAsync(parsed.data);
+            })}
             startIcon={isSubmitting ? undefined : <Save />}
             loading={isSubmitting}
           >
             <Typography variant="body2">Gem</Typography>
           </Button>
-        </Grid2>
+        </Grid>
       )}
     </FormProvider>
   );

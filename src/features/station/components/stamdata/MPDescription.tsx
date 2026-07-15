@@ -74,7 +74,7 @@ const MPDescription = ({
           placeholder="F.eks. Top rør"
           slotProps={{
             input: {
-              ...params?.InputProps,
+              ...params?.slotProps.input,
               sx: {
                 '& .Mui-disabled': {
                   WebkitTextFillColor: '#000000',

@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {EditRounded, PhotoCameraRounded, Save} from '@mui/icons-material';
-import {Box, Card, CardContent, Grid2, InputAdornment, Typography} from '@mui/material';
+import {Box, Card, CardContent, Grid, InputAdornment, Typography} from '@mui/material';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
@@ -121,11 +121,11 @@ const BoreholeStamdata = () => {
             </Typography>
           </Box>
           <FormProvider {...formMethods}>
-            <Grid2 container spacing={2}>
-              <Grid2 size={{xs: 12, sm: 6}}>
+            <Grid container spacing={2}>
+              <Grid size={{xs: 12, sm: 6}}>
                 <FormInput name="description" label="Beskrivelse" fullWidth />
-              </Grid2>
-              <Grid2 size={{xs: 12, sm: 6}}>
+              </Grid>
+              <Grid size={{xs: 12, sm: 6}}>
                 <Controller
                   name="groups"
                   control={formMethods.control}
@@ -133,20 +133,22 @@ const BoreholeStamdata = () => {
                     <LocationGroups value={value} setValue={onChange} onBlur={onBlur} disableLink />
                   )}
                 />
-              </Grid2>
-              <Grid2 size={{xs: 12, sm: 6}}>
+              </Grid>
+              <Grid size={{xs: 12, sm: 6}}>
                 <FormInput
                   name="num_controls_in_a_year"
                   label="Årlige kontroller"
                   fullWidth
                   type="number"
-                  InputProps={{
-                    endAdornment: <InputAdornment position="start">pr. år</InputAdornment>,
-                    inputProps: {min: 0},
+                  slotProps={{
+                    input: {
+                      endAdornment: <InputAdornment position="start">pr. år</InputAdornment>,
+                      inputProps: {min: 0},
+                    },
                   }}
                 />
-              </Grid2>
-              <Grid2 size={{xs: 12, sm: 6}}>
+              </Grid>
+              <Grid size={{xs: 12, sm: 6}}>
                 <Box sx={{display: 'flex', justifyContent: 'left', alignItems: 'center', gap: 2}}>
                   <FormInput
                     name="calypso_id"
@@ -172,11 +174,23 @@ const BoreholeStamdata = () => {
                 >
                   Calypso ID er et unikt nummer, der identificerer boringen samt indtag
                 </Typography>
-              </Grid2>
-            </Grid2>
-            <Grid2 container alignItems="center" justifyContent="center">
-              <Grid2 size={{xs: 12, sm: 4}}>
-                <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+              </Grid>
+            </Grid>
+            <Grid
+              container
+              sx={{
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Grid size={{xs: 12, sm: 4}}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    gap: 1,
+                    justifyContent: {xs: 'flex-end', sm: 'center'},
+                  }}
+                >
                   <Button
                     bttype="tertiary"
                     onClick={() => {
@@ -194,8 +208,8 @@ const BoreholeStamdata = () => {
                     Gem
                   </Button>
                 </Box>
-              </Grid2>
-            </Grid2>
+              </Grid>
+            </Grid>
           </FormProvider>
         </CardContent>
       </Card>

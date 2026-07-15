@@ -73,23 +73,25 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
       <FormProvider {...formMethods}>
         <Box
           sx={{
+            my: 1,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 0.5,
           }}
-          my={1}
         >
           <Typography variant="h6" gutterBottom={true}>
             Område: {unit}
           </Typography>
           <Box
-            display={'flex'}
-            flexDirection={'row'}
-            gap={1}
-            alignItems={'center'}
-            justifyContent={'center'}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <FormInput<YRangeValues>
               name="min"
@@ -111,7 +113,13 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
           </Box>
         </Box>
       </FormProvider>
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }}
+      >
         <Button
           bttype="tertiary"
           onClick={() => {

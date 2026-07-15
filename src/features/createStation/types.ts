@@ -3,13 +3,11 @@ import {AddUnitType} from './forms/UnitForm';
 import {AccessTable, ContactTable, Group} from '~/types';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 import {LocationMetadata} from '~/hooks/query/useMetadata';
+import {ControlSettingsOutput} from '../configuration/api/useControlSettingsForm';
+import {SyncFormSchema} from '../synchronization/api/useSyncForm';
 
 /*  FORMSTATE */
-export type ControlSettingsFormState = {
-  controls_per_year: number;
-  lead_time: number | null;
-  selectValue: 1 | 2;
-};
+export type ControlSettingsFormState = Omit<ControlSettingsOutput, 'dummy' | 'from_unit'>;
 
 export type SyncFormState = {
   dmp?:
@@ -59,7 +57,7 @@ type TimeseriesFormState = {
   meta?: TimeseriesMeta;
   watlevmp?: Watlevmp;
   control_settings?: ControlSettingsFormState;
-  sync?: SyncFormState;
+  sync?: SyncFormSchema;
   unit?: AddUnitType;
 };
 
@@ -100,7 +98,7 @@ export type ControlSettingsPayload = {
 export type TimeseriesPayload = {
   meta?: TimeseriesMeta;
   watlevmp?: Watlevmp;
-  control_settings?: ControlSettingsPayload;
+  control_settings?: Omit<ControlSettingsOutput, 'dummy' | 'from_unit'>;
   sync?: SyncFormState;
   unit?: AddUnitType;
 };

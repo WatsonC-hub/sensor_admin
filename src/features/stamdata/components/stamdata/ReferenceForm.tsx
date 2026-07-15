@@ -24,15 +24,16 @@ const schema = z.object({
   gid: z.number().optional(),
   startdate: zodDayjs('Start dato skal være udfyldt'),
   elevation: z
-    .number({required_error: 'Pejlepunkt skal være udfyldt'})
-    .optional()
+    .number({message: 'Pejlepunkt skal være udfyldt'})
+    .nullable()
     .refine((val) => val !== null && val !== undefined, {
       message: 'Pejlepunkt skal være udfyldt',
     }),
   mp_description: z.string().nullish(),
 });
 
-export type WatlevMPFormValues = z.infer<typeof schema>;
+export type WatlevMPFormValues = z.input<typeof schema>;
+export type WatlevMPFormValuesOutput = z.output<typeof schema>;
 
 export default function ReferenceForm() {
   const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
@@ -41,7 +42,7 @@ export default function ReferenceForm() {
   const [showForm, setShowForm] = useShowFormState();
   const {data: metadata} = useTimeseriesData(ts_id);
 
-  const formMethods = useForm<WatlevMPFormValues, unknown, WatlevMPFormValues>({
+  const formMethods = useForm<WatlevMPFormValues, unknown, WatlevMPFormValuesOutput>({
     resolver: zodResolver(schema),
     defaultValues: initialWatlevmpData(),
     mode: 'onTouched',
@@ -82,7 +83,15 @@ export default function ReferenceForm() {
       ) : (
         <MaalepunktTableDesktop handleEdit={handleEdit} disabled={disabled} />
       )}
-      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={2} mt={2}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: 2,
+          mt: 2,
+        }}
+      >
         <FabWrapper
           icon={<AddCircle />}
           text="Tilføj målepunkt"

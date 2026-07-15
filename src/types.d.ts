@@ -317,7 +317,7 @@ export type QaAlgorithmParameters = {
 };
 
 export type QaAlgorithmsPut = {
-  algorithm: string;
+  // algorithm: string;
   parameters: Record<string, any>;
   disabled: boolean;
 };

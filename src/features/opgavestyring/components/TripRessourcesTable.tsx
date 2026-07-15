@@ -26,7 +26,13 @@ const TripContactTable = ({ressources}: Props) => {
     () => ({
       ...(sharedTableOptions as Partial<MRT_TableOptions<TaskRessources>>),
       renderTopToolbar: (
-        <Typography variant="body1" pt={1} px={1}>
+        <Typography
+          variant="body1"
+          sx={{
+            pt: 1,
+            px: 1,
+          }}
+        >
           Pakkeliste
         </Typography>
       ),
@@ -44,7 +50,11 @@ const TripContactTable = ({ressources}: Props) => {
   );
 
   return (
-    <Box p={1}>
+    <Box
+      sx={{
+        p: 1,
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

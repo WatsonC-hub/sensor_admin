@@ -65,10 +65,22 @@ const AddToTripDialog = ({open, onClose, loc_id}: AddToTripDialogProps) => {
               value={itinerary.id}
               sx={{display: 'flex', flexDirection: 'column'}}
             >
-              <Typography variant="body1" ml={0} mr={'auto'}>
+              <Typography
+                variant="body1"
+                sx={{
+                  ml: 0,
+                  mr: 'auto',
+                }}
+              >
                 {itinerary.name}
               </Typography>
-              <Typography variant="caption" ml={1} mr={'auto'}>
+              <Typography
+                variant="caption"
+                sx={{
+                  ml: 1,
+                  mr: 'auto',
+                }}
+              >
                 {taskUsers?.find((user) => user.id === itinerary.assigned_to)?.display_name}{' '}
                 {itinerary.due_date}
               </Typography>

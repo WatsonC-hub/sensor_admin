@@ -1,4 +1,4 @@
-import {Grid2} from '@mui/material';
+import {Grid} from '@mui/material';
 import React from 'react';
 import StamdataLocation from '../StamdataLocation';
 import {useAppContext} from '~/state/contexts';
@@ -17,11 +17,11 @@ const BaseLocationForm = ({size, slotProps}: Props) => {
   const disabled = loc_id !== undefined;
 
   return (
-    <Grid2 container spacing={2}>
-      <Grid2 size={size}>
+    <Grid container spacing={2}>
+      <Grid size={size}>
         <StamdataLocation.LoctypeSelect disabled={disabled} {...slotProps?.loctypeSelect} />
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 };
 

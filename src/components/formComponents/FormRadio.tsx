@@ -1,12 +1,12 @@
 import {
   GridBaseProps,
-  Grid2,
+  Grid,
   FormControlLabel,
   Radio,
   RadioGroup,
   RadioGroupProps,
   Box,
-  Grid2Props,
+  GridProps,
 } from '@mui/material';
 import React from 'react';
 import {FieldValues, useFormContext, Controller, Path} from 'react-hook-form';
@@ -17,7 +17,7 @@ type FormRadioProps<T extends FieldValues> = {
   label?: React.ReactNode;
   gridSizes?: GridBaseProps['size'];
   icon?: React.ReactNode;
-  gridProps?: Grid2Props;
+  gridProps?: GridProps;
   options: {value: string | number | boolean; label: string; icon?: React.ReactNode}[];
 } & Omit<RadioGroupProps, 'name' | 'value' | 'onChange'>;
 
@@ -33,7 +33,7 @@ const FormRadio = <T extends FieldValues>({
   const {gridSizes: contextGridSizes} = React.useContext(FormContext);
 
   return (
-    <Grid2 {...gridProps} size={gridSizes ?? contextGridSizes}>
+    <Grid {...gridProps} size={gridSizes ?? contextGridSizes}>
       {label && <Box sx={{display: 'flex', alignItems: 'center'}}>{label}</Box>}
       <Controller
         name={name}
@@ -56,7 +56,7 @@ const FormRadio = <T extends FieldValues>({
           </RadioGroup>
         )}
       />
-    </Grid2>
+    </Grid>
   );
 };
 

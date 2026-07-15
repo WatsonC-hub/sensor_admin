@@ -1,5 +1,5 @@
 import {CloseOutlined, RestartAlt} from '@mui/icons-material';
-import {Box, Typography, Grid2} from '@mui/material';
+import {Box, Typography, Grid} from '@mui/material';
 import React from 'react';
 import {useForm, FormProvider, Controller} from 'react-hook-form';
 
@@ -59,14 +59,16 @@ const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
       >
         <Typography variant="h6">Filtrer lokationer</Typography>
       </TooltipWrapper>
-      <Grid2 container spacing={0}>
+      <Grid container spacing={0.5} sx={{mb: 2}}>
         {iotAccess && (
-          <Grid2
+          <Grid
             size={boreholeAccess ? 6 : 12}
-            display="flex"
-            flexDirection="column"
-            flexGrow={1}
-            gap={1}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              flexGrow: 1,
+              gap: 1,
+            }}
           >
             <FormToggleButton
               gridSizes={12}
@@ -78,15 +80,28 @@ const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
                 handleSubmit(submit)();
               }}
               direction="row"
-              options={
-                [{value: 'kunde', label: 'Kunde'}, {value: 'watsonc', label: 'WatsonC'}, {value: 'begge', label: 'Begge'}]
-              }
+              options={[
+                {value: 'kunde', label: 'Kunde'},
+                {value: 'watsonc', label: 'WatsonC'},
+                {value: 'begge', label: 'Begge'},
+              ]}
             />
-          </Grid2>
+          </Grid>
         )}
-      </Grid2>
-      <Grid2 container spacing={0.5} mt={1}>
-        <Grid2 size={12} display="flex">
+      </Grid>
+      <Grid
+        container
+        spacing={1}
+        sx={{
+          mt: 1,
+        }}
+      >
+        <Grid
+          size={12}
+          sx={{
+            display: 'flex',
+          }}
+        >
           <Controller
             name="locationFilter"
             control={control}
@@ -110,8 +125,8 @@ const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
               );
             }}
           />
-        </Grid2>
-        <Grid2 size={isMobile ? 12 : 6}>
+        </Grid>
+        <Grid size={isMobile ? 12 : 6}>
           <Controller
             name="groups"
             control={control}
@@ -128,9 +143,9 @@ const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
               />
             )}
           />
-        </Grid2>
+        </Grid>
         {superUser && (
-          <Grid2 size={isMobile ? 12 : 6}>
+          <Grid size={isMobile ? 12 : 6}>
             <Controller
               name="projects"
               control={control}
@@ -145,9 +160,9 @@ const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
                 />
               )}
             />
-          </Grid2>
+          </Grid>
         )}
-        <Grid2 size={12}>
+        <Grid size={12}>
           <Controller
             name="notificationTypes"
             control={control}
@@ -163,9 +178,8 @@ const FilterOptions = ({isParentClosed, onClose}: FilterOptionsProps) => {
             )}
           />
           {/* </TooltipWrapper> */}
-        </Grid2>
-      </Grid2>
-
+        </Grid>
+      </Grid>
       <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: 1}}>
         <Button bttype="tertiary" onClick={resetFilters} startIcon={<RestartAlt />}>
           Nulstil

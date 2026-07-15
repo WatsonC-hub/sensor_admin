@@ -42,7 +42,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
     setDeleteDialogOpen(true);
   };
 
-  const submit: SubmitHandler<QaAlgorithmsPut> = (data) => {
+  const submit = (data: QaAlgorithmsPut) => {
     const payload = {
       path: `${ts_id}`,
       data: {
@@ -123,7 +123,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
       parameters: qaAlgorithm.parameter_values,
     });
   if (schemaData.success) defaultValues = schemaData.data;
-  const formMethods = useForm<QaAlgorithmsPut>({
+  const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: defaultValues,
   });
@@ -169,10 +169,12 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           title={
             <Box>
               <Box
-                display={'flex'}
-                flexDirection={'row'}
-                justifyContent={'space-between'}
-                alignItems={'center'}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
               >
                 <Typography variant={'h5'}>{qaAlgorithm.name}</Typography>
                 <FormControlLabel
@@ -203,7 +205,12 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
                   }}
                 />
               </Box>
-              <Typography fontSize={13} variant="body2">
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 13,
+                }}
+              >
                 {qaAlgorithm.description}
               </Typography>
             </Box>

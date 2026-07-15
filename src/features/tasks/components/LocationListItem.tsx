@@ -1,4 +1,4 @@
-import {Box, Grid2, Link, Typography} from '@mui/material';
+import {Box, Grid, Link, Typography} from '@mui/material';
 import React from 'react';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
@@ -34,48 +34,63 @@ const LocationListItem = ({itemData, onClick}: Props) => {
 
   return (
     <Box
-      display={'flex'}
-      flexDirection={'row'}
-      alignItems={'center'}
       key={itemData.loc_id}
-      width={'100%'}
       sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+
         ':hover': {
           backgroundColor: 'grey.100',
         },
       }}
     >
       <Box
-        display={'flex'}
-        flexDirection={'column'}
-        flexGrow={1}
+        onClick={onClick}
         sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flexGrow: 1,
           py: 0.5,
           px: 1,
           cursor: 'pointer',
         }}
-        onClick={onClick}
       >
         <Box
-          display={'flex'}
-          flexDirection={'row'}
-          alignItems={'center'}
-          justifyContent={'space-between'}
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
         >
           <Typography>{itemData.loc_name}</Typography>
           {itinerary && (
-            <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
               <Box
-                height={24}
-                width={24}
                 sx={{
+                  height: 24,
+                  width: 24,
                   color: 'grey.700',
                 }}
               >
                 {TripIcon}
               </Box>
               {itinerary.due_date && (
-                <Typography variant="caption" color="grey.700">
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'grey.700',
+                  }}
+                >
                   {convertDate(itinerary.due_date)}
                 </Typography>
               )}
@@ -83,34 +98,60 @@ const LocationListItem = ({itemData, onClick}: Props) => {
           )}
         </Box>
 
-        <Box display={'flex'} flexDirection={'column'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           {filteredTasks
             ?.sort((a, b) => Number(a.is_created) - Number(b.is_created))
             .map((task) => {
               return (
-                <Grid2 key={task.id} container p={1} alignItems={'center'} flexGrow={1}>
-                  <Grid2 size={8} alignContent={'center'} flexGrow={1}>
-                    <Box display={'flex'} flexDirection={'column'}>
+                <Grid
+                  key={task.id}
+                  container
+                  sx={{
+                    p: 1,
+                    alignItems: 'center',
+                    flexGrow: 1,
+                  }}
+                >
+                  <Grid
+                    size={8}
+                    sx={{
+                      alignContent: 'center',
+                      flexGrow: 1,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
                       <Link
-                        display={'flex'}
-                        flexDirection={'row'}
-                        gap={1}
                         underline="hover"
-                        sx={{
-                          width: 'fit-content',
-                          cursor: 'pointer',
-                        }}
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedTask(task.id);
                         }}
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          gap: 1,
+                          width: 'fit-content',
+                          cursor: 'pointer',
+                        }}
                       >
                         <Box
-                          display={'flex'}
-                          flexDirection={'row'}
-                          color={'white'}
-                          gap={1}
-                          alignItems={'center'}
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            color: 'white',
+                            gap: 1,
+                            alignItems: 'center',
+                          }}
                         >
                           <NotificationIcon
                             iconDetails={{
@@ -128,44 +169,73 @@ const LocationListItem = ({itemData, onClick}: Props) => {
                       </Link>
                       {!task.is_created && task.sla && superUser && (
                         <Typography
-                          mt={-0.5}
-                          ml={3.5}
-                          fontStyle={'italic'}
-                          fontWeight={'bold'}
                           variant={'caption'}
+                          sx={{
+                            mt: -0.5,
+                            ml: 3.5,
+                            fontStyle: 'italic',
+                            fontWeight: 'bold',
+                          }}
                         >
                           SLA: {task.sla.format('l')}
                         </Typography>
                       )}
                     </Box>
-                  </Grid2>
-                  <Grid2 size={4} display={'flex'} flexDirection={'column'} alignItems={'start'}>
+                  </Grid>
+                  <Grid
+                    size={4}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'start',
+                    }}
+                  >
                     {task.assigned_to && (
-                      <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          gap: 1,
+                          alignItems: 'center',
+                        }}
+                      >
                         <Person fontSize="small" sx={{color: 'grey.700', fontSize: '1.1rem'}} />
-                        <Typography variant="caption" color="grey.700">
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'grey.700',
+                          }}
+                        >
                           {task.assigned_display_name}
                         </Typography>
                       </Box>
                     )}
                     {task.due_date && (
-                      <Box display={'flex'} flexDirection={'row'} gap={1}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          gap: 1,
+                        }}
+                      >
                         <CalendarIcon
                           fontSize="small"
                           sx={{color: 'grey.700', fontSize: '1.1rem'}}
                         />
                         <Typography
                           variant="caption"
-                          alignItems={'center'}
-                          fontSize={'0.65rem'}
-                          color="grey.700"
+                          sx={{
+                            alignItems: 'center',
+                            fontSize: '0.65rem',
+                            color: 'grey.700',
+                          }}
                         >
                           {convertDate(task.due_date)}
                         </Typography>
                       </Box>
                     )}
-                  </Grid2>
-                </Grid2>
+                  </Grid>
+                </Grid>
               );
             })}
         </Box>

@@ -40,7 +40,13 @@ const OwnTaskList = () => {
   const items = virtualizer.getVirtualItems();
 
   return (
-    <Box maxHeight={'100%'} display="flex" flexDirection="column">
+    <Box
+      sx={{
+        maxHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <Typography variant="h6" sx={{padding: 1}}>
         Mine Opgaver
       </Typography>

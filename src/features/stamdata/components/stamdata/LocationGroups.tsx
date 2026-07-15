@@ -53,11 +53,12 @@ const LocationGroups = ({
       sx={{
         marginTop: '8px',
         marginBottom: '4px',
-        pb: 1.5,
+        pb: 1,
       }}
       freeSolo
       forcePopupIcon={false}
       multiple
+      size="small"
       fullWidth
       disabled={disable}
       value={value ?? []}
@@ -85,16 +86,34 @@ const LocationGroups = ({
         // return `${option.id.slice(0, 4)} - ${option.group_name}`;
       }}
       isOptionEqualToValue={(option, value) => {
+        if (typeof option === 'string' || typeof value === 'string') {
+          return option === value;
+        }
         return option.id === value.id;
       }}
-      renderTags={(value, getTagProps) => {
+      renderValue={(value, getTagProps) => {
         return value.map((option, index) => {
+          if (typeof option === 'string') {
+            return <Chip variant="outlined" label={option} {...getTagProps({index})} key={index} />;
+          }
+
           const content = (
             <>
-              <Typography display="inline" variant="body2" color="grey.400">
+              <Typography
+                variant="body2"
+                sx={{
+                  display: 'inline',
+                  color: 'grey.400',
+                }}
+              >
                 {option.id === '' && 'Ny - '}
               </Typography>
-              <Typography display="inline" variant="body2">
+              <Typography
+                variant="body2"
+                sx={{
+                  display: 'inline',
+                }}
+              >
                 {option.group_name}
               </Typography>
             </>
@@ -126,10 +145,21 @@ const LocationGroups = ({
       }}
       renderOption={(props, option) => (
         <li {...props} key={option.id}>
-          <Typography display="inline" variant="body2" color="grey.400">
+          <Typography
+            variant="body2"
+            sx={{
+              display: 'inline',
+              color: 'grey.400',
+            }}
+          >
             {option.id === '' && 'Opret - '}
           </Typography>
-          <Typography display="inline" variant="body2">
+          <Typography
+            variant="body2"
+            sx={{
+              display: 'inline',
+            }}
+          >
             {option.group_name}
           </Typography>
         </li>
@@ -144,10 +174,10 @@ const LocationGroups = ({
           onBlur={onBlur}
           slotProps={{
             input: {
-              ...params.InputProps,
+              ...params.slotProps.input,
               endAdornment: (
                 <>
-                  {params.InputProps.endAdornment}
+                  {params.slotProps.input.endAdornment}
                   <InputAdornment position="end">
                     {fieldDescriptionText && (
                       <LinkableTooltip fieldDescriptionText={fieldDescriptionText} />

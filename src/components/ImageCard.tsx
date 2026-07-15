@@ -121,9 +121,20 @@ function ImageCard({image, deleteMutation, handleEdit, mobileSize}: ImageCardPro
             {deleteMutation.isPending ? (
               <CircularProgress />
             ) : (
-              <Box display="flex" alignItems="center" gap={1}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
                 <Delete />
-                <Typography variant="body2" fontSize={14}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontSize: 14,
+                  }}
+                >
                   Slet
                 </Typography>
               </Box>
@@ -135,9 +146,20 @@ function ImageCard({image, deleteMutation, handleEdit, mobileSize}: ImageCardPro
             size="small"
             bttype="primary"
           >
-            <Box display="flex" alignItems="center" gap={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
               <Edit />
-              <Typography variant="body2" fontSize={14}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 14,
+                }}
+              >
                 Rediger
               </Typography>
             </Box>

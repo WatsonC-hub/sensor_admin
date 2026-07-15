@@ -49,7 +49,7 @@ const LocationForm = () => {
     <FormProvider {...locationFormMethods}>
       <StamdataLocation>
         <LocationForm size={size} loc_id={undefined} />
-        {loctype_id && <OptionalLocationForm size={size} loc_id={undefined} />}
+        {loctype_id !== undefined && <OptionalLocationForm size={size} loc_id={undefined} />}
       </StamdataLocation>
     </FormProvider>
   );

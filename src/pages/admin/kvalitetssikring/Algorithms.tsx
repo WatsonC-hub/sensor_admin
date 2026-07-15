@@ -1,4 +1,4 @@
-import {Box, Divider, Grid2 as Grid, Typography} from '@mui/material';
+import {Box, Divider, Grid, Typography} from '@mui/material';
 
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
@@ -35,8 +35,17 @@ const Algorithms = () => {
   }, [data]);
   return (
     <>
-      <Box display="flex" flexDirection={isMobile ? 'column-reverse' : 'row'}>
-        <Box width={'100%'}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column-reverse' : 'row',
+        }}
+      >
+        <Box
+          sx={{
+            width: '100%',
+          }}
+        >
           <GraphManager
             defaultDataToShow={{
               Kontrolmålinger: true,
@@ -49,7 +58,14 @@ const Algorithms = () => {
       </Box>
       <Divider />
       <StationPageBoxLayout>
-        <Box display="flex" justifyContent="space-between" alignItems="center" minWidth={800}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            minWidth: 800,
+          }}
+        >
           <TooltipWrapper
             description="På denne side kan du se de algoritmer, der er tilgængelige for tidsserien. Læs mere om algoritmer i guiden."
             url="https://www.watsonc.dk/guides/side-oversigt/#juster-advarsler"
@@ -60,7 +76,9 @@ const Algorithms = () => {
         <Grid
           container
           direction={'row'}
-          justifyContent={data && data.length < 4 ? 'center' : 'start'}
+          sx={{
+            justifyContent: data && data.length < 4 ? 'center' : 'start',
+          }}
         >
           {data?.map((algorithm) => (
             <Grid key={algorithm.name} size={mobileRatio || data.length === 1 ? 12 : columns}>

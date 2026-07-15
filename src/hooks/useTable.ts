@@ -214,7 +214,7 @@ const excludeColumnFilterFnsOnFirst = <TData extends MRT_RowData>(
 ) => {
   if (isFirstRender) {
     if (state?.columnFilterFns) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // oxlint-disable-next-line @typescript-eslint/no-unused-vars
       const {columnFilterFns, ...rest} = state;
       return rest;
     }
@@ -244,9 +244,9 @@ export const useTable = <TData extends MRT_RowData>(
   const table = useMaterialReactTable({
     columns,
     data: data ?? [],
-    ...tableOptions,
-    ...state,
     state: {
+      ...tableOptions,
+      ...state,
       ...tableState,
       isLoading: data === undefined,
       showSkeletons: data === undefined,
@@ -257,7 +257,7 @@ export const useTable = <TData extends MRT_RowData>(
     // Sets the columnFilterFns on the first render to avoid a bug with the columnFilterFns not being set correctly
     table.setColumnFilterFns((prev) => ({
       ...prev,
-      ...(state?.state?.columnFilterFns ?? {}),
+      ...state?.state?.columnFilterFns,
     }));
     setIsFirstRender(false);
   }
@@ -300,9 +300,9 @@ export const useQueryTable = <TData extends MRT_RowData>(
   const table = useMaterialReactTable({
     columns,
     data: data ?? [],
-    ...tableOptions,
-    ...state,
     state: {
+      ...tableOptions,
+      ...state,
       ...state?.state,
       isLoading: data === undefined && !isFetched,
       showSkeletons: data === undefined && !isFetched,
@@ -313,7 +313,7 @@ export const useQueryTable = <TData extends MRT_RowData>(
     // Sets the columnFilterFns on the first render to avoid a bug with the columnFilterFns not being set correctly
     table.setColumnFilterFns((prev) => ({
       ...prev,
-      ...(state?.state?.columnFilterFns ?? {}),
+      ...state?.state?.columnFilterFns,
     }));
     setIsFirstRender(false);
   }

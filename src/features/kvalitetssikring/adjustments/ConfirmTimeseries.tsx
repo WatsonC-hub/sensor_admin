@@ -95,13 +95,28 @@ const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTi
   };
   return (
     <FormProvider {...formMethods}>
-      <Box alignSelf={'center'} justifySelf={'center'}>
-        <Box display={'flex'} flexDirection="row" justifyContent={'center'} mb={1} gap={1}>
+      <Box
+        sx={{
+          alignSelf: 'center',
+          justifySelf: 'center',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            mb: 1,
+            gap: 1,
+          }}
+        >
           <Typography
-            alignSelf={'center'}
             variant={isMobile ? 'h6' : 'h5'}
             component="h2"
-            fontWeight={'bold'}
+            sx={{
+              alignSelf: 'center',
+              fontWeight: 'bold',
+            }}
           >
             Godkend tidsserie
           </Typography>
@@ -125,15 +140,25 @@ const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTi
           </Tooltip>
         </Box>
         <Box
-          display={'flex'}
-          flexDirection={'column'}
-          alignItems={'center'}
-          alignSelf={'center'}
-          gap={1}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            alignSelf: 'center',
+            gap: 1,
+          }}
         >
           <FormDateTime name={'startDate'} label={'Sidst godkendt'} disabled={true} />
           <FormDateTime name="date" label="Godkend til" disabled={!initiateConfirmTimeseries} />
-          <Box display={'flex'} mt={2.5} flexDirection={'row'} alignSelf={'center'} gap={1}>
+          <Box
+            sx={{
+              display: 'flex',
+              mt: 2.5,
+              flexDirection: 'row',
+              alignSelf: 'center',
+              gap: 1,
+            }}
+          >
             <Button
               bttype="tertiary"
               onClick={() => {

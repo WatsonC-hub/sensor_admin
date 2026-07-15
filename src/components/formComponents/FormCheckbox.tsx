@@ -1,11 +1,11 @@
 import {
   GridBaseProps,
-  Grid2,
+  Grid,
   FormControlLabel,
   Checkbox,
   CheckboxProps,
   Box,
-  Grid2Props,
+  GridProps,
   FormHelperText,
 } from '@mui/material';
 import React from 'react';
@@ -17,7 +17,7 @@ type FormCheckboxProps<T extends FieldValues> = {
   label?: string;
   gridSizes?: GridBaseProps['size'];
   icon?: React.ReactNode;
-  gridProps?: Grid2Props;
+  gridProps?: GridProps;
   onChangeCallback?: (value: boolean) => void;
   warning?: (value: boolean) => string | undefined;
 } & Omit<CheckboxProps, 'name' | 'checked' | 'onChange' | 'inputRef'>;
@@ -37,7 +37,7 @@ const FormCheckbox = <T extends FieldValues>({
   const {gridSizes: contextGridSizes} = React.useContext(FormContext);
   const watchValue = watch(name);
   return (
-    <Grid2 {...gridProps} size={gridSizes ?? contextGridSizes}>
+    <Grid {...gridProps} size={gridSizes ?? contextGridSizes}>
       <Controller
         name={name}
         control={control}
@@ -70,7 +70,7 @@ const FormCheckbox = <T extends FieldValues>({
       />
 
       {warning && <FormHelperText sx={{color: 'orange'}}>{warning(watchValue)}</FormHelperText>}
-    </Grid2>
+    </Grid>
   );
 };
 

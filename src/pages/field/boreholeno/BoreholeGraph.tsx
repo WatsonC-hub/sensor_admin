@@ -112,7 +112,9 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
       }
     : {
         yaxis: {
-          title: 'Vandstand',
+          title: {
+            text: 'Vandstand',
+          },
         },
         yaxis2: {},
       };

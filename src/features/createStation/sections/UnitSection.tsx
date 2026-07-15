@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Dialog, DialogContent, DialogTitle, Typography} from '@mui/material';
-import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
+import {AddCircleOutlined, RemoveCircleOutlined} from '@mui/icons-material';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import Button from '~/components/Button';
 import UnitForm from '../forms/UnitForm';
@@ -42,7 +42,7 @@ const UnitSection = ({uuid, tstype_id}: UnitStepProps) => {
       {unit === undefined && (
         <Button
           bttype="primary"
-          startIcon={<AddCircleOutline />}
+          startIcon={<AddCircleOutlined />}
           sx={button_sx(unit !== undefined)}
           onClick={() => setOpen(true)}
         >
@@ -55,7 +55,12 @@ const UnitSection = ({uuid, tstype_id}: UnitStepProps) => {
           primaryText={<Typography variant="body2">{unit?.calypso_id}</Typography>}
           secondaryText={
             <>
-              <Typography variant="caption" display={'block'}>
+              <Typography
+                variant="caption"
+                sx={{
+                  display: 'block',
+                }}
+              >
                 {sensor_id}
               </Typography>
               <Typography variant="caption">
@@ -68,7 +73,7 @@ const UnitSection = ({uuid, tstype_id}: UnitStepProps) => {
       {unit !== undefined && (
         <Button
           bttype="primary"
-          startIcon={<RemoveCircleOutline />}
+          startIcon={<RemoveCircleOutlined />}
           sx={button_sx(unit === undefined)}
           onClick={() => {
             deleteState(`timeseries.${uuid}.unit`);

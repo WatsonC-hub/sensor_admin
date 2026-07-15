@@ -1,13 +1,13 @@
 import React from 'react';
-import useSyncForm, {SyncFormSchema} from '../api/useSyncForm';
+import useSyncForm, {SyncFormSchema, SyncFormSchemaOutput} from '../api/useSyncForm';
 import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import {Grid2, Box, FormControlLabel, Checkbox} from '@mui/material';
+import {Grid, Box, FormControlLabel, Checkbox} from '@mui/material';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {Controller} from 'react-hook-form';
 
-const Form = createTypedForm<SyncFormSchema>();
+const Form = createTypedForm<SyncFormSchema, SyncFormSchemaOutput>();
 
 type JupiterDmpSyncProps = {
   loctype_id?: number;
@@ -132,7 +132,15 @@ const JupiterDmpSync = ({
             )}
           </Box>
 
-          <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">
+          <Grid
+            size={12}
+            sx={{
+              display: 'flex',
+              gap: 1,
+              justifyContent: 'flex-end',
+              alignSelf: 'end',
+            }}
+          >
             <UpdateProgressButton
               progressKey="sync"
               key={ts_id}
@@ -148,7 +156,7 @@ const JupiterDmpSync = ({
               disabled={disabled || !isDirty}
             />
             <Form.Submit submit={submit} />
-          </Grid2>
+          </Grid>
         </Form>
       )}
     </>

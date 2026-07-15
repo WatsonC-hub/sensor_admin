@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {ZodIssueCode} from 'zod/v3';
 import {zodDayjs} from '~/helpers/schemas';
 
 const baseLocationSchema = z.object({
@@ -11,10 +12,10 @@ const baseLocationSchema = z.object({
     )
     .nullish(),
   x: z
-    .number({required_error: 'X-koordinat skal udfyldes'})
+    .number({message: 'X-koordinat skal udfyldes'})
     .transform((val) => (typeof val === 'number' ? val : parseFloat(val))),
   y: z
-    .number({required_error: 'Y-koordinat skal udfyldes'})
+    .number({message: 'Y-koordinat skal udfyldes'})
     .transform((val) => (typeof val === 'number' ? val : parseFloat(val))),
   terrainqual: z.string(),
   terrainlevel: z.number().nullish(),
@@ -50,7 +51,7 @@ const baseTimeseriesSchema = z.object({
 });
 
 const baseAddTimeseriesSchema = baseTimeseriesSchema.extend({
-  tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
+  tstype_id: z.number({message: 'Vælg tidsserietype'}),
 });
 
 const baseEditTimeseriesSchema = baseTimeseriesSchema.extend({
@@ -101,16 +102,8 @@ const editUnitSchema = z
   })
   .superRefine((unit, ctx) => {
     if (unit.startdate.isSameOrAfter(unit.enddate)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.invalid_date,
-        message: 'start dato må ikke være senere end slut dato',
-        path: ['startdate'],
-      });
-      ctx.addIssue({
-        code: z.ZodIssueCode.invalid_date,
-        message: 'slut dato må ikke være tidligere end start dato',
-        path: ['enddate'],
-      });
+      ctx.addIssue('slut dato må ikke være tidligere end start dato');
+      ctx.addIssue('slut dato må ikke være tidligere end start dato');
     }
   });
 

@@ -49,7 +49,7 @@ export default function Tilsyn() {
 
   const {data: tilsynData} = tilsynSchema.safeParse(initialData);
 
-  const formMethods = useForm<TilsynSchemaType>({
+  const formMethods = useForm({
     resolver: zodResolver(tilsynSchema),
     defaultValues: tilsynData,
     mode: 'onTouched',
@@ -120,13 +120,25 @@ export default function Tilsyn() {
       <Divider />
       <StationPageBoxLayout>
         <FormProvider {...formMethods}>
-          <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
             {showForm === true && (
               <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
             )}
           </Box>
         </FormProvider>
-        <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: isTouch || isLaptop ? 8 : undefined,
+          }}
+        >
           <TilsynTable
             handleEdit={handleEdit}
             handleDelete={handleDelete}

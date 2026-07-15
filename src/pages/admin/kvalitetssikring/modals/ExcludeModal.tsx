@@ -93,23 +93,27 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
     <Box>
       <FormProvider {...formMethods}>
         <Box
-          display={'flex'}
-          flexDirection={'row'}
-          flexWrap={isMobile ? 'wrap' : 'inherit'}
-          justifyContent={'center'}
-          alignItems={'center'}
-          gap={2}
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: isMobile ? 'wrap' : 'inherit',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 2,
+          }}
         >
           <FormDateTime<ExcludeModalValues> name="startDate" label="Dato fra" required />
           <FormDateTime<ExcludeModalValues> name="endDate" label="Dato til" required />
         </Box>
         <Box
-          display={'flex'}
-          flexDirection={'row'}
-          flexWrap={isMobile ? 'wrap' : 'inherit'}
-          justifyContent={'center'}
-          alignItems={'center'}
-          gap={2}
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: isMobile ? 'wrap' : 'inherit',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 2,
+          }}
         >
           <FormInput<ExcludeModalValues>
             name="startValue"
@@ -132,7 +136,6 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
         </Box>
         <FormInput<ExcludeModalValues> name="comment" label="Kommentar" multiline rows={3} />
       </FormProvider>
-
       <Typography gutterBottom>
         Vil du fjerne alt inden for de to tidsstempler, eller kun de valgte punkter?
       </Typography>
@@ -150,7 +153,13 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
       {radio == 'selected' && (
         <Typography gutterBottom>Ekskluderer {selection.points?.length} punkter</Typography>
       )}
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }}
+      >
         <Button
           bttype="tertiary"
           // startIcon={<KeyboardReturnIcon />}

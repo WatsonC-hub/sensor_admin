@@ -3,7 +3,8 @@ import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-reac
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
-
+import {z} from 'zod';
+import {locationAccessSchema} from './api/useLocationAccessForm';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
@@ -22,7 +23,10 @@ import {TypedFormComponent} from '~/components/formComponents/Form';
 
 type LocationAccessTableProps = {
   loc_id?: number;
-  Form: TypedFormComponent<Access, Access>;
+  Form: TypedFormComponent<
+    z.input<typeof locationAccessSchema>,
+    z.output<typeof locationAccessSchema>
+  >;
 };
 
 const onDeleteBtnClick = (
@@ -189,7 +193,13 @@ const LocationAccessTable = ({loc_id, Form}: LocationAccessTableProps) => {
     },
     renderEditRowDialogContent: () => {
       return (
-        <Box py={4} px={2} boxShadow={6}>
+        <Box
+          sx={{
+            py: 4,
+            px: 2,
+            boxShadow: 6,
+          }}
+        >
           <LocationAccessForm
             loc_id={loc_id}
             showLocationAccess={true}

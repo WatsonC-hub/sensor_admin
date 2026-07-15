@@ -45,8 +45,17 @@ export default function TilsynTableDesktop({handleEdit, handleDelete, disabled}:
         header: 'Tilsyn',
         size: 200,
         Cell: ({row}) => (
-          <Box display="flex" gap={1}>
-            <Box alignSelf="center">
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+            }}
+          >
+            <Box
+              sx={{
+                alignSelf: 'center',
+              }}
+            >
               {row.original.batteriskift ? (
                 <BatteryAlertRounded sx={{color: 'grey.700'}} />
               ) : row.original.tilsyn ? (
@@ -55,7 +64,12 @@ export default function TilsynTableDesktop({handleEdit, handleDelete, disabled}:
                 ''
               )}
             </Box>
-            <Box display="flex" flexDirection="column">
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
               {row.original.batteriskift && row.original.tilsyn ? (
                 <b>Batteri skiftet og tilsyn</b>
               ) : row.original.batteriskift && row.original.tilsyn !== true ? (

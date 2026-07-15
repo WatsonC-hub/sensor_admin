@@ -30,11 +30,13 @@ const TripContacts = ({contacts}: TripContactsProps) => {
             {(cell.getValue<string[]>() || []).map((loc, index) => (
               <Link
                 key={index}
-                sx={{cursor: 'pointer'}}
-                display="block"
                 onClick={() => {
                   location(row.original.loc_ids[index]);
                   setPageToShow(stationPages.KONTAKTER);
+                }}
+                sx={{
+                  display: 'block',
+                  cursor: 'pointer',
                 }}
               >
                 {loc}
@@ -62,7 +64,13 @@ const TripContacts = ({contacts}: TripContactsProps) => {
     () => ({
       ...(sharedTableOptions as Partial<MRT_TableOptions<TaskContact>>),
       renderTopToolbar: (
-        <Typography variant="body1" pt={1} px={1}>
+        <Typography
+          variant="body1"
+          sx={{
+            pt: 1,
+            px: 1,
+          }}
+        >
           Skal kontaktes inden besøg
         </Typography>
       ),
@@ -80,7 +88,11 @@ const TripContacts = ({contacts}: TripContactsProps) => {
   );
 
   return (
-    <Box p={1}>
+    <Box
+      sx={{
+        p: 1,
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

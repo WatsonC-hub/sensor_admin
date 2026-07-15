@@ -59,11 +59,6 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
       onClose={() => {
         setOpen(false);
       }}
-      sx={{
-        marginTop: '8px',
-        marginBottom: '4px',
-        pb: 1.5,
-      }}
       onTouchStart={(e) => {
         if (isMobile) e.stopPropagation();
       }}
@@ -72,6 +67,7 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
       forcePopupIcon={false}
       multiple
       fullWidth
+      size="small"
       value={optionsWithAlle.filter((item) => value?.includes(item.name)) ?? []}
       onChange={(event, newValue) => {
         const newObjects = newValue.filter((item) => typeof item != 'string');
@@ -97,10 +93,10 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
       isOptionEqualToValue={(option, value) => {
         return option.name === value.name;
       }}
-      renderTags={(value, getTagProps) => {
+      renderValue={(value, getTagProps) => {
         return value.map((option, index) => {
           const content = (
-            <Typography display="inline" variant="body2">
+            <Typography variant="body2" sx={{display: 'inline'}}>
               {option.name}
             </Typography>
           );
@@ -116,6 +112,27 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
           );
         });
       }}
+      // renderTags={(value, getTagProps) => {
+      //   return value.map((option, index) => {
+      //     const content = (
+      //       <Typography variant="body2" sx={{
+      //         display: "inline"
+      //       }}>
+      //         {option.name}
+      //       </Typography>
+      //     );
+
+      //     return (
+      //       <Chip
+      //         variant="outlined"
+      //         label={content}
+      //         component={'div'}
+      //         {...getTagProps({index})}
+      //         key={index}
+      //       />
+      //     );
+      //   });
+      // }}
       renderOption={(props, option) => (
         <li {...props} key={option.name}>
           {option.name != 'Alle' ? (
@@ -163,7 +180,7 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
           focused={open}
           slotProps={{
             inputLabel: {
-              ...params.InputLabelProps,
+              ...params.slotProps.inputLabel,
               shrink: true,
             },
           }}

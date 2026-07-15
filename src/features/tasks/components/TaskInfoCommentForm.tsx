@@ -63,19 +63,23 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      mt={isMonitor ? 3 : 0}
-      mb={isMonitor ? 5 : 0}
-      maxHeight={'100%'}
-      gap={2}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        mt: isMonitor ? 3 : 0,
+        mb: isMonitor ? 5 : 0,
+        maxHeight: '100%',
+        gap: 2,
+      }}
     >
       <Box
-        // maxHeight={'100%'}
-        display={'flex'}
-        flexDirection={'column'}
-        gap={2}
-        sx={{overflowY: 'auto', overflowX: 'hidden'}}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+        }}
       >
         {taskHistory?.map((row) => {
           if ('comment' in row) return <TaskInfoComment key={row.id} comment={row} />;

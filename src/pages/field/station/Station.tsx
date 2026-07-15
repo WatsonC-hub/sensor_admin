@@ -180,15 +180,35 @@ const Layout = ({children}: LayoutProps) => {
     <>
       <NavBar key={'station'} zIndex={9999}>
         {isTouch && <NavBar.StationDrawerMenu />}
-        <Box display="block" flexGrow={1} overflow="hidden">
+        <Box
+          sx={{
+            display: 'block',
+            flexGrow: 1,
+            overflow: 'hidden',
+          }}
+        >
           {!isTouch && (
-            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+            <Typography
+              sx={{
+                pl: 1.7,
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {locationdata?.loc_name}
             </Typography>
           )}
           {isTouch && <MinimalSelect />}
         </Box>
-        <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexShrink: 0,
+          }}
+        >
           {locationdata?.projectno && (
             <Tooltip title="Vis projektside" arrow>
               <IconButton
@@ -235,11 +255,13 @@ const Layout = ({children}: LayoutProps) => {
         <Box
           key={'main_content'}
           id={'main_content'}
-          display="flex"
-          flexGrow={1}
-          minWidth={0}
-          flexDirection={'column'}
-          overflow="auto"
+          sx={{
+            display: 'flex',
+            flexGrow: 1,
+            minWidth: 0,
+            flexDirection: 'column',
+            overflow: 'auto',
+          }}
         >
           {children}
         </Box>

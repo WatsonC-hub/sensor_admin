@@ -1,4 +1,4 @@
-import {RemoveCircleOutline} from '@mui/icons-material';
+import {RemoveCircleOutlined} from '@mui/icons-material';
 import {IconButton, ListItem, ListItemText} from '@mui/material';
 import React, {ReactNode} from 'react';
 
@@ -15,7 +15,7 @@ const SimpleTextView = ({primaryText, secondaryText, icon, onRemove, disabled}: 
     <ListItem disableGutters disablePadding>
       {onRemove && (
         <IconButton aria-label="remove contact" size="small" edge="start" disabled={disabled}>
-          <RemoveCircleOutline
+          <RemoveCircleOutlined
             color={!disabled ? 'primary' : 'disabled'}
             fontSize="small"
             onClick={() => {

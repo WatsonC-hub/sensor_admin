@@ -1,6 +1,7 @@
 import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
+import {z} from 'zod';
 
 import Button from '~/components/Button';
 import {initialLocationAccessData} from '~/consts';
@@ -8,15 +9,20 @@ import {Access} from '~/types';
 import {Save} from '@mui/icons-material';
 import LocationAccessForm from './LocationAccessForm';
 import {TypedFormComponent} from '~/components/formComponents/Form';
+import {locationAccessSchema} from './api/useLocationAccessForm';
+import {FormOutput} from './LocationAccess';
 
 type Props = {
   loc_id?: number | undefined;
   editMode?: 'create' | 'edit' | 'modal';
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;
-  handleSave: SubmitHandler<Access>;
+  handleSave: SubmitHandler<FormOutput>;
   showLocationAccess?: boolean;
-  Form: TypedFormComponent<Access, Access>;
+  Form: TypedFormComponent<
+    z.input<typeof locationAccessSchema>,
+    z.output<typeof locationAccessSchema>
+  >;
 };
 
 const LocationAccessFormDialog = ({
@@ -33,7 +39,7 @@ const LocationAccessFormDialog = ({
     clearErrors,
     handleSubmit,
     formState: {isSubmitting},
-  } = useFormContext<Access>();
+  } = useFormContext<FormOutput>();
 
   const handleClose = () => {
     reset(initialLocationAccessData);

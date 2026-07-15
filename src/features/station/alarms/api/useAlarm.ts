@@ -3,15 +3,15 @@ import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {useAppContext} from '~/state/contexts';
 import {AlarmNotificationType, AlarmHistory, AlarmTableType} from '../types';
 import {APIError} from '~/queryClient';
-import {AlarmsFormValues} from '../schema';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {AlarmFormInput} from '../schema';
 
 interface AlarmBase {
   path: string;
 }
 
 interface AlarmsPost extends AlarmBase {
-  data: AlarmsFormValues;
+  data: AlarmFormInput;
 }
 
 const alarmPostOptions = {

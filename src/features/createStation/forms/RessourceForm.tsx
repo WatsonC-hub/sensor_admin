@@ -5,7 +5,6 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
-import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
 import Button from '~/components/Button';
 import {DoNotDisturb} from '@mui/icons-material';
@@ -35,6 +34,10 @@ const ressourceSchema = z.object({
     .transform((r) => r ?? []),
 });
 
+export type RessourceInput = z.input<typeof ressourceSchema>;
+export type RessourceOutput = z.output<typeof ressourceSchema>;
+type Ressourcer = z.infer<typeof ressourceSchema>['ressourcer'];
+
 const RessourceForm = () => {
   const {isMobile} = useBreakpoints();
   const id = 'location.ressourcer';
@@ -47,7 +50,7 @@ const RessourceForm = () => {
       state.deleteState,
     ]);
 
-  const formMethods = useForm<{ressourcer: Ressourcer[]}>({
+  const formMethods = useForm({
     resolver: zodResolver(ressourceSchema),
     defaultValues: {
       ressourcer: ressourcer,

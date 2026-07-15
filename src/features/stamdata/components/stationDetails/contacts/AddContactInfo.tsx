@@ -80,7 +80,7 @@ const AddContactInfo = ({open, setOpen, loc_id, onValidate}: SelectContactInfoPr
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Tilføj kontakt</DialogTitle>
         <DialogContent>
-          <Grid item xs={12} sm={12}>
+          <Grid size={{xs: 12, sm: 12}}>
             <ExtendedAutocomplete<ContactInfo>
               options={data ?? []}
               loading={isFetching}
@@ -112,12 +112,27 @@ const AddContactInfo = ({open, setOpen, loc_id, onValidate}: SelectContactInfoPr
               renderOption={(props, option) => {
                 return (
                   <li {...props} key={option.id + ' - ' + option.loc_id}>
-                    <Box display={'flex'} flexDirection={'column'}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
                       <Typography>{option.name}</Typography>
-                      <Typography fontStyle={'italic'} variant="body2">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontStyle: 'italic',
+                        }}
+                      >
                         {option.email}
                       </Typography>
-                      <Typography fontStyle={'italic'} variant="body2">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontStyle: 'italic',
+                        }}
+                      >
                         {option.org && option.org !== '' && option.org}
                       </Typography>
                     </Box>
@@ -136,7 +151,11 @@ const AddContactInfo = ({open, setOpen, loc_id, onValidate}: SelectContactInfoPr
               handleHomeEndKeys
             />
           </Grid>
-          <Grid item mt={1}>
+          <Grid
+            sx={{
+              mt: 1,
+            }}
+          >
             <Divider
               sx={{bgcolor: 'primary.main', paddingTop: 0.1, paddingBottom: 0.1, marginBottom: 1}}
             />
@@ -153,7 +172,7 @@ const AddContactInfo = ({open, setOpen, loc_id, onValidate}: SelectContactInfoPr
               {createNew ? 'Annuller oprettelse af' : 'Opret'} kontakt
             </Button>
           </Grid>
-          <Grid item xs={12} sm={12}>
+          <Grid size={{xs: 12, sm: 12}}>
             <Collapse in={createNew}>
               <StationContactInfo
                 isEditing={isEditing}
