@@ -73,6 +73,7 @@ const MPDescription = ({
           variant="outlined"
           placeholder="F.eks. Top rør"
           slotProps={{
+            ...params?.slotProps,
             input: {
               ...params?.slotProps.input,
               sx: {

@@ -137,6 +137,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
             size="small"
             variant="outlined"
             slotProps={{
+              ...params.slotProps,
               input: {
                 ...params.slotProps.input,
                 startAdornment: (

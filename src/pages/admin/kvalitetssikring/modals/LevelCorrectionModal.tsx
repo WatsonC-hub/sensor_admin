@@ -1,7 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
-import dayjs from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
 import {useAtomValue} from 'jotai';
 import {parseAsString, useQueryState} from 'nuqs';
 import {useEffect} from 'react';
@@ -66,7 +66,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
     onClose();
   };
 
-  const x = watch('date');
+  const x = watch('date') as Dayjs | undefined;
 
   useEffect(() => {
     setValue('date', dayjs(selection?.points?.[0]?.x));

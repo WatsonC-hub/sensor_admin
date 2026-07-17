@@ -22,7 +22,6 @@ const NotificationTypeFilter = ({setValue, value, onBlur, label = 'Notifikatione
       forcePopupIcon={false}
       multiple
       fullWidth
-      size="small"
       value={options.filter((item) => value?.includes(item.gid)) ?? []}
       autoHighlight={true}
       onChange={(event, newValue) => {
@@ -71,35 +70,6 @@ const NotificationTypeFilter = ({setValue, value, onBlur, label = 'Notifikatione
           );
         });
       }}
-      // renderTags={(value, getTagProps) => {
-      //   return value.map((option, index) => {
-      //     const content = (
-      //       <Typography
-      //         variant="body2"
-      //         sx={{
-      //           display: 'inline',
-      //         }}
-      //       >
-      //         {option.name}
-      //       </Typography>
-      //     );
-
-      //     return (
-      //       <Chip
-      //         variant="outlined"
-      //         label={content}
-      //         sx={{
-      //           backgroundColor: getColor({flag: option.flag}),
-      //           color: 'HighlightText',
-      //           opacity: 0.8,
-      //         }}
-      //         component={'div'}
-      //         {...getTagProps({index})}
-      //         key={index}
-      //       />
-      //     );
-      //   });
-      // }}
       renderOption={(props, option) => (
         <li {...props} key={option.gid}>
           <Typography
@@ -117,6 +87,7 @@ const NotificationTypeFilter = ({setValue, value, onBlur, label = 'Notifikatione
           {...params}
           fullWidth
           slotProps={{
+            ...params.slotProps,
             inputLabel: {shrink: true},
           }}
           variant="outlined"

@@ -1,5 +1,5 @@
 import {Box, Grid, Typography} from '@mui/material';
-import {UseFormReturn} from 'react-hook-form';
+import {SubmitHandler, UseFormReturn} from 'react-hook-form';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {initialWatlevmpData} from '~/features/stamdata/components/stamdata/const';
 import {
@@ -29,7 +29,7 @@ const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
     post: {mutateAsync: postWatlevmpAsync},
     put: {mutateAsync: putWatlevmpAsync},
   } = useMaalepunkt(ts_id);
-  const handleMaalepunktSubmit = async (values: WatlevMPFormValues) => {
+  const handleMaalepunktSubmit: SubmitHandler<WatlevMPFormValuesOutput> = async (values) => {
     const mutationOptions = {
       onSuccess: () => {
         reset(initialWatlevmpData());

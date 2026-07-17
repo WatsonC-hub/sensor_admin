@@ -50,6 +50,8 @@ export default function ReferenceForm() {
 
   const {reset} = formMethods;
 
+  console.log('test');
+
   const {
     feature_permission_query: {data: permissions},
     location_permissions,
@@ -58,10 +60,11 @@ export default function ReferenceForm() {
   const disabled = permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit';
 
   const handleEdit = (data: MaalepunktAsDayjs) => {
-    const {data: parsedData} = schema.safeParse({
+    const {data: parsedData, error} = schema.safeParse({
       ...data,
       mp_description: data.mp_description ?? '',
     });
+    console.log('parsedData', parsedData, error);
     reset(parsedData);
     setShowForm(true);
   };

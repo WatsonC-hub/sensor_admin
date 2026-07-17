@@ -106,7 +106,8 @@ const Pejling = () => {
   };
 
   const handleEdit = (data: PejlingItem) => {
-    const {data: parsedData} = schema.safeParse(data);
+    const {data: parsedData, error} = schema.safeParse(data);
+    console.log(data, parsedData, error);
     reset(parsedData);
     setShowForm(true);
     setGid(data.gid);

@@ -5,7 +5,7 @@ import {useCallback, useMemo} from 'react';
 
 import {statefullTableAtomFamily} from '~/state/atoms';
 
-type StateAndHandlers<TData extends MRT_RowData> = Pick<
+export type StateAndHandlers<TData extends MRT_RowData> = Pick<
   MRT_TableOptions<TData>,
   | 'state'
   | 'onColumnFiltersChange'

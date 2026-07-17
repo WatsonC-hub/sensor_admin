@@ -16,7 +16,7 @@ import {useAppContext} from '~/state/contexts';
 
 import {useCertifyQa, useCertifyQaMutations} from '../api/useCertifyQa';
 import {zodDayjs} from '~/helpers/schemas';
-import dayjs from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
 import FormDateTime from '~/components/FormDateTime';
 
 interface WizardConfirmTimeseriesProps {
@@ -39,7 +39,8 @@ const schema = z
     {path: ['date'], message: 'Dato må ikke være tidligere end sidst godkendt'}
   );
 
-type CertifyQaValues = z.infer<typeof schema>;
+type CertifyQaValues = z.input<typeof schema>;
+type CertifyQaOutput = z.output<typeof schema>;
 
 const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTimeseriesProps) => {
   const {ts_id} = useAppContext(['ts_id']);
@@ -60,7 +61,7 @@ const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTi
     level: 1,
   });
 
-  const formMethods = useForm<CertifyQaValues>({
+  const formMethods = useForm<CertifyQaValues, unknown, CertifyQaOutput>({
     resolver: zodResolver(schema),
     defaultValues: {
       startDate: qaData?.[0]?.date ? dayjs(qaData[0].date) : undefined,
@@ -75,7 +76,7 @@ const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTi
 
   const {watch, handleSubmit, setValue} = formMethods;
 
-  const enddateWatch = watch('date');
+  const enddateWatch = watch('date') as Dayjs | undefined;
 
   useEffect(() => {
     if (selection.points && selection.points.length > 0) {
@@ -84,7 +85,7 @@ const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTi
     }
   }, [selection]);
 
-  const handleSave: SubmitHandler<CertifyQaValues> = async (certifyQa) => {
+  const handleSave: SubmitHandler<CertifyQaOutput> = async (certifyQa) => {
     const payload = {
       path: `${ts_id}`,
       data: {...certifyQa, date: certifyQa.date},

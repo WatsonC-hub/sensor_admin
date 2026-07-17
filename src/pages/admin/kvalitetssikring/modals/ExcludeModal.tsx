@@ -30,7 +30,8 @@ const schema = z.object({
   comment: z.string().optional(),
 });
 
-type ExcludeModalValues = z.infer<typeof schema>;
+type ExcludeModalValues = z.input<typeof schema>;
+type ExcludeModalOutput = z.output<typeof schema>;
 
 const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   const [radio, setRadio] = useState('selected');
@@ -50,7 +51,7 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
     comment: '',
   });
 
-  const formMethods = useForm<ExcludeModalValues>({
+  const formMethods = useForm<ExcludeModalValues, unknown, ExcludeModalOutput>({
     resolver: zodResolver(schema),
     defaultValues: parsedData,
     mode: 'onTouched',
@@ -68,7 +69,7 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
     post: {mutateAsync: excludeAsync},
   } = useExclude();
 
-  const onAccept: SubmitHandler<ExcludeModalValues> = async (values: ExcludeModalValues) => {
+  const onAccept: SubmitHandler<ExcludeModalOutput> = async (values) => {
     await excludeAsync({
       path: `${timeseries_data?.ts_id}`,
       data: {

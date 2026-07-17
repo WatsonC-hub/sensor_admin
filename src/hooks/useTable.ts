@@ -244,9 +244,10 @@ export const useTable = <TData extends MRT_RowData>(
   const table = useMaterialReactTable({
     columns,
     data: data ?? [],
+    ...tableOptions,
+    ...state,
+    // @ts-ignore
     state: {
-      ...tableOptions,
-      ...state,
       ...tableState,
       isLoading: data === undefined,
       showSkeletons: data === undefined,
@@ -262,6 +263,7 @@ export const useTable = <TData extends MRT_RowData>(
     setIsFirstRender(false);
   }
 
+  // @ts-ignore
   return table;
 };
 
@@ -300,9 +302,10 @@ export const useQueryTable = <TData extends MRT_RowData>(
   const table = useMaterialReactTable({
     columns,
     data: data ?? [],
+    ...tableOptions,
+    ...state,
+    // @ts-ignore
     state: {
-      ...tableOptions,
-      ...state,
       ...state?.state,
       isLoading: data === undefined && !isFetched,
       showSkeletons: data === undefined && !isFetched,
@@ -318,5 +321,6 @@ export const useQueryTable = <TData extends MRT_RowData>(
     setIsFirstRender(false);
   }
 
+  // @ts-ignore
   return table;
 };

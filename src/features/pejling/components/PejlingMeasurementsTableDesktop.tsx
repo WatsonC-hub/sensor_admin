@@ -94,6 +94,7 @@ export default function PejlingMeasurementsTableDesktop({handleEdit, disabled}: 
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
+          console.log(row.original);
           handleEdit(row.original);
         }}
         onDeleteBtnClick={() => {

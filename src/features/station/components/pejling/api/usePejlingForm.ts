@@ -76,7 +76,7 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
       };
 
       const mpData = opts[1]?.mpData;
-      const out = await zodResolver(schema)(values, opts[1], opts[2]);
+      const out = await zodResolver(schema)(...opts);
 
       if (values.timeofmeas === null) {
         return out;
@@ -87,6 +87,8 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
           return true;
         }
       });
+
+      console.log('mp', mp, 'values.timeofmeas', values.timeofmeas, 'mpData', mpData);
 
       if (!mp && tstype_id === 1 && values.timeofmeas != null) {
         out.errors.timeofmeas = {

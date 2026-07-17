@@ -49,7 +49,7 @@ const ExcludeRow = ({data, index, isWithYValues = false, onClose}: ExcludeRowPro
 
   const {data: parsedData} = schema.safeParse(data);
 
-  const formMethods = useForm<z.infer<typeof schema>>({
+  const formMethods = useForm<z.input<typeof schema>, unknown, z.output<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: parsedData,
   });

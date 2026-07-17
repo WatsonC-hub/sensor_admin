@@ -24,7 +24,6 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
       freeSolo
       forcePopupIcon={false}
       multiple
-      size="small"
       fullWidth
       value={value ?? []}
       autoHighlight={true}
@@ -55,32 +54,6 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
         }
         return option.project_no === value.project_no;
       }}
-      // renderTags={(values, getTagProps) => {
-      //   return values.map((option, index) => {
-      //     const content = (
-      //       <Typography
-      //         variant="body2"
-      //         sx={{
-      //           display: 'inline',
-      //         }}
-      //       >
-      //         {/* {option.customer_name ? option.customer_name + ' - ' : ''} */}
-      //         {option.project_info ? ` ${option.project_no} -` : option.project_no}
-      //         {option.project_info ? ` ${option.project_info}` : ''}
-      //       </Typography>
-      //     );
-
-      //     return (
-      //       <Chip
-      //         variant="outlined"
-      //         label={content}
-      //         component={'div'}
-      //         {...getTagProps({index})}
-      //         key={index}
-      //       />
-      //     );
-      //   });
-      // }}
       renderValue={(value, getItemProps) => {
         return value.map((option, index) => {
           if (typeof option === 'string') {
@@ -149,6 +122,7 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
           {...params}
           fullWidth
           slotProps={{
+            ...params.slotProps,
             inputLabel: {shrink: true},
           }}
           variant="outlined"

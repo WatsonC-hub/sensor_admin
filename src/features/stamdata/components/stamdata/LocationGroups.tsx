@@ -58,7 +58,6 @@ const LocationGroups = ({
       freeSolo
       forcePopupIcon={false}
       multiple
-      size="small"
       fullWidth
       disabled={disable}
       value={value ?? []}
@@ -173,6 +172,7 @@ const LocationGroups = ({
           placeholder="Vælg gruppe(r)..."
           onBlur={onBlur}
           slotProps={{
+            ...params.slotProps,
             input: {
               ...params.slotProps.input,
               endAdornment: (
