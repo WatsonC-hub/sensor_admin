@@ -214,7 +214,6 @@ const excludeColumnFilterFnsOnFirst = <TData extends MRT_RowData>(
 ) => {
   if (isFirstRender) {
     if (state?.columnFilterFns) {
-      // oxlint-disable-next-line @typescript-eslint/no-unused-vars
       const {columnFilterFns, ...rest} = state;
       return rest;
     }

@@ -18,7 +18,7 @@ import {persister, queryClient} from '~/queryClient';
 import theme from '~/theme';
 
 import App from './App';
-
+import 'leaflet/dist/leaflet.css';
 import '~/index.css';
 import {CommandProvider} from './features/commandpalette/components/CommandContext';
 import moment from 'moment';

@@ -61,13 +61,13 @@
   },
   "scripts": {
     "dev": "vp dev",
-    "build": "tsgo -b && vp build",
+    "build": "tsc -b && vp build",
     "serve": "vp preview",
     "prune": "vp dlx ts-prune -p ./tsconfig.app.json",
     "generate": "openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes",
     "lint": "vp lint src",
     "test": "vp test",
-    "check-types": "tsgo -b --pretty --noEmit",
+    "check-types": "tsc -b --pretty --noEmit",
     "prepare": "vp config"
   },
   "browserslist": {
@@ -99,11 +99,11 @@
     "globals": "^17.7.0",
     "nuqs": "^2.9.0",
     "rollup-plugin-visualizer": "^7.0.1",
-    "typescript": "^6.0.3",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.4",
+    "typescript": "^7.0.2",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.7",
     "vite-plugin-pwa": "^1.3.0",
     "vite-plugin-svgr": "^5.2.0",
-    "vite-plus": "0.2.4",
+    "vite-plus": "0.2.7",
     "vite-tsconfig-paths": "^6.1.1",
     "workbox-cacheable-response": "^7.4.1",
     "workbox-core": "^7.4.1",
@@ -120,6 +120,6 @@
     }
   },
   "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.4"
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.7"
   }
 }

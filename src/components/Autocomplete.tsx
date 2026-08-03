@@ -79,7 +79,7 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
       }}
       renderInput={(params) => {
         const {
-          slotProps: {input: InputProps},
+          slotProps: {input: InputProps, inputLabel: InputLabelProps, ...otherSlotProps} = {},
         } = params;
         let sx = {
           pb: 0,
@@ -111,12 +111,13 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
             fullWidth
             margin="dense"
             slotProps={{
-              inputLabel: {shrink: true},
+              ...otherSlotProps,
+              inputLabel: {...InputLabelProps, shrink: true},
               input: {
                 ...InputProps,
                 endAdornment: (
                   <>
-                    {InputProps.endAdornment}
+                    {InputProps?.endAdornment}
                     <Box sx={{display: 'flex', alignItems: 'center'}}>
                       <InputAdornment position="end">
                         {fieldDescriptionText && (

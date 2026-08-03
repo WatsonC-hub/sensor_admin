@@ -11,13 +11,13 @@ type Props = {
 };
 
 enum FieldsMap {
-  'name' = 'Navn',
-  'status_id' = 'Status',
-  'due_date' = 'Dato',
-  'assigned_to' = 'Ansvarlig',
-  'description' = 'Beskrivelse',
-  'block_all' = 'Bloker alle',
-  'block_on_location' = 'Bloker på lokation',
+  name = 'Navn',
+  status_id = 'Status',
+  due_date = 'Dato',
+  assigned_to = 'Ansvarlig',
+  description = 'Beskrivelse',
+  block_all = 'Bloker alle',
+  block_on_location = 'Bloker på lokation',
 }
 
 const TaskInfoChanges = ({taskChanges, taskUsers, taskStatus}: Props) => {

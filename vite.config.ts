@@ -118,10 +118,35 @@ export default defineConfig({
       {
         files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
         rules: {
+          'no-console': 'warn',
           'typescript/no-floating-promises': 'warn',
           'typescript/no-misused-spread': 'warn',
+          'typescript/no-explicit-any': 'off',
+          'react-compiler/react-compiler': 'error',
+          'react/only-export-components': ['warn', {allowConstantExport: true}],
+          'import/no-cycle': 'error',
+          'check-file/filename-naming-convention': [
+            'error',
+            {
+              '**/*.{tsx}': 'PASCAL_CASE',
+              '**/*.{ts}': 'CAMEL_CASE',
+            },
+            {
+              ignoreMiddleExtensions: true,
+            },
+          ],
+          'check-file/folder-naming-convention': [
+            'error',
+            {
+              '**/*': 'CAMEL_CASE',
+            },
+          ],
+
+          'vite-plus/prefer-vite-plus-imports': 'error',
         },
         // rules: {
+        //   'typescript/no-floating-promises': 'warn',
+        //   'typescript/no-misused-spread': 'warn',
         //   'constructor-super': 'off',
         //   'for-direction': 'error',
         //   'getter-return': 'off',
@@ -249,7 +274,6 @@ export default defineConfig({
         //         'tree',
         //         'treegrid',
         //       ],
-        //       includeRoles: ['alert', 'dialog'],
         //     },
         //   ],
         //   'jsx-a11y/heading-has-content': 'error',
@@ -443,7 +467,7 @@ export default defineConfig({
       output: {
         entryFileNames: '[name].js',
         chunkFileNames: '[name].js',
-        advancedChunks: {
+        codeSplitting: {
           groups: [
             {
               name: 'vendor_plotly',
