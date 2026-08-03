@@ -50,7 +50,7 @@ type UnitEndPayload = {
   change_reason?: number;
   action?: string;
   comment?: string;
-  units: Array<UnitEnd>;
+  unitHistory: Array<UnitEnd>;
 };
 
 const baseSchema = z.object({
@@ -74,6 +74,7 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
   const activeTimeseries = location_data?.timeseries.filter(
     (ts) => dayjs(ts.slutdato).isAfter(dayjs()) && unit_history?.some((uh) => uh.ts_id === ts.ts_id)
   );
+
   const [checkedSensors, setCheckedSensors] = useState<UnitHistory[]>([]);
 
   const tstype_ids = activeTimeseries?.map((ts) => ts.tstype_id);
@@ -110,7 +111,12 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
       toast.success('Udstyret er hjemtaget');
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.unitHistory2()],
+      invalidates: [
+        queryKeys.Timeseries.unitHistory2(),
+        queryKeys.AvailableUnits.all(),
+        ['udstyr'],
+        queryKeys.Timeseries.metadata(ts_id),
+      ],
     },
   });
 
@@ -123,7 +129,7 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
     }
   }, [unit_history]);
 
-  const formMethods = useUnitForm<Omit<UnitEndPayload, 'units'>>({
+  const formMethods = useUnitForm<Omit<UnitEndPayload, 'unitHistory'>>({
     schema: superUser ? superUserSchema : baseSchema,
     mode: 'Add',
     defaultValues: {
@@ -210,35 +216,39 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
               <Typography variant="subtitle1" sx={{mt: 2}}>
                 Tilgængelige tidsserier:
               </Typography>
-              {unit_history?.map((sensor) => (
-                <Box
-                  key={sensor.uuid}
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={checkedSensors.some((s) => s.uuid === sensor.uuid)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setCheckedSensors((prev) => [...prev, sensor]);
-                          } else {
-                            setCheckedSensors((prev) => prev.filter((s) => s.uuid !== sensor.uuid));
-                          }
-                        }}
-                      />
-                    }
-                    label={
-                      <Typography>
-                        {sensor.signal_id} - {sensor.sensor_id} (
-                        {activeTimeseries?.find((ts) => ts.ts_id === sensor.ts_id)?.ts_name})
-                      </Typography>
-                    }
-                  />
-                </Box>
-              ))}
+              {unit_history
+                .filter((sensor) => activeTimeseries?.some((ts) => ts.ts_id === sensor.ts_id))
+                .map((sensor) => (
+                  <Box
+                    key={sensor.uuid}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={checkedSensors.some((s) => s.uuid === sensor.uuid)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setCheckedSensors((prev) => [...prev, sensor]);
+                            } else {
+                              setCheckedSensors((prev) =>
+                                prev.filter((s) => s.uuid !== sensor.uuid)
+                              );
+                            }
+                          }}
+                        />
+                      }
+                      label={
+                        <Typography>
+                          {sensor.signal_id} - {sensor.sensor_id} (
+                          {activeTimeseries?.find((ts) => ts.ts_id === sensor.ts_id)?.ts_name})
+                        </Typography>
+                      }
+                    />
+                  </Box>
+                ))}
             </List>
           )}
         </Box>
@@ -256,7 +266,7 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
               change_reason: data.change_reason,
               action: data.action,
               comment: data.comment,
-              units: checkedSensors.map((sensor) => ({
+              unitHistory: checkedSensors.map((sensor) => ({
                 ts_id: sensor.ts_id,
                 gid: sensor.gid,
                 startdate: dayjs(sensor.startdato),

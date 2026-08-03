@@ -54,11 +54,16 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
   );
 
   const filteredTimeseries = location_data?.timeseries.filter(
-    (ts) => !ts.unit_uuid && !ts.calculated
+    (ts) => (!ts.unit_uuid || dayjs(ts.slutdato).isBefore(dayjs())) && !ts.calculated
   );
+
+  console.log(filteredTimeseries, 'filteredTimeseries');
+
   const matchingSensorTimeseries = filteredTimeseries?.filter((ts) =>
     selectedSensors.some((sensor) => sensor.sensortypeid === ts.tstype_id)
   );
+
+  console.log(selectedSensors, 'selectedSensors');
   const singleSensorTimeseries = matchingSensorTimeseries?.length === 1;
   const hasPrefix = filteredTimeseries?.some((ts) => ts.prefix !== null && ts.prefix !== '');
   const tstype_ids = [...new Set(filteredTimeseries?.map((ts) => ts.tstype_id))];
@@ -201,8 +206,20 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
                           <Select
                             fullWidth
                             size="small"
+                            displayEmpty
                             value={timeseriesSelections[timeseries.ts_id]?.unit_uuid || ''}
                             onChange={(e) => {
+                              // if e.target.value is empty string, remove the selection for this timeseries
+                              if (e.target.value === '') {
+                                setTimeseriesSelections((prev) => {
+                                  const newSelections = {...prev};
+                                  delete newSelections[timeseries.ts_id];
+                                  return newSelections;
+                                });
+                                return;
+                              }
+
+                              console.log(e.target.value, 'selected unit');
                               const selectedUnit = selectedSensors.find(
                                 (sensor) => sensor.unit_uuid === e.target.value
                               );
@@ -219,6 +236,7 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
                               }
                             }}
                           >
+                            <MenuItem value={''}>Ingen opsætning</MenuItem>
                             {selectedSensors
                               .filter((sensor) => sensor.sensortypeid === timeseries.tstype_id)
                               .map((sensor) => (
@@ -244,7 +262,12 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
             bttype="primary"
             startIcon={isPostingUnits ? undefined : <Save />}
             loading={isPostingUnits}
-            disabled={!isDirty || Object.keys(errors).length > 0 || isPostingUnits}
+            disabled={
+              !isDirty ||
+              Object.keys(errors).length > 0 ||
+              isPostingUnits ||
+              Object.keys(timeseriesSelections).length === 0
+            }
             onClick={handleSubmit(async () => {
               if (superUser)
                 await checkInheritInvoice(
