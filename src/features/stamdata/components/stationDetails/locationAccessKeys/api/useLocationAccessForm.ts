@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {DefaultValues, useForm} from 'react-hook-form';
-import {z, ZodObject} from 'zod';
+import {z} from 'zod/v4';
 import {AccessType} from '~/helpers/enumHelper';
 
 export const locationAccessSchema = z
@@ -44,18 +44,18 @@ export const locationAccessSchema = z
 
 // const locationAccessArraySchema = z.array(locationAccessSchema);
 
-type LocationAccessFormProps<TSchema extends ZodObject<any>> = {
+type LocationAccessFormProps<TSchema extends z.ZodType<any, unknown, any>> = {
   schema: TSchema;
   defaultValues: DefaultValues<z.input<TSchema>> | undefined;
   values?: z.input<TSchema>;
 };
 
-const useLocationAccessForm = <TSchema extends ZodObject<any>>({
+const useLocationAccessForm = <TSchema extends z.ZodType<any, unknown, any>>({
   schema,
   defaultValues,
   values,
 }: LocationAccessFormProps<TSchema>) => {
-  const locationAccessFormMethods = useForm<z.input<TSchema>, any, z.output<TSchema>>({
+  const locationAccessFormMethods = useForm<z.input<TSchema>, unknown, z.output<TSchema>>({
     resolver: zodResolver(schema),
     mode: 'onTouched',
     defaultValues: defaultValues,

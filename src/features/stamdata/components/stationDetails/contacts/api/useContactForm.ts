@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {DefaultValues, useForm} from 'react-hook-form';
-import {z, ZodObject} from 'zod';
+import {z} from 'zod/v4';
 
 export const contactSchema = z.object({
   id: z.string().nullish(),
@@ -36,18 +36,18 @@ export type InferContactTable = z.infer<typeof contact_info_table>;
 
 // const contactArraySchema = z.array(contactSchema);
 
-type ContactFormProps<TSchema extends ZodObject<any>> = {
+type ContactFormProps<TSchema extends z.ZodType<any, unknown, any>> = {
   schema: TSchema;
   defaultValues: DefaultValues<z.input<TSchema>> | undefined;
   values?: z.input<TSchema>;
 };
 
-const useContactForm = <Schema extends ZodObject<any>>({
+const useContactForm = <Schema extends z.ZodType<any, unknown, any>>({
   schema,
   defaultValues,
   values,
 }: ContactFormProps<Schema>) => {
-  const contactFormMethods = useForm<z.input<Schema>, any, z.output<Schema>>({
+  const contactFormMethods = useForm<z.input<Schema>, unknown, z.output<Schema>>({
     resolver: zodResolver(schema),
     mode: 'onTouched',
     defaultValues: defaultValues,

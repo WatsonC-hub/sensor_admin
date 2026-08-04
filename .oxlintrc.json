@@ -20,7 +20,7 @@
         "react/button-has-type": "error",
         "react/react-in-jsx-scope": ["off"],
         "jsx-a11y/anchor-is-valid": "off",
-        "@typescript-eslint/no-unused-vars": ["error"],
+        "no-unused-vars": "error",
 
         // "typescript/no-floating-promises": "warn",
         // "typescript/no-misused-promises": "warn",
