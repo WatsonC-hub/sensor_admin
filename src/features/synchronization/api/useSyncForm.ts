@@ -68,7 +68,7 @@ const useSyncForm = <T extends FieldValues, S extends FieldValues = T>({
     enabled: isDmpAllowed,
   });
 
-  let conditionalSchema = syncSchema.superRefine((data, ctx) => {
+  const conditionalSchema = syncSchema.superRefine((data, ctx) => {
     if (canSyncJupiter && (data.jupiter === undefined || data.jupiter === null)) {
       ctx.addIssue({
         code: ZodIssueCode.custom,

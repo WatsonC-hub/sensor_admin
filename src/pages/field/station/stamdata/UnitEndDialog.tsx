@@ -34,7 +34,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
 
   // let unitEndSchema;
 
-  let BaseUnitEndSchema = z
+  const BaseUnitEndSchema = z
     .object({
       enddate: zodDayjs('slutdato er påkrævet').refine((date) => date.isAfter(unit?.startdato), {
         message: 'Slutdato skal være efter startdato',
