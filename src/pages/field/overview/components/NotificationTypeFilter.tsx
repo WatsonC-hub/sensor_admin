@@ -1,7 +1,6 @@
 import {Autocomplete, Chip, TextField, Typography} from '@mui/material';
 import React from 'react';
 import {Noop} from 'react-hook-form';
-import {getColor} from '~/features/notifications/utils';
 import {useNotificationTypes} from '~/hooks/query/useNotificationOverview';
 
 type Props = {

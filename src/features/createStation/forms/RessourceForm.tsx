@@ -36,7 +36,6 @@ const ressourceSchema = z.object({
 
 export type RessourceInput = z.input<typeof ressourceSchema>;
 export type RessourceOutput = z.output<typeof ressourceSchema>;
-type Ressourcer = z.infer<typeof ressourceSchema>['ressourcer'];
 
 const RessourceForm = () => {
   const {isMobile} = useBreakpoints();

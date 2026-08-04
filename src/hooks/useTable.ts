@@ -214,8 +214,8 @@ const excludeColumnFilterFnsOnFirst = <TData extends MRT_RowData>(
 ) => {
   if (isFirstRender) {
     if (state?.columnFilterFns) {
-      const {columnFilterFns, ...rest} = state;
-      return rest;
+      delete state.columnFilterFns;
+      return state;
     }
   }
   return state;
@@ -245,7 +245,6 @@ export const useTable = <TData extends MRT_RowData>(
     data: data ?? [],
     ...tableOptions,
     ...state,
-    // @ts-expect-error
     state: {
       ...tableState,
       isLoading: data === undefined,
@@ -262,7 +261,6 @@ export const useTable = <TData extends MRT_RowData>(
     setIsFirstRender(false);
   }
 
-  // @ts-expect-error
   return table;
 };
 
@@ -303,7 +301,6 @@ export const useQueryTable = <TData extends MRT_RowData>(
     data: data ?? [],
     ...tableOptions,
     ...state,
-    // @ts-expect-error
     state: {
       ...state?.state,
       isLoading: data === undefined && !isFetched,
@@ -320,6 +317,5 @@ export const useQueryTable = <TData extends MRT_RowData>(
     setIsFirstRender(false);
   }
 
-  // @ts-expect-error
   return table;
 };

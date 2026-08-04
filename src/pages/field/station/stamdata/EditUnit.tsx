@@ -14,7 +14,7 @@ import {BuildRounded} from '@mui/icons-material';
 import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import UnitEndDateDialog from './UnitEndDialog';
 import useUnitForm from '~/features/station/api/useUnitForm';
-import {EditUnit as EditUnitType, addUnitSchema, editUnitSchema} from '~/features/station/schema';
+import {addUnitSchema, editUnitSchema} from '~/features/station/schema';
 
 import UnitHistoryTable from './UnitHistoryTable';
 import {useUnitMutations} from '~/features/stamdata/api/useUnit';

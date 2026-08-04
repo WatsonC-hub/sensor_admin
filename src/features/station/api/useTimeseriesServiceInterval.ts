@@ -1,7 +1,6 @@
-import {queryOptions, useMutation, useQuery, useSuspenseQuery} from '@tanstack/react-query';
+import {queryOptions, useMutation, useSuspenseQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
-import {useUser} from '~/features/auth/useUser';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 
@@ -31,9 +30,6 @@ const timeseriesServiceIntervalOptions = (ts_id: number) =>
   });
 
 export const useTimeseriesServiceInterval = (ts_id: number) => {
-  const {
-    features: {iotAccess},
-  } = useUser();
   return useSuspenseQuery({
     ...timeseriesServiceIntervalOptions(ts_id),
     // enabled: iotAccess && ts_id !== undefined,

@@ -58,7 +58,7 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
           flexDirection: gridDirection,
           alignItems: 'center',
         },
-        ...(Array.isArray(gridProps?.sx) ? gridProps?.sx : [gridProps?.sx]),
+        ...(gridProps ? (Array.isArray(gridProps.sx) ? gridProps.sx : [gridProps.sx]) : []),
       ]}
     >
       <Grid>

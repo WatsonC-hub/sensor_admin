@@ -7,12 +7,7 @@ import FormInput, {FormInputProps} from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
-import {
-  BoreholeAddLocation,
-  BoreholeEditLocation,
-  DefaultAddLocation,
-  DefaultEditLocation,
-} from '../../schema';
+import {BoreholeAddLocation, BoreholeEditLocation, DefaultAddLocation} from '../../schema';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import {Borehole} from '../../api/useBorehole';

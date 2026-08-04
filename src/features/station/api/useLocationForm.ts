@@ -5,7 +5,7 @@ import {
   defaultAddLocationSchema,
   defaultEditLocationSchema,
 } from '../schema';
-import {DefaultValues, FieldValues, Path, useForm} from 'react-hook-form';
+import {DefaultValues, Path, useForm} from 'react-hook-form';
 import {z, ZodObject} from 'zod/v4';
 import React from 'react';
 import DefaultLocationForm from '../components/stamdata/stamdataComponents/DefaultLocationForm';
@@ -30,7 +30,7 @@ type useLocationFormProps<T> =
       context: {loc_id: number};
     };
 
-const getSchemaAndForm = <T extends FieldValues>(
+const getSchemaAndForm = (
   loctype_id: number,
   mode: 'Add' | 'Edit',
   superUser: boolean | undefined,
@@ -80,7 +80,7 @@ const useLocationForm = <T extends Record<string, any>>({
   const {superUser} = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, superUser, context.loc_id);
+  const [schema, form] = getSchemaAndForm(loctype_id, mode, superUser, context.loc_id);
 
   let parsed_data = undefined;
 

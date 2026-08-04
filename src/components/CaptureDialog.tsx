@@ -50,7 +50,7 @@ interface CaptureDialogProps {
 }
 
 export default function CaptureDialog({handleClose, handleScan, open}: CaptureDialogProps) {
-  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [_, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [hasPermission, setHasPermission] = useState(true);
   async function handleScanning(raw_data: IDetectedBarcode[]) {

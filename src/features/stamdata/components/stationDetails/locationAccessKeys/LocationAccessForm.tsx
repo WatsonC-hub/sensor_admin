@@ -4,7 +4,7 @@ import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import {AccessType} from '~/helpers/EnumHelper';
-import {Access, ContactInfo} from '~/types';
+import {ContactInfo} from '~/types';
 import SelectLocationAccess from './SelectLocationAccess';
 import {initialLocationAccessData} from '~/consts';
 import {TypedFormComponent} from '~/components/formComponents/Form';

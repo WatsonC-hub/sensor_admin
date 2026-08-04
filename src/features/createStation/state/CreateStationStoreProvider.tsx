@@ -138,9 +138,9 @@ export type CreateStationStoreState = {
   clearSubmitters: () => void;
 };
 
-type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
-};
+// type DeepPartial<T> = {
+//   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+// };
 
 // const defaultState: DeepPartial<CreateStationFormState> = {
 //   location: {

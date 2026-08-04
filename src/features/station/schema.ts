@@ -1,5 +1,4 @@
 import {z} from 'zod';
-import {ZodIssueCode} from 'zod/v3';
 import {zodDayjs} from '~/helpers/schemas';
 
 const baseLocationSchema = z.object({

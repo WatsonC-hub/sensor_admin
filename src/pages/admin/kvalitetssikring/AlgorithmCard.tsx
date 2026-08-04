@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import React, {useEffect, useMemo, useState} from 'react';
-import {Controller, FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {Controller, FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import Button from '~/components/Button';

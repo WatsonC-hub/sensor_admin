@@ -1,7 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useQuery} from '@tanstack/react-query';
-import {DefaultValues, FieldValues, useForm} from 'react-hook-form';
-import {z, ZodObject} from 'zod';
+import {DefaultValues, useForm} from 'react-hook-form';
+import {z} from 'zod';
 import {ZodIssueCode} from 'zod/v3';
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
 
@@ -31,17 +31,13 @@ type SyncContext = {
   ts_id?: number;
 };
 
-type SyncFormProps<T extends FieldValues> = {
+type SyncFormProps = {
   defaultValues?: DefaultValues<SyncFormSchema>;
   values?: SyncFormSchema;
   context: SyncContext;
 };
 
-const useSyncForm = <T extends FieldValues, S extends FieldValues = T>({
-  defaultValues,
-  values,
-  context,
-}: SyncFormProps<T>) => {
+const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
   const isJupiterType = [1, 11, 12, 16].includes(context?.tstype_id || 0);
   const isBorehole = context?.loctype_id === 9;
 

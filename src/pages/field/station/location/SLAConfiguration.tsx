@@ -20,14 +20,8 @@ const SLASchema = z.object({
   days_to_visitation: z.number({error: 'SLA frist er påkrævet'}).optional(),
 });
 
-type SLAForm = {
-  days_to_visitation: number | undefined;
-};
-
 type A = z.input<typeof SLASchema>;
 type B = z.output<typeof SLASchema>;
-
-type SLASubmit = z.infer<typeof SLASchema>;
 
 const SLAConfiguration = () => {
   const {loc_id} = useAppContext(['loc_id']);

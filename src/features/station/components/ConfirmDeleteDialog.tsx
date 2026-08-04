@@ -54,7 +54,6 @@ const ConfirmDeleteDialog = ({
           <TextField
             variant="outlined"
             placeholder="bekræft"
-            autoFocus
             focused
             onChange={(e) => setConfirmationText(e.target.value)}
           />

@@ -41,7 +41,6 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
 
   const {
     watch,
-    getValues,
     handleSubmit,
     formState: {errors},
   } = formMethods;

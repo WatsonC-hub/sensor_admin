@@ -252,8 +252,8 @@
         "check-file/filename-naming-convention": [
           "error",
           {
-            "**/*.tsx": "PASCAL_CASE",
-            "**/*.ts": "CAMEL_CASE"
+            "**/*.{tsx}": "PASCAL_CASE",
+            "**/*.{ts}": "CAMEL_CASE"
           },
           {
             "ignoreMiddleExtensions": true
@@ -262,7 +262,7 @@
         "check-file/folder-naming-convention": [
           "error",
           {
-            "/**/*": "CAMEL_CASE"
+            "/src/**/*": "CAMEL_CASE"
           }
         ],
         "no-empty-function": ["off"],
@@ -275,6 +275,7 @@
         "typescript/explicit-function-return-type": ["off"],
         "typescript/explicit-module-boundary-types": ["off"]
       },
+
       "plugins": ["typescript", "react", "import", "jsx-a11y"],
       "env": {
         "es2018": true,
@@ -288,5 +289,9 @@
         "SuppressedError": "readonly"
       }
     }
-  ]
+  ],
+  "options": {
+    "typeAware": true,
+    "typeCheck": true
+  }
 }

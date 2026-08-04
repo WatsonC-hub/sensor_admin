@@ -5,7 +5,6 @@ import {z} from 'zod';
 
 import Button from '~/components/Button';
 import {initialLocationAccessData} from '~/consts';
-import {Access} from '~/types';
 import {Save} from '@mui/icons-material';
 import LocationAccessForm from './LocationAccessForm';
 import {TypedFormComponent} from '~/components/formComponents/Form';

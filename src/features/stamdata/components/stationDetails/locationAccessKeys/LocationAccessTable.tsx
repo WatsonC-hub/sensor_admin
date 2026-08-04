@@ -17,7 +17,7 @@ import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {Access, AccessTable} from '~/types';
+import {AccessTable} from '~/types';
 import LocationAccessForm from './LocationAccessForm';
 import {TypedFormComponent} from '~/components/formComponents/Form';
 

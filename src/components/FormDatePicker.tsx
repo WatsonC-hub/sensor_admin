@@ -2,7 +2,7 @@ import React from 'react';
 import {Box, TextFieldVariants} from '@mui/material';
 import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 
-import dayjs, {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
 import {DatePicker, DatePickerProps, PickersActionBarAction} from '@mui/x-date-pickers';
 import CustomActionBar from '~/helpers/CustomActionBar';
 

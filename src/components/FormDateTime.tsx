@@ -3,7 +3,7 @@ import {TextFieldVariants} from '@mui/material';
 import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 import {DateTimePicker, DateTimePickerProps} from '@mui/x-date-pickers/DateTimePicker';
 
-import dayjs, {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
 import {PickersActionBarAction} from '@mui/x-date-pickers';
 
 export type FormDateTimeProps<TFieldValues extends FieldValues> = Omit<

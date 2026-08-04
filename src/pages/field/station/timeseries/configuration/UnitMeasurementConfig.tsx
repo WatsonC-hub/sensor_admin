@@ -37,7 +37,6 @@ const ConfigurationSchema = z.object({
 const requiredSchema = ConfigurationSchema.required();
 
 type ConfigForm = z.input<typeof ConfigurationSchema>;
-type ConfigSubmit = z.infer<typeof requiredSchema>;
 
 // type ConfigForm = {
 //   sampleInterval: number | undefined;

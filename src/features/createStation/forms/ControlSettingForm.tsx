@@ -20,12 +20,6 @@ type Props = {
   setValues: (values: ControlSettingsFormState) => void;
 };
 
-type ValidateControlSettings = {
-  controls_per_year: number | null;
-  lead_time: number | null;
-  selectValue: 1 | 2;
-};
-
 const ControlSettingForm = ({id, values, setValues}: Props) => {
   const {isMobile} = useBreakpoints();
   const [registerSubmitter, removeSubmitter, timeseries, deleteState] = useCreateStationStore(

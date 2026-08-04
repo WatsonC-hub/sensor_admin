@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Access, AccessTable} from '~/types';
+import {AccessTable} from '~/types';
 import useLocationAccessForm, {
   locationAccessSchema,
 } from '~/features/stamdata/components/stationDetails/locationAccessKeys/api/useLocationAccessForm';
