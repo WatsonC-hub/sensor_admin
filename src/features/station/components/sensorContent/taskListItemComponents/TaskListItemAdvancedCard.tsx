@@ -19,7 +19,7 @@ import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
 import {convertDate} from '~/helpers/dateConverter';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import TaskForm from '~/features/tasks/components/TaskForm';
-import {getColor} from '~/features/notifications/utils';
+import {getColor} from '~/features/notifications/Utils';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -225,7 +225,11 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
           }
         />
         <CardContent
-          sx={{paddingBottom: 0, paddingX: 1, '&.MuiCardContent-root:last-child': {paddingY: 0}}}
+          sx={{
+            paddingBottom: 0,
+            paddingX: 1,
+            '&.MuiCardContent-root:last-child': {paddingY: 0},
+          }}
         >
           <Grid
             container

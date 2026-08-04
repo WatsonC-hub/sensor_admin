@@ -2,7 +2,7 @@ import {Box, Button, Card, CardContent, CardHeader, Link, Typography} from '@mui
 import React, {useMemo} from 'react';
 import {Task} from '~/features/tasks/types';
 import {EditOutlined} from '@mui/icons-material';
-import {getColor} from '~/features/notifications/utils';
+import {getColor} from '~/features/notifications/Utils';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {convertDate} from '~/helpers/dateConverter';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
@@ -145,7 +145,11 @@ const TaskListItemSimpleCard = ({task}: Props) => {
           }
         />
         <CardContent
-          sx={{paddingBottom: 0, paddingX: 1, '&.MuiCardContent-root:last-child': {paddingY: 1}}}
+          sx={{
+            paddingBottom: 0,
+            paddingX: 1,
+            '&.MuiCardContent-root:last-child': {paddingY: 1},
+          }}
         >
           <Box
             sx={{

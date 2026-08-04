@@ -4,7 +4,7 @@ import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
 
 import L from 'leaflet';
 import './map.css';
-import {getBoreholeColor, getBoreholeIcon, getColor, getIcon} from '../notifications/utils';
+import {getBoreholeColor, getBoreholeIcon, getColor, getIcon} from '../notifications/Utils';
 
 export const setIconSize = (size: number) => {
   const root = document.documentElement;

@@ -2,7 +2,7 @@ import React from 'react';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {useFormContext} from 'react-hook-form';
 import {Box, Chip, Typography} from '@mui/material';
-import {getColor} from '~/features/notifications/utils';
+import {getColor} from '~/features/notifications/Utils';
 import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import SouthIcon from '@mui/icons-material/South';
 import {useNotificationTypes, type NotificationType} from '~/hooks/query/useNotificationOverview';

@@ -1,7 +1,7 @@
 import {Box, BoxProps, Tooltip} from '@mui/material';
 import React from 'react';
 import {BoreholeDetails, IconDetails} from '~/features/notifications/types';
-import {getBoreholeColor, getBoreholeIcon} from '~/features/notifications/utils';
+import {getBoreholeColor, getBoreholeIcon} from '~/features/notifications/Utils';
 //Imports
 
 const flagStyling = (iconDetails: BoreholeDetails) => {

@@ -39,7 +39,7 @@ import {
 import {useUser} from '~/features/auth/useUser';
 import {setIconSize} from '../utils';
 import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
-import {getColor} from '~/features/notifications/utils';
+import {getColor} from '~/features/notifications/Utils';
 import {useDisplayState} from '~/hooks/ui';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {highlightedItinerariesAtom, usedHeightAtom, usedWidthAtom} from '~/state/atoms';
@@ -691,7 +691,9 @@ const useMap = <TData extends object>(
 
   useEffect(() => {
     const handler = (e: CustomEvent) => {
-      mapRef.current?.flyTo([e.detail.lat, e.detail.lng], e.detail.zoom || zoom, {animate: false});
+      mapRef.current?.flyTo([e.detail.lat, e.detail.lng], e.detail.zoom || zoom, {
+        animate: false,
+      });
     };
 
     window.addEventListener('leaflet-pan', handler as EventListener);

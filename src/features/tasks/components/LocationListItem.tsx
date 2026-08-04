@@ -7,7 +7,7 @@ import {convertDate} from '~/helpers/dateConverter';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import {Person} from '@mui/icons-material';
 import {useItinerary} from '../api/useItinerary';
-import {getIcon} from '~/features/notifications/utils';
+import {getIcon} from '~/features/notifications/Utils';
 import {useDisplayState} from '~/hooks/ui';
 import {useUser} from '~/features/auth/useUser';
 type Props = {

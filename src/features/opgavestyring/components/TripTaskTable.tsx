@@ -2,7 +2,7 @@ import {Box, Link, Typography} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 
-import {getIcon} from '~/features/notifications/utils';
+import {getIcon} from '~/features/notifications/Utils';
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import {useTable} from '~/hooks/useTable';
 
