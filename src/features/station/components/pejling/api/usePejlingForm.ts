@@ -3,7 +3,7 @@ import {
   pejlingBoreholeSchema,
   PejlingSchemaType,
   pejlingSchema,
-} from '../PejlingSchema';
+} from '../pejlingSchema';
 import {useForm} from 'react-hook-form';
 import PejlingForm from '../components/PejlingForm';
 import {z, ZodObject, ZodType} from 'zod';

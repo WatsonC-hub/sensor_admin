@@ -17,7 +17,7 @@ import CompoundPejling from '~/features/station/components/pejling/CompoundPejli
 import {
   PejlingBoreholeSchemaType,
   PejlingSchemaType,
-} from '~/features/station/components/pejling/PejlingSchema';
+} from '~/features/station/components/pejling/pejlingSchema';
 import {PejlingItem, LatestMeasurement} from '~/types';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/enumHelper';

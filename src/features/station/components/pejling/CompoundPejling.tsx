@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import React, {useContext, useEffect, useState} from 'react';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import {PejlingBoreholeSchemaType, PejlingSchemaType} from './PejlingSchema';
+import {PejlingBoreholeSchemaType, PejlingSchemaType} from './pejlingSchema';
 import {Controller, useFormContext} from 'react-hook-form';
 import {correction_map} from '~/consts';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -373,7 +373,9 @@ const NotPossible = () => {
             checked={notPossible}
             onChange={(e) => {
               console.log(defaultValues, 'defaultvalues');
-              setValue('measurement', e.target.checked ? null : 0, {shouldDirty: e.target.checked});
+              setValue('measurement', e.target.checked ? null : 0, {
+                shouldDirty: e.target.checked,
+              });
               if (!defaultValues || 'extrema' in defaultValues)
                 setValue('extrema', e.target.checked ? 'A' : undefined, {
                   shouldDirty: e.target.checked,

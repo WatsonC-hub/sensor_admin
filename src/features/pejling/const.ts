@@ -1,7 +1,7 @@
 import {
   PejlingBoreholeSchemaType,
   PejlingSchemaType,
-} from '../station/components/pejling/PejlingSchema';
+} from '../station/components/pejling/pejlingSchema';
 import dayjs from 'dayjs';
 
 export const initialData = () =>
