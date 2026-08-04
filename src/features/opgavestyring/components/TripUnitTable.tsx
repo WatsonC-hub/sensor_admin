@@ -6,7 +6,7 @@ import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import {useTable} from '~/hooks/useTable';
 import {TaskUnits} from '~/types';
-import {sharedTableOptions} from '../shared_options';
+import {sharedTableOptions} from '../sharedOptions';
 
 type Props = {
   units: Array<TaskUnits> | undefined;

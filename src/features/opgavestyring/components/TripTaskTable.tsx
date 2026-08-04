@@ -7,7 +7,7 @@ import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import {useTable} from '~/hooks/useTable';
 
 import {LocationTasks} from '~/types';
-import {sharedTableOptions} from '../shared_options';
+import {sharedTableOptions} from '../sharedOptions';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 type Props = {

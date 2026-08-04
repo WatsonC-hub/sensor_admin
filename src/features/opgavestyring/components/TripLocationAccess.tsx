@@ -7,7 +7,7 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useTable} from '~/hooks/useTable';
 import {TaskLocationAccess} from '~/types';
-import {sharedTableOptions} from '../shared_options';
+import {sharedTableOptions} from '../sharedOptions';
 
 type TripLocationAccessProps = {
   keys: Array<TaskLocationAccess> | undefined;

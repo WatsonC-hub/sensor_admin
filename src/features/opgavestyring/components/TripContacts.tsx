@@ -6,7 +6,7 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useTable} from '~/hooks/useTable';
 import {TaskContact} from '~/types';
-import {sharedTableOptions} from '../shared_options';
+import {sharedTableOptions} from '../sharedOptions';
 
 type TripContactsProps = {
   contacts: Array<TaskContact> | undefined;
