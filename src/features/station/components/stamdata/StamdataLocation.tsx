@@ -14,7 +14,7 @@ import {Borehole} from '../../api/useBorehole';
 import {utm} from '~/features/map/mapConsts';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {useAppContext} from '~/state/contexts';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {queryClient} from '~/queryClient';
 import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
 

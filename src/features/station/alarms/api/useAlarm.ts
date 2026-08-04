@@ -3,7 +3,7 @@ import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {useAppContext} from '~/state/contexts';
 import {AlarmNotificationType, AlarmHistory, AlarmTableType} from '../types';
 import {APIError} from '~/queryClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {AlarmFormInput} from '../schema';
 
 interface AlarmBase {

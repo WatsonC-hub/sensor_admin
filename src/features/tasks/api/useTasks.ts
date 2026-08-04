@@ -21,7 +21,7 @@ import {
   TaskAPI,
 } from '../types';
 import {useDisplayState} from '~/hooks/ui';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import dayjs from 'dayjs';
 import {useUser} from '~/features/auth/useUser';
 

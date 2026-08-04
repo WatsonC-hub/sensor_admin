@@ -2,7 +2,7 @@ import {useQuery, queryOptions, UseQueryOptions} from '@tanstack/react-query';
 import {useCallback} from 'react';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {Group} from '~/types';

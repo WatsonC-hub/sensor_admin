@@ -12,7 +12,7 @@ import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import FormInput from '~/components/FormInput';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
 import {useAppContext} from '~/state/contexts';
 

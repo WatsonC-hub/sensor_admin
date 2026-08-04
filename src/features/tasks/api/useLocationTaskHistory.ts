@@ -1,7 +1,7 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {TaskAPI} from '../types';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import dayjs from 'dayjs';
 
 const locationTaskHistoryOptions = (loc_id: number | undefined) =>

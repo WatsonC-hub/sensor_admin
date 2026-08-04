@@ -12,7 +12,7 @@ import localforage from 'localforage';
 import {apiClient} from '~/apiClient';
 import {httpStatusDescriptions} from '~/consts';
 import {excludeDelOptions, excludePostOptions, excludePutOptions} from '~/hooks/query/useExclude';
-import {queryKeys} from './helpers/QueryKeyFactoryHelper';
+import {queryKeys} from './helpers/queryKeyFactoryHelper';
 import {
   deleteImageMutationOptions,
   postImageMutationOptions,

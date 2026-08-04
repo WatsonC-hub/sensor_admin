@@ -3,7 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 
 interface RessourcerBase {

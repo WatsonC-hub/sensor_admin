@@ -2,7 +2,7 @@ import {useQuery} from '@tanstack/react-query';
 import {} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 
 export type UnitHistory = {

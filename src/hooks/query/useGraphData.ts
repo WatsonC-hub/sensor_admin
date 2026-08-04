@@ -2,7 +2,7 @@ import {useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {GraphData} from '~/types';
 
 export const useGraphData = (ts_id: number | undefined, xRange: Array<string>) => {

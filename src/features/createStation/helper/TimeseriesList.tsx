@@ -10,7 +10,7 @@ import {TransformedUnit} from '../types';
 import {apiClient} from '~/apiClient';
 import {Tstype} from '~/types';
 import {useQuery} from '@tanstack/react-query';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useUser} from '~/features/auth/useUser';
 import {Router, Timeline} from '@mui/icons-material';
 

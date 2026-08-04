@@ -12,7 +12,7 @@ import {
 } from '../../schema';
 import FormTextField from '~/components/FormTextField';
 import {useAppContext} from '~/state/contexts';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {Controller, useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 

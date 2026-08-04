@@ -4,7 +4,7 @@ import {useQuery} from '@tanstack/react-query';
 import React, {useEffect, useState} from 'react';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useAppContext} from '~/state/contexts';
 import {BoreholeData} from '~/types';

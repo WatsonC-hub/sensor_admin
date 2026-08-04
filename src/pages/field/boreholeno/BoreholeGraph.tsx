@@ -6,7 +6,7 @@ import React, {useEffect, useState} from 'react';
 import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 import {BoreholeMeasurement} from '~/types';

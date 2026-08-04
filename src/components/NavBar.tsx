@@ -37,7 +37,7 @@ import {useUser} from '~/features/auth/useUser';
 import {toast} from 'react-toastify';
 import CaptureDialog from './CaptureDialog';
 import {useTasks} from '~/features/tasks/api/useTasks';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();

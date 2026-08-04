@@ -1,7 +1,7 @@
 import {useQuery} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {QaAllData} from '~/types';
 
 export const useAdjustmentData = (ts_id: number) => {

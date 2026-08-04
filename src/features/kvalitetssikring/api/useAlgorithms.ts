@@ -2,7 +2,7 @@ import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/rea
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {QaAlgorithms} from '~/types';

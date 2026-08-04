@@ -27,7 +27,7 @@ import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {useSetAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 
 const Pejling = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);

@@ -13,7 +13,7 @@ import SaveImageDialog from '~/components/SaveImageDialog';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useFormData from '~/hooks/useFormData';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import PlotGraph from '~/pages/field/boreholeno/BoreholeGraph';

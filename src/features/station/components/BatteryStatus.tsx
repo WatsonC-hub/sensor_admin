@@ -5,7 +5,7 @@ import React from 'react';
 
 import {apiClient} from '~/apiClient';
 import BatteryIndicator from '~/components/BatteryIndicator';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
 import {BatteryStatusType} from '~/types';

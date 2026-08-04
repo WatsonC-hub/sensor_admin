@@ -10,7 +10,7 @@ import TooltipWrapper from '~/components/TooltipWrapper';
 
 import {limitDecimalNumbers, splitTimeFromDate} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTable} from '~/hooks/useTable';
 import {useAppContext} from '~/state/contexts';

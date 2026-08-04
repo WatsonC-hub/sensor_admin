@@ -1,6 +1,6 @@
 import {useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 
 export interface Project {
   project_no: string;

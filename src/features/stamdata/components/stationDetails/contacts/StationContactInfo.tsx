@@ -8,7 +8,7 @@ import {apiClient} from '~/apiClient';
 import {FormPhoneInput} from '~/components/formComponents/FormPhoneInput';
 import FormInput from '~/components/FormInput';
 import {ContactInfoType} from '~/helpers/EnumHelper';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {InferContactInfo} from './api/useContactForm';
 import useBreakpoints from '~/hooks/useBreakpoints';
 

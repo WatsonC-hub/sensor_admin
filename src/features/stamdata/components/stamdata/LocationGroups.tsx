@@ -9,7 +9,7 @@ import {getGroupLink} from '~/helpers/links';
 import {apiClient} from '~/apiClient';
 import {Group} from '~/types';
 import LinkableTooltip from '~/components/LinkableTooltip';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 const filter = createFilterOptions<Group>({

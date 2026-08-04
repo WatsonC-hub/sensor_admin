@@ -4,7 +4,7 @@ import Button from './components/Button';
 import {apiClient} from './apiClient';
 import {queryClient} from './queryClient';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
-import {queryKeys} from './helpers/QueryKeyFactoryHelper';
+import {queryKeys} from './helpers/queryKeyFactoryHelper';
 
 type Props = {
   message: string;

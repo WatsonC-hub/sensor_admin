@@ -17,7 +17,7 @@ import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import {useGraphData} from '~/hooks/query/useGraphData';

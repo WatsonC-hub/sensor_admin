@@ -17,7 +17,7 @@ import useLocationForm from '~/features/station/api/useLocationForm';
 import ConfirmDeleteDialog from '~/features/station/components/ConfirmDeleteDialog';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
 import {BaseLocation} from '~/features/station/schema';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';

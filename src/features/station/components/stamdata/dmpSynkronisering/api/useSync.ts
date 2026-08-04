@@ -2,7 +2,7 @@ import {MutationOptions, queryOptions, useMutation, useQuery} from '@tanstack/re
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {SyncFormSchema} from '~/features/synchronization/api/useSyncForm';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 
 interface SyncBase {
