@@ -6,7 +6,7 @@ import {useForm, FormProvider, Controller} from 'react-hook-form';
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
-import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
+import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filterConsts';
 import NotificationTypeFilter from './NotificationTypeFilter';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import ProjectsFilter from './ProjectsFilter';

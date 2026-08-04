@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import {Noop} from 'react-hook-form';
 import React, {useEffect, useMemo, useState} from 'react';
-import {locationFilterOptions} from './filter_consts';
+import {locationFilterOptions} from './filterConsts';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 type Props = {

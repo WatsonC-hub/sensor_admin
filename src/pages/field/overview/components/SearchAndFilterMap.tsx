@@ -17,7 +17,7 @@ import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
-import {defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
+import {defaultMapFilter} from '~/pages/field/overview/components/filterConsts';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
 import {BoreholeMapData} from '~/types';
 
@@ -159,7 +159,9 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
               },
             }}
             placeholder="Søg efter lokation..."
-            sx={{'& .MuiOutlinedInput-root': {borderRadius: '9999px', backgroundColor: 'white'}}}
+            sx={{
+              '& .MuiOutlinedInput-root': {borderRadius: '9999px', backgroundColor: 'white'},
+            }}
           />
         )}
         sx={{

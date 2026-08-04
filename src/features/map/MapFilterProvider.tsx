@@ -1,6 +1,6 @@
 import {createStore} from 'zustand';
 import {createJSONStorage, devtools, persist} from 'zustand/middleware';
-import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
+import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filterConsts';
 import {merge} from 'lodash';
 import {useUser} from '../auth/useUser';
 import React, {useState} from 'react';

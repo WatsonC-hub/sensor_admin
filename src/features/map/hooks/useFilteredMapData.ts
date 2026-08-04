@@ -1,5 +1,5 @@
 import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
-import {Filter, locationFilterOptions} from '~/pages/field/overview/components/filter_consts';
+import {Filter, locationFilterOptions} from '~/pages/field/overview/components/filterConsts';
 import {BoreholeMapData} from '~/types';
 import {useMemo, useState} from 'react';
 import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
