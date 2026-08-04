@@ -1,3 +1,4 @@
+// oxlint-disable check-file/filename-naming-convention
 import {CssBaseline, StyledEngineProvider, ThemeProvider} from '@mui/material';
 import * as Sentry from '@sentry/react';
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
@@ -22,7 +23,7 @@ import 'leaflet/dist/leaflet.css';
 import '~/index.css';
 import {CommandProvider} from './features/commandpalette/components/CommandContext';
 import moment from 'moment';
-import 'moment/locale/da';
+// import "moment/locale/da";
 import dayjs from 'dayjs';
 import dayDA from 'dayjs/locale/da';
 import {LocalizationProvider} from '@mui/x-date-pickers';

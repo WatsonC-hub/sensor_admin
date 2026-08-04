@@ -5,7 +5,7 @@ import {RemoveCircleOutlined} from '@mui/icons-material';
 import {Grid} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import Button from '~/components/Button';
-import {isSynchronizationAllowed} from './TimeseriesStepHelper';
+import {isSynchronizationAllowed} from './timeseriesStepHelper';
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
 import {TimeseriesPayload} from '../types';
 import {useCreateStationStore} from '../state/useCreateStationStore';
