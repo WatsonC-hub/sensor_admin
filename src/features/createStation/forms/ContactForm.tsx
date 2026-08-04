@@ -14,7 +14,7 @@ import {AddCircleOutlined, DoNotDisturb, Edit} from '@mui/icons-material';
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {button_sx} from '../common_style';
+import {button_sx} from '../commonStyle';
 import {useProjectContacts} from '~/features/stamdata/api/useContactInfo';
 import {CreateLocationData} from '../types';
 

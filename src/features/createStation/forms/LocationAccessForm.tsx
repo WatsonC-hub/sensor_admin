@@ -11,7 +11,7 @@ import {Box} from '@mui/material';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {button_sx} from '../common_style';
+import {button_sx} from '../commonStyle';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {z} from 'zod';
 

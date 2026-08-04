@@ -9,7 +9,7 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 import Button from '~/components/Button';
 import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {button_sx} from '../common_style';
+import {button_sx} from '../commonStyle';
 
 const SLASchema = z.object({
   days_to_visitation: z

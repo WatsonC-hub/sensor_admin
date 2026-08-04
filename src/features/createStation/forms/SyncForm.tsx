@@ -7,7 +7,7 @@ import useSyncForm, {
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import {SyncFormState} from '../types';
 import Button from '~/components/Button';
-import {button_sx} from '../common_style';
+import {button_sx} from '../commonStyle';
 import {Stack, Typography} from '@mui/material';
 
 type SyncFormProps = {

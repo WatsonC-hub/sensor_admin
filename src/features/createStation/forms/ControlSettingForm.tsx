@@ -10,7 +10,7 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
 
 import Button from '~/components/Button';
-import {button_sx} from '../common_style';
+import {button_sx} from '../commonStyle';
 
 type EmptyObject = Record<string, never>;
 

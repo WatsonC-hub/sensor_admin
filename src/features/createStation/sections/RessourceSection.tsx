@@ -5,7 +5,7 @@ import FormFieldset from '~/components/formComponents/FormFieldset';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import RessourceForm from '../forms/RessourceForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {button_sx} from '../common_style';
+import {button_sx} from '../commonStyle';
 
 const RessourceSection = () => {
   const [ressourcer, setState] = useCreateStationStore((state) => [

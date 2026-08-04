@@ -9,7 +9,7 @@ import {useUnit} from '~/features/stamdata/api/useUnit';
 import dayjs from 'dayjs';
 import RouterIcon from '@mui/icons-material/Router';
 import SimpleTextView from '~/components/SimpleTextView';
-import {button_sx} from '../common_style';
+import {button_sx} from '../commonStyle';
 
 type UnitStepProps = {
   uuid: string;

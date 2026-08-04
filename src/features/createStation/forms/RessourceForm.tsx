@@ -8,7 +8,7 @@ import {z} from 'zod';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
 import Button from '~/components/Button';
 import {DoNotDisturb} from '@mui/icons-material';
-import {button_sx} from '../common_style';
+import {button_sx} from '../commonStyle';
 
 const ressourceSchema = z.object({
   ressourcer: z
