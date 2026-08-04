@@ -16,7 +16,7 @@ import {
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {BoreholeMaalepunktTableData} from '~/types';

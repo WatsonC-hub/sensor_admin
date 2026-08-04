@@ -21,7 +21,7 @@ import ContactInfo from '~/features/stamdata/components/stationDetails/contacts/
 import StationPageBoxLayout from './StationPageBoxLayout';
 import ActionArea from './ActionArea';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import EditLocation from '~/pages/field/station/stamdata/EditLocation';
 
 import {Fullscreen, FullscreenExit} from '@mui/icons-material';

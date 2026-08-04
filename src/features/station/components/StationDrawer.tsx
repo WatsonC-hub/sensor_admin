@@ -54,7 +54,7 @@ import {getRessourcerOptions} from '~/features/stamdata/api/useRessourcer';
 import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory';
 import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {getImageOptions} from '../api/useImages';
-import {stationPages, StationPages} from '~/helpers/EnumHelper';
+import {stationPages, StationPages} from '~/helpers/enumHelper';
 import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';

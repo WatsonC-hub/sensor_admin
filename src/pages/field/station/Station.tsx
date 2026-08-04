@@ -24,7 +24,7 @@ import ImagePage from './stamdata/ImagePage';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import StationDrawer from '~/features/station/components/StationDrawer';
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import {useAtom} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 import {Fullscreen, FullscreenExit} from '@mui/icons-material';

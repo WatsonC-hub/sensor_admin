@@ -9,7 +9,7 @@ import RenderInternalActions from '~/components/tableComponents/RenderInternalAc
 import {initialContactData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import {ContactInfoType, MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {ContactInfoType, MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';

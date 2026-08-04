@@ -7,7 +7,7 @@ import RenderInternalActions from '~/components/tableComponents/RenderInternalAc
 import {setTableBoxStyle} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';

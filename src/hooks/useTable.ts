@@ -13,7 +13,7 @@ import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import {useMemo, useState} from 'react';
 
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {APIError} from '~/queryClient';
 

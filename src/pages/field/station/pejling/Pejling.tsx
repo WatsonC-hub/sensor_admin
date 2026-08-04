@@ -20,7 +20,7 @@ import {
 } from '~/features/station/components/pejling/PejlingSchema';
 import {PejlingItem, LatestMeasurement} from '~/types';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {APIError} from '~/queryClient';

@@ -12,7 +12,7 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import {UnitHistory, useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import {checkEndDateIsUnset, convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';

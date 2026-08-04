@@ -11,7 +11,7 @@ import React, {useState} from 'react';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import {navIconStyle, qaHistorySkeletonHeight} from '~/consts';
-import {AdjustmentTypes, qaAdjustment} from '~/helpers/EnumHelper';
+import {AdjustmentTypes, qaAdjustment} from '~/helpers/enumHelper';
 import {useAppContext} from '~/state/contexts';
 
 import {useCertifyQa, useCertifyQaMutations} from '../api/useCertifyQa';

@@ -2,7 +2,7 @@ import {assign, merge} from 'lodash';
 import {Layout} from 'plotly.js';
 import {useState} from 'react';
 
-import {MergeType} from '~/helpers/EnumHelper';
+import {MergeType} from '~/helpers/enumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 /**
  * For nu er mergetype required. Det kan være at den måske skal være optional i fremtiden

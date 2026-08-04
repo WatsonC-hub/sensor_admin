@@ -9,7 +9,7 @@ import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {AdjustmentTypes, MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {AdjustmentTypes, MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {ExcludeData, useExclude} from '~/hooks/query/useExclude';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';

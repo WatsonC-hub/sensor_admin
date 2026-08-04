@@ -9,7 +9,7 @@ import {apiClient} from '~/apiClient';
 import TooltipWrapper from '~/components/TooltipWrapper';
 
 import {limitDecimalNumbers, splitTimeFromDate} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTable} from '~/hooks/useTable';

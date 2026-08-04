@@ -12,7 +12,7 @@ import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle} from '~/consts';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useQueryTable} from '~/hooks/useTable';
 import {TilsynItem} from '~/types';

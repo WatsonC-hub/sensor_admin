@@ -1,7 +1,7 @@
 import {BottomNavigation, BottomNavigationAction, Box, SvgIconProps} from '@mui/material';
 import React from 'react';
 
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 import CustomBottomNavigationActionLabel from './CustomLabel';

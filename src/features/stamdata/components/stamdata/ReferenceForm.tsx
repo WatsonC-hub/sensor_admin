@@ -16,7 +16,7 @@ import {MaalepunktAsDayjs} from '~/types';
 import {zodDayjs} from '~/helpers/schemas';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useEffect} from 'react';
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import JupiterMPTable from './JupiterMPTable';
 import {Box} from '@mui/material';
 

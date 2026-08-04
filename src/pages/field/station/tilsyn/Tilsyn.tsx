@@ -13,7 +13,7 @@ import StationPageBoxLayout from '~/features/station/components/StationPageBoxLa
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import {zodDayjs} from '~/helpers/schemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';

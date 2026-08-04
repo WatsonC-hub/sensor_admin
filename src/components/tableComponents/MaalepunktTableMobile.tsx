@@ -10,7 +10,7 @@ import React, {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle, setTableBoxStyle} from '~/consts';
 import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';

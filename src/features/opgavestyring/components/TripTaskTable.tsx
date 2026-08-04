@@ -3,7 +3,7 @@ import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-reac
 import React, {useMemo} from 'react';
 
 import {getIcon} from '~/features/notifications/utils';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import {useTable} from '~/hooks/useTable';
 
 import {LocationTasks} from '~/types';

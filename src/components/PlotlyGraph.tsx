@@ -12,7 +12,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import ReplayIcon from '@mui/icons-material/Replay';
 import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
-import {MergeType} from '~/helpers/EnumHelper';
+import {MergeType} from '~/helpers/enumHelper';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';

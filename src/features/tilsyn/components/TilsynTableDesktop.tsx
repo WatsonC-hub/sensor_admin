@@ -8,7 +8,7 @@ import RenderInternalActions from '~/components/tableComponents/RenderInternalAc
 import {setTableBoxStyle} from '~/consts';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';

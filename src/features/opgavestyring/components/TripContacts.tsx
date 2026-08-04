@@ -1,7 +1,7 @@
 import {Box, Link, Typography} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
-import {MergeType, stationPages, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, stationPages, TableTypes} from '~/helpers/enumHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useTable} from '~/hooks/useTable';

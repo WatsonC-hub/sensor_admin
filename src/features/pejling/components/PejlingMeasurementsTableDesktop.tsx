@@ -7,7 +7,7 @@ import RenderInternalActions from '~/components/tableComponents/RenderInternalAc
 import {correction_map, setTableBoxStyle} from '~/consts';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';

@@ -1,6 +1,6 @@
 import {useQueryState, parseAsStringLiteral, parseAsBoolean} from 'nuqs';
 
-import {qaAdjustmentLiteral, stationPages} from '~/helpers/EnumHelper';
+import {qaAdjustmentLiteral, stationPages} from '~/helpers/enumHelper';
 
 export function useStationPages() {
   return useQueryState(

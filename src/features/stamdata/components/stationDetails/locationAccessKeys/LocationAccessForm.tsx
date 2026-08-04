@@ -3,7 +3,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
-import {AccessType} from '~/helpers/EnumHelper';
+import {AccessType} from '~/helpers/enumHelper';
 import {ContactInfo} from '~/types';
 import SelectLocationAccess from './SelectLocationAccess';
 import {initialLocationAccessData} from '~/consts';

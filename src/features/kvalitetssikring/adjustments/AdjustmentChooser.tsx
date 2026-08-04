@@ -4,7 +4,7 @@ import {parseAsStringLiteral, useQueryState} from 'nuqs';
 import React, {useEffect} from 'react';
 import {toast} from 'react-toastify';
 
-import {qaAdjustmentLiteral} from '~/helpers/EnumHelper';
+import {qaAdjustmentLiteral} from '~/helpers/enumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {
   initiateConfirmTimeseriesAtom,
