@@ -28,7 +28,7 @@ const LocationForm = () => {
 
   useEffect(() => {
     registerSubmitter('location.meta', async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         setState('location.meta', values);
         valid = true;

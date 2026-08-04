@@ -44,7 +44,7 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
   useEffect(() => {
     if (values !== undefined)
       registerSubmitter(id, async () => {
-        let valid: boolean = false;
+        let valid = false;
         await handleSubmit((values) => {
           setValues(values);
           valid = true;
@@ -59,7 +59,7 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
     const currentValues = getValues();
     setValues(currentValues as ControlSettingsFormState);
     registerSubmitter(id, async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         setValues(values);
         valid = true;

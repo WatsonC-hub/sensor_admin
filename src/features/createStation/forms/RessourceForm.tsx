@@ -61,7 +61,7 @@ const RessourceForm = () => {
 
   useEffect(() => {
     registerSubmitter(id, async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         setState('location.ressourcer', values.ressourcer);
         valid = true;

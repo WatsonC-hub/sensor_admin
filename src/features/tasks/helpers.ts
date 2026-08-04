@@ -11,7 +11,7 @@ export const isSimpleTask = (task: Task) => {
 
 export const createSmoothScrollToFn = (
   getScrollElement: () => HTMLElement | null,
-  duration: number = 1000
+  duration = 1000
 ): VirtualizerOptions<any, any>['scrollToFn'] => {
   let scrollingRef = 0;
 

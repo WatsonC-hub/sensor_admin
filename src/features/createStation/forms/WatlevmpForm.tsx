@@ -126,7 +126,7 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
   const onChangeCallback = () => {
     setValues({});
     registerSubmitter(id, async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         if (
           values.description !== watlevmp?.description ||

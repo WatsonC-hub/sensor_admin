@@ -41,7 +41,7 @@ const VisibilityForm = ({visibility, setValues}: VisibilityFormProps) => {
 
   useEffect(() => {
     registerSubmitter('location.visibility', async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         setValues(values);
         valid = true;

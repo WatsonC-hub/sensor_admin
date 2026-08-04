@@ -1,9 +1,20 @@
 {
   "name": "sensor-app",
-  "homepage": "https://watsonc-hub.github.io/",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://watsonc-hub.github.io/",
   "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "tsc -b && vp build",
+    "serve": "vp preview",
+    "prune": "vp dlx ts-prune -p ./tsconfig.app.json",
+    "generate": "openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes",
+    "lint": "vp dlx oxlint .",
+    "test": "vp test",
+    "check-types": "tsc -b --pretty --noEmit",
+    "prepare": "vp config"
+  },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/react": "^0.5.0",
@@ -25,12 +36,10 @@
     "@tanstack/react-virtual": "^3.14.5",
     "@types/leaflet.markercluster": "^1.5.6",
     "@types/react-router-dom": "^5.3.3",
-    "@typescript/native-preview": "^7.0.0-dev.20260707.2",
     "@yudiel/react-qr-scanner": "^2.6.0",
     "axios": "^1.18.1",
     "cmdk": "^1.1.1",
     "dayjs": "^1.11.21",
-    "install-scripts": "^1.2.0",
     "jotai": "^2.20.1",
     "leaflet": "^1.9.4",
     "leaflet-active-area": "^1.3.1",
@@ -40,10 +49,10 @@
     "leaflet.markercluster": "^1.5.3",
     "localforage": "^1.10.0",
     "lodash": "^4.18.1",
-    "ls": "^1.0.0",
     "material-react-table": "^3.2.1",
     "moment": "^2.30.1",
     "mui-tel-input": "^11.0.0",
+    "oxlint": "^1.77.0",
     "plotly.js": "^3.7.0",
     "posthog-js": "^1.399.0",
     "react": "19.2.7",
@@ -58,30 +67,6 @@
     "workbox-window": "^7.4.1",
     "zod": "^4.4.3",
     "zustand": "^5.0.14"
-  },
-  "scripts": {
-    "dev": "vp dev",
-    "build": "tsc -b && vp build",
-    "serve": "vp preview",
-    "prune": "vp dlx ts-prune -p ./tsconfig.app.json",
-    "generate": "openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes",
-    "lint": "vp lint src",
-    "test": "vp test",
-    "check-types": "tsc -b --pretty --noEmit",
-    "prepare": "vp config"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not ie <= 11",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "devDependencies": {
     "@hookform/devtools": "^4.4.0",
@@ -98,6 +83,7 @@
     "eslint-plugin-react-compiler": "^19.1.0-rc.2",
     "globals": "^17.7.0",
     "nuqs": "^2.9.0",
+    "oxlint-tsgolint": "^7.0.2001",
     "rollup-plugin-visualizer": "^7.0.1",
     "typescript": "^7.0.2",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.2.7",
@@ -112,14 +98,27 @@
     "workbox-routing": "^7.4.1",
     "workbox-strategies": "^7.4.1"
   },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.7"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not ie <= 11",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "devEngines": {
     "packageManager": {
       "name": "npm",
       "version": "12.0.1",
       "onFail": "download"
     }
-  },
-  "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.7"
   }
 }

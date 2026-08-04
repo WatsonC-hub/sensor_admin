@@ -23,7 +23,7 @@ type PejlingFormProps = {
   tstype_id: number | undefined;
 };
 
-const getSchemaAndForm = (loctype_id: number = -1, tstype_id: number = -1) => {
+const getSchemaAndForm = (loctype_id = -1, tstype_id = -1) => {
   const {isMobile} = useBreakpoints();
   let selectedSchema: ZodType<Record<string, any>> = z.object({});
   let selectedForm = PejlingForm;

@@ -46,7 +46,7 @@ const SlaForm = ({setValues}: SlaFormProps) => {
     const values = getValues();
     setValues(values as SLA);
     registerSubmitter('location.sla', async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         setValues(values);
         valid = true;
@@ -58,7 +58,7 @@ const SlaForm = ({setValues}: SlaFormProps) => {
   useEffect(() => {
     if (sla !== undefined)
       registerSubmitter('location.sla', async () => {
-        let valid: boolean = false;
+        let valid = false;
         await handleSubmit((values) => {
           setValues(values);
           valid = true;

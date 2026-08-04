@@ -46,7 +46,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
 
   useEffect(() => {
     registerSubmitter(id, async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         if (!isDmpAllowed || values.dmp === null) delete (values as Partial<typeof values>).dmp;
         if (!canSyncJupiter || values.jupiter === null)
