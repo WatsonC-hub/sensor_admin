@@ -1,3 +1,4 @@
+// oxlint-disable check-file/filename-naming-convention
 import {apiClient} from '~/apiClient';
 
 export async function askPermission() {
