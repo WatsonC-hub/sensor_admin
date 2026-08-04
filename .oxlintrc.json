@@ -252,8 +252,8 @@
         "check-file/filename-naming-convention": [
           "error",
           {
-            "**/*.{tsx}": "PASCAL_CASE",
-            "**/*.{ts}": "CAMEL_CASE"
+            "**/*.tsx": "PASCAL_CASE",
+            "**/*.ts": "CAMEL_CASE"
           },
           {
             "ignoreMiddleExtensions": true
