@@ -1,13 +1,13 @@
 // A hook that returns whether the current screen size is mobile, tablet or desktop.
-import {UseQueryResult} from '@tanstack/react-query';
+import type {UseQueryResult} from '@tanstack/react-query';
 import {merge, assign} from 'lodash';
+import type {MRT_TableState} from 'material-react-table';
 import {
   type MRT_RowData,
   type MRT_TableOptions,
   type MRT_ColumnDef,
   useMaterialReactTable,
   type MRT_TableInstance,
-  MRT_TableState,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import {useMemo, useState} from 'react';
@@ -15,7 +15,7 @@ import {useMemo, useState} from 'react';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {APIError} from '~/queryClient';
+import type {APIError} from '~/queryClient';
 
 const getOptions = <TData extends MRT_RowData>(
   breakpoints: ReturnType<typeof useBreakpoints>,

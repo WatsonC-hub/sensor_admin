@@ -1,12 +1,9 @@
-import {
-  PejlingBoreholeSchemaType,
-  pejlingBoreholeSchema,
-  PejlingSchemaType,
-  pejlingSchema,
-} from '../pejlingSchema';
+import type {PejlingBoreholeSchemaType, PejlingSchemaType} from '../pejlingSchema';
+import {pejlingBoreholeSchema, pejlingSchema} from '../pejlingSchema';
 import {useForm} from 'react-hook-form';
 import PejlingForm from '../components/PejlingForm';
-import {z, ZodObject, ZodType} from 'zod';
+import type {ZodObject, ZodType} from 'zod';
+import {z} from 'zod';
 import PejlingBoreholeForm from '../components/PejlingBoreholeForm';
 import PejlingMeasurementsTableDesktop from '~/features/pejling/components/PejlingMeasurementsTableDesktop';
 import useBreakpoints from '~/hooks/useBreakpoints';

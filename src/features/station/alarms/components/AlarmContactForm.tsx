@@ -1,5 +1,5 @@
 import React from 'react';
-import {AlarmContactFormOutput, AlarmFormOutput} from '../schema';
+import type {AlarmContactFormOutput, AlarmFormOutput} from '../schema';
 
 import {useFormContext} from 'react-hook-form';
 

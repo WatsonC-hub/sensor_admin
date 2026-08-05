@@ -2,7 +2,8 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Grid} from '@mui/material';
 import React, {useEffect} from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import type {SubmitHandler} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import Button from '~/components/Button';

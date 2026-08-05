@@ -1,7 +1,7 @@
 import ImageViewer from '~/components/ImageViewer';
 import useImages from '~/features/station/api/useImages';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
-import {Image} from '~/types';
+import type {Image} from '~/types';
 
 interface Props {
   type: 'station' | 'borehole';

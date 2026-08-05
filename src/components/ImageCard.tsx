@@ -12,7 +12,7 @@ import {toast} from 'react-toastify';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
-import {Image} from '~/types';
+import type {Image} from '~/types';
 
 import GenericCard from './GenericCard';
 import {useAppContext} from '~/state/contexts';

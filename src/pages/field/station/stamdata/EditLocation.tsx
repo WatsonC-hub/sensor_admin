@@ -5,7 +5,7 @@ import {useMutation} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
-import {z} from 'zod';
+import type {z} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
@@ -16,7 +16,7 @@ import useDeleteLocation from '~/features/station/api/useDeleteLocation';
 import useLocationForm from '~/features/station/api/useLocationForm';
 import ConfirmDeleteDialog from '~/features/station/components/ConfirmDeleteDialog';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
-import {BaseLocation} from '~/features/station/schema';
+import type {BaseLocation} from '~/features/station/schema';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';

@@ -1,10 +1,6 @@
 import {Box, Checkbox, Typography} from '@mui/material';
-import {
-  MRT_ColumnDef,
-  MRT_TableOptions,
-  MRT_ExpandButton,
-  MaterialReactTable,
-} from 'material-react-table';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -18,7 +14,7 @@ import {
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
-import {BoreholeMeasurement} from '~/types';
+import type {BoreholeMeasurement} from '~/types';
 
 interface Props {
   data: BoreholeMeasurement[] | undefined;

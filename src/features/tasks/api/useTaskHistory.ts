@@ -3,7 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 
-import {DBTaskComment, PostComment, TaskChanges, TaskComment} from '../types';
+import type {DBTaskComment, PostComment, TaskChanges, TaskComment} from '../types';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 interface TaskCommentBase {
   path: string;

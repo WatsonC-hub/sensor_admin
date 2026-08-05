@@ -1,6 +1,7 @@
 // hooks/usePageActions.ts
 import {useEffect} from 'react';
-import {CommandAction, useCommandRegistry} from '../components/CommandContext';
+import type {CommandAction} from '../components/CommandContext';
+import {useCommandRegistry} from '../components/CommandContext';
 
 export const usePageActions = (actions: CommandAction[]) => {
   const {register, unregister} = useCommandRegistry();

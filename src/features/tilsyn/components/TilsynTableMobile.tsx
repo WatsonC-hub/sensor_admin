@@ -1,11 +1,7 @@
 import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
-import {
-  MRT_ColumnDef,
-  MRT_ExpandButton,
-  MRT_TableOptions,
-  MaterialReactTable,
-} from 'material-react-table';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -15,7 +11,7 @@ import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useQueryTable} from '~/hooks/useTable';
-import {TilsynItem} from '~/types';
+import type {TilsynItem} from '~/types';
 
 interface Props {
   handleEdit: (tilsyn: TilsynItem) => void;

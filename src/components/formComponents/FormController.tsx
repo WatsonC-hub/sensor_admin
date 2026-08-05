@@ -1,6 +1,8 @@
-import {GridBaseProps, Grid, GridProps, FormHelperText} from '@mui/material';
+import type {GridBaseProps, GridProps} from '@mui/material';
+import {Grid, FormHelperText} from '@mui/material';
 import React from 'react';
-import {FieldValues, useFormContext, Controller, Path, ControllerProps} from 'react-hook-form';
+import type {FieldValues, Path, ControllerProps} from 'react-hook-form';
+import {useFormContext, Controller} from 'react-hook-form';
 import {FormContext} from './const';
 
 type FormControllerProps<T extends FieldValues, K extends Path<T>> = {

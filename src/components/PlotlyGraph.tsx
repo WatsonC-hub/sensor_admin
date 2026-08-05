@@ -24,7 +24,7 @@ import Button from './Button';
 import {Download} from '@mui/icons-material';
 import {useAppContext} from '~/state/contexts';
 
-import {DataToShow} from '~/types';
+import type {DataToShow} from '~/types';
 import GraphSwitch from '~/features/station/components/GraphSwitch';
 import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
 import dayjs from 'dayjs';

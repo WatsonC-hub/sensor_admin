@@ -1,4 +1,5 @@
-import {Box, Fab, FabProps, SvgIconProps, Typography, useTheme} from '@mui/material';
+import type {FabProps, SvgIconProps} from '@mui/material';
+import {Box, Fab, Typography, useTheme} from '@mui/material';
 import {merge} from 'lodash';
 import React from 'react';
 

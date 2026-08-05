@@ -1,8 +1,11 @@
-import {Grid, GridBaseProps} from '@mui/material';
+import type {GridBaseProps} from '@mui/material';
+import {Grid} from '@mui/material';
 import React from 'react';
-import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
+import type {FieldValues, Path} from 'react-hook-form';
+import {Controller, useFormContext} from 'react-hook-form';
 import {FormContext} from './const';
-import ExtendedAutocomplete, {AutoCompleteFieldProps} from '../Autocomplete';
+import type {AutoCompleteFieldProps} from '../Autocomplete';
+import ExtendedAutocomplete from '../Autocomplete';
 
 export type FormAutocompleteProps<
   T extends FieldValues,

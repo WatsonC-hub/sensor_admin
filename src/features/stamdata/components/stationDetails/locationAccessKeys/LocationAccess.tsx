@@ -1,7 +1,7 @@
 import KeyIcon from '@mui/icons-material/Key';
 import {Box} from '@mui/material';
 import React, {useState} from 'react';
-import {SubmitHandler} from 'react-hook-form';
+import type {SubmitHandler} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
 import {initialLocationAccessData} from '~/consts';
@@ -13,10 +13,10 @@ import StationPageBoxLayout from '~/features/station/components/StationPageBoxLa
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useAppContext} from '~/state/contexts';
 import useLocationAccessForm, {locationAccessSchema} from './api/useLocationAccessForm';
-import {Access} from '~/types';
+import type {Access} from '~/types';
 import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
 import {createTypedForm} from '~/components/formComponents/Form';
-import {z} from 'zod';
+import type {z} from 'zod';
 
 export type FormOutput = z.output<typeof locationAccessSchema>;
 export type FormInput = z.input<typeof locationAccessSchema>;

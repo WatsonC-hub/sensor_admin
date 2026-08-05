@@ -15,7 +15,7 @@ import ConfigAlert from './ConfigAlert';
 import {z} from 'zod';
 import Button from '~/components/Button';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {APIError} from '~/queryClient';
+import type {APIError} from '~/queryClient';
 import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useUser} from '~/features/auth/useUser';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';

@@ -1,10 +1,11 @@
 import {Grid} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import dayjs, {Dayjs} from 'dayjs';
+import type {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
 import React, {useEffect, useState} from 'react';
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {
+import type {
   LastJupiterMPAPI,
   LastJupiterMPData,
 } from '~/pages/field/boreholeno/components/LastJupiterMP';

@@ -1,4 +1,5 @@
-import React, {SyntheticEvent, useEffect, useState} from 'react';
+import type {SyntheticEvent} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 import dayjs from 'dayjs';
 import {toast} from 'react-toastify';
@@ -25,9 +26,10 @@ import OwnDatePicker from '~/components/OwnDatePicker';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {useAppContext} from '~/state/contexts';
-import {UnitPost, useUnit} from '~/features/stamdata/api/useUnit';
+import type {UnitPost} from '~/features/stamdata/api/useUnit';
+import {useUnit} from '~/features/stamdata/api/useUnit';
 import AddSensorDialog from './AddSensorDialog';
-import {AddUnitType} from '~/features/createStation/forms/UnitForm';
+import type {AddUnitType} from '~/features/createStation/forms/UnitForm';
 
 interface AddUnitFormProps {
   udstyrDialogOpen: boolean;

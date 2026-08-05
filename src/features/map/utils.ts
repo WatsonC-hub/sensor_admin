@@ -1,5 +1,5 @@
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {BoreholeMapData} from '~/types';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {BoreholeMapData} from '~/types';
 import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
 
 import L from 'leaflet';

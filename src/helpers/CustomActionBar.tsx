@@ -1,4 +1,5 @@
-import {PickersActionBar, PickersActionBarProps} from '@mui/x-date-pickers/PickersActionBar';
+import type {PickersActionBarProps} from '@mui/x-date-pickers/PickersActionBar';
+import {PickersActionBar} from '@mui/x-date-pickers/PickersActionBar';
 import {Button, Stack} from '@mui/material';
 
 type CustomActionBarProps = PickersActionBarProps & {

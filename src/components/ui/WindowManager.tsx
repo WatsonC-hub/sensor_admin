@@ -1,5 +1,6 @@
 import React, {Children, cloneElement} from 'react';
-import {Box, IconButton, SxProps} from '@mui/material';
+import type {SxProps} from '@mui/material';
+import {Box, IconButton} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import CloseIcon from '@mui/icons-material/Close';
 import useWindowDimensions from '~/hooks/useWindowDimensions';

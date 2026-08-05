@@ -1,6 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {DefaultValues, useForm} from 'react-hook-form';
-import {z} from 'zod/v4';
+import type {DefaultValues} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
+import type {z} from 'zod/v4';
 
 type UseWatlevmpFormProps<TSchema extends z.ZodType<any, unknown, any>> = {
   schema: TSchema;

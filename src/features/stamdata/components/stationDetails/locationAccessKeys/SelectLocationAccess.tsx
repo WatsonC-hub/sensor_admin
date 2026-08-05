@@ -1,13 +1,13 @@
 import {Typography} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
-import {z} from 'zod';
-import {locationAccessSchema} from './api/useLocationAccessForm';
+import type {z} from 'zod';
+import type {locationAccessSchema} from './api/useLocationAccessForm';
 
-import {TypedFormComponent} from '~/components/formComponents/Form';
+import type {TypedFormComponent} from '~/components/formComponents/Form';
 import {useSearchLocationAccess} from '~/features/stamdata/api/useLocationAccess';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
-import {Access} from '~/types';
+import type {Access} from '~/types';
 
 type Props = {
   loc_id: number | undefined;

@@ -1,7 +1,9 @@
 import {Save} from '@mui/icons-material';
-import {FieldValues, useFormContext} from 'react-hook-form';
+import type {FieldValues} from 'react-hook-form';
+import {useFormContext} from 'react-hook-form';
 import Button from '../Button';
-import {ButtonProps, Typography} from '@mui/material';
+import type {ButtonProps} from '@mui/material';
+import {Typography} from '@mui/material';
 
 type SubmitProps<T> = ButtonProps & {
   submit: (values: T) => void;

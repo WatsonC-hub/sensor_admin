@@ -1,6 +1,7 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
 import dayjs from 'dayjs';
-import React, {ChangeEvent, createRef, useState} from 'react';
+import type {ChangeEvent} from 'react';
+import React, {createRef, useState} from 'react';
 
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';

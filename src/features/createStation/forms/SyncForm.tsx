@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {createTypedForm} from '~/components/formComponents/Form';
-import useSyncForm, {
+import type {
   SyncFormSchema,
   SyncFormSchemaOutput,
 } from '~/features/synchronization/api/useSyncForm';
+import useSyncForm from '~/features/synchronization/api/useSyncForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {SyncFormState} from '../types';
+import type {SyncFormState} from '../types';
 import Button from '~/components/Button';
 import {button_sx} from '../commonStyle';
 import {Stack, Typography} from '@mui/material';

@@ -1,7 +1,7 @@
 import {Typography, Box} from '@mui/material';
 import React from 'react';
 
-import {TaskChanges, TaskStatus, TaskUser} from '~/features/tasks/types';
+import type {TaskChanges, TaskStatus, TaskUser} from '~/features/tasks/types';
 import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
 
 type Props = {

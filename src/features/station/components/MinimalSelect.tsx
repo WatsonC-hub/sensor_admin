@@ -1,6 +1,7 @@
 import {Typography} from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
+import type {SelectChangeEvent} from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import {useEffect, useState} from 'react';
 
 import {useLocationData} from '~/hooks/query/useMetadata';

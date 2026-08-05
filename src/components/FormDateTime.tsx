@@ -1,10 +1,12 @@
 import React from 'react';
-import {TextFieldVariants} from '@mui/material';
-import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
-import {DateTimePicker, DateTimePickerProps} from '@mui/x-date-pickers/DateTimePicker';
+import type {TextFieldVariants} from '@mui/material';
+import type {FieldValues, Path} from 'react-hook-form';
+import {Controller, useFormContext} from 'react-hook-form';
+import type {DateTimePickerProps} from '@mui/x-date-pickers/DateTimePicker';
+import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
 
 import dayjs from 'dayjs';
-import {PickersActionBarAction} from '@mui/x-date-pickers';
+import type {PickersActionBarAction} from '@mui/x-date-pickers';
 
 export type FormDateTimeProps<TFieldValues extends FieldValues> = Omit<
   DateTimePickerProps,

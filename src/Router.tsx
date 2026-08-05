@@ -9,11 +9,12 @@ import GuardedHome from './pages/Home';
 import GuardedCreateStation from './pages/CreateStation';
 import {useUser} from './features/auth/useUser';
 import {QueryStats, LocationOn, Timeline, Home as HomeIcon} from '@mui/icons-material';
-import {SelectionCommand} from './features/commandpalette/components/CommandContext';
+import type {SelectionCommand} from './features/commandpalette/components/CommandContext';
 import {usePageActions} from './features/commandpalette/hooks/usePageActions';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import ReleaseNoticeModal from './components/ReleaseNotice';
-import useCmdPalette, {CommandPalette} from './hooks/query/useCmdPalette';
+import type {CommandPalette} from './hooks/query/useCmdPalette';
+import useCmdPalette from './hooks/query/useCmdPalette';
 import AccessDenied from './AccessDenied';
 
 const Router = () => {

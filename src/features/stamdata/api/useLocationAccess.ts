@@ -3,8 +3,8 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
-import {Access, AccessTable} from '~/types';
+import type {APIError} from '~/queryClient';
+import type {Access, AccessTable} from '~/types';
 
 interface LocationAccessBase {
   path: string;

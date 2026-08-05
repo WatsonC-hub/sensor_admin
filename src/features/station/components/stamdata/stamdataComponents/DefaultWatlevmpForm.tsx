@@ -1,8 +1,8 @@
 import React from 'react';
 import StamdataWatlevmp from '../MPFormCompound';
 import {Grid} from '@mui/material';
-import {FormInputProps} from '~/components/FormInput';
-import {Watlevmp} from '~/features/station/schema';
+import type {FormInputProps} from '~/components/FormInput';
+import type {Watlevmp} from '~/features/station/schema';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 type DefaultWatlevmpFormProps = {

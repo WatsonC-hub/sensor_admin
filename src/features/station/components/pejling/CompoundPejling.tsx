@@ -9,8 +9,9 @@ import {
   Checkbox,
 } from '@mui/material';
 import React, {useContext, useEffect, useState} from 'react';
-import FormInput, {FormInputProps} from '~/components/FormInput';
-import {PejlingBoreholeSchemaType, PejlingSchemaType} from './pejlingSchema';
+import type {FormInputProps} from '~/components/FormInput';
+import FormInput from '~/components/FormInput';
+import type {PejlingBoreholeSchemaType, PejlingSchemaType} from './pejlingSchema';
 import {Controller, useFormContext} from 'react-hook-form';
 import {correction_map} from '~/consts';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -20,12 +21,13 @@ import Button from '~/components/Button';
 import {Save} from '@mui/icons-material';
 import {useAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
-import {LatestMeasurement, MaalepunktAsDayjs} from '~/types';
+import type {LatestMeasurement, MaalepunktAsDayjs} from '~/types';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {get} from 'lodash';
 import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
+import type {FormDateTimeProps} from '~/components/FormDateTime';
+import FormDateTime from '~/components/FormDateTime';
 import {useAppContext} from '~/state/contexts';
 
 interface PejlingProps {

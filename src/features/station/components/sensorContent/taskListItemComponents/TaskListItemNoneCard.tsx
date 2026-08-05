@@ -1,7 +1,7 @@
 import {Card, CardHeader, Box, Typography, Link} from '@mui/material';
 import React from 'react';
 import {getColor} from '~/features/notifications/Utils';
-import {Task} from '~/features/tasks/types';
+import type {Task} from '~/features/tasks/types';
 import {convertDate} from '~/helpers/dateConverter';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';

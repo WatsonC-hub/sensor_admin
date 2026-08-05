@@ -1,6 +1,6 @@
 import {Box, Grid, Link, Typography} from '@mui/material';
 import React from 'react';
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useTaskState} from '../api/useTaskState';
 import {convertDate} from '~/helpers/dateConverter';

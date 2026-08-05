@@ -9,9 +9,8 @@ import {
 } from '~/features/station/api/useTimeseriesServiceInterval';
 import Button from '~/components/Button';
 import EditControlSettings from '~/features/configuration/components/EditControlSettings';
-import useControlSettingsForm, {
-  ControlSettingsFormValues,
-} from '~/features/configuration/api/useControlSettingsForm';
+import type {ControlSettingsFormValues} from '~/features/configuration/api/useControlSettingsForm';
+import useControlSettingsForm from '~/features/configuration/api/useControlSettingsForm';
 import {useUser} from '~/features/auth/useUser';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import usePermissions from '~/features/permissions/api/usePermissions';

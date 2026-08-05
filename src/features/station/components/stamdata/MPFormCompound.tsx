@@ -1,7 +1,8 @@
 import {InputAdornment} from '@mui/material';
 import React from 'react';
-import FormInput, {FormInputProps} from '~/components/FormInput';
-import {Watlevmp} from '../../schema';
+import type {FormInputProps} from '~/components/FormInput';
+import FormInput from '~/components/FormInput';
+import type {Watlevmp} from '../../schema';
 
 type MPFormCompoundProps = {
   children: React.ReactNode;

@@ -1,6 +1,7 @@
 import {Box, Typography} from '@mui/material';
 
-import React, {ReactNode} from 'react';
+import type {ReactNode} from 'react';
+import React from 'react';
 import {useAppContext} from '~/state/contexts';
 import useLocationTaskHistory from '~/features/tasks/api/useLocationTaskHistory';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';

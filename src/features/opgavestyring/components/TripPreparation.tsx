@@ -18,7 +18,7 @@ import TripUnitTable from '~/features/opgavestyring/components/TripUnitTable';
 import {useDisplayState} from '~/hooks/ui';
 import {useItinerary, useItineraryMutations} from '~/features/tasks/api/useItinerary';
 import EditableField from '~/components/EditableField';
-import {TaskCollection} from '~/types';
+import type {TaskCollection} from '~/types';
 
 interface TripPreparationProps {
   data: TaskCollection | undefined;

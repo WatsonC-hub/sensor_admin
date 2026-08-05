@@ -6,12 +6,13 @@ import {
   defaultEditTimeseriesSchema,
 } from '../schema';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {FieldValues, useForm, DefaultValues} from 'react-hook-form';
+import type {FieldValues, DefaultValues} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 import DefaultTimeseriesForm from '../components/stamdata/stamdataComponents/DefaultTimeseriesForm';
 import BoreholeTimeseriesForm from '../components/stamdata/stamdataComponents/BoreholeTimeseriesForm';
 import DefaultTimeseriesEditForm from '../components/stamdata/stamdataComponents/DefaultTimeseriesEditForm';
 import BoreholeTimeseriesEditForm from '../components/stamdata/stamdataComponents/BoreholeTimeseriesEditForm';
-import {ZodObject} from 'zod';
+import type {ZodObject} from 'zod';
 
 type useTimeseriesFormProps<T extends FieldValues> = {
   defaultValues?: DefaultValues<T>;

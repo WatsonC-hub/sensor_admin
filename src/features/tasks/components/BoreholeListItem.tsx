@@ -1,7 +1,7 @@
 import {Box, Typography} from '@mui/material';
 import React from 'react';
 
-import {BoreholeMapData} from '~/types';
+import type {BoreholeMapData} from '~/types';
 import BoreholeIcon from '~/pages/field/overview/components/BoreholeIcon';
 type Props = {
   itemData: BoreholeMapData;

@@ -1,8 +1,10 @@
 import {Box, Typography} from '@mui/material';
-import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
-import {NotificationType, useNotificationTypes} from '~/hooks/query/useNotificationOverview';
+import type {NotificationType} from '~/hooks/query/useNotificationOverview';
+import {useNotificationTypes} from '~/hooks/query/useNotificationOverview';
 import {useTable} from '~/hooks/useTable';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 

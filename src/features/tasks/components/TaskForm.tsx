@@ -1,21 +1,26 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, FormControlLabel, Switch, TextFieldProps, Typography} from '@mui/material';
+import type {TextFieldProps} from '@mui/material';
+import {Box, FormControlLabel, Switch, Typography} from '@mui/material';
 import React, {useEffect} from 'react';
-import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
+import type {UseFormReturn} from 'react-hook-form';
+import {Controller, FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {z} from 'zod';
 
-import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
+import type {AutoCompleteFieldProps} from '~/components/Autocomplete';
+import ExtendedAutocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
-import FormInput, {FormInputProps} from '~/components/FormInput';
+import type {FormInputProps} from '~/components/FormInput';
+import FormInput from '~/components/FormInput';
 import {useNextDueDate, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
-import {TaskUser} from '~/features/tasks/types';
+import type {TaskUser} from '~/features/tasks/types';
 
 import {useTaskState} from '../api/useTaskState';
 import {merge} from 'lodash';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {zodDayjs} from '~/helpers/schemas';
-import FormDatePicker, {FormDatePickerProps} from '~/components/FormDatePicker';
+import type {FormDatePickerProps} from '~/components/FormDatePicker';
+import FormDatePicker from '~/components/FormDatePicker';
 import {toast} from 'react-toastify';
 import {useDisplayState} from '~/hooks/ui';
 

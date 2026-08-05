@@ -9,7 +9,7 @@ import LocationStep from '~/features/createStation/components/LocationStep';
 import FormSteps from '~/features/createStation/components/FormSteps';
 import TimeseriesStep from '~/features/createStation/components/TimeseriesStep';
 import AdditionalStep from '~/features/createStation/components/AdditionalStep';
-import {CreateLocationData} from '~/features/createStation/types';
+import type {CreateLocationData} from '~/features/createStation/types';
 import {useLocation} from 'react-router-dom';
 import CreateStationStoreProvider from '~/features/createStation/state/CreateStationStoreProvider';
 import {useLocationData} from '~/hooks/query/useMetadata';

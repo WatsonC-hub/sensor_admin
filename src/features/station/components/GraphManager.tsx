@@ -3,7 +3,7 @@ import {useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import {useAtom, useAtomValue, useSetAtom} from 'jotai';
 
-import {Layout, PlotData} from 'plotly.js';
+import type {Layout, PlotData} from 'plotly.js';
 import React, {useEffect, useMemo, useState} from 'react';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
@@ -33,7 +33,7 @@ import {
   tempHorizontalAtom,
 } from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {DataToShow, HorizontalLine, QaGraphLabel} from '~/types';
+import type {DataToShow, HorizontalLine, QaGraphLabel} from '~/types';
 
 interface GraphManagerProps {
   dynamicMeasurement?: Array<string | number>;

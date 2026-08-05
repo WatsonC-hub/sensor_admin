@@ -2,7 +2,7 @@ import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {Group} from '~/types';
+import type {Group} from '~/types';
 
 type LocationInfo = {
   loc_name: string;

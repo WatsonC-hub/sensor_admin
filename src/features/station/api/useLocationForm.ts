@@ -5,8 +5,10 @@ import {
   defaultAddLocationSchema,
   defaultEditLocationSchema,
 } from '../schema';
-import {DefaultValues, Path, useForm} from 'react-hook-form';
-import {z, ZodObject} from 'zod/v4';
+import type {DefaultValues, Path} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
+import type {ZodObject} from 'zod/v4';
+import {z} from 'zod/v4';
 import React from 'react';
 import DefaultLocationForm from '../components/stamdata/stamdataComponents/DefaultLocationForm';
 import BoreholeLocationForm from '../components/stamdata/stamdataComponents/BoreholeLocationForm';

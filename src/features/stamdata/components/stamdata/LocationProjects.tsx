@@ -2,11 +2,12 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {Link} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import {FieldError, Noop} from 'react-hook-form';
+import type {FieldError, Noop} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
-import useLocationProject, {Project} from '../../api/useLocationProject';
+import type {Project} from '../../api/useLocationProject';
+import useLocationProject from '../../api/useLocationProject';
 import {AddCircleOutlined} from '@mui/icons-material';
 
 interface LocationProjectsProps {

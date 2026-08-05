@@ -4,7 +4,7 @@ import {useAppContext} from '~/state/contexts';
 import {Box, Typography} from '@mui/material';
 import JupiterDmpSync from '~/features/synchronization/components/JupiterDmpSync';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
-import {SyncFormSchema} from '~/features/synchronization/api/useSyncForm';
+import type {SyncFormSchema} from '~/features/synchronization/api/useSyncForm';
 
 const Synchronization = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);

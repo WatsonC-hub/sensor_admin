@@ -7,7 +7,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import Button from '~/components/Button';
 import {isSynchronizationAllowed} from './timeseriesStepHelper';
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
-import {TimeseriesPayload} from '../types';
+import type {TimeseriesPayload} from '../types';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import ControlSettingSection from '../sections/ControlSettingSection';
 import SyncSection from '../sections/SyncSection';

@@ -2,10 +2,10 @@ import React from 'react';
 import StamdataLocation from '../StamdataLocation';
 import {Grid} from '@mui/material';
 import {useUser} from '~/features/auth/useUser';
-import {FormInputProps} from '~/components/FormInput';
-import {BoreholeAddLocation} from '~/features/station/schema';
-import {AutoCompleteFieldProps} from '~/components/Autocomplete';
-import {Borehole} from '~/features/station/api/useBorehole';
+import type {FormInputProps} from '~/components/FormInput';
+import type {BoreholeAddLocation} from '~/features/station/schema';
+import type {AutoCompleteFieldProps} from '~/components/Autocomplete';
+import type {Borehole} from '~/features/station/api/useBorehole';
 
 type Props = {
   size: number;

@@ -1,9 +1,9 @@
-import {SvgIconProps} from '@mui/material';
-import {Dayjs} from 'dayjs';
-import {ReactNode} from 'react';
+import type {SvgIconProps} from '@mui/material';
+import type {Dayjs} from 'dayjs';
+import type {ReactNode} from 'react';
 // import type {FeatureCollection, Geometry} from 'leaflet';
-import * as geojson from 'geojson';
-import {CertifyQa} from './features/kvalitetssikring/api/useCertifyQa';
+import type * as geojson from 'geojson';
+import type {CertifyQa} from './features/kvalitetssikring/api/useCertifyQa';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 

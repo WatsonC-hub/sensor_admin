@@ -7,7 +7,8 @@ import {z} from 'zod';
 import {createTypedForm} from '~/components/formComponents/Form';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {Metadata, metadataQueryOptions} from '~/hooks/query/useMetadata';
+import type {Metadata} from '~/hooks/query/useMetadata';
+import {metadataQueryOptions} from '~/hooks/query/useMetadata';
 import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
 
 type VisibilityConfigProps = {

@@ -13,7 +13,7 @@ import {
 import DescriptionIcon from '@mui/icons-material/Description';
 import React, {useMemo, useState} from 'react';
 import {useTaskMutations, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
-import {Task} from '~/features/tasks/types';
+import type {Task} from '~/features/tasks/types';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
 import {convertDate} from '~/helpers/dateConverter';

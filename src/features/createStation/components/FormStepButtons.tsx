@@ -6,7 +6,7 @@ import Button from '~/components/Button';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AlertDialog from '~/components/AlertDialog';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {CreateStationPayload} from '../types';
+import type {CreateStationPayload} from '../types';
 import {useMutation} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';

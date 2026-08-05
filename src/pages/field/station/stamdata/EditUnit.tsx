@@ -2,7 +2,7 @@ import {Box} from '@mui/material';
 import moment from 'moment';
 import React, {useState} from 'react';
 import {FormProvider} from 'react-hook-form';
-import {z} from 'zod';
+import type {z} from 'zod';
 
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';

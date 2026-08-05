@@ -1,11 +1,12 @@
-import {useQuery, queryOptions, UseQueryOptions} from '@tanstack/react-query';
+import type {UseQueryOptions} from '@tanstack/react-query';
+import {useQuery, queryOptions} from '@tanstack/react-query';
 import {useCallback} from 'react';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import type {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-import {Group} from '~/types';
+import type {Group} from '~/types';
 
 export type Metadata = {
   loc_id: number;

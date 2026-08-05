@@ -3,7 +3,7 @@ import {Box, Typography, Button, Grid, TextField, Link} from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import React, {useMemo, useState} from 'react';
 import {useTaskMutations, useTaskStatus} from '~/features/tasks/api/useTasks';
-import {Task} from '~/features/tasks/types';
+import type {Task} from '~/features/tasks/types';
 import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
 
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutlined';

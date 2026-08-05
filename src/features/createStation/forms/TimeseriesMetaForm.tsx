@@ -5,7 +5,7 @@ import StamdataTimeseries from '~/features/station/components/stamdata/StamdataT
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {FormProvider} from 'react-hook-form';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {TimeseriesMeta} from '../types';
+import type {TimeseriesMeta} from '../types';
 
 type TimeseriesMetaFormProps = {
   uuid: string;

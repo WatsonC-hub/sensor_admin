@@ -8,7 +8,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import dayjs, {Dayjs} from 'dayjs';
+import type {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
 import React from 'react';
 import {toast} from 'react-toastify';
 

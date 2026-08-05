@@ -4,7 +4,7 @@ import FormStepButtons from './FormStepButtons';
 import TimeseriesList from '../helper/TimeseriesList';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import {Typography} from '@mui/material';
-import {TimeseriesMeta} from '../types';
+import type {TimeseriesMeta} from '../types';
 
 type Props = {
   activeStep: number;

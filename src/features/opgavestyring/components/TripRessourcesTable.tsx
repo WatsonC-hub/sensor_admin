@@ -1,10 +1,11 @@
 import {Box, Typography} from '@mui/material';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import {useTable} from '~/hooks/useTable';
-import {TaskRessources} from '~/types';
+import type {TaskRessources} from '~/types';
 import {sharedTableOptions} from '../sharedOptions';
 
 type Props = {

@@ -4,7 +4,7 @@ import {useUser} from '~/features/auth/useUser';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {queryClient} from '~/queryClient';
-import {DmpSyncValidCombination} from '~/types';
+import type {DmpSyncValidCombination} from '~/types';
 
 const getDmpAllowedMapList = queryOptions({
   queryKey: queryKeys.dmpAllowedMapList(),

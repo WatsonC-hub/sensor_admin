@@ -1,5 +1,6 @@
 import {Command} from 'cmdk';
-import {CommandAction, useCommandRegistry} from './CommandContext';
+import type {CommandAction} from './CommandContext';
+import {useCommandRegistry} from './CommandContext';
 import {useState, useEffect} from 'react';
 import '../styles/cmdk.css';
 import {Box} from '@mui/material';

@@ -1,6 +1,7 @@
 import {DateTimePicker} from '@mui/x-date-pickers';
-import {PickerValue} from '@mui/x-date-pickers/internals';
-import dayjs, {Dayjs} from 'dayjs';
+import type {PickerValue} from '@mui/x-date-pickers/internals';
+import type {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
 import React from 'react';
 
 interface OwnDatePickerProps {

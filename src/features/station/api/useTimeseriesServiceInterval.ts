@@ -2,7 +2,7 @@ import {queryOptions, useMutation, useSuspenseQuery} from '@tanstack/react-query
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import type {APIError} from '~/queryClient';
 
 type ServiceConfiguration = {
   controlsPerYear: number | null;

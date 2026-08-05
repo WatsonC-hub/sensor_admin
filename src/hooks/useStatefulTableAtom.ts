@@ -1,4 +1,5 @@
-import {useAtom, WritableAtom} from 'jotai';
+import type {WritableAtom} from 'jotai';
+import {useAtom} from 'jotai';
 import {RESET} from 'jotai/utils';
 import type {MRT_RowData, MRT_TableOptions, MRT_TableState} from 'material-react-table';
 import {useCallback, useMemo} from 'react';

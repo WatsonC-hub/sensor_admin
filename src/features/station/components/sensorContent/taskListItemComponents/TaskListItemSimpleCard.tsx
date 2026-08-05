@@ -1,6 +1,6 @@
 import {Box, Button, Card, CardContent, CardHeader, Link, Typography} from '@mui/material';
 import React, {useMemo} from 'react';
-import {Task} from '~/features/tasks/types';
+import type {Task} from '~/features/tasks/types';
 import {EditOutlined} from '@mui/icons-material';
 import {getColor} from '~/features/notifications/Utils';
 import TaskForm from '~/features/tasks/components/TaskForm';

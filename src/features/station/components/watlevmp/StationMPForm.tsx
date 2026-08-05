@@ -1,8 +1,8 @@
 import {Box, Grid, Typography} from '@mui/material';
-import {SubmitHandler, UseFormReturn} from 'react-hook-form';
+import type {SubmitHandler, UseFormReturn} from 'react-hook-form';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {initialWatlevmpData} from '~/features/stamdata/components/stamdata/const';
-import {
+import type {
   WatlevMPFormValues,
   WatlevMPFormValuesOutput,
 } from '~/features/stamdata/components/stamdata/ReferenceForm';

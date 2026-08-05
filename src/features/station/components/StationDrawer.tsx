@@ -26,7 +26,8 @@ import {
   useTheme,
 } from '@mui/material';
 import {useAtom} from 'jotai';
-import React, {ReactNode} from 'react';
+import type {ReactNode} from 'react';
+import React from 'react';
 import FunctionsIcon from '@mui/icons-material/Functions';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -36,14 +37,10 @@ import BackpackIcon from '@mui/icons-material/Backpack';
 import KeyIcon from '@mui/icons-material/Key';
 import {drawerOpenAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {
-  Metadata,
-  metadataQueryOptions,
-  useLocationData,
-  useTimeseriesData,
-} from '~/hooks/query/useMetadata';
+import type {Metadata} from '~/hooks/query/useMetadata';
+import {metadataQueryOptions, useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useUser} from '~/features/auth/useUser';
-import {QueryKey, UseQueryOptions} from '@tanstack/react-query';
+import type {QueryKey, UseQueryOptions} from '@tanstack/react-query';
 import {queryClient} from '~/queryClient';
 import {pejlingGetOptions} from '~/features/pejling/api/usePejling';
 import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
@@ -54,7 +51,8 @@ import {getRessourcerOptions} from '~/features/stamdata/api/useRessourcer';
 import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory';
 import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {getImageOptions} from '../api/useImages';
-import {stationPages, StationPages} from '~/helpers/enumHelper';
+import type {StationPages} from '~/helpers/enumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';

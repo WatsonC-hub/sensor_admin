@@ -1,5 +1,5 @@
 import {assign, merge} from 'lodash';
-import {Layout} from 'plotly.js';
+import type {Layout} from 'plotly.js';
 import {useState} from 'react';
 
 import {MergeType} from '~/helpers/enumHelper';

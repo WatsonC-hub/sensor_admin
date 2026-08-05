@@ -4,7 +4,7 @@ import React from 'react';
 import ExtendedAutocomplete from '~/components/Autocomplete';
 import {assignedToAtom} from '~/state/atoms';
 import {useTaskUsers} from '../api/useTasks';
-import {TaskUser} from '../types';
+import type {TaskUser} from '../types';
 import TooltipWrapper from '~/components/TooltipWrapper';
 
 const LocationListFilter = () => {

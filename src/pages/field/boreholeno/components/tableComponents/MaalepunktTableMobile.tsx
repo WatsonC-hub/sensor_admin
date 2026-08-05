@@ -1,10 +1,6 @@
 import {Box, Typography} from '@mui/material';
-import {
-  MaterialReactTable,
-  MRT_ColumnDef,
-  MRT_ExpandButton,
-  MRT_TableOptions,
-} from 'material-react-table';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable, MRT_ExpandButton} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -19,8 +15,8 @@ import {
 import {TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
-import {BoreholeMaalepunktTableData} from '~/types';
-import {BoreholeMaalepunkt} from '../../Boreholeno';
+import type {BoreholeMaalepunktTableData} from '~/types';
+import type {BoreholeMaalepunkt} from '../../Boreholeno';
 import dayjs from 'dayjs';
 
 interface Props {

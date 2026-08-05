@@ -1,6 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useQuery} from '@tanstack/react-query';
-import {DefaultValues, useForm} from 'react-hook-form';
+import type {DefaultValues} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {ZodIssueCode} from 'zod/v3';
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';

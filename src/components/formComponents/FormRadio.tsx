@@ -1,15 +1,8 @@
-import {
-  GridBaseProps,
-  Grid,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  RadioGroupProps,
-  Box,
-  GridProps,
-} from '@mui/material';
+import type {GridBaseProps, RadioGroupProps, GridProps} from '@mui/material';
+import {Grid, FormControlLabel, Radio, RadioGroup, Box} from '@mui/material';
 import React from 'react';
-import {FieldValues, useFormContext, Controller, Path} from 'react-hook-form';
+import type {FieldValues, Path} from 'react-hook-form';
+import {useFormContext, Controller} from 'react-hook-form';
 import {FormContext} from './const';
 
 type FormRadioProps<T extends FieldValues> = {

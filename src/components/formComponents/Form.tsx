@@ -1,5 +1,6 @@
-import React, {JSX} from 'react';
-import {FieldValues, Path} from 'react-hook-form';
+import type {JSX} from 'react';
+import React from 'react';
+import type {FieldValues, Path} from 'react-hook-form';
 import FormCheckbox from './FormCheckbox';
 import FormInputWrapper from './FormInputWrapper';
 import Submit from './Submit';

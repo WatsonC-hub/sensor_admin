@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import {Noop} from 'react-hook-form';
+import type {Noop} from 'react-hook-form';
 import React, {useEffect, useMemo, useState} from 'react';
 import {locationFilterOptions} from './filterConsts';
 import useBreakpoints from '~/hooks/useBreakpoints';

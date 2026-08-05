@@ -1,7 +1,8 @@
-import {MutationOptions, queryOptions, useMutation, useQuery} from '@tanstack/react-query';
+import type {MutationOptions} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
-import {SyncFormSchema} from '~/features/synchronization/api/useSyncForm';
+import type {SyncFormSchema} from '~/features/synchronization/api/useSyncForm';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 

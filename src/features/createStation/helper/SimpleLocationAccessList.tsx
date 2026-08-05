@@ -1,5 +1,5 @@
 import React from 'react';
-import {SimpleLocationAccess} from '../types';
+import type {SimpleLocationAccess} from '../types';
 import {List} from '@mui/material';
 import SimpleTextView from '~/components/SimpleTextView';
 

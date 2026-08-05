@@ -1,7 +1,7 @@
 import {Box, Button, Card, CardContent, Typography} from '@mui/material';
 import React from 'react';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
-import {Task} from '~/features/tasks/types';
+import type {Task} from '~/features/tasks/types';
 import {Person} from '@mui/icons-material';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import {convertDate} from '~/helpers/dateConverter';

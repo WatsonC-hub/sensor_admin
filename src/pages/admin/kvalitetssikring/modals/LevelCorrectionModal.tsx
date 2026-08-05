@@ -1,11 +1,13 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
-import dayjs, {Dayjs} from 'dayjs';
+import type {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
 import {useAtomValue} from 'jotai';
 import {parseAsString, useQueryState} from 'nuqs';
 import {useEffect} from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import type {SubmitHandler} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';

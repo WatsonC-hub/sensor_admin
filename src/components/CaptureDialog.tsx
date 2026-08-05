@@ -5,10 +5,11 @@ import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import Slide from '@mui/material/Slide';
 import Toolbar from '@mui/material/Toolbar';
-import {IDetectedBarcode, Scanner as QrReader} from '@yudiel/react-qr-scanner';
+import type {IDetectedBarcode} from '@yudiel/react-qr-scanner';
+import {Scanner as QrReader} from '@yudiel/react-qr-scanner';
 import React, {useEffect, useState} from 'react';
 
-import {TransitionProps} from '@mui/material/transitions';
+import type {TransitionProps} from '@mui/material/transitions';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {children: React.ReactElement<any, any>},

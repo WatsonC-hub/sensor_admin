@@ -1,6 +1,7 @@
 import {Update} from '@mui/icons-material';
 import {Box, IconButton, Skeleton, Typography} from '@mui/material';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import {useMemo} from 'react';
 import {toast} from 'react-toastify';
@@ -12,7 +13,7 @@ import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
 import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-import {LatestMeasurement} from '~/types';
+import type {LatestMeasurement} from '~/types';
 
 type LatestMeasurementTableProps = {
   latestMeasurement: LatestMeasurement | undefined;

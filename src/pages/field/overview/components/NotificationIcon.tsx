@@ -1,6 +1,7 @@
-import {Box, BoxProps, Tooltip} from '@mui/material';
+import type {BoxProps} from '@mui/material';
+import {Box, Tooltip} from '@mui/material';
 import React from 'react';
-import {IconDetails} from '~/features/notifications/types';
+import type {IconDetails} from '~/features/notifications/types';
 import {getColor, getIcon} from '~/features/notifications/Utils';
 //Imports
 

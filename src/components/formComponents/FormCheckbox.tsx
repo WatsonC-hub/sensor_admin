@@ -1,15 +1,8 @@
-import {
-  GridBaseProps,
-  Grid,
-  FormControlLabel,
-  Checkbox,
-  CheckboxProps,
-  Box,
-  GridProps,
-  FormHelperText,
-} from '@mui/material';
+import type {GridBaseProps, CheckboxProps, GridProps} from '@mui/material';
+import {Grid, FormControlLabel, Checkbox, Box, FormHelperText} from '@mui/material';
 import React from 'react';
-import {FieldValues, useFormContext, Controller, Path} from 'react-hook-form';
+import type {FieldValues, Path} from 'react-hook-form';
+import {useFormContext, Controller} from 'react-hook-form';
 import {FormContext} from './const';
 
 type FormCheckboxProps<T extends FieldValues> = {

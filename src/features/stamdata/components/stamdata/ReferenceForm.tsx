@@ -12,7 +12,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 import {initialWatlevmpData} from './const';
-import {MaalepunktAsDayjs} from '~/types';
+import type {MaalepunktAsDayjs} from '~/types';
 import {zodDayjs} from '~/helpers/schemas';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useEffect} from 'react';

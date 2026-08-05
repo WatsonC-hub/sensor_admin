@@ -1,15 +1,18 @@
-import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
-import {Filter, locationFilterOptions} from '~/pages/field/overview/components/filterConsts';
-import {BoreholeMapData} from '~/types';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import type {Filter} from '~/pages/field/overview/components/filterConsts';
+import {locationFilterOptions} from '~/pages/field/overview/components/filterConsts';
+import type {BoreholeMapData} from '~/types';
 import {useMemo, useState} from 'react';
 import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
 import {assignedToAtom} from '~/state/atoms';
 import {useAtomValue} from 'jotai';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {isEmptyObject} from '~/helpers/guardHelper';
-import dayjs, {Dayjs} from 'dayjs';
+import type {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
 import {useUser} from '~/features/auth/useUser';
-import {Task} from '~/features/tasks/types';
+import type {Task} from '~/features/tasks/types';
 import {useMapFilterStore} from './useMapFilterStore';
 
 const searchValue = (value: any, search_string: string): boolean => {

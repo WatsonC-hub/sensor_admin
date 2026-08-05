@@ -1,15 +1,13 @@
-import {DataToShow} from './types';
+import type {DataToShow} from './types';
 
 let mapToken: string;
 
 export const isProduction = import.meta.env.PROD;
 
 if (isProduction) {
-  mapToken =
-    'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY2xma3cxbnFmMGYyNzN5bWpvb2Rjd2VuMyJ9.HSp-vSdF0i1uCSeUoCkwcA';
+  mapToken = import.meta.env.VITE_MAPBOX_TOKEN;
 } else {
-  mapToken =
-    'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY20zbjE0eWN6MTV5aDJxcXo3aXFpZ2kzYyJ9.UVPpejPboVyzBKCYupxOxw';
+  mapToken = '';
 }
 
 export const navIconStyle = (isSelected: boolean) => {

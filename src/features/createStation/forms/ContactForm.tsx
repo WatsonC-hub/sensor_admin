@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import useContactForm, {
   contact_info_table,
 } from '~/features/stamdata/components/stationDetails/contacts/api/useContactForm';
-import {ContactTable} from '~/types';
+import type {ContactTable} from '~/types';
 import {FormProvider} from 'react-hook-form';
 import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddContactInfo';
 import {lowerCase} from 'lodash';
@@ -16,7 +16,7 @@ import FormFieldset from '~/components/formComponents/FormFieldset';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {button_sx} from '../commonStyle';
 import {useProjectContacts} from '~/features/stamdata/api/useContactInfo';
-import {CreateLocationData} from '../types';
+import type {CreateLocationData} from '../types';
 
 const ContactForm = () => {
   const {isMobile} = useBreakpoints();

@@ -1,4 +1,5 @@
-import {BottomNavigation, BottomNavigationAction, Box, SvgIconProps} from '@mui/material';
+import type {SvgIconProps} from '@mui/material';
+import {BottomNavigation, BottomNavigationAction, Box} from '@mui/material';
 import React from 'react';
 
 import {stationPages} from '~/helpers/enumHelper';

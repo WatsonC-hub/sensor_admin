@@ -18,7 +18,7 @@ import {toast} from 'react-toastify';
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
 import {useMapUtilityStore, mapUtilityStore} from '~/state/store';
-import {BoreholeMapData, Parking, PartialBy} from '~/types';
+import type {BoreholeMapData, Parking, PartialBy} from '~/types';
 import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
 
 import {
@@ -41,7 +41,7 @@ import {setIconSize} from '../utils';
 import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/Utils';
 import {useDisplayState} from '~/hooks/ui';
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {highlightedItinerariesAtom, usedHeightAtom, usedWidthAtom} from '~/state/atoms';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useMapFilterStore} from '../hooks/useMapFilterStore';

@@ -1,6 +1,7 @@
-import {Box, BoxProps, Tooltip} from '@mui/material';
+import type {BoxProps} from '@mui/material';
+import {Box, Tooltip} from '@mui/material';
 import React from 'react';
-import {BoreholeDetails, IconDetails} from '~/features/notifications/types';
+import type {BoreholeDetails, IconDetails} from '~/features/notifications/types';
 import {getBoreholeColor, getBoreholeIcon} from '~/features/notifications/Utils';
 //Imports
 

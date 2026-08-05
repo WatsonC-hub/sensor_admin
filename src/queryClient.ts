@@ -1,12 +1,8 @@
 import {createAsyncStoragePersister} from '@tanstack/query-async-storage-persister';
-import {
-  matchQuery,
-  MutationCache,
-  QueryClient,
-  QueryKey,
-  UseMutationOptions,
-} from '@tanstack/react-query';
-import axios, {AxiosError} from 'axios';
+import type {QueryKey, UseMutationOptions} from '@tanstack/react-query';
+import {matchQuery, MutationCache, QueryClient} from '@tanstack/react-query';
+import type {AxiosError} from 'axios';
+import axios from 'axios';
 import {toast} from 'react-toastify';
 import localforage from 'localforage';
 import {apiClient} from '~/apiClient';

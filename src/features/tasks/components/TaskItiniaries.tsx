@@ -1,5 +1,6 @@
 import {Box, Typography, Card, IconButton, Link} from '@mui/material';
-import React, {ReactNode, useCallback, useRef, useState} from 'react';
+import type {ReactNode} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
@@ -8,7 +9,7 @@ import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {useItineraries, useItineraryMutations} from '../api/useItinerary';
 
 import {useTaskUsers} from '../api/useTasks';
-import {Taskitinerary} from '../types';
+import type {Taskitinerary} from '../types';
 import {convertDate} from '~/helpers/dateConverter';
 import {useDisplayState} from '~/hooks/ui';
 import {DatePicker} from '@mui/x-date-pickers';
@@ -22,7 +23,8 @@ import {FlagEnum, ItineraryColors, sensorColors} from '~/features/notifications/
 import {useUser} from '~/features/auth/useUser';
 import {Edit, ExpandLess, ExpandMore, Person} from '@mui/icons-material';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useAtom} from 'jotai';
 import {highlightedItinerariesAtom} from '~/state/atoms';
 

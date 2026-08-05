@@ -1,7 +1,8 @@
 import {Autocomplete, Chip, TextField, Typography} from '@mui/material';
 import React from 'react';
-import {Noop} from 'react-hook-form';
-import useLocationProject, {Project} from '~/features/stamdata/api/useLocationProject';
+import type {Noop} from 'react-hook-form';
+import type {Project} from '~/features/stamdata/api/useLocationProject';
+import useLocationProject from '~/features/stamdata/api/useLocationProject';
 
 type Props = {
   value: Array<Project> | undefined | null;

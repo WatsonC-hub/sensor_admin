@@ -1,6 +1,8 @@
-import {Card, CardProps, SxProps} from '@mui/material';
+import type {CardProps, SxProps} from '@mui/material';
+import {Card} from '@mui/material';
 import {merge} from 'lodash';
-import React, {ReactElement, useState} from 'react';
+import type {ReactElement} from 'react';
+import React, {useState} from 'react';
 
 type Props = CardProps & {
   shadowIn?: number;

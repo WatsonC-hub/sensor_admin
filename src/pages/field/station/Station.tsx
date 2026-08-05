@@ -1,5 +1,6 @@
 import {Box, Divider, IconButton, Tooltip, Typography} from '@mui/material';
-import React, {ReactNode, useEffect} from 'react';
+import type {ReactNode} from 'react';
+import React, {useEffect} from 'react';
 
 import NavBar from '~/components/NavBar';
 import {useUser} from '~/features/auth/useUser';

@@ -1,11 +1,12 @@
 import {Box, Link, Typography} from '@mui/material';
-import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, stationPages, TableTypes} from '~/helpers/enumHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useTable} from '~/hooks/useTable';
-import {TaskContact} from '~/types';
+import type {TaskContact} from '~/types';
 import {sharedTableOptions} from '../sharedOptions';
 
 type TripContactsProps = {

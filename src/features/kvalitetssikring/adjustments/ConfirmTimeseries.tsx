@@ -6,7 +6,8 @@ import {Box, Tooltip, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import {parseAsString, useQueryState} from 'nuqs';
 import React, {useEffect} from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import type {SubmitHandler} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
@@ -16,7 +17,8 @@ import {useAppContext} from '~/state/contexts';
 
 import {useCertifyQa, useCertifyQaMutations} from '../api/useCertifyQa';
 import {zodDayjs} from '~/helpers/schemas';
-import dayjs, {Dayjs} from 'dayjs';
+import type {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
 import FormDateTime from '~/components/FormDateTime';
 
 interface WizardConfirmTimeseriesProps {

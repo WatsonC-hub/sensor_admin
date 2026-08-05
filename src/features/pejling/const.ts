@@ -1,4 +1,4 @@
-import {
+import type {
   PejlingBoreholeSchemaType,
   PejlingSchemaType,
 } from '../station/components/pejling/pejlingSchema';

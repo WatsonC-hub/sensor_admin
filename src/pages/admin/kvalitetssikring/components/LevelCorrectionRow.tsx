@@ -10,7 +10,7 @@ import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
 import {zodDayjs} from '~/helpers/schemas';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
-import {LevelCorrection} from '~/types';
+import type {LevelCorrection} from '~/types';
 
 interface LevelCorrectionRowProps {
   data: LevelCorrection;

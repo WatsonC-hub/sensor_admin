@@ -1,8 +1,10 @@
 import {AddAPhotoRounded, AddCircle} from '@mui/icons-material';
 import {Box, Divider} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import dayjs, {Dayjs} from 'dayjs';
-import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
+import type {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
+import type {ChangeEvent} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -23,7 +25,7 @@ import PejlingFormBorehole from '~/pages/field/boreholeno/components/PejlingForm
 import MaalepunktTable from '~/pages/field/boreholeno/MaalepunktTable';
 import PejlingMeasurements from '~/pages/field/boreholeno/PejlingMeasurements';
 import {useAppContext} from '~/state/contexts';
-import {
+import type {
   Kontrol,
   BoreholeMaalepunktPost,
   BoreholeMeasurement,

@@ -3,7 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {Parking} from '~/types';
+import type {Parking} from '~/types';
 
 interface ParkeringBase {
   path: string;

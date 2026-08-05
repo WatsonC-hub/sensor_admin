@@ -3,8 +3,9 @@ import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from '~/apiClient';
 import {PhotoCameraRounded} from '@mui/icons-material';
-import FormInput, {FormInputProps} from '~/components/FormInput';
-import {
+import type {FormInputProps} from '~/components/FormInput';
+import FormInput from '~/components/FormInput';
+import type {
   BoreholeAddTimeseries,
   BoreholeEditTimeseries,
   DefaultAddTimeseries,
@@ -19,7 +20,7 @@ import Button from '~/components/Button';
 import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
 import CaptureDialog from '~/components/CaptureDialog';
 import {toast} from 'react-toastify';
-import {Tstype} from '~/types';
+import type {Tstype} from '~/types';
 
 type Props = {
   children: React.ReactNode;

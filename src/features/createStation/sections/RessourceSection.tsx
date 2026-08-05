@@ -1,5 +1,6 @@
 import {AddCircleOutlined} from '@mui/icons-material';
-import React, {ReactNode} from 'react';
+import type {ReactNode} from 'react';
+import React from 'react';
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import useBreakpoints from '~/hooks/useBreakpoints';

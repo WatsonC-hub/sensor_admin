@@ -19,7 +19,7 @@ import {useCertifyQa, useCertifyQaMutations} from '../api/useCertifyQa';
 import AdjustmentDataTable from './AdjustmentDataTable';
 import CustomSpeedDial, {CustomTooltip} from '~/components/CustomSpeedDial';
 import {Verified, Delete, Save} from '@mui/icons-material';
-import {DialAction} from '~/types';
+import type {DialAction} from '~/types';
 import {useAdjustmentState} from '~/hooks/useQueryStateParameters';
 import {useSetAtom} from 'jotai';
 import {

@@ -1,5 +1,5 @@
 import React from 'react';
-import {SimpleContact} from '../types';
+import type {SimpleContact} from '../types';
 import {List} from '@mui/material';
 import SimpleTextView from '~/components/SimpleTextView';
 

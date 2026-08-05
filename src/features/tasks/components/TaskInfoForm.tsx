@@ -2,12 +2,13 @@ import {Delete} from '@mui/icons-material';
 // import DragHandleIcon from '@mui/icons-material/DragHandle';
 import {Box, Grid, TextField, Tooltip, Typography} from '@mui/material';
 import React, {useState} from 'react';
-import {FieldValues, useFormContext} from 'react-hook-form';
+import type {FieldValues} from 'react-hook-form';
+import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import {useTaskMutations, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
-import {Task} from '~/features/tasks/types';
+import type {Task} from '~/features/tasks/types';
 import {useDisplayState} from '~/hooks/ui';
 import dayjs from 'dayjs';
 

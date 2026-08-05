@@ -12,12 +12,8 @@ import useDeleteTimeseries from '~/features/station/api/useDeleteTimeseries';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
 import ConfirmDeleteDialog from '~/features/station/components/ConfirmDeleteDialog';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
-import {
-  BoreholeEditTimeseries,
-  boreholeEditTimeseriesSchema,
-  DefaultEditTimeseries,
-  defaultEditTimeseriesSchema,
-} from '~/features/station/schema';
+import type {BoreholeEditTimeseries, DefaultEditTimeseries} from '~/features/station/schema';
+import {boreholeEditTimeseriesSchema, defaultEditTimeseriesSchema} from '~/features/station/schema';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';

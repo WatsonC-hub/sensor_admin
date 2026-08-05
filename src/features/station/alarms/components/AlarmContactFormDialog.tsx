@@ -8,23 +8,20 @@ import {
   Typography,
 } from '@mui/material';
 import React, {useState} from 'react';
-import {
-  AlarmContactFormInput,
-  AlarmContactFormOutput,
-  alarmContactSchema,
-  AlarmFormInput,
-} from '../schema';
+import type {AlarmContactFormInput, AlarmContactFormOutput, AlarmFormInput} from '../schema';
+import {alarmContactSchema} from '../schema';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {AlarmContactTypeDialog} from '../types';
+import type {AlarmContactTypeDialog} from '../types';
 import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import {useAppContext} from '~/state/contexts';
-import {ContactInfo} from '~/types';
+import type {ContactInfo} from '~/types';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import SmsIcon from '@mui/icons-material/Sms';
 import EmailIcon from '@mui/icons-material/Email';
 import CallIcon from '@mui/icons-material/Call';
-import {SubmitHandler, useForm, UseFormSetValue} from 'react-hook-form';
+import type {SubmitHandler, UseFormSetValue} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 
 const AlarmContactTypedForm = createTypedForm<AlarmContactFormInput, AlarmContactFormOutput>();
 

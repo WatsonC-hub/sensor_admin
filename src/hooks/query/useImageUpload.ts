@@ -1,5 +1,6 @@
-import {useMutation, MutationOptions} from '@tanstack/react-query';
-import {Dayjs} from 'dayjs';
+import type {MutationOptions} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
+import type {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';

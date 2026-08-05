@@ -3,7 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {RouteFeature} from '~/types';
+import type {RouteFeature} from '~/types';
 
 interface LeafletMapRouteBase {
   path: string;

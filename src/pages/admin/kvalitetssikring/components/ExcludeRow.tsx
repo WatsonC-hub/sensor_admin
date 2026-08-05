@@ -9,7 +9,8 @@ import Button from '~/components/Button';
 import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
 import {zodDayjs} from '~/helpers/schemas';
-import {ExcludeData, useExclude} from '~/hooks/query/useExclude';
+import type {ExcludeData} from '~/hooks/query/useExclude';
+import {useExclude} from '~/hooks/query/useExclude';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 interface ExcludeRowProps {

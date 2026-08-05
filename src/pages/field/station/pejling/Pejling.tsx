@@ -14,16 +14,16 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import GraphManager from '~/features/station/components/GraphManager';
 import usePejlingForm from '~/features/station/components/pejling/api/usePejlingForm';
 import CompoundPejling from '~/features/station/components/pejling/CompoundPejling';
-import {
+import type {
   PejlingBoreholeSchemaType,
   PejlingSchemaType,
 } from '~/features/station/components/pejling/pejlingSchema';
-import {PejlingItem, LatestMeasurement} from '~/types';
+import type {PejlingItem, LatestMeasurement} from '~/types';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/enumHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
-import {APIError} from '~/queryClient';
+import type {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {useSetAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';

@@ -1,6 +1,7 @@
-import {TextField, TextFieldProps} from '@mui/material';
+import type {TextFieldProps} from '@mui/material';
+import {TextField} from '@mui/material';
 import React from 'react';
-import {FieldError} from 'react-hook-form';
+import type {FieldError} from 'react-hook-form';
 
 export type FormTextFieldProps = {
   value: string;

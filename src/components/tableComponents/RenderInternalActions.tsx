@@ -1,8 +1,7 @@
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import {Box, IconButton, Tooltip} from '@mui/material';
+import type {MRT_RowData, MRT_TableInstance} from 'material-react-table';
 import {
-  MRT_RowData,
-  MRT_TableInstance,
   MRT_ToggleFiltersButton,
   MRT_ShowHideColumnsButton,
   MRT_ToggleFullScreenButton,

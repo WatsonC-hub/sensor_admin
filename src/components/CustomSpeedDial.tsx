@@ -5,7 +5,7 @@ import React, {useState} from 'react';
 import {toast} from 'react-toastify';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {DialAction} from '~/types';
+import type {DialAction} from '~/types';
 
 type CustomSpeedDialProps = {
   actions: Array<DialAction>;

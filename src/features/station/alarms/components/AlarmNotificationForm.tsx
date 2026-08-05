@@ -7,7 +7,7 @@ import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import SouthIcon from '@mui/icons-material/South';
 import {useNotificationTypes, type NotificationType} from '~/hooks/query/useNotificationOverview';
 import Button from '~/components/Button';
-import {AlarmFormInput, AlarmFormOutput} from '../schema';
+import type {AlarmFormInput, AlarmFormOutput} from '../schema';
 
 const AlarmNotificationTypedForm = createTypedForm<AlarmFormInput, AlarmFormOutput>();
 

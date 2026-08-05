@@ -1,15 +1,12 @@
 import {Box, Typography} from '@mui/material';
-import {
-  MaterialReactTable,
-  MRT_ColumnDef,
-  MRT_ExpandButton,
-  MRT_TableOptions,
-} from 'material-react-table';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable, MRT_ExpandButton} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import {UnitHistory, useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
+import type {UnitHistory} from '~/features/stamdata/api/useUnitHistory';
+import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import {checkEndDateIsUnset, convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/enumHelper';

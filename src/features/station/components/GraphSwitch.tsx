@@ -7,7 +7,7 @@ import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {dataToShowAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {DataToShow} from '~/types';
+import type {DataToShow} from '~/types';
 
 interface GraphSwitchProps {
   dataToShow: Partial<DataToShow>;

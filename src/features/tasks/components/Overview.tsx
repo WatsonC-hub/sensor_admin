@@ -5,11 +5,11 @@ import WindowManager from '~/components/ui/WindowManager';
 import {DragDropProvider} from '@dnd-kit/react';
 import Map from '~/pages/Map';
 import TaskInfo from './TaskInfo';
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {AppContext} from '~/state/contexts';
 import Station from '~/pages/field/station/Station';
 
-import {BoreholeMapData} from '~/types';
+import type {BoreholeMapData} from '~/types';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
 import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
 import {metadataQueryOptions} from '~/hooks/query/useMetadata';

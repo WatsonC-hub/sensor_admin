@@ -20,7 +20,8 @@ import {
 
 import {useQueryClient} from '@tanstack/react-query';
 import {useAtom} from 'jotai';
-import {useState, ReactNode, MouseEventHandler} from 'react';
+import type {ReactNode, MouseEventHandler} from 'react';
+import {useState} from 'react';
 
 import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';

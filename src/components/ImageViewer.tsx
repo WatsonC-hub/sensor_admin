@@ -1,12 +1,14 @@
 import {Box, CircularProgress, Grid, Skeleton, Typography} from '@mui/material';
-import {Mutation, useMutationState, useQueryClient} from '@tanstack/react-query';
+import type {Mutation} from '@tanstack/react-query';
+import {useMutationState, useQueryClient} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 
 import ImageCard from '~/components/ImageCard';
-import {Image} from '~/types';
+import type {Image} from '~/types';
 import Button from './Button';
-import {ImagePayload, useImageUpload} from '~/hooks/query/useImageUpload';
-import {APIError} from '~/queryClient';
+import type {ImagePayload} from '~/hooks/query/useImageUpload';
+import {useImageUpload} from '~/hooks/query/useImageUpload';
+import type {APIError} from '~/queryClient';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useFindBorehole} from '~/features/station/api/useBorehole';
 

@@ -6,9 +6,9 @@ import LocationListItem from './LocationListItem';
 
 import {useDisplayState} from '~/hooks/ui';
 import {Box, Divider, Typography} from '@mui/material';
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import {BoreholeMapData} from '~/types';
+import type {BoreholeMapData} from '~/types';
 import BoreholeListItem from './BoreholeListItem';
 import {createSmoothScrollToFn} from '../helpers';
 import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';

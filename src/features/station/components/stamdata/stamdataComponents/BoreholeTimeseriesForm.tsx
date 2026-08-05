@@ -1,8 +1,8 @@
 import {Grid} from '@mui/material';
 import React from 'react';
 import StamdataTimeseries from '../StamdataTimeseries';
-import {FormInputProps} from '~/components/FormInput';
-import {BoreholeAddTimeseries} from '~/features/station/schema';
+import type {FormInputProps} from '~/components/FormInput';
+import type {BoreholeAddTimeseries} from '~/features/station/schema';
 
 type Props = {
   size: number;

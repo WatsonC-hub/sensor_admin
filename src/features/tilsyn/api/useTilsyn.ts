@@ -1,12 +1,12 @@
 import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
-import {Dayjs} from 'dayjs';
+import type {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import type {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-import {TilsynItem} from '~/types';
+import type {TilsynItem} from '~/types';
 
 interface TilsynBase {
   path: string;

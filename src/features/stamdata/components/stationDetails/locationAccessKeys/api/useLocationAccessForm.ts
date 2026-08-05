@@ -1,5 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {DefaultValues, useForm} from 'react-hook-form';
+import type {DefaultValues} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 import {z} from 'zod/v4';
 import {AccessType} from '~/helpers/enumHelper';
 

@@ -4,20 +4,23 @@ import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-import L, {ContextMenuItemClickEvent} from 'leaflet';
+import type {ContextMenuItemClickEvent} from 'leaflet';
+import L from 'leaflet';
 import '~/css/leaflet.css';
-import {useEffect, SyntheticEvent, useCallback} from 'react';
+import type {SyntheticEvent} from 'react';
+import {useEffect, useCallback} from 'react';
 import {toast} from 'react-toastify';
 import '~/features/map/map.css';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
-import {MapOverview, timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import {timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 
 import {useMapUtilityStore} from '~/state/store';
-import {BoreholeMapData} from '~/types';
+import type {BoreholeMapData} from '~/types';
 
 import 'leaflet/dist/leaflet.css';
 
@@ -36,7 +39,7 @@ import {debounce} from 'lodash';
 import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
 import {findBorehole} from '~/features/station/api/useBorehole';
 import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
-import {SelectionCommand} from '~/features/commandpalette/components/CommandContext';
+import type {SelectionCommand} from '~/features/commandpalette/components/CommandContext';
 
 import {NotListedLocation} from '@mui/icons-material';
 import useBreakpoints from '~/hooks/useBreakpoints';

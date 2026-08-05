@@ -1,12 +1,12 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Card, CardContent, Grid, InputAdornment, TextField, Typography} from '@mui/material';
-import {PickerValue} from '@mui/x-date-pickers/internals';
+import type {PickerValue} from '@mui/x-date-pickers/internals';
 import dayjs from 'dayjs';
 import React, {useState} from 'react';
 
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
-import {BoreholeMaalepunkt} from '~/pages/field/boreholeno/Boreholeno';
+import type {BoreholeMaalepunkt} from '~/pages/field/boreholeno/Boreholeno';
 
 interface MaalepunktFormProps {
   formData: BoreholeMaalepunkt;

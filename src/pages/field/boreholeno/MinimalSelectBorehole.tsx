@@ -1,5 +1,6 @@
 import MenuItem from '@mui/material/MenuItem';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
+import type {SelectChangeEvent} from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import {useQuery} from '@tanstack/react-query';
 import React, {useEffect, useState} from 'react';
 
@@ -7,7 +8,7 @@ import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useAppContext} from '~/state/contexts';
-import {BoreholeData} from '~/types';
+import type {BoreholeData} from '~/types';
 
 const MinimalSelect = () => {
   const {boreholeno, intakeno} = useAppContext(['boreholeno'], ['intakeno']);

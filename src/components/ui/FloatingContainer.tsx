@@ -1,4 +1,5 @@
-import {Box, BoxProps, useTheme} from '@mui/material';
+import type {BoxProps} from '@mui/material';
+import {Box, useTheme} from '@mui/material';
 import {merge} from 'lodash';
 import React from 'react';
 

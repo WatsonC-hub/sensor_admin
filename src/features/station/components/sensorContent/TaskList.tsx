@@ -6,7 +6,7 @@ import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {useAppContext} from '~/state/contexts';
 import TaskListItemSimpleCard from './taskListItemComponents/TaskListItemSimpleCard';
 import TaskListItemAdvancedCard from './taskListItemComponents/TaskListItemAdvancedCard';
-import {Task} from '~/features/tasks/types';
+import type {Task} from '~/features/tasks/types';
 import {isSimpleTask} from '~/features/tasks/helpers';
 
 import {useLocationData} from '~/hooks/query/useMetadata';

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {AccessTable} from '~/types';
+import type {AccessTable} from '~/types';
 import useLocationAccessForm, {
   locationAccessSchema,
 } from '~/features/stamdata/components/stationDetails/locationAccessKeys/api/useLocationAccessForm';
@@ -13,7 +13,7 @@ import FormFieldset from '~/components/formComponents/FormFieldset';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {button_sx} from '../commonStyle';
 import {createTypedForm} from '~/components/formComponents/Form';
-import {z} from 'zod';
+import type {z} from 'zod';
 
 const Form = createTypedForm<
   z.input<typeof locationAccessSchema>,

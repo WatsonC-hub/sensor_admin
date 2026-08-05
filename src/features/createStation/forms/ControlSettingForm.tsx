@@ -5,7 +5,7 @@ import useControlSettingsForm from '~/features/configuration/api/useControlSetti
 import ControlSettings from '~/features/configuration/components/ControlSettings';
 import CreateControlSettings from '~/features/configuration/components/CreateControlSettings';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {ControlSettingsFormState} from '../types';
+import type {ControlSettingsFormState} from '../types';
 import {useCreateStationStore} from '../state/useCreateStationStore';
 import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
 

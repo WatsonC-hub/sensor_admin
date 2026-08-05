@@ -1,22 +1,27 @@
 import {Typography, InputAdornment, TextField} from '@mui/material';
-import {RefetchOptions, useQuery} from '@tanstack/react-query';
-import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
+import type {RefetchOptions} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
+import type {ChangeEvent} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 import {apiClient} from '~/apiClient';
-import FormInput, {FormInputProps} from '~/components/FormInput';
+import type {FormInputProps} from '~/components/FormInput';
+import FormInput from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
-import {BoreholeAddLocation, BoreholeEditLocation, DefaultAddLocation} from '../../schema';
+import type {BoreholeAddLocation, BoreholeEditLocation, DefaultAddLocation} from '../../schema';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
-import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
-import {Borehole} from '../../api/useBorehole';
+import type {AutoCompleteFieldProps} from '~/components/Autocomplete';
+import ExtendedAutocomplete from '~/components/Autocomplete';
+import type {Borehole} from '../../api/useBorehole';
 import {utm} from '~/features/map/mapConsts';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {useAppContext} from '~/state/contexts';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {queryClient} from '~/queryClient';
-import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 
 type Props = {
   children: React.ReactNode;

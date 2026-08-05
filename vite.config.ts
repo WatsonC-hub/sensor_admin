@@ -1,7 +1,8 @@
 import strip from '@rollup/plugin-strip';
 import react from '@vitejs/plugin-react';
 import {defineConfig, lazyPlugins} from 'vite-plus';
-import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
+import type {VitePWAOptions} from 'vite-plugin-pwa';
+import {VitePWA} from 'vite-plugin-pwa';
 import svgrPlugin from 'vite-plugin-svgr';
 
 const pwaOptions: Partial<VitePWAOptions> = {
@@ -153,10 +154,11 @@ export default defineConfig({
           'jsx-a11y/anchor-is-valid': 'off',
           'no-unused-vars': 'error',
 
-          // 'typescript/no-floating-promises': 'warn',
-          // 'typescript/no-misused-promises': 'warn',
-          'typescript/no-explicit-any': ['off'],
-          'typescript/explicit-module-boundary-types': ['off'],
+          'typescript/no-floating-promises': 'warn',
+          'typescript/no-misused-promises': 'warn',
+          'typescript/no-explicit-any': ['warn'],
+          'typescript/explicit-module-boundary-types': ['warn'],
+          'typescript/consistent-type-imports': ['error', {prefer: 'type-imports'}],
 
           'import/no-cycle': 'error',
           'import/default': 'off',

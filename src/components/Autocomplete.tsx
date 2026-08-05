@@ -1,11 +1,5 @@
-import {
-  Autocomplete,
-  AutocompleteProps,
-  Box,
-  InputAdornment,
-  TextField,
-  TextFieldProps,
-} from '@mui/material';
+import type {AutocompleteProps, TextFieldProps} from '@mui/material';
+import {Autocomplete, Box, InputAdornment, TextField} from '@mui/material';
 import React from 'react';
 import LinkableTooltip from './LinkableTooltip';
 import {merge} from 'lodash';

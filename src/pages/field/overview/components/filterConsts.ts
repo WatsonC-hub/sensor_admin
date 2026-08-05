@@ -1,4 +1,4 @@
-import {Project} from '~/features/stamdata/api/useLocationProject';
+import type {Project} from '~/features/stamdata/api/useLocationProject';
 import type {Group} from '~/types';
 
 export const locationFilterOptions = [

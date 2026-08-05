@@ -3,7 +3,7 @@ import React from 'react';
 import TilsynTableDesktop from '~/features/tilsyn/components/TilsynTableDesktop';
 import TilsynTableMobile from '~/features/tilsyn/components/TilsynTableMobile';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {TilsynItem} from '~/types';
+import type {TilsynItem} from '~/types';
 
 interface TilsynTableProps {
   handleEdit: (data: TilsynItem) => void;

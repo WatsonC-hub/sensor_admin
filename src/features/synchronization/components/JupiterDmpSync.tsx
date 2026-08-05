@@ -1,5 +1,6 @@
 import React from 'react';
-import useSyncForm, {SyncFormSchema, SyncFormSchemaOutput} from '../api/useSyncForm';
+import type {SyncFormSchema, SyncFormSchemaOutput} from '../api/useSyncForm';
+import useSyncForm from '../api/useSyncForm';
 import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {Grid, Box, FormControlLabel, Checkbox} from '@mui/material';

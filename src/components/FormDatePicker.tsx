@@ -1,9 +1,12 @@
 import React from 'react';
-import {Box, TextFieldVariants} from '@mui/material';
-import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
+import type {TextFieldVariants} from '@mui/material';
+import {Box} from '@mui/material';
+import type {FieldValues, Path} from 'react-hook-form';
+import {Controller, useFormContext} from 'react-hook-form';
 
-import dayjs from 'dayjs';
-import {DatePicker, DatePickerProps, PickersActionBarAction} from '@mui/x-date-pickers';
+import type dayjs from 'dayjs';
+import type {DatePickerProps, PickersActionBarAction} from '@mui/x-date-pickers';
+import {DatePicker} from '@mui/x-date-pickers';
 import CustomActionBar from '~/helpers/CustomActionBar';
 
 export type FormDatePickerProps<TFieldValues extends FieldValues> = Omit<

@@ -1,9 +1,10 @@
 import {Grid} from '@mui/material';
 import React from 'react';
-import ControlSettings, {
+import type {
   ControlSettingsProps,
   LeadTimeProps,
 } from '~/features/configuration/components/ControlSettings';
+import ControlSettings from '~/features/configuration/components/ControlSettings';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 type Props = {

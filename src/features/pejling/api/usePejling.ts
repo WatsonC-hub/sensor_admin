@@ -1,12 +1,12 @@
 import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
-import {Dayjs} from 'dayjs';
+import type {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import type {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-import {PejlingItem} from '~/types';
+import type {PejlingItem} from '~/types';
 
 interface PejlingBase {
   path: string;

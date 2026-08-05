@@ -1,6 +1,7 @@
 import {Box} from '@mui/material';
 import React from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import type {SubmitHandler} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import FormInput from '~/components/FormInput';

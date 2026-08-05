@@ -4,7 +4,7 @@ import {useLocationData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {Box} from '@mui/material';
-import {AlarmFormInput} from '../schema';
+import type {AlarmFormInput} from '../schema';
 
 type AlarmGroupOptions = {
   group_id: string;

@@ -8,7 +8,7 @@ import {Controller, useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
-import {TilsynSchemaType} from '~/pages/field/station/tilsyn/Tilsyn';
+import type {TilsynSchemaType} from '~/pages/field/station/tilsyn/Tilsyn';
 
 interface TilsynFormPops {
   handleServiceSubmit: (values: TilsynSchemaType) => void;

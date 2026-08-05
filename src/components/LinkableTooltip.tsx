@@ -1,4 +1,5 @@
-import {Dialog, IconButton, Tooltip, TooltipProps, Typography} from '@mui/material';
+import type {TooltipProps} from '@mui/material';
+import {Dialog, IconButton, Tooltip, Typography} from '@mui/material';
 import React from 'react';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import useBreakpoints from '~/hooks/useBreakpoints';

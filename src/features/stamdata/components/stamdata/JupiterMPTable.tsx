@@ -2,8 +2,10 @@ import {Download} from '@mui/icons-material';
 import {CircularProgress, Box, IconButton, Typography} from '@mui/material';
 
 import {useQuery} from '@tanstack/react-query';
-import dayjs, {Dayjs} from 'dayjs';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {apiClient} from '~/apiClient';
 import TooltipWrapper from '~/components/TooltipWrapper';

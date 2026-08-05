@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
-import {SubmitHandler, useForm} from 'react-hook-form';
+import type {SubmitHandler} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 import {createTypedForm} from '~/components/formComponents/Form';
 import AlarmNotificationForm from './AlarmNotificationForm';
-import {AlarmFormInput, AlarmFormOutput, alarmsSchema} from '../schema';
+import type {AlarmFormInput, AlarmFormOutput} from '../schema';
+import {alarmsSchema} from '../schema';
 import {Box, ButtonGroup, Typography} from '@mui/material';
 import {ExpandLess, ExpandMore} from '@mui/icons-material';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {AlarmTableType} from '../types';
+import type {AlarmTableType} from '../types';
 import {useAppContext} from '~/state/contexts';
 import {useAlarm} from '../api/useAlarm';
 import {toast} from 'react-toastify';

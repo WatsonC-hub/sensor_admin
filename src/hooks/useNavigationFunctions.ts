@@ -1,6 +1,7 @@
 // import {parseAsArrayOf, parseAsInteger, useQueryState} from 'nuqs';
 import {useMemo} from 'react';
-import {NavigateOptions, useNavigate} from 'react-router-dom';
+import type {NavigateOptions} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 import {useDisplayState} from './ui';
 

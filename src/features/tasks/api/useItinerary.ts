@@ -4,6 +4,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 // import {Notification} from '~/hooks/query/useNotificationOverview';
 
+import type {MergeItinerary} from '../types';
 import {
   type completeItinerary,
   type AddLocationToItinerary,
@@ -11,11 +12,10 @@ import {
   type PostTaskitinerary,
   type Taskitinerary,
   TaskPermission,
-  MergeItinerary,
 } from '../types';
 import {useUser} from '~/features/auth/useUser';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {QueryType} from '~/types';
+import type {QueryType} from '~/types';
 
 const itineraryPostOptions = {
   mutationKey: ['itinerary_post'],

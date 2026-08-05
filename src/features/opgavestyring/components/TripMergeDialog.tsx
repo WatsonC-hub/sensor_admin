@@ -1,7 +1,8 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import type {SubmitHandler} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 import AlertDialog from '~/components/AlertDialog';
 import Button from '~/components/Button';

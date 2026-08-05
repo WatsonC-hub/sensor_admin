@@ -1,18 +1,15 @@
-import {
-  Stack,
-  ToggleButtonGroup,
-  ToggleButton,
-  Typography,
+import type {
   GridProps,
   GridBaseProps,
-  Grid,
   ToggleButtonGroupProps,
   SxProps,
   ToggleButtonProps,
 } from '@mui/material';
+import {Stack, ToggleButtonGroup, ToggleButton, Typography, Grid} from '@mui/material';
 import {isEqual, merge} from 'lodash';
 import React from 'react';
-import {Controller, FieldPath, FieldPathValue, FieldValues, useFormContext} from 'react-hook-form';
+import type {FieldPath, FieldPathValue, FieldValues} from 'react-hook-form';
+import {Controller, useFormContext} from 'react-hook-form';
 
 type FormToggleButtonOption<T> = {
   value: T;

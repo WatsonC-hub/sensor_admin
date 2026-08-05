@@ -3,11 +3,11 @@ import Autocomplete, {createFilterOptions} from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import {useQuery} from '@tanstack/react-query';
-import {Noop} from 'react-hook-form';
+import type {Noop} from 'react-hook-form';
 
 import {getGroupLink} from '~/helpers/links';
 import {apiClient} from '~/apiClient';
-import {Group} from '~/types';
+import type {Group} from '~/types';
 import LinkableTooltip from '~/components/LinkableTooltip';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';

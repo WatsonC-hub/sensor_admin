@@ -9,7 +9,7 @@ import {FormPhoneInput} from '~/components/formComponents/FormPhoneInput';
 import FormInput from '~/components/FormInput';
 import {ContactInfoType} from '~/helpers/enumHelper';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {InferContactInfo} from './api/useContactForm';
+import type {InferContactInfo} from './api/useContactForm';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 interface ModalProps {

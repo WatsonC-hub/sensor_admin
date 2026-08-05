@@ -1,7 +1,7 @@
 import {Dialog, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
 import AlarmForm from './AlarmForm';
-import {AlarmTableType} from '../types';
+import type {AlarmTableType} from '../types';
 import TooltipWrapper from '~/components/TooltipWrapper';
 
 type AlarmFormDialogProps = {

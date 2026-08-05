@@ -1,10 +1,6 @@
 import {Box, Typography} from '@mui/material';
-import {
-  MRT_ColumnDef,
-  MRT_ExpandButton,
-  MRT_TableOptions,
-  MaterialReactTable,
-} from 'material-react-table';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -16,7 +12,7 @@ import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
 import {useAppContext} from '~/state/contexts';
-import {MaalepunktAsDayjs} from '~/types';
+import type {MaalepunktAsDayjs} from '~/types';
 
 interface Props {
   handleEdit: (maalepunkt: MaalepunktAsDayjs) => void;
