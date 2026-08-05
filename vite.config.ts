@@ -121,19 +121,29 @@ export default defineConfig({
     ignorePatterns: ['node_modules', 'dist', '*.html'],
   },
   lint: {
-    plugins: ['typescript'],
+    plugins: ['typescript', 'react', 'unicorn'],
     categories: {
       correctness: 'off',
     },
-    env: {
-      builtin: true,
+    options: {
+      typeAware: true,
+      typeCheck: true,
     },
     ignorePatterns: ['dist', 'dev-dist'],
     overrides: [
       {
+        env: {
+          builtin: true,
+          es2018: true,
+          es2020: true,
+          browser: true,
+        },
         files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-        plugins: ['typescript', 'react'],
-        jsPlugins: ['eslint-plugin-react-compiler', 'eslint-plugin-check-file'],
+        jsPlugins: [
+          'eslint-plugin-react-compiler',
+          'eslint-plugin-check-file',
+          // {name: 'vite-plus', specifier: 'vite-plus/oxlint-plugin'},
+        ],
         rules: {
           'react-compiler/react-compiler': 'error',
           // set of custom rules
@@ -143,8 +153,8 @@ export default defineConfig({
           'jsx-a11y/anchor-is-valid': 'off',
           'no-unused-vars': 'error',
 
-          // "typescript/no-floating-promises": "warn",
-          // "typescript/no-misused-promises": "warn",
+          // 'typescript/no-floating-promises': 'warn',
+          // 'typescript/no-misused-promises': 'warn',
           'typescript/no-explicit-any': ['off'],
           'typescript/explicit-module-boundary-types': ['off'],
 
@@ -152,21 +162,20 @@ export default defineConfig({
           'import/default': 'off',
           'import/no-named-as-default-member': 'off',
           'import/no-named-as-default': 'off',
-          'unicorn/filename-case': [
+          'check-file/filename-naming-convention': [
             'error',
             {
               '**/*.tsx': 'PASCAL_CASE',
-              '**/*.ts': 'CAMEL_CASE',
+              '**/!(vite-env.d.ts)*.ts': 'CAMEL_CASE',
             },
             {
               ignoreMiddleExtensions: true,
-              // ignore: ["vite-env.d.ts"],
             },
           ],
           'check-file/folder-naming-convention': [
             'error',
             {
-              '/src/**/*': 'CAMEL_CASE',
+              'src/**/*': 'CAMEL_CASE',
             },
           ],
           'no-empty-function': ['off'],
@@ -178,28 +187,19 @@ export default defineConfig({
           ],
           'typescript/explicit-function-return-type': ['off'],
         },
-
-        env: {
-          es2018: true,
-          es2020: true,
-          browser: true,
-        },
-        globals: {
-          AsyncDisposableStack: 'readonly',
-          DisposableStack: 'readonly',
-          SuppressedError: 'readonly',
-        },
       },
     ],
-    options: {
-      typeAware: true,
-      typeCheck: true,
+    globals: {
+      AsyncDisposableStack: 'readonly',
+      DisposableStack: 'readonly',
+      SuppressedError: 'readonly',
     },
-    // "rules": {
-    //   "typescript/no-floating-promises": "warn",
-    //   "typescript/no-misused-promises": "warn"
-    // }
   },
+
+  // "rules": {
+  //   "typescript/no-floating-promises": "warn",
+  //   "typescript/no-misused-promises": "warn"
+  // }
   resolve: {
     tsconfigPaths: true,
   },
