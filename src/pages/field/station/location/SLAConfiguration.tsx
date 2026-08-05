@@ -37,7 +37,7 @@ const SLAConfiguration = () => {
       days_to_visitation: values?.daysToVisitation,
     },
     values: {
-      days_to_visitation: values.daysToVisitation,
+      days_to_visitation: values?.daysToVisitation,
     },
   });
 
