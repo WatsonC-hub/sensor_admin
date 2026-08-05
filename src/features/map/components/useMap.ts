@@ -178,6 +178,7 @@ const useMap = <TData extends object>(
       position: 'bottomright',
     }).addTo(map);
 
+    //@ts-expect-error Valid code
     L.basemapControl({
       position: 'bottomleft',
       layers:

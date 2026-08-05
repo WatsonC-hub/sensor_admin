@@ -245,6 +245,7 @@ export const useTable = <TData extends MRT_RowData>(
     data: data ?? [],
     ...tableOptions,
     ...state,
+    //@ts-expect-error A workaround for the type error that occurs when using the state prop in useMaterialReactTable. The state prop is not typed correctly in the library, so we need to cast it to any to avoid the type error.
     state: {
       ...tableState,
       isLoading: data === undefined,
@@ -260,7 +261,7 @@ export const useTable = <TData extends MRT_RowData>(
     }));
     setIsFirstRender(false);
   }
-
+  //@ts-expect-error A workaround for the type error that occurs when using the state prop in useMaterialReactTable. The state prop is not typed correctly in the library, so we need to cast it to any to avoid the type error.
   return table;
 };
 
@@ -301,6 +302,7 @@ export const useQueryTable = <TData extends MRT_RowData>(
     data: data ?? [],
     ...tableOptions,
     ...state,
+    //@ts-expect-error A workaround for the type error that occurs when using the state prop in useMaterialReactTable. The state prop is not typed correctly in the library, so we need to cast it to any to avoid the type error.
     state: {
       ...state?.state,
       isLoading: data === undefined && !isFetched,
@@ -316,6 +318,6 @@ export const useQueryTable = <TData extends MRT_RowData>(
     }));
     setIsFirstRender(false);
   }
-
+  //@ts-expect-error A workaround for the type error that occurs when using the state prop in useMaterialReactTable. The state prop is not typed correctly in the library, so we need to cast it to any to avoid the type error.
   return table;
 };
