@@ -2,18 +2,20 @@ import {Save} from '@mui/icons-material';
 import {Grid, Typography} from '@mui/material';
 import React from 'react';
 import {FormProvider} from 'react-hook-form';
-import {useAppContext} from '~/state/contexts';
+
+import Button from '~/components/Button';
+import {useUser} from '~/features/auth/useUser';
+import useControlSettingsForm from '~/features/configuration/api/useControlSettingsForm';
+import EditControlSettings from '~/features/configuration/components/EditControlSettings';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {
   useTimeseriesServiceInterval,
   useTimeseriesServiceIntervalMutation,
 } from '~/features/station/api/useTimeseriesServiceInterval';
-import Button from '~/components/Button';
-import EditControlSettings from '~/features/configuration/components/EditControlSettings';
-import type {ControlSettingsFormValues} from '~/features/configuration/api/useControlSettingsForm';
-import useControlSettingsForm from '~/features/configuration/api/useControlSettingsForm';
-import {useUser} from '~/features/auth/useUser';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import usePermissions from '~/features/permissions/api/usePermissions';
+import {useAppContext} from '~/state/contexts';
+
+import type {ControlSettingsFormValues} from '~/features/configuration/api/useControlSettingsForm';
 
 const YearlyControlsConfig = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);

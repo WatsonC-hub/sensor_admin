@@ -1,7 +1,8 @@
 import {useMemo} from 'react';
 
-import {useTasks} from './useTasks';
 import {useDisplayState} from '~/hooks/ui';
+
+import {useTasks} from './useTasks';
 
 export const useTaskState = () => {
   const selectedTaskId = useDisplayState((state) => state.selectedTask);

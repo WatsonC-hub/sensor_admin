@@ -1,10 +1,9 @@
 import {Box, Typography} from '@mui/material';
-import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {renderDetailStyle, correction_map} from '~/consts';
+import {correction_map, renderDetailStyle} from '~/consts';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
@@ -12,6 +11,8 @@ import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useQueryTable} from '~/hooks/useTable';
 import {useAppContext} from '~/state/contexts';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import type {PejlingItem} from '~/types';
 
 interface Props {

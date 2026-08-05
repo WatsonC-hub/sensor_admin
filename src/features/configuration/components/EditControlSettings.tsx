@@ -1,7 +1,9 @@
 import {Grid} from '@mui/material';
 import React from 'react';
-import ControlSettings from './ControlSettings';
+
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import ControlSettings from './ControlSettings';
 
 type EditControlSettingsProps = {
   disabled: boolean;

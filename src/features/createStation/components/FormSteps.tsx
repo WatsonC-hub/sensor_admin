@@ -1,4 +1,4 @@
-import {Stepper, Step, StepLabel, Typography} from '@mui/material';
+import {Step, StepLabel, Stepper, Typography} from '@mui/material';
 import React from 'react';
 
 type Props = {

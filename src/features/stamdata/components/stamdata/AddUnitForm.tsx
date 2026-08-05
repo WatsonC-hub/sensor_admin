@@ -1,9 +1,3 @@
-import type {SyntheticEvent} from 'react';
-import React, {useEffect, useState} from 'react';
-import {useFormContext} from 'react-hook-form';
-import dayjs from 'dayjs';
-import {toast} from 'react-toastify';
-
 import {Save} from '@mui/icons-material';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import {
@@ -18,18 +12,25 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import dayjs from 'dayjs';
+import React, {useEffect, useState} from 'react';
+import {useFormContext} from 'react-hook-form';
+import {toast} from 'react-toastify';
 
+import {apiClient} from '~/apiClient';
 import Autocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import OwnDatePicker from '~/components/OwnDatePicker';
-import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
-import {useAppContext} from '~/state/contexts';
-import type {UnitPost} from '~/features/stamdata/api/useUnit';
 import {useUnit} from '~/features/stamdata/api/useUnit';
+import {useAppContext} from '~/state/contexts';
+
 import AddSensorDialog from './AddSensorDialog';
+
+import type {SyntheticEvent} from 'react';
 import type {AddUnitType} from '~/features/createStation/forms/UnitForm';
+import type {UnitPost} from '~/features/stamdata/api/useUnit';
 
 interface AddUnitFormProps {
   udstyrDialogOpen: boolean;

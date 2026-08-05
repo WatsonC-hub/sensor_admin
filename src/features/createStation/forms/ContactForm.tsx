@@ -1,22 +1,25 @@
+import {AddCircleOutlined, DoNotDisturb, Edit} from '@mui/icons-material';
+import {Box} from '@mui/material';
+import {lowerCase} from 'lodash';
 import React, {useEffect, useState} from 'react';
+import {FormProvider} from 'react-hook-form';
+
+import Button from '~/components/Button';
+import FormFieldset from '~/components/formComponents/FormFieldset';
+import {useProjectContacts} from '~/features/stamdata/api/useContactInfo';
+import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddContactInfo';
 import useContactForm, {
   contact_info_table,
 } from '~/features/stamdata/components/stationDetails/contacts/api/useContactForm';
-import type {ContactTable} from '~/types';
-import {FormProvider} from 'react-hook-form';
-import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddContactInfo';
-import {lowerCase} from 'lodash';
 import {setRoleName} from '~/features/stamdata/components/stationDetails/contacts/const';
-import SimpleContactList from '../helper/SimpleContactList';
-import {Box} from '@mui/material';
-import {useCreateStationStore} from '../state/useCreateStationStore';
-import {AddCircleOutlined, DoNotDisturb, Edit} from '@mui/icons-material';
-import Button from '~/components/Button';
-import FormFieldset from '~/components/formComponents/FormFieldset';
 import useBreakpoints from '~/hooks/useBreakpoints';
+
 import {button_sx} from '../commonStyle';
-import {useProjectContacts} from '~/features/stamdata/api/useContactInfo';
+import SimpleContactList from '../helper/SimpleContactList';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+
 import type {CreateLocationData} from '../types';
+import type {ContactTable} from '~/types';
 
 const ContactForm = () => {
   const {isMobile} = useBreakpoints();

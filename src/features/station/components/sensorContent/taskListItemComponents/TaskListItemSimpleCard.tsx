@@ -1,17 +1,19 @@
-import {Box, Button, Card, CardContent, CardHeader, Link, Typography} from '@mui/material';
-import React, {useMemo} from 'react';
-import type {Task} from '~/features/tasks/types';
 import {EditOutlined} from '@mui/icons-material';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import {Box, Button, Card, CardContent, CardHeader, Link, Typography} from '@mui/material';
+import dayjs from 'dayjs';
+import React, {useMemo} from 'react';
+
+import {useUser} from '~/features/auth/useUser';
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/Utils';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {convertDate} from '~/helpers/dateConverter';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useDisplayState} from '~/hooks/ui';
-import {useUser} from '~/features/auth/useUser';
-import dayjs from 'dayjs';
-import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
+
+import type {Task} from '~/features/tasks/types';
 
 type Props = {
   task: Task;

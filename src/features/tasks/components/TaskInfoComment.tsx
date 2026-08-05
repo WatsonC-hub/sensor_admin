@@ -1,8 +1,9 @@
 import {Box, Typography} from '@mui/material';
 import React from 'react';
 
-import type {TaskComment} from '~/features/tasks/types';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
+
+import type {TaskComment} from '~/features/tasks/types';
 
 type Props = {
   comment: TaskComment;

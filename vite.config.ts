@@ -1,9 +1,13 @@
 import strip from '@rollup/plugin-strip';
 import react from '@vitejs/plugin-react';
-import {defineConfig, lazyPlugins} from 'vite-plus';
-import type {VitePWAOptions} from 'vite-plugin-pwa';
 import {VitePWA} from 'vite-plugin-pwa';
 import svgrPlugin from 'vite-plugin-svgr';
+import {defineConfig, lazyPlugins} from 'vite-plus';
+
+import {fmtOptions} from './oxfmt.config';
+import {lintOptions} from './oxlint.config';
+
+import type {VitePWAOptions} from 'vite-plugin-pwa';
 
 const pwaOptions: Partial<VitePWAOptions> = {
   devOptions: {enabled: true, type: 'module'},
@@ -106,97 +110,8 @@ export default defineConfig({
   staged: {
     '*': 'vp check --fix',
   },
-  fmt: {
-    arrowParens: 'always',
-    bracketSpacing: false,
-    jsxSingleQuote: false,
-    printWidth: 100,
-    proseWrap: 'always',
-    quoteProps: 'as-needed',
-    semi: true,
-    singleQuote: true,
-    tabWidth: 2,
-    trailingComma: 'es5',
-    useTabs: false,
-    sortPackageJson: false,
-    ignorePatterns: ['node_modules', 'dist', '*.html'],
-  },
-  lint: {
-    plugins: ['typescript', 'react', 'unicorn'],
-    categories: {
-      correctness: 'off',
-    },
-    options: {
-      typeAware: true,
-      typeCheck: true,
-    },
-    ignorePatterns: ['dist', 'dev-dist'],
-    overrides: [
-      {
-        env: {
-          builtin: true,
-          es2018: true,
-          es2020: true,
-          browser: true,
-        },
-        files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-        jsPlugins: [
-          'eslint-plugin-react-compiler',
-          'eslint-plugin-check-file',
-          // {name: 'vite-plus', specifier: 'vite-plus/oxlint-plugin'},
-        ],
-        rules: {
-          'react-compiler/react-compiler': 'error',
-          // set of custom rules
-          'no-console': 'warn',
-          'react/button-has-type': 'error',
-          'react/react-in-jsx-scope': ['off'],
-          'jsx-a11y/anchor-is-valid': 'off',
-          'no-unused-vars': 'error',
-
-          'typescript/no-floating-promises': 'warn',
-          'typescript/no-misused-promises': 'warn',
-          'typescript/no-explicit-any': ['warn'],
-          'typescript/explicit-module-boundary-types': ['warn'],
-          'typescript/consistent-type-imports': ['error', {prefer: 'type-imports'}],
-
-          'import/no-cycle': 'error',
-          'import/default': 'off',
-          'import/no-named-as-default-member': 'off',
-          'import/no-named-as-default': 'off',
-          'check-file/filename-naming-convention': [
-            'error',
-            {
-              '**/*.tsx': 'PASCAL_CASE',
-              '**/!(vite-env.d.ts)*.ts': 'CAMEL_CASE',
-            },
-            {
-              ignoreMiddleExtensions: true,
-            },
-          ],
-          'check-file/folder-naming-convention': [
-            'error',
-            {
-              'src/**/*': 'CAMEL_CASE',
-            },
-          ],
-          'no-empty-function': ['off'],
-          'react/only-export-components': [
-            'warn',
-            {
-              allowConstantExport: true,
-            },
-          ],
-          'typescript/explicit-function-return-type': ['off'],
-        },
-      },
-    ],
-    globals: {
-      AsyncDisposableStack: 'readonly',
-      DisposableStack: 'readonly',
-      SuppressedError: 'readonly',
-    },
-  },
+  fmt: fmtOptions,
+  lint: lintOptions,
 
   // "rules": {
   //   "typescript/no-floating-promises": "warn",

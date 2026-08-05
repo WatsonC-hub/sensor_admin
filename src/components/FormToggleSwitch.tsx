@@ -1,8 +1,9 @@
-import type {SwitchProps, SxProps} from '@mui/material';
-import {Switch, FormControlLabel} from '@mui/material';
+import {FormControlLabel, Switch} from '@mui/material';
 import React from 'react';
-import type {FieldValues, Path} from 'react-hook-form';
 import {Controller, useFormContext} from 'react-hook-form';
+
+import type {SwitchProps, SxProps} from '@mui/material';
+import type {FieldValues, Path} from 'react-hook-form';
 
 type FormToggleSwitchProps<TFieldValues extends FieldValues> = SwitchProps & {
   name: Path<TFieldValues>;

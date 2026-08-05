@@ -1,34 +1,33 @@
+import {Fullscreen, FullscreenExit} from '@mui/icons-material';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {Alert, Box, IconButton, Tooltip, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import {useQueryClient} from '@tanstack/react-query';
+import {useAtom} from 'jotai';
 import React from 'react';
 
 import Button from '~/components/Button';
 import NavBar from '~/components/NavBar';
+import {useUser} from '~/features/auth/useUser';
+import ContactInfo from '~/features/stamdata/components/stationDetails/contacts/ContactInfo';
+import LocationAccess from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccess';
+import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
+import {stationPages} from '~/helpers/enumHelper';
 import {metadataQueryOptions, useLocationData} from '~/hooks/query/useMetadata';
+import {useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
+import LocationConfiguration from '~/pages/field/station/location/Configuration';
+import EditLocation from '~/pages/field/station/stamdata/EditLocation';
 import ImagePage from '~/pages/field/station/stamdata/ImagePage';
+import {fullScreenAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
 
+import ActionArea from './ActionArea';
 import MinimalSelect from './MinimalSelect';
 import StationDrawer from './StationDrawer';
-import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
-import {useUser} from '~/features/auth/useUser';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import LocationAccess from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccess';
-import ContactInfo from '~/features/stamdata/components/stationDetails/contacts/ContactInfo';
 import StationPageBoxLayout from './StationPageBoxLayout';
-import ActionArea from './ActionArea';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {stationPages} from '~/helpers/enumHelper';
-import EditLocation from '~/pages/field/station/stamdata/EditLocation';
-
-import {Fullscreen, FullscreenExit} from '@mui/icons-material';
-import {useAtom} from 'jotai';
-import {fullScreenAtom} from '~/state/atoms';
-import {useDisplayState} from '~/hooks/ui';
-import LocationConfiguration from '~/pages/field/station/location/Configuration';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();

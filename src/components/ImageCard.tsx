@@ -6,17 +6,18 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
-import type {UseMutationResult} from '@tanstack/react-query';
 import React, {useState} from 'react';
 import {toast} from 'react-toastify';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
-import type {Image} from '~/types';
+import usePermissions from '~/features/permissions/api/usePermissions';
+import {useAppContext} from '~/state/contexts';
 
 import GenericCard from './GenericCard';
-import {useAppContext} from '~/state/contexts';
-import usePermissions from '~/features/permissions/api/usePermissions';
+
+import type {UseMutationResult} from '@tanstack/react-query';
+import type {Image} from '~/types';
 
 type ImageCardProps = {
   image: Image;

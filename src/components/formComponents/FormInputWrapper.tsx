@@ -1,10 +1,12 @@
-import type {GridBaseProps} from '@mui/material';
 import {Grid} from '@mui/material';
 import React from 'react';
-import type {FieldValues, Path} from 'react-hook-form';
-import type {FormInputProps} from '../FormInput';
+
 import FormInput from '../FormInput';
 import {FormContext} from './const';
+
+import type {FormInputProps} from '../FormInput';
+import type {GridBaseProps} from '@mui/material';
+import type {FieldValues, Path} from 'react-hook-form';
 
 type TextFieldProps<T extends FieldValues> = Omit<FormInputProps<T>, 'name'> & {
   name: Path<T>;

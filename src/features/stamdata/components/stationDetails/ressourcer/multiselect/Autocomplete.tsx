@@ -9,11 +9,12 @@ import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+
 import type {
   MultiSelectProps,
   Ressourcer,
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
-import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 
 interface CheckboxesTagsProps extends MultiSelectProps {
   loc_id: number | undefined;

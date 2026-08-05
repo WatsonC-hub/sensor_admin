@@ -1,5 +1,4 @@
 import {Box} from '@mui/material';
-import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
@@ -14,6 +13,8 @@ import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
 import {useAppContext} from '~/state/contexts';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import type {PejlingItem} from '~/types';
 
 interface Props {

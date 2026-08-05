@@ -1,13 +1,13 @@
+import {EditOutlined} from '@mui/icons-material';
+import DescriptionIcon from '@mui/icons-material/Description';
 import {Box, Button, Grid, Link} from '@mui/material';
 import React, {useMemo} from 'react';
-import type {Task} from '~/features/tasks/types';
-import {EditOutlined} from '@mui/icons-material';
+
 import TaskForm from '~/features/tasks/components/TaskForm';
-
-import DescriptionIcon from '@mui/icons-material/Description';
-
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useDisplayState} from '~/hooks/ui';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+
+import type {Task} from '~/features/tasks/types';
 
 type Props = {
   task: Task;

@@ -1,17 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-  Typography,
-  Link,
-  Box,
-  IconButton,
-} from '@mui/material';
-import Button from './Button';
 import {Close} from '@mui/icons-material';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Link,
+  Typography,
+} from '@mui/material';
+import React, {useEffect, useState} from 'react';
+
+import Button from './Button';
 
 const RELEASE_NOTICE_KEY = 'fieldAppReleaseNotice_v2026_02';
 

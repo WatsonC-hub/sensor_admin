@@ -1,68 +1,70 @@
-import AddIcon from '@mui/icons-material/Add';
-
 import {
   AddCircle,
+  DoNotDisturb,
+  Edit,
   PhotoLibraryRounded,
   PlaylistAddCheck,
-  StraightenRounded,
-  Edit,
+  PriorityHigh,
   Router,
   Settings,
-  PriorityHigh,
-  DoNotDisturb,
+  StraightenRounded,
 } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
 import AlarmIcon from '@mui/icons-material/Alarm';
+import BackpackIcon from '@mui/icons-material/Backpack';
+import FunctionsIcon from '@mui/icons-material/Functions';
+import KeyIcon from '@mui/icons-material/Key';
+import PersonIcon from '@mui/icons-material/Person';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {
-  Drawer,
   Box,
+  ClickAwayListener,
+  Divider,
+  Drawer,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
-  Divider,
-  ListItemButton,
-  ClickAwayListener,
   Typography,
   useTheme,
 } from '@mui/material';
 import {useAtom} from 'jotai';
-import type {ReactNode} from 'react';
 import React from 'react';
-import FunctionsIcon from '@mui/icons-material/Functions';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
-import PersonIcon from '@mui/icons-material/Person';
-import BackpackIcon from '@mui/icons-material/Backpack';
-import KeyIcon from '@mui/icons-material/Key';
-import {drawerOpenAtom} from '~/state/atoms';
-import {useAppContext} from '~/state/contexts';
-import type {Metadata} from '~/hooks/query/useMetadata';
-import {metadataQueryOptions, useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
+
+import TooltipWrapper from '~/components/TooltipWrapper';
 import {useUser} from '~/features/auth/useUser';
-import type {QueryKey, UseQueryOptions} from '@tanstack/react-query';
-import {queryClient} from '~/queryClient';
+import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
+import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory';
 import {pejlingGetOptions} from '~/features/pejling/api/usePejling';
-import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
-import {getMaalepunktOptions} from '~/hooks/query/useMaalepunkt';
 import {contactInfoGetOptions} from '~/features/stamdata/api/useContactInfo';
 import {locationAccessGetOptions} from '~/features/stamdata/api/useLocationAccess';
 import {getRessourcerOptions} from '~/features/stamdata/api/useRessourcer';
-import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory';
-import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
-import {getImageOptions} from '../api/useImages';
-import type {StationPages} from '~/helpers/enumHelper';
+import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
 import {stationPages} from '~/helpers/enumHelper';
-import MinimalSelect from './MinimalSelect';
+import {useProgress} from '~/hooks/query/stationProgress';
+import {getMaalepunktOptions} from '~/hooks/query/useMaalepunkt';
+import {metadataQueryOptions, useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import TooltipWrapper from '~/components/TooltipWrapper';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
+import {queryClient} from '~/queryClient';
+import {drawerOpenAtom} from '~/state/atoms';
+import {useAppContext} from '~/state/contexts';
+
+import {alarmGetOptions} from '../alarms/api/useAlarm';
+import useDmpAllowedMapList, {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
+import {getImageOptions} from '../api/useImages';
 import {
   timeseriesMeasureSampleSendOptions,
   useTimeseriesMeasureSampleSend,
 } from '../api/useTimeseriesMeasureSampleSend';
-import useDmpAllowedMapList, {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
-import {alarmGetOptions} from '../alarms/api/useAlarm';
-import {useProgress} from '~/hooks/query/stationProgress';
+import MinimalSelect from './MinimalSelect';
+
+import type {QueryKey, UseQueryOptions} from '@tanstack/react-query';
+import type {ReactNode} from 'react';
+import type {StationPages} from '~/helpers/enumHelper';
+import type {Metadata} from '~/hooks/query/useMetadata';
 
 const drawerWidth = 200;
 

@@ -1,17 +1,16 @@
 import {Save} from '@mui/icons-material';
 import {
   Box,
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Grid,
   Typography,
-  Divider,
-  Collapse,
 } from '@mui/material';
 import React, {useState} from 'react';
-import type {SubmitHandler} from 'react-hook-form';
 import {useFormContext} from 'react-hook-form';
 
 import ExtendedAutocomplete from '~/components/Autocomplete';
@@ -20,8 +19,10 @@ import {initialContactData} from '~/consts';
 import {useContactInfo, useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
-import type {ContactInfo} from '~/types';
+
 import type {InferContactTable} from './api/useContactForm';
+import type {SubmitHandler} from 'react-hook-form';
+import type {ContactInfo} from '~/types';
 
 interface SelectContactInfoProps {
   open: boolean;

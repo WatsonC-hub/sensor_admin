@@ -1,24 +1,26 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {AddCircle} from '@mui/icons-material';
+import {Box} from '@mui/material';
+import {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
-import FabWrapper from '~/components/FabWrapper';
 
+import FabWrapper from '~/components/FabWrapper';
 import MaalepunktTableDesktop from '~/components/tableComponents/MaalepunktTableDesktop';
 import MaalepunktTableMobile from '~/components/tableComponents/MaalepunktTableMobile';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import StationMPForm from '~/features/station/components/watlevmp/StationMPForm';
+import {stationPages} from '~/helpers/enumHelper';
+import {zodDayjs} from '~/helpers/schemas';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
+
 import {initialWatlevmpData} from './const';
-import type {MaalepunktAsDayjs} from '~/types';
-import {zodDayjs} from '~/helpers/schemas';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import {useEffect} from 'react';
-import {stationPages} from '~/helpers/enumHelper';
 import JupiterMPTable from './JupiterMPTable';
-import {Box} from '@mui/material';
+
+import type {MaalepunktAsDayjs} from '~/types';
 
 const schema = z.object({
   gid: z.number().optional(),

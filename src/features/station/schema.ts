@@ -1,4 +1,5 @@
 import {z} from 'zod';
+
 import {zodDayjs} from '~/helpers/schemas';
 
 const baseLocationSchema = z.object({

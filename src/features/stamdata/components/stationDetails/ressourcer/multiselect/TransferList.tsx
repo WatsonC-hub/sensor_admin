@@ -12,12 +12,13 @@ import {useEffect, useState} from 'react';
 import Button from '~/components/Button';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {CategoryType} from '~/helpers/enumHelper';
+
 import type {
   MultiSelectProps,
   Ressourcer,
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
-import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {CategoryType} from '~/helpers/enumHelper';
 
 function not(a: Ressourcer[], b: Ressourcer[]) {
   return a.filter((value) => b.map((option) => option.navn).indexOf(value.navn) === -1);

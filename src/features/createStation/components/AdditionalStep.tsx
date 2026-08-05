@@ -1,14 +1,15 @@
 import {Typography} from '@mui/material';
 import React from 'react';
-import FormStepButtons from './FormStepButtons';
 
-import RessourceSection from '../sections/RessourceSection';
+import {useUser} from '~/features/auth/useUser';
+
 import ContactForm from '../forms/ContactForm';
 import LocationAccessForm from '../forms/LocationAccessForm';
-import {useCreateStationStore} from '../state/useCreateStationStore';
-import VisibilitySection from '../sections/VisibilitySection';
+import RessourceSection from '../sections/RessourceSection';
 import SlaSection from '../sections/SlaSection';
-import {useUser} from '~/features/auth/useUser';
+import VisibilitySection from '../sections/VisibilitySection';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+import FormStepButtons from './FormStepButtons';
 
 type Props = {
   activeStep: number;

@@ -1,4 +1,4 @@
-import {useQueryState, parseAsStringLiteral, parseAsBoolean} from 'nuqs';
+import {parseAsBoolean, parseAsStringLiteral, useQueryState} from 'nuqs';
 
 import {qaAdjustmentLiteral, stationPages} from '~/helpers/enumHelper';
 

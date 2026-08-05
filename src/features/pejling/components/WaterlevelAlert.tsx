@@ -1,4 +1,4 @@
-import {Grid, Alert, Typography} from '@mui/material';
+import {Alert, Grid, Typography} from '@mui/material';
 import React from 'react';
 
 import {limitDecimalNumbers} from '~/helpers/dateConverter';

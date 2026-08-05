@@ -1,8 +1,9 @@
-import type {FabProps, SvgIconProps} from '@mui/material';
 import {Fab, Typography} from '@mui/material';
 import React from 'react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {FabProps, SvgIconProps} from '@mui/material';
 
 interface Props extends Omit<FabProps, 'variant'> {
   text: string;

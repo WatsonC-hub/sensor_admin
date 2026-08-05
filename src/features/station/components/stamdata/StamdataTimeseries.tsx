@@ -1,25 +1,26 @@
-import {InputAdornment, TextField, FormControlLabel, Checkbox, Box} from '@mui/material';
+import {PhotoCameraRounded} from '@mui/icons-material';
+import {Box, Checkbox, FormControlLabel, InputAdornment, TextField} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
+import {Controller, useFormContext} from 'react-hook-form';
+import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
-import {PhotoCameraRounded} from '@mui/icons-material';
-import type {FormInputProps} from '~/components/FormInput';
+import Button from '~/components/Button';
+import CaptureDialog from '~/components/CaptureDialog';
 import FormInput from '~/components/FormInput';
+import FormTextField from '~/components/FormTextField';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
+import {useAppContext} from '~/state/contexts';
+
 import type {
   BoreholeAddTimeseries,
   BoreholeEditTimeseries,
   DefaultAddTimeseries,
   DefaultEditTimeseries,
 } from '../../schema';
-import FormTextField from '~/components/FormTextField';
-import {useAppContext} from '~/state/contexts';
-import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {Controller, useFormContext} from 'react-hook-form';
-import Button from '~/components/Button';
-
-import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
-import CaptureDialog from '~/components/CaptureDialog';
-import {toast} from 'react-toastify';
+import type {FormInputProps} from '~/components/FormInput';
 import type {Tstype} from '~/types';
 
 type Props = {

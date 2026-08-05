@@ -1,13 +1,15 @@
-import {Card, CardHeader, Box, Typography, Link} from '@mui/material';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import {Box, Card, CardHeader, Link, Typography} from '@mui/material';
+import dayjs from 'dayjs';
 import React from 'react';
+
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/Utils';
-import type {Task} from '~/features/tasks/types';
 import {convertDate} from '~/helpers/dateConverter';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import dayjs from 'dayjs';
-import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+
+import type {Task} from '~/features/tasks/types';
 
 type Props = {
   task: Task;

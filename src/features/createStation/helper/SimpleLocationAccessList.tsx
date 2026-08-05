@@ -1,7 +1,9 @@
-import React from 'react';
-import type {SimpleLocationAccess} from '../types';
 import {List} from '@mui/material';
+import React from 'react';
+
 import SimpleTextView from '~/components/SimpleTextView';
+
+import type {SimpleLocationAccess} from '../types';
 
 type Props = {
   values: SimpleLocationAccess[] | undefined;

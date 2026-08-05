@@ -1,48 +1,49 @@
-import {Box} from '@mui/material';
+import {NotListedLocation} from '@mui/icons-material';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-import type {ContextMenuItemClickEvent} from 'leaflet';
+import {Box} from '@mui/material';
 import L from 'leaflet';
+
 import '~/css/leaflet.css';
-import type {SyntheticEvent} from 'react';
-import {useEffect, useCallback} from 'react';
+import {debounce} from 'lodash';
+import {useCallback, useEffect} from 'react';
 import {toast} from 'react-toastify';
+
 import '~/features/map/map.css';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
-import type {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-
-import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
-
-import {useMapUtilityStore} from '~/state/store';
-import type {BoreholeMapData} from '~/types';
-
-import 'leaflet/dist/leaflet.css';
-
-import 'leaflet-contextmenu/dist/leaflet.contextmenu.min.css';
-import useMap from '../features/map/components/useMap';
+import {useUser} from '~/features/auth/useUser';
+import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
 import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
 import {
   getBoreholesIcon,
   getNotificationIcon,
   preventClickAfterTouchend,
 } from '~/features/map/utils';
-import {utm} from '../features/map/mapConsts';
-import {queryClient} from '~/queryClient';
-import {useUser} from '~/features/auth/useUser';
-import {debounce} from 'lodash';
-import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
 import {findBorehole} from '~/features/station/api/useBorehole';
-import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
-import type {SelectionCommand} from '~/features/commandpalette/components/CommandContext';
+import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
 
-import {NotListedLocation} from '@mui/icons-material';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-contextmenu/dist/leaflet.contextmenu.min.css';
+
+import {timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
+import {queryClient} from '~/queryClient';
+import {useMapUtilityStore} from '~/state/store';
+
+import useMap from '../features/map/components/useMap';
+import {utm} from '../features/map/mapConsts';
+
+import type {ContextMenuItemClickEvent} from 'leaflet';
+import type {SyntheticEvent} from 'react';
+import type {SelectionCommand} from '~/features/commandpalette/components/CommandContext';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {BoreholeMapData} from '~/types';
 
 interface LocItems {
   name: string;

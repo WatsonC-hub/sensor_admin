@@ -1,5 +1,4 @@
 import {Box, Dialog, DialogContent, DialogTitle, Typography} from '@mui/material';
-import type {MRT_ColumnDef, MRT_RowData, MRT_TableOptions} from 'material-react-table';
 import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
@@ -7,7 +6,6 @@ import DeleteAlert from '~/components/DeleteAlert';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {AdjustmentTypes, MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
-import type {ExcludeData} from '~/hooks/query/useExclude';
 import {useExclude} from '~/hooks/query/useExclude';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
@@ -17,9 +15,11 @@ import {useTable} from '~/hooks/useTable';
 import ExcludeRow from '~/pages/admin/kvalitetssikring/components/ExcludeRow';
 import LevelCorrectionRow from '~/pages/admin/kvalitetssikring/components/LevelCorrectionRow';
 import YRangeRow from '~/pages/admin/kvalitetssikring/components/YRangeRow';
-import type {AdjustmentData, DataExclude, LevelCorrection, MinMaxCutoff} from '~/types';
 
 import type {CertifyQa} from '../api/useCertifyQa';
+import type {MRT_ColumnDef, MRT_RowData, MRT_TableOptions} from 'material-react-table';
+import type {ExcludeData} from '~/hooks/query/useExclude';
+import type {AdjustmentData, DataExclude, LevelCorrection, MinMaxCutoff} from '~/types';
 
 type Props = {
   data: Array<AdjustmentData> | undefined;

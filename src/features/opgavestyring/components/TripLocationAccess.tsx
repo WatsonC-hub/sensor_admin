@@ -1,14 +1,16 @@
-import {Link, Box, Typography} from '@mui/material';
-
-import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {Box, Link, Typography} from '@mui/material';
 import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
-import {MergeType, stationPages, TableTypes} from '~/helpers/enumHelper';
+
+import {MergeType, TableTypes, stationPages} from '~/helpers/enumHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useTable} from '~/hooks/useTable';
-import type {TaskLocationAccess} from '~/types';
+
 import {sharedTableOptions} from '../sharedOptions';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {TaskLocationAccess} from '~/types';
 
 type TripLocationAccessProps = {
   keys: Array<TaskLocationAccess> | undefined;

@@ -1,8 +1,9 @@
 import {Box, Typography} from '@mui/material';
 import React from 'react';
 
-import type {BoreholeMapData} from '~/types';
 import BoreholeIcon from '~/pages/field/overview/components/BoreholeIcon';
+
+import type {BoreholeMapData} from '~/types';
 type Props = {
   itemData: BoreholeMapData;
   onClick: () => void;

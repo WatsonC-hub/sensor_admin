@@ -1,15 +1,16 @@
 import {
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  Select,
+  DialogContent,
+  DialogTitle,
   MenuItem,
+  Select,
   Typography,
 } from '@mui/material';
 import React from 'react';
+
 import Button from '~/components/Button';
-import {useItineraryMutations, useItineraries} from '~/features/tasks/api/useItinerary';
+import {useItineraries, useItineraryMutations} from '~/features/tasks/api/useItinerary';
 import {useTaskUsers} from '~/features/tasks/api/useTasks';
 
 type AddToTripDialogProps = {

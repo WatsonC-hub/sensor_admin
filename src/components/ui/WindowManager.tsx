@@ -1,12 +1,14 @@
-import React, {Children, cloneElement} from 'react';
-import type {SxProps} from '@mui/material';
-import {Box, IconButton} from '@mui/material';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import CloseIcon from '@mui/icons-material/Close';
-import useWindowDimensions from '~/hooks/useWindowDimensions';
+import {Box, IconButton} from '@mui/material';
 import {useSetAtom} from 'jotai';
-import {usedHeightAtom, usedWidthAtom} from '~/state/atoms';
+import React, {Children, cloneElement} from 'react';
+
 import {appBarHeight} from '~/consts';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import useWindowDimensions from '~/hooks/useWindowDimensions';
+import {usedHeightAtom, usedWidthAtom} from '~/state/atoms';
+
+import type {SxProps} from '@mui/material';
 
 type WindowManagerProps = {
   children: React.ReactElement<WindowProps>[];
@@ -129,7 +131,10 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
     } else {
       const innerwidth = child.props.minSize * columnWidth;
       shownChildren.push(
-        cloneElement(child, {width: innerwidth, height: firstElement ? '100%' : child.props.height})
+        cloneElement(child, {
+          width: innerwidth,
+          height: firstElement ? '100%' : child.props.height,
+        })
       );
       usedWidth += innerwidth;
     }

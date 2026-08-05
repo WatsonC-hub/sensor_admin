@@ -1,28 +1,29 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import type {TextFieldProps} from '@mui/material';
 import {Box, FormControlLabel, Switch, Typography} from '@mui/material';
+import {merge} from 'lodash';
 import React, {useEffect} from 'react';
-import type {UseFormReturn} from 'react-hook-form';
 import {Controller, FormProvider, useForm, useFormContext} from 'react-hook-form';
+import {toast} from 'react-toastify';
 import {z} from 'zod';
 
-import type {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import ExtendedAutocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
-import type {FormInputProps} from '~/components/FormInput';
+import FormDatePicker from '~/components/FormDatePicker';
 import FormInput from '~/components/FormInput';
 import {useNextDueDate, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
-import type {TaskUser} from '~/features/tasks/types';
+import {zodDayjs} from '~/helpers/schemas';
+import {useLocationData} from '~/hooks/query/useMetadata';
+import {useDisplayState} from '~/hooks/ui';
 
 import {useTaskState} from '../api/useTaskState';
-import {merge} from 'lodash';
-import {useLocationData} from '~/hooks/query/useMetadata';
-import {zodDayjs} from '~/helpers/schemas';
+
+import type {TextFieldProps} from '@mui/material';
+import type {UseFormReturn} from 'react-hook-form';
+import type {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import type {FormDatePickerProps} from '~/components/FormDatePicker';
-import FormDatePicker from '~/components/FormDatePicker';
-import {toast} from 'react-toastify';
-import {useDisplayState} from '~/hooks/ui';
+import type {FormInputProps} from '~/components/FormInput';
+import type {TaskUser} from '~/features/tasks/types';
 
 const zodSchema = z.object({
   ts_id: z.number({message: 'Tidsserie skal være angivet'}),

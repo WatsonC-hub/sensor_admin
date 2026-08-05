@@ -1,8 +1,10 @@
-import type {AutocompleteProps, TextFieldProps} from '@mui/material';
 import {Autocomplete, Box, InputAdornment, TextField} from '@mui/material';
-import React from 'react';
-import LinkableTooltip from './LinkableTooltip';
 import {merge} from 'lodash';
+import React from 'react';
+
+import LinkableTooltip from './LinkableTooltip';
+
+import type {AutocompleteProps, TextFieldProps} from '@mui/material';
 
 // notice we add M extends boolean to control multiple
 export type AutoCompleteFieldProps<T extends object, M extends boolean = false> = Omit<

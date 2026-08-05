@@ -1,14 +1,16 @@
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {Box, Chip, Grid, Link, Typography} from '@mui/material';
 import React from 'react';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+
+import {useUser} from '~/features/auth/useUser';
 import {getGroupLink} from '~/helpers/links';
-import {useAppContext} from '~/state/contexts';
-import {useLocationInfo} from '../../api/useLocationInfo';
 import {useTimeseriesStatus} from '~/hooks/query/useNotificationOverview';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useUser} from '~/features/auth/useUser';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
+import {useAppContext} from '~/state/contexts';
+
+import {useLocationInfo} from '../../api/useLocationInfo';
 
 const LocationInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);

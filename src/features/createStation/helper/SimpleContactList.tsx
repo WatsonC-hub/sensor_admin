@@ -1,7 +1,9 @@
-import React from 'react';
-import type {SimpleContact} from '../types';
 import {List} from '@mui/material';
+import React from 'react';
+
 import SimpleTextView from '~/components/SimpleTextView';
+
+import type {SimpleContact} from '../types';
 
 type Props = {
   values: SimpleContact[] | undefined;

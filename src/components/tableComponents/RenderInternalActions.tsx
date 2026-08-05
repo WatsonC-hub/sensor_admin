@@ -1,13 +1,14 @@
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import {Box, IconButton, Tooltip} from '@mui/material';
-import type {MRT_RowData, MRT_TableInstance} from 'material-react-table';
 import {
-  MRT_ToggleFiltersButton,
   MRT_ShowHideColumnsButton,
+  MRT_ToggleFiltersButton,
   MRT_ToggleFullScreenButton,
 } from 'material-react-table';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {MRT_RowData, MRT_TableInstance} from 'material-react-table';
 
 const RenderInternalActions = <TData extends MRT_RowData>({
   table,

@@ -1,8 +1,10 @@
-import React from 'react';
-import StamdataTimeseries from '../StamdataTimeseries';
 import {Grid} from '@mui/material';
-import type {DefaultAddTimeseries} from '~/features/station/schema';
+import React from 'react';
+
+import StamdataTimeseries from '../StamdataTimeseries';
+
 import type {FormInputProps} from '~/components/FormInput';
+import type {DefaultAddTimeseries} from '~/features/station/schema';
 
 type Props = {
   size: number;

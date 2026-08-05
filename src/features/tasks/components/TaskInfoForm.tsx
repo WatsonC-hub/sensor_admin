@@ -1,16 +1,18 @@
 import {Delete} from '@mui/icons-material';
 // import DragHandleIcon from '@mui/icons-material/DragHandle';
 import {Box, Grid, TextField, Tooltip, Typography} from '@mui/material';
+import dayjs from 'dayjs';
 import React, {useState} from 'react';
-import type {FieldValues} from 'react-hook-form';
 import {useFormContext} from 'react-hook-form';
+
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import {useTaskMutations, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
-import type {Task} from '~/features/tasks/types';
 import {useDisplayState} from '~/hooks/ui';
-import dayjs from 'dayjs';
+
+import type {FieldValues} from 'react-hook-form';
+import type {Task} from '~/features/tasks/types';
 
 // import {useTaskStore} from '../api/useTaskStore';
 
@@ -130,13 +132,13 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             sx={{pb: 0}}
             label={'Opgavenavn'}
             name="name"
-            onBlurCallback={async () => await handlePatch('name')}
+            onBlurCallback={async () => handlePatch('name')}
           />
         </Grid>
         <Grid size={{xs: 12, sm: 6}}>
           <TaskForm.StatusSelect
             disableClosedStatus={!selectedTask.is_created}
-            onBlurCallback={async () => await handlePatch('status_id')}
+            onBlurCallback={async () => handlePatch('status_id')}
           />
         </Grid>
         <Grid size={{xs: 12, sm: 6}}>
@@ -147,7 +149,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
               alignItems: 'center',
             }}
           >
-            <TaskForm.DueDate onChangeCallback={async () => await handlePatch('due_date')} />
+            <TaskForm.DueDate onChangeCallback={async () => handlePatch('due_date')} />
           </Box>
         </Grid>
         <Grid
@@ -208,7 +210,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
               <Typography>Bloker</Typography>
               <TaskForm.BlockAll
                 sx={{pb: 0}}
-                onBlurCallback={async () => await handlePatch('block_all')}
+                onBlurCallback={async () => handlePatch('block_all')}
               />
             </Grid>
             <Grid
@@ -223,7 +225,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
               <Typography>på</Typography>
               <TaskForm.BlockOnLocation
                 sx={{pb: 0}}
-                onBlurCallback={async () => await handlePatch('block_on_location')}
+                onBlurCallback={async () => handlePatch('block_on_location')}
               />
             </Grid>
           </Grid>
@@ -238,7 +240,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             multiline={true}
             rows={5}
             placeholder="Indtæst opgavebeskrivelse..."
-            onBlurCallback={async () => await handlePatch('description')}
+            onBlurCallback={async () => handlePatch('description')}
           />
         </Grid>
       </Grid>

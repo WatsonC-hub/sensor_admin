@@ -7,6 +7,7 @@ export async function askPermission() {
       resolve(result);
     });
 
+    // oxlint-disable-next-line typescript/strict-boolean-expressions
     if (permissionResult) {
       permissionResult.then(resolve, reject);
     }

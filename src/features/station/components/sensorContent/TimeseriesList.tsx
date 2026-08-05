@@ -1,19 +1,21 @@
-import {Box, Typography, Link, IconButton} from '@mui/material';
+import DirectionsIcon from '@mui/icons-material/Directions';
+import FmdGoodIcon from '@mui/icons-material/FmdGood';
+import {Box, IconButton, Link, Typography} from '@mui/material';
+import {CalendarIcon} from '@mui/x-date-pickers';
+import {useAtomValue} from 'jotai';
 import React from 'react';
+
+import {utm, zoomAtom} from '~/features/map/mapConsts';
+import {useParkering} from '~/features/parkering/api/useParkering';
 import {convertDate} from '~/helpers/dateConverter';
 import {useTimeseriesStatus} from '~/hooks/query/useNotificationOverview';
+import {useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useAppContext} from '~/state/contexts';
-import {CalendarIcon} from '@mui/x-date-pickers';
+
 import {useLocationInfo} from '../../api/useLocationInfo';
-import {useParkering} from '~/features/parkering/api/useParkering';
-import {utm, zoomAtom} from '~/features/map/mapConsts';
-import DirectionsIcon from '@mui/icons-material/Directions';
-import {useDisplayState} from '~/hooks/ui';
-import FmdGoodIcon from '@mui/icons-material/FmdGood';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useAtomValue} from 'jotai';
 const TimeseriesList = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const {station} = useNavigationFunctions();

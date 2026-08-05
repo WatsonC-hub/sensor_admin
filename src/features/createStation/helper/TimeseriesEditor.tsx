@@ -1,17 +1,20 @@
-import React from 'react';
-import TimeseriesMetaForm from '../forms/TimeseriesMetaForm';
-import WatlevmpSection from '../sections/WatlevmpSection';
 import {RemoveCircleOutlined} from '@mui/icons-material';
 import {Grid} from '@mui/material';
-import useBreakpoints from '~/hooks/useBreakpoints';
+import React from 'react';
+
 import Button from '~/components/Button';
-import {isSynchronizationAllowed} from './timeseriesStepHelper';
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
-import type {TimeseriesPayload} from '../types';
-import {useCreateStationStore} from '../state/useCreateStationStore';
+import useBreakpoints from '~/hooks/useBreakpoints';
+
+import TimeseriesMetaForm from '../forms/TimeseriesMetaForm';
 import ControlSettingSection from '../sections/ControlSettingSection';
 import SyncSection from '../sections/SyncSection';
 import UnitSection from '../sections/UnitSection';
+import WatlevmpSection from '../sections/WatlevmpSection';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+import {isSynchronizationAllowed} from './timeseriesStepHelper';
+
+import type {TimeseriesPayload} from '../types';
 
 type Props = {
   index: string;

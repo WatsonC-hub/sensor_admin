@@ -1,8 +1,9 @@
 import {Box, Typography} from '@mui/material';
 
+import {useUser} from '~/features/auth/useUser';
+
 import LocationListFilter from './LocationListFilter';
 import LocationListVirtualizer from './LocationListVirtualizer';
-import {useUser} from '~/features/auth/useUser';
 
 const LocationList = () => {
   const {simpleTaskPermission} = useUser();

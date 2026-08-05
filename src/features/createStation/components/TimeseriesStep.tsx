@@ -1,9 +1,10 @@
+import {Typography} from '@mui/material';
 import React from 'react';
-import FormStepButtons from './FormStepButtons';
 
 import TimeseriesList from '../helper/TimeseriesList';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {Typography} from '@mui/material';
+import FormStepButtons from './FormStepButtons';
+
 import type {TimeseriesMeta} from '../types';
 
 type Props = {

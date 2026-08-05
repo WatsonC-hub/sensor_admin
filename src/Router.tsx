@@ -1,21 +1,22 @@
+import {Home as HomeIcon, LocationOn, QueryStats, Timeline} from '@mui/icons-material';
 import React from 'react';
 import {Navigate, Route, Routes} from 'react-router-dom';
 
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
-import {AppContext} from './state/contexts';
-import ScanComponent from './components/ScanComponent';
-import GuardedHome from './pages/Home';
-import GuardedCreateStation from './pages/CreateStation';
-import {useUser} from './features/auth/useUser';
-import {QueryStats, LocationOn, Timeline, Home as HomeIcon} from '@mui/icons-material';
-import type {SelectionCommand} from './features/commandpalette/components/CommandContext';
-import {usePageActions} from './features/commandpalette/hooks/usePageActions';
-import {useNavigationFunctions} from './hooks/useNavigationFunctions';
-import ReleaseNoticeModal from './components/ReleaseNotice';
-import type {CommandPalette} from './hooks/query/useCmdPalette';
-import useCmdPalette from './hooks/query/useCmdPalette';
 import AccessDenied from './AccessDenied';
+import ReleaseNoticeModal from './components/ReleaseNotice';
+import ScanComponent from './components/ScanComponent';
+import {useUser} from './features/auth/useUser';
+import {usePageActions} from './features/commandpalette/hooks/usePageActions';
+import useCmdPalette from './hooks/query/useCmdPalette';
+import {useNavigationFunctions} from './hooks/useNavigationFunctions';
+import GuardedCreateStation from './pages/CreateStation';
+import GuardedHome from './pages/Home';
+import {AppContext} from './state/contexts';
+
+import type {SelectionCommand} from './features/commandpalette/components/CommandContext';
+import type {CommandPalette} from './hooks/query/useCmdPalette';
 
 const Router = () => {
   const user = useUser();

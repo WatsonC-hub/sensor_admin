@@ -10,41 +10,44 @@ import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom, useAtomValue} from 'jotai';
 import L from 'leaflet';
 import {LocateControl} from 'leaflet.locatecontrol';
+
 import '~/css/leaflet.css';
+
 import './L.basemapControl';
 import {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
+import {useUser} from '~/features/auth/useUser';
+import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
+import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
+import {getColor} from '~/features/notifications/Utils';
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
-import {useMapUtilityStore, mapUtilityStore} from '~/state/store';
-import type {BoreholeMapData, Parking, PartialBy} from '~/types';
-import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
+import {useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {highlightedItinerariesAtom, usedHeightAtom, usedWidthAtom} from '~/state/atoms';
+import {mapUtilityStore, useMapUtilityStore} from '~/state/store';
 
+import {useMapFilterStore} from '../hooks/useMapFilterStore';
 import {
-  satelitemapbox,
-  zoomThresholdForParking,
-  zoomThresholdForSmallMarkers,
-  zoomThreshold,
-  zoomAtom,
-  panAtom,
+  defaultMapBox,
   drawStyle,
-  utm,
-  parkingIcon,
   hightlightParkingIcon,
   markerNumThreshold,
-  defaultMapBox,
+  panAtom,
+  parkingIcon,
   routeStyle,
+  satelitemapbox,
+  utm,
+  zoomAtom,
+  zoomThreshold,
+  zoomThresholdForParking,
+  zoomThresholdForSmallMarkers,
 } from '../mapConsts';
-import {useUser} from '~/features/auth/useUser';
 import {setIconSize} from '../utils';
-import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
-import {getColor} from '~/features/notifications/Utils';
-import {useDisplayState} from '~/hooks/ui';
+
 import type {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {highlightedItinerariesAtom, usedHeightAtom, usedWidthAtom} from '~/state/atoms';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useMapFilterStore} from '../hooks/useMapFilterStore';
+import type {BoreholeMapData, Parking, PartialBy} from '~/types';
 
 const useMap = <TData extends object>(
   id: string,

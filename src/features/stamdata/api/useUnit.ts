@@ -1,9 +1,10 @@
-import {useQuery, useMutation} from '@tanstack/react-query';
-import type {Dayjs} from 'dayjs';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {Dayjs} from 'dayjs';
 
 export interface Unit {
   terminal_type: string;

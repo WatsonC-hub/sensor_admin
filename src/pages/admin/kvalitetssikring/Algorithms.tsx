@@ -1,12 +1,12 @@
 import {Box, Divider, Grid, Typography} from '@mui/material';
-
-import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
-import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import GraphManager from '~/features/station/components/GraphManager';
-import TooltipWrapper from '~/components/TooltipWrapper';
 import React, {useEffect} from 'react';
+
+import TooltipWrapper from '~/components/TooltipWrapper';
+import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
+import GraphManager from '~/features/station/components/GraphManager';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
 
 const Algorithms = () => {
   const {isMobile} = useBreakpoints();

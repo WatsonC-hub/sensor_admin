@@ -1,27 +1,30 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, Typography, TextField, InputAdornment, Alert, Grid} from '@mui/material';
+import {Alert, Box, Grid, InputAdornment, TextField, Typography} from '@mui/material';
+import dayjs from 'dayjs';
 import React, {useEffect, useState} from 'react';
-import {useForm, FormProvider} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
+import {z} from 'zod';
+
+import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {useUser} from '~/features/auth/useUser';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {
   useTimeseriesMeasureSampleSend,
   useTimeseriesMeasureSampleSendMutation,
 } from '~/features/station/api/useTimeseriesMeasureSampleSend';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {useAppContext} from '~/state/contexts';
-import ConfigAlert from './ConfigAlert';
-import {z} from 'zod';
-import Button from '~/components/Button';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import type {APIError} from '~/queryClient';
-import {useMapOverview} from '~/hooks/query/useNotificationOverview';
-import {useUser} from '~/features/auth/useUser';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import dayjs from 'dayjs';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import usePermissions from '~/features/permissions/api/usePermissions';
+import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAppContext} from '~/state/contexts';
+
+import ConfigAlert from './ConfigAlert';
+
+import type {APIError} from '~/queryClient';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z

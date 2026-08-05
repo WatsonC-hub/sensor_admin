@@ -1,16 +1,18 @@
+import {Save} from '@mui/icons-material';
 import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
-import type {SubmitHandler} from 'react-hook-form';
 import {useFormContext} from 'react-hook-form';
-import type {z} from 'zod';
 
 import Button from '~/components/Button';
 import {initialLocationAccessData} from '~/consts';
-import {Save} from '@mui/icons-material';
+
 import LocationAccessForm from './LocationAccessForm';
-import type {TypedFormComponent} from '~/components/formComponents/Form';
+
 import type {locationAccessSchema} from './api/useLocationAccessForm';
 import type {FormOutput} from './LocationAccess';
+import type {SubmitHandler} from 'react-hook-form';
+import type {z} from 'zod';
+import type {TypedFormComponent} from '~/components/formComponents/Form';
 
 type Props = {
   loc_id?: number | undefined;

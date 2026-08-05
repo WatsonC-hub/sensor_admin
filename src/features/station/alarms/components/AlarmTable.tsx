@@ -1,21 +1,24 @@
 import {Box, Dialog, Typography} from '@mui/material';
-import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
-import {MergeType, TableTypes} from '~/helpers/enumHelper';
-import {useTable} from '~/hooks/useTable';
-import RenderActions from '~/helpers/RowActions';
-import {useAppContext} from '~/state/contexts';
+
 import Button from '~/components/Button';
-import AlarmHistoryTable from './AlarmHistoryTable';
-import type {AlarmTableType} from '../types';
-import AlarmFormDialog from './AlarmFormDialog';
-import AlarmContactTable from './AlarmContactTable';
-import AlarmNotificationTable from './AlarmNotificationTable';
-import {useAlarm} from '../api/useAlarm';
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
+import RenderActions from '~/helpers/RowActions';
 import {useLocationData} from '~/hooks/query/useMetadata';
+import {useTable} from '~/hooks/useTable';
+import {useAppContext} from '~/state/contexts';
+
+import {useAlarm} from '../api/useAlarm';
+import AlarmContactTable from './AlarmContactTable';
+import AlarmFormDialog from './AlarmFormDialog';
+import AlarmHistoryTable from './AlarmHistoryTable';
+import AlarmNotificationTable from './AlarmNotificationTable';
+
+import type {AlarmTableType} from '../types';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 type AlarmTableProps = {
   alarms: Array<AlarmTableType> | undefined;
 };

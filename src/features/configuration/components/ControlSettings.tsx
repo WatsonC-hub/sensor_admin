@@ -1,11 +1,13 @@
-import {InputAdornment, Select, Typography, MenuItem} from '@mui/material';
+import {InputAdornment, MenuItem, Select, Typography} from '@mui/material';
 import React, {createContext, useState} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
-import type {FormInputProps} from '~/components/FormInput';
+
 import FormInput from '~/components/FormInput';
-import type {ControlSettingsFormValues} from '../api/useControlSettingsForm';
-import type {FormTextFieldProps} from '~/components/FormTextField';
 import FormTextField from '~/components/FormTextField';
+
+import type {ControlSettingsFormValues} from '../api/useControlSettingsForm';
+import type {FormInputProps} from '~/components/FormInput';
+import type {FormTextFieldProps} from '~/components/FormTextField';
 
 type Props = {
   children: React.ReactNode;

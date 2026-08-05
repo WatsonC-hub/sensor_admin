@@ -1,4 +1,25 @@
+import {Download} from '@mui/icons-material';
+import ReplayIcon from '@mui/icons-material/Replay';
+import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import {Box, ClickAwayListener, Tooltip} from '@mui/material';
+import dayjs from 'dayjs';
+// @ts-expect-error not part of type
+import Plotly from 'plotly.js/dist/plotly-gl2d';
+import React, {useEffect, useMemo, useState} from 'react';
+import createPlotlyComponent from 'react-plotly.js/factory';
+
+import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
+import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
+import GraphSwitch from '~/features/station/components/GraphSwitch';
+import {MergeType} from '~/helpers/enumHelper';
+import {useEdgeDates} from '~/hooks/query/useEdgeDates';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useCorrectData} from '~/hooks/useCorrectData';
+import {useAppContext} from '~/state/contexts';
+
+import Button from './Button';
+
 import type {
   Layout,
   PlotData,
@@ -6,28 +27,7 @@ import type {
   PlotRelayoutEvent,
   PlotSelectionEvent,
 } from 'plotly.js';
-// @ts-expect-error not part of type
-import Plotly from 'plotly.js/dist/plotly-gl2d';
-import React, {useEffect, useMemo, useState} from 'react';
-import createPlotlyComponent from 'react-plotly.js/factory';
-import ReplayIcon from '@mui/icons-material/Replay';
-import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
-import {MergeType} from '~/helpers/enumHelper';
-import {useEdgeDates} from '~/hooks/query/useEdgeDates';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useCorrectData} from '~/hooks/useCorrectData';
-
-import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
-
-import Button from './Button';
-import {Download} from '@mui/icons-material';
-import {useAppContext} from '~/state/contexts';
-
 import type {DataToShow} from '~/types';
-import GraphSwitch from '~/features/station/components/GraphSwitch';
-import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
-import dayjs from 'dayjs';
 
 interface PlotlyGraphProps {
   plotEventProps?: {

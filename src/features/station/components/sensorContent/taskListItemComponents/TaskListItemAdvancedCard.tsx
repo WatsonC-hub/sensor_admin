@@ -1,32 +1,33 @@
 import {EditOutlined, Person, Warning} from '@mui/icons-material';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import {
   Box,
-  Typography,
-  Card,
-  CardHeader,
-  CardContent,
   Button,
+  Card,
+  CardContent,
+  CardHeader,
   Grid,
-  TextField,
   Link,
+  TextField,
+  Typography,
 } from '@mui/material';
-import DescriptionIcon from '@mui/icons-material/Description';
+import dayjs from 'dayjs';
 import React, {useMemo, useState} from 'react';
-import {useTaskMutations, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
-import type {Task} from '~/features/tasks/types';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
-import {convertDate} from '~/helpers/dateConverter';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-import TaskForm from '~/features/tasks/components/TaskForm';
+
+import {useUser} from '~/features/auth/useUser';
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/Utils';
+import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
+import {useTaskMutations, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
+import TaskForm from '~/features/tasks/components/TaskForm';
+import {convertDate} from '~/helpers/dateConverter';
+import {useDisplayState} from '~/hooks/ui';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {useDisplayState} from '~/hooks/ui';
-import {useUser} from '~/features/auth/useUser';
-import dayjs from 'dayjs';
-import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import type {Task} from '~/features/tasks/types';
 
 type Props = {
   task: Task;

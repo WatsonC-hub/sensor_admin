@@ -1,23 +1,26 @@
-import {Box, Tooltip} from '@mui/material';
-import Button from '~/components/Button';
-import LocationInfo from '~/features/station/components/sensorContent/LocationInfo';
-import TaskList from '~/features/station/components/sensorContent/TaskList';
-import TimeseriesList from '~/features/station/components/sensorContent/TimeseriesList';
-import {useAppContext} from '~/state/contexts';
-import {useCallback, useState} from 'react';
-import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
-import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
-import TaskHistoryList from '~/features/station/components/sensorContent/TaskHistoryList';
-import type {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {useMapOverview} from '~/hooks/query/useNotificationOverview';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
-import useBreakpoints from '~/hooks/useBreakpoints';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
-import AddToTripDialog from './AddToTripDialog';
+import {Box, Tooltip} from '@mui/material';
+import {useCallback, useState} from 'react';
+
+import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
+import LocationInfo from '~/features/station/components/sensorContent/LocationInfo';
+import TaskHistoryList from '~/features/station/components/sensorContent/TaskHistoryList';
+import TaskList from '~/features/station/components/sensorContent/TaskList';
+import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
+import TimeseriesList from '~/features/station/components/sensorContent/TimeseriesList';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
+import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import {StatusEnum} from '~/features/tasks/types';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAppContext} from '~/state/contexts';
+
+import AddToTripDialog from './AddToTripDialog';
+
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext(['loc_id'], []);

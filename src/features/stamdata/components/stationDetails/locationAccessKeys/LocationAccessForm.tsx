@@ -1,15 +1,18 @@
 import {Box, Collapse, Divider, Grid, Typography} from '@mui/material';
 import React, {useEffect, useMemo, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
+
 import Button from '~/components/Button';
+import {initialLocationAccessData} from '~/consts';
 import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import {AccessType} from '~/helpers/enumHelper';
-import type {ContactInfo} from '~/types';
+
 import SelectLocationAccess from './SelectLocationAccess';
-import {initialLocationAccessData} from '~/consts';
-import type {TypedFormComponent} from '~/components/formComponents/Form';
-import type {z} from 'zod';
+
 import type {locationAccessSchema} from './api/useLocationAccessForm';
+import type {z} from 'zod';
+import type {TypedFormComponent} from '~/components/formComponents/Form';
+import type {ContactInfo} from '~/types';
 type LocationAccessFormProps = {
   loc_id?: number | undefined;
   showLocationAccess?: boolean;

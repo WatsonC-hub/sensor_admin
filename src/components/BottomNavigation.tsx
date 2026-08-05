@@ -1,4 +1,3 @@
-import type {SvgIconProps} from '@mui/material';
 import {BottomNavigation, BottomNavigationAction, Box} from '@mui/material';
 import React from 'react';
 
@@ -6,6 +5,8 @@ import {stationPages} from '~/helpers/enumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 import CustomBottomNavigationActionLabel from './CustomLabel';
+
+import type {SvgIconProps} from '@mui/material';
 
 interface NavigationItem<T> {
   text: string;

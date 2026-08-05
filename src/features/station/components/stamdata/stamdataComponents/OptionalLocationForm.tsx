@@ -1,7 +1,8 @@
 import {Grid} from '@mui/material';
 import React from 'react';
-import StamdataLocation from '../StamdataLocation';
 import {useFormContext} from 'react-hook-form';
+
+import StamdataLocation from '../StamdataLocation';
 
 type Props = {
   size: number;

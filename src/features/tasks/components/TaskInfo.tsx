@@ -5,8 +5,9 @@ import {useTaskState} from '~/features/tasks/api/useTaskState';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import TaskInfoCommentForm from '~/features/tasks/components/TaskInfoCommentForm';
 import TaskInfoForm from '~/features/tasks/components/TaskInfoForm';
-import useLocationTaskHistory from '../api/useLocationTaskHistory';
 import {useDisplayState} from '~/hooks/ui';
+
+import useLocationTaskHistory from '../api/useLocationTaskHistory';
 
 const TaskInfo = () => {
   const [loc_id, selectedTaskId] = useDisplayState((state) => [state.loc_id, state.selectedTask]);

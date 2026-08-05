@@ -1,6 +1,7 @@
-import type {VirtualizerOptions} from '@tanstack/react-virtual';
 import {elementScroll} from '@tanstack/react-virtual';
+
 import type {Task} from './types';
+import type {VirtualizerOptions} from '@tanstack/react-virtual';
 
 export const isSimpleTask = (task: Task) => {
   return (

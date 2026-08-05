@@ -1,7 +1,8 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import type {DefaultValues} from 'react-hook-form';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+
+import type {DefaultValues} from 'react-hook-form';
 
 const controlSettingsSchema = z.object({
   controls_per_year: z

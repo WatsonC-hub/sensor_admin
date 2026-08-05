@@ -16,15 +16,16 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import type {PickerValue} from '@mui/x-date-pickers/internals';
 import dayjs from 'dayjs';
 import React, {useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {alertHeight} from '~/consts';
-import type {BoreholeMaalepunktTableData, MaalepunktTableData} from '~/types';
+
 import type {OmittedKontrol} from '../Boreholeno';
+import type {PickerValue} from '@mui/x-date-pickers/internals';
+import type {BoreholeMaalepunktTableData, MaalepunktTableData} from '~/types';
 
 interface BoreholePejlingFormProps {
   formData: OmittedKontrol;

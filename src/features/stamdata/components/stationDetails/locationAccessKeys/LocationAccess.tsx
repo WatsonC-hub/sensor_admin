@@ -1,22 +1,24 @@
 import KeyIcon from '@mui/icons-material/Key';
 import {Box} from '@mui/material';
 import React, {useState} from 'react';
-import type {SubmitHandler} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
+import {createTypedForm} from '~/components/formComponents/Form';
 import {initialLocationAccessData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
 import LocationAccessFormDialog from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
 import LocationAccessTable from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessTable';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useAppContext} from '~/state/contexts';
+
 import useLocationAccessForm, {locationAccessSchema} from './api/useLocationAccessForm';
-import type {Access} from '~/types';
-import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
-import {createTypedForm} from '~/components/formComponents/Form';
+
+import type {SubmitHandler} from 'react-hook-form';
 import type {z} from 'zod';
+import type {Access} from '~/types';
 
 export type FormOutput = z.output<typeof locationAccessSchema>;
 export type FormInput = z.input<typeof locationAccessSchema>;

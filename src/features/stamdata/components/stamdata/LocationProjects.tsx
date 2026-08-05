@@ -1,14 +1,16 @@
+import {AddCircleOutlined} from '@mui/icons-material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {Link} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import type {FieldError, Noop} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
-import type {Project} from '../../api/useLocationProject';
+
 import useLocationProject from '../../api/useLocationProject';
-import {AddCircleOutlined} from '@mui/icons-material';
+
+import type {Project} from '../../api/useLocationProject';
+import type {FieldError, Noop} from 'react-hook-form';
 
 interface LocationProjectsProps {
   value: string | undefined | null;

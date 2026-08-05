@@ -1,6 +1,5 @@
 import {Box} from '@mui/material';
 import React from 'react';
-import type {SubmitHandler} from 'react-hook-form';
 import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
@@ -9,9 +8,11 @@ import {useTaskHistory, useTaskHistoryMutations} from '~/features/tasks/api/useT
 import {useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import TaskInfoChanges from '~/features/tasks/components/TaskInfoChanges';
 import TaskInfoComment from '~/features/tasks/components/TaskInfoComment';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 import {useTaskState} from '../api/useTaskState';
-import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {SubmitHandler} from 'react-hook-form';
 
 const taskCommentSchema = z.object({
   id: z.string().optional(),

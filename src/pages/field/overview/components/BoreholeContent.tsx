@@ -1,13 +1,13 @@
+import {Directions} from '@mui/icons-material';
 import {Box, Chip, Grid, IconButton, Link, Typography} from '@mui/material';
 
 import {useFindBorehole} from '~/features/station/api/useBorehole';
+import {convertDate} from '~/helpers/dateConverter';
 import {getGroupLink} from '~/helpers/links';
-
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useAppContext} from '~/state/contexts';
+
 import BoreholeIcon from './BoreholeIcon';
-import {convertDate} from '~/helpers/dateConverter';
-import {Directions} from '@mui/icons-material';
 
 const BoreholeContent = () => {
   const {boreholeno} = useAppContext(['boreholeno']);

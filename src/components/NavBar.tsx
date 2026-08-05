@@ -1,10 +1,11 @@
-import {MapRounded, Person, Menu as MenuIcon, Help, Notifications} from '@mui/icons-material';
+import {Help, MapRounded, Menu as MenuIcon, Notifications, Person} from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import PlaceIcon from '@mui/icons-material/Place';
-import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import {
   AppBar,
   Badge,
@@ -17,28 +18,28 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-
 import {useQueryClient} from '@tanstack/react-query';
 import {useAtom} from 'jotai';
-import type {ReactNode, MouseEventHandler} from 'react';
 import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
 import {appBarHeight} from '~/consts';
+import {useUser} from '~/features/auth/useUser';
+import {useTasks} from '~/features/tasks/api/useTasks';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
 import {drawerOpenAtom} from '~/state/atoms';
-import CloseIcon from '@mui/icons-material/Close';
+
 import Button from './Button';
-import {useDisplayState} from '~/hooks/ui';
-import {useNavigate} from 'react-router-dom';
-import {useUser} from '~/features/auth/useUser';
-import {toast} from 'react-toastify';
 import CaptureDialog from './CaptureDialog';
-import {useTasks} from '~/features/tasks/api/useTasks';
-import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {MouseEventHandler, ReactNode} from 'react';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();

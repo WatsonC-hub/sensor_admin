@@ -1,19 +1,19 @@
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
-import type {AutocompleteInputChangeReason} from '@mui/material';
-import {Autocomplete, TextField, InputAdornment, Menu, Badge} from '@mui/material';
+import {Autocomplete, Badge, InputAdornment, Menu, TextField} from '@mui/material';
 import IconButton from '@mui/material/IconButton';
+import React, {useRef, useState} from 'react';
 
-import type {SyntheticEvent, MouseEventHandler} from 'react';
-import React, {useState, useRef} from 'react';
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
-
-import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {defaultMapFilter} from '~/pages/field/overview/components/filterConsts';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
+
+import type {AutocompleteInputChangeReason} from '@mui/material';
+import type {MouseEventHandler, SyntheticEvent} from 'react';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 import type {BoreholeMapData} from '~/types';
 
 interface LocItems {

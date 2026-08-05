@@ -1,10 +1,11 @@
 import {Box, Typography} from '@mui/material';
-
-import {useUser} from '~/features/auth/useUser';
-import {useTasks} from '../api/useTasks';
-import TaskListItemAdvancedCard from '~/features/station/components/sensorContent/taskListItemComponents/TaskListItemAdvancedCard';
 import {useVirtualizer} from '@tanstack/react-virtual';
 import {useCallback, useMemo, useRef} from 'react';
+
+import {useUser} from '~/features/auth/useUser';
+import TaskListItemAdvancedCard from '~/features/station/components/sensorContent/taskListItemComponents/TaskListItemAdvancedCard';
+
+import {useTasks} from '../api/useTasks';
 import {createSmoothScrollToFn} from '../helpers';
 
 const OwnTaskList = () => {

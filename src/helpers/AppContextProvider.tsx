@@ -1,6 +1,8 @@
 import React from 'react';
-import type {AppContextType} from '~/state/contexts';
+
 import {AppContext, useAppContext} from '~/state/contexts';
+
+import type {AppContextType} from '~/state/contexts';
 
 type Props = {
   children?: React.ReactNode;

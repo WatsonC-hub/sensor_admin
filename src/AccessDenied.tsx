@@ -1,10 +1,11 @@
 import {Box, Typography} from '@mui/material';
 import React from 'react';
-import Button from './components/Button';
+
 import {apiClient} from './apiClient';
-import {queryClient} from './queryClient';
-import {useNavigationFunctions} from './hooks/useNavigationFunctions';
+import Button from './components/Button';
 import {queryKeys} from './helpers/queryKeyFactoryHelper';
+import {useNavigationFunctions} from './hooks/useNavigationFunctions';
+import {queryClient} from './queryClient';
 
 type Props = {
   message: string;

@@ -1,9 +1,12 @@
 import {Grid} from '@mui/material';
 import React from 'react';
-import StamdataLocation from '../StamdataLocation';
+
 import {useAppContext} from '~/state/contexts';
-import type {BaseLocation} from '~/features/station/schema';
+
+import StamdataLocation from '../StamdataLocation';
+
 import type {FormInputProps} from '~/components/FormInput';
+import type {BaseLocation} from '~/features/station/schema';
 
 type Props = {
   size: number;

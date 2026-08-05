@@ -1,18 +1,19 @@
-import {Box, Typography, Tooltip, IconButton} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-
+import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import React from 'react';
-import {useTaskState} from '~/features/tasks/api/useTaskState';
-import {useAppContext} from '~/state/contexts';
-import TaskListItemSimpleCard from './taskListItemComponents/TaskListItemSimpleCard';
-import TaskListItemAdvancedCard from './taskListItemComponents/TaskListItemAdvancedCard';
-import type {Task} from '~/features/tasks/types';
-import {isSimpleTask} from '~/features/tasks/helpers';
 
-import {useLocationData} from '~/hooks/query/useMetadata';
-import {useUser} from '~/features/auth/useUser';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {useUser} from '~/features/auth/useUser';
+import {useTaskState} from '~/features/tasks/api/useTaskState';
+import {isSimpleTask} from '~/features/tasks/helpers';
+import {useLocationData} from '~/hooks/query/useMetadata';
+import {useAppContext} from '~/state/contexts';
+
+import TaskListItemAdvancedCard from './taskListItemComponents/TaskListItemAdvancedCard';
 import TaskListItemNoneCard from './taskListItemComponents/TaskListItemNoneCard';
+import TaskListItemSimpleCard from './taskListItemComponents/TaskListItemSimpleCard';
+
+import type {Task} from '~/features/tasks/types';
 
 const sortTasks = (a: Task, b: Task) => {
   if ((a.blocks_notifications.includes(1) || a.blocks_notifications.includes(207)) && !a.is_created)

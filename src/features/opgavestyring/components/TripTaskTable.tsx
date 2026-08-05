@@ -1,15 +1,16 @@
 import {Box, Link, Typography} from '@mui/material';
-import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 
 import {getIcon} from '~/features/notifications/Utils';
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useTable} from '~/hooks/useTable';
 
-import type {LocationTasks} from '~/types';
 import {sharedTableOptions} from '../sharedOptions';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {LocationTasks} from '~/types';
 
 type Props = {
   tasks: Array<LocationTasks> | undefined;

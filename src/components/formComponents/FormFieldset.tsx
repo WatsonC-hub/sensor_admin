@@ -1,9 +1,9 @@
-import type {SxProps, TypographyProps} from '@mui/material';
 import {Typography} from '@mui/material';
-
 import Box from '@mui/material/Box';
 import {merge} from 'lodash';
 import React from 'react';
+
+import type {SxProps, TypographyProps} from '@mui/material';
 
 type Props = {
   children: React.ReactNode;

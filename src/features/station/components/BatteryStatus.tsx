@@ -8,6 +8,7 @@ import BatteryIndicator from '~/components/BatteryIndicator';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
+
 import type {BatteryStatusType} from '~/types';
 
 const estimatedText = (years: number, months: number, days: number): string => {

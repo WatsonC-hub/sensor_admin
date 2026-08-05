@@ -1,9 +1,11 @@
 import {Grid} from '@mui/material';
 import React from 'react';
-import StamdataTimeseries from '../StamdataTimeseries';
+
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
-import usePermissions from '~/features/permissions/api/usePermissions';
+
+import StamdataTimeseries from '../StamdataTimeseries';
 
 type Props = {size: number};
 

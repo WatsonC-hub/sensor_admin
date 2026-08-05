@@ -1,16 +1,18 @@
 import {Call, Email} from '@mui/icons-material';
-import {Grid, InputAdornment, IconButton, Checkbox, FormControlLabel} from '@mui/material';
+import {Checkbox, FormControlLabel, Grid, IconButton, InputAdornment} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import {isValidPhoneNumber} from 'libphonenumber-js';
 import {useEffect} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
-import {isValidPhoneNumber} from 'libphonenumber-js';
+
 import {apiClient} from '~/apiClient';
 import {FormPhoneInput} from '~/components/formComponents/FormPhoneInput';
 import FormInput from '~/components/FormInput';
 import {ContactInfoType} from '~/helpers/enumHelper';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import type {InferContactInfo} from './api/useContactForm';
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {InferContactInfo} from './api/useContactForm';
 
 interface ModalProps {
   isEditing: boolean;

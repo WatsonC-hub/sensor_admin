@@ -1,12 +1,15 @@
+import {Box, Checkbox, FormControlLabel, Grid} from '@mui/material';
 import React from 'react';
-import type {SyncFormSchema, SyncFormSchemaOutput} from '../api/useSyncForm';
-import useSyncForm from '../api/useSyncForm';
+import {Controller} from 'react-hook-form';
+
 import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import {Grid, Box, FormControlLabel, Checkbox} from '@mui/material';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {Controller} from 'react-hook-form';
+
+import useSyncForm from '../api/useSyncForm';
+
+import type {SyncFormSchema, SyncFormSchemaOutput} from '../api/useSyncForm';
 
 const Form = createTypedForm<SyncFormSchema, SyncFormSchemaOutput>();
 

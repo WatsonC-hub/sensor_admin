@@ -1,16 +1,16 @@
 import {Delete} from '@mui/icons-material';
 import {
-  DialogActions,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Typography,
-  TextField,
   Box,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Typography,
 } from '@mui/material';
-
 import React from 'react';
+
 import Button from '~/components/Button';
 
 type DeleteTimeseriesProps = {

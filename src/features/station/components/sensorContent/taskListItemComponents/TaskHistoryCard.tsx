@@ -1,11 +1,13 @@
-import {Box, Button, Card, CardContent, Typography} from '@mui/material';
-import React from 'react';
-import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
-import type {Task} from '~/features/tasks/types';
 import {Person} from '@mui/icons-material';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
+import {Box, Button, Card, CardContent, Typography} from '@mui/material';
 import {CalendarIcon} from '@mui/x-date-pickers';
+import React from 'react';
+
 import {convertDate} from '~/helpers/dateConverter';
 import {useDisplayState} from '~/hooks/ui';
+
+import type {Task} from '~/features/tasks/types';
 
 type Props = {
   task: Task;

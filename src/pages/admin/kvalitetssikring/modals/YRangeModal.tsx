@@ -4,7 +4,6 @@ import {Box, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import {parseAsString, useQueryState} from 'nuqs';
 import {useEffect} from 'react';
-import type {SubmitHandler} from 'react-hook-form';
 import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
@@ -13,6 +12,8 @@ import FormInput from '~/components/FormInput';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 import {qaSelection} from '~/state/atoms';
+
+import type {SubmitHandler} from 'react-hook-form';
 
 interface YRangeModalProps {
   onClose: () => void;

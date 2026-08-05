@@ -6,7 +6,6 @@ import dayjs from 'dayjs';
 import {useAtomValue} from 'jotai';
 import {parseAsString, useQueryState} from 'nuqs';
 import {useEffect, useState} from 'react';
-import type {SubmitHandler} from 'react-hook-form';
 import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
@@ -18,6 +17,8 @@ import {useExclude} from '~/hooks/query/useExclude';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {qaSelection} from '~/state/atoms';
+
+import type {SubmitHandler} from 'react-hook-form';
 
 interface ExcludeModalProps {
   onClose: () => void;

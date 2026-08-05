@@ -1,34 +1,36 @@
+import {Save} from '@mui/icons-material';
 import {
-  Typography,
-  InputAdornment,
+  Checkbox,
   FormControl,
   FormControlLabel,
   FormLabel,
+  InputAdornment,
   Radio,
   RadioGroup,
-  Checkbox,
+  Typography,
 } from '@mui/material';
-import React, {useContext, useEffect, useState} from 'react';
-import type {FormInputProps} from '~/components/FormInput';
-import FormInput from '~/components/FormInput';
-import type {PejlingBoreholeSchemaType, PejlingSchemaType} from './pejlingSchema';
-import {Controller, useFormContext} from 'react-hook-form';
-import {correction_map} from '~/consts';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import IngenMPAlert from '~/features/pejling/components/IngenMPAlert';
-import Button from '~/components/Button';
-import {Save} from '@mui/icons-material';
 import {useAtom} from 'jotai';
-import {boreholeIsPumpAtom} from '~/state/atoms';
-import type {LatestMeasurement, MaalepunktAsDayjs} from '~/types';
-import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {get} from 'lodash';
-import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
-import TooltipWrapper from '~/components/TooltipWrapper';
-import type {FormDateTimeProps} from '~/components/FormDateTime';
+import React, {useContext, useEffect, useState} from 'react';
+import {Controller, useFormContext} from 'react-hook-form';
+
+import Button from '~/components/Button';
 import FormDateTime from '~/components/FormDateTime';
+import FormInput from '~/components/FormInput';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import {correction_map} from '~/consts';
+import IngenMPAlert from '~/features/pejling/components/IngenMPAlert';
+import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
+import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {boreholeIsPumpAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
+
+import type {PejlingBoreholeSchemaType, PejlingSchemaType} from './pejlingSchema';
+import type {FormDateTimeProps} from '~/components/FormDateTime';
+import type {FormInputProps} from '~/components/FormInput';
+import type {LatestMeasurement, MaalepunktAsDayjs} from '~/types';
 
 interface PejlingProps {
   submit: (values: PejlingSchemaType | PejlingBoreholeSchemaType) => void;

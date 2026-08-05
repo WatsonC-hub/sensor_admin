@@ -1,11 +1,14 @@
 import {Box, Typography} from '@mui/material';
 import {useAtom} from 'jotai';
 import React from 'react';
+
 import ExtendedAutocomplete from '~/components/Autocomplete';
-import {assignedToAtom} from '~/state/atoms';
-import {useTaskUsers} from '../api/useTasks';
-import type {TaskUser} from '../types';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {assignedToAtom} from '~/state/atoms';
+
+import {useTaskUsers} from '../api/useTasks';
+
+import type {TaskUser} from '../types';
 
 const LocationListFilter = () => {
   const [selectedUser, setSelectedUser] = useAtom<TaskUser | null>(assignedToAtom);

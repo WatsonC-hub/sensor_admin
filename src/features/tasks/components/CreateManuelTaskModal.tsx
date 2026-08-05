@@ -3,10 +3,11 @@ import React from 'react';
 
 import Button from '~/components/Button';
 import {useTaskMutations} from '~/features/tasks/api/useTasks';
-import type {FormValues} from '~/features/tasks/components/TaskForm';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
+
+import type {FormValues} from '~/features/tasks/components/TaskForm';
 
 interface Props {
   open: boolean;

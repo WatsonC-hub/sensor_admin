@@ -1,11 +1,13 @@
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import {Box, Typography} from '@mui/material';
+import React from 'react';
+
+import useLocationTaskHistory from '~/features/tasks/api/useLocationTaskHistory';
+import {useAppContext} from '~/state/contexts';
+
+import TaskHistoryCard from './taskListItemComponents/TaskHistoryCard';
 
 import type {ReactNode} from 'react';
-import React from 'react';
-import {useAppContext} from '~/state/contexts';
-import useLocationTaskHistory from '~/features/tasks/api/useLocationTaskHistory';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import TaskHistoryCard from './taskListItemComponents/TaskHistoryCard';
 const TaskHistoryList = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const {data} = useLocationTaskHistory(loc_id);

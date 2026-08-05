@@ -1,8 +1,9 @@
 import {Box, Button, Icon, Typography} from '@mui/material';
-import type {ToastContentProps} from 'react-toastify';
 
 import {rerunIcon} from '~/helpers/plotlyIcons';
 import {useCorrectData} from '~/hooks/useCorrectData';
+
+import type {ToastContentProps} from 'react-toastify';
 
 const RerunToast = ({closeToast, data}: Partial<ToastContentProps<{ts_id: number}>>) => {
   const ts_id = data?.ts_id;

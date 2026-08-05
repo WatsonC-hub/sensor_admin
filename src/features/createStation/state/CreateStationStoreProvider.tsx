@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
-
 import {createStore} from 'zustand';
-import type {CreateStationFormState, TimeseriesMeta} from '../types';
 import {devtools} from 'zustand/middleware';
+
+import type {CreateStationFormState, TimeseriesMeta} from '../types';
 
 function setByPath<T extends object, P extends Path<T>>(
   obj: T,

@@ -1,10 +1,13 @@
+import {merge} from 'lodash';
+import React, {useState} from 'react';
 import {createStore} from 'zustand';
 import {createJSONStorage, devtools, persist} from 'zustand/middleware';
-import type {Filter} from '~/pages/field/overview/components/filterConsts';
+
 import {defaultMapFilter} from '~/pages/field/overview/components/filterConsts';
-import {merge} from 'lodash';
+
 import {useUser} from '../auth/useUser';
-import React, {useState} from 'react';
+
+import type {Filter} from '~/pages/field/overview/components/filterConsts';
 
 export type MapFilterState = {
   search: string;

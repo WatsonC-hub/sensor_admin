@@ -2,16 +2,15 @@ import {Box, useTheme} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import {useAtom, useAtomValue, useSetAtom} from 'jotai';
-
-import type {Layout, PlotData} from 'plotly.js';
 import React, {useEffect, useMemo, useState} from 'react';
 import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {
   correction_map,
-  setGraphHeight,
   defaultDataToShow as globalDefaultDataToShow,
+  setGraphHeight,
 } from '~/consts';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
@@ -33,6 +32,8 @@ import {
   tempHorizontalAtom,
 } from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
+
+import type {Layout, PlotData} from 'plotly.js';
 import type {DataToShow, HorizontalLine, QaGraphLabel} from '~/types';
 
 interface GraphManagerProps {

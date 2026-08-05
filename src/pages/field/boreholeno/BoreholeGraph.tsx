@@ -1,6 +1,5 @@
 import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import type {Layout, PlotData} from 'plotly.js';
 import React, {useEffect, useState} from 'react';
 
 import {apiClient} from '~/apiClient';
@@ -9,6 +8,8 @@ import {setGraphHeight} from '~/consts';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
+
+import type {Layout, PlotData} from 'plotly.js';
 import type {BoreholeMeasurement} from '~/types';
 
 type JupiterData = {

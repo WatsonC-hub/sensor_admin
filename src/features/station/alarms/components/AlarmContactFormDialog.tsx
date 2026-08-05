@@ -1,27 +1,30 @@
+import {zodResolver} from '@hookform/resolvers/zod';
+import CallIcon from '@mui/icons-material/Call';
+import EmailIcon from '@mui/icons-material/Email';
+import SmsIcon from '@mui/icons-material/Sms';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Grid,
   Box,
+  Dialog,
   DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
   Typography,
 } from '@mui/material';
 import React, {useState} from 'react';
-import type {AlarmContactFormInput, AlarmContactFormOutput, AlarmFormInput} from '../schema';
-import {alarmContactSchema} from '../schema';
-import {createTypedForm} from '~/components/formComponents/Form';
-import {zodResolver} from '@hookform/resolvers/zod';
-import type {AlarmContactTypeDialog} from '../types';
-import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
-import {useAppContext} from '~/state/contexts';
-import type {ContactInfo} from '~/types';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import SmsIcon from '@mui/icons-material/Sms';
-import EmailIcon from '@mui/icons-material/Email';
-import CallIcon from '@mui/icons-material/Call';
-import type {SubmitHandler, UseFormSetValue} from 'react-hook-form';
 import {useForm} from 'react-hook-form';
+
+import {createTypedForm} from '~/components/formComponents/Form';
+import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAppContext} from '~/state/contexts';
+
+import {alarmContactSchema} from '../schema';
+
+import type {AlarmContactFormInput, AlarmContactFormOutput, AlarmFormInput} from '../schema';
+import type {AlarmContactTypeDialog} from '../types';
+import type {SubmitHandler, UseFormSetValue} from 'react-hook-form';
+import type {ContactInfo} from '~/types';
 
 const AlarmContactTypedForm = createTypedForm<AlarmContactFormInput, AlarmContactFormOutput>();
 

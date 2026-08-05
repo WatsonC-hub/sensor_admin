@@ -1,7 +1,9 @@
 import {Autocomplete, Chip, TextField, Typography} from '@mui/material';
 import React from 'react';
-import type {Noop} from 'react-hook-form';
+
 import {useNotificationTypes} from '~/hooks/query/useNotificationOverview';
+
+import type {Noop} from 'react-hook-form';
 
 type Props = {
   value: Array<number> | undefined | null;

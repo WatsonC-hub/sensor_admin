@@ -1,32 +1,34 @@
-import {Box, Typography, Card, IconButton, Link} from '@mui/material';
-import type {ReactNode} from 'react';
-import React, {useCallback, useRef, useState} from 'react';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import {useDroppable} from '@dnd-kit/react';
+import {Edit, ExpandLess, ExpandMore, Person} from '@mui/icons-material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import {Box, Card, IconButton, Link, Typography} from '@mui/material';
+import {DatePicker} from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
+import {useAtom} from 'jotai';
+import React, {useCallback, useRef, useState} from 'react';
 
+import Button from '~/components/Button';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import {useUser} from '~/features/auth/useUser';
+import {FlagEnum, ItineraryColors, sensorColors} from '~/features/notifications/consts';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
+import {convertDate} from '~/helpers/dateConverter';
+
+import 'dayjs/locale/da';
+
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {useDisplayState} from '~/hooks/ui';
+import {highlightedItinerariesAtom} from '~/state/atoms';
 
 import {useItineraries, useItineraryMutations} from '../api/useItinerary';
-
 import {useTaskUsers} from '../api/useTasks';
-import type {Taskitinerary} from '../types';
-import {convertDate} from '~/helpers/dateConverter';
-import {useDisplayState} from '~/hooks/ui';
-import {DatePicker} from '@mui/x-date-pickers';
-import TaskForm from './TaskForm';
-import {useDroppable} from '@dnd-kit/react';
-import dayjs from 'dayjs';
-import 'dayjs/locale/da';
 import CreateItineraryDialog from './CreateItineraryDialog';
-import Button from '~/components/Button';
-import {FlagEnum, ItineraryColors, sensorColors} from '~/features/notifications/consts';
-import {useUser} from '~/features/auth/useUser';
-import {Edit, ExpandLess, ExpandMore, Person} from '@mui/icons-material';
-import TooltipWrapper from '~/components/TooltipWrapper';
+import TaskForm from './TaskForm';
+
+import type {Taskitinerary} from '../types';
+import type {ReactNode} from 'react';
 import type {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {useMapOverview} from '~/hooks/query/useNotificationOverview';
-import {useAtom} from 'jotai';
-import {highlightedItinerariesAtom} from '~/state/atoms';
 
 const selectData = (data: Taskitinerary[], user_id: number | undefined) => {
   const reduced = data.reduce(

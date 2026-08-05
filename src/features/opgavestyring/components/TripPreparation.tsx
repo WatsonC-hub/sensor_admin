@@ -1,23 +1,22 @@
+import {Check} from '@mui/icons-material';
+import MoveUpIcon from '@mui/icons-material/MoveUp';
 import {Box} from '@mui/material';
 import React, {useState} from 'react';
 
-import Button from '~/components/Button';
 import AlertDialog from '~/components/AlertDialog';
+import Button from '~/components/Button';
+import EditableField from '~/components/EditableField';
+import TripRessourcesTable from '~/features/opgavestyring/components/TripRessourcesTable';
+import TripUnitTable from '~/features/opgavestyring/components/TripUnitTable';
+import {useItinerary, useItineraryMutations} from '~/features/tasks/api/useItinerary';
+import {useDisplayState} from '~/hooks/ui';
 import LoadingSkeleton from '~/LoadingSkeleton';
-
-import {Check} from '@mui/icons-material';
-import MoveUpIcon from '@mui/icons-material/MoveUp';
 
 import TripContacts from './TripContacts';
 import TripLocationAccess from './TripLocationAccess';
 import TripMergeDialog from './TripMergeDialog';
-import TripRessourcesTable from '~/features/opgavestyring/components/TripRessourcesTable';
 import TripTaskTable from './TripTaskTable';
-import TripUnitTable from '~/features/opgavestyring/components/TripUnitTable';
 
-import {useDisplayState} from '~/hooks/ui';
-import {useItinerary, useItineraryMutations} from '~/features/tasks/api/useItinerary';
-import EditableField from '~/components/EditableField';
 import type {TaskCollection} from '~/types';
 
 interface TripPreparationProps {

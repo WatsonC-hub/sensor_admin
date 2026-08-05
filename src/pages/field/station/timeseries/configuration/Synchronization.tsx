@@ -1,9 +1,11 @@
-import React from 'react';
-import useSync from '~/features/station/components/stamdata/dmpSynkronisering/api/useSync';
-import {useAppContext} from '~/state/contexts';
 import {Box, Typography} from '@mui/material';
+import React from 'react';
+
+import useSync from '~/features/station/components/stamdata/dmpSynkronisering/api/useSync';
 import JupiterDmpSync from '~/features/synchronization/components/JupiterDmpSync';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useAppContext} from '~/state/contexts';
+
 import type {SyncFormSchema} from '~/features/synchronization/api/useSyncForm';
 
 const Synchronization = () => {

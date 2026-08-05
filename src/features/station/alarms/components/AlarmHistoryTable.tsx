@@ -1,11 +1,13 @@
 import {Box} from '@mui/material';
-import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
+
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import {useTable} from '~/hooks/useTable';
+
 import type {AlarmHistory} from '../types';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 
 type AlarmHistoryTableProps = {
   alarmHistory: Array<AlarmHistory> | undefined;

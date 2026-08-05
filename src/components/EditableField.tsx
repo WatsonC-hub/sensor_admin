@@ -1,9 +1,7 @@
-import {Box, IconButton, TextField, Typography} from '@mui/material';
-
-import {useState} from 'react';
-
-import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
+import EditIcon from '@mui/icons-material/Edit';
+import {Box, IconButton, TextField, Typography} from '@mui/material';
+import {useState} from 'react';
 
 interface EditableFieldProps {
   label: string | null;

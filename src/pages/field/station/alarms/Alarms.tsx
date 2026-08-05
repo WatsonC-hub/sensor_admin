@@ -1,13 +1,14 @@
+import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import {Box} from '@mui/material';
 import React from 'react';
+
 import FabWrapper from '~/components/FabWrapper';
-import AlarmTable from '~/features/station/alarms/components/AlarmTable';
-import MoreTimeIcon from '@mui/icons-material/MoreTime';
-import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
-import AlarmFormDialog from '~/features/station/alarms/components/AlarmFormDialog';
-import {useAlarm} from '~/features/station/alarms/api/useAlarm';
-import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import {useAlarm} from '~/features/station/alarms/api/useAlarm';
+import AlarmFormDialog from '~/features/station/alarms/components/AlarmFormDialog';
+import AlarmTable from '~/features/station/alarms/components/AlarmTable';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 
 type AlarmsProps = {
   ts_id?: number;

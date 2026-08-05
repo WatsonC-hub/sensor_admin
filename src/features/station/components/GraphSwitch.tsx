@@ -1,12 +1,14 @@
 import {Box, FormControlLabel, Switch, Typography} from '@mui/material';
 import {useSetAtom} from 'jotai';
 import React from 'react';
+
 import Button from '~/components/Button';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {dataToShowAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
+
 import type {DataToShow} from '~/types';
 
 interface GraphSwitchProps {

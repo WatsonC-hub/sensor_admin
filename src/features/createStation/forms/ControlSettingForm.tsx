@@ -1,16 +1,18 @@
+import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
 import {Box, Grid} from '@mui/material';
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
+
+import Button from '~/components/Button';
 import useControlSettingsForm from '~/features/configuration/api/useControlSettingsForm';
 import ControlSettings from '~/features/configuration/components/ControlSettings';
 import CreateControlSettings from '~/features/configuration/components/CreateControlSettings';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import type {ControlSettingsFormState} from '../types';
-import {useCreateStationStore} from '../state/useCreateStationStore';
-import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
 
-import Button from '~/components/Button';
 import {button_sx} from '../commonStyle';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+
+import type {ControlSettingsFormState} from '../types';
 
 type EmptyObject = Record<string, never>;
 

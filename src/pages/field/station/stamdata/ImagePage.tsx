@@ -1,6 +1,5 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
 import dayjs from 'dayjs';
-import type {ChangeEvent} from 'react';
 import React, {createRef, useState} from 'react';
 
 import FabWrapper from '~/components/FabWrapper';
@@ -10,6 +9,8 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
+
+import type {ChangeEvent} from 'react';
 
 const ImagePage = () => {
   const {loc_id} = useAppContext(['loc_id']);

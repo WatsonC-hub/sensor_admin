@@ -1,15 +1,13 @@
-import {Dialog, DialogTitle, DialogContent, Box, DialogActions} from '@mui/material';
+import {Box, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
+import {z} from 'zod';
 
 import Button from '~/components/Button';
+import FormInput from '~/components/FormInput';
+import {zodDayjs} from '~/helpers/schemas';
 
 import {useItineraryMutations} from '../api/useItinerary';
-
 import TaskForm from './TaskForm';
-import FormInput from '~/components/FormInput';
-
-import {z} from 'zod';
-import {zodDayjs} from '~/helpers/schemas';
 
 type CreateItineraryDialogProps = {
   dialogOpen: boolean;
@@ -55,7 +53,7 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
     <Dialog open={dialogOpen} onClose={onClose}>
       <DialogTitle>Lav ny tur</DialogTitle>
       <TaskForm
-        onSubmit={async (data) => await onSubmit(data)}
+        onSubmit={async (data) => onSubmit(data)}
         defaultValues={{
           name: '',
           assigned_to: null,

@@ -1,10 +1,14 @@
-import type {MapOverview} from '~/hooks/query/useNotificationOverview';
-import type {BoreholeMapData} from '~/types';
+import L from 'leaflet';
+
 import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
 
-import L from 'leaflet';
-import './map.css';
 import {getBoreholeColor, getBoreholeIcon, getColor, getIcon} from '../notifications/Utils';
+
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+
+import './map.css';
+
+import type {BoreholeMapData} from '~/types';
 
 export const setIconSize = (size: number) => {
   const root = document.documentElement;

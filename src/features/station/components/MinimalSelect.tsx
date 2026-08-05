@@ -1,12 +1,13 @@
 import {Typography} from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
-import type {SelectChangeEvent} from '@mui/material/Select';
 import Select from '@mui/material/Select';
 import {useEffect, useState} from 'react';
 
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useAppContext} from '~/state/contexts';
+
+import type {SelectChangeEvent} from '@mui/material/Select';
 
 const MinimalSelect = () => {
   const {ts_id} = useAppContext(['loc_id'], ['ts_id']);

@@ -1,10 +1,11 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
-import type {Dayjs} from 'dayjs';
 
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
-import type {FlagEnum, NotificationIDEnum} from '~/features/notifications/consts';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {Dayjs} from 'dayjs';
+import type {FlagEnum, NotificationIDEnum} from '~/features/notifications/consts';
 import type {Group, QueryType} from '~/types';
 
 export interface MapOverview {

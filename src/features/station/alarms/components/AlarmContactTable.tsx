@@ -1,11 +1,13 @@
 import {Box, Typography} from '@mui/material';
-import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
+
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
-import {useTable} from '~/hooks/useTable';
-import type {ContactTable} from '../types';
 import RenderActions from '~/helpers/RowActions';
+import {useTable} from '~/hooks/useTable';
+
+import type {ContactTable} from '../types';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 
 type AlarmContactTableProps = {
   alarmContacts: Array<ContactTable> | undefined;

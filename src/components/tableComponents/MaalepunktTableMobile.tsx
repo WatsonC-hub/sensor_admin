@@ -1,5 +1,4 @@
 import {Box, Typography} from '@mui/material';
-import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
@@ -12,6 +11,8 @@ import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
 import {useAppContext} from '~/state/contexts';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import type {MaalepunktAsDayjs} from '~/types';
 
 interface Props {

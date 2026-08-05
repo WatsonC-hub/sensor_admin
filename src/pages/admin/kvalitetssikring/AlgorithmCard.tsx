@@ -20,6 +20,7 @@ import GenericCard from '~/components/GenericCard';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {useRunQA} from '~/hooks/useRunQA';
 import {useAppContext} from '~/state/contexts';
+
 import type {QaAlgorithmParameters, QaAlgorithms, QaAlgorithmsPut} from '~/types';
 
 interface AlgorithCardProps {

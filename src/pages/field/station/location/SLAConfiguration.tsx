@@ -4,6 +4,7 @@ import {Box, Grid, InputAdornment, Typography} from '@mui/material';
 import React from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
+
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import usePermissions from '~/features/permissions/api/usePermissions';
@@ -106,7 +107,7 @@ const SLAConfiguration = () => {
         <Button
           bttype="primary"
           disabled={isSubmitting || !isDirty || location_permissions !== 'edit'}
-          onClick={handleSubmit(async (data) => await mutateAsync(data))}
+          onClick={handleSubmit(async (data) => mutateAsync(data))}
           loading={isSubmitting}
           startIcon={isSubmitting ? undefined : <Save />}
         >

@@ -1,6 +1,5 @@
 import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
-import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import {useMemo, useState} from 'react';
 
@@ -11,6 +10,8 @@ import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useQueryTable} from '~/hooks/useTable';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import type {TilsynItem} from '~/types';
 
 interface Props {

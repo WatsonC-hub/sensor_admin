@@ -8,10 +8,13 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import type {Noop} from 'react-hook-form';
 import React, {useEffect, useMemo, useState} from 'react';
-import {locationFilterOptions} from './filterConsts';
+
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import {locationFilterOptions} from './filterConsts';
+
+import type {Noop} from 'react-hook-form';
 
 type Props = {
   value: Array<string> | undefined | null;

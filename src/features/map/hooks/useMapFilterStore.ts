@@ -1,8 +1,10 @@
+import React from 'react';
 import {useStore} from 'zustand';
 import {useShallow} from 'zustand/shallow';
-import React from 'react';
-import type {MapFilterState} from '../MapFilterProvider';
+
 import {MapFilterContext} from '../MapFilterProvider';
+
+import type {MapFilterState} from '../MapFilterProvider';
 
 export const useMapFilterStore = <T>(selector: (state: MapFilterState) => T) => {
   const store = React.useContext(MapFilterContext);

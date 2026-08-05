@@ -1,11 +1,14 @@
 import {Grid} from '@mui/material';
 import React from 'react';
-import StamdataLocation from '../StamdataLocation';
+
 import {useUser} from '~/features/auth/useUser';
-import type {FormInputProps} from '~/components/FormInput';
-import type {DefaultAddLocation} from '~/features/station/schema';
+
+import StamdataLocation from '../StamdataLocation';
+
 import type {AutoCompleteFieldProps} from '~/components/Autocomplete';
+import type {FormInputProps} from '~/components/FormInput';
 import type {Borehole} from '~/features/station/api/useBorehole';
+import type {DefaultAddLocation} from '~/features/station/schema';
 
 type Props = {
   size: number;

@@ -1,9 +1,10 @@
-import type {NotificationIDEnum} from './consts';
-import {boreholeColors, BoreHoleFlagEnum, FlagEnum, NotificationEnum, sensorColors} from './consts';
-import type {BoreholeDetails, IconDetails} from './types';
-
-import type {JSX} from 'react';
 import dayjs from 'dayjs';
+
+import {BoreHoleFlagEnum, FlagEnum, NotificationEnum, boreholeColors, sensorColors} from './consts';
+
+import type {NotificationIDEnum} from './consts';
+import type {BoreholeDetails, IconDetails} from './types';
+import type {JSX} from 'react';
 
 const rawIcons = Object.fromEntries(
   Object.entries(

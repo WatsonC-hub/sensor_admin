@@ -1,7 +1,8 @@
 import {RemoveCircleOutlined} from '@mui/icons-material';
 import {IconButton, ListItem, ListItemText} from '@mui/material';
-import type {ReactNode} from 'react';
 import React from 'react';
+
+import type {ReactNode} from 'react';
 
 type Props = {
   primaryText: ReactNode | string;

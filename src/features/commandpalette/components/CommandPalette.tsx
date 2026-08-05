@@ -1,11 +1,16 @@
-import {Command} from 'cmdk';
-import type {CommandAction} from './CommandContext';
-import {useCommandRegistry} from './CommandContext';
-import {useState, useEffect} from 'react';
-import '../styles/cmdk.css';
 import {Box} from '@mui/material';
-import useBreakpoints from '~/hooks/useBreakpoints';
+import {Command} from 'cmdk';
+import {useEffect, useState} from 'react';
+
 import Button from '~/components/Button';
+
+import '../styles/cmdk.css';
+
+import useBreakpoints from '~/hooks/useBreakpoints';
+
+import {useCommandRegistry} from './CommandContext';
+
+import type {CommandAction} from './CommandContext';
 
 function CommandPalette() {
   const [open, setOpen] = useState(false);

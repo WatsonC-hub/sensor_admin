@@ -1,9 +1,11 @@
-import React from 'react';
 import {Grid} from '@mui/material';
-import CompoundPejling from '../CompoundPejling';
 import {useAtomValue} from 'jotai';
-import {boreholeIsPumpAtom} from '~/state/atoms';
+import React from 'react';
+
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {boreholeIsPumpAtom} from '~/state/atoms';
+
+import CompoundPejling from '../CompoundPejling';
 
 const PejlingBoreholeForm = () => {
   const isPump = useAtomValue(boreholeIsPumpAtom);

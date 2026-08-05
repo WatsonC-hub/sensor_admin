@@ -1,5 +1,7 @@
+import {Fullscreen, FullscreenExit} from '@mui/icons-material';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {Box, Divider, IconButton, Tooltip, Typography} from '@mui/material';
-import type {ReactNode} from 'react';
+import {useAtom} from 'jotai';
 import React, {useEffect} from 'react';
 
 import NavBar from '~/components/NavBar';
@@ -11,31 +13,31 @@ import LocationAccess from '~/features/stamdata/components/stationDetails/locati
 import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
 import ActionArea from '~/features/station/components/ActionArea';
 import BatteryStatus from '~/features/station/components/BatteryStatus';
+import GraphManager from '~/features/station/components/GraphManager';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
+import StationDrawer from '~/features/station/components/StationDrawer';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import AppContextProvider from '~/helpers/AppContextProvider';
+import {stationPages} from '~/helpers/enumHelper';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
 import Pejling from '~/pages/field/station/pejling/Pejling';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
-import {useAppContext} from '~/state/contexts';
-import EditUnit from './stamdata/EditUnit';
-import ImagePage from './stamdata/ImagePage';
-import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import StationDrawer from '~/features/station/components/StationDrawer';
-import {stationPages} from '~/helpers/enumHelper';
-import {useAtom} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
-import {Fullscreen, FullscreenExit} from '@mui/icons-material';
-import GraphManager from '~/features/station/components/GraphManager';
+import {useAppContext} from '~/state/contexts';
+
+import Alarms from './alarms/Alarms';
+import LocationConfiguration from './location/Configuration';
 import EditLocation from './stamdata/EditLocation';
 import EditTimeseries from './stamdata/EditTimeseries';
-import Alarms from './alarms/Alarms';
+import EditUnit from './stamdata/EditUnit';
+import ImagePage from './stamdata/ImagePage';
 import TimeseriesConfiguration from './timeseries/configuration/Configuration';
-import LocationConfiguration from './location/Configuration';
-import AppContextProvider from '~/helpers/AppContextProvider';
+
+import type {ReactNode} from 'react';
 
 export default function Station() {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);

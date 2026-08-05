@@ -1,5 +1,5 @@
 import {Box, Typography} from '@mui/material';
-import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import dayjs from 'dayjs';
 import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
@@ -7,14 +7,15 @@ import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
-import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {checkEndDateIsUnset, convertDate, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import type {BoreholeMaalepunktTableData} from '~/types';
+
 import type {BoreholeMaalepunkt} from '../../Boreholeno';
-import dayjs from 'dayjs';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {BoreholeMaalepunktTableData} from '~/types';
 
 interface Props {
   data: BoreholeMaalepunktTableData[] | undefined;

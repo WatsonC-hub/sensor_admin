@@ -1,19 +1,22 @@
-import type {PejlingBoreholeSchemaType, PejlingSchemaType} from '../pejlingSchema';
-import {pejlingBoreholeSchema, pejlingSchema} from '../pejlingSchema';
+import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm} from 'react-hook-form';
-import PejlingForm from '../components/PejlingForm';
-import type {ZodObject, ZodType} from 'zod';
 import {z} from 'zod';
-import PejlingBoreholeForm from '../components/PejlingBoreholeForm';
+
 import PejlingMeasurementsTableDesktop from '~/features/pejling/components/PejlingMeasurementsTableDesktop';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import PejlingMeasurementsTableMobile from '~/features/pejling/components/PejlingMeasurementsTableMobile';
 import {boreholeInitialData, initialData} from '~/features/pejling/const';
-import PejlingBoreholeTableMobile from '../components/tables/PejlingBoreholeTableMobile';
-import PejlingBoreholeTableDesktop from '../components/tables/PejlingBoreholeTableDesktop';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
-import {zodResolver} from '@hookform/resolvers/zod';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
+
+import PejlingBoreholeForm from '../components/PejlingBoreholeForm';
+import PejlingForm from '../components/PejlingForm';
+import PejlingBoreholeTableDesktop from '../components/tables/PejlingBoreholeTableDesktop';
+import PejlingBoreholeTableMobile from '../components/tables/PejlingBoreholeTableMobile';
+import {pejlingBoreholeSchema, pejlingSchema} from '../pejlingSchema';
+
+import type {PejlingBoreholeSchemaType, PejlingSchemaType} from '../pejlingSchema';
+import type {ZodObject, ZodType} from 'zod';
 
 type PejlingFormProps = {
   loctype_id: number | undefined;

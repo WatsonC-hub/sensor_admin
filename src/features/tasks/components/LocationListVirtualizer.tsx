@@ -1,17 +1,18 @@
-import React, {useCallback, useRef} from 'react';
+import {Box, Divider, Typography} from '@mui/material';
 import {useVirtualizer} from '@tanstack/react-virtual';
+import React, {useCallback, useRef} from 'react';
 
+import TooltipWrapper from '~/components/TooltipWrapper';
 import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
+import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
+import {useDisplayState} from '~/hooks/ui';
+
+import {createSmoothScrollToFn} from '../helpers';
+import BoreholeListItem from './BoreholeListItem';
 import LocationListItem from './LocationListItem';
 
-import {useDisplayState} from '~/hooks/ui';
-import {Box, Divider, Typography} from '@mui/material';
 import type {MapOverview} from '~/hooks/query/useNotificationOverview';
-import TooltipWrapper from '~/components/TooltipWrapper';
 import type {BoreholeMapData} from '~/types';
-import BoreholeListItem from './BoreholeListItem';
-import {createSmoothScrollToFn} from '../helpers';
-import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
 
 const LocationListVirtualizer = () => {
   const {listFilteredData} = useFilteredMapData();

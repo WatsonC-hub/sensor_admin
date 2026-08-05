@@ -1,19 +1,19 @@
-import React, {useState} from 'react';
-import NavBar from '~/components/NavBar';
 import {Box, Grid, Typography} from '@mui/material';
-import useBreakpoints from '~/hooks/useBreakpoints';
-
-import TooltipWrapper from '~/components/TooltipWrapper';
-
-import LocationStep from '~/features/createStation/components/LocationStep';
-import FormSteps from '~/features/createStation/components/FormSteps';
-import TimeseriesStep from '~/features/createStation/components/TimeseriesStep';
-import AdditionalStep from '~/features/createStation/components/AdditionalStep';
-import type {CreateLocationData} from '~/features/createStation/types';
+import React, {useState} from 'react';
 import {useLocation} from 'react-router-dom';
+
+import NavBar from '~/components/NavBar';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import {useUser} from '~/features/auth/useUser';
+import AdditionalStep from '~/features/createStation/components/AdditionalStep';
+import FormSteps from '~/features/createStation/components/FormSteps';
+import LocationStep from '~/features/createStation/components/LocationStep';
+import TimeseriesStep from '~/features/createStation/components/TimeseriesStep';
 import CreateStationStoreProvider from '~/features/createStation/state/CreateStationStoreProvider';
 import {useLocationData} from '~/hooks/query/useMetadata';
-import {useUser} from '~/features/auth/useUser';
+import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {CreateLocationData} from '~/features/createStation/types';
 
 const CreateStation = () => {
   let {state} = useLocation();

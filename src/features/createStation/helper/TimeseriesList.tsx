@@ -1,18 +1,21 @@
-import TimeseriesEditor from './TimeseriesEditor';
-import Button from '~/components/Button';
+import {Router, Timeline} from '@mui/icons-material';
 import {Box} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
 import {useState} from 'react';
+
+import {apiClient} from '~/apiClient';
+import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
+import {useUser} from '~/features/auth/useUser';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
 import UnitDialog from '../components/UnitDialog';
 import {useCreateStationStore} from '../state/useCreateStationStore';
+import TimeseriesEditor from './TimeseriesEditor';
+
 import type {AddUnitType} from '../forms/UnitForm';
 import type {TransformedUnit} from '../types';
-import {apiClient} from '~/apiClient';
 import type {Tstype} from '~/types';
-import {useQuery} from '@tanstack/react-query';
-import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {useUser} from '~/features/auth/useUser';
-import {Router, Timeline} from '@mui/icons-material';
 
 function TimeseriesList() {
   const [unitDialog, setUnitDialog] = useState(false);

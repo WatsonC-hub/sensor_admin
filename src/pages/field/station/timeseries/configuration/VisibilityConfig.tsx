@@ -4,12 +4,14 @@ import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+
 import {createTypedForm} from '~/components/formComponents/Form';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import type {Metadata} from '~/hooks/query/useMetadata';
 import {metadataQueryOptions} from '~/hooks/query/useMetadata';
 import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
+
+import type {Metadata} from '~/hooks/query/useMetadata';
 
 type VisibilityConfigProps = {
   loc_id: number;

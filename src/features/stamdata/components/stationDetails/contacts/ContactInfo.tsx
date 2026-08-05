@@ -1,18 +1,19 @@
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import {Box} from '@mui/material';
 import React, {useState} from 'react';
-import useContactForm, {contactSchema} from './api/useContactForm';
 import {FormProvider} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
 import {initialContactData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
 import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddContactInfo';
+import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useAppContext} from '~/state/contexts';
+
+import useContactForm, {contactSchema} from './api/useContactForm';
 
 const ContactInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);

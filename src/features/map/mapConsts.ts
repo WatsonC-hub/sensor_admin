@@ -3,6 +3,7 @@ import utmObj from 'utm-latlng';
 
 import {isProduction, mapboxToken} from '~/consts';
 import {atomWithTimedStorage} from '~/state/atoms';
+
 import type {RouteFeature} from '~/types';
 
 export const utm = new utmObj();

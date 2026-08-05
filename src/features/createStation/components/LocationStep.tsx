@@ -1,9 +1,9 @@
+import {Typography} from '@mui/material';
 import React from 'react';
 
-import FormStepButtons from './FormStepButtons';
-import {useCreateStationStore} from '../state/useCreateStationStore';
 import LocationForm from '../forms/LocationForm';
-import {Typography} from '@mui/material';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+import FormStepButtons from './FormStepButtons';
 
 type Props = {
   activeStep: number;

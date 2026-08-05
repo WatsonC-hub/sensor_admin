@@ -1,10 +1,11 @@
-import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
-import type {Dayjs} from 'dayjs';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {Dayjs} from 'dayjs';
 
 export type Maalepunkt = {
   startdate: string;

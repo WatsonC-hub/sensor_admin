@@ -1,8 +1,10 @@
 import {Grid} from '@mui/material';
 import React from 'react';
-import StamdataLocation from '../StamdataLocation';
-import usePermissions from '~/features/permissions/api/usePermissions';
+
 import {useUser} from '~/features/auth/useUser';
+import usePermissions from '~/features/permissions/api/usePermissions';
+
+import StamdataLocation from '../StamdataLocation';
 
 type Props = {
   size: number;

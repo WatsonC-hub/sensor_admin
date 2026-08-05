@@ -1,11 +1,12 @@
-import type {UseQueryOptions} from '@tanstack/react-query';
-import {useQuery, queryOptions} from '@tanstack/react-query';
+import {queryOptions, useQuery} from '@tanstack/react-query';
 import {useCallback} from 'react';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import type {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
+
+import type {UseQueryOptions} from '@tanstack/react-query';
+import type {APIError} from '~/queryClient';
 import type {Group} from '~/types';
 
 export type Metadata = {

@@ -1,27 +1,29 @@
-import {Typography, InputAdornment, TextField} from '@mui/material';
-import type {RefetchOptions} from '@tanstack/react-query';
+import {InputAdornment, TextField, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import type {ChangeEvent} from 'react';
 import React, {useCallback, useEffect, useState} from 'react';
-import {useFormContext, Controller} from 'react-hook-form';
+import {Controller, useFormContext} from 'react-hook-form';
+
 import {apiClient} from '~/apiClient';
-import type {FormInputProps} from '~/components/FormInput';
+import ExtendedAutocomplete from '~/components/Autocomplete';
 import FormInput from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
+import {utm} from '~/features/map/mapConsts';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
-import type {BoreholeAddLocation, BoreholeEditLocation, DefaultAddLocation} from '../../schema';
-import {getDTMQuota} from '~/pages/field/fieldAPI';
-import type {AutoCompleteFieldProps} from '~/components/Autocomplete';
-import ExtendedAutocomplete from '~/components/Autocomplete';
-import type {Borehole} from '../../api/useBorehole';
-import {utm} from '~/features/map/mapConsts';
-import {postElasticSearch} from '~/pages/field/boreholeAPI';
-import {useAppContext} from '~/state/contexts';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
-import {queryClient} from '~/queryClient';
-import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {postElasticSearch} from '~/pages/field/boreholeAPI';
+import {getDTMQuota} from '~/pages/field/fieldAPI';
+import {queryClient} from '~/queryClient';
+import {useAppContext} from '~/state/contexts';
+
+import type {Borehole} from '../../api/useBorehole';
+import type {BoreholeAddLocation, BoreholeEditLocation, DefaultAddLocation} from '../../schema';
+import type {RefetchOptions} from '@tanstack/react-query';
+import type {ChangeEvent} from 'react';
+import type {AutoCompleteFieldProps} from '~/components/Autocomplete';
+import type {FormInputProps} from '~/components/FormInput';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 
 type Props = {
   children: React.ReactNode;

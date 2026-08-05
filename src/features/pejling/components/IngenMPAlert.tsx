@@ -1,4 +1,4 @@
-import {Grid, Alert, Link} from '@mui/material';
+import {Alert, Grid, Link} from '@mui/material';
 import React from 'react';
 
 import {alertHeight} from '~/consts';

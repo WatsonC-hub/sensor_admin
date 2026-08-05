@@ -1,20 +1,22 @@
 import {CloseOutlined, RestartAlt} from '@mui/icons-material';
-import {Box, Typography, Grid} from '@mui/material';
+import {Box, Grid, Typography} from '@mui/material';
 import React from 'react';
-import {useForm, FormProvider, Controller} from 'react-hook-form';
+import {Controller, FormProvider, useForm} from 'react-hook-form';
 
 import Button from '~/components/Button';
-import {useUser} from '~/features/auth/useUser';
-import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
-import type {Filter} from '~/pages/field/overview/components/filterConsts';
-import {defaultMapFilter} from '~/pages/field/overview/components/filterConsts';
-import NotificationTypeFilter from './NotificationTypeFilter';
-import TooltipWrapper from '~/components/TooltipWrapper';
-import ProjectsFilter from './ProjectsFilter';
-import LocationFilter from './LocationFilter';
 import FormToggleButton from '~/components/formComponents/FormToggleButton';
-import useBreakpoints from '~/hooks/useBreakpoints';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
+import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {defaultMapFilter} from '~/pages/field/overview/components/filterConsts';
+
+import LocationFilter from './LocationFilter';
+import NotificationTypeFilter from './NotificationTypeFilter';
+import ProjectsFilter from './ProjectsFilter';
+
+import type {Filter} from '~/pages/field/overview/components/filterConsts';
 
 interface FilterOptionsProps {
   isParentClosed: boolean;

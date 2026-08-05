@@ -1,8 +1,8 @@
 import {
   AddCircle,
-  StraightenRounded,
-  PhotoLibraryRounded,
   ConstructionRounded,
+  PhotoLibraryRounded,
+  StraightenRounded,
 } from '@mui/icons-material';
 import {startCase} from 'lodash';
 import React from 'react';

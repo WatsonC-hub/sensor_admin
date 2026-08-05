@@ -1,3 +1,15 @@
+import {zodResolver} from '@hookform/resolvers/zod';
+import React from 'react';
+import {useForm} from 'react-hook-form';
+import {z} from 'zod/v4';
+
+import {useUser} from '~/features/auth/useUser';
+
+import BaseLocationForm from '../components/stamdata/stamdataComponents/BaseLocationForm';
+import BoreholeLocationEditForm from '../components/stamdata/stamdataComponents/BoreholeLocationEditForm';
+import BoreholeLocationForm from '../components/stamdata/stamdataComponents/BoreholeLocationForm';
+import DefaultLocationEditForm from '../components/stamdata/stamdataComponents/DefaultLocationEditForm';
+import DefaultLocationForm from '../components/stamdata/stamdataComponents/DefaultLocationForm';
 import {
   baseLocationSchema,
   boreholeAddLocationSchema,
@@ -5,18 +17,9 @@ import {
   defaultAddLocationSchema,
   defaultEditLocationSchema,
 } from '../schema';
+
 import type {DefaultValues, Path} from 'react-hook-form';
-import {useForm} from 'react-hook-form';
 import type {ZodObject} from 'zod/v4';
-import {z} from 'zod/v4';
-import React from 'react';
-import DefaultLocationForm from '../components/stamdata/stamdataComponents/DefaultLocationForm';
-import BoreholeLocationForm from '../components/stamdata/stamdataComponents/BoreholeLocationForm';
-import BaseLocationForm from '../components/stamdata/stamdataComponents/BaseLocationForm';
-import BoreholeLocationEditForm from '../components/stamdata/stamdataComponents/BoreholeLocationEditForm';
-import DefaultLocationEditForm from '../components/stamdata/stamdataComponents/DefaultLocationEditForm';
-import {useUser} from '~/features/auth/useUser';
-import {zodResolver} from '@hookform/resolvers/zod';
 
 type useLocationFormProps<T> =
   | {

@@ -1,8 +1,9 @@
-import {useQuery, queryOptions} from '@tanstack/react-query';
+import {queryOptions, useQuery} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
-import {TaskPermission} from '../tasks/types';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import {TaskPermission} from '../tasks/types';
 
 type User = {
   user_id: number;

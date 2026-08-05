@@ -1,9 +1,9 @@
+import type {CertifyQa} from './features/kvalitetssikring/api/useCertifyQa';
 import type {SvgIconProps} from '@mui/material';
 import type {Dayjs} from 'dayjs';
-import type {ReactNode} from 'react';
 // import type {FeatureCollection, Geometry} from 'leaflet';
 import type * as geojson from 'geojson';
-import type {CertifyQa} from './features/kvalitetssikring/api/useCertifyQa';
+import type {ReactNode} from 'react';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -200,7 +200,12 @@ export type Tstype = {
   service_interval: number | null;
 };
 
-type RouteProperties = {loc_id: number; id: number; comment: string | null; type: 'walk' | 'drive'};
+type RouteProperties = {
+  loc_id: number;
+  id: number;
+  comment: string | null;
+  type: 'walk' | 'drive';
+};
 
 export type RouteFeature = geojson.Feature<geojson.Geometry, RouteProperties>;
 

@@ -12,7 +12,6 @@ import useDeleteTimeseries from '~/features/station/api/useDeleteTimeseries';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
 import ConfirmDeleteDialog from '~/features/station/components/ConfirmDeleteDialog';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
-import type {BoreholeEditTimeseries, DefaultEditTimeseries} from '~/features/station/schema';
 import {boreholeEditTimeseriesSchema, defaultEditTimeseriesSchema} from '~/features/station/schema';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
@@ -20,6 +19,8 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
 import {useAppContext} from '~/state/contexts';
+
+import type {BoreholeEditTimeseries, DefaultEditTimeseries} from '~/features/station/schema';
 
 const EditTimeseries = () => {
   const setTsId = useDisplayState((state) => state.setTsId);

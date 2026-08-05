@@ -1,3 +1,6 @@
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import {
   Box,
   Card,
@@ -9,22 +12,20 @@ import {
   Link,
   Typography,
 } from '@mui/material';
+import dayjs from 'dayjs';
 import React from 'react';
-import DriveEtaIcon from '@mui/icons-material/DriveEta';
-import {useItinerary} from '~/features/tasks/api/useItinerary';
-import {useTaskState} from '~/features/tasks/api/useTaskState';
-import {useAppContext} from '~/state/contexts';
-import {useTaskMutations, useTaskUsers} from '~/features/tasks/api/useTasks';
-import CloseIcon from '@mui/icons-material/Close';
 
-import ItineraryListItemSimpleCard from './ItineraryListItemSimpleCard';
-import ItineraryListItemAdvancedCard from './ItineraryListItemAdvancedCard';
 import Button from '~/components/Button';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import {useItinerary} from '~/features/tasks/api/useItinerary';
+import {useTaskMutations, useTaskUsers} from '~/features/tasks/api/useTasks';
+import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {isSimpleTask} from '~/features/tasks/helpers';
 import {useDisplayState} from '~/hooks/ui';
-import dayjs from 'dayjs';
-import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import {useAppContext} from '~/state/contexts';
+
+import ItineraryListItemAdvancedCard from './ItineraryListItemAdvancedCard';
+import ItineraryListItemSimpleCard from './ItineraryListItemSimpleCard';
 
 interface ItineraryCardListProps {
   itinerary_id: string;

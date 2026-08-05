@@ -1,10 +1,10 @@
-import type {Watlevmp} from '~/features/station/schema';
-import type {AddUnitType} from './forms/UnitForm';
-import type {AccessTable, ContactTable, Group} from '~/types';
-import type {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
-import type {LocationMetadata} from '~/hooks/query/useMetadata';
 import type {ControlSettingsOutput} from '../configuration/api/useControlSettingsForm';
 import type {SyncFormSchema} from '../synchronization/api/useSyncForm';
+import type {AddUnitType} from './forms/UnitForm';
+import type {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
+import type {Watlevmp} from '~/features/station/schema';
+import type {LocationMetadata} from '~/hooks/query/useMetadata';
+import type {AccessTable, ContactTable, Group} from '~/types';
 
 /*  FORMSTATE */
 export type ControlSettingsFormState = Omit<ControlSettingsOutput, 'dummy' | 'from_unit'>;

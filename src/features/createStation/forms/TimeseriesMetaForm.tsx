@@ -1,10 +1,13 @@
-import React, {useEffect} from 'react';
-import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
 import {Grid} from '@mui/material';
+import React, {useEffect} from 'react';
+import {FormProvider} from 'react-hook-form';
+
+import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {FormProvider} from 'react-hook-form';
+
 import {useCreateStationStore} from '../state/useCreateStationStore';
+
 import type {TimeseriesMeta} from '../types';
 
 type TimeseriesMetaFormProps = {
