@@ -6,5 +6,6 @@
   },
   "editor.defaultFormatter": "oxc.oxc-vscode",
   "editor.formatOnSaveMode": "file",
-  "oxc.fmt.configPath": "./vite.config.ts"
+  "oxc.fmt.configPath": "./vite.config.ts",
+  "oxc.path.oxlint": "./vite.config.ts"
 }

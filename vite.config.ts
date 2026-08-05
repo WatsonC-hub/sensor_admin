@@ -120,6 +120,86 @@ export default defineConfig({
     sortPackageJson: false,
     ignorePatterns: ['node_modules', 'dist', '*.html'],
   },
+  lint: {
+    plugins: ['typescript'],
+    categories: {
+      correctness: 'off',
+    },
+    env: {
+      builtin: true,
+    },
+    ignorePatterns: ['dist', 'dev-dist'],
+    overrides: [
+      {
+        files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+        plugins: ['typescript', 'react'],
+        jsPlugins: ['eslint-plugin-react-compiler', 'eslint-plugin-check-file'],
+        rules: {
+          'react-compiler/react-compiler': 'error',
+          // set of custom rules
+          'no-console': 'warn',
+          'react/button-has-type': 'error',
+          'react/react-in-jsx-scope': ['off'],
+          'jsx-a11y/anchor-is-valid': 'off',
+          'no-unused-vars': 'error',
+
+          // "typescript/no-floating-promises": "warn",
+          // "typescript/no-misused-promises": "warn",
+          'typescript/no-explicit-any': ['off'],
+          'typescript/explicit-module-boundary-types': ['off'],
+
+          'import/no-cycle': 'error',
+          'import/default': 'off',
+          'import/no-named-as-default-member': 'off',
+          'import/no-named-as-default': 'off',
+          'unicorn/filename-case': [
+            'error',
+            {
+              '**/*.tsx': 'PASCAL_CASE',
+              '**/*.ts': 'CAMEL_CASE',
+            },
+            {
+              ignoreMiddleExtensions: true,
+              // ignore: ["vite-env.d.ts"],
+            },
+          ],
+          'check-file/folder-naming-convention': [
+            'error',
+            {
+              '/src/**/*': 'CAMEL_CASE',
+            },
+          ],
+          'no-empty-function': ['off'],
+          'react/only-export-components': [
+            'warn',
+            {
+              allowConstantExport: true,
+            },
+          ],
+          'typescript/explicit-function-return-type': ['off'],
+        },
+
+        env: {
+          es2018: true,
+          es2020: true,
+          browser: true,
+        },
+        globals: {
+          AsyncDisposableStack: 'readonly',
+          DisposableStack: 'readonly',
+          SuppressedError: 'readonly',
+        },
+      },
+    ],
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
+    // "rules": {
+    //   "typescript/no-floating-promises": "warn",
+    //   "typescript/no-misused-promises": "warn"
+    // }
+  },
   resolve: {
     tsconfigPaths: true,
   },
