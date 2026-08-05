@@ -1,20 +1,12 @@
 import type {DataToShow} from './types';
 
-let mapToken: string;
-
 export const isProduction = import.meta.env.PROD;
 
-if (isProduction) {
-  mapToken = import.meta.env.VITE_MAPBOX_TOKEN;
-} else {
-  mapToken = '';
-}
+export const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 export const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
 };
-
-export const mapboxToken = mapToken;
 
 export const correction_map: Record<number, string> = {
   0: 'Kontrol',
