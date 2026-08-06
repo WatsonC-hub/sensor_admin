@@ -87,7 +87,7 @@ const HomeButton = () => {
 
 const AppBarLayout = ({children, zIndex}: {children?: ReactNode; zIndex?: number}) => {
   return (
-    <AppBar position="sticky" enableColorOnDark sx={{zIndex: zIndex}}>
+    <AppBar position="sticky" enableColorOnDark sx={{zIndex: zIndex}} className="app-title-bar">
       <Toolbar
         sx={{
           height: appBarHeight,
@@ -97,6 +97,7 @@ const AppBarLayout = ({children, zIndex}: {children?: ReactNode; zIndex?: number
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}
+        className="app-title-div"
       >
         {children}
       </Toolbar>
@@ -168,7 +169,12 @@ const NavBarMenu = ({
   return (
     <>
       {highligtFirst && items != undefined && items.length > 0 && (
-        <Button bttype={'primary'} onClick={items?.[0].onClick} startIcon={items?.[0].icon}>
+        <Button
+          bttype={'primary'}
+          onClick={items?.[0].onClick}
+          startIcon={items?.[0].icon}
+          className="app-title-controls"
+        >
           {items?.[0].title}
         </Button>
       )}
@@ -178,6 +184,7 @@ const NavBarMenu = ({
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleClick}
+        className="app-title-controls"
       >
         <MoreVertIcon />
       </IconButton>
@@ -188,6 +195,7 @@ const NavBarMenu = ({
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
+        className="app-title-controls"
       >
         {items
           ?.filter((item, index) => (highligtFirst ? !(index == 0) : true))
@@ -260,6 +268,7 @@ const StationDrawerMenu = () => {
           setOpen(!open);
         }}
         size="large"
+        className="app-title-controls"
       >
         <MenuIcon />
       </IconButton>
@@ -277,6 +286,7 @@ const GoBack = () => {
         navigate(-1);
       }}
       size="large"
+      className="app-title-controls"
     >
       <KeyboardBackspaceIcon />
     </IconButton>
@@ -285,7 +295,7 @@ const GoBack = () => {
 
 const Close = ({onClick}: {onClick: () => void}) => {
   return (
-    <IconButton color="inherit" onClick={onClick} size="large">
+    <IconButton color="inherit" onClick={onClick} size="large" className="app-title-controls">
       <CloseIcon />
     </IconButton>
   );
@@ -306,6 +316,7 @@ const LocationList = () => {
       bttype={'primary'}
       onClick={() => setLocList(!loc_list)}
       startIcon={!isMobile && <PlaceIcon />}
+      className="app-title-controls"
     >
       {isMobile && <PlaceIcon />}
       {!isMobile && 'Lokationsliste'}
@@ -337,6 +348,7 @@ const OwnTaskList = () => {
         },
       }}
       disabled={disabled}
+      className="app-title-controls"
     >
       <Badge
         badgeContent={
@@ -376,6 +388,7 @@ const TripList = () => {
       bttype={'primary'}
       onClick={() => setTripList(!trip_list)}
       startIcon={!isMobile && <DirectionsCarIcon />}
+      className="app-title-controls"
     >
       {isMobile && <DirectionsCarIcon />}
       {!isMobile && 'Ture'}
