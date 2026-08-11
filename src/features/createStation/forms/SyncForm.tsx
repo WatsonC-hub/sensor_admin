@@ -135,7 +135,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
           {isDmpAllowed && (
             <>
               <Stack direction={'column'}>
-                <Typography>Skal stationen synkroniseres med DMP?</Typography>
+                <Typography>Skal tidsserien synkroniseres med danmarks miljø portal?</Typography>
                 <Stack direction={'row'} spacing={1}>
                   {toggleDmpOptions.map((option) => (
                     <Button

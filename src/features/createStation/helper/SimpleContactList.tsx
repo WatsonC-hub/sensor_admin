@@ -20,7 +20,7 @@ const SimpleContactList = ({values, onRemove}: Props) => {
           return (
             <SimpleTextView
               key={index}
-              primaryText={contact.name}
+              primaryText={contact.name + ' - ' + (contact.contact_role_name?.toLowerCase() ?? '')}
               secondaryText={contact.email}
               onRemove={() => onRemove(contact.id)}
               disabled={
@@ -34,3 +34,4 @@ const SimpleContactList = ({values, onRemove}: Props) => {
 };
 
 export default SimpleContactList;
+  
