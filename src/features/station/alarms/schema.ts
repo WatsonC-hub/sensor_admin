@@ -2,7 +2,7 @@ import {z} from 'zod';
 
 function addIssue(path: string, message: string, ctx: z.RefinementCtx) {
   ctx.addIssue({
-    code: z.ZodIssueCode.custom,
+    code: 'custom',
     message: `${message} (${path === 'from' ? 'fra' : 'til'})`,
     path: [path],
   });
@@ -64,7 +64,7 @@ export const alarmContactSchema = z
   .superRefine((val, ctx) => {
     if (!val?.sms?.selected && !val?.email?.selected && !val?.call?.selected) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Mindst én kontaktmetode skal være valgt',
         path: ['root'],
       });

@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm} from 'react-hook-form';
-import {z} from 'zod/v4';
+import {z} from 'zod';
 
 import type {DefaultValues} from 'react-hook-form';
 
@@ -8,7 +8,7 @@ export const contactSchema = z.object({
   id: z.string().nullish(),
   name: z.string({message: 'Navn på kontakten skal udfyldes'}),
   mobile: z.string().nullish(),
-  email: z.union([z.string().email('Det skal være en valid email'), z.literal('')]).nullable(),
+  email: z.union([z.email('Det skal være en valid email'), z.literal('')]).nullable(),
   comment: z.string().optional(),
   contact_role: z
     .number()

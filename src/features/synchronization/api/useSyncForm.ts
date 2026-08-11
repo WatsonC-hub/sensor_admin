@@ -2,7 +2,6 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useQuery} from '@tanstack/react-query';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
-import {ZodIssueCode} from 'zod/v3';
 
 import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
 
@@ -70,7 +69,7 @@ const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
   const conditionalSchema = syncSchema.superRefine((data, ctx) => {
     if (canSyncJupiter && (data.jupiter === undefined || data.jupiter === null)) {
       ctx.addIssue({
-        code: ZodIssueCode.custom,
+        code: 'custom',
         path: ['jupiter'],
         message: 'Vælg venligst om der skal synkroniseres til Jupiter',
       });
@@ -78,7 +77,7 @@ const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
 
     if (isDmpAllowed && (data.dmp === undefined || data.dmp === null)) {
       ctx.addIssue({
-        code: ZodIssueCode.custom,
+        code: 'custom',
         path: ['dmp'],
         message: 'Data ejer skal vælges',
       });
