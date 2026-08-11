@@ -33,3 +33,20 @@ export const useUnitHistory = () => {
   });
   return query;
 };
+
+export const UseUnitHistory2 = (ts_id: number | undefined) => {
+  const query = useQuery<UnitHistory[]>({
+    queryKey: queryKeys.Timeseries.unitHistory2(),
+    queryFn: async () => {
+      const {data} = await apiClient.get(
+        // `/sensor_field/stamdata/unit_history_batch?${ts_ids?.map((ts_id) => `ts_ids=${ts_id}`).join('&')}`
+        `/sensor_field/stamdata/unit_history_batch/${ts_id}`
+      );
+      return data;
+    },
+    refetchOnWindowFocus: false,
+    enabled: ts_id !== undefined,
+  });
+
+  return query;
+};

@@ -21,7 +21,7 @@ interface ModalProps {
   isUser: boolean;
 }
 
-type ContactRole = {
+export type ContactRole = {
   id: number;
   name: string;
   default_type?: 'lokation' | 'projekt';

@@ -23,7 +23,7 @@ export interface Unit {
   signal_id: number;
 }
 
-interface TypeUnitPost {
+export interface TypeUnitPost {
   unit_uuid: string;
   startdate: Dayjs | undefined;
   enddate: Dayjs;
@@ -38,6 +38,16 @@ export interface UnitPost extends UnitBase {
   data: TypeUnitPost;
 }
 
+interface UnitBatchType {
+  startdate: Dayjs | undefined;
+  inherit_invoice?: boolean;
+  units: Record<number, TypeUnitPost>;
+}
+
+export interface UnitBatchPost {
+  data: UnitBatchType;
+}
+
 const unitPostOptions = {
   mutationKey: ['unit_post'],
   mutationFn: async (mutation_data: UnitPost) => {
@@ -46,6 +56,15 @@ const unitPostOptions = {
       `/sensor_field/stamdata/unit_history/${path}`,
       data
     );
+    return result;
+  },
+};
+
+const unitBatchPostOptions = {
+  mutationKey: ['unit_batch_post'],
+  mutationFn: async (mutation_data: UnitBatchPost) => {
+    const {data} = mutation_data;
+    const {data: result} = await apiClient.post(`/sensor_field/stamdata/unit_history_batch`, data);
     return result;
   },
 };
@@ -82,9 +101,26 @@ const deleteUnitMutation = (ts_id: number) =>
     },
   });
 
+const postUnitMutation = () =>
+  useMutation({
+    ...unitPostOptions,
+    meta: {
+      invalidates: [queryKeys.AvailableUnits.all(), ['udstyr'], ['metadata']],
+    },
+  });
+
+const postUnitBatchMutation = () =>
+  useMutation({
+    ...unitBatchPostOptions,
+    meta: {
+      invalidates: [queryKeys.AvailableUnits.all(), ['udstyr'], ['metadata']],
+    },
+  });
+
 export const useUnitMutations = (ts_id: number) => {
   const editUnit = editUnitMutation(ts_id);
   const deleteUnit = deleteUnitMutation(ts_id);
+
   return {editUnit, deleteUnit};
 };
 
@@ -96,12 +132,8 @@ export const useUnit = () => {
       return data;
     },
   });
-  const post = useMutation({
-    ...unitPostOptions,
-    onSuccess: () => {},
-    meta: {
-      invalidates: [queryKeys.AvailableUnits.all(), ['udstyr'], ['metadata']],
-    },
-  });
-  return {get, post};
+
+  const post = postUnitMutation();
+  const postBatch = postUnitBatchMutation();
+  return {get, post, postBatch};
 };

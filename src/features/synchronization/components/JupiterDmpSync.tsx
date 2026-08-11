@@ -75,7 +75,7 @@ const JupiterDmpSync = ({
             )}
             {isDmpAllowed && (
               <Box>
-                <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til DMP">
+                <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til Danmarks Miljøportal">
                   <Controller
                     name="dmp"
                     control={control}
@@ -99,7 +99,7 @@ const JupiterDmpSync = ({
                               }}
                             />
                           }
-                          label={'DMP'}
+                          label={'Danmarks Miljøportal'}
                         />
                       );
                     }}

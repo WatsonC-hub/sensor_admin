@@ -71,6 +71,7 @@ export type SimpleContact = {
   name: string;
   email: string | null;
   contact_role?: number | undefined;
+  contact_role_name?: string | undefined;
   contact_type?: string | undefined;
 };
 

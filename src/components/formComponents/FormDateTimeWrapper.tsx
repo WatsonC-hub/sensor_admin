@@ -8,7 +8,7 @@ import type {FormDateTimeProps} from '../FormDateTime';
 import type {GridBaseProps} from '@mui/material';
 import type {FieldValues, Path} from 'react-hook-form';
 
-type DatetimeProps<T extends FieldValues> = Omit<FormDateTimeProps<T>, 'name'> & {
+export type DatetimeProps<T extends FieldValues> = Omit<FormDateTimeProps<T>, 'name'> & {
   name: Path<T>;
   gridSizes?: GridBaseProps['size'];
 };
