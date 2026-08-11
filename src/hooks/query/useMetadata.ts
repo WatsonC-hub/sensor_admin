@@ -63,6 +63,7 @@ export type LocationMetadata = {
     ts_name: string;
     calculated: boolean;
     prefix: string | null;
+    slutdato: string | null;
     tstype_name: string;
     intakeno: number | null;
     timeseries_calypso_id?: number | null;
@@ -103,6 +104,7 @@ const transformMetadata = (data: Metadata[], ts_id: number | undefined): Locatio
           intakeno: data.intakeno,
           timeseries_calypso_id: data.timeseries_calypso_id,
           unit_uuid: data.unit_uuid,
+          slutdato: data.slutdato,
         };
       }),
   };

@@ -14,17 +14,16 @@ import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import {checkEndDateIsUnset, convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
 import SaveIcon from '@mui/icons-material/Save';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {renderDetailStyle} from '~/consts';
-import {editUnitSchema} from '~/features/station/schema';
+import {EditUnit, editUnitSchema} from '~/features/station/schema';
 import {useUnitMutations} from '~/features/stamdata/api/useUnit';
 import DeleteAlert from '~/components/DeleteAlert';
 
 interface UnitHistoryTableProps {
-  submit: (data: any) => Promise<void>;
+  submit: (data: EditUnit) => Promise<void>;
   setSelectedUnit: (ugid: number | '') => void;
   ts_id: number;
   loc_id: number;
@@ -36,12 +35,11 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
     handleSubmit,
     reset,
     formState: {isDirty, errors, isSubmitting},
-  } = useFormContext();
+  } = useFormContext<EditUnit>();
   const {
     deleteUnit: {mutate: deleteUnit, isPending: isDeletingUnit},
   } = useUnitMutations(ts_id);
   const {isMobile} = useBreakpoints();
-  const {data: metadata} = useTimeseriesData();
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
   const [deleteAlertOpen, setDeleteAlertOpen] = React.useState(false);
@@ -164,7 +162,6 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
         <RenderActions
           handleEdit={() => {
             setSelectedUnit(row.original.gid);
-            resetToDefault(row.original);
             table.setEditingRow(row);
           }}
           onDeleteBtnClick={() => {
@@ -194,9 +191,7 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
             </Button>
             <Button
               bttype="primary"
-              disabled={
-                !isDirty || !metadata?.unit_uuid || disabled || Object.keys(errors).length > 0
-              }
+              disabled={!isDirty || disabled || Object.keys(errors).length > 0}
               onClick={async () => {
                 await handleSubmit(
                   (data) => {
