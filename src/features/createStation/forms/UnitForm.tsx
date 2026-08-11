@@ -19,7 +19,7 @@ type Props = {
 const addSchema = z.object({
   startdate: zodDayjs().default(dayjs()),
   unit_uuid: z.string({message: 'Udstyrs UUID er påkrævet'}),
-  calypso_id: z.string().optional(),
+  calypso_id: z.union([z.string(), z.number()]).optional(),
 });
 
 export type AddUnitType = z.infer<typeof addSchema>;

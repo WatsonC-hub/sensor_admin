@@ -26,6 +26,7 @@ export const locationAccessSchema = z
       if (type == AccessType.Key) {
         return placering !== '';
       }
+      return true;
     },
     {
       message: 'Udleveres på adresse felt skal udfyldes',

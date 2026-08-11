@@ -94,7 +94,12 @@ const ControlFrequency = ({
         render={({field: {onChange, onBlur, value}, fieldState: {error}}) => {
           let innerValue = undefined;
           if (value !== undefined && value !== null && value !== '')
-            innerValue = intervalType === 1 ? value.toFixed(1) : Number((12 / value).toFixed(1));
+            innerValue =
+              intervalType === 1
+                ? Number.isInteger(value)
+                  ? value
+                  : value.toFixed(1)
+                : Number((12 / value).toFixed(1));
 
           const interval = intervalFromFrequencyPerYear(value ?? 0);
           return (
@@ -111,14 +116,7 @@ const ControlFrequency = ({
                 } else if (intervalType === 2 && inputValue !== '') {
                   newValue = 12 / Number(inputValue);
                 }
-                console.log(
-                  'intervalType',
-                  intervalType,
-                  'inputValue',
-                  inputValue,
-                  'newValue',
-                  newValue
-                );
+
                 onChange(newValue);
 
                 if (onChangeCallback) {

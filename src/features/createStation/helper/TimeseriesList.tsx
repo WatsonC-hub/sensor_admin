@@ -112,7 +112,7 @@ function TimeseriesList() {
               const transformedUnit: AddUnitType = {
                 unit_uuid: unit.unit_uuid,
                 startdate: startdate,
-                calypso_id: unit.calypso_id.toString(),
+                calypso_id: unit.calypso_id === 0 ? unit.terminal_id.toString() : unit.calypso_id,
               };
               return {
                 ...transformedUnit,
