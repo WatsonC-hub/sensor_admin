@@ -105,13 +105,20 @@ const ControlFrequency = ({
               onChange={(e) => {
                 const inputValue = e.target.value;
                 let newValue: number | string = '';
-               
+
                 if (intervalType === 1 && inputValue !== '') {
                   newValue = Number(inputValue);
                 } else if (intervalType === 2 && inputValue !== '') {
-                  newValue = (12 / Number(inputValue));
+                  newValue = 12 / Number(inputValue);
                 }
-                console.log('intervalType', intervalType, 'inputValue', inputValue, 'newValue', newValue);
+                console.log(
+                  'intervalType',
+                  intervalType,
+                  'inputValue',
+                  inputValue,
+                  'newValue',
+                  newValue
+                );
                 onChange(newValue);
 
                 if (onChangeCallback) {
@@ -147,7 +154,9 @@ const ControlFrequency = ({
                       <Typography variant="caption">Kontrolmåles hver {interval}</Typography>
                     )
                   ) : (
-                    <Typography variant="caption">Kontrolmåles {value.toFixed(1)} gange om året</Typography>
+                    <Typography variant="caption">
+                      Kontrolmåles {value.toFixed(1)} gange om året
+                    </Typography>
                   )
                 ) : null
               }
@@ -174,7 +183,9 @@ const LeadTime = ({onChangeCallback, disabled, ...rest}: LeadTimeProps) => {
       type="number"
       fullWidth
       disabled={disabled}
-      placeholder={controls_per_year ? `${Math.floor(Math.min(2, (12 / controls_per_year)*0.25)*31)}` : ''}
+      placeholder={
+        controls_per_year ? `${Math.floor(Math.min(2, (12 / controls_per_year) * 0.25) * 31)}` : ''
+      }
       slotProps={{
         input: {
           disabled: disabled,

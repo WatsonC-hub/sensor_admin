@@ -36,4 +36,3 @@ const SimpleContactList = ({values, onRemove}: Props) => {
 };
 
 export default SimpleContactList;
-  

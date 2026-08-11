@@ -17,10 +17,10 @@ import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useTable} from '~/hooks/useTable';
-import type {EditUnit} from '~/features/station/schema';
 
 import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import type {UnitHistory} from '~/features/stamdata/api/useUnitHistory';
+import type {EditUnit} from '~/features/station/schema';
 
 interface UnitHistoryTableProps {
   submit: (data: EditUnit) => Promise<void>;

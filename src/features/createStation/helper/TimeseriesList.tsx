@@ -59,11 +59,11 @@ function TimeseriesList() {
       (type) => type.tstype_id === tstype_id
     )?.service_interval;
     // if (service_interval !== null && service_interval !== undefined) {
-      setState(`timeseries.${index}.control_settings`, {
-        controls_per_year: 12 / (service_interval ?? 12),
-        lead_time: null,
-        selectValue: 1,
-      });
+    setState(`timeseries.${index}.control_settings`, {
+      controls_per_year: 12 / (service_interval ?? 12),
+      lead_time: null,
+      selectValue: 1,
+    });
     // }
   };
 

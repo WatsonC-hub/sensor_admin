@@ -1,25 +1,22 @@
 import {BuildRounded} from '@mui/icons-material';
 import {Box} from '@mui/material';
+import dayjs from 'dayjs';
 import React, {useState} from 'react';
 import {FormProvider} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
-import usePermissions from '~/features/permissions/api/usePermissions';
 import {useUnitMutations} from '~/features/stamdata/api/useUnit';
-import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import useUnitForm from '~/features/station/api/useUnitForm';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import {addUnitSchema, editUnitSchema} from '~/features/station/schema';
+import {editUnitSchema} from '~/features/station/schema';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
 
-import UnitEndDateDialog from './UnitEndDialog';
-import UnitHistoryTable from './UnitHistoryTable';
-
-import type {z} from 'zod';
-import dayjs from 'dayjs';
 import AddUnitsDialog from './AddUnitsDialog';
 import EndUnitsDialog from './EndUnitsDialog';
+import UnitHistoryTable from './UnitHistoryTable';
+
+import type {EditUnit as EditUnitType} from '~/features/station/schema';
 
 const EditUnit = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
@@ -32,9 +29,8 @@ const EditUnit = () => {
     editUnit: {mutateAsync: editUnit},
   } = useUnitMutations(ts_id);
 
-  const editFormMethods = useUnitForm<EditUnitType>({
+  const editFormMethods = useUnitForm({
     schema: editUnitSchema,
-    mode: 'Edit',
     defaultValues: {
       unit_uuid: metadata?.unit_uuid ?? '',
       startdate: metadata?.startdato ? dayjs(metadata.startdato) : undefined,
@@ -86,7 +82,7 @@ const EditUnit = () => {
           />
         )}
       </Box>
-      <Box display="flex" justifyContent={'flex-end'}>
+      <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
         <FabWrapper
           icon={<BuildRounded />}
           text={!has_active_unit ? 'Tilføj udstyr' : 'Hjemtag udstyr'}

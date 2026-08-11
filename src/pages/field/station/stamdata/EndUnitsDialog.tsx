@@ -6,29 +6,28 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
-  Grid2,
   List,
+  Grid,
   Typography,
 } from '@mui/material';
-
-import React, {useEffect, useState} from 'react';
-
-import Button from '~/components/Button';
-import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
-import useUnitForm from '~/features/station/api/useUnitForm';
-import {FormProvider} from 'react-hook-form';
-import dayjs, {Dayjs} from 'dayjs';
-import {useLocationData} from '~/hooks/query/useMetadata';
 import {useMutation, useQuery} from '@tanstack/react-query';
-import {apiClient} from '~/apiClient';
+import dayjs, {type Dayjs} from 'dayjs';
+import React, {useEffect, useState} from 'react';
+import {FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {useAppContext} from '~/state/contexts';
-import {UnitHistory, UseUnitHistory2} from '~/features/stamdata/api/useUnitHistory';
+import {z} from 'zod';
+
+import {apiClient} from '~/apiClient';
+import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
-import {z} from 'zod';
+import {type UnitHistory, UseUnitHistory2} from '~/features/stamdata/api/useUnitHistory';
+import useUnitForm from '~/features/station/api/useUnitForm';
+import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {zodDayjs} from '~/helpers/schemas';
+import {useLocationData} from '~/hooks/query/useMetadata';
+import {useAppContext} from '~/state/contexts';
 
 type UnitDialogProps = {
   open: boolean;
@@ -61,8 +60,8 @@ const baseSchema = z.object({
 });
 
 const superUserSchema = baseSchema.extend({
-  change_reason: z.number({required_error: 'Vælg årsag'}),
-  action: z.string({required_error: 'Vælg handling'}),
+  change_reason: z.number({error: 'Vælg årsag'}),
+  action: z.string({error: 'Vælg handling'}),
 });
 
 const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
@@ -129,9 +128,8 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
     }
   }, [unit_history]);
 
-  const formMethods = useUnitForm<Omit<UnitEndPayload, 'unitHistory'>>({
+  const formMethods = useUnitForm({
     schema: superUser ? superUserSchema : baseSchema,
-    mode: 'Add',
     defaultValues: {
       enddate: dayjs(),
       change_reason: undefined,
@@ -157,13 +155,13 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
       <DialogContent>
         <FormProvider {...formMethods}>
           <StamdataUnit tstype_id={tstype_ids}>
-            <Grid2 container>
+            <Grid container>
               <StamdataUnit.EndDate required />
-            </Grid2>
+            </Grid>
           </StamdataUnit>
 
           {superUser && (
-            <Box display="flex" flexDirection="column" gap={1}>
+            <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
               <FormInput
                 name="change_reason"
                 fullWidth
@@ -221,9 +219,7 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
                 .map((sensor) => (
                   <Box
                     key={sensor.uuid}
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
+                    sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}
                   >
                     <FormControlLabel
                       control={

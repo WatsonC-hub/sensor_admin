@@ -7,12 +7,13 @@ import {toast} from 'react-toastify';
 
 import CaptureDialog from '~/components/CaptureDialog';
 import FormAutocomplete from '~/components/formComponents/FormAutocomplete';
-import FormDateTime from '~/components/FormDateTime';
+import FormDateTimeWrapper, {
+  type DatetimeProps,
+} from '~/components/formComponents/FormDateTimeWrapper';
 import FormInput from '~/components/FormInput';
 import {useUnit} from '~/features/stamdata/api/useUnit';
 
 import type {FormAutocompleteProps} from '~/components/formComponents/FormAutocomplete';
-import type {FormDateTimeProps} from '~/components/FormDateTime';
 import type {FormInputProps} from '~/components/FormInput';
 import type {AddUnitType} from '~/features/createStation/forms/UnitForm';
 
@@ -75,15 +76,17 @@ type AutocompleteInputProps = Omit<
   'name' | 'labelKey' | 'valueKey' | 'options'
 >;
 
-const CalypsoID = ({textFieldsProps, gridSizes, ...rest}: AutocompleteInputProps) => {
+const CalypsoID = ({textFieldsProps, ...rest}: AutocompleteInputProps) => {
   const {ids} = React.useContext(UnitContext);
 
   return (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'row',
-      width: '100%',
-    }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+      }}
+    >
       <FormAutocomplete<AddUnitType, {calypso_id: string}, false>
         labelKey="calypso_id"
         valueKey="calypso_id"

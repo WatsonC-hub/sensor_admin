@@ -5,21 +5,22 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid2,
+  Grid,
   List,
   MenuItem,
   Select,
   Typography,
 } from '@mui/material';
-import dayjs from 'dayjs';
+import dayjs, {type Dayjs} from 'dayjs';
 import React, {useState} from 'react';
 import {FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
+
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
-import {TypeUnitPost, Unit, useUnit} from '~/features/stamdata/api/useUnit';
+import {type TypeUnitPost, type Unit, useUnit} from '~/features/stamdata/api/useUnit';
 import useUnitForm from '~/features/station/api/useUnitForm';
 import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
 import {zodDayjs} from '~/helpers/schemas';
@@ -32,11 +33,11 @@ type AddUnitsDialogProps = {
 };
 
 const unitSchema = z.object({
-  calypso_id: z.string({required_error: 'Calypso ID er påkrævet'}),
+  calypso_id: z.string({error: 'Calypso ID er påkrævet'}),
   startdate: zodDayjs('Startdato er påkrævet').default(dayjs()),
 });
 
-type UnitType = z.infer<typeof unitSchema>;
+type UnitType = z.input<typeof unitSchema>;
 type CalypsoIdOption = {calypso_id: string};
 
 const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
@@ -74,9 +75,8 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
 
   const {superUser} = useUser();
 
-  const formMethods = useUnitForm<UnitType>({
+  const formMethods = useUnitForm({
     schema: unitSchema,
-    mode: 'Add',
     defaultValues: {calypso_id: undefined, startdate: dayjs()},
   });
 
@@ -159,7 +159,7 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
   const submit = (data: UnitType, inheritInvoice: boolean) => {
     postUnitBatch({
       data: {
-        startdate: data.startdate,
+        startdate: data.startdate as Dayjs,
         inherit_invoice: inheritInvoice,
         units: timeseriesSelections,
       },
@@ -174,10 +174,10 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
         <DialogContent>
           <FormProvider {...formMethods}>
             <StamdataUnit tstype_id={tstype_ids}>
-              <Grid2 container>
+              <Grid container>
                 <StamdataUnit.CalypsoID onChangeCallback={handleCalypsoIdChange} />
                 <StamdataUnit.StartDate required />
-              </Grid2>
+              </Grid>
             </StamdataUnit>
           </FormProvider>
 
@@ -187,22 +187,27 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
                 <Typography variant="subtitle1" sx={{mt: 2}}>
                   Tilgængelige tidsserier:
                 </Typography>
-                <Box display="flex" flexDirection="column" gap={1}>
+                <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
                   {matchingSensorTimeseries?.map((timeseries) => {
                     return (
-                      <Box key={timeseries.ts_id} display="flex" alignItems="center" gap={1}>
+                      <Box
+                        key={timeseries.ts_id}
+                        sx={{display: 'flex', alignItems: 'center', gap: 1}}
+                      >
                         <Box
-                          display="flex"
-                          alignItems="center"
-                          width={hasPrefix ? '28%' : singleSensorTimeseries ? 'auto' : '23%'}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            width: hasPrefix ? '28%' : singleSensorTimeseries ? 'auto' : '23%',
+                          }}
                         >
-                          <Typography textAlign={hasPrefix ? 'right' : 'left'} flexGrow={1}>
+                          <Typography sx={{textAlign: hasPrefix ? 'right' : 'left', flexGrow: 1}}>
                             {timeseries.prefix
                               ? `${timeseries.prefix} - ${timeseries.tstype_name}`
                               : timeseries.tstype_name}
                           </Typography>
                         </Box>
-                        <Box display="flex" alignItems="center" gap={1} flexGrow={1}>
+                        <Box sx={{display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1}}>
                           <Select
                             fullWidth
                             size="small"
@@ -268,7 +273,7 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
               isPostingUnits ||
               Object.keys(timeseriesSelections).length === 0
             }
-            onClick={handleSubmit(async () => {
+            onClick={handleSubmit(async (data) => {
               if (superUser)
                 await checkInheritInvoice(
                   Object.keys(timeseriesSelections).map((id) => parseInt(id)),
@@ -276,7 +281,7 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
                 );
 
               if (!superUser) {
-                submit(getValues(), false);
+                submit(data, false);
               }
             })}
           >
