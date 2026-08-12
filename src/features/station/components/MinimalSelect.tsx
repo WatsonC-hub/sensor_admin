@@ -103,8 +103,8 @@ const MinimalSelect = () => {
         </Select>
       ) : (
         <Typography
-          color="white"
           sx={{
+            color: 'white',
             fontSize: 14,
           }}
         >

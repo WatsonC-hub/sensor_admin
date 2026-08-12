@@ -41,7 +41,7 @@ type UnitType = z.input<typeof unitSchema>;
 type CalypsoIdOption = {calypso_id: string};
 
 const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
-  const {loc_id} = useAppContext(['loc_id']);
+  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: location_data} = useLocationData(loc_id);
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false);
   const [selectedSensors, setSelectedSensors] = React.useState<Unit[]>([]);
@@ -58,13 +58,10 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
     (ts) => (!ts.unit_uuid || dayjs(ts.slutdato).isBefore(dayjs())) && !ts.calculated
   );
 
-  console.log(filteredTimeseries, 'filteredTimeseries');
-
   const matchingSensorTimeseries = filteredTimeseries?.filter((ts) =>
     selectedSensors.some((sensor) => sensor.sensortypeid === ts.tstype_id)
   );
 
-  console.log(selectedSensors, 'selectedSensors');
   const singleSensorTimeseries = matchingSensorTimeseries?.length === 1;
   const hasPrefix = filteredTimeseries?.some((ts) => ts.prefix !== null && ts.prefix !== '');
   const tstype_ids = [...new Set(filteredTimeseries?.map((ts) => ts.tstype_id))];
@@ -113,7 +110,7 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
     );
 
     const availableTimeseries = filteredTimeseries?.filter(
-      (ts) => timeseriesCount?.[ts.tstype_id] === 1
+      (ts) => timeseriesCount?.[ts.tstype_id] === 1 || ts.ts_id === ts_id
     );
 
     availableTimeseries?.forEach((ts) => {
@@ -145,7 +142,6 @@ const AddUnitsDialog = ({open, onClose}: AddUnitsDialogProps) => {
     const {data} = await apiClient.get(
       `/sensor_field/stamdata/check-invoices/${terminal_id}?${ts_ids.map((id) => `ts_id=${id}`).join('&')}`
     );
-
     if (data?.ignoreInvoice) {
       if (data?.message) toast.warning(data?.message);
       submit(getValues(), false);

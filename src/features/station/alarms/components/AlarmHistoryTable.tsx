@@ -34,9 +34,8 @@ const AlarmHistoryTable = ({alarmHistory}: AlarmHistoryTableProps) => {
         accessorKey: 'alarm',
       },
       {
-        header: 'signal_warning',
-        accessorKey: 'Signalering',
-        Cell: ({cell}) => (cell.getValue() ? 'Ja' : 'Nej'),
+        header: 'Notifikation',
+        accessorKey: 'notification_name',
       },
     ],
     []

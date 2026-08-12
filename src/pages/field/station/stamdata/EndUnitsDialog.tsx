@@ -27,6 +27,7 @@ import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {zodDayjs} from '~/helpers/schemas';
 import {useLocationData} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 
 type UnitDialogProps = {
@@ -68,11 +69,26 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
   const {ts_id} = useAppContext(['ts_id']);
   const {data: location_data} = useLocationData();
   const {superUser} = useUser();
+  const {isMobile} = useBreakpoints();
 
   const {data: unit_history} = UseUnitHistory2(ts_id);
+
   const activeTimeseries = location_data?.timeseries.filter(
     (ts) => dayjs(ts.slutdato).isAfter(dayjs()) && unit_history?.some((uh) => uh.ts_id === ts.ts_id)
   );
+
+  const activeGroupedSensors = unit_history
+    ?.filter((uh) => activeTimeseries?.some((ts) => ts.ts_id === uh.ts_id))
+    .reduce(
+      (acc: Record<string, UnitHistory[]>, curr) => {
+        if (!acc[curr.sensor_id]) {
+          acc[curr.sensor_id] = [];
+        }
+        acc[curr.sensor_id].push(curr);
+        return acc;
+      },
+      {} as Record<string, UnitHistory[]>
+    );
 
   const [checkedSensors, setCheckedSensors] = useState<UnitHistory[]>([]);
 
@@ -121,9 +137,7 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
 
   useEffect(() => {
     if (unit_history && unit_history.length > 0) {
-      const initialCheckedSensors = unit_history.filter((sensor) =>
-        activeTimeseries?.some((ts) => ts.ts_id === sensor.ts_id)
-      );
+      const initialCheckedSensors = unit_history.filter((sensor) => sensor.ts_id === ts_id);
       setCheckedSensors(initialCheckedSensors);
     }
   }, [unit_history]);
@@ -150,8 +164,8 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Tilføj tidsserier på baggrund af udstyr</DialogTitle>
+    <Dialog open={open} onClose={handleClose} fullWidth={isMobile}>
+      <DialogTitle>Hjemtag en eller flere udstyr</DialogTitle>
       <DialogContent>
         <FormProvider {...formMethods}>
           <StamdataUnit tstype_id={tstype_ids}>
@@ -209,42 +223,103 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
           )}
         </FormProvider>
         <Box>
-          {unit_history && unit_history.length > 0 && (
+          {activeGroupedSensors && Object.keys(activeGroupedSensors).length > 0 && (
             <List>
               <Typography variant="subtitle1" sx={{mt: 2}}>
                 Tilgængelige tidsserier:
               </Typography>
-              {unit_history
-                .filter((sensor) => activeTimeseries?.some((ts) => ts.ts_id === sensor.ts_id))
-                .map((sensor) => (
+
+              {Object.entries(activeGroupedSensors).map(([sensor_id, sensors]) => {
+                const isTerminalChecked = sensors.every((s) =>
+                  checkedSensors.some((sensor) => sensor.ts_id === s.ts_id)
+                );
+
+                const isTerminalIndeterminate =
+                  sensors.length !==
+                    checkedSensors.filter((sensor) => sensor.sensor_id === sensor_id).length &&
+                  sensors.some((s) => checkedSensors.some((sensor) => sensor.ts_id === s.ts_id));
+
+                return (
                   <Box
-                    key={sensor.uuid}
-                    sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}
+                    key={sensor_id}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: isMobile ? 0.5 : undefined,
+                    }}
                   >
                     <FormControlLabel
                       control={
                         <Checkbox
-                          checked={checkedSensors.some((s) => s.uuid === sensor.uuid)}
+                          checked={isTerminalChecked}
+                          indeterminate={isTerminalIndeterminate}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              setCheckedSensors((prev) => [...prev, sensor]);
+                              setCheckedSensors((prev) => [
+                                ...prev,
+                                ...sensors.filter((s) => !prev.some((ps) => ps.uuid === s.uuid)),
+                              ]);
                             } else {
                               setCheckedSensors((prev) =>
-                                prev.filter((s) => s.uuid !== sensor.uuid)
+                                prev.filter(
+                                  (s) => !sensors.some((sensor) => sensor.uuid === s.uuid)
+                                )
                               );
                             }
                           }}
                         />
                       }
-                      label={
-                        <Typography>
-                          {sensor.signal_id} - {sensor.sensor_id} (
-                          {activeTimeseries?.find((ts) => ts.ts_id === sensor.ts_id)?.ts_name})
-                        </Typography>
-                      }
+                      label={<Typography>Sensor {sensor_id}</Typography>}
                     />
+                    {sensors.map((sensor) => (
+                      <Box
+                        key={sensor.uuid}
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          pl: 1.5,
+                        }}
+                      >
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={checkedSensors.some((s) => s.uuid === sensor.uuid)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setCheckedSensors((prev) => [...prev, sensor]);
+                                } else {
+                                  setCheckedSensors((prev) =>
+                                    prev.filter((s) => s.uuid !== sensor.uuid)
+                                  );
+                                }
+                              }}
+                            />
+                          }
+                          label={
+                            <Typography
+                              sx={{
+                                display: 'flex',
+                                flexDirection: isMobile ? 'column' : 'row',
+                                gap: 0.5,
+                              }}
+                            >
+                              <Typography>
+                                {sensor.signal_id} - {sensor.sensor_id}
+                              </Typography>
+                              <Typography>
+                                (
+                                {activeTimeseries?.find((ts) => ts.ts_id === sensor.ts_id)?.ts_name}
+                                )
+                              </Typography>
+                            </Typography>
+                          }
+                        />
+                      </Box>
+                    ))}
                   </Box>
-                ))}
+                );
+              })}
             </List>
           )}
         </Box>
