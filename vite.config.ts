@@ -4,6 +4,7 @@ import {VitePWA} from 'vite-plugin-pwa';
 import svgrPlugin from 'vite-plugin-svgr';
 import {defineConfig, lazyPlugins} from 'vite-plus';
 
+import {oxfmtOptions} from './oxfmt.config';
 import {lintOptions} from './oxlint.config';
 
 import type {VitePWAOptions} from 'vite-plugin-pwa';
@@ -109,38 +110,8 @@ export default defineConfig({
   staged: {
     '*': 'vpr fix',
   },
-  fmt: {
-    arrowParens: 'always',
-    bracketSpacing: false,
-    jsxSingleQuote: false,
-    printWidth: 100,
-    singleQuote: true,
-    proseWrap: 'always',
-    quoteProps: 'as-needed',
-    semi: true,
-    tabWidth: 2,
-    trailingComma: 'es5',
-    useTabs: false,
-    sortPackageJson: true,
-    ignorePatterns: ['node_modules', 'dist', '*.html'],
-    sortImports: {
-      newlinesBetween: true,
-      groups: [
-        ['value-builtin'],
-        ['value-external'],
-        ['value-internal'],
-        ['value-parent', 'value-sibling', 'value-index'],
-        ['type-import'],
-        ['unknown'],
-      ],
-    },
-  },
+  fmt: oxfmtOptions,
   lint: lintOptions,
-
-  // "rules": {
-  //   "typescript/no-floating-promises": "warn",
-  //   "typescript/no-misused-promises": "warn"
-  // }
   resolve: {
     tsconfigPaths: true,
   },
