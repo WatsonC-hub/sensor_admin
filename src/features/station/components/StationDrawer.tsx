@@ -25,46 +25,45 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import {useAtom} from 'jotai';
-import React, {ReactNode} from 'react';
+import { useAtom } from 'jotai';
+import React, { ReactNode } from 'react';
 import FunctionsIcon from '@mui/icons-material/Functions';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
+import { useStationPages } from '~/hooks/useQueryStateParameters';
 import PersonIcon from '@mui/icons-material/Person';
 import BackpackIcon from '@mui/icons-material/Backpack';
 import KeyIcon from '@mui/icons-material/Key';
-import {drawerOpenAtom} from '~/state/atoms';
-import {useAppContext} from '~/state/contexts';
+import { drawerOpenAtom } from '~/state/atoms';
+import { useAppContext } from '~/state/contexts';
 import {
   Metadata,
   metadataQueryOptions,
   useLocationData,
   useTimeseriesData,
 } from '~/hooks/query/useMetadata';
-import {useUser} from '~/features/auth/useUser';
-import {QueryKey, UseQueryOptions} from '@tanstack/react-query';
-import {queryClient} from '~/queryClient';
-import {pejlingGetOptions} from '~/features/pejling/api/usePejling';
-import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
-import {getMaalepunktOptions} from '~/hooks/query/useMaalepunkt';
-import {contactInfoGetOptions} from '~/features/stamdata/api/useContactInfo';
-import {locationAccessGetOptions} from '~/features/stamdata/api/useLocationAccess';
-import {getRessourcerOptions} from '~/features/stamdata/api/useRessourcer';
-import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory';
-import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
-import {getImageOptions} from '../api/useImages';
-import {stationPages, StationPages} from '~/helpers/EnumHelper';
+import { useUser } from '~/features/auth/useUser';
+import { QueryKey, UseQueryOptions } from '@tanstack/react-query';
+import { queryClient } from '~/queryClient';
+import { pejlingGetOptions } from '~/features/pejling/api/usePejling';
+import { tilsynGetOptions } from '~/features/tilsyn/api/useTilsyn';
+import { getMaalepunktOptions } from '~/hooks/query/useMaalepunkt';
+import { contactInfoGetOptions } from '~/features/stamdata/api/useContactInfo';
+import { locationAccessGetOptions } from '~/features/stamdata/api/useLocationAccess';
+import { getRessourcerOptions } from '~/features/stamdata/api/useRessourcer';
+import { getQAHistoryOptions } from '~/features/kvalitetssikring/api/useQAHistory';
+import { getAlgorithmOptions } from '~/features/kvalitetssikring/api/useAlgorithms';
+import { getImageOptions } from '../api/useImages';
+import { stationPages, StationPages } from '~/helpers/EnumHelper';
 import MinimalSelect from './MinimalSelect';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import { useNavigationFunctions } from '~/hooks/useNavigationFunctions';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {
   timeseriesMeasureSampleSendOptions,
-  useTimeseriesMeasureSampleSend,
 } from '../api/useTimeseriesMeasureSampleSend';
-import useDmpAllowedMapList, {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
-import {alarmGetOptions} from '../alarms/api/useAlarm';
-import {useProgress} from '~/hooks/query/stationProgress';
+import useDmpAllowedMapList, { prefetchDmpAllowedMapList } from '../api/useDmpAllowedMapList';
+import { alarmGetOptions } from '../alarms/api/useAlarm';
+import { useProgress } from '~/hooks/query/stationProgress';
 
 const drawerWidth = 200;
 
@@ -99,37 +98,35 @@ const navIconStyle = (isSelected: boolean) => {
 };
 const StationDrawer = () => {
   const theme = useTheme();
-  const {ts_id, loc_id} = useAppContext(['loc_id'], ['ts_id']);
+  const { ts_id, loc_id } = useAppContext(['loc_id'], ['ts_id']);
   const [pageToShow, setPageToShow] = useStationPages();
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
-  const {isTouch} = useBreakpoints();
-  const {data: metadata} = useTimeseriesData();
-  const {data: locationdata} = useLocationData();
-  const {data: progress} = useProgress(loc_id, ts_id);
-  const {data, error} = useTimeseriesMeasureSampleSend(ts_id);
+  const { isTouch } = useBreakpoints();
+  const { data: metadata } = useTimeseriesData();
+  const { data: locationdata } = useLocationData();
+  const { data: progress } = useProgress(loc_id, ts_id);
 
   const isDmpAllowed = useDmpAllowedMapList(ts_id);
 
   const configurationProgress =
     progress?.kontrolhyppighed === false ||
-    (progress?.sync === false &&
-      (isDmpAllowed ||
-        (metadata?.loctype_id === 9 && [1, 11, 12, 16].includes(metadata?.tstype_id || 0)))) ||
-    progress?.visibility === false ||
-    (progress?.samplesend === false && data !== undefined && !error)
+      (progress?.sync === false &&
+        (isDmpAllowed ||
+          (metadata?.loctype_id === 9 && [1, 11, 12, 16].includes(metadata?.tstype_id || 0)))) ||
+      progress?.visibility === false
       ? 0
       : undefined;
 
   const {
     superUser,
-    features: {iotAccess, alarms, contacts, keys: accessKeys, ressources, stationProgress},
+    features: { iotAccess, alarms, contacts, keys: accessKeys, ressources, stationProgress },
   } = useUser();
-  const {createStamdata} = useNavigationFunctions();
+  const { createStamdata } = useNavigationFunctions();
 
   const handlePrefetch = <TData, TError, TSelectData, TKey extends QueryKey>(
     options: UseQueryOptions<TData, TError, TSelectData, TKey>
   ) => {
-    queryClient.prefetchQuery({...options, staleTime: 1000 * 10});
+    queryClient.prefetchQuery({ ...options, staleTime: 1000 * 10 });
   };
 
   const toggleDrawer = (newOpen: boolean) => {
@@ -166,13 +163,13 @@ const StationDrawer = () => {
       items: [
         ...(ts_id == undefined
           ? [
-              {
-                text: 'Ingen tidsserier',
-                page: stationPages.PEJLING,
-                icon: <DoNotDisturb />,
-                requiredTsId: false,
-              },
-            ]
+            {
+              text: 'Ingen tidsserier',
+              page: stationPages.PEJLING,
+              icon: <DoNotDisturb />,
+              requiredTsId: false,
+            },
+          ]
           : []),
         {
           text: 'Kontrol',
@@ -232,7 +229,6 @@ const StationDrawer = () => {
           requiredTsId: true,
           onHover: () => handlePrefetch(alarmGetOptions(ts_id)),
           disabled: !alarms,
-          progress: progress?.alarm == false ? 0 : undefined,
         },
         {
           text: 'Konfiguration',
@@ -331,7 +327,7 @@ const StationDrawer = () => {
             justifyContent: 'space-between',
           }}
         >
-          <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
+          <ListItemText sx={{ color: 'white', fontSize: 'bold' }} primary={category.text} />
           <Box alignItems={'center'} display="flex" gap={1}>
             {category.settings &&
               category.settings
@@ -368,7 +364,7 @@ const StationDrawer = () => {
 
             const mouseEnter = () => {
               timer = setTimeout(
-                item.onHover && pageToShow !== item.page ? item.onHover : () => {},
+                item.onHover && pageToShow !== item.page ? item.onHover : () => { },
                 100
               );
             };
@@ -403,18 +399,18 @@ const StationDrawer = () => {
                     if (open) toggleDrawer(false);
                   }}
                 >
-                  <ListItemIcon sx={{color: navIconStyle(pageToShow === item.page), minWidth: 42}}>
+                  <ListItemIcon sx={{ color: navIconStyle(pageToShow === item.page), minWidth: 42 }}>
                     {item.icon}
                   </ListItemIcon>
                   <ListItemText>
                     <Wrapper
-                      {...(item.tooltip ? {description: item.tooltip, withIcon: false} : {})}
+                      {...(item.tooltip ? { description: item.tooltip, withIcon: false } : {})}
                     >
                       {item.text}
                     </Wrapper>
                   </ListItemText>
                   {item.progress != undefined && stationProgress && (
-                    <PriorityHigh sx={{color: theme.palette.info.light}} />
+                    <PriorityHigh sx={{ color: theme.palette.info.light }} />
                   )}
                 </ListItemButton>
               </ListItem>
@@ -445,10 +441,10 @@ type LayoutProps = {
   variant?: 'temporary' | 'permanent';
 };
 
-const Layout = ({children, variant}: LayoutProps) => {
+const Layout = ({ children, variant }: LayoutProps) => {
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
-  const {data: locationdata} = useLocationData();
-  const {isTouch} = useBreakpoints();
+  const { data: locationdata } = useLocationData();
+  const { isTouch } = useBreakpoints();
   const open = openAtom;
   const toggleDrawer = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -476,7 +472,7 @@ const Layout = ({children, variant}: LayoutProps) => {
         )}
       </Box>
       <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
-        <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
+        <Box sx={{ overflowY: 'auto', overflowX: 'hidden', p: 0 }}>{children}</Box>
       </ClickAwayListener>
     </Drawer>
   );

@@ -11,8 +11,6 @@ export type ProgressStatus = {
   watlevmp: boolean;
   sync: boolean;
   kontrolhyppighed: boolean;
-  alarm: boolean;
-  samplesend: boolean;
   sla: boolean;
   visibility: boolean;
 };
