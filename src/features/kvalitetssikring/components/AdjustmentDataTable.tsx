@@ -18,6 +18,7 @@ import YRangeRow from '~/pages/admin/kvalitetssikring/components/YRangeRow';
 
 import type {CertifyQa} from '../api/useCertifyQa';
 import type {MRT_ColumnDef, MRT_RowData, MRT_TableOptions} from 'material-react-table';
+import type {JSX} from 'react';
 import type {ExcludeData} from '~/hooks/query/useExclude';
 import type {AdjustmentData, DataExclude, LevelCorrection, MinMaxCutoff} from '~/types';
 
@@ -32,7 +33,7 @@ sortMap.set(AdjustmentTypes.EXLUDEPOINTS, 3);
 sortMap.set(AdjustmentTypes.MINMAX, 4);
 sortMap.set(AdjustmentTypes.APPROVED, 5);
 
-const AdjustmentDataTable = ({data}: Props) => {
+const AdjustmentDataTable = ({data}: Props): JSX.Element => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const {del: delCorrection} = useLevelCorrection();
