@@ -1,10 +1,10 @@
-import {Typography, InputAdornment, TextField} from '@mui/material';
-import {RefetchOptions, useQuery} from '@tanstack/react-query';
-import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
-import {useFormContext, Controller} from 'react-hook-form';
-import {apiClient} from '~/apiClient';
-import FormInput, {FormInputProps} from '~/components/FormInput';
-import {useUser} from '~/features/auth/useUser';
+import { Typography, InputAdornment, TextField } from '@mui/material';
+import { RefetchOptions, useQuery } from '@tanstack/react-query';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { useFormContext, Controller } from 'react-hook-form';
+import { apiClient } from '~/apiClient';
+import FormInput, { FormInputProps } from '~/components/FormInput';
+import { useUser } from '~/features/auth/useUser';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
 import {
@@ -13,15 +13,15 @@ import {
   DefaultAddLocation,
   DefaultEditLocation,
 } from '../../schema';
-import {getDTMQuota} from '~/pages/field/fieldAPI';
-import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
-import {Borehole} from '../../api/useBorehole';
-import {utm} from '~/features/map/mapConsts';
-import {postElasticSearch} from '~/pages/field/boreholeAPI';
-import {useAppContext} from '~/state/contexts';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {queryClient} from '~/queryClient';
-import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
+import { getDTMQuota } from '~/pages/field/fieldAPI';
+import ExtendedAutocomplete, { AutoCompleteFieldProps } from '~/components/Autocomplete';
+import { Borehole } from '../../api/useBorehole';
+import { utm } from '~/features/map/mapConsts';
+import { postElasticSearch } from '~/pages/field/boreholeAPI';
+import { useAppContext } from '~/state/contexts';
+import { queryKeys } from '~/helpers/QueryKeyFactoryHelper';
+import { queryClient } from '~/queryClient';
+import { MapOverview, useMapOverview } from '~/hooks/query/useNotificationOverview';
 
 type Props = {
   children: React.ReactNode;
@@ -38,11 +38,12 @@ const LocationContext = React.createContext(
   }
 );
 
-const StamdataLocation = ({children}: Props) => {
-  const {setValue, watch} = useFormContext<
+const StamdataLocation = ({ children }: Props) => {
+  const { loc_id } = useAppContext(undefined, ['loc_id']);
+  const { setValue, watch } = useFormContext<
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
-
+  console.log(loc_id)
   const x = watch('x');
   const y = watch('y');
   const terrainqual = watch('terrainqual');
@@ -54,7 +55,7 @@ const StamdataLocation = ({children}: Props) => {
     queryKey: queryKeys.dtm(),
     queryFn: () => getDTMQuota(x, y),
     refetchOnWindowFocus: false,
-    enabled: x !== undefined && y !== undefined && terrainqual === 'DTM',
+    enabled: x !== undefined && y !== undefined && terrainqual === 'DTM' && !loc_id,
   });
 
   useEffect(() => {
@@ -97,10 +98,10 @@ const LoctypeSelect = (
     'name'
   >
 ) => {
-  const {data} = useQuery({
+  const { data } = useQuery({
     queryKey: queryKeys.locationTypes(),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<locationType>>(
+      const { data } = await apiClient.get<Array<locationType>>(
         `/sensor_field/stamdata/location_types`
       );
       return data;
@@ -116,7 +117,7 @@ const LoctypeSelect = (
           label="Lokationstype"
           placeholder="Vælg type"
           select
-          options={data.map((item) => ({[item.loctype_id]: item.loctypename}))}
+          options={data.map((item) => ({ [item.loctype_id]: item.loctypename }))}
           keyType="number"
           required
           infoText="Lokationstypen kan betyde hvilke muligheder der er for at tilføje data til lokationen. F.eks. kan DGU boringer oprettes smartere og synkroniseres til GEUS."
@@ -135,10 +136,10 @@ const X = (
     'name'
   >
 ) => {
-  const {watch} = useFormContext<
+  const { watch } = useFormContext<
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
-  const {refetchDTM} = React.useContext(LocationContext);
+  const { refetchDTM } = React.useContext(LocationContext);
   const watchTerrainqual = watch('terrainqual');
 
   return (
@@ -171,10 +172,10 @@ const Y = (
     'name'
   >
 ) => {
-  const {watch} = useFormContext<
+  const { watch } = useFormContext<
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
-  const {refetchDTM} = React.useContext(LocationContext);
+  const { refetchDTM } = React.useContext(LocationContext);
   const watchTerrainqual = watch('terrainqual');
 
   return (
@@ -236,7 +237,7 @@ const TerrainQuality = (
     'name'
   >
 ) => {
-  const {refetchDTM} = React.useContext(LocationContext);
+  const { refetchDTM } = React.useContext(LocationContext);
 
   return (
     <FormInput
@@ -245,7 +246,7 @@ const TerrainQuality = (
       select
       fullWidth
       placeholder="Vælg type"
-      options={[{DTM: 'DTM'}, {dGPS: 'dGPS'}]}
+      options={[{ DTM: 'DTM' }, { dGPS: 'dGPS' }]}
       keyType="string"
       onChangeCallback={(e) => {
         if ((e as ChangeEvent<HTMLTextAreaElement>).target.value === 'DTM') {
@@ -281,11 +282,11 @@ type BoreholeNoProps = Partial<AutoCompleteFieldProps<Borehole>> & {
   editing?: boolean;
 };
 
-const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
+const Boreholeno = ({ editing = false, ...props }: BoreholeNoProps) => {
   const {
     setValue,
     control,
-    formState: {errors, defaultValues, dirtyFields},
+    formState: { errors, defaultValues, dirtyFields },
     watch,
     trigger,
   } = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
@@ -303,14 +304,14 @@ const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
       setSelectedBorehole(
         defaultValues && dirtyFields.boreholeno === undefined
           ? {
-              boreholeno: defaultValues.boreholeno!,
-              latitude: defaultValues.y!,
-              longitude: defaultValues.x!,
-            }
+            boreholeno: defaultValues.boreholeno!,
+            latitude: defaultValues.y!,
+            longitude: defaultValues.x!,
+          }
           : null
       );
     } else if (editing === false) {
-      setSelectedBorehole(boreholeno ? {boreholeno, latitude: y, longitude: x} : null);
+      setSelectedBorehole(boreholeno ? { boreholeno, latitude: y, longitude: x } : null);
     }
   }, [boreholeno]);
 
@@ -318,7 +319,7 @@ const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
     <Controller
       name="boreholeno"
       control={control}
-      render={({field: {onChange}}) => {
+      render={({ field: { onChange } }) => {
         return (
           <>
             {loctype_id === 9 && (
@@ -337,15 +338,15 @@ const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
                     setSelectedBorehole(option);
                     // @ts-expect-error error in type definition
                     const latlng = utm.convertLatLngToUtm(option.latitude, option.longitude, 32);
-                    setValue('x', parseFloat(latlng.Easting.toFixed(1)), {shouldValidate: true});
-                    setValue('y', parseFloat(latlng.Northing.toFixed(1)), {shouldValidate: true});
+                    setValue('x', parseFloat(latlng.Easting.toFixed(1)), { shouldValidate: true });
+                    setValue('y', parseFloat(latlng.Northing.toFixed(1)), { shouldValidate: true });
                     trigger('boreholeno');
                   }
                 }}
                 error={errors.boreholeno?.message}
                 selectValue={selectedBorehole}
                 filterOptions={(options, params) => {
-                  const {inputValue} = params;
+                  const { inputValue } = params;
                   const filter = options.filter((option) =>
                     option.boreholeno?.includes(inputValue)
                   );
@@ -412,7 +413,7 @@ const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
 const BoreholeSuffix = (
   props: Omit<FormInputProps<BoreholeAddLocation | BoreholeEditLocation>, 'name' | 'label'>
 ) => {
-  const {watch} = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
+  const { watch } = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
   const boreholeno = watch('boreholeno');
   return (
     <FormInput
@@ -442,12 +443,12 @@ const Groups = (
     'name'
   >
 ) => {
-  const {control} = useFormContext();
+  const { control } = useFormContext();
   return (
     <Controller
       name="groups"
       control={control}
-      render={({field: {onChange, value, onBlur}}) => (
+      render={({ field: { onChange, value, onBlur } }) => (
         <LocationGroups
           value={value}
           setValue={onChange}
@@ -468,13 +469,13 @@ const InitialProjectNo = (
     'name'
   >
 ) => {
-  const {superUser} = useUser();
-  const {control} = useFormContext<
+  const { superUser } = useUser();
+  const { control } = useFormContext<
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
-  const {loc_id} = useAppContext(undefined, ['loc_id']);
+  const { loc_id } = useAppContext(undefined, ['loc_id']);
 
-  const {data} = useMapOverview({
+  const { data } = useMapOverview({
     select: useCallback(
       (data: MapOverview[]) => data.find((loc) => loc.loc_id === loc_id),
       [loc_id]
@@ -487,7 +488,7 @@ const InitialProjectNo = (
     <Controller
       name="initial_project_no"
       control={control}
-      render={({field: {onChange, value, onBlur}, fieldState: {error}}) => (
+      render={({ field: { onChange, value, onBlur }, fieldState: { error } }) => (
         <LocationProjects
           {...props}
           value={value}
@@ -521,7 +522,7 @@ const Description = (
 };
 
 const LocationID = () => {
-  const {loc_id} = useAppContext(['loc_id']);
+  const { loc_id } = useAppContext(['loc_id']);
   return (
     <TextField
       value={loc_id}
@@ -537,10 +538,10 @@ const LocationID = () => {
         '& .MuiInputBase-input.Mui-disabled': {
           WebkitTextFillColor: '#000000',
         },
-        '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-        '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+        '& .MuiInputLabel-root': { color: 'primary.main' }, //styles the label
+        '& .MuiInputLabel-root.Mui-disabled': { color: 'rgba(0, 0, 0, 0.38)' }, //styles the label
         '& .MuiOutlinedInput-root': {
-          '& > fieldset': {borderColor: 'primary.main'},
+          '& > fieldset': { borderColor: 'primary.main' },
         },
         '.MuiFormHelperText-root': {
           position: 'absolute',

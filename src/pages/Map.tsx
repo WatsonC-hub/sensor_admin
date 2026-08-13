@@ -1,44 +1,45 @@
-import {Box} from '@mui/material';
+import { Box } from '@mui/material';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-import L, {ContextMenuItemClickEvent} from 'leaflet';
+import L, { ContextMenuItemClickEvent } from 'leaflet';
 import '~/css/leaflet.css';
-import {useEffect, SyntheticEvent, useCallback} from 'react';
-import {toast} from 'react-toastify';
+import { useEffect, SyntheticEvent, useCallback } from 'react';
+import { toast } from 'react-toastify';
 import '~/features/map/map.css';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
-import {MapOverview, timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import { MapOverview, timeseriesStatusOptions } from '~/hooks/query/useNotificationOverview';
+import { useNavigationFunctions } from '~/hooks/useNavigationFunctions';
 
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 
-import {useMapUtilityStore} from '~/state/store';
-import {BoreholeMapData} from '~/types';
+import { useMapUtilityStore } from '~/state/store';
+import { BoreholeMapData } from '~/types';
 
 import 'leaflet/dist/leaflet.css';
 
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.min.css';
 import useMap from '../features/map/components/useMap';
-import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
+import { useFilteredMapData } from '~/features/map/hooks/useFilteredMapData';
 import {
   getBoreholesIcon,
   getNotificationIcon,
+  preventClickAfterLongPress,
   preventClickAfterTouchend,
 } from '~/features/map/utils';
-import {utm} from '../features/map/mapConsts';
-import {queryClient} from '~/queryClient';
-import {useUser} from '~/features/auth/useUser';
-import {debounce} from 'lodash';
-import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
-import {findBorehole} from '~/features/station/api/useBorehole';
-import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
-import {SelectionCommand} from '~/features/commandpalette/components/CommandContext';
+import { utm } from '../features/map/mapConsts';
+import { queryClient } from '~/queryClient';
+import { useUser } from '~/features/auth/useUser';
+import { debounce } from 'lodash';
+import { locationInfoOptions } from '~/features/station/api/useLocationInfo';
+import { findBorehole } from '~/features/station/api/useBorehole';
+import { usePageActions } from '~/features/commandpalette/hooks/usePageActions';
+import { SelectionCommand } from '~/features/commandpalette/components/CommandContext';
 
-import {NotListedLocation} from '@mui/icons-material';
+import { NotListedLocation } from '@mui/icons-material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 interface LocItems {
@@ -51,9 +52,9 @@ interface MapProps {
   clickCallback?: (data: MapOverview | BoreholeMapData | null) => void;
 }
 
-const Map = ({clickCallback}: MapProps) => {
-  const {isMobile} = useBreakpoints();
-  const {createStamdata, location} = useNavigationFunctions();
+const Map = ({ clickCallback }: MapProps) => {
+  const { isMobile } = useBreakpoints();
+  const { createStamdata, location } = useNavigationFunctions();
   const [setSelectLocId, setEditRouteLayer, setEditParkingLayer] = useMapUtilityStore((state) => [
     state.setSelectedLocId,
     state.setEditRouteLayer,
@@ -61,10 +62,10 @@ const Map = ({clickCallback}: MapProps) => {
   ]);
 
   const {
-    features: {iotAccess, routesAndParking},
+    features: { iotAccess, routesAndParking },
   } = useUser();
 
-  const {data, mapFilteredData: filteredData, setExtraData} = useFilteredMapData();
+  const { data, mapFilteredData: filteredData, setExtraData } = useFilteredMapData();
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
@@ -96,7 +97,7 @@ const Map = ({clickCallback}: MapProps) => {
   const {
     map,
     setSelectedMarker,
-    layers: {markerLayer},
+    layers: { markerLayer },
     delete: {
       deleteId,
       deleteParking,
@@ -107,7 +108,7 @@ const Map = ({clickCallback}: MapProps) => {
       setDisplayDelete,
       type,
     },
-    warning: {displayAlert, setDisplayAlert},
+    warning: { displayAlert, setDisplayAlert },
     defaultContextmenuItems,
   } = useMap('test', filteredData, contextmenuItems, clickCallback);
 
@@ -134,7 +135,7 @@ const Map = ({clickCallback}: MapProps) => {
   const createLocationMarker = (element: MapOverview) => {
     const point: L.LatLngExpression = [element.latitude, element.longitude];
     const marker = L.marker(point, {
-      icon: getNotificationIcon({...element}),
+      icon: getNotificationIcon({ ...element }),
       interactive: true,
       riseOnHover: true,
       title: element.loc_name,
@@ -205,7 +206,7 @@ const Map = ({clickCallback}: MapProps) => {
 
     locationMenu = [
       ...locationMenu,
-      {text: 'divider', separator: true},
+      { text: 'divider', separator: true },
       ...defaultContextmenuItems,
     ];
 
@@ -225,7 +226,7 @@ const Map = ({clickCallback}: MapProps) => {
 
     if (marker) {
       marker.openPopup();
-      map?.flyTo(marker.getLatLng(), 14, {animate: false});
+      map?.flyTo(marker.getLatLng(), 14, { animate: false });
       marker.fire('click');
       setExtraData(null);
       setSelectedMarker(marker.options.data);
@@ -236,7 +237,7 @@ const Map = ({clickCallback}: MapProps) => {
       if (hiddenMarker) {
         // hightlightedMarker = marker;
         hiddenMarker.openPopup();
-        map?.flyTo(hiddenMarker.getLatLng(), 14, {animate: false});
+        map?.flyTo(hiddenMarker.getLatLng(), 14, { animate: false });
         hiddenMarker.fire('click');
       }
     }
@@ -249,7 +250,7 @@ const Map = ({clickCallback}: MapProps) => {
 
     if (marker) {
       marker.openPopup();
-      map?.flyTo(marker.getLatLng(), 14, {animate: false});
+      map?.flyTo(marker.getLatLng(), 14, { animate: false });
       marker.fire('click');
       setExtraData(null);
       setSelectedMarker(marker.options.data);
@@ -265,7 +266,7 @@ const Map = ({clickCallback}: MapProps) => {
         if (hiddenMarker) {
           // hightlightedMarker = marker;
           hiddenMarker.openPopup();
-          map?.flyTo(hiddenMarker.getLatLng(), 14, {animate: false});
+          map?.flyTo(hiddenMarker.getLatLng(), 14, { animate: false });
           hiddenMarker.fire('click');
         }
       }
@@ -279,7 +280,7 @@ const Map = ({clickCallback}: MapProps) => {
       type: 'selection',
       perform: (inp) => {
         createHiddenLocationMarker(inp.loc_name);
-        map?.flyTo([inp.latitude, inp.longitude], 14, {animate: false});
+        map?.flyTo([inp.latitude, inp.longitude], 14, { animate: false });
         location(inp.loc_id);
       },
       icon: <NotListedLocation />,
@@ -336,14 +337,14 @@ const Map = ({clickCallback}: MapProps) => {
         const marker = createLocationMarker(element);
 
         if (marker) {
-          marker.bindTooltip(element.loc_name, {direction: 'top', offset: [0, -10]});
+          marker.bindTooltip(element.loc_name, { direction: 'top', offset: [0, -10] });
         }
 
         return marker;
       } else {
         const marker = createBoreholeMarker(element);
 
-        marker.bindTooltip(element.boreholeno, {direction: 'top', offset: [0, -10]});
+        marker.bindTooltip(element.boreholeno, { direction: 'top', offset: [0, -10] });
 
         return marker;
       }
@@ -352,13 +353,7 @@ const Map = ({clickCallback}: MapProps) => {
     markerLayer?.addLayers(markers);
   }, [filteredData, markerLayer]);
 
-  useEffect(() => {
-    document.getElementById('test')?.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-    });
 
-    preventClickAfterTouchend('test');
-  }, []);
 
   return (
     <>
@@ -383,7 +378,7 @@ const Map = ({clickCallback}: MapProps) => {
       <Box position={'absolute'} zIndex={401} p={0} mr={2} width={isMobile ? '100%' : undefined}>
         <SearchAndFilterMap data={data} handleSearchSelect={handleSearchSelect} />
       </Box>
-      <Box id="test" className="no-select" sx={{width: '100%', height: '100%'}} />
+      <Box id="test" className="no-select" sx={{ width: '100%', height: '100%' }} />
     </>
   );
 };
