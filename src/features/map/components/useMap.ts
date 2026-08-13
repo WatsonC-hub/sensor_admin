@@ -37,7 +37,7 @@ import {
   routeStyle,
 } from '../mapConsts';
 import {useUser} from '~/features/auth/useUser';
-import {setIconSize} from '../utils';
+import {preventLeafletPostLongPress, setIconSize} from '../utils';
 import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
@@ -179,6 +179,7 @@ const useMap = <TData extends object>(
       layers: [{layer: defaultMapBox}, {layer: satelitemapbox}],
     }).addTo(map);
 
+    preventLeafletPostLongPress(map);
     onMapClickEvent(map);
     onCreateRouteEvent(map);
     onMapMoveEndEvent(map);
