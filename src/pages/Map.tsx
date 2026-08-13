@@ -27,8 +27,6 @@ import { useFilteredMapData } from '~/features/map/hooks/useFilteredMapData';
 import {
   getBoreholesIcon,
   getNotificationIcon,
-  preventClickAfterLongPress,
-  preventClickAfterTouchend,
 } from '~/features/map/utils';
 import { utm } from '../features/map/mapConsts';
 import { queryClient } from '~/queryClient';
