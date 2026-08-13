@@ -282,7 +282,7 @@ export default function AddUnitForm({
                 label="Fra"
                 value={dayjs(unitData.fra)}
                 onChange={handleDateChange}
-                helperText={errors.startdate ? errors.startdate.message : ''}
+                helperText={errors.startdate ? (errors.startdate.message as string) : ''}
               />
             </DialogContent>
 

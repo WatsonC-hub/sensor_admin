@@ -1,34 +1,34 @@
-import {zodResolver} from '@hookform/resolvers/zod';
-import {Save} from '@mui/icons-material';
-import {Box, Typography, TextField, InputAdornment, Alert, Grid2} from '@mui/material';
-import React, {useEffect, useState} from 'react';
-import {useForm, FormProvider} from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Save } from '@mui/icons-material';
+import { Box, Typography, TextField, InputAdornment, Alert, Grid2 } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 import FormInput from '~/components/FormInput';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {
   useTimeseriesMeasureSampleSend,
   useTimeseriesMeasureSampleSendMutation,
 } from '~/features/station/api/useTimeseriesMeasureSampleSend';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {useAppContext} from '~/state/contexts';
+import { convertDateWithTimeStamp } from '~/helpers/dateConverter';
+import { useAppContext } from '~/state/contexts';
 import ConfigAlert from './ConfigAlert';
-import {z} from 'zod';
+import { z } from 'zod';
 import Button from '~/components/Button';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {APIError} from '~/queryClient';
-import {useMapOverview} from '~/hooks/query/useNotificationOverview';
-import {useUser} from '~/features/auth/useUser';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import { APIError } from '~/queryClient';
+import { useMapOverview } from '~/hooks/query/useNotificationOverview';
+import { useUser } from '~/features/auth/useUser';
+import { useTimeseriesData } from '~/hooks/query/useMetadata';
 import dayjs from 'dayjs';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import usePermissions from '~/features/permissions/api/usePermissions';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
-    .number({required_error: 'Måleinterval er påkrævet'})
+    .number({ required_error: 'Måleinterval er påkrævet' })
     .min(1, 'Måleinterval skal være mindst 1 minut'),
   sendInterval: z
-    .number({required_error: 'Sendeinterval er påkrævet'})
+    .number({ required_error: 'Sendeinterval er påkrævet' })
     .min(1, 'Sendingsinterval skal være mindst 1 minut'),
 });
 
@@ -49,26 +49,26 @@ const convertMinutesToTime = (minutes: number) => {
 
 const getOptions = (sampleInterval: number | undefined) => {
   if (!sampleInterval) return [];
-  return Array.from({length: NUM_OPTIONS}, (_, i) => i + 1).map((value) => {
+  return Array.from({ length: NUM_OPTIONS }, (_, i) => i + 1).map((value) => {
     const interval = value * sampleInterval;
 
     const label = convertMinutesToTime(interval) + ` (${value} målinger)`;
 
-    return {[interval]: label};
+    return { [interval]: label };
   });
 };
 
 const UnitMeasurementConfig = () => {
-  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
-  const {data, isLoading, error} = useTimeseriesMeasureSampleSend(ts_id);
-  const {data: timeseriesData} = useTimeseriesData(ts_id);
-  const {data: currentLocation} = useMapOverview({
+  const { ts_id, loc_id } = useAppContext(['ts_id', 'loc_id']);
+  const { data, isLoading, error } = useTimeseriesMeasureSampleSend(ts_id);
+  const { data: timeseriesData } = useTimeseriesData(ts_id);
+  const { data: currentLocation } = useMapOverview({
     select: (data) => data.find((loc) => loc.loc_id === loc_id),
   });
-  const {mutateAsync} = useTimeseriesMeasureSampleSendMutation(ts_id);
+  const { mutateAsync } = useTimeseriesMeasureSampleSendMutation(ts_id);
   const [options, setOptions] = useState<Array<Record<number, string>>>([]);
-  const {isMobile} = useBreakpoints();
-  const {superUser} = useUser();
+  const { isMobile } = useBreakpoints();
+  const { superUser } = useUser();
   const values = data?.savedConfig ? data.savedConfig : undefined;
 
   const formMethods = useForm<ConfigForm, unknown, ConfigSubmit>({
@@ -80,7 +80,7 @@ const UnitMeasurementConfig = () => {
     values: values,
   });
 
-  const {location_permissions} = usePermissions(loc_id);
+  const { location_permissions } = usePermissions(loc_id);
 
   const disabled =
     !data?.configPossible ||
@@ -91,7 +91,7 @@ const UnitMeasurementConfig = () => {
   const {
     handleSubmit,
     reset,
-    formState: {isSubmitting, isDirty},
+    formState: { isSubmitting, isDirty },
     getValues,
   } = formMethods;
 
@@ -163,7 +163,7 @@ const UnitMeasurementConfig = () => {
           value={
             data?.currentConfig?.sendInterval
               ? convertMinutesToTime(data?.currentConfig?.sendInterval) +
-                ` (${num_measurements} målinger)`
+              ` (${num_measurements} målinger)`
               : ''
           }
           slotProps={{
@@ -258,18 +258,12 @@ const UnitMeasurementConfig = () => {
         />
       </Box>
 
-      <Typography variant="body2" color="textSecondary" sx={{mt: 1, mb: 2}}>
+      <Typography variant="body2" color="textSecondary" sx={{ mt: 1, mb: 2 }}>
         Forventet tidspunkt for omkonfigurering {configChange ? configChange : 'ukendt'}
       </Typography>
 
       {!disabled && (
         <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
-          <UpdateProgressButton
-            loc_id={loc_id}
-            ts_id={ts_id}
-            progressKey="samplesend"
-            disabled={disabled || isDirty}
-          />
           <Button
             bttype="tertiary"
             onClick={() => reset()}

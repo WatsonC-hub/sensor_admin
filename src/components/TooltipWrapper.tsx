@@ -1,4 +1,4 @@
-import {Box, Link, Tooltip} from '@mui/material';
+import { Box, Link, Tooltip } from '@mui/material';
 import InfoOutlined from '@mui/icons-material/InfoOutlined';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import React from 'react';
@@ -30,15 +30,15 @@ const TooltipWrapper = ({
   }
 
   return (
-    <Tooltip title={description} arrow enterTouchDelay={0}>
-      <Box
-        display="flex"
-        alignItems="center"
-        alignContent="center"
-        justifyContent={children ? 'space-between' : 'end'}
-        gap={1}
-      >
-        {children}
+    <Box
+      display="flex"
+      alignItems="center"
+      alignContent="center"
+      justifyContent={children ? 'space-between' : 'end'}
+      gap={1}
+    >
+      {children}
+      <Tooltip title={description} arrow enterTouchDelay={0}>
         {url ? (
           <Link
             href={url}
@@ -82,8 +82,8 @@ const TooltipWrapper = ({
             />
           </Box>
         )}
-      </Box>
-    </Tooltip>
+      </Tooltip>
+    </Box>
   );
 };
 
