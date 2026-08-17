@@ -13,18 +13,6 @@ body {
     monospace;
 } */
 
-.app-title-bar {
-  app-region: drag;
-}
-
-.app-title-div {
-  width: env(titlebar-area-width, 100%);
-}
-
-.app-title-controls {
-  app-region: no-drag;
-}
-
 .root {
   display: flex;
   flex-direction: column;
