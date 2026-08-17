@@ -1,4 +1,4 @@
-import { Warning } from '@mui/icons-material';
+import {Warning} from '@mui/icons-material';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
@@ -6,10 +6,10 @@ import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
 
-import { apiClient } from '~/apiClient';
+import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import { useUser } from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import useDeleteLocation from '~/features/station/api/useDeleteLocation';
 import useLocationForm from '~/features/station/api/useLocationForm';
@@ -19,8 +19,8 @@ import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import { useStationPages } from '~/hooks/useQueryStateParameters';
-import { useAppContext } from '~/state/contexts';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
+import {useAppContext} from '~/state/contexts';
 
 import type {z} from 'zod';
 import type {BaseLocation} from '~/features/station/schema';
@@ -28,18 +28,18 @@ import type {BaseLocation} from '~/features/station/schema';
 const EditLocation = () => {
   const setLocId = useDisplayState((state) => state.setLocId);
   const [, setPage] = useStationPages();
-  const { loc_id, ts_id } = useAppContext(['loc_id'], ['ts_id']);
+  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const [assertDeletion, setAssertDeletion] = React.useState(false);
-  const { mutate: deleteLocation, isPending } = useDeleteLocation();
-  const { data: metadata } = useLocationData();
-  const { location_permissions } = usePermissions(loc_id);
-  const { isMobile } = useBreakpoints();
+  const {mutate: deleteLocation, isPending} = useDeleteLocation();
+  const {data: metadata} = useLocationData();
+  const {location_permissions} = usePermissions(loc_id);
+  const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
-  const { superUser } = useUser();
+  const {superUser} = useUser();
 
-  const { mutateAsync: updateLocationAsync } = useMutation({
+  const {mutateAsync: updateLocationAsync} = useMutation({
     mutationFn: async (data: any) => {
-      const { data: out } = await apiClient.put(
+      const {data: out} = await apiClient.put(
         `/sensor_field/stamdata/update_location/${loc_id}`,
         data
       );
@@ -55,7 +55,7 @@ const EditLocation = () => {
     },
   });
 
-  const default_data = { ...metadata, initial_project_no: metadata?.projectno } as BaseLocation;
+  const default_data = {...metadata, initial_project_no: metadata?.projectno} as BaseLocation;
   const [formMethods, LocationForm, locationSchema] = useLocationForm({
     defaultValues: metadata ? default_data : undefined,
     mode: 'Edit',
@@ -66,7 +66,7 @@ const EditLocation = () => {
   });
 
   const {
-    formState: { isDirty, isValid, isSubmitting },
+    formState: {isDirty, isValid, isSubmitting},
     reset,
     handleSubmit,
   } = formMethods;
@@ -138,7 +138,7 @@ const EditLocation = () => {
             loading={isSubmitting}
             onClick={handleSubmit(Submit)}
             startIcon={isSubmitting ? undefined : <SaveIcon />}
-            sx={{ marginRight: 1 }}
+            sx={{marginRight: 1}}
           >
             Gem
           </Button>
@@ -150,7 +150,7 @@ const EditLocation = () => {
         onClose={() => setAssertDeletion(false)}
         isPending={isPending}
         onDelete={() => {
-          const payload = { path: loc_id };
+          const payload = {path: loc_id};
           deleteLocation(payload, {
             onSuccess: () => {
               setAssertDeletion(false);

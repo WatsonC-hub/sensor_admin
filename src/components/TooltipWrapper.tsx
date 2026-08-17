@@ -31,13 +31,13 @@ const TooltipWrapper = ({
 
   return (
     <Box
-        sx={{
+      sx={{
         display: 'flex',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: children ? 'space-between' : 'end',
         gap: 1,
-        }}
+      }}
     >
       {children}
       <Tooltip title={description} arrow enterTouchDelay={0}>
