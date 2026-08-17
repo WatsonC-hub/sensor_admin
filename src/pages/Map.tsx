@@ -1,4 +1,4 @@
-import {NotListedLocation} from '@mui/icons-material';
+import { NotListedLocation } from '@mui/icons-material';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
@@ -8,9 +8,9 @@ import {Box} from '@mui/material';
 import L from 'leaflet';
 
 import '~/css/leaflet.css';
-import {debounce} from 'lodash';
-import {useCallback, useEffect} from 'react';
-import {toast} from 'react-toastify';
+import { debounce} from 'lodash';
+import {useCallback, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 import '~/features/map/map.css';
 import AlertDialog from '~/components/AlertDialog';
@@ -21,7 +21,6 @@ import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
 import {
   getBoreholesIcon,
   getNotificationIcon,
-  preventClickAfterTouchend,
 } from '~/features/map/utils';
 import {findBorehole} from '~/features/station/api/useBorehole';
 import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
@@ -29,7 +28,7 @@ import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.min.css';
 
-import {timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
+import { timeseriesStatusOptions } from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
@@ -55,9 +54,9 @@ interface MapProps {
   clickCallback?: (data: MapOverview | BoreholeMapData | null) => void;
 }
 
-const Map = ({clickCallback}: MapProps) => {
-  const {isMobile} = useBreakpoints();
-  const {createStamdata, location} = useNavigationFunctions();
+const Map = ({ clickCallback }: MapProps) => {
+  const { isMobile } = useBreakpoints();
+  const { createStamdata, location } = useNavigationFunctions();
   const [setSelectLocId, setEditRouteLayer, setEditParkingLayer] = useMapUtilityStore((state) => [
     state.setSelectedLocId,
     state.setEditRouteLayer,
@@ -65,10 +64,10 @@ const Map = ({clickCallback}: MapProps) => {
   ]);
 
   const {
-    features: {iotAccess, routesAndParking},
+    features: { iotAccess, routesAndParking },
   } = useUser();
 
-  const {data, mapFilteredData: filteredData, setExtraData} = useFilteredMapData();
+  const { data, mapFilteredData: filteredData, setExtraData } = useFilteredMapData();
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
@@ -100,7 +99,7 @@ const Map = ({clickCallback}: MapProps) => {
   const {
     map,
     setSelectedMarker,
-    layers: {markerLayer},
+    layers: { markerLayer },
     delete: {
       deleteId,
       deleteParking,
@@ -111,7 +110,7 @@ const Map = ({clickCallback}: MapProps) => {
       setDisplayDelete,
       type,
     },
-    warning: {displayAlert, setDisplayAlert},
+    warning: { displayAlert, setDisplayAlert },
     defaultContextmenuItems,
   } = useMap('test', filteredData, contextmenuItems, clickCallback);
 
@@ -138,7 +137,7 @@ const Map = ({clickCallback}: MapProps) => {
   const createLocationMarker = (element: MapOverview) => {
     const point: L.LatLngExpression = [element.latitude, element.longitude];
     const marker = L.marker(point, {
-      icon: getNotificationIcon({...element}),
+      icon: getNotificationIcon({ ...element }),
       interactive: true,
       riseOnHover: true,
       title: element.loc_name,
@@ -209,7 +208,7 @@ const Map = ({clickCallback}: MapProps) => {
 
     locationMenu = [
       ...locationMenu,
-      {text: 'divider', separator: true},
+      { text: 'divider', separator: true },
       ...defaultContextmenuItems,
     ];
 
@@ -229,7 +228,7 @@ const Map = ({clickCallback}: MapProps) => {
 
     if (marker) {
       marker.openPopup();
-      map?.flyTo(marker.getLatLng(), 14, {animate: false});
+      map?.flyTo(marker.getLatLng(), 14, { animate: false });
       marker.fire('click');
       setExtraData(null);
       setSelectedMarker(marker.options.data);
@@ -240,7 +239,7 @@ const Map = ({clickCallback}: MapProps) => {
       if (hiddenMarker) {
         // hightlightedMarker = marker;
         hiddenMarker.openPopup();
-        map?.flyTo(hiddenMarker.getLatLng(), 14, {animate: false});
+        map?.flyTo(hiddenMarker.getLatLng(), 14, { animate: false });
         hiddenMarker.fire('click');
       }
     }
@@ -253,7 +252,7 @@ const Map = ({clickCallback}: MapProps) => {
 
     if (marker) {
       marker.openPopup();
-      map?.flyTo(marker.getLatLng(), 14, {animate: false});
+      map?.flyTo(marker.getLatLng(), 14, { animate: false });
       marker.fire('click');
       setExtraData(null);
       setSelectedMarker(marker.options.data);
@@ -269,7 +268,7 @@ const Map = ({clickCallback}: MapProps) => {
         if (hiddenMarker) {
           // hightlightedMarker = marker;
           hiddenMarker.openPopup();
-          map?.flyTo(hiddenMarker.getLatLng(), 14, {animate: false});
+          map?.flyTo(hiddenMarker.getLatLng(), 14, { animate: false });
           hiddenMarker.fire('click');
         }
       }
@@ -283,7 +282,7 @@ const Map = ({clickCallback}: MapProps) => {
       type: 'selection',
       perform: (inp) => {
         createHiddenLocationMarker(inp.loc_name);
-        map?.flyTo([inp.latitude, inp.longitude], 14, {animate: false});
+        map?.flyTo([inp.latitude, inp.longitude], 14, { animate: false });
         location(inp.loc_id);
       },
       icon: <NotListedLocation />,
@@ -340,14 +339,14 @@ const Map = ({clickCallback}: MapProps) => {
         const marker = createLocationMarker(element);
 
         if (marker) {
-          marker.bindTooltip(element.loc_name, {direction: 'top', offset: [0, -10]});
+          marker.bindTooltip(element.loc_name, { direction: 'top', offset: [0, -10] });
         }
 
         return marker;
       } else {
         const marker = createBoreholeMarker(element);
 
-        marker.bindTooltip(element.boreholeno, {direction: 'top', offset: [0, -10]});
+        marker.bindTooltip(element.boreholeno, { direction: 'top', offset: [0, -10] });
 
         return marker;
       }
@@ -356,13 +355,7 @@ const Map = ({clickCallback}: MapProps) => {
     markerLayer?.addLayers(markers);
   }, [filteredData, markerLayer]);
 
-  useEffect(() => {
-    document.getElementById('test')?.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-    });
 
-    preventClickAfterTouchend('test');
-  }, []);
 
   return (
     <>
@@ -395,7 +388,7 @@ const Map = ({clickCallback}: MapProps) => {
       >
         <SearchAndFilterMap data={data} handleSearchSelect={handleSearchSelect} />
       </Box>
-      <Box id="test" className="no-select" sx={{width: '100%', height: '100%'}} />
+      <Box id="test" className="no-select" sx={{ width: '100%', height: '100%' }} />
     </>
   );
 };

@@ -54,41 +54,55 @@ export const getNotificationIcon = (marker: MapOverview) => {
   });
 };
 
-export function preventClickAfterTouchend(id: string, longPressDuration = 600) {
-  let longPressTimer: number;
-  let suppressClick = false;
+export function preventLeafletPostLongPress(map: L.Map, duration = 600) {
+  const container = map.getContainer();
 
-  const element = document.getElementById(id);
+  let timer: number | undefined;
+  let longPressed = false;
 
-  element?.addEventListener('touchstart', (e) => {
-    // Only handle single-finger touches
-    if (e.touches.length > 1) return;
-    longPressTimer = setTimeout(() => {
-      // Trigger your context menu logic
-      suppressClick = true;
-    }, longPressDuration);
-  });
-
-  element?.addEventListener('touchend', () => {
-    clearTimeout(longPressTimer);
-    // Let click suppression only last a tiny bit
-    if (suppressClick) {
-      setTimeout(() => {
-        suppressClick = false;
-      }, 100);
+  const clearTimer = () => {
+    if (timer !== undefined) {
+      window.clearTimeout(timer);
+      timer = undefined;
     }
+  };
+
+  const onTouchStart = (event: TouchEvent) => {
+    if (event.touches.length !== 1) {
+      clearTimer();
+      longPressed = false;
+      return;
+    }
+
+    longPressed = false;
+
+    timer = window.setTimeout(() => {
+      longPressed = true;
+    }, duration);
+  };
+
+  const onMouseDown = (event: MouseEvent) => {
+    if (!longPressed) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  /*
+   * Capture phase is important here.
+   *
+   * We want to intercept these events before Leaflet's handlers.
+   */
+  container.addEventListener('touchstart', onTouchStart, {
+    capture: true,
+    passive: false,
   });
 
-  const contextMenues = document.querySelectorAll('.leaflet-contextmenu');
+  container.addEventListener('mousedown', onMouseDown, true);
 
-  contextMenues.forEach((menu) => {
-    menu?.addEventListener('click', (e) => {
-      if (suppressClick) {
-        // toast.info('Click suppressed');
-        e.preventDefault();
-        e.stopPropagation();
-        return;
-      }
-    });
-  });
+  return () => {
+    clearTimer();
+    container.removeEventListener('touchstart', onTouchStart, true);
+    container.removeEventListener('mousedown', onMouseDown, true);
+  };
 }

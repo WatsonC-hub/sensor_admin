@@ -44,7 +44,7 @@ import {
   zoomThresholdForParking,
   zoomThresholdForSmallMarkers,
 } from '../mapConsts';
-import {setIconSize} from '../utils';
+import {preventLeafletPostLongPress, setIconSize} from '../utils';
 
 import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 import type {BoreholeMapData, Parking, PartialBy} from '~/types';
@@ -190,6 +190,7 @@ const useMap = <TData extends object>(
           : [{layer: satelitemapbox}, {layer: defaultMapBox}],
     }).addTo(map);
 
+    preventLeafletPostLongPress(map);
     onMapClickEvent(map);
     onCreateRouteEvent(map);
     onMapMoveEndEvent(map);

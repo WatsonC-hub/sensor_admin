@@ -15,13 +15,13 @@ type AlarmsProps = {
   loc_id?: number;
 };
 
-const Alarms = ({ts_id, loc_id}: AlarmsProps) => {
+const Alarms = ({ ts_id, loc_id }: AlarmsProps) => {
   const [pageToShow] = useStationPages();
   const [showForm] = useShowFormState();
-  const {location_permissions} = usePermissions(loc_id);
+  const { location_permissions } = usePermissions(loc_id);
   const [open, setOpen] = React.useState(false);
   const {
-    get: {data: alarms},
+    get: { data: alarms },
   } = useAlarm();
 
   const cancel = () => {
@@ -45,13 +45,6 @@ const Alarms = ({ts_id, loc_id}: AlarmsProps) => {
           gap: 1,
         }}
       >
-        <UpdateProgressButton
-          loc_id={-1}
-          disabled={location_permissions !== 'edit'}
-          ts_id={ts_id}
-          progressKey="alarm"
-          alterStyle
-        />
         <FabWrapper
           icon={<MoreTimeIcon />}
           text="Tilføj Alarm"

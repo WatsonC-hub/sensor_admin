@@ -57,7 +57,6 @@ import useDmpAllowedMapList, {prefetchDmpAllowedMapList} from '../api/useDmpAllo
 import {getImageOptions} from '../api/useImages';
 import {
   timeseriesMeasureSampleSendOptions,
-  useTimeseriesMeasureSampleSend,
 } from '../api/useTimeseriesMeasureSampleSend';
 import MinimalSelect from './MinimalSelect';
 
@@ -99,37 +98,35 @@ const navIconStyle = (isSelected: boolean) => {
 };
 const StationDrawer = () => {
   const theme = useTheme();
-  const {ts_id, loc_id} = useAppContext(['loc_id'], ['ts_id']);
+  const { ts_id, loc_id } = useAppContext(['loc_id'], ['ts_id']);
   const [pageToShow, setPageToShow] = useStationPages();
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
-  const {isTouch} = useBreakpoints();
-  const {data: metadata} = useTimeseriesData();
-  const {data: locationdata} = useLocationData();
-  const {data: progress} = useProgress(loc_id, ts_id);
-  const {data, error} = useTimeseriesMeasureSampleSend(ts_id);
+  const { isTouch } = useBreakpoints();
+  const { data: metadata } = useTimeseriesData();
+  const { data: locationdata } = useLocationData();
+  const { data: progress } = useProgress(loc_id, ts_id);
 
   const isDmpAllowed = useDmpAllowedMapList(ts_id);
 
   const configurationProgress =
     progress?.kontrolhyppighed === false ||
-    (progress?.sync === false &&
-      (isDmpAllowed ||
-        (metadata?.loctype_id === 9 && [1, 11, 12, 16].includes(metadata?.tstype_id || 0)))) ||
-    progress?.visibility === false ||
-    (progress?.samplesend === false && data !== undefined && !error)
+      (progress?.sync === false &&
+        (isDmpAllowed ||
+          (metadata?.loctype_id === 9 && [1, 11, 12, 16].includes(metadata?.tstype_id || 0)))) ||
+      progress?.visibility === false
       ? 0
       : undefined;
 
   const {
     superUser,
-    features: {iotAccess, alarms, contacts, keys: accessKeys, ressources, stationProgress},
+    features: { iotAccess, alarms, contacts, keys: accessKeys, ressources, stationProgress },
   } = useUser();
-  const {createStamdata} = useNavigationFunctions();
+  const { createStamdata } = useNavigationFunctions();
 
   const handlePrefetch = <TData, TError, TSelectData, TKey extends QueryKey>(
     options: UseQueryOptions<TData, TError, TSelectData, TKey>
   ) => {
-    queryClient.prefetchQuery({...options, staleTime: 1000 * 10});
+    queryClient.prefetchQuery({ ...options, staleTime: 1000 * 10 });
   };
 
   const toggleDrawer = (newOpen: boolean) => {
@@ -166,13 +163,13 @@ const StationDrawer = () => {
       items: [
         ...(ts_id == undefined
           ? [
-              {
-                text: 'Ingen tidsserier',
-                page: stationPages.PEJLING,
-                icon: <DoNotDisturb />,
-                requiredTsId: false,
-              },
-            ]
+            {
+              text: 'Ingen tidsserier',
+              page: stationPages.PEJLING,
+              icon: <DoNotDisturb />,
+              requiredTsId: false,
+            },
+          ]
           : []),
         {
           text: 'Kontrol',
@@ -232,7 +229,6 @@ const StationDrawer = () => {
           requiredTsId: true,
           onHover: () => handlePrefetch(alarmGetOptions(ts_id)),
           disabled: !alarms,
-          progress: progress?.alarm == false ? 0 : undefined,
         },
         {
           text: 'Konfiguration',
@@ -331,7 +327,7 @@ const StationDrawer = () => {
             justifyContent: 'space-between',
           }}
         >
-          <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
+          <ListItemText sx={{ color: 'white', fontSize: 'bold' }} primary={category.text} />
           <Box
             sx={{
               alignItems: 'center',
@@ -373,7 +369,7 @@ const StationDrawer = () => {
 
             const mouseEnter = () => {
               timer = setTimeout(
-                item.onHover && pageToShow !== item.page ? item.onHover : () => {},
+                item.onHover && pageToShow !== item.page ? item.onHover : () => { },
                 100
               );
             };
@@ -408,18 +404,18 @@ const StationDrawer = () => {
                     if (open) toggleDrawer(false);
                   }}
                 >
-                  <ListItemIcon sx={{color: navIconStyle(pageToShow === item.page), minWidth: 42}}>
+                  <ListItemIcon sx={{ color: navIconStyle(pageToShow === item.page), minWidth: 42 }}>
                     {item.icon}
                   </ListItemIcon>
                   <ListItemText>
                     <Wrapper
-                      {...(item.tooltip ? {description: item.tooltip, withIcon: false} : {})}
+                      {...(item.tooltip ? { description: item.tooltip, withIcon: false } : {})}
                     >
                       {item.text}
                     </Wrapper>
                   </ListItemText>
                   {item.progress != undefined && stationProgress && (
-                    <PriorityHigh sx={{color: theme.palette.info.light}} />
+                    <PriorityHigh sx={{ color: theme.palette.info.light }} />
                   )}
                 </ListItemButton>
               </ListItem>
@@ -450,10 +446,10 @@ type LayoutProps = {
   variant?: 'temporary' | 'permanent';
 };
 
-const Layout = ({children, variant}: LayoutProps) => {
+const Layout = ({ children, variant }: LayoutProps) => {
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
-  const {data: locationdata} = useLocationData();
-  const {isTouch} = useBreakpoints();
+  const { data: locationdata } = useLocationData();
+  const { isTouch } = useBreakpoints();
   const open = openAtom;
   const toggleDrawer = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -493,7 +489,7 @@ const Layout = ({children, variant}: LayoutProps) => {
         )}
       </Box>
       <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
-        <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
+        <Box sx={{ overflowY: 'auto', overflowX: 'hidden', p: 0 }}>{children}</Box>
       </ClickAwayListener>
     </Drawer>
   );
