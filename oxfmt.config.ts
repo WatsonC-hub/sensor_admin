@@ -14,7 +14,7 @@ export const oxfmtOptions: OxfmtConfig = {
   useTabs: false,
   sortPackageJson: true,
   ignorePatterns: ['node_modules', 'dist', '*.html'],
-  endOfLine: 'crlf',
+  // endOfLine: 'crlf',
   sortImports: {
     newlinesBetween: true,
     groups: [
