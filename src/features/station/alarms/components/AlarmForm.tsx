@@ -1,15 +1,15 @@
-import React, {useState} from 'react';
-import {useForm} from 'react-hook-form';
-import {createTypedForm} from '~/components/formComponents/Form';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { createTypedForm } from '~/components/formComponents/Form';
 import AlarmNotificationForm from './AlarmNotificationForm';
-import {AlarmsFormValues, alarmsSchema} from '../schema';
-import {Box, ButtonGroup, Typography} from '@mui/material';
-import {ExpandLess, ExpandMore} from '@mui/icons-material';
-import {zodResolver} from '@hookform/resolvers/zod';
-import {AlarmTableType} from '../types';
-import {useAppContext} from '~/state/contexts';
-import {useAlarm} from '../api/useAlarm';
-import {toast} from 'react-toastify';
+import { AlarmsFormValues, alarmsSchema } from '../schema';
+import { Box, ButtonGroup, Typography } from '@mui/material';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AlarmTableType } from '../types';
+import { useAppContext } from '~/state/contexts';
+import { useAlarm } from '../api/useAlarm';
+import { toast } from 'react-toastify';
 import FormFieldset from '~/components/formComponents/FormFieldset';
 import AlarmContactForm from './AlarmContactForm';
 import AlarmContactFormDialog from './AlarmContactFormDialog';
@@ -25,16 +25,16 @@ type AlarmFormProps = {
 
 const Form = createTypedForm<AlarmsFormValues>();
 
-const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
-  const {ts_id} = useAppContext(['ts_id']);
+const AlarmForm = ({ setOpen, alarm }: AlarmFormProps) => {
+  const { ts_id } = useAppContext(['ts_id']);
   const [onGroup, setOnGroup] = useState(alarm?.group_id ? true : false);
 
   const [contactsCollapsed, setContactsCollapsed] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const {
-    post: {mutateAsync: postAlarmAsync},
-    put: {mutateAsync: putAlarmAsync},
+    post: { mutateAsync: postAlarmAsync },
+    put: { mutateAsync: putAlarmAsync },
   } = useAlarm();
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
@@ -60,7 +60,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     mode: 'onTouched',
   });
 
-  const {reset, watch, setValue, handleSubmit} = alarmMethods;
+  const { reset, watch, setValue, handleSubmit } = alarmMethods;
 
   const contacts = watch('contacts');
   const watched_group_id = watch('group_id');
@@ -118,7 +118,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
           name="name"
           label="Navn"
           placeholder="f.eks. Kritiske notifikationer"
-          gridSizes={{xs: 12}}
+          gridSizes={{ xs: 12 }}
         />
 
         <Box display="flex" alignItems="center" gap={2}>
@@ -128,7 +128,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
               bttype={onGroup ? 'tertiary' : 'primary'}
               onClick={() => {
                 setOnGroup(false);
-                setValue('group_id', null, {shouldDirty: true});
+                setValue('group_id', null, { shouldDirty: true });
               }}
             >
               Tidsserie
@@ -144,7 +144,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
 
         <FormFieldset
           label="Kontakter"
-          sx={{width: '100%', px: 1}}
+          sx={{ width: '100%', px: 1 }}
           icon={contactsCollapsed ? <ExpandMore /> : <ExpandLess />}
           onClick={() => setContactsCollapsed(!contactsCollapsed)}
         >
@@ -162,7 +162,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
           multiline
           rows={3}
           placeholder="f.eks. bruger kontaktes hurtigst muligt..."
-          gridSizes={{xs: 12}}
+          gridSizes={{ xs: 12 }}
         />
         <Box ml={'auto'} display="flex" gap={1}>
           <Form.Cancel
@@ -176,6 +176,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
                 ? 'Vælg en gruppe for at gemme alarmen. Hvis der ikke findes en relevant gruppe, kan du vælge "Tidsserie" eller tilføje en ny gruppe under lokationens indstillinger.'
                 : undefined
             }
+            withIcon={onGroup && !watched_group_id ? true : false}
           >
             <Form.Submit submit={handleSave} disabled={onGroup && !watched_group_id} />
           </TooltipWrapper>
