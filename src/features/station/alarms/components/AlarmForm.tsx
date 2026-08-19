@@ -193,6 +193,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
                 ? 'Vælg en gruppe for at gemme alarmen. Hvis der ikke findes en relevant gruppe, kan du vælge "Tidsserie" eller tilføje en ny gruppe under lokationens indstillinger.'
                 : undefined
             }
+            withIcon={onGroup && !watched_group_id ? true : false}
           >
             <Form.Submit submit={handleSave} disabled={onGroup && !watched_group_id} />
           </TooltipWrapper>
