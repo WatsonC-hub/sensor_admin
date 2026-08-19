@@ -34,14 +34,23 @@ export const useUnitHistory = () => {
   return query;
 };
 
-export const UseUnitHistory2 = (ts_id: number | undefined) => {
-  const query = useQuery<UnitHistory[]>({
+export type LocationActiveUnits = {
+  calypso_id: number;
+  gid: number;
+  enddate: string;
+  sensor_id: string;
+  ts_id: number;
+  unit_uuid: string;
+  startdate: string;
+  terminal_id: string;
+  signal_id: number;
+};
+
+export const useLocationActiveUnits = (ts_id: number | undefined) => {
+  const query = useQuery<LocationActiveUnits[]>({
     queryKey: queryKeys.Timeseries.unitHistory2(),
     queryFn: async () => {
-      const {data} = await apiClient.get(
-        // `/sensor_field/stamdata/unit_history_batch?${ts_ids?.map((ts_id) => `ts_ids=${ts_id}`).join('&')}`
-        `/sensor_field/stamdata/unit_history_batch/${ts_id}`
-      );
+      const {data} = await apiClient.get(`/sensor_field/stamdata/unit_history_batch/${ts_id}`);
       return data;
     },
     refetchOnWindowFocus: false,

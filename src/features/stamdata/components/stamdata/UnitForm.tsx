@@ -36,7 +36,7 @@ export default function UnitForm({mode, tstype_id}: UnitFormProps) {
   const {data: history} = useUnitHistory();
   let unit: UnitHistory | Unit | undefined;
   if (editMode) {
-    unit = history?.find((u) => u.uuid === unit_uuid);
+    unit = history?.find((u) => u.unit_uuid === unit_uuid);
   } else {
     unit = availableUnits?.find((u) => u.unit_uuid === unit_uuid);
   }

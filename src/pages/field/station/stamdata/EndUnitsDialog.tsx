@@ -21,7 +21,10 @@ import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
-import {type UnitHistory, UseUnitHistory2} from '~/features/stamdata/api/useUnitHistory';
+import {
+  type LocationActiveUnits,
+  useLocationActiveUnits,
+} from '~/features/stamdata/api/useUnitHistory';
 import useUnitForm from '~/features/station/api/useUnitForm';
 import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
@@ -71,26 +74,24 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
   const {superUser} = useUser();
   const {isMobile} = useBreakpoints();
 
-  const {data: unit_history} = UseUnitHistory2(ts_id);
+  const {data: unit_history} = useLocationActiveUnits(ts_id);
 
   const activeTimeseries = location_data?.timeseries.filter(
     (ts) => dayjs(ts.slutdato).isAfter(dayjs()) && unit_history?.some((uh) => uh.ts_id === ts.ts_id)
   );
 
-  const activeGroupedSensors = unit_history
-    ?.filter((uh) => activeTimeseries?.some((ts) => ts.ts_id === uh.ts_id))
-    .reduce(
-      (acc: Record<string, UnitHistory[]>, curr) => {
-        if (!acc[curr.sensor_id]) {
-          acc[curr.sensor_id] = [];
-        }
-        acc[curr.sensor_id].push(curr);
-        return acc;
-      },
-      {} as Record<string, UnitHistory[]>
-    );
+  const activeGroupedSensors = unit_history?.reduce(
+    (acc, curr) => {
+      if (!acc[curr.sensor_id]) {
+        acc[curr.sensor_id] = [];
+      }
+      acc[curr.sensor_id].push(curr);
+      return acc;
+    },
+    {} as Record<string, LocationActiveUnits[]>
+  );
 
-  const [checkedSensors, setCheckedSensors] = useState<UnitHistory[]>([]);
+  const [checkedUnits, setCheckedUnits] = useState<LocationActiveUnits[]>([]);
 
   const tstype_ids = activeTimeseries?.map((ts) => ts.tstype_id);
 
@@ -105,14 +106,14 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
   });
 
   const {data: actions} = useQuery<Action[]>({
-    queryKey: queryKeys.actions(checkedSensors?.map((uh) => uh.uuid)),
+    queryKey: queryKeys.actions(checkedUnits?.map((uh) => uh.unit_uuid)),
     queryFn: async () => {
       const {data} = await apiClient.get(
-        `/sensor_field/stamdata/unit-actions?${checkedSensors?.map((uh) => `uuid=${uh.uuid}`).join('&')}`
+        `/sensor_field/stamdata/unit-actions?${checkedUnits?.map((uh) => `uuid=${uh.unit_uuid}`).join('&')}`
       );
       return data;
     },
-    enabled: superUser && checkedSensors !== undefined && checkedSensors.length > 0,
+    enabled: superUser && checkedUnits !== undefined && checkedUnits.length > 0,
     staleTime: 1000 * 60 * 60,
   });
 
@@ -138,7 +139,7 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
   useEffect(() => {
     if (unit_history && unit_history.length > 0) {
       const initialCheckedSensors = unit_history.filter((sensor) => sensor.ts_id === ts_id);
-      setCheckedSensors(initialCheckedSensors);
+      setCheckedUnits(initialCheckedSensors);
     }
   }, [unit_history]);
 
@@ -159,7 +160,7 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
   } = formMethods;
 
   const handleClose = () => {
-    setCheckedSensors([]);
+    setCheckedUnits([]);
     onClose();
   };
 
@@ -231,13 +232,13 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
 
               {Object.entries(activeGroupedSensors).map(([sensor_id, sensors]) => {
                 const isTerminalChecked = sensors.every((s) =>
-                  checkedSensors.some((sensor) => sensor.ts_id === s.ts_id)
+                  checkedUnits.some((sensor) => sensor.ts_id === s.ts_id)
                 );
 
                 const isTerminalIndeterminate =
                   sensors.length !==
-                    checkedSensors.filter((sensor) => sensor.sensor_id === sensor_id).length &&
-                  sensors.some((s) => checkedSensors.some((sensor) => sensor.ts_id === s.ts_id));
+                    checkedUnits.filter((sensor) => sensor.sensor_id === sensor_id).length &&
+                  sensors.some((s) => checkedUnits.some((sensor) => sensor.ts_id === s.ts_id));
 
                 return (
                   <Box
@@ -256,14 +257,16 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
                           indeterminate={isTerminalIndeterminate}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              setCheckedSensors((prev) => [
+                              setCheckedUnits((prev) => [
                                 ...prev,
-                                ...sensors.filter((s) => !prev.some((ps) => ps.uuid === s.uuid)),
+                                ...sensors.filter(
+                                  (s) => !prev.some((ps) => ps.unit_uuid === s.unit_uuid)
+                                ),
                               ]);
                             } else {
-                              setCheckedSensors((prev) =>
+                              setCheckedUnits((prev) =>
                                 prev.filter(
-                                  (s) => !sensors.some((sensor) => sensor.uuid === s.uuid)
+                                  (s) => !sensors.some((sensor) => sensor.unit_uuid === s.unit_uuid)
                                 )
                               );
                             }
@@ -272,51 +275,54 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
                       }
                       label={<Typography>Sensor {sensor_id}</Typography>}
                     />
-                    {sensors.map((sensor) => (
-                      <Box
-                        key={sensor.uuid}
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          pl: 1.5,
-                        }}
-                      >
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={checkedSensors.some((s) => s.uuid === sensor.uuid)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setCheckedSensors((prev) => [...prev, sensor]);
-                                } else {
-                                  setCheckedSensors((prev) =>
-                                    prev.filter((s) => s.uuid !== sensor.uuid)
-                                  );
-                                }
-                              }}
-                            />
-                          }
-                          label={
-                            <Typography
-                              sx={{
-                                display: 'flex',
-                                flexDirection: isMobile ? 'column' : 'row',
-                                gap: 0.5,
-                              }}
-                            >
-                              <Typography>
-                                {sensor.signal_id} - {sensor.sensor_id}
+                    {sensors.map((sensor) => {
+                      const at = activeTimeseries?.find((ts) => ts.ts_id === sensor.ts_id);
+                      return (
+                        <Box
+                          key={sensor.unit_uuid}
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            pl: 1.5,
+                          }}
+                        >
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={checkedUnits.some((s) => s.unit_uuid === sensor.unit_uuid)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setCheckedUnits((prev) => [...prev, sensor]);
+                                  } else {
+                                    setCheckedUnits((prev) =>
+                                      prev.filter((s) => s.unit_uuid !== sensor.unit_uuid)
+                                    );
+                                  }
+                                }}
+                              />
+                            }
+                            label={
+                              <Typography
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: isMobile ? 'column' : 'row',
+                                  gap: 0.5,
+                                }}
+                              >
+                                <Typography>{sensor.signal_id}</Typography>
+                                <Typography>
+                                  (
+                                  {at?.prefix
+                                    ? at.prefix + ' - ' + at.tstype_name
+                                    : at?.tstype_name}
+                                  )
+                                </Typography>
                               </Typography>
-                              <Typography>
-                                (
-                                {activeTimeseries?.find((ts) => ts.ts_id === sensor.ts_id)?.ts_name}
-                                )
-                              </Typography>
-                            </Typography>
-                          }
-                        />
-                      </Box>
-                    ))}
+                            }
+                          />
+                        </Box>
+                      );
+                    })}
                   </Box>
                 );
               })}
@@ -330,17 +336,17 @@ const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
         </Button>
         <Button
           bttype="primary"
-          disabled={checkedSensors.length === 0 || Object.keys(errors).length > 0}
+          disabled={checkedUnits.length === 0 || Object.keys(errors).length > 0}
           onClick={handleSubmit(async (data) => {
             await takeHomeMutation({
               enddate: data.enddate,
               change_reason: data.change_reason,
               action: data.action,
               comment: data.comment,
-              unitHistory: checkedSensors.map((sensor) => ({
+              unitHistory: checkedUnits.map((sensor) => ({
                 ts_id: sensor.ts_id,
                 gid: sensor.gid,
-                startdate: dayjs(sensor.startdato),
+                startdate: dayjs(sensor.startdate),
               })),
             });
           })}
