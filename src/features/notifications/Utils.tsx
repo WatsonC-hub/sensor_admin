@@ -40,6 +40,7 @@ const defaultStyling = {
 
 export const getColor = (iconDetails: IconDetails) => {
   if (iconDetails?.flag) return sensorColors[iconDetails?.flag].color;
+
   if (iconDetails?.has_task) {
     if (iconDetails.due_date?.add(1, 'day').isBefore(dayjs()))
       return sensorColors[FlagEnum.WARNING].color;
