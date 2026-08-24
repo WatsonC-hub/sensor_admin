@@ -105,6 +105,19 @@ const pwaOptions: Partial<VitePWAOptions> = {
 //   authToken: process.env.SENTRY_AUTH_TOKEN,
 // };
 
+// "scripts": {
+//   "dev": "vp dev",
+//   "build": "tsc -b && vp build",
+//   "serve": "vp preview",
+//   "prune": "vp dlx ts-prune -p ./tsconfig.app.json",
+//   "generate": "openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes",
+//   "check": "vp check",
+//   "fix": "vp check --fix",
+//   "test": "vp test",
+//   "check-types": "tsc -b --pretty --noEmit",
+//   "prepare": "vp config"
+// },
+
 // https://vitejs.dev/config/
 export default defineConfig({
   staged: {
@@ -112,6 +125,39 @@ export default defineConfig({
   },
   fmt: oxfmtOptions,
   lint: lintOptions,
+  run: {
+    tasks: {
+      check: {
+        command: 'vp check --fix',
+      },
+      serve: {
+        command: 'vp preview',
+        dependsOn: ['check', 'build'],
+      },
+      prune: {
+        command: 'vp dlx ts-prune -p ./tsconfig.app.json',
+        dependsOn: ['check'],
+      },
+      generate: {
+        command:
+          'openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes',
+        dependsOn: ['check'],
+      },
+      build: {
+        command: 'vp build',
+        dependsOn: ['check'],
+      },
+
+      test: {
+        command: 'vp test',
+      },
+
+      ci: {
+        command: 'vp build',
+        dependsOn: ['check', 'test'],
+      },
+    },
+  },
   resolve: {
     tsconfigPaths: true,
   },
