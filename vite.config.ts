@@ -1,4 +1,3 @@
-import strip from '@rollup/plugin-strip';
 import react from '@vitejs/plugin-react';
 import {VitePWA} from 'vite-plugin-pwa';
 import svgrPlugin from 'vite-plugin-svgr';
@@ -17,6 +16,12 @@ const pwaOptions: Partial<VitePWAOptions> = {
   registerType: 'autoUpdate',
   injectManifest: {globPatterns: ['**/!(*.map)'], maximumFileSizeToCacheInBytes: 5000000},
   includeAssets: ['**/*'],
+  // includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+
+  // injectManifest: {
+  //   globPatterns: ['**/*.{js,css,html,json,webmanifest,png,svg,ico,woff,woff2}'],
+  //   maximumFileSizeToCacheInBytes: 5000000,
+  // },
   manifest: {
     name: 'Calypso @ Field',
     short_name: 'Field',
@@ -26,7 +31,6 @@ const pwaOptions: Partial<VitePWAOptions> = {
     id: '/',
     dir: 'ltr',
     display: 'minimal-ui',
-    // display_override: ['window-controls-overlay'],
     orientation: 'portrait',
     start_url: '/',
     lang: 'da-DK',
@@ -146,6 +150,7 @@ export default defineConfig({
       build: {
         command: 'vp build',
         dependsOn: ['check'],
+        cache: false,
       },
 
       test: {
@@ -161,26 +166,26 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
-  plugins: lazyPlugins(() => [
+  plugins: [
     react(),
-    svgrPlugin({
-      include: '**/*.svg?react',
-    }),
-    VitePWA(pwaOptions),
-    {
-      ...strip({include: /\**\/*.js/, functions: ['console.log', 'assert.*']}),
-      // { include: /\**\/*.js/ } // <- this works, but the default of '**/*.js' doesn't
-      apply: 'build',
-    },
-    // visualizer({filename: 'stats.html', open: true}),
-    // removeConsole(),
-    // sentryVitePlugin(sentryOptions),
-  ]),
+
+    lazyPlugins(() => [
+      svgrPlugin({
+        include: '**/*.svg?react',
+      }),
+      VitePWA(pwaOptions),
+    ]),
+  ],
   // define: {global: 'window'},
   build: {
     sourcemap: true,
     rolldownOptions: {
       output: {
+        minify: {
+          compress: {
+            dropConsole: true,
+          },
+        },
         entryFileNames: '[name].js',
         chunkFileNames: '[name].js',
         codeSplitting: {
