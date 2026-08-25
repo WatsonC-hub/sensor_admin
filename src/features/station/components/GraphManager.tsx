@@ -178,7 +178,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       const params = {
         startdato:
           unitHistory && unitHistory.length > 1
-            ? unitHistory[unitHistory.length - 1].startdate
+            ? unitHistory[unitHistory.length - 1].startdato
             : timeseries_data?.startdato,
       };
 
