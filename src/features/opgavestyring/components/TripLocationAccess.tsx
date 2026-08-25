@@ -1,13 +1,16 @@
-import {Link, Box, Typography} from '@mui/material';
-
-import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import {Box, Link, Typography} from '@mui/material';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
-import {MergeType, stationPages, TableTypes} from '~/helpers/EnumHelper';
+
+import {MergeType, TableTypes, stationPages} from '~/helpers/enumHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useTable} from '~/hooks/useTable';
-import {TaskLocationAccess} from '~/types';
-import {sharedTableOptions} from '../shared_options';
+
+import {sharedTableOptions} from '../sharedOptions';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {TaskLocationAccess} from '~/types';
 
 type TripLocationAccessProps = {
   keys: Array<TaskLocationAccess> | undefined;
@@ -32,11 +35,13 @@ const TripLocationAccess = ({keys}: TripLocationAccessProps) => {
             {(cell.getValue<string[]>() || []).map((loc, index) => (
               <Link
                 key={index}
-                sx={{cursor: 'pointer'}}
-                display="block"
                 onClick={() => {
                   location(row.original.loc_ids[index]);
                   setPageToShow(stationPages.KONTAKTER);
+                }}
+                sx={{
+                  display: 'block',
+                  cursor: 'pointer',
                 }}
               >
                 {loc}
@@ -59,7 +64,13 @@ const TripLocationAccess = ({keys}: TripLocationAccessProps) => {
     () => ({
       ...(sharedTableOptions as Partial<MRT_TableOptions<TaskLocationAccess>>),
       renderTopToolbar: (
-        <Typography variant="body1" pt={1} px={1}>
+        <Typography
+          variant="body1"
+          sx={{
+            pt: 1,
+            px: 1,
+          }}
+        >
           Nøgler
         </Typography>
       ),
@@ -77,7 +88,11 @@ const TripLocationAccess = ({keys}: TripLocationAccessProps) => {
   );
 
   return (
-    <Box p={1}>
+    <Box
+      sx={{
+        p: 1,
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

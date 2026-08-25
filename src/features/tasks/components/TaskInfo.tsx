@@ -5,8 +5,9 @@ import {useTaskState} from '~/features/tasks/api/useTaskState';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import TaskInfoCommentForm from '~/features/tasks/components/TaskInfoCommentForm';
 import TaskInfoForm from '~/features/tasks/components/TaskInfoForm';
-import useLocationTaskHistory from '../api/useLocationTaskHistory';
 import {useDisplayState} from '~/hooks/ui';
+
+import useLocationTaskHistory from '../api/useLocationTaskHistory';
 
 const TaskInfo = () => {
   const [loc_id, selectedTaskId] = useDisplayState((state) => [state.loc_id, state.selectedTask]);
@@ -48,8 +49,14 @@ const TaskInfo = () => {
   if (!task) return null;
 
   return (
-    <Grid container spacing={2} p={1}>
-      <Grid item xs={12} lg={6}>
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        p: 1,
+      }}
+    >
+      <Grid size={{xs: 12, lg: 6}}>
         <TaskForm
           key={task.id}
           disabled={!task.can_edit}
@@ -59,7 +66,7 @@ const TaskInfo = () => {
           <TaskInfoForm selectedTask={task} />
         </TaskForm>
       </Grid>
-      <Grid item xs={12} lg={6}>
+      <Grid size={{xs: 12, lg: 6}}>
         <TaskInfoCommentForm selectedTaskId={task.id} />
       </Grid>
     </Grid>

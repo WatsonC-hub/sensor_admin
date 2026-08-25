@@ -1,9 +1,12 @@
-import {Grid2} from '@mui/material';
+import {Grid} from '@mui/material';
 import React from 'react';
-import StamdataLocation from '../StamdataLocation';
+
 import {useAppContext} from '~/state/contexts';
-import {BaseLocation} from '~/features/station/schema';
-import {FormInputProps} from '~/components/FormInput';
+
+import StamdataLocation from '../StamdataLocation';
+
+import type {FormInputProps} from '~/components/FormInput';
+import type {BaseLocation} from '~/features/station/schema';
 
 type Props = {
   size: number;
@@ -17,11 +20,11 @@ const BaseLocationForm = ({size, slotProps}: Props) => {
   const disabled = loc_id !== undefined;
 
   return (
-    <Grid2 container spacing={2}>
-      <Grid2 size={size}>
+    <Grid container spacing={2}>
+      <Grid size={size}>
         <StamdataLocation.LoctypeSelect disabled={disabled} {...slotProps?.loctypeSelect} />
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 };
 

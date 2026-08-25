@@ -2,7 +2,7 @@ import {z} from 'zod';
 
 function addIssue(path: string, message: string, ctx: z.RefinementCtx) {
   ctx.addIssue({
-    code: z.ZodIssueCode.custom,
+    code: 'custom',
     message: `${message} (${path === 'from' ? 'fra' : 'til'})`,
     path: [path],
   });
@@ -10,9 +10,7 @@ function addIssue(path: string, message: string, ctx: z.RefinementCtx) {
 
 export const alarmContactSchema = z
   .object({
-    contact_id: z
-      .string({invalid_type_error: 'Kontakt ID er påkrævet'})
-      .min(1, 'Kontakt er påkrævet'),
+    contact_id: z.string({message: 'Kontakt ID er påkrævet'}).min(1, 'Kontakt er påkrævet'),
     name: z.string(),
     sms: z
       .object({
@@ -66,7 +64,7 @@ export const alarmContactSchema = z
   .superRefine((val, ctx) => {
     if (!val?.sms?.selected && !val?.email?.selected && !val?.call?.selected) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Mindst én kontaktmetode skal være valgt',
         path: ['root'],
       });
@@ -89,5 +87,9 @@ export const alarmsSchema = z.object({
   contacts: contactArray.shape.contacts.optional(),
 });
 
-export type AlarmsFormValues = z.infer<typeof alarmsSchema>;
-export type AlarmContactFormType = z.infer<typeof alarmContactSchema>;
+export type AlarmFormInput = z.input<typeof alarmsSchema>;
+export type AlarmFormOutput = z.output<typeof alarmsSchema>;
+
+// export type AlarmContactFormType = z.infer<typeof alarmContactSchema>;
+export type AlarmContactFormInput = z.input<typeof alarmContactSchema>;
+export type AlarmContactFormOutput = z.output<typeof alarmContactSchema>;

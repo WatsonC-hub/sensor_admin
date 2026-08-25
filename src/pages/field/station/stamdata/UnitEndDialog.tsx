@@ -1,10 +1,10 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
-import {Dialog, DialogTitle, DialogContent, DialogActions} from '@mui/material';
-import {useQuery, useMutation} from '@tanstack/react-query';
+import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import moment from 'moment';
-import {useForm, FormProvider} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
 
@@ -13,10 +13,11 @@ import Button from '~/components/Button';
 import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
-import {UnitHistory} from '~/features/stamdata/api/useUnitHistory';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {zodDayjs} from '~/helpers/schemas';
 import {useAppContext} from '~/state/contexts';
+
+import type {UnitHistory} from '~/features/stamdata/api/useUnitHistory';
 
 interface UnitEndDateDialogProps {
   openDialog: boolean;
@@ -32,44 +33,50 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
   const {ts_id} = useAppContext(['ts_id']);
   const {superUser} = useUser();
 
-  let unitEndSchema;
+  // let unitEndSchema;
 
-  const requiredUnitEndSchema = z.object({
-    enddate: zodDayjs('slutdato er påkrævet').refine((date) => date.isAfter(unit?.startdato), {
-      message: 'Slutdato skal være efter startdato',
-    }),
-    change_reason: z.number({required_error: 'Vælg årsag'}).optional(),
-    action: z.string({required_error: 'Vælg handling'}).optional(),
-    comment: z.string().optional(),
-  });
-  unitEndSchema = requiredUnitEndSchema;
+  const BaseUnitEndSchema = z
+    .object({
+      enddate: zodDayjs('slutdato er påkrævet').refine((date) => date.isAfter(unit?.startdato), {
+        message: 'Slutdato skal være efter startdato',
+      }),
+      change_reason: z.number({message: 'Vælg årsag'}).optional(),
+      action: z.string({message: 'Vælg handling'}).optional(),
+      comment: z.string().optional(),
+    })
+    .refine((data) => {
+      if (superUser) {
+        return 'change_reason' in data && data.change_reason !== undefined;
+      }
+      return true;
+    });
 
-  type UnitEndFormValues = z.infer<typeof unitEndSchema>;
-
-  const {data: parsed} = unitEndSchema.safeParse({
+  const {data: parsed} = BaseUnitEndSchema.safeParse({
     ...unit,
     enddate: dayjs().startOf('minute'),
   });
 
-  if (!superUser) {
-    unitEndSchema = unitEndSchema.omit({
-      change_reason: true,
-      action: true,
-    });
-  }
+  // if (!superUser) {
+  //   BaseUnitEndSchema = BaseUnitEndSchema.omit({
+  //     change_reason: true,
+  //     action: true,
+  //   });
+  // }
 
-  if (superUser) {
-    unitEndSchema = unitEndSchema.refine(
-      (data) => 'change_reason' in data && data.change_reason !== undefined,
-      {
-        path: ['change_reason'],
-        message: 'Vælg årsag',
-      }
-    );
-  }
+  // if (superUser) {
+  //   BaseUnitEndSchema = BaseUnitEndSchema.extend({
+  //     change_reason: z.number({message: 'Vælg årsag'}),
+  //     action: z.string({message: 'Vælg handling'}),
+  //   }).refine((data) => 'change_reason' in data && data.change_reason !== undefined, {
+  //     path: ['change_reason'],
+  //     message: 'Vælg årsag',
+  //   });
+  // }
 
-  const formMethods = useForm<UnitEndFormValues>({
-    resolver: zodResolver(unitEndSchema),
+  type UnitEndFormValues = z.output<typeof BaseUnitEndSchema>;
+
+  const formMethods = useForm({
+    resolver: zodResolver(BaseUnitEndSchema),
     defaultValues: parsed,
   });
 

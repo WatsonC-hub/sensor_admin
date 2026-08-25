@@ -1,11 +1,12 @@
-import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
-import {QaAlgorithms} from '~/types';
+
+import type {APIError} from '~/queryClient';
+import type {QaAlgorithms} from '~/types';
 interface AlgorithmsBase {
   path: string;
   data?: any;

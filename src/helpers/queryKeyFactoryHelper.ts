@@ -1,4 +1,4 @@
-import {Dayjs} from 'dayjs';
+import type {Dayjs} from 'dayjs';
 
 export const queryKeys = {
   Location: {
@@ -33,6 +33,7 @@ export const queryKeys = {
     tilsyn: (ts_id: number | undefined) => ['service', 'udstyr', ts_id] as const,
     maalepunkt: (ts_id: number | undefined) => ['watlevmp', ts_id] as const,
     unitHistory: (ts_id: number | undefined) => ['udstyr', ts_id] as const,
+    unitHistory2: () => ['udstyr', 'unit_history'] as const,
     algorithms: (ts_id: number) => ['algorithms', ts_id] as const,
     certifyQa: (ts_id: number) => ['certifyQa', ts_id] as const,
     QAWithTsId: (ts_id: number) => ['qa_all', 'algorithms', ts_id] as const,
@@ -120,7 +121,7 @@ export const queryKeys = {
   user: () => ['user'] as const,
   notificationTypes: () => ['notification_types'] as const,
   changeReasons: () => ['change_reasons'] as const,
-  actions: (unit_uuid: string | undefined) => ['actions', unit_uuid] as const,
+  actions: (unit_uuid: string | Array<string> | undefined) => ['actions', unit_uuid] as const,
   cmdOptions: () => ['cmd_options'] as const,
   dmpAllowedMapList: () => ['dmp_allowed_map_list'] as const,
   StationProgress: (ts_id?: number) => ['station_progress', ts_id] as const,

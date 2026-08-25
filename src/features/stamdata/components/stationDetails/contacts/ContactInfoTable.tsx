@@ -1,23 +1,28 @@
 import {Box} from '@mui/material';
 import {startCase} from 'lodash';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
-import {SubmitHandler, useFormContext} from 'react-hook-form';
+import {useFormContext} from 'react-hook-form';
+
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {initialContactData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import {ContactInfoType, MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
+import {ContactInfoType, MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {ContactTable} from '~/types';
+
 import EditContactInfo from './EditContactInfo';
-import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import StationContactInfo from './StationContactInfo';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {SubmitHandler} from 'react-hook-form';
+import type {ContactTable} from '~/types';
 
 type Props = {
   loc_id?: number;
@@ -230,7 +235,13 @@ const ContactInfoTable = ({loc_id}: Props) => {
     },
     renderEditRowDialogContent: () => {
       return (
-        <Box py={4} px={2} boxShadow={6}>
+        <Box
+          sx={{
+            py: 4,
+            px: 2,
+            boxShadow: 6,
+          }}
+        >
           <StationContactInfo isEditing={true} isUser={true} tableModal={true} />
         </Box>
       );
@@ -307,7 +318,7 @@ const ContactInfoTable = ({loc_id}: Props) => {
       <EditContactInfo
         openContactInfoDialog={openContactInfoDialog}
         handleClose={handleClose}
-        handleSave={async () => await handleSubmit(handleSave, (e) => console.log(e))()}
+        handleSave={async () => handleSubmit(handleSave, (e) => console.log(e))()}
         isDisabled={Object.keys(dirtyFields).length === 0 || !isDirty}
         loading={isSubmitting}
         isUser={isUser}

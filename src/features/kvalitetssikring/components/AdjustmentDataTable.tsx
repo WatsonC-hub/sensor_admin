@@ -1,17 +1,12 @@
 import {Box, Dialog, DialogContent, DialogTitle, Typography} from '@mui/material';
-import {
-  MaterialReactTable,
-  MRT_ColumnDef,
-  MRT_RowData,
-  MRT_TableOptions,
-} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {AdjustmentTypes, MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {AdjustmentTypes, MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
-import {ExcludeData, useExclude} from '~/hooks/query/useExclude';
+import {useExclude} from '~/hooks/query/useExclude';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
@@ -20,9 +15,12 @@ import {useTable} from '~/hooks/useTable';
 import ExcludeRow from '~/pages/admin/kvalitetssikring/components/ExcludeRow';
 import LevelCorrectionRow from '~/pages/admin/kvalitetssikring/components/LevelCorrectionRow';
 import YRangeRow from '~/pages/admin/kvalitetssikring/components/YRangeRow';
-import {AdjustmentData, DataExclude, LevelCorrection, MinMaxCutoff} from '~/types';
 
-import {CertifyQa} from '../api/useCertifyQa';
+import type {CertifyQa} from '../api/useCertifyQa';
+import type {MRT_ColumnDef, MRT_RowData, MRT_TableOptions} from 'material-react-table';
+import type {JSX} from 'react';
+import type {ExcludeData} from '~/hooks/query/useExclude';
+import type {AdjustmentData, DataExclude, LevelCorrection, MinMaxCutoff} from '~/types';
 
 type Props = {
   data: Array<AdjustmentData> | undefined;
@@ -35,7 +33,7 @@ sortMap.set(AdjustmentTypes.EXLUDEPOINTS, 3);
 sortMap.set(AdjustmentTypes.MINMAX, 4);
 sortMap.set(AdjustmentTypes.APPROVED, 5);
 
-const AdjustmentDataTable = ({data}: Props) => {
+const AdjustmentDataTable = ({data}: Props): JSX.Element => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const {del: delCorrection} = useLevelCorrection();
@@ -54,21 +52,30 @@ const AdjustmentDataTable = ({data}: Props) => {
 
   const onSuccess = () => {
     setDialogOpen(false);
-  }
+  };
 
   const handleDelete = (ts_id: number | undefined, gid: number | undefined, type: string) => {
     if (type === AdjustmentTypes.EXLUDEPOINTS || type === AdjustmentTypes.EXLUDETIME)
-      delExclude.mutate({
-        path: `${ts_id}/${gid}`,
-      }, {onSuccess});
+      delExclude.mutate(
+        {
+          path: `${ts_id}/${gid}`,
+        },
+        {onSuccess}
+      );
     else if (type === AdjustmentTypes.LEVELCORRECTION)
-      delCorrection.mutate({
-        path: `${ts_id}/${gid}`,
-      }, {onSuccess});
+      delCorrection.mutate(
+        {
+          path: `${ts_id}/${gid}`,
+        },
+        {onSuccess}
+      );
     else if (type === AdjustmentTypes.MINMAX)
-      delMinMax.mutate({
-        path: `${ts_id}`,
-      }, {onSuccess});
+      delMinMax.mutate(
+        {
+          path: `${ts_id}`,
+        },
+        {onSuccess}
+      );
   };
 
   const result = data?.sort((a, b) => {
@@ -106,25 +113,50 @@ const AdjustmentDataTable = ({data}: Props) => {
               <Box>
                 {row.original.type === AdjustmentTypes.EXLUDEPOINTS && (
                   <Box>
-                    <Typography variant="caption" fontWeight={'bold'}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       Område: {'  '}
                     </Typography>
-                    <Typography variant="caption" display={'inline-block'}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: 'inline-block',
+                      }}
+                    >
                       {limitDecimalNumbers(data.min_value)} {unit}
                     </Typography>
                     {' - '}
-                    <Typography variant="caption" display={'inline-block'}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: 'inline-block',
+                      }}
+                    >
                       {limitDecimalNumbers(data.max_value)}
                       {unit}
                     </Typography>
                   </Box>
                 )}
                 <Box>
-                  <Typography variant="caption" display={'inline-block'}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'inline-block',
+                    }}
+                  >
                     <b>Fra: </b>
                     {convertDateWithTimeStamp(data.startdate)}
                   </Typography>
-                  <Typography variant="caption" display={'inline-block'}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'inline-block',
+                    }}
+                  >
                     <b>Til: </b>
 
                     {convertDateWithTimeStamp(data.enddate)}
@@ -137,7 +169,12 @@ const AdjustmentDataTable = ({data}: Props) => {
             return (
               <Box>
                 <Box>
-                  <Typography variant="caption" display={'inline-block'}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'inline-block',
+                    }}
+                  >
                     <b>Dato: </b>
                     {convertDateWithTimeStamp(data.date)}
                   </Typography>
@@ -150,7 +187,12 @@ const AdjustmentDataTable = ({data}: Props) => {
               <Box>
                 <Box>
                   {row.original.type === AdjustmentTypes.MINMAX && (
-                    <Box display={'flex'} flexDirection={'column'}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
                       <Typography variant="caption">
                         <b>Nedre: </b>
                         {limitDecimalNumbers(data.mincutoff)} {unit}
@@ -169,7 +211,12 @@ const AdjustmentDataTable = ({data}: Props) => {
             return (
               <Box>
                 <Box>
-                  <Typography variant="caption" display={'inline-block'}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'inline-block',
+                    }}
+                  >
                     <b>Til: </b>
                     {convertDateWithTimeStamp(data.date)}
                   </Typography>

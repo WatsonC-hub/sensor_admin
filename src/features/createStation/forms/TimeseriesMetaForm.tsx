@@ -1,11 +1,14 @@
+import {Grid} from '@mui/material';
 import React, {useEffect} from 'react';
+import {FormProvider} from 'react-hook-form';
+
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
-import {Grid2} from '@mui/material';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {FormProvider} from 'react-hook-form';
+
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {TimeseriesMeta} from '../types';
+
+import type {TimeseriesMeta} from '../types';
 
 type TimeseriesMetaFormProps = {
   uuid: string;
@@ -31,11 +34,9 @@ const TimeseriesMetaForm = ({uuid, setValues, setTstype, setIntakeno}: Timeserie
   const duplicateField = locationMeta?.boreholeno ? 'intakeno' : 'prefix';
 
   const [timeseriesFormMethods, TimeseriesForm] = useTimeseriesForm({
-    formProps: {
-      defaultValues: timeseries?.['meta'],
-      context: {
-        loctype_id: locationMeta?.loctype_id,
-      },
+    defaultValues: timeseries?.['meta'],
+    context: {
+      loctype_id: locationMeta?.loctype_id,
     },
     mode: 'Add',
   });
@@ -74,11 +75,11 @@ const TimeseriesMetaForm = ({uuid, setValues, setTstype, setIntakeno}: Timeserie
 
   useEffect(() => {
     registerSubmitter(id, async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         if (locationMeta?.boreholeno) delete values.prefix;
 
-        setValues(values);
+        setValues(values as TimeseriesMeta);
         valid = true;
       })();
       return valid;
@@ -90,9 +91,9 @@ const TimeseriesMetaForm = ({uuid, setValues, setTstype, setIntakeno}: Timeserie
   return (
     <FormProvider {...timeseriesFormMethods}>
       <StamdataTimeseries boreholeno={locationMeta?.boreholeno}>
-        <Grid2 container size={12} spacing={1}>
+        <Grid container size={12} spacing={1}>
           <TimeseriesForm size={size} loc_name={locationMeta?.loc_name} required />
-        </Grid2>
+        </Grid>
       </StamdataTimeseries>
     </FormProvider>
   );

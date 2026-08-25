@@ -1,7 +1,9 @@
-import React from 'react';
-import {SimpleContact} from '../types';
 import {List} from '@mui/material';
+import React from 'react';
+
 import SimpleTextView from '~/components/SimpleTextView';
+
+import type {SimpleContact} from '../types';
 
 type Props = {
   values: SimpleContact[] | undefined;
@@ -20,7 +22,7 @@ const SimpleContactList = ({values, onRemove}: Props) => {
           return (
             <SimpleTextView
               key={index}
-              primaryText={contact.name}
+              primaryText={contact.name + ' - ' + (contact.contact_role_name?.toLowerCase() ?? '')}
               secondaryText={contact.email}
               onRemove={() => onRemove(contact.id)}
               disabled={

@@ -1,18 +1,21 @@
-import React, {useEffect} from 'react';
-import {z} from 'zod';
-import {createTypedForm} from '~/components/formComponents/Form';
-import {useCreateStationStore} from '../state/useCreateStationStore';
 import {zodResolver} from '@hookform/resolvers/zod';
+import React, {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
+import {z} from 'zod';
+
+import {createTypedForm} from '~/components/formComponents/Form';
 import FormToggleButton from '~/components/formComponents/FormToggleButton';
 
+import {useCreateStationStore} from '../state/useCreateStationStore';
+
 const schema = z.object({
-  requires_auth: z.boolean({required_error: 'Vælg om data skal kræve login'}),
+  requires_auth: z.boolean({message: 'Vælg om data skal kræve login'}),
 });
 
-type VisibilityFormState = z.infer<typeof schema>;
+type VisibilityFormState = z.input<typeof schema>;
+type VisibilityFormStateOutput = z.output<typeof schema>;
 
-const Form = createTypedForm<VisibilityFormState>();
+const Form = createTypedForm<VisibilityFormState, VisibilityFormStateOutput>();
 
 type VisibilityFormProps = {
   visibility: VisibilityFormState | object | undefined;
@@ -40,7 +43,7 @@ const VisibilityForm = ({visibility, setValues}: VisibilityFormProps) => {
 
   useEffect(() => {
     registerSubmitter('location.visibility', async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         setValues(values);
         valid = true;

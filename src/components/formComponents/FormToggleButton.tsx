@@ -1,18 +1,16 @@
-import {
-  Stack,
-  ToggleButtonGroup,
-  ToggleButton,
-  Typography,
-  Grid2Props,
-  GridBaseProps,
-  Grid2,
-  ToggleButtonGroupProps,
-  SxProps,
-  ToggleButtonProps,
-} from '@mui/material';
+import {Grid, Stack, ToggleButton, ToggleButtonGroup, Typography} from '@mui/material';
 import {isEqual, merge} from 'lodash';
 import React from 'react';
-import {Controller, FieldPath, FieldPathValue, FieldValues, useFormContext} from 'react-hook-form';
+import {Controller, useFormContext} from 'react-hook-form';
+
+import type {
+  GridBaseProps,
+  GridProps,
+  SxProps,
+  ToggleButtonGroupProps,
+  ToggleButtonProps,
+} from '@mui/material';
+import type {FieldPath, FieldPathValue, FieldValues} from 'react-hook-form';
 
 type FormToggleButtonOption<T> = {
   value: T;
@@ -24,7 +22,7 @@ type FormToggleButtonProps<T extends FieldValues, K extends FieldPath<T>> = {
   options: FormToggleButtonOption<FieldPathValue<T, K>>[];
   label?: string;
   gridSizes?: GridBaseProps['size'];
-  gridProps?: Grid2Props;
+  gridProps?: GridProps;
   direction?: 'row' | 'column';
   gridDirection?: 'row' | 'column';
   onChangeCallback?: (value: FieldPathValue<T, K>) => void;
@@ -48,15 +46,20 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
   const {control} = useFormContext<T, K>();
 
   return (
-    <Grid2
+    <Grid
       container
-      flexDirection={gridDirection}
       {...gridProps}
       size={gridSizes}
       spacing={1}
-      alignItems="center"
+      sx={[
+        {
+          flexDirection: gridDirection,
+          alignItems: 'center',
+        },
+        ...(gridProps ? (Array.isArray(gridProps.sx) ? gridProps.sx : [gridProps.sx]) : []),
+      ]}
     >
-      <Grid2>
+      <Grid>
         <Controller
           name={name}
           control={control}
@@ -115,7 +118,13 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
                         sx={merged_sx}
                         value={option.value}
                       >
-                        <Typography textTransform={'initial'}>{option.label}</Typography>
+                        <Typography
+                          sx={{
+                            textTransform: 'initial',
+                          }}
+                        >
+                          {option.label}
+                        </Typography>
                       </ToggleButton>
                     );
                   })}
@@ -125,12 +134,18 @@ const FormToggleButton = <T extends FieldValues, K extends FieldPath<T>>({
           }}
         />
         {warning && (
-          <Typography color="error.main" variant="caption" sx={{mt: 0.5}}>
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'error.main',
+              mt: 0.5,
+            }}
+          >
             {warning(control._formValues[name])}
           </Typography>
         )}
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 };
 

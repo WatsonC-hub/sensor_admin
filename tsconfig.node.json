@@ -5,14 +5,11 @@
     "lib": ["ESNext"],
     "module": "ESNext",
     "skipLibCheck": true,
-
-    "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"],
-      "src/*": ["src/*"]
+      "~/*": ["./src/*"],
+      "src/*": ["./src/*"]
     },
     "allowJs": true,
-    "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,

@@ -1,19 +1,26 @@
-import {Box, Collapse, Divider, Grid2, Typography} from '@mui/material';
+import {Box, Collapse, Divider, Grid, Typography} from '@mui/material';
 import React, {useEffect, useMemo, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
-import Button from '~/components/Button';
-import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
-import {AccessType} from '~/helpers/EnumHelper';
-import {Access, ContactInfo} from '~/types';
-import SelectLocationAccess from './SelectLocationAccess';
-import {initialLocationAccessData} from '~/consts';
-import {TypedFormComponent} from '~/components/formComponents/Form';
 
+import Button from '~/components/Button';
+import {initialLocationAccessData} from '~/consts';
+import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
+import {AccessType} from '~/helpers/enumHelper';
+
+import SelectLocationAccess from './SelectLocationAccess';
+
+import type {locationAccessSchema} from './api/useLocationAccessForm';
+import type {z} from 'zod';
+import type {TypedFormComponent} from '~/components/formComponents/Form';
+import type {ContactInfo} from '~/types';
 type LocationAccessFormProps = {
   loc_id?: number | undefined;
   showLocationAccess?: boolean;
   disabled?: boolean;
-  Form: TypedFormComponent<Access, Access>;
+  Form: TypedFormComponent<
+    z.input<typeof locationAccessSchema>,
+    z.output<typeof locationAccessSchema>
+  >;
 };
 
 const LocationAccessForm = ({
@@ -27,7 +34,7 @@ const LocationAccessForm = ({
     showLocationAccess ?? false
   );
   const {data} = useSearchContact(loc_id, search);
-  const {watch, reset} = useFormContext<Access>();
+  const {watch, reset} = useFormContext();
   const location_access_id = watch('id');
   const contact_id = watch('contact_id');
   const contact_name = watch('contact_name');
@@ -92,7 +99,7 @@ const LocationAccessForm = ({
       )}
       <Collapse in={showLocationAccessForm}>
         {showLocationAccessForm && (
-          <Grid2 container spacing={1}>
+          <Grid container spacing={1}>
             <Form.Input
               name="type"
               label="Type"
@@ -115,12 +122,27 @@ const LocationAccessForm = ({
               renderOption={(props, option) => {
                 return (
                   <li {...props} key={option.id + ' - ' + option.loc_id}>
-                    <Box display={'flex'} flexDirection={'column'}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
                       <Typography>{option.name}</Typography>
-                      <Typography fontStyle={'italic'} variant="body2">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontStyle: 'italic',
+                        }}
+                      >
                         {option.email}
                       </Typography>
-                      <Typography fontStyle={'italic'} variant="body2">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontStyle: 'italic',
+                        }}
+                      >
                         {option.org && option.org !== '' && option.org}
                       </Typography>
                     </Box>
@@ -185,7 +207,7 @@ const LocationAccessForm = ({
               disabled={disabled}
               fullWidth
             />
-          </Grid2>
+          </Grid>
         )}
       </Collapse>
     </>

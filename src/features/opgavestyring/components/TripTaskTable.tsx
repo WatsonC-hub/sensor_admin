@@ -1,14 +1,16 @@
 import {Box, Link, Typography} from '@mui/material';
-import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 
-import {getIcon} from '~/features/notifications/utils';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {getIcon} from '~/features/notifications/Utils';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useTable} from '~/hooks/useTable';
 
-import {LocationTasks} from '~/types';
-import {sharedTableOptions} from '../shared_options';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {sharedTableOptions} from '../sharedOptions';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {LocationTasks} from '~/types';
 
 type Props = {
   tasks: Array<LocationTasks> | undefined;
@@ -23,17 +25,37 @@ const TripTaskTable = ({tasks}: Props) => {
         header: 'Opgave type',
         accessorKey: 'name',
         Cell: ({cell, row}) => (
-          <Box display="flex" gap={1} alignItems="center">
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              alignItems: 'center',
+            }}
+          >
             <Box
-              display={'flex'}
-              flexDirection={'row'}
-              alignItems={'center'}
-              gap={moreSpace ? 0.5 : 0}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: moreSpace ? 0.5 : 0,
+              }}
             >
-              <Typography width={20} variant="body2">
+              <Typography
+                variant="body2"
+                sx={{
+                  width: 20,
+                }}
+              >
                 {row.original.count + 'x '}
               </Typography>
-              <Box height={22} width={22} display="flex" alignSelf={'center'}>
+              <Box
+                sx={{
+                  height: 22,
+                  width: 22,
+                  display: 'flex',
+                  alignSelf: 'center',
+                }}
+              >
                 {row.original.blocks_notifications.length > 0
                   ? getIcon({notification_id: row.original.blocks_notifications?.[0]}, false)
                   : getIcon({mapicontype: 'task'}, false)}
@@ -54,12 +76,25 @@ const TripTaskTable = ({tasks}: Props) => {
       ...(sharedTableOptions as Partial<MRT_TableOptions<LocationTasks>>),
       positionExpandColumn: 'last',
       renderTopToolbar: (
-        <Typography variant="body1" pt={1} px={1}>
+        <Typography
+          variant="body1"
+          sx={{
+            pt: 1,
+            px: 1,
+          }}
+        >
           Opgaver
         </Typography>
       ),
       renderDetailPanel: ({row}) => (
-        <Box display={'flex'} flexDirection={'column'} p={1} gap={1}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            p: 1,
+            gap: 1,
+          }}
+        >
           {row.original.link_name?.map((name, index) => (
             <Link
               key={index}
@@ -89,7 +124,11 @@ const TripTaskTable = ({tasks}: Props) => {
   );
 
   return (
-    <Box p={1}>
+    <Box
+      sx={{
+        p: 1,
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

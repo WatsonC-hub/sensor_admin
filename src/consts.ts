@@ -1,22 +1,12 @@
-import {DataToShow} from './types';
-
-let mapToken: string;
+import type {DataToShow} from './types';
 
 export const isProduction = import.meta.env.PROD;
 
-if (isProduction) {
-  mapToken =
-    'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY2xma3cxbnFmMGYyNzN5bWpvb2Rjd2VuMyJ9.HSp-vSdF0i1uCSeUoCkwcA';
-} else {
-  mapToken =
-    'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY20zbjE0eWN6MTV5aDJxcXo3aXFpZ2kzYyJ9.UVPpejPboVyzBKCYupxOxw';
-}
+export const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 export const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
 };
-
-export const mapboxToken = mapToken;
 
 export const correction_map: Record<number, string> = {
   0: 'Kontrol',

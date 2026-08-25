@@ -1,26 +1,30 @@
-import React, {useEffect} from 'react';
-import {useFormContext} from 'react-hook-form';
-import {useUnit} from '~/features/stamdata/api/useUnit';
-import FormInput, {FormInputProps} from '~/components/FormInput';
-import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
-import {toast} from 'react-toastify';
-import CaptureDialog from '~/components/CaptureDialog';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import {Box, IconButton} from '@mui/material';
 import dayjs from 'dayjs';
-import {AddUnitType} from '~/features/createStation/forms/UnitForm';
-import FormAutocomplete, {
-  FormAutocompleteProps,
-} from '~/components/formComponents/FormAutocomplete';
+import React, {useEffect} from 'react';
+import {useFormContext} from 'react-hook-form';
+import {toast} from 'react-toastify';
+
+import CaptureDialog from '~/components/CaptureDialog';
+import FormAutocomplete from '~/components/formComponents/FormAutocomplete';
+import FormDateTimeWrapper, {
+  type DatetimeProps,
+} from '~/components/formComponents/FormDateTimeWrapper';
+import FormInput from '~/components/FormInput';
+import {useUnit} from '~/features/stamdata/api/useUnit';
+
+import type {FormAutocompleteProps} from '~/components/formComponents/FormAutocomplete';
+import type {FormInputProps} from '~/components/FormInput';
+import type {AddUnitType} from '~/features/createStation/forms/UnitForm';
 
 type StamdataUnitProps = {
   children: React.ReactNode;
-  tstype_id: number | undefined;
+  tstype_id: number | Array<number> | undefined;
 };
 
 type UnitContextType = {
-  tstype_id: number | undefined;
-  ids: {id: string}[];
+  tstype_id: number | Array<number> | undefined;
+  ids: {calypso_id: string}[];
 };
 
 const UnitContext = React.createContext<UnitContextType>({
@@ -35,7 +39,11 @@ const StamdataUnit = ({children, tstype_id}: StamdataUnitProps) => {
   const ids = [
     ...new Set(
       availableUnits
-        ?.filter((unit) => unit.sensortypeid === tstype_id || tstype_id == undefined)
+        ?.filter((unit) =>
+          Array.isArray(tstype_id)
+            ? tstype_id.includes(unit.sensortypeid)
+            : unit.sensortypeid === tstype_id || tstype_id == undefined
+        )
         ?.map((x) => (x.calypso_id === 0 ? x.terminal_id.toString() : x.calypso_id))
     ),
   ]
@@ -57,14 +65,14 @@ const StamdataUnit = ({children, tstype_id}: StamdataUnitProps) => {
       return 0;
     })
     .map((val) => ({
-      id: typeof val == 'number' ? val.toString() : val,
+      calypso_id: typeof val == 'number' ? val.toString() : val,
     }));
   return <UnitContext.Provider value={{tstype_id, ids}}>{children}</UnitContext.Provider>;
 };
 
 type BaseInputProps = Omit<FormInputProps<AddUnitType>, 'name'>;
 type AutocompleteInputProps = Omit<
-  FormAutocompleteProps<AddUnitType, {id: string}, false>,
+  FormAutocompleteProps<AddUnitType, {calypso_id: string}, false>,
   'name' | 'labelKey' | 'valueKey' | 'options'
 >;
 
@@ -72,11 +80,17 @@ const CalypsoID = ({textFieldsProps, ...rest}: AutocompleteInputProps) => {
   const {ids} = React.useContext(UnitContext);
 
   return (
-    <Box display="flex" alignItems="center" width="100%">
-      <FormAutocomplete<AddUnitType, {id: string}, false>
-        labelKey="id"
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+      }}
+    >
+      <FormAutocomplete<AddUnitType, {calypso_id: string}, false>
+        labelKey="calypso_id"
+        valueKey="calypso_id"
         name="calypso_id"
-        valueKey="id"
         fullWidth
         gridSizes={12}
         options={ids}
@@ -136,7 +150,7 @@ const SensorID = ({required, ...rest}: BaseInputProps) => {
 };
 
 interface ScannerProps {
-  onChangeCallback?: (option: {id: string} | null) => void;
+  onChangeCallback?: (option: {calypso_id: string} | null) => void;
 }
 
 const Scanner = ({onChangeCallback}: ScannerProps) => {
@@ -149,7 +163,7 @@ const Scanner = ({onChangeCallback}: ScannerProps) => {
 
   return (
     <>
-      <IconButton onClick={() => setOpenCaptureDialog(true)} size="large">
+      <IconButton onClick={() => setOpenCaptureDialog(true)}>
         <QrCodeScannerIcon />
       </IconButton>
       {openCaptureDialog && (
@@ -163,7 +177,7 @@ const Scanner = ({onChangeCallback}: ScannerProps) => {
               return;
             }
 
-            if (!ids.find((val) => val.id == calypso_id.toString())) {
+            if (!ids.find((val) => val.calypso_id == calypso_id.toString())) {
               toast.error(`Ingen tilgængelige enheder med Calypso ID: ${calypso_id}`);
               setOpenCaptureDialog(false);
               return;
@@ -176,7 +190,7 @@ const Scanner = ({onChangeCallback}: ScannerProps) => {
               )
             );
 
-            if (onChangeCallback) onChangeCallback({id: calypso_id.toString()});
+            if (onChangeCallback) onChangeCallback({calypso_id: calypso_id.toString()});
             setValue('calypso_id', calypso_id.toString());
 
             if (unit.length === 1) {
@@ -191,15 +205,36 @@ const Scanner = ({onChangeCallback}: ScannerProps) => {
   );
 };
 
-type BaseDateProps = Omit<FormDateTimeProps<AddUnitType>, 'name'>;
+type BaseDateProps = Omit<DatetimeProps<AddUnitType>, 'name'>;
 
-const StartDate = ({required, ...rest}: BaseDateProps) => {
-  return <FormDateTime name="startdate" label="Fra" required={required} {...rest} />;
+const StartDate = ({required, gridSizes, ...rest}: BaseDateProps) => {
+  return (
+    <FormDateTimeWrapper
+      name="startdate"
+      label="Fra"
+      required={required}
+      {...rest}
+      gridSizes={gridSizes ?? 12}
+    />
+  );
+};
+
+const EndDate = ({required, gridSizes, ...rest}: BaseDateProps) => {
+  return (
+    <FormDateTimeWrapper
+      name="enddate"
+      label="Slut dato"
+      required={required}
+      {...rest}
+      gridSizes={gridSizes ?? 12}
+    />
+  );
 };
 
 StamdataUnit.CalypsoID = CalypsoID;
 StamdataUnit.SensorID = SensorID;
 StamdataUnit.StartDate = StartDate;
+StamdataUnit.EndDate = EndDate;
 StamdataUnit.Scanner = Scanner;
 
 export default StamdataUnit;

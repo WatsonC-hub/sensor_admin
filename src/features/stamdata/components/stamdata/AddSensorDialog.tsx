@@ -1,6 +1,6 @@
-import {Typography, Dialog, DialogContent, DialogTitle, DialogActions} from '@mui/material';
-
+import {Dialog, DialogActions, DialogContent, DialogTitle, Typography} from '@mui/material';
 import React from 'react';
+
 import Button from '~/components/Button';
 import useBreakpoints from '~/hooks/useBreakpoints';
 

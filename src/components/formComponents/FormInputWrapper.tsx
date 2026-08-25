@@ -1,8 +1,12 @@
-import {GridBaseProps, Grid2} from '@mui/material';
+import {Grid} from '@mui/material';
 import React from 'react';
-import {FieldValues, Path} from 'react-hook-form';
-import FormInput, {FormInputProps} from '../FormInput';
+
+import FormInput from '../FormInput';
 import {FormContext} from './const';
+
+import type {FormInputProps} from '../FormInput';
+import type {GridBaseProps} from '@mui/material';
+import type {FieldValues, Path} from 'react-hook-form';
 
 type TextFieldProps<T extends FieldValues> = Omit<FormInputProps<T>, 'name'> & {
   name: Path<T>;
@@ -16,9 +20,9 @@ const FormInputWrapper = <T extends FieldValues>({
 }: TextFieldProps<T>) => {
   const {gridSizes: contextGridSizes} = React.useContext(FormContext);
   return (
-    <Grid2 size={gridSizes ?? contextGridSizes}>
+    <Grid size={gridSizes ?? contextGridSizes}>
       <FormInput<T> name={name} {...props} />
-    </Grid2>
+    </Grid>
   );
 };
 

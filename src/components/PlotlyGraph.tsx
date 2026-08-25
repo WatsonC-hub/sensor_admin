@@ -1,4 +1,25 @@
+import {Download} from '@mui/icons-material';
+import ReplayIcon from '@mui/icons-material/Replay';
+import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import {Box, ClickAwayListener, Tooltip} from '@mui/material';
+import dayjs from 'dayjs';
+// @ts-expect-error not part of type
+import Plotly from 'plotly.js/dist/plotly-gl2d';
+import React, {useEffect, useMemo, useState} from 'react';
+import createPlotlyComponent from 'react-plotly.js/factory';
+
+import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
+import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
+import GraphSwitch from '~/features/station/components/GraphSwitch';
+import {MergeType} from '~/helpers/enumHelper';
+import {useEdgeDates} from '~/hooks/query/useEdgeDates';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useCorrectData} from '~/hooks/useCorrectData';
+import {useAppContext} from '~/state/contexts';
+
+import Button from './Button';
+
 import type {
   Layout,
   PlotData,
@@ -6,28 +27,7 @@ import type {
   PlotRelayoutEvent,
   PlotSelectionEvent,
 } from 'plotly.js';
-// @ts-expect-error not part of type
-import Plotly from 'plotly.js/dist/plotly-gl2d';
-import React, {useEffect, useMemo, useState} from 'react';
-import createPlotlyComponent from 'react-plotly.js/factory';
-import ReplayIcon from '@mui/icons-material/Replay';
-import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
-import {MergeType} from '~/helpers/EnumHelper';
-import {useEdgeDates} from '~/hooks/query/useEdgeDates';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useCorrectData} from '~/hooks/useCorrectData';
-
-import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
-
-import Button from './Button';
-import {Download} from '@mui/icons-material';
-import {useAppContext} from '~/state/contexts';
-
-import {DataToShow} from '~/types';
-import GraphSwitch from '~/features/station/components/GraphSwitch';
-import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
-import dayjs from 'dayjs';
+import type {DataToShow} from '~/types';
 
 interface PlotlyGraphProps {
   plotEventProps?: {
@@ -214,8 +214,20 @@ export default function PlotlyGraph({
 
   return (
     <>
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-        <Box pl={isTouch ? 0 : 7} display={'flex'} flexDirection={'row'}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Box
+          sx={{
+            pl: isTouch ? 0 : 7,
+            display: 'flex',
+            flexDirection: 'row',
+          }}
+        >
           <Button
             bttype="link"
             onClick={() => graphLayout('week')}
@@ -250,7 +262,14 @@ export default function PlotlyGraph({
           </Button>
         </Box>
         {((boreholeno !== null && ts_id !== undefined) || boreholeno === null) && (
-          <Box display={'flex'} flexDirection={'row'} pr={1} gap={isTouch ? 0 : 1}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              pr: 1,
+              gap: isTouch ? 0 : 1,
+            }}
+          >
             <Tooltip title={'Genberegn tidsserie data'} arrow placement="top">
               <Button
                 bttype="link"
@@ -295,7 +314,6 @@ export default function PlotlyGraph({
           </Box>
         )}
       </Box>
-
       {isOpen && (
         <ClickAwayListener
           onClickAway={(e) => {
@@ -316,7 +334,6 @@ export default function PlotlyGraph({
           </Box>
         </ClickAwayListener>
       )}
-
       <Plot
         onSelected={(e) => {
           if (plotEventProps?.onSelected) plotEventProps.onSelected(e);

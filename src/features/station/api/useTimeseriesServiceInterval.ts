@@ -1,9 +1,10 @@
-import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
+import {queryOptions, useMutation, useSuspenseQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
-import {useUser} from '~/features/auth/useUser';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {APIError} from '~/queryClient';
 
 type ServiceConfiguration = {
   controlsPerYear: number | null;
@@ -31,12 +32,9 @@ const timeseriesServiceIntervalOptions = (ts_id: number) =>
   });
 
 export const useTimeseriesServiceInterval = (ts_id: number) => {
-  const {
-    features: {iotAccess},
-  } = useUser();
-  return useQuery({
+  return useSuspenseQuery({
     ...timeseriesServiceIntervalOptions(ts_id),
-    enabled: iotAccess && ts_id !== undefined,
+    // enabled: iotAccess && ts_id !== undefined,
   });
 };
 

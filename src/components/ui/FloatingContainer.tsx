@@ -1,6 +1,8 @@
-import {Box, BoxProps, useTheme} from '@mui/material';
+import {Box, useTheme} from '@mui/material';
 import {merge} from 'lodash';
 import React from 'react';
+
+import type {BoxProps} from '@mui/material';
 
 const FloatingContainer = ({children, sx, ...otherProps}: BoxProps) => {
   const theme = useTheme();

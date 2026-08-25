@@ -5,7 +5,8 @@ import React, {useState} from 'react';
 import {toast} from 'react-toastify';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {DialAction} from '~/types';
+
+import type {DialAction} from '~/types';
 
 type CustomSpeedDialProps = {
   actions: Array<DialAction>;
@@ -19,10 +20,21 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
     <SpeedDial
       ariaLabel="SpeedDial"
       icon={
-        <Box display={'flex'} px={3} flexDirection={'row'}>
+        <Box
+          sx={{
+            display: 'flex',
+            px: 3,
+            flexDirection: 'row',
+          }}
+        >
           <ManageSearch />
           {!isMobile && (
-            <Typography px={1} textTransform={'none'}>
+            <Typography
+              sx={{
+                px: 1,
+                textTransform: 'none',
+              }}
+            >
               Justér
             </Typography>
           )}
@@ -59,32 +71,35 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
           <SpeedDialAction
             key={action.key}
             icon={action.icon}
-            tooltipOpen
-            FabProps={{
-              onClick: () => {
-                action.onClick();
-                setOpen(!open);
-                if (toast.isActive('juster') && action.dialog === false)
-                  toast.update('juster', {style: {display: 'none'}});
+            slotProps={{
+              fab: {
+                onClick: () => {
+                  action.onClick();
+                  setOpen(!open);
+                  if (toast.isActive('juster') && action.dialog === false)
+                    toast.update('juster', {style: {display: 'none'}});
 
-                if (toast.isActive('juster') && action.dialog !== false)
-                  toast.update('juster', {
-                    render: <CustomTooltip toastContent={action.toastTip} />,
-                    type: 'default',
-                  });
-                else if (!toast.isActive('juster') && action.dialog !== false)
-                  toast(<CustomTooltip toastContent={action.toastTip} />, {
-                    autoClose: false,
-                    toastId: 'juster',
-                    style: {
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                    },
-                  });
+                  if (toast.isActive('juster') && action.dialog !== false)
+                    toast.update('juster', {
+                      render: <CustomTooltip toastContent={action.toastTip} />,
+                      type: 'default',
+                    });
+                  else if (!toast.isActive('juster') && action.dialog !== false)
+                    toast(<CustomTooltip toastContent={action.toastTip} />, {
+                      autoClose: false,
+                      toastId: 'juster',
+                      style: {
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                      },
+                    });
+                },
+              },
+              tooltip: {
+                title: action.tooltip,
               },
             }}
-            tooltipTitle={action.tooltip}
             sx={{
               '.MuiSpeedDialAction-fab': {
                 borderRadius: 4,
@@ -125,12 +140,14 @@ export const CustomTooltip = ({toastContent}: {toastContent: string}) => {
       arrow={true}
     >
       <Box
-        display={'flex'}
-        flexDirection={'row'}
-        width={'100%'}
-        gap={1}
-        justifyContent={'center'}
-        alignItems={'center'}
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          width: '100%',
+          gap: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
       >
         <InfoOutlinedIcon color="info" />
         <Typography>{toastContent}</Typography>

@@ -1,5 +1,6 @@
-import {DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
+import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
 import React from 'react';
+
 import Button from './Button';
 
 interface AlertProps {

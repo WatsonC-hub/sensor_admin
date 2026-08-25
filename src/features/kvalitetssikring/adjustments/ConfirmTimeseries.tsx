@@ -3,21 +3,24 @@ import {Save} from '@mui/icons-material';
 // import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {Box, Tooltip, Typography} from '@mui/material';
+import dayjs from 'dayjs';
 import {useAtomValue} from 'jotai';
 import {parseAsString, useQueryState} from 'nuqs';
 import React, {useEffect} from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
+import FormDateTime from '~/components/FormDateTime';
+import {zodDayjs} from '~/helpers/schemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {qaSelection} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
 
 import {useCertifyQa, useCertifyQaMutations} from '../api/useCertifyQa';
-import {zodDayjs} from '~/helpers/schemas';
-import dayjs from 'dayjs';
-import FormDateTime from '~/components/FormDateTime';
+
+import type {Dayjs} from 'dayjs';
+import type {SubmitHandler} from 'react-hook-form';
 
 interface WizardConfirmTimeseriesProps {
   initiateConfirmTimeseries: boolean;
@@ -39,7 +42,8 @@ const schema = z
     {path: ['date'], message: 'Dato må ikke være tidligere end sidst godkendt'}
   );
 
-type CertifyQaValues = z.infer<typeof schema>;
+type CertifyQaValues = z.input<typeof schema>;
+type CertifyQaOutput = z.output<typeof schema>;
 
 const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTimeseriesProps) => {
   const {ts_id} = useAppContext(['ts_id']);
@@ -60,7 +64,7 @@ const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTi
     level: 1,
   });
 
-  const formMethods = useForm<CertifyQaValues>({
+  const formMethods = useForm<CertifyQaValues, unknown, CertifyQaOutput>({
     resolver: zodResolver(schema),
     defaultValues: {
       startDate: qaData?.[0]?.date ? dayjs(qaData[0].date) : undefined,
@@ -75,7 +79,7 @@ const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTi
 
   const {watch, handleSubmit, setValue} = formMethods;
 
-  const enddateWatch = watch('date');
+  const enddateWatch = watch('date') as Dayjs | undefined;
 
   useEffect(() => {
     if (selection.points && selection.points.length > 0) {
@@ -84,7 +88,7 @@ const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTi
     }
   }, [selection]);
 
-  const handleSave: SubmitHandler<CertifyQaValues> = async (certifyQa) => {
+  const handleSave: SubmitHandler<CertifyQaOutput> = async (certifyQa) => {
     const payload = {
       path: `${ts_id}`,
       data: {...certifyQa, date: certifyQa.date},
@@ -95,13 +99,28 @@ const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTi
   };
   return (
     <FormProvider {...formMethods}>
-      <Box alignSelf={'center'} justifySelf={'center'}>
-        <Box display={'flex'} flexDirection="row" justifyContent={'center'} mb={1} gap={1}>
+      <Box
+        sx={{
+          alignSelf: 'center',
+          justifySelf: 'center',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            mb: 1,
+            gap: 1,
+          }}
+        >
           <Typography
-            alignSelf={'center'}
             variant={isMobile ? 'h6' : 'h5'}
             component="h2"
-            fontWeight={'bold'}
+            sx={{
+              alignSelf: 'center',
+              fontWeight: 'bold',
+            }}
           >
             Godkend tidsserie
           </Typography>
@@ -125,15 +144,25 @@ const ConfirmTimeseries = ({initiateConfirmTimeseries, onClose}: WizardConfirmTi
           </Tooltip>
         </Box>
         <Box
-          display={'flex'}
-          flexDirection={'column'}
-          alignItems={'center'}
-          alignSelf={'center'}
-          gap={1}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            alignSelf: 'center',
+            gap: 1,
+          }}
         >
           <FormDateTime name={'startDate'} label={'Sidst godkendt'} disabled={true} />
           <FormDateTime name="date" label="Godkend til" disabled={!initiateConfirmTimeseries} />
-          <Box display={'flex'} mt={2.5} flexDirection={'row'} alignSelf={'center'} gap={1}>
+          <Box
+            sx={{
+              display: 'flex',
+              mt: 2.5,
+              flexDirection: 'row',
+              alignSelf: 'center',
+              gap: 1,
+            }}
+          >
             <Button
               bttype="tertiary"
               onClick={() => {

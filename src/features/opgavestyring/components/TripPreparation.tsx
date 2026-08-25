@@ -1,24 +1,23 @@
+import {Check} from '@mui/icons-material';
+import MoveUpIcon from '@mui/icons-material/MoveUp';
 import {Box} from '@mui/material';
 import React, {useState} from 'react';
 
-import Button from '~/components/Button';
 import AlertDialog from '~/components/AlertDialog';
+import Button from '~/components/Button';
+import EditableField from '~/components/EditableField';
+import TripRessourcesTable from '~/features/opgavestyring/components/TripRessourcesTable';
+import TripUnitTable from '~/features/opgavestyring/components/TripUnitTable';
+import {useItinerary, useItineraryMutations} from '~/features/tasks/api/useItinerary';
+import {useDisplayState} from '~/hooks/ui';
 import LoadingSkeleton from '~/LoadingSkeleton';
-
-import {Check} from '@mui/icons-material';
-import MoveUpIcon from '@mui/icons-material/MoveUp';
 
 import TripContacts from './TripContacts';
 import TripLocationAccess from './TripLocationAccess';
 import TripMergeDialog from './TripMergeDialog';
-import TripRessourcesTable from '~/features/opgavestyring/components/TripRessourcesTable';
 import TripTaskTable from './TripTaskTable';
-import TripUnitTable from '~/features/opgavestyring/components/TripUnitTable';
 
-import {useDisplayState} from '~/hooks/ui';
-import {useItinerary, useItineraryMutations} from '~/features/tasks/api/useItinerary';
-import EditableField from '~/components/EditableField';
-import {TaskCollection} from '~/types';
+import type {TaskCollection} from '~/types';
 
 interface TripPreparationProps {
   data: TaskCollection | undefined;
@@ -54,28 +53,38 @@ const TripPreparation = ({data}: TripPreparationProps) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" overflow="auto" gap={1}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'auto',
+        gap: 1,
+      }}
+    >
       <EditableField
         label={itinerary.name}
         placeholder="Indtast navn..."
         variant="title"
         onSave={(value) => updateField('name', value)}
       />
-
       <EditableField
         label={itinerary.comment}
         placeholder="Indtast kommentar..."
         multiline
         onSave={(value) => updateField('comment', value)}
       />
-
       <TripRessourcesTable ressources={data?.ressourcer} />
       <TripLocationAccess keys={data?.location_access} />
       <TripContacts contacts={data?.contacts} />
       <TripTaskTable tasks={data?.tasks} />
       <TripUnitTable units={data?.units} />
-
-      <Box display="flex" gap={1} alignSelf="center">
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 1,
+          alignSelf: 'center',
+        }}
+      >
         <Button
           bttype="primary"
           sx={{borderRadius: 2.5}}
@@ -94,9 +103,7 @@ const TripPreparation = ({data}: TripPreparationProps) => {
           Afslut tur
         </Button>
       </Box>
-
       <TripMergeDialog itinerary_id={itinerary_id!} open={mergeOpen} setOpen={setMergeOpen} />
-
       <AlertDialog
         open={completeOpen}
         setOpen={setCompleteOpen}

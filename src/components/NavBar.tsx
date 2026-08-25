@@ -1,10 +1,11 @@
-import { MapRounded, Person, Menu as MenuIcon, Help, Notifications } from '@mui/icons-material';
+import {Help, MapRounded, Menu as MenuIcon, Notifications, Person} from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import PlaceIcon from '@mui/icons-material/Place';
-import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import {
   AppBar,
   Badge,
@@ -17,31 +18,32 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import {useQueryClient} from '@tanstack/react-query';
+import {useAtom} from 'jotai';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {toast} from 'react-toastify';
 
-import { useQueryClient } from '@tanstack/react-query';
-import { useAtom } from 'jotai';
-import { useState, ReactNode, MouseEventHandler } from 'react';
-
-import { apiClient } from '~/apiClient';
+import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
-import { appBarHeight } from '~/consts';
+import {appBarHeight} from '~/consts';
+import {useUser} from '~/features/auth/useUser';
+import {useTasks} from '~/features/tasks/api/useTasks';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import { useNavigationFunctions } from '~/hooks/useNavigationFunctions';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
-import { drawerOpenAtom } from '~/state/atoms';
-import CloseIcon from '@mui/icons-material/Close';
-import Button from './Button';
-import { useDisplayState } from '~/hooks/ui';
-import { useNavigate } from 'react-router-dom';
-import { useUser } from '~/features/auth/useUser';
-import { toast } from 'react-toastify';
-import CaptureDialog from './CaptureDialog';
-import { useTasks } from '~/features/tasks/api/useTasks';
-import { queryKeys } from '~/helpers/QueryKeyFactoryHelper';
+import {drawerOpenAtom} from '~/state/atoms';
 
-const LogOut = ({ children }: { children?: ReactNode }) => {
+import Button from './Button';
+import CaptureDialog from './CaptureDialog';
+
+import type {MouseEventHandler, ReactNode} from 'react';
+
+const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();
-  const { home } = useNavigationFunctions();
+  const {home} = useNavigationFunctions();
 
   const handleLogout = async () => {
     await apiClient.get('/auth/logout/secure');
@@ -53,8 +55,12 @@ const LogOut = ({ children }: { children?: ReactNode }) => {
   return (
     <Box
       onClick={handleLogout}
-      width={'100%'}
-      sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+      sx={{
+        width: '100%',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+      }}
     >
       {children}
     </Box>
@@ -62,7 +68,7 @@ const LogOut = ({ children }: { children?: ReactNode }) => {
 };
 
 const HomeButton = () => {
-  const { home } = useNavigationFunctions();
+  const {home} = useNavigationFunctions();
 
   return (
     <Tooltip title="Tilbage til kortet" arrow>
@@ -79,9 +85,9 @@ const HomeButton = () => {
   );
 };
 
-const AppBarLayout = ({ children, zIndex }: { children?: ReactNode; zIndex?: number }) => {
+const AppBarLayout = ({children, zIndex}: {children?: ReactNode; zIndex?: number}) => {
   return (
-    <AppBar position="sticky" enableColorOnDark sx={{ zIndex: zIndex }}>
+    <AppBar position="sticky" enableColorOnDark sx={{zIndex: zIndex}}>
       <Toolbar
         disableGutters
         sx={{
@@ -146,7 +152,7 @@ const NavBarMenu = ({
   disableProfile = true,
 }: {
   highligtFirst?: boolean;
-  items?: { title: string; icon: ReactNode; onClick: () => void }[];
+  items?: {title: string; icon: ReactNode; onClick: () => void}[];
   disableLogout?: boolean;
   disableProfile?: boolean;
 }) => {
@@ -163,11 +169,7 @@ const NavBarMenu = ({
   return (
     <>
       {highligtFirst && items != undefined && items.length > 0 && (
-        <Button
-          bttype={'primary'}
-          onClick={items?.[0].onClick}
-          startIcon={items?.[0].icon}
-        >
+        <Button bttype={'primary'} onClick={items?.[0].onClick} startIcon={items?.[0].icon}>
           {items?.[0].title}
         </Button>
       )}
@@ -244,7 +246,7 @@ const NavBarMenu = ({
 };
 
 const Logo = () => {
-  const { isMobile } = useBreakpoints();
+  const {isMobile} = useBreakpoints();
 
   return isMobile ? <SmallLogo /> : <LogoSvg />;
 };
@@ -282,7 +284,7 @@ const GoBack = () => {
   );
 };
 
-const Close = ({ onClick }: { onClick: () => void }) => {
+const Close = ({onClick}: {onClick: () => void}) => {
   return (
     <IconButton color="inherit" onClick={onClick} size="large">
       <CloseIcon />
@@ -292,7 +294,7 @@ const Close = ({ onClick }: { onClick: () => void }) => {
 
 const LocationList = () => {
   const [loc_list, setLocList] = useDisplayState((state) => [state.loc_list, state.setLocList]);
-  const { isMobile } = useBreakpoints();
+  const {isMobile} = useBreakpoints();
 
   return (
     <Button
@@ -318,7 +320,7 @@ const OwnTaskList = () => {
     state.setOwnTaskList,
   ]);
   const user = useUser();
-  const { data: tasks } = useTasks();
+  const {data: tasks} = useTasks();
 
   const task_list = tasks?.filter(
     (task) => task.assigned_to === user.user_id.toString() && task.status_id !== 2
@@ -340,7 +342,13 @@ const OwnTaskList = () => {
       <Badge
         badgeContent={
           task_list && task_list.length > 0 ? (
-            <Typography variant="caption" color="white" pr={0.2}>
+            <Typography
+              variant="caption"
+              color="white"
+              sx={{
+                pr: 0.2,
+              }}
+            >
               {task_list.length}
             </Typography>
           ) : null
@@ -348,7 +356,7 @@ const OwnTaskList = () => {
         color="secondary"
       >
         <Notifications
-          sx={{ color: own_task_list ? 'secondary.main' : disabled ? 'inherit' : 'white' }}
+          sx={{color: own_task_list ? 'secondary.main' : disabled ? 'inherit' : 'white'}}
         />
       </Badge>
     </IconButton>
@@ -357,7 +365,7 @@ const OwnTaskList = () => {
 
 const TripList = () => {
   const [trip_list, setTripList] = useDisplayState((state) => [state.trip_list, state.setTripList]);
-  const { isMobile } = useBreakpoints();
+  const {isMobile} = useBreakpoints();
   return (
     <Button
       sx={{
@@ -379,11 +387,11 @@ const TripList = () => {
 const ScannerAsTitle = () => {
   const [open, setOpen] = useState(false);
   async function getData(labelid: string | number) {
-    const { data } = await apiClient.get(`/sensor_field/calypso_id/${labelid}`);
+    const {data} = await apiClient.get(`/sensor_field/calypso_id/${labelid}`);
     return data;
   }
 
-  const { location, station, boreholeIntake } = useNavigationFunctions();
+  const {location, station, boreholeIntake} = useNavigationFunctions();
 
   const handleClose = () => {
     setOpen(false);
@@ -391,7 +399,7 @@ const ScannerAsTitle = () => {
 
   const handleScan = async (data: any, calypso_id: number | null) => {
     if (!calypso_id) {
-      toast.error('QR-koden er ikke gyldig', { autoClose: 2000 });
+      toast.error('QR-koden er ikke gyldig', {autoClose: 2000});
       handleClose();
       return;
     }
@@ -411,7 +419,7 @@ const ScannerAsTitle = () => {
           boreholeIntake(resp.boreholeno, resp.intakeno);
         }
       } else {
-        toast.error('Ukendt fejl', { autoClose: 2000 });
+        toast.error('Ukendt fejl', {autoClose: 2000});
       }
       handleClose();
     } catch (e: any) {
@@ -433,19 +441,28 @@ const ScannerAsTitle = () => {
   );
 };
 
-const Title = ({ title }: { title: string }) => {
-  const { isMobile } = useBreakpoints();
+const Title = ({title}: {title: string}) => {
+  const {isMobile} = useBreakpoints();
   return (
-    <Typography
-      sx={{left: '50%', transform: 'translateX(-50%)', position: 'absolute'}}
-      variant={isMobile ? 'h6' : 'h4'}
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignContent: 'center',
+      }}
     >
-      {title}
-    </Typography>
+      <Typography sx={{}} variant={isMobile ? 'h6' : 'h4'}>
+        {title}
+      </Typography>
+      {/* <LinkableTooltip
+        fieldDescriptionText="Læs mere om stamdata"
+        sx={{pb: 0, pl: 0.5, color: 'white'}}
+      /> */}
+    </Box>
   );
 };
 
-const NavBar = ({ children, zIndex }: { children?: ReactNode; zIndex?: number }) => {
+const NavBar = ({children, zIndex}: {children?: ReactNode; zIndex?: number}) => {
   return <AppBarLayout zIndex={zIndex}>{children}</AppBarLayout>;
 };
 

@@ -1,8 +1,8 @@
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle, Typography} from '@mui/material';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
-import {SubmitHandler, useFormContext} from 'react-hook-form';
+import {useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
@@ -11,18 +11,27 @@ import {initialLocationAccessData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
-import {AccessType, MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {AccessType, MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {Access, AccessTable} from '~/types';
+
 import LocationAccessForm from './LocationAccessForm';
-import {TypedFormComponent} from '~/components/formComponents/Form';
+
+import type {locationAccessSchema} from './api/useLocationAccessForm';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {SubmitHandler} from 'react-hook-form';
+import type {z} from 'zod';
+import type {TypedFormComponent} from '~/components/formComponents/Form';
+import type {AccessTable} from '~/types';
 
 type LocationAccessTableProps = {
   loc_id?: number;
-  Form: TypedFormComponent<Access, Access>;
+  Form: TypedFormComponent<
+    z.input<typeof locationAccessSchema>,
+    z.output<typeof locationAccessSchema>
+  >;
 };
 
 const onDeleteBtnClick = (
@@ -189,7 +198,13 @@ const LocationAccessTable = ({loc_id, Form}: LocationAccessTableProps) => {
     },
     renderEditRowDialogContent: () => {
       return (
-        <Box py={4} px={2} boxShadow={6}>
+        <Box
+          sx={{
+            py: 4,
+            px: 2,
+            boxShadow: 6,
+          }}
+        >
           <LocationAccessForm
             loc_id={loc_id}
             showLocationAccess={true}

@@ -1,38 +1,41 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {AddCircle} from '@mui/icons-material';
+import {Box} from '@mui/material';
+import {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
-import FabWrapper from '~/components/FabWrapper';
 
+import FabWrapper from '~/components/FabWrapper';
 import MaalepunktTableDesktop from '~/components/tableComponents/MaalepunktTableDesktop';
 import MaalepunktTableMobile from '~/components/tableComponents/MaalepunktTableMobile';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import StationMPForm from '~/features/station/components/watlevmp/StationMPForm';
+import {stationPages} from '~/helpers/enumHelper';
+import {zodDayjs} from '~/helpers/schemas';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
+
 import {initialWatlevmpData} from './const';
-import {MaalepunktAsDayjs} from '~/types';
-import {zodDayjs} from '~/helpers/schemas';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import {useEffect} from 'react';
-import {stationPages} from '~/helpers/EnumHelper';
 import JupiterMPTable from './JupiterMPTable';
-import {Box} from '@mui/material';
+
+import type {MaalepunktAsDayjs} from '~/types';
 
 const schema = z.object({
   gid: z.number().optional(),
   startdate: zodDayjs('Start dato skal være udfyldt'),
   elevation: z
-    .number({required_error: 'Pejlepunkt skal være udfyldt'})
-    .optional()
+    .number({message: 'Pejlepunkt skal være udfyldt'})
+    .nullable()
     .refine((val) => val !== null && val !== undefined, {
       message: 'Pejlepunkt skal være udfyldt',
     }),
   mp_description: z.string().nullish(),
 });
 
-export type WatlevMPFormValues = z.infer<typeof schema>;
+export type WatlevMPFormValues = z.input<typeof schema>;
+export type WatlevMPFormValuesOutput = z.output<typeof schema>;
 
 export default function ReferenceForm() {
   const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
@@ -41,13 +44,15 @@ export default function ReferenceForm() {
   const [showForm, setShowForm] = useShowFormState();
   const {data: metadata} = useTimeseriesData(ts_id);
 
-  const formMethods = useForm<WatlevMPFormValues, unknown, WatlevMPFormValues>({
+  const formMethods = useForm<WatlevMPFormValues, unknown, WatlevMPFormValuesOutput>({
     resolver: zodResolver(schema),
     defaultValues: initialWatlevmpData(),
     mode: 'onTouched',
   });
 
   const {reset} = formMethods;
+
+  console.log('test');
 
   const {
     feature_permission_query: {data: permissions},
@@ -57,10 +62,11 @@ export default function ReferenceForm() {
   const disabled = permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit';
 
   const handleEdit = (data: MaalepunktAsDayjs) => {
-    const {data: parsedData} = schema.safeParse({
+    const {data: parsedData, error} = schema.safeParse({
       ...data,
       mp_description: data.mp_description ?? '',
     });
+    console.log('parsedData', parsedData, error);
     reset(parsedData);
     setShowForm(true);
   };
@@ -82,7 +88,15 @@ export default function ReferenceForm() {
       ) : (
         <MaalepunktTableDesktop handleEdit={handleEdit} disabled={disabled} />
       )}
-      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={2} mt={2}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: 2,
+          mt: 2,
+        }}
+      >
         <FabWrapper
           icon={<AddCircle />}
           text="Tilføj målepunkt"

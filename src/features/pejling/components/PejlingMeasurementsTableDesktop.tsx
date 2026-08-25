@@ -1,5 +1,5 @@
 import {Box} from '@mui/material';
-import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -7,23 +7,22 @@ import RenderInternalActions from '~/components/tableComponents/RenderInternalAc
 import {correction_map, setTableBoxStyle} from '~/consts';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import { useAppContext } from '~/state/contexts';
-import {PejlingItem} from '~/types';
+import {useAppContext} from '~/state/contexts';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {PejlingItem} from '~/types';
 
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
   disabled: boolean;
 }
 
-export default function PejlingMeasurementsTableDesktop({
-  handleEdit,
-  disabled,
-}: Props) {
+export default function PejlingMeasurementsTableDesktop({handleEdit, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const {ts_id} = useAppContext(['ts_id']);
   const [mpId, setMpId] = useState(-1);
@@ -49,7 +48,7 @@ export default function PejlingMeasurementsTableDesktop({
       onSuccess: () => {
         setDialogOpen(false);
       },
-      });
+    });
   };
 
   const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
@@ -97,6 +96,7 @@ export default function PejlingMeasurementsTableDesktop({
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
+          console.log(row.original);
           handleEdit(row.original);
         }}
         onDeleteBtnClick={() => {

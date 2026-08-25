@@ -8,10 +8,13 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import {Noop} from 'react-hook-form';
 import React, {useEffect, useMemo, useState} from 'react';
-import {locationFilterOptions} from './filter_consts';
+
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import {locationFilterOptions} from './filterConsts';
+
+import type {Noop} from 'react-hook-form';
 
 type Props = {
   value: Array<string> | undefined | null;
@@ -59,11 +62,6 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
       onClose={() => {
         setOpen(false);
       }}
-      sx={{
-        marginTop: '8px',
-        marginBottom: '4px',
-        pb: 1.5,
-      }}
       onTouchStart={(e) => {
         if (isMobile) e.stopPropagation();
       }}
@@ -97,10 +95,10 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
       isOptionEqualToValue={(option, value) => {
         return option.name === value.name;
       }}
-      renderTags={(value, getTagProps) => {
+      renderValue={(value, getTagProps) => {
         return value.map((option, index) => {
           const content = (
-            <Typography display="inline" variant="body2">
+            <Typography variant="body2" sx={{display: 'inline'}}>
               {option.name}
             </Typography>
           );
@@ -116,6 +114,27 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
           );
         });
       }}
+      // renderTags={(value, getTagProps) => {
+      //   return value.map((option, index) => {
+      //     const content = (
+      //       <Typography variant="body2" sx={{
+      //         display: "inline"
+      //       }}>
+      //         {option.name}
+      //       </Typography>
+      //     );
+
+      //     return (
+      //       <Chip
+      //         variant="outlined"
+      //         label={content}
+      //         component={'div'}
+      //         {...getTagProps({index})}
+      //         key={index}
+      //       />
+      //     );
+      //   });
+      // }}
       renderOption={(props, option) => (
         <li {...props} key={option.name}>
           {option.name != 'Alle' ? (
@@ -144,41 +163,44 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
           )}
         </li>
       )}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          fullWidth
-          variant="outlined"
-          label={label}
-          placeholder="Vælg visning..."
-          onBlur={onBlur}
-          onTouchStart={() => {
-            if (isMobile) {
-              setOpen(true);
-            }
-          }}
-          onKeyDown={() => {
-            if (!open) setOpen(true);
-          }}
-          focused={open}
-          slotProps={{
-            inputLabel: {
-              ...params.InputLabelProps,
-              shrink: true,
-            },
-          }}
-          sx={{
-            '& .MuiInputBase-input.Mui-disabled': {
-              WebkitTextFillColor: '#000000',
-            },
-            '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-            '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-            '& .MuiOutlinedInput-root': {
-              '& > fieldset': {borderColor: 'primary.main'},
-            },
-          }}
-        />
-      )}
+      renderInput={(params) => {
+        return (
+          <TextField
+            {...params}
+            fullWidth
+            variant="outlined"
+            label={label}
+            placeholder="Vælg visning..."
+            onBlur={onBlur}
+            onTouchStart={() => {
+              if (isMobile) {
+                setOpen(true);
+              }
+            }}
+            onKeyDown={() => {
+              if (!open) setOpen(true);
+            }}
+            focused={open}
+            slotProps={{
+              ...params.slotProps,
+              inputLabel: {
+                ...params.slotProps.inputLabel,
+                shrink: true,
+              },
+            }}
+            sx={{
+              '& .MuiInputBase-input.Mui-disabled': {
+                WebkitTextFillColor: '#000000',
+              },
+              '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+              '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+              '& .MuiOutlinedInput-root': {
+                '& > fieldset': {borderColor: 'primary.main'},
+              },
+            }}
+          />
+        );
+      }}
       slotProps={{
         popper: {
           onTouchStart: (e) => {

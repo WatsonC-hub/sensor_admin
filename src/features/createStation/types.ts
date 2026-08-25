@@ -1,15 +1,13 @@
-import {Watlevmp} from '~/features/station/schema';
-import {AddUnitType} from './forms/UnitForm';
-import {AccessTable, ContactTable, Group} from '~/types';
-import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
-import {LocationMetadata} from '~/hooks/query/useMetadata';
+import type {ControlSettingsOutput} from '../configuration/api/useControlSettingsForm';
+import type {SyncFormSchema} from '../synchronization/api/useSyncForm';
+import type {AddUnitType} from './forms/UnitForm';
+import type {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
+import type {Watlevmp} from '~/features/station/schema';
+import type {LocationMetadata} from '~/hooks/query/useMetadata';
+import type {AccessTable, ContactTable, Group} from '~/types';
 
 /*  FORMSTATE */
-export type ControlSettingsFormState = {
-  controls_per_year: number;
-  lead_time: number | null;
-  selectValue: 1 | 2;
-};
+export type ControlSettingsFormState = Omit<ControlSettingsOutput, 'dummy' | 'from_unit'>;
 
 export type SyncFormState = {
   dmp?:
@@ -59,7 +57,7 @@ type TimeseriesFormState = {
   meta?: TimeseriesMeta;
   watlevmp?: Watlevmp;
   control_settings?: ControlSettingsFormState;
-  sync?: SyncFormState;
+  sync?: SyncFormSchema;
   unit?: AddUnitType;
 };
 
@@ -73,6 +71,7 @@ export type SimpleContact = {
   name: string;
   email: string | null;
   contact_role?: number | undefined;
+  contact_role_name?: string | undefined;
   contact_type?: string | undefined;
 };
 
@@ -100,7 +99,7 @@ export type ControlSettingsPayload = {
 export type TimeseriesPayload = {
   meta?: TimeseriesMeta;
   watlevmp?: Watlevmp;
-  control_settings?: ControlSettingsPayload;
+  control_settings?: Omit<ControlSettingsOutput, 'dummy' | 'from_unit'>;
   sync?: SyncFormState;
   unit?: AddUnitType;
 };

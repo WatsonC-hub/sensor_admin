@@ -1,14 +1,17 @@
-import {Grid2} from '@mui/material';
+import {Grid} from '@mui/material';
 import React from 'react';
 import {useFormContext} from 'react-hook-form';
 
-import FormTextField from '~/components/FormTextField';
-
-import {Unit, useUnit} from '../../api/useUnit';
-import {UnitHistory, useUnitHistory} from '../../api/useUnitHistory';
-import {useAppContext} from '~/state/contexts';
-import usePermissions from '~/features/permissions/api/usePermissions';
 import FormDateTime from '~/components/FormDateTime';
+import FormTextField from '~/components/FormTextField';
+import usePermissions from '~/features/permissions/api/usePermissions';
+import {useAppContext} from '~/state/contexts';
+
+import {useUnit} from '../../api/useUnit';
+import {useUnitHistory} from '../../api/useUnitHistory';
+
+import type {Unit} from '../../api/useUnit';
+import type {UnitHistory} from '../../api/useUnitHistory';
 
 interface UnitFormProps {
   mode: string;
@@ -33,7 +36,7 @@ export default function UnitForm({mode, tstype_id}: UnitFormProps) {
   const {data: history} = useUnitHistory();
   let unit: UnitHistory | Unit | undefined;
   if (editMode) {
-    unit = history?.find((u) => u.uuid === unit_uuid);
+    unit = history?.find((u) => u.unit_uuid === unit_uuid);
   } else {
     unit = availableUnits?.find((u) => u.unit_uuid === unit_uuid);
   }
@@ -43,28 +46,34 @@ export default function UnitForm({mode, tstype_id}: UnitFormProps) {
   }
 
   return (
-    <Grid2 container spacing={2} width={'100%'}>
-      <Grid2 size={{xs: 12, sm: 6}}>
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        width: '100%',
+      }}
+    >
+      <Grid size={{xs: 12, sm: 6}}>
         <FormTextField disabled value={unit?.terminal_type ?? ''} label="Terminal" />
-      </Grid2>
-      <Grid2 size={{xs: 12, sm: 6}}>
+      </Grid>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormTextField disabled label="Terminal ID" value={unit?.terminal_id ?? ''} />
-      </Grid2>
-      <Grid2 size={{xs: 12, sm: 6}}>
+      </Grid>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormTextField
           disabled
           label="CALYPSO ID"
           value={unit?.calypso_id ? String(unit?.calypso_id) : ''}
         />
-      </Grid2>
-      <Grid2 size={{xs: 12, sm: 6}}>
+      </Grid>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormTextField disabled label="Sensor" value={unit?.sensorinfo ?? ''} />
-      </Grid2>
-      <Grid2 size={{xs: 12, sm: 6}}>
+      </Grid>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormTextField disabled label="Sensor ID" value={unit?.sensor_id ?? ''} />
-      </Grid2>
-      <Grid2 size={{xs: 12, sm: 6}}></Grid2>
-      <Grid2 size={{xs: 12, sm: 6}}>
+      </Grid>
+      <Grid size={{xs: 12, sm: 6}}></Grid>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormDateTime
           name="startdate"
           label="Startdato"
@@ -72,8 +81,8 @@ export default function UnitForm({mode, tstype_id}: UnitFormProps) {
           required
           sx={{minWidth: '200px'}}
         />
-      </Grid2>
-      <Grid2 size={{xs: 12, sm: 6}}>
+      </Grid>
+      <Grid size={{xs: 12, sm: 6}}>
         {editMode && (
           <FormDateTime
             name="enddate"
@@ -84,7 +93,7 @@ export default function UnitForm({mode, tstype_id}: UnitFormProps) {
             sx={{minWidth: '200px'}}
           />
         )}
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 }

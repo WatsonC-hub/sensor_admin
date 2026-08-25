@@ -1,18 +1,21 @@
 import {zodResolver} from '@hookform/resolvers/zod';
+import MoveUpIcon from '@mui/icons-material/MoveUp';
 import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
+
 import AlertDialog from '~/components/AlertDialog';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {
-  useItineraryMutations,
   useItineraries,
   useItinerary,
+  useItineraryMutations,
 } from '~/features/tasks/api/useItinerary';
 import {useDisplayState} from '~/hooks/ui';
-import MoveUpIcon from '@mui/icons-material/MoveUp';
+
+import type {SubmitHandler} from 'react-hook-form';
 
 type Props = {
   itinerary_id: string;
@@ -37,7 +40,7 @@ const TripMergeDialog = ({itinerary_id, open, setOpen}: Props) => {
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(
       z.object({
-        target_itinerary_id: z.string({required_error: 'Vælg en tur'}).min(1, 'Vælg en tur'),
+        target_itinerary_id: z.string({message: 'Vælg en tur'}).min(1, 'Vælg en tur'),
       })
     ),
     mode: 'onTouched',

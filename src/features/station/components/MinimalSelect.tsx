@@ -1,11 +1,13 @@
 import {Typography} from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import {useEffect, useState} from 'react';
 
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useAppContext} from '~/state/contexts';
+
+import type {SelectChangeEvent} from '@mui/material/Select';
 
 const MinimalSelect = () => {
   const {ts_id} = useAppContext(['loc_id'], ['ts_id']);
@@ -28,14 +30,6 @@ const MinimalSelect = () => {
   };
   const handleOpen = () => setIsOpen(true);
 
-  const menuProps = {
-    PaperProps: {
-      sx: {
-        backgroundColor: 'primary.main',
-      },
-    },
-  };
-
   useEffect(() => {
     if (ts_id) {
       setIsOpen(false);
@@ -54,7 +48,15 @@ const MinimalSelect = () => {
     <>
       {metadata.timeseries.length > 1 ? (
         <Select
-          MenuProps={menuProps}
+          MenuProps={{
+            slotProps: {
+              paper: {
+                sx: {
+                  backgroundColor: 'primary.main',
+                },
+              },
+            },
+          }}
           value={hasTimeseries && ts_id ? ts_id.toString() : ''}
           onChange={handleChange}
           open={isOpen}
@@ -100,7 +102,12 @@ const MinimalSelect = () => {
           ))}
         </Select>
       ) : (
-        <Typography color="white" fontSize={14}>
+        <Typography
+          sx={{
+            color: 'white',
+            fontSize: 14,
+          }}
+        >
           {(metadata.timeseries[0].prefix ? metadata.timeseries[0].prefix + ' - ' : '') +
             ' ' +
             metadata.timeseries[0].tstype_name}

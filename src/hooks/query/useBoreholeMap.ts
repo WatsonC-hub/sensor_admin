@@ -1,8 +1,10 @@
 import {useQuery} from '@tanstack/react-query';
+
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {BoreholeMapData} from '~/types';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {BoreholeMapData} from '~/types';
 
 // type Options = Partial<Omit<UseQueryOptions<BoreholeMapData[]>, 'queryKey' | 'queryFn'>>;
 

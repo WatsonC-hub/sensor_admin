@@ -1,18 +1,24 @@
-import {Box, Grid2, Typography} from '@mui/material';
-import {UseFormReturn} from 'react-hook-form';
+import {Box, Grid, Typography} from '@mui/material';
+
 import {createTypedForm} from '~/components/formComponents/Form';
 import {initialWatlevmpData} from '~/features/stamdata/components/stamdata/const';
-import {WatlevMPFormValues} from '~/features/stamdata/components/stamdata/ReferenceForm';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
+
 import MPDescription from '../stamdata/MPDescription';
 
+import type {SubmitHandler, UseFormReturn} from 'react-hook-form';
+import type {
+  WatlevMPFormValues,
+  WatlevMPFormValuesOutput,
+} from '~/features/stamdata/components/stamdata/ReferenceForm';
+
 interface WatlevMPFormProps {
-  formMethods: UseFormReturn<WatlevMPFormValues, unknown, WatlevMPFormValues>;
+  formMethods: UseFormReturn<WatlevMPFormValues, unknown, WatlevMPFormValuesOutput>;
 }
 
-const Form = createTypedForm<WatlevMPFormValues>();
+const Form = createTypedForm<WatlevMPFormValues, WatlevMPFormValuesOutput>();
 
 const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
   const {ts_id} = useAppContext(['ts_id']);
@@ -26,7 +32,7 @@ const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
     post: {mutateAsync: postWatlevmpAsync},
     put: {mutateAsync: putWatlevmpAsync},
   } = useMaalepunkt(ts_id);
-  const handleMaalepunktSubmit = async (values: WatlevMPFormValues) => {
+  const handleMaalepunktSubmit: SubmitHandler<WatlevMPFormValuesOutput> = async (values) => {
     const mutationOptions = {
       onSuccess: () => {
         reset(initialWatlevmpData());
@@ -52,7 +58,12 @@ const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
     }
   };
   return (
-    <Box maxWidth={600} margin="auto">
+    <Box
+      sx={{
+        maxWidth: 600,
+        margin: 'auto',
+      }}
+    >
       <Form
         formMethods={formMethods}
         label={defaultValues?.gid ? 'Rediger målepunkt' : 'Indberet målepunkt'}
@@ -70,21 +81,23 @@ const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
         />
         <Form.DateTime name="startdate" label={'Gældende fra'} />
 
-        <Grid2 size={12}>
+        <Grid size={12}>
           <Form.Controller
             name="mp_description"
             render={({field}) => {
               return <MPDescription {...field} value={field.value ?? ''} />;
             }}
           />
-        </Grid2>
+        </Grid>
         <Box
-          display={'flex'}
-          gap={1}
-          justifySelf="flex-end"
-          justifyContent="flex-end"
-          mr={0}
-          ml="auto"
+          sx={{
+            display: 'flex',
+            gap: 1,
+            justifySelf: 'flex-end',
+            justifyContent: 'flex-end',
+            mr: 0,
+            ml: 'auto',
+          }}
         >
           <Form.Cancel
             disabled={false}

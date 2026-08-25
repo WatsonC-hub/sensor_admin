@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import React, {useEffect, useMemo, useState} from 'react';
-import {Controller, FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {Controller, FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import Button from '~/components/Button';
@@ -20,7 +20,8 @@ import GenericCard from '~/components/GenericCard';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {useRunQA} from '~/hooks/useRunQA';
 import {useAppContext} from '~/state/contexts';
-import {QaAlgorithmParameters, QaAlgorithms, QaAlgorithmsPut} from '~/types';
+
+import type {QaAlgorithmParameters, QaAlgorithms, QaAlgorithmsPut} from '~/types';
 
 interface AlgorithCardProps {
   qaAlgorithm: QaAlgorithms;
@@ -42,7 +43,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
     setDeleteDialogOpen(true);
   };
 
-  const submit: SubmitHandler<QaAlgorithmsPut> = (data) => {
+  const submit = (data: QaAlgorithmsPut) => {
     const payload = {
       path: `${ts_id}`,
       data: {
@@ -123,7 +124,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
       parameters: qaAlgorithm.parameter_values,
     });
   if (schemaData.success) defaultValues = schemaData.data;
-  const formMethods = useForm<QaAlgorithmsPut>({
+  const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: defaultValues,
   });
@@ -169,10 +170,12 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           title={
             <Box>
               <Box
-                display={'flex'}
-                flexDirection={'row'}
-                justifyContent={'space-between'}
-                alignItems={'center'}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
               >
                 <Typography variant={'h5'}>{qaAlgorithm.name}</Typography>
                 <FormControlLabel
@@ -203,7 +206,12 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
                   }}
                 />
               </Box>
-              <Typography fontSize={13} variant="body2">
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 13,
+                }}
+              >
                 {qaAlgorithm.description}
               </Typography>
             </Box>

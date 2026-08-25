@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
-
 import {createStore} from 'zustand';
-import {CreateStationFormState, TimeseriesMeta} from '../types';
 import {devtools} from 'zustand/middleware';
+
+import type {CreateStationFormState, TimeseriesMeta} from '../types';
 
 function setByPath<T extends object, P extends Path<T>>(
   obj: T,
@@ -138,9 +138,9 @@ export type CreateStationStoreState = {
   clearSubmitters: () => void;
 };
 
-type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
-};
+// type DeepPartial<T> = {
+//   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+// };
 
 // const defaultState: DeepPartial<CreateStationFormState> = {
 //   location: {
@@ -149,7 +149,7 @@ type DeepPartial<T> = {
 //   },
 // };
 
-const createStationStore = (defaultValues?: DeepPartial<CreateStationFormState>) =>
+const createStationStore = (defaultValues: Partial<CreateStationFormState>) =>
   createStore<CreateStationStoreState>()(
     devtools((set, get) => ({
       formState: defaultValues,
@@ -215,7 +215,7 @@ export const CreateStationStoreContext = React.createContext<ReturnType<
 
 interface CreateStationStoreProviderProps {
   children: React.ReactNode;
-  defaultValues?: DeepPartial<CreateStationFormState>;
+  defaultValues: Partial<CreateStationFormState>;
 }
 
 const CreateStationStoreProvider = ({children, defaultValues}: CreateStationStoreProviderProps) => {

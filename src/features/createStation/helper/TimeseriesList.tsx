@@ -1,18 +1,21 @@
-import TimeseriesEditor from './TimeseriesEditor';
-import Button from '~/components/Button';
+import {Router, Timeline} from '@mui/icons-material';
 import {Box} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
 import {useState} from 'react';
+
+import {apiClient} from '~/apiClient';
+import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
+import {useUser} from '~/features/auth/useUser';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
 import UnitDialog from '../components/UnitDialog';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {AddUnitType} from '../forms/UnitForm';
-import {TransformedUnit} from '../types';
-import {apiClient} from '~/apiClient';
-import {Tstype} from '~/types';
-import {useQuery} from '@tanstack/react-query';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {useUser} from '~/features/auth/useUser';
-import {Router, Timeline} from '@mui/icons-material';
+import TimeseriesEditor from './TimeseriesEditor';
+
+import type {AddUnitType} from '../forms/UnitForm';
+import type {TransformedUnit} from '../types';
+import type {Tstype} from '~/types';
 
 function TimeseriesList() {
   const [unitDialog, setUnitDialog] = useState(false);
@@ -55,18 +58,25 @@ function TimeseriesList() {
     const service_interval = timeseries_types?.find(
       (type) => type.tstype_id === tstype_id
     )?.service_interval;
-    if (service_interval !== null && service_interval !== undefined) {
-      setState(`timeseries.${index}.control_settings`, {
-        controls_per_year: 12 / service_interval,
-        lead_time: null,
-        selectValue: 1,
-      });
-    }
+    // if (service_interval !== null && service_interval !== undefined) {
+    setState(`timeseries.${index}.control_settings`, {
+      controls_per_year: 12 / (service_interval ?? 12),
+      lead_time: null,
+      selectValue: 1,
+    });
+    // }
   };
 
   return (
     <>
-      <Box display="flex" gap={1} flexWrap="wrap" alignSelf={'center'}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 1,
+          flexWrap: 'wrap',
+          alignSelf: 'center',
+        }}
+      >
         {iotAccess && (
           <Button bttype="primary" onClick={() => setUnitDialog(true)} startIcon={<Router />}>
             Tilføj fra udstyr
@@ -102,7 +112,7 @@ function TimeseriesList() {
               const transformedUnit: AddUnitType = {
                 unit_uuid: unit.unit_uuid,
                 startdate: startdate,
-                calypso_id: unit.calypso_id.toString(),
+                calypso_id: unit.calypso_id === 0 ? unit.terminal_id.toString() : unit.calypso_id,
               };
               return {
                 ...transformedUnit,

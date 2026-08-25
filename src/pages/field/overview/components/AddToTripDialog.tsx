@@ -1,15 +1,16 @@
 import {
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  Select,
+  DialogContent,
+  DialogTitle,
   MenuItem,
+  Select,
   Typography,
 } from '@mui/material';
 import React from 'react';
+
 import Button from '~/components/Button';
-import {useItineraryMutations, useItineraries} from '~/features/tasks/api/useItinerary';
+import {useItineraries, useItineraryMutations} from '~/features/tasks/api/useItinerary';
 import {useTaskUsers} from '~/features/tasks/api/useTasks';
 
 type AddToTripDialogProps = {
@@ -65,10 +66,22 @@ const AddToTripDialog = ({open, onClose, loc_id}: AddToTripDialogProps) => {
               value={itinerary.id}
               sx={{display: 'flex', flexDirection: 'column'}}
             >
-              <Typography variant="body1" ml={0} mr={'auto'}>
+              <Typography
+                variant="body1"
+                sx={{
+                  ml: 0,
+                  mr: 'auto',
+                }}
+              >
                 {itinerary.name}
               </Typography>
-              <Typography variant="caption" ml={1} mr={'auto'}>
+              <Typography
+                variant="caption"
+                sx={{
+                  ml: 1,
+                  mr: 'auto',
+                }}
+              >
                 {taskUsers?.find((user) => user.id === itinerary.assigned_to)?.display_name}{' '}
                 {itinerary.due_date}
               </Typography>

@@ -1,24 +1,41 @@
-import React from 'react';
-import {createTypedForm} from '~/components/formComponents/Form';
-import {AlarmsFormValues} from '../schema';
-import {useFormContext} from 'react-hook-form';
-import {Box, Chip, Typography} from '@mui/material';
-import {getColor} from '~/features/notifications/utils';
-import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import SouthIcon from '@mui/icons-material/South';
-import {useNotificationTypes, type NotificationType} from '~/hooks/query/useNotificationOverview';
-import Button from '~/components/Button';
+import {Box, Chip, Typography} from '@mui/material';
+import React from 'react';
+import {useFormContext} from 'react-hook-form';
 
-const AlarmNotificationTypedForm = createTypedForm<AlarmsFormValues>();
+import Button from '~/components/Button';
+import {createTypedForm} from '~/components/formComponents/Form';
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import {getColor} from '~/features/notifications/Utils';
+import {type NotificationType, useNotificationTypes} from '~/hooks/query/useNotificationOverview';
+
+import type {AlarmFormInput, AlarmFormOutput} from '../schema';
+
+const AlarmNotificationTypedForm = createTypedForm<AlarmFormInput, AlarmFormOutput>();
 
 const AlarmNotificationForm = () => {
-  const {setValue, watch} = useFormContext<AlarmsFormValues>();
+  const {setValue, watch} = useFormContext<AlarmFormInput>();
   const notification_ids = watch('notification_ids');
   const {data} = useNotificationTypes();
 
   return (
-    <Box display={'flex'} flexDirection={'column'} width={'100%'} gap={1}>
-      <Box display={'flex'} flexDirection={'row'} gap={1} alignItems="center" flexWrap={'wrap'}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        gap: 1,
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 1,
+          alignItems: 'center',
+          flexWrap: 'wrap',
+        }}
+      >
         <Button
           bttype="tertiary"
           sx={{
@@ -119,10 +136,15 @@ const AlarmNotificationForm = () => {
         //   );
         //   trigger('notification_ids');
         // }}
-        renderTags={(value, getTagProps) => {
+        renderValue={(value, getTagProps) => {
           return value.map((option, index) => {
             const content = (
-              <Typography display="inline" variant="body2">
+              <Typography
+                variant="body2"
+                sx={{
+                  display: 'inline',
+                }}
+              >
                 {option.name}
               </Typography>
             );

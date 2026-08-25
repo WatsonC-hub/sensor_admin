@@ -1,10 +1,13 @@
-import {Grid2} from '@mui/material';
+import {Grid} from '@mui/material';
 import React from 'react';
-import ControlSettings, {
+
+import ControlSettings from '~/features/configuration/components/ControlSettings';
+import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {
   ControlSettingsProps,
   LeadTimeProps,
 } from '~/features/configuration/components/ControlSettings';
-import useBreakpoints from '~/hooks/useBreakpoints';
 
 type Props = {
   slotProps?: {
@@ -17,14 +20,14 @@ type Props = {
 const CreateControlSettings = ({slotProps, containerGridSize = 12}: Props) => {
   const {isMobile} = useBreakpoints();
   return (
-    <Grid2 container size={containerGridSize} spacing={1}>
-      <Grid2 size={isMobile ? 12 : 6}>
+    <Grid container size={containerGridSize} spacing={1}>
+      <Grid size={isMobile ? 12 : 6}>
         <ControlSettings.ControlFrequency required {...slotProps?.controlFrequency} />
-      </Grid2>
-      <Grid2 size={isMobile ? 12 : 6}>
+      </Grid>
+      <Grid size={isMobile ? 12 : 6}>
         <ControlSettings.LeadTime {...slotProps?.leadTime} />
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 };
 

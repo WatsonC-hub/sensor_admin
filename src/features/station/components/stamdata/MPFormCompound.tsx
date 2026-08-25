@@ -1,7 +1,10 @@
 import {InputAdornment} from '@mui/material';
 import React from 'react';
-import FormInput, {FormInputProps} from '~/components/FormInput';
-import {Watlevmp} from '../../schema';
+
+import FormInput from '~/components/FormInput';
+
+import type {Watlevmp} from '../../schema';
+import type {FormInputProps} from '~/components/FormInput';
 
 type MPFormCompoundProps = {
   children: React.ReactNode;
@@ -20,8 +23,10 @@ const Elevation = (props: Omit<FormInputProps<Watlevmp>, 'name'>) => {
       required
       disabled={props.disabled}
       fullWidth
-      InputProps={{
-        endAdornment: <InputAdornment position="start">m</InputAdornment>,
+      slotProps={{
+        input: {
+          endAdornment: <InputAdornment position="start">m</InputAdornment>,
+        },
       }}
       {...props}
     />

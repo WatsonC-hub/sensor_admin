@@ -1,8 +1,12 @@
-import {GridBaseProps, Grid2} from '@mui/material';
-import {FieldValues, UseFormReturn, FormProvider} from 'react-hook-form';
-import FormFieldset from './FormFieldset';
-import {FormContext} from './const';
+import {Grid} from '@mui/material';
 import React from 'react';
+import {FormProvider} from 'react-hook-form';
+
+import {FormContext} from './const';
+import FormFieldset from './FormFieldset';
+
+import type {GridBaseProps} from '@mui/material';
+import type {FieldValues, UseFormReturn} from 'react-hook-form';
 
 type Props<T extends FieldValues, S extends Record<string, any> = T> = {
   formMethods: UseFormReturn<T, unknown, S>;
@@ -14,9 +18,9 @@ type Props<T extends FieldValues, S extends Record<string, any> = T> = {
 
 const Wrapper = ({children, wrap}: {children: React.ReactNode; wrap: boolean}) => {
   return wrap ? (
-    <Grid2 container size={12} spacing={1}>
+    <Grid container size={12} spacing={1}>
       {children}
-    </Grid2>
+    </Grid>
   ) : (
     <>{children}</>
   );

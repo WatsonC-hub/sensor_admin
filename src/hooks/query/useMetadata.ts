@@ -1,11 +1,13 @@
-import {useQuery, queryOptions, UseQueryOptions} from '@tanstack/react-query';
+import {queryOptions, useQuery} from '@tanstack/react-query';
 import {useCallback} from 'react';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
-import {Group} from '~/types';
+
+import type {UseQueryOptions} from '@tanstack/react-query';
+import type {APIError} from '~/queryClient';
+import type {Group} from '~/types';
 
 export type Metadata = {
   loc_id: number;
@@ -63,6 +65,7 @@ export type LocationMetadata = {
     ts_name: string;
     calculated: boolean;
     prefix: string | null;
+    slutdato: string | null;
     tstype_name: string;
     intakeno: number | null;
     timeseries_calypso_id?: number | null;
@@ -103,6 +106,7 @@ const transformMetadata = (data: Metadata[], ts_id: number | undefined): Locatio
           intakeno: data.intakeno,
           timeseries_calypso_id: data.timeseries_calypso_id,
           unit_uuid: data.unit_uuid,
+          slutdato: data.slutdato,
         };
       }),
   };

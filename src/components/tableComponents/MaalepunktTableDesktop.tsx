@@ -1,19 +1,21 @@
 import {Box} from '@mui/material';
-import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {useAppContext} from '~/state/contexts';
-import {MaalepunktAsDayjs} from '~/types';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {MaalepunktAsDayjs} from '~/types';
 
 interface Props {
   handleEdit: (maalepunkt: MaalepunktAsDayjs) => void;
@@ -34,12 +36,15 @@ export default function MaalepunktTableDesktop({handleEdit, disabled}: Props) {
     setDialogOpen(true);
   };
 
- const handleDeleteMaalepunkt = (gid: number | undefined) => {
-    deleteWatlevmp.mutate({path: `${ts_id}/${gid}`}, {
-      onSuccess: () => {
-        setDialogOpen(false);
+  const handleDeleteMaalepunkt = (gid: number | undefined) => {
+    deleteWatlevmp.mutate(
+      {path: `${ts_id}/${gid}`},
+      {
+        onSuccess: () => {
+          setDialogOpen(false);
+        },
       }
-    });
+    );
   };
 
   const unit = timeseries?.tstype_id === 1 ? 'Kote [m (DVR90)]' : `Måling [${timeseries?.unit}]`;

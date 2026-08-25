@@ -6,17 +6,18 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
-import type {UseMutationResult} from '@tanstack/react-query';
 import React, {useState} from 'react';
 import {toast} from 'react-toastify';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
-import {Image} from '~/types';
+import usePermissions from '~/features/permissions/api/usePermissions';
+import {useAppContext} from '~/state/contexts';
 
 import GenericCard from './GenericCard';
-import {useAppContext} from '~/state/contexts';
-import usePermissions from '~/features/permissions/api/usePermissions';
+
+import type {UseMutationResult} from '@tanstack/react-query';
+import type {Image} from '~/types';
 
 type ImageCardProps = {
   image: Image;
@@ -121,9 +122,20 @@ function ImageCard({image, deleteMutation, handleEdit, mobileSize}: ImageCardPro
             {deleteMutation.isPending ? (
               <CircularProgress />
             ) : (
-              <Box display="flex" alignItems="center" gap={1}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
                 <Delete />
-                <Typography variant="body2" fontSize={14}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontSize: 14,
+                  }}
+                >
                   Slet
                 </Typography>
               </Box>
@@ -135,9 +147,20 @@ function ImageCard({image, deleteMutation, handleEdit, mobileSize}: ImageCardPro
             size="small"
             bttype="primary"
           >
-            <Box display="flex" alignItems="center" gap={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
               <Edit />
-              <Typography variant="body2" fontSize={14}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 14,
+                }}
+              >
                 Rediger
               </Typography>
             </Box>

@@ -1,15 +1,16 @@
+import {Fullscreen, FullscreenExit} from '@mui/icons-material';
 import {Box, IconButton} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
+import {useAtom} from 'jotai';
 
 import NavBar from '~/components/NavBar';
 import {useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import Boreholeno from '~/pages/field/boreholeno/Boreholeno';
 import MinimalSelectBorehole from '~/pages/field/boreholeno/MinimalSelectBorehole';
-import ActionAreaBorehole from './ActionAreaBorehole';
-import {Fullscreen, FullscreenExit} from '@mui/icons-material';
-import {useAtom} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
-import useBreakpoints from '~/hooks/useBreakpoints';
+
+import ActionAreaBorehole from './ActionAreaBorehole';
 
 export default function BoreholeRouter() {
   const setIntakeNo = useDisplayState((state) => state.setIntakeNo);
@@ -20,7 +21,13 @@ export default function BoreholeRouter() {
     <>
       <CssBaseline />
       <NavBar>
-        <Box display="block" flexGrow={1} overflow="hidden">
+        <Box
+          sx={{
+            display: 'block',
+            flexGrow: 1,
+            overflow: 'hidden',
+          }}
+        >
           <MinimalSelectBorehole />
         </Box>
         {!isMobile && (
@@ -41,7 +48,6 @@ export default function BoreholeRouter() {
           }}
         />
       </NavBar>
-
       <Box
         component="main"
         style={{
@@ -53,12 +59,14 @@ export default function BoreholeRouter() {
         }}
       >
         <Box
-          display="flex"
-          flexGrow={1}
-          minWidth={0}
-          gap={1}
-          flexDirection={'column'}
-          overflow="auto"
+          sx={{
+            display: 'flex',
+            flexGrow: 1,
+            minWidth: 0,
+            gap: 1,
+            flexDirection: 'column',
+            overflow: 'auto',
+          }}
         >
           <Boreholeno />
         </Box>

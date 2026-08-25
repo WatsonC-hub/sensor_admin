@@ -1,17 +1,19 @@
-import {Box, Button, Card, CardContent, CardHeader, Link, Typography} from '@mui/material';
-import React, {useMemo} from 'react';
-import {Task} from '~/features/tasks/types';
 import {EditOutlined} from '@mui/icons-material';
-import {getColor} from '~/features/notifications/utils';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import {Box, Button, Card, CardContent, CardHeader, Link, Typography} from '@mui/material';
+import dayjs from 'dayjs';
+import React, {useMemo} from 'react';
+
+import {useUser} from '~/features/auth/useUser';
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import {getColor} from '~/features/notifications/Utils';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {convertDate} from '~/helpers/dateConverter';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useDisplayState} from '~/hooks/ui';
-import {useUser} from '~/features/auth/useUser';
-import dayjs from 'dayjs';
-import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
+
+import type {Task} from '~/features/tasks/types';
 
 type Props = {
   task: Task;
@@ -59,17 +61,21 @@ const TaskListItemSimpleCard = ({task}: Props) => {
           }}
           title={
             <Box
-              display="flex"
-              flexDirection={'row'}
-              alignItems="center"
-              justifyContent={'space-between'}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
             >
               <Box
-                display={'flex'}
-                flexDirection={'row'}
-                gap={0.5}
-                alignItems="center"
-                fontSize={14}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 0.5,
+                  alignItems: 'center',
+                  fontSize: 14,
+                }}
               >
                 <NotificationIcon
                   iconDetails={{
@@ -80,16 +86,21 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                   }}
                   noCircle={true}
                 />
-                <Box display="flex" flexDirection={'column'}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
                   <Link
                     onClick={() => station(task.ts_id)}
                     color="inherit"
                     variant="caption"
                     underline="always"
-                    display="flex"
-                    flexWrap="wrap"
-                    gap={0.5}
                     sx={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 0.5,
                       cursor: 'pointer',
                       textDecorationColor: 'rgba(255, 255, 255, 0.6)',
                     }}
@@ -99,10 +110,12 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                   </Link>
                   {task.sla && superUser && (
                     <Typography
-                      mt={-0.5}
-                      fontStyle={'italic'}
-                      fontWeight={'bold'}
                       variant={'caption'}
+                      sx={{
+                        mt: -0.5,
+                        fontStyle: 'italic',
+                        fontWeight: 'bold',
+                      }}
                     >
                       Løsningsfrist: {task.sla.format('l')}
                     </Typography>
@@ -110,7 +123,13 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                 </Box>
               </Box>
               {task.due_date && (
-                <Box display="flex" flexDirection={'row'} gap={1}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: 1,
+                  }}
+                >
                   <PendingActionsIcon
                     fontSize="small"
                     sx={{
@@ -128,9 +147,20 @@ const TaskListItemSimpleCard = ({task}: Props) => {
           }
         />
         <CardContent
-          sx={{paddingBottom: 0, paddingX: 1, '&.MuiCardContent-root:last-child': {paddingY: 1}}}
+          sx={{
+            paddingBottom: 0,
+            paddingX: 1,
+            '&.MuiCardContent-root:last-child': {paddingY: 1},
+          }}
         >
-          <Box display={'flex'} flexDirection={'row'} alignItems="center" justifyContent="end">
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'end',
+            }}
+          >
             {task.can_edit && (
               <EditOutlined
                 fontSize="small"

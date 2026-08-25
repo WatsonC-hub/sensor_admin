@@ -1,18 +1,27 @@
-import React, {useEffect} from 'react';
-import {Access, AccessTable} from '~/types';
-import useLocationAccessForm from '~/features/stamdata/components/stationDetails/locationAccessKeys/api/useLocationAccessForm';
-import LocationAccessFormDialog from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
-import Button from '~/components/Button';
-import {AddCircleOutline, DoNotDisturb, Edit} from '@mui/icons-material';
-import SimpleLocationAccessList from '../helper/SimpleLocationAccessList';
+import {AddCircleOutlined, DoNotDisturb, Edit} from '@mui/icons-material';
 import {Box} from '@mui/material';
-import {useCreateStationStore} from '../state/useCreateStationStore';
-import FormFieldset from '~/components/formComponents/FormFieldset';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {button_sx} from '../common_style';
-import {createTypedForm} from '~/components/formComponents/Form';
+import React, {useEffect} from 'react';
 
-const Form = createTypedForm<Access>();
+import Button from '~/components/Button';
+import {createTypedForm} from '~/components/formComponents/Form';
+import FormFieldset from '~/components/formComponents/FormFieldset';
+import useLocationAccessForm, {
+  locationAccessSchema,
+} from '~/features/stamdata/components/stationDetails/locationAccessKeys/api/useLocationAccessForm';
+import LocationAccessFormDialog from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
+import useBreakpoints from '~/hooks/useBreakpoints';
+
+import {button_sx} from '../commonStyle';
+import SimpleLocationAccessList from '../helper/SimpleLocationAccessList';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+
+import type {z} from 'zod';
+import type {AccessTable} from '~/types';
+
+const Form = createTypedForm<
+  z.input<typeof locationAccessSchema>,
+  z.output<typeof locationAccessSchema>
+>();
 
 const LocationAccessForm = () => {
   const {isMobile} = useBreakpoints();
@@ -27,9 +36,9 @@ const LocationAccessForm = () => {
       state.removeSubmitter,
     ]);
 
-  const locationAccessMethods = useLocationAccessForm<Access>({
+  const locationAccessMethods = useLocationAccessForm<typeof locationAccessSchema>({
+    schema: locationAccessSchema,
     defaultValues: undefined,
-    mode: 'add',
   });
 
   const onValidChange = (value: AccessTable[] | undefined) => {
@@ -57,7 +66,12 @@ const LocationAccessForm = () => {
   return (
     <FormFieldset label={'Adgangsnøgler'} sx={{p: 1, width: '100%'}}>
       <Form formMethods={locationAccessMethods}>
-        <Box display={'flex'} flexDirection={'column'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <SimpleLocationAccessList
             values={
               location_access
@@ -67,14 +81,16 @@ const LocationAccessForm = () => {
             onRemove={removeLocationAccess}
           />
           <Box
-            display="flex"
-            flexDirection={isMobile ? 'column' : 'row'}
-            justifyContent={'flex-start'}
-            gap={1}
+            sx={{
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              justifyContent: 'flex-start',
+              gap: 1,
+            }}
           >
             <Button
               bttype="primary"
-              startIcon={<AddCircleOutline />}
+              startIcon={<AddCircleOutlined />}
               sx={{
                 ...button_sx(location_access !== undefined && location_access.length > 0),
                 alignSelf: isMobile ? 'start' : 'center',
@@ -131,7 +147,10 @@ const LocationAccessForm = () => {
                 navn: data.navn ?? '',
                 placering: data.placering ?? '',
                 type: data.type as string,
-                contact_name: data.contact_name ?? '',
+                contact_name:
+                  'contact_name' in data && typeof data.contact_name === 'string'
+                    ? (data.contact_name ?? '')
+                    : '',
               };
               onValidChange([...(location_access || []), newAccess]);
               setLocationAccessDialogOpen(false);

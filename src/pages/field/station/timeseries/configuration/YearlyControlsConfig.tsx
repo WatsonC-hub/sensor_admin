@@ -1,27 +1,21 @@
 import {Save} from '@mui/icons-material';
-import {Grid2, Typography} from '@mui/material';
+import {Grid, Typography} from '@mui/material';
 import React from 'react';
 import {FormProvider} from 'react-hook-form';
-import {useAppContext} from '~/state/contexts';
+
+import Button from '~/components/Button';
+import {useUser} from '~/features/auth/useUser';
+import useControlSettingsForm from '~/features/configuration/api/useControlSettingsForm';
+import EditControlSettings from '~/features/configuration/components/EditControlSettings';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {
   useTimeseriesServiceInterval,
   useTimeseriesServiceIntervalMutation,
 } from '~/features/station/api/useTimeseriesServiceInterval';
-import Button from '~/components/Button';
-import EditControlSettings from '~/features/configuration/components/EditControlSettings';
-import useControlSettingsForm, {
-  ControlSettingsFormValues,
-} from '~/features/configuration/api/useControlSettingsForm';
-import {useUser} from '~/features/auth/useUser';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import usePermissions from '~/features/permissions/api/usePermissions';
+import {useAppContext} from '~/state/contexts';
 
-type FormValues = {
-  controls_per_year: number | null;
-  lead_time: number | null;
-  dummy: number | null;
-  selectValue: 1 | 2;
-};
+import type {ControlSettingsFormValues} from '~/features/configuration/api/useControlSettingsForm';
 
 const YearlyControlsConfig = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -36,16 +30,16 @@ const YearlyControlsConfig = () => {
     (!values?.isCustomerService && !superUser) ||
     location_permissions !== 'edit';
 
-  const formMethods = useControlSettingsForm<FormValues, ControlSettingsFormValues>({
+  const formMethods = useControlSettingsForm({
     defaultValues: {
-      controls_per_year: null,
+      controls_per_year: undefined,
       lead_time: null,
       dummy: null,
       selectValue: 1,
     },
-    values: values && {
+    values: {
       controls_per_year: values.controlsPerYear,
-      lead_time: values.leadTime ?? null,
+      lead_time: values.leadTime,
       dummy: values.controlsPerYear !== null ? Number(values.controlsPerYear.toFixed(3)) : null,
       selectValue: 1,
     },
@@ -69,9 +63,15 @@ const YearlyControlsConfig = () => {
   return (
     <FormProvider {...formMethods}>
       <EditControlSettings disabled={disabled} />
-
       {!disabled && (
-        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+        <Grid
+          size={12}
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 1,
+          }}
+        >
           <UpdateProgressButton
             loc_id={loc_id}
             ts_id={ts_id}
@@ -99,7 +99,7 @@ const YearlyControlsConfig = () => {
           >
             <Typography variant="body2">Gem</Typography>
           </Button>
-        </Grid2>
+        </Grid>
       )}
     </FormProvider>
   );

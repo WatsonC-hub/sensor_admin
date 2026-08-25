@@ -1,11 +1,14 @@
-import React, {Children, cloneElement} from 'react';
-import {Box, IconButton, SxProps} from '@mui/material';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import CloseIcon from '@mui/icons-material/Close';
-import useWindowDimensions from '~/hooks/useWindowDimensions';
+import {Box, IconButton} from '@mui/material';
 import {useSetAtom} from 'jotai';
-import {usedHeightAtom, usedWidthAtom} from '~/state/atoms';
+import React, {Children, cloneElement} from 'react';
+
 import {appBarHeight} from '~/consts';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import useWindowDimensions from '~/hooks/useWindowDimensions';
+import {usedHeightAtom, usedWidthAtom} from '~/state/atoms';
+
+import type {SxProps} from '@mui/material';
 
 type WindowManagerProps = {
   children: React.ReactElement<WindowProps>[];
@@ -50,13 +53,15 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
   if (isMobile && arrayedChildren.length > 0) {
     return (
       <Box
-        zIndex={1001}
-        height="100%"
         sx={{
+          zIndex: 1001,
+          height: '100%',
           width: '100%',
           pointerEvents: 'none',
+
           // ml: 'auto',
           display: 'flex',
+
           flexDirection: 'column',
           position: 'absolute',
           pt: 1,
@@ -72,9 +77,9 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
   if (fullScreenWindow) {
     return (
       <Box
-        zIndex={1001}
-        height="100%"
         sx={{
+          zIndex: 1001,
+          height: '100%',
           width: '100%',
           pointerEvents: 'none',
           display: 'flex',
@@ -126,7 +131,10 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
     } else {
       const innerwidth = child.props.minSize * columnWidth;
       shownChildren.push(
-        cloneElement(child, {width: innerwidth, height: firstElement ? '100%' : child.props.height})
+        cloneElement(child, {
+          width: innerwidth,
+          height: firstElement ? '100%' : child.props.height,
+        })
       );
       usedWidth += innerwidth;
     }
@@ -138,10 +146,11 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
 
   return (
     // <WindowContext.Provider value={{columnWidth: minColumnWidth}}>
+    // </WindowContext.Provider>
     <Box
-      zIndex={1001}
-      height="100%"
       sx={{
+        zIndex: 1001,
+        height: '100%',
         width: '100%',
         pointerEvents: 'none',
         display: 'flex',
@@ -153,7 +162,6 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
     >
       {shownChildren}
     </Box>
-    // </WindowContext.Provider>
   );
 };
 
@@ -238,7 +246,14 @@ const Window = ({
           </IconButton>
         )}
       </Box>
-      <Box display="flex" height="100%" flexDirection={'column'} overflow="hidden">
+      <Box
+        sx={{
+          display: 'flex',
+          height: '100%',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+      >
         {children}
       </Box>
     </Box>

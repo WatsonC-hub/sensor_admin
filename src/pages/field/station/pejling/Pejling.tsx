@@ -1,7 +1,7 @@
 import {AddCircle} from '@mui/icons-material';
-import {Card, Box, Divider, Typography} from '@mui/material';
-
+import {Box, Card, Divider, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import {useSetAtom} from 'jotai';
 import React, {useEffect, useState} from 'react';
 import {FormProvider} from 'react-hook-form';
 
@@ -10,24 +10,23 @@ import FabWrapper from '~/components/FabWrapper';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
 import usePermissions from '~/features/permissions/api/usePermissions';
-
 import GraphManager from '~/features/station/components/GraphManager';
 import usePejlingForm from '~/features/station/components/pejling/api/usePejlingForm';
 import CompoundPejling from '~/features/station/components/pejling/CompoundPejling';
-import {
-  PejlingBoreholeSchemaType,
-  PejlingSchemaType,
-} from '~/features/station/components/pejling/PejlingSchema';
-import {PejlingItem, LatestMeasurement} from '~/types';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
-import {APIError} from '~/queryClient';
-import {useAppContext} from '~/state/contexts';
-import {useSetAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {useAppContext} from '~/state/contexts';
+
+import type {
+  PejlingBoreholeSchemaType,
+  PejlingSchemaType,
+} from '~/features/station/components/pejling/pejlingSchema';
+import type {APIError} from '~/queryClient';
+import type {LatestMeasurement, PejlingItem} from '~/types';
 
 const Pejling = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -106,7 +105,8 @@ const Pejling = () => {
   };
 
   const handleEdit = (data: PejlingItem) => {
-    const {data: parsedData} = schema.safeParse(data);
+    const {data: parsedData, error} = schema.safeParse(data);
+    console.log(data, parsedData, error);
     reset(parsedData);
     setShowForm(true);
     setGid(data.gid);
@@ -169,7 +169,14 @@ const Pejling = () => {
                 setDynamic={setDynamic}
               >
                 <PejlingForm />
-                <Box gap={1} display={'flex'} justifyContent={'center'} mt={2}>
+                <Box
+                  sx={{
+                    gap: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mt: 2,
+                  }}
+                >
                   <CompoundPejling.CancelButton />
                   <CompoundPejling.SubmitButton />
                 </Box>
@@ -177,7 +184,12 @@ const Pejling = () => {
             </Card>
           )}
         </FormProvider>
-        <Box display={'flex'} flexDirection={'column'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <Table
             handleEdit={handleEdit}
             disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}

@@ -1,9 +1,10 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, Grid2, InputAdornment, Typography} from '@mui/material';
+import {Box, Grid, InputAdornment, Typography} from '@mui/material';
 import React from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
+
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import usePermissions from '~/features/permissions/api/usePermissions';
@@ -17,14 +18,11 @@ import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
 
 const SLASchema = z.object({
-  days_to_visitation: z.number({required_error: 'SLA frist er påkrævet'}),
+  days_to_visitation: z.number({error: 'SLA frist er påkrævet'}).optional(),
 });
 
-type SLAForm = {
-  days_to_visitation: number | undefined;
-};
-
-type SLASubmit = z.infer<typeof SLASchema>;
+type A = z.input<typeof SLASchema>;
+type B = z.output<typeof SLASchema>;
 
 const SLAConfiguration = () => {
   const {loc_id} = useAppContext(['loc_id']);
@@ -33,7 +31,7 @@ const SLAConfiguration = () => {
   const {isMobile} = useBreakpoints();
   const {location_permissions} = usePermissions(loc_id);
 
-  const formMethods = useForm<SLAForm, unknown, SLASubmit>({
+  const formMethods = useForm<A, unknown, B>({
     resolver: zodResolver(SLASchema),
     defaultValues: {
       days_to_visitation: values?.daysToVisitation,
@@ -51,7 +49,11 @@ const SLAConfiguration = () => {
 
   if (isPending) {
     return (
-      <Box minWidth={isMobile ? '70vw' : 800}>
+      <Box
+        sx={{
+          minWidth: isMobile ? '70vw' : 800,
+        }}
+      >
         <LoadingSkeleton />
       </Box>
     );
@@ -59,7 +61,14 @@ const SLAConfiguration = () => {
 
   return (
     <FormProvider {...formMethods}>
-      <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} alignItems={'center'}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: 2,
+          alignItems: 'center',
+        }}
+      >
         <FormInput
           name="days_to_visitation"
           label="Løsningsfrist"
@@ -74,8 +83,14 @@ const SLAConfiguration = () => {
           fullWidth
         />
       </Box>
-
-      <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+      <Grid
+        size={12}
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: 1,
+        }}
+      >
         <UpdateProgressButton
           loc_id={loc_id}
           disabled={isDirty || location_permissions !== 'edit'}
@@ -92,13 +107,13 @@ const SLAConfiguration = () => {
         <Button
           bttype="primary"
           disabled={isSubmitting || !isDirty || location_permissions !== 'edit'}
-          onClick={handleSubmit(async (data) => await mutateAsync(data))}
+          onClick={handleSubmit(async (data) => mutateAsync(data))}
           loading={isSubmitting}
           startIcon={isSubmitting ? undefined : <Save />}
         >
           <Typography variant="body2">Gem</Typography>
         </Button>
-      </Grid2>
+      </Grid>
     </FormProvider>
   );
 };

@@ -1,21 +1,28 @@
+import {Stack, Typography} from '@mui/material';
 import React, {useEffect, useState} from 'react';
+
+import Button from '~/components/Button';
 import {createTypedForm} from '~/components/formComponents/Form';
 import useSyncForm from '~/features/synchronization/api/useSyncForm';
+
+import {button_sx} from '../commonStyle';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {SyncFormState} from '../types';
-import Button from '~/components/Button';
-import {button_sx} from '../common_style';
-import {Stack, Typography} from '@mui/material';
+
+import type {SyncFormState} from '../types';
+import type {
+  SyncFormSchema,
+  SyncFormSchemaOutput,
+} from '~/features/synchronization/api/useSyncForm';
 
 type SyncFormProps = {
   id: string;
   loctype_id?: number;
   tstype_id?: number;
-  values: SyncFormState | undefined;
-  setValues: (values: SyncFormState) => void;
+  values: SyncFormSchema | undefined;
+  setValues: (values: SyncFormSchema) => void;
 };
 
-const Form = createTypedForm<SyncFormState>();
+const Form = createTypedForm<SyncFormSchema, SyncFormSchemaOutput>();
 
 const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps) => {
   const [dmpActive, setDmpActive] = useState(!!values?.dmp && values.dmp !== null);
@@ -24,7 +31,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     state.removeSubmitter,
     state.deleteState,
   ]);
-  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm<SyncFormState>({
+  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm({
     context: {
       loctype_id,
       tstype_id,
@@ -43,10 +50,11 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
 
   useEffect(() => {
     registerSubmitter(id, async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
-        if (!isDmpAllowed || values.dmp === null) delete values.dmp;
-        if (!canSyncJupiter || values.jupiter === null) delete values.jupiter;
+        if (!isDmpAllowed || values.dmp === null) delete (values as Partial<typeof values>).dmp;
+        if (!canSyncJupiter || values.jupiter === null)
+          delete (values as Partial<typeof values>).jupiter;
         if (Object.keys(values).length === 0) {
           deleteState(id as `timeseries.${string}.sync`);
           valid = true;
@@ -89,7 +97,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     {
       selected: (val: SyncFormState['dmp']) => val !== null && typeof val === 'object',
       onChange: () => {
-        setValue('dmp', {});
+        setValue('dmp', null);
         setDmpActive(true);
       },
       label: 'Ja',
@@ -135,7 +143,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
           {isDmpAllowed && (
             <>
               <Stack direction={'column'}>
-                <Typography>Skal stationen synkroniseres med DMP?</Typography>
+                <Typography>Skal tidsserien synkroniseres med Danmarks Miljøportal?</Typography>
                 <Stack direction={'row'} spacing={1}>
                   {toggleDmpOptions.map((option) => (
                     <Button

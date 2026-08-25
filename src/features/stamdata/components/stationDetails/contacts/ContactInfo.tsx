@@ -7,12 +7,13 @@ import FabWrapper from '~/components/FabWrapper';
 import {initialContactData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
 import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddContactInfo';
+import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useAppContext} from '~/state/contexts';
-import useContactForm from './api/useContactForm';
+
+import useContactForm, {contactSchema} from './api/useContactForm';
 
 const ContactInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);
@@ -24,8 +25,8 @@ const ContactInfo = () => {
   } = useUser();
 
   const contactFormMethods = useContactForm({
+    schema: contactSchema,
     defaultValues: initialContactData,
-    mode: 'edit',
   });
 
   const {reset} = contactFormMethods;
@@ -43,7 +44,14 @@ const ContactInfo = () => {
           )}
           <ContactInfoTable loc_id={loc_id} />
         </FormProvider>
-        <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: 1,
+          }}
+        >
           <UpdateProgressButton progressKey="kontakter" loc_id={loc_id} ts_id={-1} alterStyle />
           <FabWrapper
             icon={<PersonAddIcon />}

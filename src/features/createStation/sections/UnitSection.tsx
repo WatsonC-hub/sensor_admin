@@ -1,15 +1,17 @@
-import React, {useState} from 'react';
+import {AddCircleOutlined, RemoveCircleOutlined} from '@mui/icons-material';
+import RouterIcon from '@mui/icons-material/Router';
 import {Dialog, DialogContent, DialogTitle, Typography} from '@mui/material';
-import {AddCircleOutline, RemoveCircleOutline} from '@mui/icons-material';
-import FormFieldset from '~/components/formComponents/FormFieldset';
+import dayjs from 'dayjs';
+import React, {useState} from 'react';
+
 import Button from '~/components/Button';
+import FormFieldset from '~/components/formComponents/FormFieldset';
+import SimpleTextView from '~/components/SimpleTextView';
+import {useUnit} from '~/features/stamdata/api/useUnit';
+
+import {button_sx} from '../commonStyle';
 import UnitForm from '../forms/UnitForm';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {useUnit} from '~/features/stamdata/api/useUnit';
-import dayjs from 'dayjs';
-import RouterIcon from '@mui/icons-material/Router';
-import SimpleTextView from '~/components/SimpleTextView';
-import {button_sx} from '../common_style';
 
 type UnitStepProps = {
   uuid: string;
@@ -42,7 +44,7 @@ const UnitSection = ({uuid, tstype_id}: UnitStepProps) => {
       {unit === undefined && (
         <Button
           bttype="primary"
-          startIcon={<AddCircleOutline />}
+          startIcon={<AddCircleOutlined />}
           sx={button_sx(unit !== undefined)}
           onClick={() => setOpen(true)}
         >
@@ -55,7 +57,12 @@ const UnitSection = ({uuid, tstype_id}: UnitStepProps) => {
           primaryText={<Typography variant="body2">{unit?.calypso_id}</Typography>}
           secondaryText={
             <>
-              <Typography variant="caption" display={'block'}>
+              <Typography
+                variant="caption"
+                sx={{
+                  display: 'block',
+                }}
+              >
                 {sensor_id}
               </Typography>
               <Typography variant="caption">
@@ -68,7 +75,7 @@ const UnitSection = ({uuid, tstype_id}: UnitStepProps) => {
       {unit !== undefined && (
         <Button
           bttype="primary"
-          startIcon={<RemoveCircleOutline />}
+          startIcon={<RemoveCircleOutlined />}
           sx={button_sx(unit === undefined)}
           onClick={() => {
             deleteState(`timeseries.${uuid}.unit`);

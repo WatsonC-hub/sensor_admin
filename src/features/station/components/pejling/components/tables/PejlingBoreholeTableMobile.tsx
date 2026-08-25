@@ -1,22 +1,19 @@
 import {Box, Typography} from '@mui/material';
-import {
-  MRT_ColumnDef,
-  MRT_TableOptions,
-  MRT_ExpandButton,
-  MaterialReactTable,
-} from 'material-react-table';
+import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {renderDetailStyle, correction_map} from '~/consts';
+import {correction_map, renderDetailStyle} from '~/consts';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useQueryTable} from '~/hooks/useTable';
-import { useAppContext } from '~/state/contexts';
-import {PejlingItem} from '~/types';
+import {useAppContext} from '~/state/contexts';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {PejlingItem} from '~/types';
 
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
@@ -60,28 +57,56 @@ export default function PejlingBoreholeTableMobile({handleEdit, disabled}: Props
         Cell: ({row, table, staticRowIndex}) => (
           <Box
             style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}
-            sx={{width: '100%'}}
-            gap={1}
-            height={26}
+            sx={{
+              gap: 1,
+              height: 26,
+              width: '100%',
+            }}
           >
             <MRT_ExpandButton row={row} table={table} staticRowIndex={staticRowIndex} />
-            <Box display="flex" flexDirection={'column'}>
-              <Typography alignSelf={'center'} variant="caption" fontWeight="bold">
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  alignSelf: 'center',
+                  fontWeight: 'bold',
+                }}
+              >
                 {row.original.measurement === null
                   ? 'Ingen måling'
                   : `${limitDecimalNumbers(row.original.measurement)} ${unit}`}
               </Typography>
-              <Typography alignSelf={'center'} variant="caption" color="grey.700" fontWeight="bold">
+              <Typography
+                variant="caption"
+                sx={{
+                  alignSelf: 'center',
+                  color: 'grey.700',
+                  fontWeight: 'bold',
+                }}
+              >
                 {convertDate(row.original.timeofmeas)}
               </Typography>
             </Box>
 
-            <Typography margin="0 auto">
+            <Typography
+              sx={{
+                margin: '0 auto',
+              }}
+            >
               {correction_map[row.original.useforcorrection] === 'Kontrol'
                 ? correction_map[row.original.useforcorrection]
                 : 'Korrektion'}
             </Typography>
-            <Box marginLeft={'auto'}>
+            <Box
+              sx={{
+                marginLeft: 'auto',
+              }}
+            >
               <RenderActions
                 handleEdit={() => {
                   handleEdit(row.original);

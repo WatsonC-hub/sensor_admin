@@ -1,17 +1,20 @@
-import React, {useState} from 'react';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {ArrowBack, Save} from '@mui/icons-material';
-import {Grid2} from '@mui/material';
-import Button from '~/components/Button';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import AlertDialog from '~/components/AlertDialog';
-import {useCreateStationStore} from '../state/useCreateStationStore';
-import {CreateStationPayload} from '../types';
+import {Grid} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
+import React, {useState} from 'react';
 import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
+import AlertDialog from '~/components/AlertDialog';
+import Button from '~/components/Button';
 import {useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+
+import {useCreateStationStore} from '../state/useCreateStationStore';
+
+import type {CreateStationPayload} from '../types';
 
 type Props = {
   activeStep: number;
@@ -78,8 +81,16 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
   };
 
   return (
-    <Grid2 size={12} gap={0.5} pr={0.5} position={'sticky'} bottom={0}>
-      <Grid2 size={isMobile ? 12 : 'auto'} sx={{display: 'flex', justifyContent: 'flex-end'}}>
+    <Grid
+      size={12}
+      sx={{
+        gap: 0.5,
+        pr: 0.5,
+        position: 'sticky',
+        bottom: 0,
+      }}
+    >
+      <Grid size={isMobile ? 12 : 'auto'} sx={{display: 'flex', justifyContent: 'flex-end'}}>
         {loc_id === undefined && (
           <>
             <Button
@@ -129,7 +140,7 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
             {!isMobile ? `Gem & afslut` : <Save fontSize="small" />}
           </Button>
         )}
-      </Grid2>
+      </Grid>
       <AlertDialog
         open={showAlert}
         setOpen={setShowAlert}
@@ -145,7 +156,7 @@ const FormStepButtons = ({activeStep, setActiveStep, onFormIsValid, loc_id}: Pro
         handleOpret={handleSubmit}
         loading={isPending}
       />
-    </Grid2>
+    </Grid>
   );
 };
 

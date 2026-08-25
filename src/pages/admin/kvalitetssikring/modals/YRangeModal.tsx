@@ -4,7 +4,7 @@ import {Box, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import {parseAsString, useQueryState} from 'nuqs';
 import {useEffect} from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
@@ -12,6 +12,8 @@ import FormInput from '~/components/FormInput';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 import {qaSelection} from '~/state/atoms';
+
+import type {SubmitHandler} from 'react-hook-form';
 
 interface YRangeModalProps {
   onClose: () => void;
@@ -73,23 +75,25 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
       <FormProvider {...formMethods}>
         <Box
           sx={{
+            my: 1,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 0.5,
           }}
-          my={1}
         >
           <Typography variant="h6" gutterBottom={true}>
             Område: {unit}
           </Typography>
           <Box
-            display={'flex'}
-            flexDirection={'row'}
-            gap={1}
-            alignItems={'center'}
-            justifyContent={'center'}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <FormInput<YRangeValues>
               name="min"
@@ -111,7 +115,13 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
           </Box>
         </Box>
       </FormProvider>
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }}
+      >
         <Button
           bttype="tertiary"
           onClick={() => {

@@ -1,9 +1,10 @@
-import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
+import {queryOptions, useMutation, useSuspenseQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
-import {useUser} from '~/features/auth/useUser';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {APIError} from '~/queryClient';
 
 type SLAConfiguration = {
   daysToVisitation?: number | undefined;
@@ -27,12 +28,9 @@ const locationSLAConfigurationOptions = (loc_id: number) =>
   });
 
 export const useLocationSLAConfiguration = (loc_id: number) => {
-  const {
-    features: {iotAccess},
-  } = useUser();
-  return useQuery({
+  return useSuspenseQuery({
     ...locationSLAConfigurationOptions(loc_id),
-    enabled: iotAccess && loc_id !== undefined,
+    // enabled: iotAccess && loc_id !== undefined,
   });
 };
 

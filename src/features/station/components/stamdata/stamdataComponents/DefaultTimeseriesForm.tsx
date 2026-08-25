@@ -1,8 +1,10 @@
+import {Grid} from '@mui/material';
 import React from 'react';
+
 import StamdataTimeseries from '../StamdataTimeseries';
-import {Grid2} from '@mui/material';
-import {DefaultAddTimeseries} from '~/features/station/schema';
-import {FormInputProps} from '~/components/FormInput';
+
+import type {FormInputProps} from '~/components/FormInput';
+import type {DefaultAddTimeseries} from '~/features/station/schema';
 
 type Props = {
   size: number;
@@ -17,15 +19,12 @@ type Props = {
 const DefaultTimeseriesForm = ({size, loc_name, required, slotProps}: Props) => {
   return (
     <>
-      <Grid2 size={size}>
+      <Grid size={size}>
         <StamdataTimeseries.Prefix loc_name={loc_name} />
-      </Grid2>
-      <Grid2 size={size}>
+      </Grid>
+      <Grid size={size}>
         <StamdataTimeseries.TypeSelect required={required} {...slotProps?.TypeSelect} />
-      </Grid2>
-      {/* <Grid2 size={size}>
-        <StamdataTimeseries.SensorDepth />
-      </Grid2> */}
+      </Grid>
     </>
   );
 };

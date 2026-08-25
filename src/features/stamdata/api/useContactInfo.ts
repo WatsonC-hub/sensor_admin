@@ -1,11 +1,13 @@
-import {useQuery, useMutation, queryOptions, MutationOptions} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
-import {ContactInfo, ContactTable} from '~/types';
-import {InferContactInfo} from '../components/stationDetails/contacts/api/useContactForm';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {InferContactInfo} from '../components/stationDetails/contacts/api/useContactForm';
+import type {MutationOptions} from '@tanstack/react-query';
+import type {APIError} from '~/queryClient';
+import type {ContactInfo, ContactTable} from '~/types';
 
 interface ContactInfoBase {
   path: string;

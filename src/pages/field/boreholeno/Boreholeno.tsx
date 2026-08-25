@@ -1,8 +1,8 @@
 import {AddAPhotoRounded, AddCircle} from '@mui/icons-material';
 import {Box, Divider} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import dayjs, {Dayjs} from 'dayjs';
-import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
+import dayjs from 'dayjs';
+import React, {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -12,8 +12,8 @@ import MaalepunktForm from '~/components/MaalepunktForm';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import {stationPages} from '~/helpers/EnumHelper';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {stationPages} from '~/helpers/enumHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useFormData from '~/hooks/useFormData';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import PlotGraph from '~/pages/field/boreholeno/BoreholeGraph';
@@ -23,12 +23,15 @@ import PejlingFormBorehole from '~/pages/field/boreholeno/components/PejlingForm
 import MaalepunktTable from '~/pages/field/boreholeno/MaalepunktTable';
 import PejlingMeasurements from '~/pages/field/boreholeno/PejlingMeasurements';
 import {useAppContext} from '~/state/contexts';
-import {
-  Kontrol,
+
+import type {Dayjs} from 'dayjs';
+import type {ChangeEvent} from 'react';
+import type {
   BoreholeMaalepunktPost,
+  BoreholeMaalepunktTableData,
   BoreholeMeasurement,
   BoreholeMeasurementAPI,
-  BoreholeMaalepunktTableData,
+  Kontrol,
 } from '~/types';
 
 const dateUpdated = () => {
@@ -325,10 +328,13 @@ const Boreholeno = () => {
     <>
       {pageToShow !== stationPages.BILLEDER && pageToShow !== stationPages.STAMDATA && (
         <Box
-          display={'flex'}
-          flexDirection={'column'}
-          gap={5}
-          sx={{marginBottom: 0.5, marginTop: 0.2}}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 5,
+            marginBottom: 0.5,
+            marginTop: 0.2,
+          }}
         >
           <PlotGraph
             ourData={control ?? []}
@@ -337,7 +343,6 @@ const Boreholeno = () => {
           <Divider />
         </Box>
       )}
-
       {pageToShow === stationPages.PEJLING && (
         <StationPageBoxLayout>
           {showForm === true && (
@@ -379,6 +384,7 @@ const Boreholeno = () => {
       {pageToShow === stationPages.MAALEPUNKT && (
         <Box
           sx={{
+            gap: 1,
             display: 'flex',
             flexDirection: 'column',
             flexWrap: 'wrap',
@@ -386,7 +392,6 @@ const Boreholeno = () => {
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          gap={1}
         >
           <LastJupiterMP
             lastOurMP={watlevmp?.[0]}
@@ -425,9 +430,7 @@ const Boreholeno = () => {
           />
         </StationPageBoxLayout>
       )}
-
       {pageToShow === stationPages.STAMDATA && <BoreholeStamdata />}
-
       {pageToShow === stationPages.BILLEDER && (
         <StationPageBoxLayout>
           <Images

@@ -1,6 +1,6 @@
 import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 import {Box} from '@mui/material';
-import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -8,11 +8,13 @@ import RenderInternalActions from '~/components/tableComponents/RenderInternalAc
 import {setTableBoxStyle} from '~/consts';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import {TilsynItem} from '~/types';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {TilsynItem} from '~/types';
 
 interface Props {
   handleEdit: (tilsyn: TilsynItem) => void;
@@ -45,8 +47,17 @@ export default function TilsynTableDesktop({handleEdit, handleDelete, disabled}:
         header: 'Tilsyn',
         size: 200,
         Cell: ({row}) => (
-          <Box display="flex" gap={1}>
-            <Box alignSelf="center">
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+            }}
+          >
+            <Box
+              sx={{
+                alignSelf: 'center',
+              }}
+            >
               {row.original.batteriskift ? (
                 <BatteryAlertRounded sx={{color: 'grey.700'}} />
               ) : row.original.tilsyn ? (
@@ -55,7 +66,12 @@ export default function TilsynTableDesktop({handleEdit, handleDelete, disabled}:
                 ''
               )}
             </Box>
-            <Box display="flex" flexDirection="column">
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
               {row.original.batteriskift && row.original.tilsyn ? (
                 <b>Batteri skiftet og tilsyn</b>
               ) : row.original.batteriskift && row.original.tilsyn !== true ? (

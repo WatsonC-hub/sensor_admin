@@ -1,4 +1,4 @@
-import {DmpSyncValidCombination} from '~/types';
+import type {DmpSyncValidCombination} from '~/types';
 
 export const isSynchronizationAllowed = (
   tstype_id: number | undefined,

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-import {queryClient} from './queryClient';
 import {userQueryOptions} from './features/auth/useUser';
+import {queryClient} from './queryClient';
 
 const apiClient = axios.create({baseURL: '/api', withCredentials: true});
 

@@ -1,16 +1,16 @@
 import {Delete} from '@mui/icons-material';
 import {
-  DialogActions,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Typography,
-  TextField,
   Box,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Typography,
 } from '@mui/material';
-
 import React from 'react';
+
 import Button from '~/components/Button';
 
 type DeleteTimeseriesProps = {
@@ -38,7 +38,13 @@ const ConfirmDeleteDialog = ({
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Er du sikker på, at du vil slette?</DialogTitle>
       <DialogContent>
-        <Box display="flex" flexDirection="column" gap={2}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+          }}
+        >
           <Typography>{description}</Typography>
           <Typography>
             <strong>
@@ -48,7 +54,6 @@ const ConfirmDeleteDialog = ({
           <TextField
             variant="outlined"
             placeholder="bekræft"
-            autoFocus
             focused
             onChange={(e) => setConfirmationText(e.target.value)}
           />

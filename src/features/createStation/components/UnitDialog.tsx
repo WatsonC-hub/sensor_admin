@@ -6,26 +6,30 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
-  Grid2,
+  Grid,
   List,
   Typography,
 } from '@mui/material';
-
+import dayjs from 'dayjs';
 import React, {useState} from 'react';
+import {FormProvider} from 'react-hook-form';
 
 import Button from '~/components/Button';
-import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
+import {useUnit} from '~/features/stamdata/api/useUnit';
 import useUnitForm from '~/features/station/api/useUnitForm';
-import {FormProvider} from 'react-hook-form';
-import {Unit, useUnit} from '~/features/stamdata/api/useUnit';
-import dayjs, {Dayjs} from 'dayjs';
+import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
+import {addUnitSchema} from '~/features/station/schema';
+
+import type {Dayjs} from 'dayjs';
+import type {Unit} from '~/features/stamdata/api/useUnit';
 type UnitDialogProps = {
   open: boolean;
   onClose: () => void;
   onAddUnitList: (units: Unit[], startdate: Dayjs) => void;
+  tstype_id?: number;
 };
 
-const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
+const UnitDialog = ({open, onClose, onAddUnitList, tstype_id}: UnitDialogProps) => {
   const [selectedSensors, setSelectedSensors] = React.useState<Unit[]>([]);
   const [checkedSensors, setCheckedSensors] = useState<Unit[]>([]);
 
@@ -33,21 +37,20 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
     get: {data: availableUnits},
   } = useUnit();
 
-  const formMethods = useUnitForm<{calypso_id: string | undefined; startdate: Dayjs}>({
-    mode: 'Add',
+  const formMethods = useUnitForm<typeof addUnitSchema>({
+    schema: addUnitSchema,
     defaultValues: {calypso_id: undefined, startdate: dayjs()},
   });
 
   const {
     watch,
-    getValues,
     handleSubmit,
     formState: {errors},
   } = formMethods;
 
   const watchedCalypsoId = watch('calypso_id');
 
-  const handleCalypsoIdChange = (option: {id: string} | null) => {
+  const handleCalypsoIdChange = (option: {calypso_id: string} | null) => {
     if (option == null) {
       setCheckedSensors([]);
       setSelectedSensors([]);
@@ -55,7 +58,10 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
     }
 
     const sensors = availableUnits
-      ?.filter((unit) => unit.calypso_id.toString() === option.id || unit.terminal_id === option.id)
+      ?.filter(
+        (unit) =>
+          unit.calypso_id.toString() === option.calypso_id || unit.terminal_id === option.calypso_id
+      )
       .sort((a, b) => a.signal_id - b.signal_id);
     setSelectedSensors(sensors || []);
     setCheckedSensors(sensors || []);
@@ -71,11 +77,11 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
         <DialogTitle>Tilføj tidsserier på baggrund af udstyr</DialogTitle>
         <DialogContent>
           <FormProvider {...formMethods}>
-            <StamdataUnit tstype_id={undefined}>
-              <Grid2 container>
+            <StamdataUnit tstype_id={tstype_id}>
+              <Grid container>
                 <StamdataUnit.CalypsoID onChangeCallback={handleCalypsoIdChange} />
                 {watchedCalypsoId && <StamdataUnit.StartDate required />}
-              </Grid2>
+              </Grid>
             </StamdataUnit>
           </FormProvider>
 
@@ -88,9 +94,11 @@ const UnitDialog = ({open, onClose, onAddUnitList}: UnitDialogProps) => {
                 {selectedSensors.map((sensor) => (
                   <Box
                     key={sensor.unit_uuid}
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
                   >
                     <FormControlLabel
                       control={

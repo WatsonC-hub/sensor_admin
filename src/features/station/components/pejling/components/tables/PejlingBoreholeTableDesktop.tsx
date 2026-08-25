@@ -1,6 +1,5 @@
-import {Typography, Box} from '@mui/material';
-
-import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import {Box, Typography} from '@mui/material';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -12,13 +11,15 @@ import {
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import { useAppContext } from '~/state/contexts';
-import {PejlingItem} from '~/types';
+import {useAppContext} from '~/state/contexts';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {PejlingItem} from '~/types';
 
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
@@ -49,9 +50,8 @@ export default function PejlingBoreholeTableDesktop({handleEdit, disabled}: Prop
       onSuccess: () => {
         setDialogOpen(false);
       },
-      });
+    });
   };
-
 
   const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [

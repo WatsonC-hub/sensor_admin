@@ -1,16 +1,20 @@
-import {Box, CircularProgress, Typography, Stack, Divider} from '@mui/material';
-import {UseMutationResult, useQuery} from '@tanstack/react-query';
-import dayjs, {Dayjs} from 'dayjs';
+import {Box, CircularProgress, Divider, Stack, Typography} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import React from 'react';
 import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import {convertDate} from '~/helpers/dateConverter';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import LastMPCard from '~/pages/field/boreholeno/components/LastMPCard';
 import {useAppContext} from '~/state/contexts';
-import {BoreholeMaalepunktPost, MaalepunktTableData} from '~/types';
+
+import type {UseMutationResult} from '@tanstack/react-query';
+import type {Dayjs} from 'dayjs';
+import type {BoreholeMaalepunktPost, MaalepunktTableData} from '~/types';
 
 interface JupiterMPProps {
   lastOurMP: MaalepunktTableData | undefined;
@@ -96,7 +100,13 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
 
   return (
     <LastMPCard title="">
-      <Stack direction={'row'} spacing={2} justifyContent="space-between">
+      <Stack
+        direction={'row'}
+        spacing={2}
+        sx={{
+          justifyContent: 'space-between',
+        }}
+      >
         <Box
           sx={{
             flex: 1,
@@ -109,7 +119,13 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
             gap: 0.5,
           }}
         >
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <Typography variant="subtitle2">I app</Typography>
           </Stack>
 
@@ -138,12 +154,24 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
             gap: 0.5,
           }}
         >
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <Typography variant="subtitle2">Jupiter</Typography>
           </Stack>
 
           {isLoading && (
-            <Stack direction="row" alignItems="center" spacing={1}>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <CircularProgress size={16} />
               <Typography variant="body2">Indlæser data...</Typography>
             </Stack>

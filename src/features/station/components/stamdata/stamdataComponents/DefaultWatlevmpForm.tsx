@@ -1,9 +1,12 @@
+import {Grid} from '@mui/material';
 import React from 'react';
-import StamdataWatlevmp from '../MPFormCompound';
-import {Grid2} from '@mui/material';
-import {FormInputProps} from '~/components/FormInput';
-import {Watlevmp} from '~/features/station/schema';
+
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import StamdataWatlevmp from '../MPFormCompound';
+
+import type {FormInputProps} from '~/components/FormInput';
+import type {Watlevmp} from '~/features/station/schema';
 
 type DefaultWatlevmpFormProps = {
   helperText?: string;
@@ -17,12 +20,12 @@ const DefaultWatlevmpForm = ({helperText, slotProps}: DefaultWatlevmpFormProps) 
   const {isMobile} = useBreakpoints();
   return (
     <>
-      <Grid2 size={isMobile ? 12 : 4}>
+      <Grid size={isMobile ? 12 : 4}>
         <StamdataWatlevmp.Elevation helperText={helperText} {...slotProps?.elevation} />
-      </Grid2>
-      <Grid2 size={isMobile ? 12 : 8}>
+      </Grid>
+      <Grid size={isMobile ? 12 : 8}>
         <StamdataWatlevmp.Description {...slotProps?.description} />
-      </Grid2>
+      </Grid>
     </>
   );
 };

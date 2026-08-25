@@ -1,9 +1,12 @@
-import strip from '@rollup/plugin-strip';
 import react from '@vitejs/plugin-react';
-import {defineConfig} from 'vite';
-import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
+import {VitePWA} from 'vite-plugin-pwa';
 import svgrPlugin from 'vite-plugin-svgr';
-import viteTsconfigPaths from 'vite-tsconfig-paths';
+import {defineConfig, lazyPlugins} from 'vite-plus';
+
+import {oxfmtOptions} from './oxfmt.config';
+import {lintOptions} from './oxlint.config';
+
+import type {VitePWAOptions} from 'vite-plugin-pwa';
 
 const pwaOptions: Partial<VitePWAOptions> = {
   devOptions: {enabled: true, type: 'module'},
@@ -13,6 +16,12 @@ const pwaOptions: Partial<VitePWAOptions> = {
   registerType: 'autoUpdate',
   injectManifest: {globPatterns: ['**/!(*.map)'], maximumFileSizeToCacheInBytes: 5000000},
   includeAssets: ['**/*'],
+  // includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+
+  // injectManifest: {
+  //   globPatterns: ['**/*.{js,css,html,json,webmanifest,png,svg,ico,woff,woff2}'],
+  //   maximumFileSizeToCacheInBytes: 5000000,
+  // },
   manifest: {
     name: 'Calypso @ Field',
     short_name: 'Field',
@@ -22,7 +31,6 @@ const pwaOptions: Partial<VitePWAOptions> = {
     id: '/',
     dir: 'ltr',
     display: 'minimal-ui',
-    // display_override: ['window-controls-overlay'],
     orientation: 'portrait',
     start_url: '/',
     lang: 'da-DK',
@@ -66,14 +74,24 @@ const pwaOptions: Partial<VitePWAOptions> = {
     ],
 
     icons: [
-      {src: 'manifest-icon-192.maskable.png', sizes: '192x192', type: 'image/png', purpose: 'any'},
+      {
+        src: 'manifest-icon-192.maskable.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'any',
+      },
       {
         src: 'manifest-icon-192.maskable.png',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'maskable',
       },
-      {src: 'manifest-icon-512.maskable.png', sizes: '512x512', type: 'image/png', purpose: 'any'},
+      {
+        src: 'manifest-icon-512.maskable.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'any',
+      },
       {
         src: 'manifest-icon-512.maskable.png',
         sizes: '512x512',
@@ -91,44 +109,104 @@ const pwaOptions: Partial<VitePWAOptions> = {
 //   authToken: process.env.SENTRY_AUTH_TOKEN,
 // };
 
+// "scripts": {
+//   "dev": "vp dev",
+//   "build": "tsc -b && vp build",
+//   "serve": "vp preview",
+//   "prune": "vp dlx ts-prune -p ./tsconfig.app.json",
+//   "generate": "openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes",
+//   "check": "vp check",
+//   "fix": "vp check --fix",
+//   "test": "vp test",
+//   "check-types": "tsc -b --pretty --noEmit",
+//   "prepare": "vp config"
+// },
+
 // https://vitejs.dev/config/
 export default defineConfig({
+  staged: {
+    '*': 'vpr fix',
+  },
+  fmt: oxfmtOptions,
+  lint: lintOptions,
+  run: {
+    tasks: {
+      check: {
+        command: 'vp check --fix',
+      },
+      serve: {
+        command: 'vp preview',
+        dependsOn: ['check', 'build'],
+      },
+      prune: {
+        command: 'vp dlx ts-prune -p ./tsconfig.app.json',
+        dependsOn: ['check'],
+      },
+      generate: {
+        command:
+          'openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes',
+        dependsOn: ['check'],
+      },
+      build: {
+        command: 'vp build',
+        dependsOn: ['check'],
+        cache: false,
+      },
+
+      test: {
+        command: 'vp test',
+      },
+
+      ci: {
+        command: 'vp build',
+        dependsOn: ['check', 'test'],
+      },
+    },
+  },
+  resolve: {
+    tsconfigPaths: true,
+  },
   plugins: [
     react(),
-    svgrPlugin(),
-    VitePWA(pwaOptions),
-    viteTsconfigPaths(),
-    {
-      ...strip({include: /\**\/*.js/, functions: ['console.log', 'assert.*']}),
-      // { include: /\**\/*.js/ } // <- this works, but the default of '**/*.js' doesn't
-      apply: 'build',
-    },
-    // visualizer({filename: 'stats.html', open: true}),
-    // removeConsole(),
-    // sentryVitePlugin(sentryOptions),
+
+    lazyPlugins(() => [
+      svgrPlugin({
+        include: '**/*.svg?react',
+      }),
+      VitePWA(pwaOptions),
+    ]),
   ],
   // define: {global: 'window'},
   build: {
     sourcemap: true,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
+        minify: {
+          compress: {
+            dropConsole: true,
+          },
+        },
         entryFileNames: '[name].js',
         chunkFileNames: '[name].js',
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('plotly')) {
-              return 'vendor_plotly';
-            } else if (id.includes('mui')) {
-              return 'vendor_mui';
-            } else if (id.includes('leaflet')) {
-              return 'vendor_leaflet';
-            } else if (id.includes('react')) {
-              return null;
-            }
-
-            return 'vendor'; // all other package goes here
-          }
-          return null;
+        codeSplitting: {
+          groups: [
+            {
+              name: 'vendor_plotly',
+              test: /[\\/]node_modules[\\/](plotly.js)[\\/]/,
+            },
+            {
+              name: 'vendor_mui',
+              test: /[\\/]node_modules[\\/](?:@mui)[\\/]/,
+            },
+            {
+              name: 'vendor_leaflet',
+              test: /[\\/]node_modules[\\/](leaflet)[\\/]/,
+            },
+            {
+              name: 'vendor',
+              test: /[\\/]node_modules[\\/](?!plotly|@mui|leaflet|react)[\\/]/,
+            },
+          ],
         },
       },
     },

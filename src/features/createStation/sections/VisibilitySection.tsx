@@ -1,8 +1,9 @@
 import React from 'react';
 
-import {useCreateStationStore} from '../state/useCreateStationStore';
-import VisibilityForm from '../forms/VisibilityForm';
 import FormFieldset from '~/components/formComponents/FormFieldset';
+
+import VisibilityForm from '../forms/VisibilityForm';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 const VisibilitySection = () => {
   const [setState, visibility] = useCreateStationStore((state) => [

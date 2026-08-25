@@ -1,29 +1,29 @@
-import {
-  PejlingBoreholeSchemaType,
-  pejlingBoreholeSchema,
-  PejlingSchemaType,
-  pejlingSchema,
-} from '../PejlingSchema';
+import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm} from 'react-hook-form';
-import PejlingForm from '../components/PejlingForm';
-import {z, ZodType} from 'zod';
-import PejlingBoreholeForm from '../components/PejlingBoreholeForm';
+import {z} from 'zod';
+
 import PejlingMeasurementsTableDesktop from '~/features/pejling/components/PejlingMeasurementsTableDesktop';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import PejlingMeasurementsTableMobile from '~/features/pejling/components/PejlingMeasurementsTableMobile';
 import {boreholeInitialData, initialData} from '~/features/pejling/const';
-import PejlingBoreholeTableMobile from '../components/tables/PejlingBoreholeTableMobile';
-import PejlingBoreholeTableDesktop from '../components/tables/PejlingBoreholeTableDesktop';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
-import {zodResolver} from '@hookform/resolvers/zod';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
+
+import PejlingBoreholeForm from '../components/PejlingBoreholeForm';
+import PejlingForm from '../components/PejlingForm';
+import PejlingBoreholeTableDesktop from '../components/tables/PejlingBoreholeTableDesktop';
+import PejlingBoreholeTableMobile from '../components/tables/PejlingBoreholeTableMobile';
+import {pejlingBoreholeSchema, pejlingSchema} from '../pejlingSchema';
+
+import type {PejlingBoreholeSchemaType, PejlingSchemaType} from '../pejlingSchema';
+import type {ZodObject, ZodType} from 'zod';
 
 type PejlingFormProps = {
   loctype_id: number | undefined;
   tstype_id: number | undefined;
 };
 
-const getSchemaAndForm = (loctype_id: number = -1, tstype_id: number = -1) => {
+const getSchemaAndForm = (loctype_id = -1, tstype_id = -1) => {
   const {isMobile} = useBreakpoints();
   let selectedSchema: ZodType<Record<string, any>> = z.object({});
   let selectedForm = PejlingForm;
@@ -48,7 +48,7 @@ const getSchemaAndForm = (loctype_id: number = -1, tstype_id: number = -1) => {
       selectedTable = isMobile ? PejlingMeasurementsTableMobile : PejlingMeasurementsTableDesktop;
   }
 
-  return [selectedSchema, selectedForm, selectedTable] as const;
+  return [selectedSchema as ZodObject<Record<string, any>>, selectedForm, selectedTable] as const;
 };
 
 const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
@@ -88,13 +88,12 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
         }
       });
 
+      console.log('mp', mp, 'values.timeofmeas', values.timeofmeas, 'mpData', mpData);
+
       if (!mp && tstype_id === 1 && values.timeofmeas != null) {
-        out.errors = {
-          ...out.errors,
-          timeofmeas: {
-            type: 'outOfRange',
-            message: 'Tidspunkt er uden for et målepunkt',
-          },
+        out.errors.timeofmeas = {
+          type: 'outOfRange',
+          message: 'Tidspunkt er uden for et målepunkt',
         };
       }
 

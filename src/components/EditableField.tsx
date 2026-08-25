@@ -1,9 +1,7 @@
-import {Box, IconButton, TextField, Typography} from '@mui/material';
-
-import {useState} from 'react';
-
-import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
+import EditIcon from '@mui/icons-material/Edit';
+import {Box, IconButton, TextField, Typography} from '@mui/material';
+import {useState} from 'react';
 
 interface EditableFieldProps {
   label: string | null;
@@ -32,7 +30,13 @@ const EditableField = ({
   };
 
   return (
-    <Box display="flex" alignItems="center" gap={1}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+      }}
+    >
       <IconButton
         onClick={() => {
           if (editing) {
@@ -46,11 +50,12 @@ const EditableField = ({
       >
         {editing ? <CheckIcon fontSize="small" /> : <EditIcon fontSize="small" />}
       </IconButton>
-
       {!editing ? (
         <Typography
-          fontWeight={variant === 'title' ? 'bold' : undefined}
           color={editing ? 'textPrimary' : 'textSecondary'}
+          sx={{
+            fontWeight: variant === 'title' ? 'bold' : undefined,
+          }}
         >
           {label || placeholder}
         </Typography>

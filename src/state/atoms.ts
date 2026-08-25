@@ -1,11 +1,12 @@
 import {atom} from 'jotai';
-import {atomWithStorage, atomFamily} from 'jotai/utils';
-import type {SyncStorage} from 'jotai/vanilla/utils/atomWithStorage';
+import {atomFamily, atomWithStorage} from 'jotai/utils';
 import {merge} from 'lodash';
-import type {MRT_TableState, MRT_RowData} from 'material-react-table';
-import {PlotDatum} from 'plotly.js';
-import {TaskUser} from '~/features/tasks/types';
-import {DataToShow, HorizontalLine} from '~/types';
+
+import type {SyncStorage} from 'jotai/vanilla/utils/atomWithStorage';
+import type {MRT_RowData, MRT_TableState} from 'material-react-table';
+import type {PlotDatum} from 'plotly.js';
+import type {TaskUser} from '~/features/tasks/types';
+import type {DataToShow, HorizontalLine} from '~/types';
 
 function createTimedStorage<T>(timeout_ms: number): SyncStorage<T> {
   return {

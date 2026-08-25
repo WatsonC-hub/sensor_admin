@@ -1,20 +1,25 @@
-import React, {useEffect, useState} from 'react';
-import useContactForm from '~/features/stamdata/components/stationDetails/contacts/api/useContactForm';
-import {ContactTable} from '~/types';
-import {FormProvider} from 'react-hook-form';
-import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddContactInfo';
-import {lowerCase} from 'lodash';
-import {setRoleName} from '~/features/stamdata/components/stationDetails/contacts/const';
-import SimpleContactList from '../helper/SimpleContactList';
+import {AddCircleOutlined, DoNotDisturb, Edit} from '@mui/icons-material';
 import {Box} from '@mui/material';
-import {useCreateStationStore} from '../state/useCreateStationStore';
-import {AddCircleOutline, DoNotDisturb, Edit} from '@mui/icons-material';
+import {lowerCase} from 'lodash';
+import React, {useEffect, useState} from 'react';
+import {FormProvider} from 'react-hook-form';
+
 import Button from '~/components/Button';
 import FormFieldset from '~/components/formComponents/FormFieldset';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {button_sx} from '../common_style';
 import {useProjectContacts} from '~/features/stamdata/api/useContactInfo';
-import {CreateLocationData} from '../types';
+import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddContactInfo';
+import useContactForm, {
+  contact_info_table,
+} from '~/features/stamdata/components/stationDetails/contacts/api/useContactForm';
+import {setRoleName} from '~/features/stamdata/components/stationDetails/contacts/const';
+import useBreakpoints from '~/hooks/useBreakpoints';
+
+import {button_sx} from '../commonStyle';
+import SimpleContactList from '../helper/SimpleContactList';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+
+import type {CreateLocationData} from '../types';
+import type {ContactTable} from '~/types';
 
 const ContactForm = () => {
   const {isMobile} = useBreakpoints();
@@ -54,9 +59,9 @@ const ContactForm = () => {
     });
   }, [data, contacts]);
 
-  const contactInfoMethods = useContactForm<ContactTable>({
+  const contactInfoMethods = useContactForm<typeof contact_info_table>({
+    schema: contact_info_table,
     defaultValues: undefined,
-    mode: 'add',
   });
 
   const onValidChange = (value: ContactTable[] | undefined) => {
@@ -83,18 +88,25 @@ const ContactForm = () => {
   return (
     <FormFieldset label={'Kontakter'} sx={{p: 1, width: '100%'}}>
       <FormProvider {...contactInfoMethods}>
-        <Box display={'flex'} flexDirection={'column'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <SimpleContactList values={mergedContacts} onRemove={removeContact} />
 
           <Box
-            display="flex"
-            flexDirection={isMobile ? 'column' : 'row'}
-            justifyContent={'flex-start'}
-            gap={1}
+            sx={{
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              justifyContent: 'flex-start',
+              gap: 1,
+            }}
           >
             <Button
               bttype="primary"
-              startIcon={<AddCircleOutline />}
+              startIcon={<AddCircleOutlined />}
               sx={{
                 ...button_sx(contacts !== undefined && contacts.length > 0),
                 alignSelf: isMobile ? 'start' : 'center',

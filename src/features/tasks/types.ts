@@ -11,8 +11,8 @@
 //     longitude: '{{floating(8.24402, 14.70664)}}'
 //   }
 
-import {Dayjs} from 'dayjs';
-import {FlagEnum} from '../notifications/consts';
+import type {FlagEnum} from '../notifications/consts';
+import type {Dayjs} from 'dayjs';
 
 type ID = string;
 

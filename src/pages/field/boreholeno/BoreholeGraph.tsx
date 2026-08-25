@@ -1,15 +1,16 @@
 import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {Layout, PlotData} from 'plotly.js';
 import React, {useEffect, useState} from 'react';
 
 import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
-import {BoreholeMeasurement} from '~/types';
+
+import type {Layout, PlotData} from 'plotly.js';
+import type {BoreholeMeasurement} from '~/types';
 
 type JupiterData = {
   data: {
@@ -112,7 +113,9 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
       }
     : {
         yaxis: {
-          title: 'Vandstand',
+          title: {
+            text: 'Vandstand',
+          },
         },
         yaxis2: {},
       };

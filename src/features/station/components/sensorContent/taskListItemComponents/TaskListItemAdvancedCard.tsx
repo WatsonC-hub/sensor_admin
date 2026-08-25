@@ -1,32 +1,33 @@
 import {EditOutlined, Person, Warning} from '@mui/icons-material';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import {
   Box,
-  Typography,
-  Card,
-  CardHeader,
-  CardContent,
   Button,
-  Grid2,
-  TextField,
+  Card,
+  CardContent,
+  CardHeader,
+  Grid,
   Link,
+  TextField,
+  Typography,
 } from '@mui/material';
-import DescriptionIcon from '@mui/icons-material/Description';
+import dayjs from 'dayjs';
 import React, {useMemo, useState} from 'react';
-import {useTaskMutations, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
-import {Task} from '~/features/tasks/types';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
+
+import {useUser} from '~/features/auth/useUser';
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import {getColor} from '~/features/notifications/Utils';
 import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
-import {convertDate} from '~/helpers/dateConverter';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import {useTaskMutations, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
-import {getColor} from '~/features/notifications/utils';
+import {convertDate} from '~/helpers/dateConverter';
+import {useDisplayState} from '~/hooks/ui';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {useDisplayState} from '~/hooks/ui';
-import {useUser} from '~/features/auth/useUser';
-import dayjs from 'dayjs';
-import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import type {Task} from '~/features/tasks/types';
 
 type Props = {
   task: Task;
@@ -118,17 +119,21 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
           }}
           title={
             <Box
-              display="flex"
-              flexDirection={'row'}
-              alignItems="center"
-              justifyContent={'space-between'}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
             >
               <Box
-                display={'flex'}
-                flexDirection={'row'}
-                gap={0.5}
-                alignItems="center"
-                fontSize={14}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 0.5,
+                  alignItems: 'center',
+                  fontSize: 14,
+                }}
               >
                 <NotificationIcon
                   iconDetails={{
@@ -139,8 +144,20 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
                   }}
                   noCircle={true}
                 />
-                <Box display="flex" flexDirection={'column'}>
-                  <Box display="flex" flexDirection={'row'} flexWrap={'wrap'} gap={0.5}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      flexWrap: 'wrap',
+                      gap: 0.5,
+                    }}
+                  >
                     <Link
                       onClick={() =>
                         showLocationLink ? location(task.loc_id) : station(task.ts_id)
@@ -148,10 +165,10 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
                       color="inherit"
                       variant="caption"
                       underline="always"
-                      display="flex"
-                      flexWrap="wrap"
-                      gap={0.5}
                       sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 0.5,
                         cursor: 'pointer',
                         textDecorationColor: 'rgba(255, 255, 255, 0.6)',
                       }}
@@ -171,10 +188,12 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
                   </Box>
                   {!task.is_created && task.sla && superUser && (
                     <Typography
-                      mt={-0.5}
-                      fontStyle={'italic'}
-                      fontWeight={'bold'}
                       variant={'caption'}
+                      sx={{
+                        mt: -0.5,
+                        fontStyle: 'italic',
+                        fontWeight: 'bold',
+                      }}
                     >
                       Løsningsfrist: {task.sla.format('l')}
                     </Typography>
@@ -182,7 +201,14 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
                 </Box>
               </Box>
               {task.due_date && (
-                <Box display="flex" flexDirection={'row'} gap={1} alignItems={'center'}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: 1,
+                    alignItems: 'center',
+                  }}
+                >
                   <PendingActionsIcon
                     fontSize="small"
                     sx={{
@@ -200,35 +226,61 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
           }
         />
         <CardContent
-          sx={{paddingBottom: 0, paddingX: 1, '&.MuiCardContent-root:last-child': {paddingY: 0}}}
+          sx={{
+            paddingBottom: 0,
+            paddingX: 1,
+            '&.MuiCardContent-root:last-child': {paddingY: 0},
+          }}
         >
-          <Grid2 container color="grey.700" spacing={1}>
+          <Grid
+            container
+            spacing={1}
+            sx={{
+              color: 'grey.700',
+            }}
+          >
             {(task.block_all || task.block_on_location) && (
-              <Grid2 size={12} display={'flex'} flexDirection={'row'} gap={1} alignItems="center">
+              <Grid
+                size={12}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 1,
+                  alignItems: 'center',
+                }}
+              >
                 <Warning fontSize="small" />
                 <Typography
                   variant="caption"
-                  fontSize={12}
-                  display={'flex'}
-                  flexDirection={'row'}
-                  gap={0.5}
-                  alignItems="center"
+                  sx={{
+                    fontSize: 12,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: 0.5,
+                    alignItems: 'center',
+                  }}
                 >
                   Dæmper {task.block_all ? 'alle' : 'samme'} notifikationer på{' '}
                   {task.block_on_location ? 'lokationen' : 'tidsserien'}
                 </Typography>
-              </Grid2>
+              </Grid>
             )}
             {task.can_edit ? (
-              <Grid2 container size={6}>
-                <Grid2 size={2} alignItems={'center'} display={'flex'}>
+              <Grid container size={6}>
+                <Grid
+                  size={2}
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
                   <Person
                     sx={{
                       color: 'grey.700',
                     }}
                   />
-                </Grid2>
-                <Grid2 size={10}>
+                </Grid>
+                <Grid size={10}>
                   <TaskForm.AssignedToSelect
                     onBlurCallback={(e) => {
                       if (typeof e === 'object' && 'value' in e.target) {
@@ -256,11 +308,19 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
                       },
                     }}
                   />
-                </Grid2>
-              </Grid2>
+                </Grid>
+              </Grid>
             ) : (
-              <Grid2 size={6}>
-                <Box display={'flex'} flexDirection={'row'} gap={0.5} pt={0.5} alignItems="center">
+              <Grid size={6}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: 0.5,
+                    pt: 0.5,
+                    alignItems: 'center',
+                  }}
+                >
                   <Person />
                   <TextField
                     value={task.assigned_display_name ?? ''}
@@ -277,9 +337,9 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
                     }}
                   />
                 </Box>
-              </Grid2>
+              </Grid>
             )}
-            <Grid2 size={6}>
+            <Grid size={6}>
               {task.can_edit ? (
                 <TaskForm.StatusSelect
                   disableClosedStatus={!task.is_created}
@@ -315,7 +375,12 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
                   }}
                 />
               ) : (
-                <Box pt={0.5} alignItems="center">
+                <Box
+                  sx={{
+                    pt: 0.5,
+                    alignItems: 'center',
+                  }}
+                >
                   <TextField
                     value={task.status_name}
                     disabled
@@ -333,26 +398,54 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
                   />
                 </Box>
               )}
-            </Grid2>
-            <Grid2
+            </Grid>
+            <Grid
               size={12}
-              display={'flex'}
-              flexDirection={'column'}
-              justifyContent={'space-between'}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+              }}
             >
-              <Grid2 size={12} gap={1}>
+              <Grid
+                size={12}
+                sx={{
+                  gap: 1,
+                }}
+              >
                 {task.description && (
-                  <Box alignItems={'center'} display="flex" gap={1}>
+                  <Box
+                    sx={{
+                      alignItems: 'center',
+                      display: 'flex',
+                      gap: 1,
+                    }}
+                  >
                     <DescriptionIcon fontSize="small" />
                     <Typography variant="caption">{task.description}</Typography>
                   </Box>
                 )}
-              </Grid2>
-              <Grid2 size={12}>
+              </Grid>
+              <Grid size={12}>
                 {filteredComments && filteredComments.length > 0 && (
-                  <Box display="flex" flexDirection={'row'} gap={1} pt={2} alignItems="start">
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      gap: 1,
+                      pt: 2,
+                      alignItems: 'start',
+                    }}
+                  >
                     <ChatBubbleOutlineIcon fontSize="small" />
-                    <Box display="flex" flexDirection={'column'} alignItems={'start'} gap={0.5}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'start',
+                        gap: 0.5,
+                      }}
+                    >
                       {!showAllComments && (
                         <>
                           <Typography variant="caption">
@@ -379,10 +472,17 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
                     </Box>
                   </Box>
                 )}
-              </Grid2>
-            </Grid2>
-          </Grid2>
-          <Box display={'flex'} flexDirection={'row'} alignItems="center" justifyContent="end">
+              </Grid>
+            </Grid>
+          </Grid>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'end',
+            }}
+          >
             {task.can_edit && (
               <EditOutlined
                 fontSize="small"

@@ -9,11 +9,12 @@ import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+
 import type {
   MultiSelectProps,
   Ressourcer,
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
-import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 
 interface CheckboxesTagsProps extends MultiSelectProps {
   loc_id: number | undefined;
@@ -78,14 +79,20 @@ export default function CheckboxesTags({loc_id, value, setValue}: CheckboxesTags
     if (!collapsed.includes(collapsedCategory)) {
       setCollapsed([...collapsed, collapsedCategory]);
     } else {
-      setCollapsed(...[collapsed.filter((category) => category !== collapsedCategory)]);
+      setCollapsed(collapsed.filter((category) => category !== collapsedCategory));
     }
   };
 
   return (
     <>
       {options && options.length > 0 && (
-        <Box display={'flex'} flexDirection={'column'} flexGrow={1}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            flexGrow: 1,
+          }}
+        >
           <Autocomplete
             multiple
             disabled={disabled}
@@ -112,7 +119,14 @@ export default function CheckboxesTags({loc_id, value, setValue}: CheckboxesTags
               return (
                 <>
                   <ListItemText id={key.toString()} onClick={() => handleClick(group)}>
-                    <Typography ml={2} fontWeight={'bold'} display={'flex'} flexDirection={'row'}>
+                    <Typography
+                      sx={{
+                        ml: 2,
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        flexDirection: 'row',
+                      }}
+                    >
                       {group}
                       <Typography>
                         <>{collapsed.includes(group) ? <ExpandMore /> : <ExpandLess />}</>
@@ -159,7 +173,15 @@ export default function CheckboxesTags({loc_id, value, setValue}: CheckboxesTags
             }}
           />
           {loc_id !== undefined && (
-            <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} gap={1} mt={2}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'end',
+                gap: 1,
+                mt: 2,
+              }}
+            >
               <UpdateProgressButton
                 loc_id={loc_id}
                 ts_id={-1}

@@ -1,13 +1,17 @@
+import {Box} from '@mui/material';
+import {DatePicker} from '@mui/x-date-pickers';
 import React from 'react';
-import {Box, TextFieldVariants} from '@mui/material';
-import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
+import {Controller, useFormContext} from 'react-hook-form';
 
-import dayjs, {Dayjs} from 'dayjs';
-import {DatePicker, DatePickerProps, PickersActionBarAction} from '@mui/x-date-pickers';
 import CustomActionBar from '~/helpers/CustomActionBar';
 
+import type {TextFieldVariants} from '@mui/material';
+import type {DatePickerProps, PickersActionBarAction} from '@mui/x-date-pickers';
+import type dayjs from 'dayjs';
+import type {FieldValues, Path} from 'react-hook-form';
+
 export type FormDatePickerProps<TFieldValues extends FieldValues> = Omit<
-  DatePickerProps<false>,
+  DatePickerProps,
   'value' | 'onChange' | 'renderInput'
 > & {
   name: Path<TFieldValues>;
@@ -100,10 +104,18 @@ const FormDatePicker = <TFieldValues extends FieldValues>({
               },
               textField: {
                 ...slotProps?.textField,
-                InputProps: {
-                  sx: {
-                    '& > fieldset': {
-                      borderColor: 'primary.main',
+                slotProps: {
+                  input: {
+                    sx: {
+                      '& > fieldset': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                  },
+                  inputLabel: {
+                    shrink: true,
+                    sx: {
+                      color: 'primary.main',
                     },
                   },
                 },
@@ -112,12 +124,6 @@ const FormDatePicker = <TFieldValues extends FieldValues>({
                 fullWidth: true,
                 error: !!error,
                 helperText: error?.message,
-                InputLabelProps: {
-                  shrink: true,
-                  sx: {
-                    color: 'primary.main',
-                  },
-                },
               },
             }}
           />

@@ -1,6 +1,6 @@
-import {Dayjs} from 'dayjs';
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {BoreholeMapData} from '~/types';
+import type {Dayjs} from 'dayjs';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {BoreholeMapData} from '~/types';
 
 export type IconDetails = Partial<
   MapOverview & {

@@ -1,6 +1,6 @@
 import {Box} from '@mui/material';
 import React from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import FormInput from '~/components/FormInput';
@@ -8,9 +8,11 @@ import {useTaskHistory, useTaskHistoryMutations} from '~/features/tasks/api/useT
 import {useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import TaskInfoChanges from '~/features/tasks/components/TaskInfoChanges';
 import TaskInfoComment from '~/features/tasks/components/TaskInfoComment';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 import {useTaskState} from '../api/useTaskState';
-import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {SubmitHandler} from 'react-hook-form';
 
 const taskCommentSchema = z.object({
   id: z.string().optional(),
@@ -63,19 +65,23 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      mt={isMonitor ? 3 : 0}
-      mb={isMonitor ? 5 : 0}
-      maxHeight={'100%'}
-      gap={2}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        mt: isMonitor ? 3 : 0,
+        mb: isMonitor ? 5 : 0,
+        maxHeight: '100%',
+        gap: 2,
+      }}
     >
       <Box
-        // maxHeight={'100%'}
-        display={'flex'}
-        flexDirection={'column'}
-        gap={2}
-        sx={{overflowY: 'auto', overflowX: 'hidden'}}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+        }}
       >
         {taskHistory?.map((row) => {
           if ('comment' in row) return <TaskInfoComment key={row.id} comment={row} />;

@@ -1,13 +1,16 @@
+import {AddCircleOutlined} from '@mui/icons-material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {Link} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import {FieldError, Noop} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
-import useLocationProject, {Project} from '../../api/useLocationProject';
-import {AddCircleOutline} from '@mui/icons-material';
+
+import useLocationProject from '../../api/useLocationProject';
+
+import type {Project} from '../../api/useLocationProject';
+import type {FieldError, Noop} from 'react-hook-form';
 
 interface LocationProjectsProps {
   value: string | undefined | null;
@@ -60,7 +63,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
                   shrink: true,
                 },
                 input: {
-                  ...params.InputProps,
+                  ...params.slotProps.input,
                   endAdornment: (
                     <>
                       <Button
@@ -74,9 +77,9 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
                         rel="noopener"
                         sx={{textTransform: 'none'}}
                       >
-                        {selectedValue ? <OpenInNewIcon /> : <AddCircleOutline />}
+                        {selectedValue ? <OpenInNewIcon /> : <AddCircleOutlined />}
                       </Button>
-                      {params.InputProps.endAdornment}
+                      {params.slotProps.input.endAdornment}
                     </>
                   ),
                 },

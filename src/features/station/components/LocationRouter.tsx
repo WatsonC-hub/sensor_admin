@@ -1,34 +1,33 @@
+import {Fullscreen, FullscreenExit} from '@mui/icons-material';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {Alert, Box, IconButton, Tooltip, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import {useQueryClient} from '@tanstack/react-query';
+import {useAtom} from 'jotai';
 import React from 'react';
 
 import Button from '~/components/Button';
 import NavBar from '~/components/NavBar';
+import {useUser} from '~/features/auth/useUser';
+import ContactInfo from '~/features/stamdata/components/stationDetails/contacts/ContactInfo';
+import LocationAccess from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccess';
+import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
+import {stationPages} from '~/helpers/enumHelper';
 import {metadataQueryOptions, useLocationData} from '~/hooks/query/useMetadata';
+import {useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
+import LocationConfiguration from '~/pages/field/station/location/Configuration';
+import EditLocation from '~/pages/field/station/stamdata/EditLocation';
 import ImagePage from '~/pages/field/station/stamdata/ImagePage';
+import {fullScreenAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
 
+import ActionArea from './ActionArea';
 import MinimalSelect from './MinimalSelect';
 import StationDrawer from './StationDrawer';
-import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
-import {useUser} from '~/features/auth/useUser';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import LocationAccess from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccess';
-import ContactInfo from '~/features/stamdata/components/stationDetails/contacts/ContactInfo';
 import StationPageBoxLayout from './StationPageBoxLayout';
-import ActionArea from './ActionArea';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {stationPages} from '~/helpers/EnumHelper';
-import EditLocation from '~/pages/field/station/stamdata/EditLocation';
-
-import {Fullscreen, FullscreenExit} from '@mui/icons-material';
-import {useAtom} from 'jotai';
-import {fullScreenAtom} from '~/state/atoms';
-import {useDisplayState} from '~/hooks/ui';
-import LocationConfiguration from '~/pages/field/station/location/Configuration';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();
@@ -50,7 +49,12 @@ export default function LocationRouter() {
       {metadata != undefined &&
         metadata.timeseries.length === 0 &&
         pageToShow === stationPages.PEJLING && (
-          <Box maxWidth={400} mx={'auto'}>
+          <Box
+            sx={{
+              maxWidth: 400,
+              mx: 'auto',
+            }}
+          >
             <StationPageBoxLayout>
               <Alert
                 severity={'info'}
@@ -119,15 +123,35 @@ const Layout = ({children}: LayoutProps) => {
       <CssBaseline />
       <NavBar>
         {isTouch && <NavBar.StationDrawerMenu />}
-        <Box display="block" flexGrow={1} overflow="hidden">
+        <Box
+          sx={{
+            display: 'block',
+            flexGrow: 1,
+            overflow: 'hidden',
+          }}
+        >
           {!isTouch && (
-            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+            <Typography
+              sx={{
+                pl: 1.7,
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {metadata?.loc_name}
             </Typography>
           )}
           {isTouch && <MinimalSelect />}
         </Box>
-        <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexShrink: 0,
+          }}
+        >
           {metadata?.projectno && (
             <Tooltip title="Vis projektside" arrow>
               <IconButton
@@ -160,7 +184,6 @@ const Layout = ({children}: LayoutProps) => {
           />
         </Box>
       </NavBar>
-
       <Box
         component="main"
         sx={{
@@ -174,12 +197,14 @@ const Layout = ({children}: LayoutProps) => {
         <Box
           key={'main_content'}
           id={'main_content'}
-          display="flex"
-          width={'100%'}
-          flexGrow={1}
-          gap={1}
-          flexDirection={'column'}
-          overflow="auto"
+          sx={{
+            display: 'flex',
+            width: '100%',
+            flexGrow: 1,
+            gap: 1,
+            flexDirection: 'column',
+            overflow: 'auto',
+          }}
         >
           {children}
           {isMobile && <ActionArea />}

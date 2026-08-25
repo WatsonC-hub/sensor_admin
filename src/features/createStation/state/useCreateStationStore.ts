@@ -1,7 +1,10 @@
+import React from 'react';
 import {useStore} from 'zustand';
 import {useShallow} from 'zustand/shallow';
-import React from 'react';
-import {CreateStationStoreContext, CreateStationStoreState} from './CreateStationStoreProvider';
+
+import {CreateStationStoreContext} from './CreateStationStoreProvider';
+
+import type {CreateStationStoreState} from './CreateStationStoreProvider';
 
 export const useCreateStationStore = <T>(selector: (state: CreateStationStoreState) => T) => {
   const store = React.useContext(CreateStationStoreContext);

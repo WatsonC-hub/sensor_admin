@@ -13,12 +13,13 @@ import StationPageBoxLayout from '~/features/station/components/StationPageBoxLa
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import {zodDayjs} from '~/helpers/schemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
-import {TilsynItem} from '~/types';
+
+import type {TilsynItem} from '~/types';
 
 const tilsynSchema = z.object({
   dato: zodDayjs('Tidspunkt skal være udfyldt'),
@@ -49,7 +50,7 @@ export default function Tilsyn() {
 
   const {data: tilsynData} = tilsynSchema.safeParse(initialData);
 
-  const formMethods = useForm<TilsynSchemaType>({
+  const formMethods = useForm({
     resolver: zodResolver(tilsynSchema),
     defaultValues: tilsynData,
     mode: 'onTouched',
@@ -120,13 +121,25 @@ export default function Tilsyn() {
       <Divider />
       <StationPageBoxLayout>
         <FormProvider {...formMethods}>
-          <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
             {showForm === true && (
               <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
             )}
           </Box>
         </FormProvider>
-        <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: isTouch || isLaptop ? 8 : undefined,
+          }}
+        >
           <TilsynTable
             handleEdit={handleEdit}
             handleDelete={handleDelete}

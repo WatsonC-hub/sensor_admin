@@ -1,13 +1,14 @@
+import {Add} from '@mui/icons-material';
 import React from 'react';
-import {AlarmContactFormType, AlarmsFormValues} from '../schema';
-
 import {useFormContext} from 'react-hook-form';
 
-import {Add} from '@mui/icons-material';
 import Button from '~/components/Button';
+
 import AlarmContactTable from './AlarmContactTable';
 
-const removeContact = (index: number, contacts: AlarmContactFormType[]) => {
+import type {AlarmContactFormOutput, AlarmFormOutput} from '../schema';
+
+const removeContact = (index: number, contacts: AlarmContactFormOutput[]) => {
   return contacts.filter((_, i) => i !== index);
 };
 
@@ -22,7 +23,7 @@ const AlarmContactForm = ({
   setMode,
   setCurrentIndex,
 }: AlarmContactFormProps) => {
-  const {watch, setValue} = useFormContext<AlarmsFormValues>();
+  const {watch, setValue} = useFormContext<AlarmFormOutput>();
   const contacts = watch('contacts');
 
   return (

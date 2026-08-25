@@ -1,10 +1,11 @@
-import {useQuery, useMutation} from '@tanstack/react-query';
-import {Dayjs} from 'dayjs';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
+
+import type {Dayjs} from 'dayjs';
 
 export interface CertifyQa {
   id?: number;

@@ -1,29 +1,28 @@
 import {zodResolver} from '@hookform/resolvers/zod';
+import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
 import {Box, InputAdornment} from '@mui/material';
 import React, {useEffect} from 'react';
-import {useForm, FormProvider} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
+
+import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {} from '~/features/station/api/useLocationSLAConfiguration';
-import {useCreateStationStore} from '../state/useCreateStationStore';
-import Button from '~/components/Button';
-import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {button_sx} from '../common_style';
+
+import {button_sx} from '../commonStyle';
+import {useCreateStationStore} from '../state/useCreateStationStore';
 
 const SLASchema = z.object({
   days_to_visitation: z
     .number({
       message: 'Løsningsfrist skal være et tal',
     })
-    .min(1, {message: 'Løsningsfrist skal være 1 eller flere dage'}),
+    .min(1, {message: 'Løsningsfrist skal være 1 eller flere dage'})
+    .nullable(),
 });
 
 type SLA = z.infer<typeof SLASchema>;
-
-type SLAFormState = {
-  days_to_visitation: number | null;
-};
 
 type SlaFormProps = {
   setValues: (values: SLA) => void;
@@ -38,7 +37,7 @@ const SlaForm = ({setValues}: SlaFormProps) => {
     state.deleteState,
   ]);
 
-  const formMethods = useForm<SLAFormState, unknown, SLA>({
+  const formMethods = useForm({
     resolver: zodResolver(SLASchema),
     defaultValues: sla,
   });
@@ -49,7 +48,7 @@ const SlaForm = ({setValues}: SlaFormProps) => {
     const values = getValues();
     setValues(values as SLA);
     registerSubmitter('location.sla', async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         setValues(values);
         valid = true;
@@ -61,7 +60,7 @@ const SlaForm = ({setValues}: SlaFormProps) => {
   useEffect(() => {
     if (sla !== undefined)
       registerSubmitter('location.sla', async () => {
-        let valid: boolean = false;
+        let valid = false;
         await handleSubmit((values) => {
           setValues(values);
           valid = true;
@@ -74,10 +73,12 @@ const SlaForm = ({setValues}: SlaFormProps) => {
 
   return (
     <Box
-      display="flex"
-      gap={1}
-      flexDirection={isMobile ? 'column' : 'row'}
-      alignContent={isMobile ? 'end' : 'center'}
+      sx={{
+        display: 'flex',
+        gap: 1,
+        flexDirection: isMobile ? 'column' : 'row',
+        alignContent: isMobile ? 'end' : 'center',
+      }}
     >
       <FormProvider {...formMethods}>
         <FormInput

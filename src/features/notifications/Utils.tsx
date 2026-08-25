@@ -1,15 +1,10 @@
-import {
-  boreholeColors,
-  BoreHoleFlagEnum,
-  FlagEnum,
-  NotificationEnum,
-  NotificationIDEnum,
-  sensorColors,
-} from './consts';
-import { BoreholeDetails, IconDetails } from './types';
-
-import { JSX } from 'react';
 import dayjs from 'dayjs';
+
+import {BoreHoleFlagEnum, FlagEnum, NotificationEnum, boreholeColors, sensorColors} from './consts';
+
+import type {NotificationIDEnum} from './consts';
+import type {BoreholeDetails, IconDetails} from './types';
+import type {JSX} from 'react';
 
 const rawIcons = Object.fromEntries(
   Object.entries(
@@ -45,6 +40,7 @@ const defaultStyling = {
 
 export const getColor = (iconDetails: IconDetails) => {
   if (iconDetails?.flag) return sensorColors[iconDetails?.flag].color;
+
   if (iconDetails?.has_task) {
     if (iconDetails.due_date?.add(1, 'day').isBefore(dayjs()))
       return sensorColors[FlagEnum.WARNING].color;
@@ -114,7 +110,7 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
     }
 
     if (iconDetails.notification_id && !(iconDetails.notification_id in rawIcons)) {
-      return rawIcons['default']
+      return rawIcons['default'];
     }
 
     if (iconDetails.in_service && iconDetails.inactive_new) {
@@ -173,4 +169,4 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
     return <></>;
   }
 }
-export { getIcon, getBoreholeIcon };
+export {getIcon, getBoreholeIcon};

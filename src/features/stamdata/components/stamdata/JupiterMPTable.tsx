@@ -1,19 +1,21 @@
 import {Download} from '@mui/icons-material';
-import {CircularProgress, Box, IconButton, Typography} from '@mui/material';
-
+import {Box, CircularProgress, IconButton, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import dayjs, {Dayjs} from 'dayjs';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import dayjs from 'dayjs';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
+
 import {apiClient} from '~/apiClient';
 import TooltipWrapper from '~/components/TooltipWrapper';
-
 import {limitDecimalNumbers, splitTimeFromDate} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTable} from '~/hooks/useTable';
 import {useAppContext} from '~/state/contexts';
+
+import type {Dayjs} from 'dayjs';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 
 type LastJupiterMPData = {
   description: string | undefined;
@@ -132,7 +134,14 @@ const JupiterMPTable = () => {
       return (
         <>
           {isPending ? (
-            <Box display="flex" justifyContent="center" p={0.5} alignItems="center">
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                p: 0.5,
+                alignItems: 'center',
+              }}
+            >
               <CircularProgress size="18px" />
             </Box>
           ) : (
@@ -164,7 +173,12 @@ const JupiterMPTable = () => {
         </TooltipWrapper>
       ),
     renderTopToolbar: (
-      <Typography variant="body1" p={1}>
+      <Typography
+        variant="body1"
+        sx={{
+          p: 1,
+        }}
+      >
         Målepunkt eller terrænkote i Jupiter
       </Typography>
     ),
@@ -190,7 +204,11 @@ const JupiterMPTable = () => {
   );
 
   return (
-    <Box mb={1}>
+    <Box
+      sx={{
+        mb: 1,
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

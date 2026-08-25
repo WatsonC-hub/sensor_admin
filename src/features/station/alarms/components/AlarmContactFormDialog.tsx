@@ -1,35 +1,40 @@
+import {zodResolver} from '@hookform/resolvers/zod';
+import CallIcon from '@mui/icons-material/Call';
+import EmailIcon from '@mui/icons-material/Email';
+import SmsIcon from '@mui/icons-material/Sms';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Grid2,
   Box,
+  Dialog,
   DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
   Typography,
 } from '@mui/material';
 import React, {useState} from 'react';
-import {AlarmContactFormType, alarmContactSchema, AlarmsFormValues} from '../schema';
-import {createTypedForm} from '~/components/formComponents/Form';
-import {zodResolver} from '@hookform/resolvers/zod';
-import {AlarmContactTypeDialog} from '../types';
-import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
-import {useAppContext} from '~/state/contexts';
-import {ContactInfo} from '~/types';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import SmsIcon from '@mui/icons-material/Sms';
-import EmailIcon from '@mui/icons-material/Email';
-import CallIcon from '@mui/icons-material/Call';
-import {useForm, UseFormSetValue} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 
-const AlarmContactTypedForm = createTypedForm<AlarmContactFormType>();
+import {createTypedForm} from '~/components/formComponents/Form';
+import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAppContext} from '~/state/contexts';
+
+import {alarmContactSchema} from '../schema';
+
+import type {AlarmContactFormInput, AlarmContactFormOutput, AlarmFormInput} from '../schema';
+import type {AlarmContactTypeDialog} from '../types';
+import type {SubmitHandler, UseFormSetValue} from 'react-hook-form';
+import type {ContactInfo} from '~/types';
+
+const AlarmContactTypedForm = createTypedForm<AlarmContactFormInput, AlarmContactFormOutput>();
 
 type Props = {
   open: boolean;
   onClose: () => void;
   mode: 'add' | 'edit' | 'view';
   setMode: (mode: 'add' | 'edit' | 'view') => void;
-  values: AlarmContactFormType[] | undefined;
-  setValues: UseFormSetValue<AlarmsFormValues>;
+  values: AlarmContactFormInput[] | undefined;
+  setValues: UseFormSetValue<AlarmFormInput>;
   currentIndex: number;
 };
 
@@ -50,7 +55,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
 
   const currentContact = values && currentIndex !== -1 ? values[currentIndex] : undefined;
 
-  const alarmContactFormMethods = useForm<AlarmContactFormType, unknown, AlarmContactFormType>({
+  const alarmContactFormMethods = useForm<AlarmContactFormInput, unknown, AlarmContactFormOutput>({
     resolver: zodResolver(alarmContactSchema),
     defaultValues: {
       contact_id: '',
@@ -82,7 +87,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
     formState: {isSubmitted},
   } = alarmContactFormMethods;
 
-  const handleSubmit = (data: AlarmContactFormType) => {
+  const handleSubmit: SubmitHandler<AlarmContactFormInput> = (data) => {
     if (!data.call?.selected && !data.sms?.selected && !data.email?.selected) {
       return;
     }
@@ -130,13 +135,15 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
       <AlarmContactTypedForm useGrid={false} formMethods={alarmContactFormMethods}>
         <DialogTitle>{mode === 'add' ? 'Tilføj kontakt' : 'Rediger kontakt'}</DialogTitle>
         <DialogContent sx={{width: '100%'}}>
-          <Grid2
+          <Grid
             container
             size={{xs: 12, sm: 12}}
-            width={'100%'}
             direction={'row'}
-            alignItems="center"
             spacing={1}
+            sx={{
+              width: '100%',
+              alignItems: 'center',
+            }}
           >
             <AlarmContactTypedForm.Autocomplete<AlarmContactTypeDialog, false>
               options={options}
@@ -161,12 +168,14 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
               }}
             />
             <Box
-              display="flex"
-              flexDirection={isMobile ? 'column' : 'row'}
-              alignItems={'center'}
-              justifyContent={'center'}
-              gap={1}
-              width="100%"
+              sx={{
+                display: 'flex',
+                flexDirection: isMobile ? 'column' : 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 1,
+                width: '100%',
+              }}
             >
               <AlarmContactTypedForm.Checkbox
                 name={`sms.selected`}
@@ -179,7 +188,14 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                 }}
                 gridSizes={{sm: 1.5}}
               />
-              <Box display={'flex'} flexDirection={'row'} gap={1} width="100%">
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 1,
+                  width: '100%',
+                }}
+              >
                 <AlarmContactTypedForm.Input
                   name={`sms.from`}
                   label="Start interval"
@@ -199,12 +215,14 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
               </Box>
             </Box>
             <Box
-              display="flex"
-              flexDirection={isMobile ? 'column' : 'row'}
-              alignItems={'center'}
-              justifyContent={'center'}
-              gap={1}
-              width="100%"
+              sx={{
+                display: 'flex',
+                flexDirection: isMobile ? 'column' : 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 1,
+                width: '100%',
+              }}
             >
               <AlarmContactTypedForm.Checkbox
                 name={`email.selected`}
@@ -220,7 +238,14 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                 }}
                 gridSizes={{sm: 1.5}}
               />
-              <Box display={'flex'} flexDirection={'row'} gap={1} width="100%">
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 1,
+                  width: '100%',
+                }}
+              >
                 <AlarmContactTypedForm.Input
                   name={`email.from`}
                   label="Start interval"
@@ -240,12 +265,14 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
               </Box>
             </Box>
             <Box
-              display="flex"
-              flexDirection={isMobile ? 'column' : 'row'}
-              alignItems={'center'}
-              justifyContent={'center'}
-              gap={1}
-              width="100%"
+              sx={{
+                display: 'flex',
+                flexDirection: isMobile ? 'column' : 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 1,
+                width: '100%',
+              }}
             >
               <AlarmContactTypedForm.Checkbox
                 name={`call.selected`}
@@ -260,7 +287,14 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                 }}
                 gridSizes={{sm: 1.5}}
               />
-              <Box display={'flex'} flexDirection={'row'} gap={1} width="100%">
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 1,
+                  width: '100%',
+                }}
+              >
                 <AlarmContactTypedForm.Input
                   name={`call.from`}
                   label="Start interval"
@@ -279,14 +313,26 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                 />
               </Box>
             </Box>
-            <Grid2 size={12} display={'flex'} flexDirection={'row'} justifyContent={'center'}>
+            <Grid
+              size={12}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+              }}
+            >
               {!callSelected && !smsSelected && !emailSelected && isSubmitted && (
-                <Typography color="error" alignSelf="center">
+                <Typography
+                  color="error"
+                  sx={{
+                    alignSelf: 'center',
+                  }}
+                >
                   Mindst én kontaktmetode skal være valgt
                 </Typography>
               )}
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions>
           <AlarmContactTypedForm.Cancel

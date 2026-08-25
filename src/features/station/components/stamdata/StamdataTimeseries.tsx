@@ -1,25 +1,27 @@
-import {InputAdornment, TextField, FormControlLabel, Checkbox, Box} from '@mui/material';
+import {PhotoCameraRounded} from '@mui/icons-material';
+import {Box, Checkbox, FormControlLabel, InputAdornment, TextField} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
+import {Controller, useFormContext} from 'react-hook-form';
+import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
-import {PhotoCameraRounded} from '@mui/icons-material';
-import FormInput, {FormInputProps} from '~/components/FormInput';
-import {
+import Button from '~/components/Button';
+import CaptureDialog from '~/components/CaptureDialog';
+import FormInput from '~/components/FormInput';
+import FormTextField from '~/components/FormTextField';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
+import {useAppContext} from '~/state/contexts';
+
+import type {
   BoreholeAddTimeseries,
   BoreholeEditTimeseries,
   DefaultAddTimeseries,
   DefaultEditTimeseries,
 } from '../../schema';
-import FormTextField from '~/components/FormTextField';
-import {useAppContext} from '~/state/contexts';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {Controller, useFormContext} from 'react-hook-form';
-import Button from '~/components/Button';
-
-import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
-import CaptureDialog from '~/components/CaptureDialog';
-import {toast} from 'react-toastify';
-import {Tstype} from '~/types';
+import type {FormInputProps} from '~/components/FormInput';
+import type {Tstype} from '~/types';
 
 type Props = {
   children: React.ReactNode;
@@ -44,8 +46,9 @@ const TypeSelect = ({...props}: TypeSelectProps) => {
   const {data: timeseries_types} = useQuery({
     queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<Tstype>>(`/sensor_field/timeseries_types`,
-        {params: {filtered: true}});
+      const {data} = await apiClient.get<Array<Tstype>>(`/sensor_field/timeseries_types`, {
+        params: {filtered: true},
+      });
       return data;
     },
     staleTime: Infinity, // Cache indefinitely
@@ -207,11 +210,13 @@ const ScanCalypsoLabel = ({disabled}: ScanCalypsoLabelProps) => {
 
   return (
     <Box
-      display="flex"
-      gap={1}
-      flexDirection="row"
-      alignItems="center"
-      justifyContent="space-between"
+      sx={{
+        display: 'flex',
+        gap: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
     >
       <FormInput label="Calypso ID" name="calypso_id" disabled fullWidth />
       <Button

@@ -1,13 +1,17 @@
+import {Box, Checkbox, FormControlLabel, Grid} from '@mui/material';
 import React from 'react';
-import useSyncForm, {SyncFormSchema} from '../api/useSyncForm';
-import {createTypedForm} from '~/components/formComponents/Form';
-import TooltipWrapper from '~/components/TooltipWrapper';
-import {Grid2, Box, FormControlLabel, Checkbox} from '@mui/material';
-import usePermissions from '~/features/permissions/api/usePermissions';
-import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {Controller} from 'react-hook-form';
 
-const Form = createTypedForm<SyncFormSchema>();
+import {createTypedForm} from '~/components/formComponents/Form';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import usePermissions from '~/features/permissions/api/usePermissions';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+
+import useSyncForm from '../api/useSyncForm';
+
+import type {SyncFormSchema, SyncFormSchemaOutput} from '../api/useSyncForm';
+
+const Form = createTypedForm<SyncFormSchema, SyncFormSchemaOutput>();
 
 type JupiterDmpSyncProps = {
   loctype_id?: number;
@@ -65,13 +69,13 @@ const JupiterDmpSync = ({
                 <Form.Checkbox
                   disabled={disabled || intakeno == null}
                   name="jupiter"
-                  label="Synkronisere til jupiter"
+                  label="Synkroniser til jupiter"
                 />
               </TooltipWrapper>
             )}
             {isDmpAllowed && (
               <Box>
-                <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til DMP">
+                <TooltipWrapper description="Aktiverer synkronisering af denne tidsserie til Danmarks Miljøportal">
                   <Controller
                     name="dmp"
                     control={control}
@@ -95,7 +99,7 @@ const JupiterDmpSync = ({
                               }}
                             />
                           }
-                          label={'DMP'}
+                          label={'Danmarks Miljøportal'}
                         />
                       );
                     }}
@@ -132,7 +136,15 @@ const JupiterDmpSync = ({
             )}
           </Box>
 
-          <Grid2 size={12} sx={{alignSelf: 'end'}} display="flex" gap={1} justifyContent="flex-end">
+          <Grid
+            size={12}
+            sx={{
+              display: 'flex',
+              gap: 1,
+              justifyContent: 'flex-end',
+              alignSelf: 'end',
+            }}
+          >
             <UpdateProgressButton
               progressKey="sync"
               key={ts_id}
@@ -148,7 +160,7 @@ const JupiterDmpSync = ({
               disabled={disabled || !isDirty}
             />
             <Form.Submit submit={submit} />
-          </Grid2>
+          </Grid>
         </Form>
       )}
     </>

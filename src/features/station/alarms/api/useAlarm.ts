@@ -1,17 +1,19 @@
-import {apiClient} from '~/apiClient';
 import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
+
+import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
-import {AlarmNotificationType, AlarmHistory, AlarmTableType} from '../types';
-import {APIError} from '~/queryClient';
-import {AlarmsFormValues} from '../schema';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+
+import type {AlarmFormInput} from '../schema';
+import type {AlarmHistory, AlarmNotificationType, AlarmTableType} from '../types';
+import type {APIError} from '~/queryClient';
 
 interface AlarmBase {
   path: string;
 }
 
 interface AlarmsPost extends AlarmBase {
-  data: AlarmsFormValues;
+  data: AlarmFormInput;
 }
 
 const alarmPostOptions = {

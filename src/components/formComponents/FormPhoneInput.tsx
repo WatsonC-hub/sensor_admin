@@ -1,5 +1,9 @@
-import {Controller, Control, FieldValues, Path, RegisterOptions} from 'react-hook-form';
-import PhoneInput, {PhoneInputProps} from '../PhoneInput';
+import {Controller} from 'react-hook-form';
+
+import PhoneInput from '../PhoneInput';
+
+import type {PhoneInputProps} from '../PhoneInput';
+import type {Control, FieldValues, Path, RegisterOptions} from 'react-hook-form';
 
 type FormPhoneInputProps<T extends FieldValues> = {
   name: Path<T>;

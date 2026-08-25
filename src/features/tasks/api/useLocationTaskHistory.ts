@@ -1,8 +1,10 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
-import {apiClient} from '~/apiClient';
-import {TaskAPI} from '../types';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import dayjs from 'dayjs';
+
+import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {TaskAPI} from '../types';
 
 const locationTaskHistoryOptions = (loc_id: number | undefined) =>
   queryOptions({

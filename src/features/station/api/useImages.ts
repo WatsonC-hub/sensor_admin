@@ -1,8 +1,10 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
+
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {Image} from '~/types';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {Image} from '~/types';
 
 export const getImageOptions = (typeId: string | number, type: 'station' | 'borehole') =>
   queryOptions({

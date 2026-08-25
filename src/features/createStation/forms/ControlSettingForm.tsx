@@ -1,29 +1,25 @@
-import {Box, Grid2} from '@mui/material';
+import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
+import {Box, Grid} from '@mui/material';
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
+
+import Button from '~/components/Button';
 import useControlSettingsForm from '~/features/configuration/api/useControlSettingsForm';
 import ControlSettings from '~/features/configuration/components/ControlSettings';
 import CreateControlSettings from '~/features/configuration/components/CreateControlSettings';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {ControlSettingsFormState} from '../types';
-import {useCreateStationStore} from '../state/useCreateStationStore';
-import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
 
-import Button from '~/components/Button';
-import {button_sx} from '../common_style';
+import {button_sx} from '../commonStyle';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+
+import type {ControlSettingsFormState} from '../types';
 
 type EmptyObject = Record<string, never>;
 
 type Props = {
   id: string;
   values: ControlSettingsFormState | EmptyObject | undefined;
-  setValues: (values: ControlSettingsFormState | EmptyObject) => void;
-};
-
-type ValidateControlSettings = {
-  controls_per_year: number | null;
-  lead_time: number | null;
-  selectValue: 1 | 2;
+  setValues: (values: ControlSettingsFormState) => void;
 };
 
 const ControlSettingForm = ({id, values, setValues}: Props) => {
@@ -37,10 +33,7 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
     ]
   );
 
-  const controlSettingsFormMethods = useControlSettingsForm<
-    ValidateControlSettings,
-    ControlSettingsFormState
-  >({
+  const controlSettingsFormMethods = useControlSettingsForm({
     defaultValues: values,
   });
 
@@ -53,7 +46,7 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
   useEffect(() => {
     if (values !== undefined)
       registerSubmitter(id, async () => {
-        let valid: boolean = false;
+        let valid = false;
         await handleSubmit((values) => {
           setValues(values);
           valid = true;
@@ -68,7 +61,7 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
     const currentValues = getValues();
     setValues(currentValues as ControlSettingsFormState);
     registerSubmitter(id, async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         setValues(values);
         valid = true;
@@ -78,14 +71,23 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
   };
 
   return (
-    <Grid2
+    <Grid
       container
       size={12}
-      display="flex"
-      direction={isMobile ? 'column' : 'row'}
-      alignItems="center"
+      sx={{
+        direction: isMobile ? 'column' : 'row',
+        display: 'flex',
+        alignItems: 'center',
+      }}
     >
-      <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} alignItems={'center'} gap={1}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: 'center',
+          gap: 1,
+        }}
+      >
         <FormProvider {...controlSettingsFormMethods}>
           <ControlSettings>
             <CreateControlSettings
@@ -108,11 +110,13 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
             />
           </ControlSettings>
         </FormProvider>
-        <Grid2
+        <Grid
           size={isMobile ? 12 : 3}
-          alignContent={'center'}
-          display="flex"
-          justifyContent={isMobile ? 'end' : 'start'}
+          sx={{
+            alignContent: 'center',
+            display: 'flex',
+            justifyContent: isMobile ? 'end' : 'start',
+          }}
         >
           <Button
             bttype="primary"
@@ -142,9 +146,9 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
           >
             Registrer senere
           </Button>
-        </Grid2>
+        </Grid>
       </Box>
-    </Grid2>
+    </Grid>
   );
 };
 

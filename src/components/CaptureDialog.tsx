@@ -5,11 +5,13 @@ import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import Slide from '@mui/material/Slide';
 import Toolbar from '@mui/material/Toolbar';
-import {IDetectedBarcode, Scanner as QrReader} from '@yudiel/react-qr-scanner';
+import {Scanner as QrReader} from '@yudiel/react-qr-scanner';
 import React, {useEffect, useState} from 'react';
 
-import {TransitionProps} from '@mui/material/transitions';
 import NavBar from './NavBar';
+
+import type {TransitionProps} from '@mui/material/transitions';
+import type {IDetectedBarcode} from '@yudiel/react-qr-scanner';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {children: React.ReactElement<any, any>},
@@ -51,7 +53,7 @@ interface CaptureDialogProps {
 }
 
 export default function CaptureDialog({handleClose, handleScan, open}: CaptureDialogProps) {
-  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [_, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [hasPermission, setHasPermission] = useState(true);
   async function handleScanning(raw_data: IDetectedBarcode[]) {
@@ -113,7 +115,14 @@ export default function CaptureDialog({handleClose, handleScan, open}: CaptureDi
         }}
       >
         {!hasPermission ? (
-          <Typography variant="subtitle2" component="h3" align="center" display="block">
+          <Typography
+            variant="subtitle2"
+            component="h3"
+            align="center"
+            sx={{
+              display: 'block',
+            }}
+          >
             Der skal gives rettigheder til at bruge kameraet. Tjek om du har fået en forespørgsel
             eller ændre indstillinger i din browser.
           </Typography>

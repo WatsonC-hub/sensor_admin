@@ -1,8 +1,12 @@
-import {Box, MenuItem, TextField, TextFieldProps} from '@mui/material';
+import {Box, MenuItem, TextField} from '@mui/material';
 import moment from 'moment';
-import {ChangeEvent, FocusEvent} from 'react';
-import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-form';
+import {Controller, get, useFormContext} from 'react-hook-form';
+
 import TooltipWrapper from './TooltipWrapper';
+
+import type {TextFieldProps} from '@mui/material';
+import type {ChangeEvent, FocusEvent} from 'react';
+import type {FieldValues, Path} from 'react-hook-form';
 export type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
   name: Path<TFieldValues>;
   warning?: (value: any) => string | undefined;
@@ -70,8 +74,7 @@ const FormInput = <TFieldValues extends FieldValues>({
         return (
           <Wrapper
             description={infoText}
-            width={fullWidth ? '100%' : undefined}
-            sx={{position: 'relative'}}
+            sx={{position: 'relative', width: fullWidth ? '100%' : undefined}}
           >
             <TextField
               {...otherProps}
@@ -99,6 +102,7 @@ const FormInput = <TFieldValues extends FieldValues>({
                 if (onKeyDown) onKeyDown(e);
               }}
               slotProps={{
+                ...slotProps,
                 select: {
                   displayEmpty: true,
                   ...slotProps?.select,

@@ -1,10 +1,13 @@
 import {Box} from '@mui/material';
-import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
+
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import {useTable} from '~/hooks/useTable';
-import {AlarmHistory} from '../types';
+
+import type {AlarmHistory} from '../types';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 
 type AlarmHistoryTableProps = {
   alarmHistory: Array<AlarmHistory> | undefined;
@@ -31,9 +34,8 @@ const AlarmHistoryTable = ({alarmHistory}: AlarmHistoryTableProps) => {
         accessorKey: 'alarm',
       },
       {
-        header: 'signal_warning',
-        accessorKey: 'Signalering',
-        Cell: ({cell}) => (cell.getValue() ? 'Ja' : 'Nej'),
+        header: 'Notifikation',
+        accessorKey: 'notification_name',
       },
     ],
     []
@@ -72,7 +74,11 @@ const AlarmHistoryTable = ({alarmHistory}: AlarmHistoryTableProps) => {
   );
 
   return (
-    <Box alignItems={'center'}>
+    <Box
+      sx={{
+        alignItems: 'center',
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

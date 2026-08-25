@@ -1,7 +1,9 @@
-import {Dialog, DialogTitle, DialogContent, DialogActions} from '@mui/material';
+import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
-import StationContactInfo from './StationContactInfo';
+
 import Button from '~/components/Button';
+
+import StationContactInfo from './StationContactInfo';
 
 type Props = {
   openContactInfoDialog: boolean;

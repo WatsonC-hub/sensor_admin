@@ -1,18 +1,20 @@
 import {Update} from '@mui/icons-material';
 import {Box, IconButton, Skeleton, Typography} from '@mui/material';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import {useMemo} from 'react';
 import {toast} from 'react-toastify';
 
 import {limitDecimalNumbers, splitTimeFromDate} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
 import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-import {LatestMeasurement} from '~/types';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {LatestMeasurement} from '~/types';
 
 type LatestMeasurementTableProps = {
   latestMeasurement: LatestMeasurement | undefined;
@@ -139,7 +141,12 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
       </IconButton>
     ),
     renderTopToolbar: (
-      <Typography variant="body1" p={1}>
+      <Typography
+        variant="body1"
+        sx={{
+          p: 1,
+        }}
+      >
         Seneste Måling
       </Typography>
     ),
@@ -165,7 +172,11 @@ const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasure
   );
 
   return (
-    <Box mb={1}>
+    <Box
+      sx={{
+        mb: 1,
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

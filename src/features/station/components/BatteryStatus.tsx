@@ -5,10 +5,11 @@ import React from 'react';
 
 import {apiClient} from '~/apiClient';
 import BatteryIndicator from '~/components/BatteryIndicator';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
-import {BatteryStatusType} from '~/types';
+
+import type {BatteryStatusType} from '~/types';
 
 const estimatedText = (years: number, months: number, days: number): string => {
   const parts: string[] = [];
@@ -66,8 +67,25 @@ const BatteryStatus = () => {
   return (
     <>
       {battery_status && (
-        <Tooltip arrow title={<Box whiteSpace="pre-line">{tooltipText}</Box>} enterTouchDelay={0}>
-          <Box height="24px" onClick={() => {}}>
+        <Tooltip
+          arrow
+          title={
+            <Box
+              sx={{
+                whiteSpace: 'pre-line',
+              }}
+            >
+              {tooltipText}
+            </Box>
+          }
+          enterTouchDelay={0}
+        >
+          <Box
+            onClick={() => {}}
+            sx={{
+              height: '24px',
+            }}
+          >
             <BatteryIndicator
               isPowered={battery_status.is_powered}
               percentage={(battery_status.battery_percentage ?? 0) * 100}

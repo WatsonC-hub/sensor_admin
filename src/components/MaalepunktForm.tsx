@@ -1,12 +1,13 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Card, CardContent, Grid, InputAdornment, TextField, Typography} from '@mui/material';
-import {PickerValue} from '@mui/x-date-pickers/internals';
 import dayjs from 'dayjs';
 import React, {useState} from 'react';
 
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
-import {BoreholeMaalepunkt} from '~/pages/field/boreholeno/Boreholeno';
+
+import type {PickerValue} from '@mui/x-date-pickers/internals';
+import type {BoreholeMaalepunkt} from '~/pages/field/boreholeno/Boreholeno';
 
 interface MaalepunktFormProps {
   formData: BoreholeMaalepunkt;
@@ -66,8 +67,15 @@ export default function MaalepunktForm({
         <Typography gutterBottom variant="h5" component="h2">
           {formData.gid !== -1 ? 'Opdater målepunkt' : 'Indberet målepunkt'}
         </Typography>
-        <Grid container spacing={3} alignItems="center" justifyContent="center">
-          <Grid item xs={12} sm={8}>
+        <Grid
+          container
+          spacing={3}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Grid size={{xs: 12, sm: 8}}>
             <TextField
               type="number"
               variant="outlined"
@@ -76,16 +84,20 @@ export default function MaalepunktForm({
                   Pejlepunkt [m]
                 </Typography>
               }
-              InputProps={{
-                endAdornment: <InputAdornment position="start">m</InputAdornment>,
+              slotProps={{
+                input: {
+                  endAdornment: <InputAdornment position="start">m</InputAdornment>,
+                },
+                inputLabel: {
+                  shrink: true,
+                },
               }}
-              InputLabelProps={{shrink: true}}
               fullWidth
               value={formData.elevation}
               onChange={handleElevationChange}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{xs: 12, sm: 6}}>
             <OwnDatePicker
               label={'Start dato'}
               value={formData.startdate}
@@ -94,7 +106,7 @@ export default function MaalepunktForm({
             />
           </Grid>
           {formData.gid !== -1 && (
-            <Grid item xs={12} sm={6}>
+            <Grid size={{xs: 12, sm: 6}}>
               <OwnDatePicker
                 label={'Slut dato'}
                 value={formData.enddate}
@@ -103,7 +115,7 @@ export default function MaalepunktForm({
               />
             </Grid>
           )}
-          <Grid item xs={12} sm={10}>
+          <Grid size={{xs: 12, sm: 10}}>
             <TextField
               label={
                 <Typography variant="h6" component="h3">
@@ -114,13 +126,21 @@ export default function MaalepunktForm({
               variant="outlined"
               multiline
               rows={4}
-              InputLabelProps={{shrink: true}}
+              slotProps={{
+                inputLabel: {shrink: true},
+              }}
               fullWidth
               onChange={handleCommentChange}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+          <Grid size={{xs: 12, sm: 4}}>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 1,
+                justifyContent: {xs: 'flex-end', sm: 'center'},
+              }}
+            >
               <Button onClick={handleCancel} bttype="tertiary">
                 Annuller
               </Button>

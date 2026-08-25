@@ -1,21 +1,27 @@
-import {Grid2} from '@mui/material';
+import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
+import {Grid} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import dayjs, {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
 import React, {useEffect, useState} from 'react';
+import {z} from 'zod';
+
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {
+import Button from '~/components/Button';
+import {createTypedForm} from '~/components/formComponents/Form';
+import useWatlevmpForm from '~/features/station/api/useWatlevmpForm';
+import MPDescription from '~/features/station/components/stamdata/MPDescription';
+import {watlevmpAddSchema} from '~/features/station/schema';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
+
+import {button_sx} from '../commonStyle';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+
+import type {Dayjs} from 'dayjs';
+import type {
   LastJupiterMPAPI,
   LastJupiterMPData,
 } from '~/pages/field/boreholeno/components/LastJupiterMP';
-import useWatlevmpForm from '~/features/station/api/useWatlevmpForm';
-import {createTypedForm} from '~/components/formComponents/Form';
-import MPDescription from '~/features/station/components/stamdata/MPDescription';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useCreateStationStore} from '../state/useCreateStationStore';
-import Button from '~/components/Button';
-import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
-import {button_sx} from '../common_style';
 
 type EmptyObject = Record<string, never>;
 
@@ -26,19 +32,28 @@ type WatlevmpFormProps = {
   setValues: (values: ValidateWatlevmp | EmptyObject) => void;
 };
 
-type Watlevmp = {
+export type Watlevmp = {
   description: string;
   elevation: number | null;
   startdate?: Dayjs;
 };
 
-type ValidateWatlevmp = {
+export type ValidateWatlevmp = {
   description: string;
   elevation: number;
   startdate?: Dayjs;
 };
 
-const Form = createTypedForm<Watlevmp>();
+const schema = watlevmpAddSchema.extend({
+  elevation: z
+    .number()
+    .nullable()
+    .refine((val) => val !== null && val !== undefined, {
+      message: 'Målepunkt skal være udfyldt',
+    }),
+});
+
+const Form = createTypedForm<z.input<typeof schema>, z.output<typeof schema>>();
 
 const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
   const [location_meta, registerSubmitter, removeSubmitter, deleteState] = useCreateStationStore(
@@ -71,7 +86,8 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
     enabled: !!location_meta?.boreholeno && intakeno !== undefined,
   });
 
-  const watlevmpFormMethods = useWatlevmpForm<Watlevmp, ValidateWatlevmp>({
+  const watlevmpFormMethods = useWatlevmpForm<typeof schema>({
+    schema: schema,
     defaultValues: values,
   });
 
@@ -114,7 +130,7 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
   const onChangeCallback = () => {
     setValues({});
     registerSubmitter(id, async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         if (
           values.description !== watlevmp?.description ||
@@ -186,11 +202,13 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
           />
         )}
       />
-      <Grid2
+      <Grid
         size={isMobile ? 12 : 2.5}
-        alignContent={'center'}
-        display="flex"
-        justifyContent={isMobile ? 'end' : 'start'}
+        sx={{
+          alignContent: 'center',
+          display: 'flex',
+          justifyContent: isMobile ? 'end' : 'start',
+        }}
       >
         <Button
           bttype="primary"
@@ -217,7 +235,7 @@ const WatlevmpForm = ({id, intakeno, values, setValues}: WatlevmpFormProps) => {
         >
           Registrer senere
         </Button>
-      </Grid2>
+      </Grid>
     </Form>
   );
 };

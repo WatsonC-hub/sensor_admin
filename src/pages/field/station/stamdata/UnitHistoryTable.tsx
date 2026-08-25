@@ -1,30 +1,29 @@
+import SaveIcon from '@mui/icons-material/Save';
 import {Box, Typography} from '@mui/material';
-import {
-  MaterialReactTable,
-  MRT_ColumnDef,
-  MRT_ExpandButton,
-  MRT_TableOptions,
-} from 'material-react-table';
+import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {useFormContext} from 'react-hook-form';
+
 import Button from '~/components/Button';
-import usePermissions from '~/features/permissions/api/usePermissions';
-import {UnitHistory, useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
-import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
-import {checkEndDateIsUnset, convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
-import RenderActions from '~/helpers/RowActions';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import {useTable} from '~/hooks/useTable';
-import SaveIcon from '@mui/icons-material/Save';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {renderDetailStyle} from '~/consts';
-import {editUnitSchema} from '~/features/station/schema';
-import {useUnitMutations} from '~/features/stamdata/api/useUnit';
 import DeleteAlert from '~/components/DeleteAlert';
+import {renderDetailStyle} from '~/consts';
+import usePermissions from '~/features/permissions/api/usePermissions';
+import {useUnitMutations} from '~/features/stamdata/api/useUnit';
+import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
+import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
+import {editUnitSchema} from '~/features/station/schema';
+import {checkEndDateIsUnset, convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
+import RenderActions from '~/helpers/RowActions';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useTable} from '~/hooks/useTable';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {UnitHistory} from '~/features/stamdata/api/useUnitHistory';
+import type {EditUnit} from '~/features/station/schema';
 
 interface UnitHistoryTableProps {
-  submit: (data: any) => Promise<void>;
+  submit: (data: EditUnit) => Promise<void>;
   setSelectedUnit: (ugid: number | '') => void;
   ts_id: number;
   loc_id: number;
@@ -36,12 +35,11 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
     handleSubmit,
     reset,
     formState: {isDirty, errors, isSubmitting},
-  } = useFormContext();
+  } = useFormContext<EditUnit>();
   const {
     deleteUnit: {mutate: deleteUnit, isPending: isDeletingUnit},
   } = useUnitMutations(ts_id);
   const {isMobile} = useBreakpoints();
-  const {data: metadata} = useTimeseriesData();
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
   const [deleteAlertOpen, setDeleteAlertOpen] = React.useState(false);
@@ -87,46 +85,79 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
         Cell: ({row, table, staticRowIndex}) => (
           <Box
             style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}
-            gap={0.5}
-            height={26}
+            sx={{
+              gap: 0.5,
+              height: 26,
+            }}
           >
             <MRT_ExpandButton row={row} table={table} staticRowIndex={staticRowIndex} />
-            <Typography alignSelf={'center'} variant="caption" fontWeight="bold" width="2.5rem">
+            <Typography
+              variant="caption"
+              sx={{
+                alignSelf: 'center',
+                fontWeight: 'bold',
+                width: '2.5rem',
+              }}
+            >
               {row.original.calypso_id}
             </Typography>
-            <Box display={'flex'} flexDirection={'row'} gap={1}>
-              <Box display={'flex'} flexDirection={'column'}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 1,
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
                 <Typography
-                  alignSelf={'start'}
                   variant="caption"
-                  color="grey.700"
-                  fontWeight="bold"
+                  sx={{
+                    alignSelf: 'start',
+                    color: 'grey.700',
+                    fontWeight: 'bold',
+                  }}
                 >
                   Fra:
                 </Typography>
                 <Typography
-                  alignSelf={'start'}
                   variant="caption"
-                  color="grey.700"
-                  fontWeight="bold"
+                  sx={{
+                    alignSelf: 'start',
+                    color: 'grey.700',
+                    fontWeight: 'bold',
+                  }}
                 >
                   Til:
                 </Typography>
               </Box>
-              <Box display={'flex'} flexDirection={'column'}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
                 <Typography
-                  alignSelf={'start'}
                   variant="caption"
-                  color="grey.700"
-                  fontWeight="bold"
+                  sx={{
+                    alignSelf: 'start',
+                    color: 'grey.700',
+                    fontWeight: 'bold',
+                  }}
                 >
                   {convertDateWithTimeStamp(row.original.startdato)}
                 </Typography>
                 <Typography
-                  alignSelf={'start'}
                   variant="caption"
-                  color="grey.700"
-                  fontWeight="bold"
+                  sx={{
+                    alignSelf: 'start',
+                    color: 'grey.700',
+                    fontWeight: 'bold',
+                  }}
                 >
                   {checkEndDateIsUnset(row.original.slutdato)
                     ? 'Nu'
@@ -134,7 +165,11 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
                 </Typography>
               </Box>
             </Box>
-            <Box marginLeft={'auto'}>
+            <Box
+              sx={{
+                marginLeft: 'auto',
+              }}
+            >
               <RenderActions
                 handleEdit={() => {
                   setSelectedUnit(row.original.gid);
@@ -164,7 +199,6 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
         <RenderActions
           handleEdit={() => {
             setSelectedUnit(row.original.gid);
-            resetToDefault(row.original);
             table.setEditingRow(row);
           }}
           onDeleteBtnClick={() => {
@@ -182,7 +216,14 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
       return (
         <Box sx={{p: 2}}>
           <UnitForm mode="edit" />
-          <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              justifyContent: 'flex-end',
+              justifySelf: 'end',
+            }}
+          >
             <Button
               bttype="tertiary"
               onClick={() => {
@@ -194,9 +235,7 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
             </Button>
             <Button
               bttype="primary"
-              disabled={
-                !isDirty || !metadata?.unit_uuid || disabled || Object.keys(errors).length > 0
-              }
+              disabled={!isDirty || disabled || Object.keys(errors).length > 0}
               onClick={async () => {
                 await handleSubmit(
                   (data) => {
@@ -221,34 +260,96 @@ const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryT
     },
     renderDetailPanel: ({row}) => {
       return (
-        <Box display={'flex'} flexDirection={'row'} sx={isMobile ? {...renderDetailStyle} : {}}>
-          <Box display={'flex'} flexDirection={'column'} width="150px" gap={0.5}>
-            <Typography variant="body2" fontWeight={'bold'}>
+        <Box
+          sx={[
+            {
+              display: 'flex',
+              flexDirection: 'row',
+            },
+            isMobile ? {...renderDetailStyle} : {},
+          ]}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '150px',
+              gap: 0.5,
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Startdato:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Slutdato:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Calypso ID:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Terminal ID:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Terminal type:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Sensor ID:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Signal ID:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Sensor:
             </Typography>
           </Box>
-          <Box display={'flex'} flexDirection={'column'} width="100%" gap={0.5}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              gap: 0.5,
+            }}
+          >
             <Typography variant="body2">
               {convertDateWithTimeStamp(row.original.startdato)}
             </Typography>

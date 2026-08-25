@@ -1,13 +1,14 @@
 import {Box, Typography} from '@mui/material';
 import React from 'react';
 
-import UnitMeasurementConfig from './UnitMeasurementConfig';
-import YearlyControlsConfig from './YearlyControlsConfig';
-import Synchronization from './Synchronization';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useDMPAllowed from '~/features/station/api/useDmpAllowedMapList';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+
+import Synchronization from './Synchronization';
+import UnitMeasurementConfig from './UnitMeasurementConfig';
 import VisibilityConfig from './VisibilityConfig';
+import YearlyControlsConfig from './YearlyControlsConfig';
 
 type ConfigurationProps = {
   loc_id: number;
@@ -32,7 +33,12 @@ const Configuration = ({loc_id, ts_id}: ConfigurationProps) => {
         <UnitMeasurementConfig />
       </Layout>
       <Layout>
-        <Box width="fit-content" alignItems="center">
+        <Box
+          sx={{
+            width: 'fit-content',
+            alignItems: 'center',
+          }}
+        >
           <TooltipWrapper
             color="info"
             description="Kontrolhyppighed definerer hvor ofte der skal foretages kontrolmålinger. Forvarslingstiden angiver hvor lang tid i forvejen, der skal vises en opgave om at en kontrolmåling skal udføres"

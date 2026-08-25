@@ -1,10 +1,12 @@
-import React from 'react';
-import useSync from '~/features/station/components/stamdata/dmpSynkronisering/api/useSync';
-import {useAppContext} from '~/state/contexts';
 import {Box, Typography} from '@mui/material';
+import React from 'react';
+
+import useSync from '~/features/station/components/stamdata/dmpSynkronisering/api/useSync';
 import JupiterDmpSync from '~/features/synchronization/components/JupiterDmpSync';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
-import {SyncFormSchema} from '~/features/synchronization/api/useSyncForm';
+import {useAppContext} from '~/state/contexts';
+
+import type {SyncFormSchema} from '~/features/synchronization/api/useSyncForm';
 
 const Synchronization = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
@@ -26,8 +28,20 @@ const Synchronization = () => {
   };
 
   return (
-    <Box display={'flex'} flexGrow={1} flexDirection="column" justifyContent={'space-between'}>
-      <Typography variant="h6" marginBottom={1}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexGrow: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          marginBottom: 1,
+        }}
+      >
         Synkronisering
       </Typography>
       {sync_data && (

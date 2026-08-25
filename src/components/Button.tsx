@@ -1,4 +1,4 @@
-import {useTheme, type ButtonProps} from '@mui/material';
+import {type ButtonProps, useTheme} from '@mui/material';
 import MuiButton from '@mui/material/Button';
 import {merge} from 'lodash';
 

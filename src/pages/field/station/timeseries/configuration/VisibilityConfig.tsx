@@ -1,14 +1,17 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {Box, Grid2} from '@mui/material';
+import {Box, Grid} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+
 import {createTypedForm} from '~/components/formComponents/Form';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import {Metadata, metadataQueryOptions} from '~/hooks/query/useMetadata';
+import {metadataQueryOptions} from '~/hooks/query/useMetadata';
 import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
+
+import type {Metadata} from '~/hooks/query/useMetadata';
 
 type VisibilityConfigProps = {
   loc_id: number;
@@ -20,9 +23,12 @@ const schema = z.object({
   hide_public: z.boolean().optional(),
 });
 
-type Form = z.infer<typeof schema>;
+// type Form = z.infer<typeof schema>;
 
-const Form = createTypedForm<Form>();
+type FormInput = z.input<typeof schema>;
+type FormOutput = z.output<typeof schema>;
+
+const Form = createTypedForm<FormInput, FormOutput>();
 
 const metadataSelector = (data: Metadata) => ({
   requires_auth: data.requires_auth,
@@ -32,7 +38,7 @@ const metadataSelector = (data: Metadata) => ({
 const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
   const {location_permissions} = usePermissions(loc_id);
   const {data: timeseries} = useQuery(
-    metadataQueryOptions<Form>(ts_id, {
+    metadataQueryOptions<FormInput>(ts_id, {
       select: metadataSelector,
     })
   );
@@ -41,7 +47,7 @@ const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
     updateTimeseries: {mutateAsync},
   } = useUpdateTimeseries(ts_id);
 
-  const methods = useForm<Form, unknown, Form>({
+  const methods = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
     defaultValues: {
       requires_auth: false,
@@ -68,7 +74,14 @@ const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
           label="Skjul i offentlige visninger"
           disabled={location_permissions !== 'edit'}
         />
-        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+        <Grid
+          size={12}
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 1,
+          }}
+        >
           <UpdateProgressButton
             loc_id={loc_id}
             disabled={isDirty}
@@ -81,7 +94,7 @@ const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
               await mutateAsync(values);
             }}
           />
-        </Grid2>
+        </Grid>
       </Form>
     </Box>
   );

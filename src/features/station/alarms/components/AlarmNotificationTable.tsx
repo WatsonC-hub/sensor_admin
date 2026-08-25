@@ -1,10 +1,14 @@
 import {Box, Typography} from '@mui/material';
-import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
-import {NotificationType, useNotificationTypes} from '~/hooks/query/useNotificationOverview';
+
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
+import {useNotificationTypes} from '~/hooks/query/useNotificationOverview';
 import {useTable} from '~/hooks/useTable';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {NotificationType} from '~/hooks/query/useNotificationOverview';
 
 type AlarmNotificationTableProps = {
   alarm_notifications: Array<number> | undefined;
@@ -25,7 +29,15 @@ const AlarmNotificationTable = ({alarm_notifications}: AlarmNotificationTablePro
         },
         Cell: ({cell, row}) => {
           return (
-            <Box display="flex" alignItems="center" flexDirection="row" color="white" gap={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                flexDirection: 'row',
+                color: 'white',
+                gap: 1,
+              }}
+            >
               <NotificationIcon
                 iconDetails={{
                   notification_id: row.original.gid,
@@ -78,7 +90,12 @@ const AlarmNotificationTable = ({alarm_notifications}: AlarmNotificationTablePro
   );
 
   return (
-    <Box alignItems={'center'} width={'fit-content'}>
+    <Box
+      sx={{
+        alignItems: 'center',
+        width: 'fit-content',
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

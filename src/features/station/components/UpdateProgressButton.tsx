@@ -1,10 +1,13 @@
 import {Check, PriorityHigh} from '@mui/icons-material';
 import {Typography} from '@mui/material';
 import React from 'react';
+
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
-import {ProgressStatus, useStationProgress} from '~/hooks/query/stationProgress';
+import {useStationProgress} from '~/hooks/query/stationProgress';
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {ProgressStatus} from '~/hooks/query/stationProgress';
 
 type Props = {
   progressKey: keyof ProgressStatus;

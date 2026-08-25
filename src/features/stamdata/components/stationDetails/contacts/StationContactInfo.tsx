@@ -1,16 +1,18 @@
 import {Call, Email} from '@mui/icons-material';
-import {Grid, InputAdornment, IconButton, Checkbox, FormControlLabel} from '@mui/material';
+import {Checkbox, FormControlLabel, Grid, IconButton, InputAdornment} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import {isValidPhoneNumber} from 'libphonenumber-js';
 import {useEffect} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
-import {isValidPhoneNumber} from 'libphonenumber-js';
+
 import {apiClient} from '~/apiClient';
 import {FormPhoneInput} from '~/components/formComponents/FormPhoneInput';
 import FormInput from '~/components/FormInput';
-import {ContactInfoType} from '~/helpers/EnumHelper';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {InferContactInfo} from './api/useContactForm';
+import {ContactInfoType} from '~/helpers/enumHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {InferContactInfo} from './api/useContactForm';
 
 interface ModalProps {
   isEditing: boolean;
@@ -19,7 +21,7 @@ interface ModalProps {
   isUser: boolean;
 }
 
-type ContactRole = {
+export type ContactRole = {
   id: number;
   name: string;
   default_type?: 'lokation' | 'projekt';
@@ -57,8 +59,15 @@ export default function StationContactInfo({
   }, [id]);
 
   return (
-    <Grid container spacing={1} my={1} alignItems="center">
-      <Grid item xs={12} sm={6}>
+    <Grid
+      container
+      spacing={1}
+      sx={{
+        my: 1,
+        alignItems: 'center',
+      }}
+    >
+      <Grid size={{xs: 12, sm: 6}}>
         <FormInput
           name="name"
           label="Navn"
@@ -68,7 +77,7 @@ export default function StationContactInfo({
           disabled={(!isEditing && isUser) || (isUser && isEditing)}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormInput
           name="email"
           label="Email"
@@ -93,7 +102,7 @@ export default function StationContactInfo({
           }}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormPhoneInput
           name="mobile"
           control={control}
@@ -121,7 +130,7 @@ export default function StationContactInfo({
           }}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormInput
           name="contact_role"
           label="Rolle"
@@ -151,7 +160,7 @@ export default function StationContactInfo({
           }}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormInput
           name="contact_type"
           label="Tilknyt til"
@@ -163,7 +172,7 @@ export default function StationContactInfo({
           fullWidth
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <Controller
           control={control}
           name="notify_required"
@@ -184,7 +193,7 @@ export default function StationContactInfo({
           )}
         />
       </Grid>
-      <Grid item xs={12} sm={12}>
+      <Grid size={{xs: 12, sm: 12}}>
         <FormInput
           name="comment"
           label="Kommentar"

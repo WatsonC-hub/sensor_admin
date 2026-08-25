@@ -1,9 +1,11 @@
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
+
 import useLocationForm from '~/features/station/api/useLocationForm';
 import OptionalLocationForm from '~/features/station/components/stamdata/stamdataComponents/OptionalLocationForm';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
 import useBreakpoints from '~/hooks/useBreakpoints';
+
 import {useCreateStationStore} from '../state/useCreateStationStore';
 
 const LocationForm = () => {
@@ -28,7 +30,7 @@ const LocationForm = () => {
 
   useEffect(() => {
     registerSubmitter('location.meta', async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         setState('location.meta', values);
         valid = true;
@@ -49,7 +51,7 @@ const LocationForm = () => {
     <FormProvider {...locationFormMethods}>
       <StamdataLocation>
         <LocationForm size={size} loc_id={undefined} />
-        {loctype_id && <OptionalLocationForm size={size} loc_id={undefined} />}
+        {loctype_id !== undefined && <OptionalLocationForm size={size} loc_id={undefined} />}
       </StamdataLocation>
     </FormProvider>
   );

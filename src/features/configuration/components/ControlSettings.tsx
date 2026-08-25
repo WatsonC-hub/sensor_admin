@@ -1,9 +1,13 @@
-import {InputAdornment, Select, Typography, MenuItem} from '@mui/material';
+import {InputAdornment, MenuItem, Select, Typography} from '@mui/material';
 import React, {createContext, useState} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
-import FormInput, {FormInputProps} from '~/components/FormInput';
-import {ControlSettingsFormValues} from '../api/useControlSettingsForm';
-import FormTextField, {FormTextFieldProps} from '~/components/FormTextField';
+
+import FormInput from '~/components/FormInput';
+import FormTextField from '~/components/FormTextField';
+
+import type {ControlSettingsFormValues} from '../api/useControlSettingsForm';
+import type {FormInputProps} from '~/components/FormInput';
+import type {FormTextFieldProps} from '~/components/FormTextField';
 
 type Props = {
   children: React.ReactNode;
@@ -90,7 +94,12 @@ const ControlFrequency = ({
         render={({field: {onChange, onBlur, value}, fieldState: {error}}) => {
           let innerValue = undefined;
           if (value !== undefined && value !== null && value !== '')
-            innerValue = intervalType === 1 ? value : Number((12 / value).toFixed(3));
+            innerValue =
+              intervalType === 1
+                ? Number.isInteger(value)
+                  ? value
+                  : value.toFixed(1)
+                : Number((12 / value).toFixed(1));
 
           const interval = intervalFromFrequencyPerYear(value ?? 0);
           return (
@@ -101,10 +110,11 @@ const ControlFrequency = ({
               onChange={(e) => {
                 const inputValue = e.target.value;
                 let newValue: number | string = '';
+
                 if (intervalType === 1 && inputValue !== '') {
                   newValue = Number(inputValue);
                 } else if (intervalType === 2 && inputValue !== '') {
-                  newValue = Number((12 / Number(inputValue)).toFixed(3));
+                  newValue = 12 / Number(inputValue);
                 }
 
                 onChange(newValue);
@@ -142,7 +152,9 @@ const ControlFrequency = ({
                       <Typography variant="caption">Kontrolmåles hver {interval}</Typography>
                     )
                   ) : (
-                    <Typography variant="caption">Kontrolmåles {value} gange om året</Typography>
+                    <Typography variant="caption">
+                      Kontrolmåles {value.toFixed(1)} gange om året
+                    </Typography>
                   )
                 ) : null
               }
@@ -159,6 +171,8 @@ const ControlFrequency = ({
 export type LeadTimeProps = Omit<FormInputProps<ControlSettingsFormValues>, 'name'>;
 
 const LeadTime = ({onChangeCallback, disabled, ...rest}: LeadTimeProps) => {
+  const {getValues} = useFormContext<ControlSettingsFormValues>();
+  const controls_per_year = getValues('controls_per_year');
   return (
     <FormInput
       {...rest}
@@ -167,6 +181,9 @@ const LeadTime = ({onChangeCallback, disabled, ...rest}: LeadTimeProps) => {
       type="number"
       fullWidth
       disabled={disabled}
+      placeholder={
+        controls_per_year ? `${Math.floor(Math.min(2, (12 / controls_per_year) * 0.25) * 31)}` : ''
+      }
       slotProps={{
         input: {
           disabled: disabled,

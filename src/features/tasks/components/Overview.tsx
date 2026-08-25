@@ -1,34 +1,34 @@
-import {Box} from '@mui/material';
-
-import React, {useCallback} from 'react';
-import WindowManager from '~/components/ui/WindowManager';
 import {DragDropProvider} from '@dnd-kit/react';
-import TaskMap from '~/pages/Map';
-import TaskInfo from './TaskInfo';
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {AppContext} from '~/state/contexts';
-import Station from '~/pages/field/station/Station';
-
-import {BoreholeMapData} from '~/types';
-import SensorContent from '~/pages/field/overview/components/SensorContent';
-import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
-import {metadataQueryOptions} from '~/hooks/query/useMetadata';
+import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {displayStore, useDisplayState} from '~/hooks/ui';
-import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import LocationList from './LocationList';
-import TaskItiniaries from './TaskItiniaries';
-import LocationRouter from '~/features/station/components/LocationRouter';
-import Trip from '~/pages/admin/opgaver/Trip';
-import {useItineraryMutations} from '../api/useItinerary';
 import {useAtomValue} from 'jotai';
-import {fullScreenAtom} from '~/state/atoms';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
-import LocationHighlighter from '~/features/map/components/LocationHighlighter';
-import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
-import OwnTaskList from './OwnTaskList';
+import React, {useCallback} from 'react';
+
+import WindowManager from '~/components/ui/WindowManager';
 import {useUser} from '~/features/auth/useUser';
+import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
+import LocationHighlighter from '~/features/map/components/LocationHighlighter';
+import LocationRouter from '~/features/station/components/LocationRouter';
+import {metadataQueryOptions} from '~/hooks/query/useMetadata';
+import {displayStore, useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
+import Trip from '~/pages/admin/opgaver/Trip';
+import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
+import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
+import SensorContent from '~/pages/field/overview/components/SensorContent';
+import Station from '~/pages/field/station/Station';
+import {fullScreenAtom} from '~/state/atoms';
+import {AppContext} from '~/state/contexts';
+
+import {useItineraryMutations} from '../api/useItinerary';
+import LocationList from './LocationList';
+import OwnTaskList from './OwnTaskList';
+import TaskInfo from './TaskInfo';
+import TaskItiniaries from './TaskItiniaries';
+
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {BoreholeMapData} from '~/types';
 
 const Overview = () => {
   const [, setPageToShow] = useStationPages();
@@ -134,11 +134,13 @@ const Overview = () => {
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      flexGrow={1}
-      alignItems="stretch"
-      position="relative"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        alignItems: 'stretch',
+        position: 'relative',
+      }}
     >
       <Box
         sx={{
@@ -259,7 +261,13 @@ const Overview = () => {
             minSize={2}
             onClose={() => setSelectedTask(null)}
           >
-            <Box key={selectedTask} p={1} overflow="auto">
+            <Box
+              key={selectedTask}
+              sx={{
+                p: 1,
+                overflow: 'auto',
+              }}
+            >
               <TaskInfo />
             </Box>
           </WindowManager.Window>

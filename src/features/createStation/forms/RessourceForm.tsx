@@ -1,15 +1,16 @@
+import {zodResolver} from '@hookform/resolvers/zod';
+import {DoNotDisturb} from '@mui/icons-material';
 import React, {useEffect} from 'react';
+import {Controller, FormProvider, useForm} from 'react-hook-form';
+import {z} from 'zod';
+
+import Button from '~/components/Button';
 import CheckboxesTags from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/Autocomplete';
 import TranserList from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/TransferList';
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import {button_sx} from '../commonStyle';
 import {useCreateStationStore} from '../state/useCreateStationStore';
-import {zodResolver} from '@hookform/resolvers/zod';
-import {z} from 'zod';
-import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
-import {Controller, FormProvider, useForm} from 'react-hook-form';
-import Button from '~/components/Button';
-import {DoNotDisturb} from '@mui/icons-material';
-import {button_sx} from '../common_style';
 
 const ressourceSchema = z.object({
   ressourcer: z
@@ -35,6 +36,9 @@ const ressourceSchema = z.object({
     .transform((r) => r ?? []),
 });
 
+export type RessourceInput = z.input<typeof ressourceSchema>;
+export type RessourceOutput = z.output<typeof ressourceSchema>;
+
 const RessourceForm = () => {
   const {isMobile} = useBreakpoints();
   const id = 'location.ressourcer';
@@ -47,7 +51,7 @@ const RessourceForm = () => {
       state.deleteState,
     ]);
 
-  const formMethods = useForm<{ressourcer: Ressourcer[]}>({
+  const formMethods = useForm({
     resolver: zodResolver(ressourceSchema),
     defaultValues: {
       ressourcer: ressourcer,
@@ -59,7 +63,7 @@ const RessourceForm = () => {
 
   useEffect(() => {
     registerSubmitter(id, async () => {
-      let valid: boolean = false;
+      let valid = false;
       await handleSubmit((values) => {
         setState('location.ressourcer', values.ressourcer);
         valid = true;

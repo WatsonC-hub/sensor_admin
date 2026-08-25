@@ -1,45 +1,50 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { createTypedForm } from '~/components/formComponents/Form';
-import AlarmNotificationForm from './AlarmNotificationForm';
-import { AlarmsFormValues, alarmsSchema } from '../schema';
-import { Box, ButtonGroup, Typography } from '@mui/material';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { AlarmTableType } from '../types';
-import { useAppContext } from '~/state/contexts';
-import { useAlarm } from '../api/useAlarm';
-import { toast } from 'react-toastify';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {ExpandLess, ExpandMore} from '@mui/icons-material';
+import {Box, ButtonGroup, Typography} from '@mui/material';
+import React, {useState} from 'react';
+import {useForm} from 'react-hook-form';
+import {toast} from 'react-toastify';
+
+import Button from '~/components/Button';
+import DeleteAlert from '~/components/DeleteAlert';
+import {createTypedForm} from '~/components/formComponents/Form';
 import FormFieldset from '~/components/formComponents/FormFieldset';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import {useAppContext} from '~/state/contexts';
+
+import {useAlarm} from '../api/useAlarm';
+import {alarmsSchema} from '../schema';
 import AlarmContactForm from './AlarmContactForm';
 import AlarmContactFormDialog from './AlarmContactFormDialog';
 import AlarmGroup from './AlarmGroup';
-import DeleteAlert from '~/components/DeleteAlert';
-import Button from '~/components/Button';
-import TooltipWrapper from '~/components/TooltipWrapper';
+import AlarmNotificationForm from './AlarmNotificationForm';
+
+import type {AlarmFormInput, AlarmFormOutput} from '../schema';
+import type {AlarmTableType} from '../types';
+import type {SubmitHandler} from 'react-hook-form';
 
 type AlarmFormProps = {
   setOpen: (open: boolean) => void;
   alarm?: AlarmTableType;
 };
 
-const Form = createTypedForm<AlarmsFormValues>();
+const Form = createTypedForm<AlarmFormInput, AlarmFormOutput>();
 
-const AlarmForm = ({ setOpen, alarm }: AlarmFormProps) => {
-  const { ts_id } = useAppContext(['ts_id']);
+const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
+  const {ts_id} = useAppContext(['ts_id']);
   const [onGroup, setOnGroup] = useState(alarm?.group_id ? true : false);
 
   const [contactsCollapsed, setContactsCollapsed] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const {
-    post: { mutateAsync: postAlarmAsync },
-    put: { mutateAsync: putAlarmAsync },
+    post: {mutateAsync: postAlarmAsync},
+    put: {mutateAsync: putAlarmAsync},
   } = useAlarm();
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [mode, setMode] = useState<'add' | 'edit' | 'view'>('view');
-  const alarmMethods = useForm<AlarmsFormValues, unknown, AlarmsFormValues>({
+  const alarmMethods = useForm<AlarmFormInput, unknown, AlarmFormOutput>({
     resolver: zodResolver(alarmsSchema),
     defaultValues: {
       name: alarm?.name || '',
@@ -60,7 +65,7 @@ const AlarmForm = ({ setOpen, alarm }: AlarmFormProps) => {
     mode: 'onTouched',
   });
 
-  const { reset, watch, setValue, handleSubmit } = alarmMethods;
+  const {reset, watch, setValue, handleSubmit} = alarmMethods;
 
   const contacts = watch('contacts');
   const watched_group_id = watch('group_id');
@@ -70,7 +75,7 @@ const AlarmForm = ({ setOpen, alarm }: AlarmFormProps) => {
     setDeleteDialogOpen(false);
   };
 
-  const submit = async (data: AlarmsFormValues) => {
+  const submit: SubmitHandler<AlarmFormInput> = async (data) => {
     if (alarm === undefined) {
       const payload = {
         path: `${ts_id}`,
@@ -98,7 +103,7 @@ const AlarmForm = ({ setOpen, alarm }: AlarmFormProps) => {
     }
   };
 
-  const handleSave = async (data: AlarmsFormValues) => {
+  const handleSave: SubmitHandler<AlarmFormInput> = async (data) => {
     if (
       alarm?.group_id !== undefined &&
       alarm?.group_id !== '' &&
@@ -118,17 +123,23 @@ const AlarmForm = ({ setOpen, alarm }: AlarmFormProps) => {
           name="name"
           label="Navn"
           placeholder="f.eks. Kritiske notifikationer"
-          gridSizes={{ xs: 12 }}
+          gridSizes={{xs: 12}}
         />
 
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+          }}
+        >
           <Typography variant="subtitle1">Hvor skal alarmen tilknyttes?</Typography>
           <ButtonGroup>
             <Button
               bttype={onGroup ? 'tertiary' : 'primary'}
               onClick={() => {
                 setOnGroup(false);
-                setValue('group_id', null, { shouldDirty: true });
+                setValue('group_id', null, {shouldDirty: true});
               }}
             >
               Tidsserie
@@ -144,7 +155,7 @@ const AlarmForm = ({ setOpen, alarm }: AlarmFormProps) => {
 
         <FormFieldset
           label={`Kontakter ${contacts && contacts.length > 0 ? `(${contacts.length})` : ''}`}
-          sx={{ width: '100%', px: 1 }}
+          sx={{width: '100%', px: 1}}
           icon={!contactsCollapsed ? <ExpandMore /> : <ExpandLess />}
           onClick={() => setContactsCollapsed(!contactsCollapsed)}
         >
@@ -162,9 +173,15 @@ const AlarmForm = ({ setOpen, alarm }: AlarmFormProps) => {
           multiline
           rows={3}
           placeholder="f.eks. bruger kontaktes hurtigst muligt..."
-          gridSizes={{ xs: 12 }}
+          gridSizes={{xs: 12}}
         />
-        <Box ml={'auto'} display="flex" gap={1}>
+        <Box
+          sx={{
+            ml: 'auto',
+            display: 'flex',
+            gap: 1,
+          }}
+        >
           <Form.Cancel
             cancel={() => {
               setOpen(false);

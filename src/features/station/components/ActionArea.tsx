@@ -9,7 +9,7 @@ import {startCase} from 'lodash';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import {navIconStyle} from '~/consts';
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useStationList from '~/hooks/query/useStationList';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';

@@ -3,8 +3,9 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import MaalepunktTableDesktop from '~/pages/field/boreholeno/components/tableComponents/MaalepunktTableDesktop';
 import MaalepunktTableMobile from '~/pages/field/boreholeno/components/tableComponents/MaalepunktTableMobile';
 import {useAppContext} from '~/state/contexts';
-import {BoreholeMaalepunktTableData} from '~/types';
-import {BoreholeMaalepunkt} from './Boreholeno';
+
+import type {BoreholeMaalepunkt} from './Boreholeno';
+import type {BoreholeMaalepunktTableData} from '~/types';
 
 interface MaalepunktTableProps {
   watlevmp: Array<BoreholeMaalepunktTableData> | undefined;
