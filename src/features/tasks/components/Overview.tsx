@@ -18,6 +18,7 @@ import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
 import Station from '~/pages/field/station/Station';
+import Map from '~/pages/Map';
 import {fullScreenAtom} from '~/state/atoms';
 import {AppContext} from '~/state/contexts';
 
@@ -149,7 +150,7 @@ const Overview = () => {
           backgroundColor: 'primary.main',
         }}
       >
-        <TaskMap key="taskmap" clickCallback={clickCallback} />
+        <Map key="taskmap" clickCallback={clickCallback} />
       </Box>
       <DragDropProvider
         onDragStart={() => {
