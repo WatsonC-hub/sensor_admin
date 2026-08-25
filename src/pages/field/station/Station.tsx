@@ -134,7 +134,7 @@ export default function Station() {
             </Box>
             <Divider />
             <StationPageBoxLayout key={`alarm-${ts_id}`}>
-              <Alarms loc_id={loc_id} ts_id={ts_id} />
+              <Alarms loc_id={loc_id} />
             </StationPageBoxLayout>
           </>
         )}
