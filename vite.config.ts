@@ -163,9 +163,10 @@ export default defineConfig({
   },
   plugins: lazyPlugins(() => [
     react(),
-    svgrPlugin(),
+    svgrPlugin({
+      include: '**/*.svg?react',
+    }),
     VitePWA(pwaOptions),
-
     {
       ...strip({include: /\**\/*.js/, functions: ['console.log', 'assert.*']}),
       // { include: /\**\/*.js/ } // <- this works, but the default of '**/*.js' doesn't
