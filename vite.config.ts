@@ -147,11 +147,11 @@ export default defineConfig({
           'openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes',
         dependsOn: ['check'],
       },
-      build: {
-        command: 'vp build',
-        dependsOn: ['check'],
-        cache: false,
-      },
+      // build: {
+      //   command: 'vp build',
+      //   dependsOn: ['check'],
+      //   cache: false,
+      // },
 
       test: {
         command: 'vp test',
