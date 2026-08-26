@@ -107,7 +107,11 @@ export default function ReleaseNoticeModal() {
 
           <Typography>
             📘{' '}
-            <Link href="https://www.watsonc.dk/guides/udstyre" target="_blank" rel="noopener">
+            <Link
+              href="https://www.watsonc.dk/guides/opsaetning-af-udstyr"
+              target="_blank"
+              rel="noopener"
+            >
               Læs mere om det nye hjemtagning og opsætnings-flow
             </Link>
           </Typography>
