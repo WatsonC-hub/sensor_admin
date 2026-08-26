@@ -16,6 +16,7 @@ import {useUnit} from '~/features/stamdata/api/useUnit';
 import type {FormAutocompleteProps} from '~/components/formComponents/FormAutocomplete';
 import type {FormInputProps} from '~/components/FormInput';
 import type {AddUnitType} from '~/features/createStation/forms/UnitForm';
+import type {Unit} from '~/features/stamdata/api/useUnit';
 
 type StamdataUnitProps = {
   children: React.ReactNode;
@@ -25,11 +26,13 @@ type StamdataUnitProps = {
 type UnitContextType = {
   tstype_id: number | Array<number> | undefined;
   ids: {calypso_id: string}[];
+  availableUnits: Unit[] | undefined;
 };
 
 const UnitContext = React.createContext<UnitContextType>({
   tstype_id: undefined,
   ids: [],
+  availableUnits: undefined,
 });
 
 const StamdataUnit = ({children, tstype_id}: StamdataUnitProps) => {
@@ -67,7 +70,9 @@ const StamdataUnit = ({children, tstype_id}: StamdataUnitProps) => {
     .map((val) => ({
       calypso_id: typeof val == 'number' ? val.toString() : val,
     }));
-  return <UnitContext.Provider value={{tstype_id, ids}}>{children}</UnitContext.Provider>;
+  return (
+    <UnitContext.Provider value={{tstype_id, ids, availableUnits}}>{children}</UnitContext.Provider>
+  );
 };
 
 type BaseInputProps = Omit<FormInputProps<AddUnitType>, 'name'>;
@@ -108,10 +113,7 @@ const CalypsoID = ({textFieldsProps, ...rest}: AutocompleteInputProps) => {
 
 const SensorID = ({required, ...rest}: BaseInputProps) => {
   const {watch, setValue} = useFormContext();
-  const {tstype_id} = React.useContext(UnitContext);
-  const {
-    get: {data: availableUnits},
-  } = useUnit();
+  const {tstype_id, availableUnits} = React.useContext(UnitContext);
 
   const calypso_id = watch('calypso_id');
 
@@ -156,10 +158,7 @@ interface ScannerProps {
 const Scanner = ({onChangeCallback}: ScannerProps) => {
   const [openCaptureDialog, setOpenCaptureDialog] = React.useState(false);
   const {setValue} = useFormContext();
-  const {tstype_id, ids} = React.useContext(UnitContext);
-  const {
-    get: {data: availableUnits},
-  } = useUnit();
+  const {tstype_id, ids, availableUnits} = React.useContext(UnitContext);
 
   return (
     <>
