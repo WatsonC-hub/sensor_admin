@@ -38,9 +38,9 @@ const YearlyControlsConfig = () => {
       selectValue: 1,
     },
     values: {
-      controls_per_year: values.controlsPerYear,
-      lead_time: values.leadTime,
-      dummy: values.controlsPerYear !== null ? Number(values.controlsPerYear.toFixed(3)) : null,
+      controls_per_year: values?.controlsPerYear ?? null,
+      lead_time: values?.leadTime ?? null,
+      dummy: values?.controlsPerYear !== null ? Number(values?.controlsPerYear.toFixed(3)) : null,
       selectValue: 1,
     },
   });

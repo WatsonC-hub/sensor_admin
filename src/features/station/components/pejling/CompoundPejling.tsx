@@ -173,14 +173,14 @@ const SubmitButton = () => {
   const {submit} = React.useContext(CompoundPejlingContext);
   const {
     handleSubmit,
-    formState: {errors, isDirty, isSubmitting},
+    formState: {errors, isSubmitting},
   } = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
   return (
     <Button
       bttype="primary"
       fullWidth={false}
       startIcon={isSubmitting ? undefined : <Save />}
-      disabled={Object.keys(errors).length > 0 || !isDirty}
+      disabled={Object.keys(errors).length > 0}
       loading={isSubmitting}
       onClick={handleSubmit(submit, (errors) => console.log(errors))}
     >

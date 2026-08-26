@@ -97,7 +97,11 @@ const deleteUnitMutation = (ts_id: number) =>
       toast.success('Udstyr er slettet');
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.unitHistory(ts_id), queryKeys.AvailableUnits.all()],
+      invalidates: [
+        queryKeys.Timeseries.unitHistory(ts_id),
+        queryKeys.AvailableUnits.all(),
+        ['metadata'],
+      ],
     },
   });
 
@@ -131,6 +135,7 @@ export const useUnit = () => {
       const {data} = await apiClient.get<Array<Unit>>(`/sensor_field/stamdata/available_units`);
       return data;
     },
+    staleTime: 0,
   });
 
   const post = postUnitMutation();

@@ -199,16 +199,18 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
           </TooltipWrapper>
         </Box>
       </Form>
-      <AlarmContactFormDialog
-        key={currentIndex} // Force remount to reset form when editing different contact
-        open={contactDialogOpen}
-        onClose={() => setContactDialogOpen(false)}
-        mode={mode}
-        setMode={setMode}
-        values={contacts}
-        setValues={setValue}
-        currentIndex={currentIndex}
-      />
+      {contactDialogOpen && (
+        <AlarmContactFormDialog
+          key={currentIndex} // Force remount to reset form when editing different contact
+          open={contactDialogOpen}
+          onClose={() => setContactDialogOpen(false)}
+          mode={mode}
+          setMode={setMode}
+          values={contacts}
+          setValues={setValue}
+          currentIndex={currentIndex}
+        />
+      )}
       <DeleteAlert
         dialogOpen={deleteDialogOpen}
         onCancel={() => {

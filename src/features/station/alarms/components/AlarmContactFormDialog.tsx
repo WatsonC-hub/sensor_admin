@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import React, {useState} from 'react';
-import {useForm} from 'react-hook-form';
+import {useForm, useWatch} from 'react-hook-form';
 
 import {createTypedForm} from '~/components/formComponents/Form';
 import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
@@ -81,9 +81,9 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
   });
 
   const {
-    watch,
     setValue,
     trigger,
+    control,
     formState: {isSubmitted},
   } = alarmContactFormMethods;
 
@@ -107,9 +107,9 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
     setValue('contact_id', '', {shouldDirty: true});
   };
 
-  const smsSelected = watch('sms.selected');
-  const emailSelected = watch('email.selected');
-  const callSelected = watch('call.selected');
+  const smsSelected = useWatch({name: 'sms.selected', control});
+  const emailSelected = useWatch({name: 'email.selected', control});
+  const callSelected = useWatch({name: 'call.selected', control});
 
   const options = [
     ...(data?.filter((item) => item.contact_id !== currentContact?.contact_id) ?? []),

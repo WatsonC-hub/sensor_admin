@@ -26,7 +26,7 @@ type B = z.output<typeof SLASchema>;
 
 const SLAConfiguration = () => {
   const {loc_id} = useAppContext(['loc_id']);
-  const {data: values, isPending} = useLocationSLAConfiguration(loc_id);
+  const {data: values, isLoading} = useLocationSLAConfiguration(loc_id);
   const {mutateAsync} = useLocationSLAConfigurationMutation(loc_id);
   const {isMobile} = useBreakpoints();
   const {location_permissions} = usePermissions(loc_id);
@@ -47,11 +47,11 @@ const SLAConfiguration = () => {
     formState: {isSubmitting, isDirty},
   } = formMethods;
 
-  if (isPending) {
+  if (isLoading) {
     return (
       <Box
         sx={{
-          minWidth: isMobile ? '70vw' : 800,
+          minWidth: isMobile ? '70vw' : 600,
         }}
       >
         <LoadingSkeleton />
