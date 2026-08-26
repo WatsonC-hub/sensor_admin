@@ -59,7 +59,9 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
               onBlur={onBlur}
               required
               slotProps={{
+                ...params.slotProps,
                 inputLabel: {
+                  ...params.slotProps.inputLabel,
                   shrink: true,
                 },
                 input: {
