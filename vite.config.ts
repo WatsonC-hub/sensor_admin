@@ -7,6 +7,7 @@ import {oxfmtOptions} from './oxfmt.config';
 import {lintOptions} from './oxlint.config';
 
 import type {VitePWAOptions} from 'vite-plugin-pwa';
+import type {PluginOption} from 'vite-plus';
 
 const pwaOptions: Partial<VitePWAOptions> = {
   devOptions: {enabled: true, type: 'module'},
@@ -167,14 +168,16 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   plugins: [
-    react(),
-
-    lazyPlugins(() => [
-      svgrPlugin({
-        include: '**/*.svg?react',
-      }),
-      VitePWA(pwaOptions),
-    ]),
+    lazyPlugins(
+      async () =>
+        [
+          react(),
+          svgrPlugin({
+            include: '**/*.svg?react',
+          }),
+          VitePWA(pwaOptions),
+        ] as PluginOption[]
+    ),
   ],
   // define: {global: 'window'},
   build: {
