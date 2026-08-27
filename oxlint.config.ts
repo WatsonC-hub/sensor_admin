@@ -5,10 +5,10 @@ export const lintOptions: OxlintConfig = {
     correctness: 'warn',
   },
   ignorePatterns: ['dist', 'dev-dist'],
-  //   options: {
-  //     typeAware: true,
-  //     typeCheck: true,
-  //   },
+  options: {
+    typeAware: true,
+    typeCheck: true,
+  },
   overrides: [
     {
       env: {
