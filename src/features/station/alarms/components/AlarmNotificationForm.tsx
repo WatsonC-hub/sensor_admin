@@ -162,7 +162,7 @@ const AlarmNotificationForm = () => {
                 }}
                 component={'div'}
                 {...getTagProps({index})}
-                key={index}
+                key={option.gid}
               />
             );
           });

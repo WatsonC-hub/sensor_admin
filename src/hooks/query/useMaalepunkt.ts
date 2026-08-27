@@ -74,10 +74,7 @@ export const getMaalepunktOptions = (ts_id: number | undefined) =>
         `/sensor_field/station/watlevmp/${ts_id}`
       );
 
-      return data.map((mp) => ({
-        ...mp,
-        startdate: dayjs(mp.startdate),
-      }));
+      return data.map((mp) => Object.assign(mp, {startdate: dayjs(mp.startdate)}));
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
     enabled: ts_id !== null && ts_id !== undefined,

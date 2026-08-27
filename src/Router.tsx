@@ -18,6 +18,8 @@ import {AppContext} from './state/contexts';
 import type {SelectionCommand} from './features/commandpalette/components/CommandContext';
 import type {CommandPalette} from './hooks/query/useCmdPalette';
 
+const EMPTY_CONTEXT_VALUE = {};
+
 const Router = () => {
   const user = useUser();
   // early return of no IoT access or borehole access
@@ -124,7 +126,7 @@ const Router = () => {
         <Route
           path="/"
           element={
-            <AppContext.Provider value={{}}>
+            <AppContext.Provider value={EMPTY_CONTEXT_VALUE}>
               <GuardedHome />
             </AppContext.Provider>
           }
@@ -132,7 +134,7 @@ const Router = () => {
         <Route
           path="stamdata"
           element={
-            <AppContext.Provider value={{}}>
+            <AppContext.Provider value={EMPTY_CONTEXT_VALUE}>
               <GuardedCreateStation />
             </AppContext.Provider>
           }

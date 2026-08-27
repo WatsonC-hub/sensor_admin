@@ -1,6 +1,6 @@
 import {InputAdornment, TextField, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
@@ -81,14 +81,15 @@ const StamdataLocation = ({children}: Props) => {
       });
   }, [x, y]);
 
+  const locationContextValue = useMemo(
+    () => ({
+      refetchDTM,
+    }),
+    [refetchDTM]
+  );
+
   return (
-    <LocationContext.Provider
-      value={{
-        refetchDTM,
-      }}
-    >
-      {children}
-    </LocationContext.Provider>
+    <LocationContext.Provider value={locationContextValue}>{children}</LocationContext.Provider>
   );
 };
 

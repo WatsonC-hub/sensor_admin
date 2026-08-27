@@ -346,17 +346,19 @@ const useMap = <TData extends object>(
   const plotRoutesInLayer = () => {
     geoJsonRef.current?.clearLayers();
     if (geoJsonRef.current) {
-      const active_loc_ids = data.map((item) => {
-        if ('loc_id' in item) {
-          return item.loc_id;
-        }
-      });
+      const active_loc_ids = new Set(
+        data.map((item) => {
+          if ('loc_id' in item) {
+            return item.loc_id;
+          }
+        })
+      );
       if (mapRef && mapRef.current && data.length > 0 && zoom > zoomThresholdForParking) {
         if (leafletMapRoutes && leafletMapRoutes.length > 0) {
           const geo = L.geoJSON(leafletMapRoutes, {
             style: routeStyle,
             filter: (feature) => {
-              return active_loc_ids.includes(feature.properties.loc_id);
+              return active_loc_ids.has(feature.properties.loc_id);
             },
             onEachFeature: function onEachFeature(feature, layer) {
               if (feature.properties.comment != null)
@@ -421,13 +423,15 @@ const useMap = <TData extends object>(
       zoom &&
       zoom > zoomThresholdForParking
     ) {
-      const active_loc_ids = data.map((item) => {
-        if ('loc_id' in item) {
-          return item.loc_id;
-        }
-      });
+      const active_loc_ids = new Set(
+        data.map((item) => {
+          if ('loc_id' in item) {
+            return item.loc_id;
+          }
+        })
+      );
       parkings.forEach((parking: Parking) => {
-        if (parking.loc_id !== null && active_loc_ids.includes(parking.loc_id)) {
+        if (parking.loc_id !== null && active_loc_ids.has(parking.loc_id)) {
           const coords = utm.convertUtmToLatLng(parking.x, parking.y, 32, 'N');
           if (typeof coords != 'object') return;
 

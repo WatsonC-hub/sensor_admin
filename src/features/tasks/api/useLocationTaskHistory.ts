@@ -11,10 +11,9 @@ const locationTaskHistoryOptions = (loc_id: number | undefined) =>
     queryKey: queryKeys.Tasks.closedTasks(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get<TaskAPI[]>(`/sensor_admin/tasks/closed/${loc_id}`);
-      return data.map((task) => ({
-        ...task,
-        due_date: task.due_date ? dayjs(task.due_date) : null,
-      }));
+      return data.map((task) =>
+        Object.assign(task, {due_date: task.due_date ? dayjs(task.due_date) : null})
+      );
     },
     enabled: false,
   });

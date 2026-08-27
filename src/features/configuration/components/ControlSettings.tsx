@@ -1,5 +1,5 @@
 import {InputAdornment, MenuItem, Select, Typography} from '@mui/material';
-import React, {createContext, useState} from 'react';
+import React, {createContext, useMemo, useState} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
@@ -21,8 +21,12 @@ type ControlSettingsContextProps = {
 const ControlSettingsContext = createContext<ControlSettingsContextProps | undefined>(undefined);
 
 const ControlSettings = ({children, ts_ids}: Props) => {
+  const contextValue = useMemo(() => ({ts_ids}), [ts_ids]);
+
   return (
-    <ControlSettingsContext.Provider value={{ts_ids}}>{children}</ControlSettingsContext.Provider>
+    <ControlSettingsContext.Provider value={contextValue}>
+      {children}
+    </ControlSettingsContext.Provider>
   );
 };
 

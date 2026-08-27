@@ -27,11 +27,14 @@ export const contactSchema = z.object({
 });
 
 export const contact_info_table = contactSchema.extend({
-  id: z.string(),
-  relation_id: z.number(),
-  org: z.string(),
-  contact_role_name: z.string(),
+  id: z.string().optional(),
+  relation_id: z.number().optional(),
+  org_id: z.string().optional(),
+  contact_role_name: z.string().optional(),
 });
+
+export type ContactInfoInput = z.input<typeof contact_info_table>;
+export type ContactInfoOutput = z.output<typeof contact_info_table>;
 
 export type InferContactInfo = z.infer<typeof contactSchema>;
 export type InferContactTable = z.infer<typeof contact_info_table>;

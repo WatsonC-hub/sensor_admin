@@ -34,7 +34,7 @@ const TripLocationAccess = ({keys}: TripLocationAccessProps) => {
           <>
             {(cell.getValue<string[]>() || []).map((loc, index) => (
               <Link
-                key={index}
+                key={loc}
                 onClick={() => {
                   location(row.original.loc_ids[index]);
                   setPageToShow(stationPages.KONTAKTER);

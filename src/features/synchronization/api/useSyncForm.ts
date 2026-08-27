@@ -18,10 +18,7 @@ const syncSchema = z.object({
     z.literal(false),
     z.literal(null),
   ]),
-  jupiter: z.union([
-    z.boolean({message: 'Vælg venligst om der skal synkroniseres til Jupiter'}),
-    z.literal(null),
-  ]),
+  jupiter: z.boolean({message: 'Vælg venligst om der skal synkroniseres til Jupiter'}).nullish(),
 });
 
 export type SyncFormSchema = z.input<typeof syncSchema>;
@@ -75,7 +72,13 @@ const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
       });
     }
 
-    if (isDmpAllowed && (data.dmp === undefined || data.dmp === null)) {
+    if (
+      isDmpAllowed &&
+      data.dmp !== undefined &&
+      data.dmp !== null &&
+      data.dmp !== false &&
+      data.dmp.owner_cvr === undefined
+    ) {
       ctx.addIssue({
         code: 'custom',
         path: ['dmp'],
@@ -100,9 +103,9 @@ const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
   const owners: Array<{cvr: string; name: string}> = result.data;
 
   // type conditionalType = z.infer<typeof conditionalSchema>;
-  // type conditionalOutputType = z.output<typeof conditionalSchema>;
+  type conditionalOutputType = z.output<typeof conditionalSchema>;
 
-  const syncFormMethods = useForm<SyncFormSchema>({
+  const syncFormMethods = useForm<SyncFormSchema, unknown, conditionalOutputType>({
     resolver: zodResolver(conditionalSchema),
     defaultValues: defaultValues,
     mode: 'onTouched',

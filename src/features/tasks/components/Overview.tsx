@@ -2,7 +2,7 @@ import {DragDropProvider} from '@dnd-kit/react';
 import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useAtomValue} from 'jotai';
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 
 import WindowManager from '~/components/ui/WindowManager';
 import {useUser} from '~/features/auth/useUser';
@@ -81,10 +81,20 @@ const Overview = () => {
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
   const {addLocationToTrip} = useItineraryMutations();
+  const stationContext = useMemo(
+    () => ({loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}),
+    [metadata, ts_id]
+  );
+  const boreholeContext = useMemo(
+    () => ({boreholeno: boreholeno!, intakeno: intakeno!}),
+    [boreholeno, intakeno]
+  );
+  const locationContext = useMemo(() => ({loc_id: loc_id!}), [loc_id]);
 
   const {simpleTaskPermission} = useUser();
   const {isMobile, isTouch} = useBreakpoints();
   const fullScreen = useAtomValue(fullScreenAtom);
+  const locationRouterContext = useMemo(() => ({loc_id: loc_id ?? undefined}), [loc_id]);
 
   const handleDrop = (event: any) => {
     if (event.operation.source === null || event.operation.target === null) return;
@@ -222,7 +232,7 @@ const Overview = () => {
               m: isMobile ? 0.5 : undefined,
             }}
           >
-            <AppContext.Provider value={{loc_id: loc_id!}}>
+            <AppContext.Provider value={locationContext}>
               <SensorContent key={loc_id} />
             </AppContext.Provider>
           </WindowManager.Window>
@@ -237,7 +247,7 @@ const Overview = () => {
               setBoreholeNo(null);
             }}
           >
-            <AppContext.Provider value={{boreholeno: boreholeno!}}>
+            <AppContext.Provider value={boreholeContext}>
               <BoreholeContent key={boreholeno} />
             </AppContext.Provider>
           </WindowManager.Window>
@@ -286,7 +296,7 @@ const Overview = () => {
               borderRadius: isTouch ? 0 : 3,
             }}
           >
-            <AppContext.Provider value={{boreholeno: boreholeno!, intakeno: intakeno!}}>
+            <AppContext.Provider value={boreholeContext}>
               <BoreholeRouter key={`${boreholeno}-${intakeno}`} />
             </AppContext.Provider>
           </WindowManager.Window>
@@ -305,7 +315,7 @@ const Overview = () => {
             }}
             height="100%"
           >
-            <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}}>
+            <AppContext.Provider value={stationContext}>
               <Station key={ts_id} />
             </AppContext.Provider>
           </WindowManager.Window>
@@ -324,7 +334,7 @@ const Overview = () => {
             }}
             height="100%"
           >
-            <AppContext.Provider value={{loc_id: loc_id ?? undefined}}>
+            <AppContext.Provider value={locationRouterContext}>
               <LocationRouter key={`location-${loc_id}`} />
             </AppContext.Provider>
           </WindowManager.Window>

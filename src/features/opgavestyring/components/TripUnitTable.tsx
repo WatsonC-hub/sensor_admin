@@ -37,8 +37,8 @@ const TripUnitTable = ({units}: Props) => {
         accessorKey: 'sensor_names',
         Cell: ({cell}) => (
           <div>
-            {(cell.getValue<string[]>() || []).map((sensor_name, index) => (
-              <div key={index}>
+            {(cell.getValue<string[]>() || []).map((sensor_name) => (
+              <div key={sensor_name}>
                 <Typography
                   sx={{
                     fontSize: '0.85rem',

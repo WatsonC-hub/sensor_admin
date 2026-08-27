@@ -68,7 +68,7 @@ const ContactForm = () => {
     setState('location.contacts', value);
   };
 
-  const removeContact = (contact_id: string) => {
+  const removeContact = (contact_id: string | undefined) => {
     const filteredContacts = (contacts || []).filter((contact) => contact.id !== contact_id);
     if (filteredContacts.length === 0) onValidChange([]);
     else onValidChange(filteredContacts);

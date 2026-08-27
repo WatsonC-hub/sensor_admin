@@ -67,7 +67,7 @@ export type CreateStationFormState = {
 };
 
 export type SimpleContact = {
-  id: string;
+  id?: string;
   name: string;
   email: string | null;
   contact_role?: number | undefined;

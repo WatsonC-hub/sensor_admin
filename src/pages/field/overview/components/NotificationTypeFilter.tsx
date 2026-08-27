@@ -66,7 +66,7 @@ const NotificationTypeFilter = ({setValue, value, onBlur, label = 'Notifikatione
               label={content}
               component={'div'}
               {...getTagProps({index})}
-              key={index}
+              key={option.gid}
             />
           );
         });

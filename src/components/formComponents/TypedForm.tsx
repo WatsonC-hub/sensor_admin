@@ -1,5 +1,5 @@
 import {Grid} from '@mui/material';
-import React from 'react';
+import React, {useMemo} from 'react';
 import {FormProvider} from 'react-hook-form';
 
 import {FormContext} from './const';
@@ -16,6 +16,8 @@ type Props<T extends FieldValues, S extends Record<string, any> = T> = {
   label?: string;
 };
 
+const DEFAULT_GRID_SIZES: GridBaseProps['size'] = {mobile: 12, laptop: 6};
+
 const Wrapper = ({children, wrap}: {children: React.ReactNode; wrap: boolean}) => {
   return wrap ? (
     <Grid container size={12} spacing={1}>
@@ -30,11 +32,13 @@ const TypedForm = <T extends FieldValues, S extends Record<string, any> = T>({
   children,
   formMethods,
   label,
-  gridSizes = {mobile: 12, laptop: 6},
+  gridSizes = DEFAULT_GRID_SIZES,
   useGrid = true,
 }: Props<T, S>) => {
+  const contextValue = useMemo(() => ({gridSizes}), [gridSizes]);
+
   return (
-    <FormContext.Provider value={{gridSizes}}>
+    <FormContext.Provider value={contextValue}>
       <FormProvider {...formMethods}>
         {label ? (
           <FormFieldset label={label} sx={{px: 1}}>

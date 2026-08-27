@@ -97,13 +97,13 @@ const TripTaskTable = ({tasks}: Props) => {
         >
           {row.original.link_name?.map((name, index) => (
             <Link
-              key={index}
+              key={name}
               sx={{cursor: 'pointer'}}
               onClick={() => {
                 station(row.original.ts_ids[index]);
               }}
             >
-              <Typography key={index} variant="body2">
+              <Typography key={name} variant="body2">
                 {name}
               </Typography>
             </Link>

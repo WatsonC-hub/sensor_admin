@@ -73,6 +73,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     {
       selected: (val: SyncFormState['jupiter']) => val === true,
       onChange: () => {
+        if (watchedJupiter === true) return;
         setValue('jupiter', true);
       },
       label: 'Ja',
@@ -80,6 +81,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     {
       selected: (val: SyncFormState['jupiter']) => val === false,
       onChange: () => {
+        if (watchedJupiter === false) return;
         setValue('jupiter', false);
       },
       label: 'Nej',
@@ -87,6 +89,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     {
       selected: (val: SyncFormState['jupiter']) => val === null,
       onChange: () => {
+        if (watchedJupiter === null) return;
         setValue('jupiter', null);
       },
       label: 'Registrer senere',
@@ -97,7 +100,8 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     {
       selected: (val: SyncFormState['dmp']) => val !== null && typeof val === 'object',
       onChange: () => {
-        setValue('dmp', null);
+        if (watchedDmp !== null && typeof watchedDmp === 'object') return;
+        setValue('dmp', Object());
         setDmpActive(true);
       },
       label: 'Ja',
@@ -105,6 +109,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     {
       selected: (val: SyncFormState['dmp']) => val === false,
       onChange: () => {
+        if (watchedDmp === false) return;
         setValue('dmp', false);
         setDmpActive(false);
       },
@@ -113,6 +118,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     {
       selected: (val: SyncFormState['dmp']) => val === null,
       onChange: () => {
+        if (watchedDmp === null) return;
         setValue('dmp', null);
         setDmpActive(false);
       },

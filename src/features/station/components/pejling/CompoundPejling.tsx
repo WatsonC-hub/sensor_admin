@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import {useAtom} from 'jotai';
 import {get} from 'lodash';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
@@ -134,26 +134,42 @@ const CompoundPejling = ({
     else setElevationDiff(Math.abs(dynamicMeas - latestmeas));
   }, [mpData, measurement, timeofmeas, tstype_id]);
 
+  const contextValue = useMemo(
+    () => ({
+      submit,
+      openAddMP,
+      setDynamic,
+      cancel,
+      latestMeasurement,
+      hide,
+      currentMP,
+      isWaterLevel,
+      elevationDiff,
+      notPossible,
+      setNotPossible,
+      isFlow,
+    }),
+    [
+      submit,
+      openAddMP,
+      setDynamic,
+      cancel,
+      latestMeasurement,
+      hide,
+      currentMP,
+      isWaterLevel,
+      elevationDiff,
+      notPossible,
+      setNotPossible,
+      isFlow,
+    ]
+  );
+
   if (isWaterLevel && mpData !== undefined && mpData.length < 1)
     return <CompoundPejling.MPAlert openAddMP={openAddMP} />;
 
   return (
-    <CompoundPejlingContext.Provider
-      value={{
-        submit,
-        openAddMP,
-        setDynamic,
-        cancel,
-        latestMeasurement,
-        hide,
-        currentMP,
-        isWaterLevel,
-        elevationDiff,
-        notPossible,
-        setNotPossible,
-        isFlow,
-      }}
-    >
+    <CompoundPejlingContext.Provider value={contextValue}>
       {children}
     </CompoundPejlingContext.Provider>
   );

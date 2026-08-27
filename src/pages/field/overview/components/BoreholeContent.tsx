@@ -306,7 +306,7 @@ const BoreholeContent = () => {
           return (
             <>
               <Box
-                key={index}
+                key={intake}
                 sx={{
                   display: 'flex',
                   justifyContent: 'space-between',

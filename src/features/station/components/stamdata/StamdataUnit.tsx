@@ -70,9 +70,13 @@ const StamdataUnit = ({children, tstype_id}: StamdataUnitProps) => {
     .map((val) => ({
       calypso_id: typeof val == 'number' ? val.toString() : val,
     }));
-  return (
-    <UnitContext.Provider value={{tstype_id, ids, availableUnits}}>{children}</UnitContext.Provider>
+
+  const contextValue = React.useMemo(
+    () => ({tstype_id, ids, availableUnits}),
+    [availableUnits, ids, tstype_id]
   );
+
+  return <UnitContext.Provider value={contextValue}>{children}</UnitContext.Provider>;
 };
 
 type BaseInputProps = Omit<FormInputProps<AddUnitType>, 'name'>;

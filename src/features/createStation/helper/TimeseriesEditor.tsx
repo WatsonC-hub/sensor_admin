@@ -55,6 +55,7 @@ const TimeseriesEditor = ({index, onRemove, setControlSettings}: Props) => {
           setState(`timeseries.${index}.meta.tstype_id`, tstype_id);
           deleteState(`timeseries.${index}.unit`);
           deleteState(`timeseries.${index}.watlevmp`);
+          setState(`timeseries.${index}.sync`, undefined);
 
           if (tstype_id !== meta_tstype_id) {
             setControlSettings(tstype_id);

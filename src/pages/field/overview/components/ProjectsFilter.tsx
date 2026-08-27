@@ -77,7 +77,7 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
                 label={content}
                 component={'div'}
                 {...getItemProps({index})}
-                key={index}
+                key={option}
               />
             );
           }
@@ -101,7 +101,7 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
               label={content}
               component={'div'}
               {...getItemProps({index})}
-              key={index}
+              key={option.project_no}
             />
           );
         });

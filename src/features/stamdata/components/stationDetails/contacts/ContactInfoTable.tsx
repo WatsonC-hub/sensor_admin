@@ -74,7 +74,7 @@ const ContactInfoTable = ({loc_id}: Props) => {
         email: email,
         contact_role: contactInfo.contact_role,
         comment: contactInfo.comment,
-        org: contactInfo.org,
+        org_id: contactInfo.org_id,
         user_id: contactInfo.user_id ?? null,
         relation_id: contactInfo.relation_id,
         contact_type: contactInfo.contact_type,
@@ -256,11 +256,11 @@ const ContactInfoTable = ({loc_id}: Props) => {
             ...row.original,
             mobile: row.original.mobile ? row.original.mobile : null,
           });
-          setIsUser(!!row.original.org);
+          setIsUser(!!row.original.org_id);
           setOpenContactInfoDialog(true);
         }}
         onDeleteBtnClick={() => {
-          onDeleteBtnClick(row.original.relation_id, setDialogOpen, setContactID);
+          onDeleteBtnClick(row.original.relation_id!, setDialogOpen, setContactID);
         }}
         disabled={!contactsFeature || disabled}
       />

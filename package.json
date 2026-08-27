@@ -5,7 +5,10 @@
   "homepage": "https://watsonc-hub.github.io/",
   "type": "module",
   "scripts": {
-    "build": "tsc -b && vite build"
+    "build": "tsc -b && vite build",
+    "dev": "vp dev",
+    "check-types:watch": "tsc -b --pretty --noEmit --watch",
+    "typecheck": "oxlint --type-check --type-aware"
   },
   "dependencies": {
     "@dnd-kit/helpers": "^0.5.0",

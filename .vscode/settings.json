@@ -1,6 +1,9 @@
 {
   "oxc.enable": true,
   "editor.defaultFormatter": "oxc.oxc-vscode",
+  "oxc.fmt.configPath": "./oxfmt.config.ts",
+  // "oxc.disableNestedConfig": true,
+  "oxc.fmt.disableNestedConfig": true,
   "editor.formatOnSaveMode": "file",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {

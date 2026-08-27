@@ -192,10 +192,10 @@ const TimeseriesList = () => {
           </Typography>
         </>
       )}
-      {data?.map((timeseries, index) => {
+      {data?.map((timeseries) => {
         return (
           <Box
-            key={index}
+            key={timeseries.ts_id}
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
