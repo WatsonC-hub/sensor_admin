@@ -1,3 +1,4 @@
+import {Feedback} from '@dnd-kit/dom';
 import {useDraggable} from '@dnd-kit/react';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
@@ -44,10 +45,10 @@ const SensorContent = () => {
       location?.inactive_new == true &&
       location?.in_service == false);
 
-  const {ref} = useDraggable({
+  const {ref, handleRef} = useDraggable({
     id: 'location' + loc_id,
     data: {loc_id},
-    // feedback: 'clone',
+    plugins: [Feedback.configure({feedback: 'clone'})],
     disabled: !enableDragToTrip,
   });
 
@@ -98,6 +99,7 @@ const SensorContent = () => {
                 <Button
                   bttype="primary"
                   startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
+                  ref={handleRef}
                   disabled={!enableDragToTrip}
                 >
                   {!location?.itinerary_id ? 'Træk til tur' : 'Træk til anden tur'}
