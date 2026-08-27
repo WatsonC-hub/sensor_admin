@@ -7,7 +7,7 @@ import type {SimpleContact} from '../types';
 
 type Props = {
   values: SimpleContact[] | undefined;
-  onRemove: (contact_id: string) => void;
+  onRemove: (contact_id: string | undefined) => void;
 };
 
 const SimpleContactList = ({values, onRemove}: Props) => {
@@ -18,10 +18,10 @@ const SimpleContactList = ({values, onRemove}: Props) => {
         <SimpleTextView key="nocontact" primaryText={'Ingen kontakter tilføjet'} />
       )}
       {Array.isArray(values) &&
-        values.map((contact, index) => {
+        values.map((contact) => {
           return (
             <SimpleTextView
-              key={index}
+              key={contact.email}
               primaryText={contact.name + ' - ' + (contact.contact_role_name?.toLowerCase() ?? '')}
               secondaryText={contact.email}
               onRemove={() => onRemove(contact.id)}

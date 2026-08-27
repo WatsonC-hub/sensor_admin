@@ -10,7 +10,7 @@ const controlSettingsSchema = z.object({
       message: 'Antal kontroller er påkrævet',
     })
     .nullable(),
-  lead_time: z.number().nullable(),
+  lead_time: z.number().nullish(),
   dummy: z.number().nullish().optional(),
   selectValue: z.literal(1).or(z.literal(2)).default(1),
   from_unit: z.boolean().optional(),

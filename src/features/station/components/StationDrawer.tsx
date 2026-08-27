@@ -336,9 +336,9 @@ const StationDrawer = () => {
             {category.settings &&
               category.settings
                 .filter((setting) => setting?.disabled == false || setting?.disabled == undefined)
-                .map((setting, index) => (
+                .map((setting) => (
                   <ListItemIcon
-                    key={index}
+                    key={setting.page}
                     sx={{
                       color: navIconStyle(pageToShow === setting.page),
                       minWidth: 0,

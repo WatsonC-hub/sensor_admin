@@ -14,10 +14,7 @@ export const getImageOptions = (typeId: string | number, type: 'station' | 'bore
       const {data} = await apiClient.get<Image[]>(
         `/sensor_field/${type}/${endpointName}/${typeId}`
       );
-      return data.map((image) => ({
-        ...image,
-        date: dayjs(image.date), // Ensure date is a Date object
-      }));
+      return data.map((image) => Object.assign(image, {date: dayjs(image.date)}));
     },
     enabled: !!typeId,
   });

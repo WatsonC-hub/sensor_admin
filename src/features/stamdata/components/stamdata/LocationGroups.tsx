@@ -94,7 +94,9 @@ const LocationGroups = ({
       renderValue={(value, getTagProps) => {
         return value.map((option, index) => {
           if (typeof option === 'string') {
-            return <Chip variant="outlined" label={option} {...getTagProps({index})} key={index} />;
+            return (
+              <Chip variant="outlined" label={option} {...getTagProps({index})} key={option} />
+            );
           }
 
           const content = (
@@ -121,7 +123,7 @@ const LocationGroups = ({
 
           if (disableLink) {
             return (
-              <Chip variant="outlined" label={content} {...getTagProps({index})} key={index} />
+              <Chip variant="outlined" label={content} {...getTagProps({index})} key={option.id} />
             );
           }
 
@@ -138,7 +140,7 @@ const LocationGroups = ({
                 </Link>
               }
               {...getTagProps({index})}
-              key={index}
+              key={option.id}
             />
           );
         });

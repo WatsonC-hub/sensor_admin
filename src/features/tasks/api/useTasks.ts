@@ -167,11 +167,9 @@ const useTaskMutations = () => {
         queryKeys.Tasks.all(),
         previous?.map((task) => {
           if (task.id === path) {
-            const updated = {
-              ...task,
-              ...data,
+            const updated = Object.assign(task, data, {
               due_date: data?.due_date ? dayjs(data.due_date) : null,
-            };
+            });
             return updated;
           }
 
@@ -188,11 +186,9 @@ const useTaskMutations = () => {
           queryKeys.Tasks.all(),
           previous?.map((task) => {
             if (task.id === path) {
-              const updated = {
-                ...task,
-                ...data,
+              const updated = Object.assign(task, data, {
                 due_date: data?.due_date ? dayjs(data.due_date) : null,
-              };
+              });
               return updated;
             }
 
@@ -243,7 +239,7 @@ const useTaskMutations = () => {
         ['tasks'],
         previous?.map((task) => {
           if (task.id === id) {
-            const updated = {...task, itinerary_id: null};
+            const updated = Object.assign(task, {itinerary_id: null});
 
             return updated;
           }
@@ -271,11 +267,12 @@ const useTasks = () => {
     queryFn: async () => {
       const {data} = await apiClient.get<Array<TaskAPI>>(`/sensor_admin/tasks`);
 
-      return data.map((task) => ({
-        ...task,
-        due_date: task.due_date ? dayjs(task.due_date) : null,
-        sla: task.sla ? dayjs(task.sla) : null,
-      }));
+      return data.map((task) =>
+        Object.assign(task, {
+          due_date: task.due_date ? dayjs(task.due_date) : null,
+          sla: task.sla ? dayjs(task.sla) : null,
+        })
+      );
     },
 
     staleTime: 1000 * 60 * 1, // 1 minute

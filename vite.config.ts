@@ -3,8 +3,8 @@ import {VitePWA} from 'vite-plugin-pwa';
 import svgrPlugin from 'vite-plugin-svgr';
 import {defineConfig, lazyPlugins} from 'vite-plus';
 
-import {oxfmtOptions} from './oxfmt.config';
-import {lintOptions} from './oxlint.config';
+import {oxfmtOptions} from './oxfmt.config.ts';
+import {lintOptions} from './oxlint.config.ts';
 
 import type {VitePWAOptions} from 'vite-plugin-pwa';
 import type {PluginOption} from 'vite-plus';
@@ -132,8 +132,12 @@ export default defineConfig({
   lint: lintOptions,
   run: {
     tasks: {
+      typeCheck: {
+        command: 'vpx oxlint --quiet --type-check --type-aware',
+      },
       check: {
         command: 'vp check --fix',
+        dependsOn: ['typeCheck'],
       },
       serve: {
         command: 'vp preview',
@@ -148,11 +152,11 @@ export default defineConfig({
           'openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes',
         dependsOn: ['check'],
       },
-      // build: {
-      //   command: 'vp build',
-      //   dependsOn: ['check'],
-      //   cache: false,
-      // },
+      devBuild: {
+        command: 'vp build',
+        dependsOn: ['typeCheck', 'check'],
+        cache: false,
+      },
 
       test: {
         command: 'vp test',

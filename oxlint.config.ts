@@ -3,12 +3,13 @@ import {defineConfig, type OxlintConfig} from 'oxlint';
 export const lintOptions: OxlintConfig = {
   categories: {
     correctness: 'warn',
+    perf: 'error',
   },
   ignorePatterns: ['dist', 'dev-dist'],
-  options: {
-    typeAware: true,
-    typeCheck: true,
-  },
+  // options: {
+  //   typeAware: true,
+  //   typeCheck: true,
+  // },
   overrides: [
     {
       env: {

@@ -114,11 +114,12 @@ const Boreholeno = () => {
       const {data} = await apiClient.get<Array<BoreholeMeasurementAPI>>(
         `/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`
       );
-      return data.map((e) => ({
-        ...e,
-        timeofmeas: dayjs(e.timeofmeas),
-        pumpstop: e.pumpstop ? dayjs(e.pumpstop) : null,
-      }));
+      return data.map((e) =>
+        Object.assign(e, {
+          timeofmeas: dayjs(e.timeofmeas),
+          pumpstop: e.pumpstop ? dayjs(e.pumpstop) : null,
+        })
+      );
     },
 
     enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
@@ -139,15 +140,17 @@ const Boreholeno = () => {
 
   useEffect(() => {
     if (watlevmp && watlevmp.length > 0) {
-      const elev: number = watlevmp.filter((e2) => {
+      const elev: number | undefined = watlevmp.find((e2) => {
         return (
           pejlingData.timeofmeas.isSameOrAfter(e2.startdate) &&
           pejlingData.timeofmeas.isSameOrBefore(e2.enddate)
         );
-      })[0]?.elevation;
+      })?.elevation;
 
       const dynamicDate = pejlingData.timeofmeas.format('YYYY-MM-DD HH:mm:ss');
-      const dynamicMeas: number = elev - pejlingData.disttowatertable_m;
+      const dynamicMeas: number = elev
+        ? elev - pejlingData.disttowatertable_m
+        : -pejlingData.disttowatertable_m;
       setDynamic({date: dynamicDate, measurement: dynamicMeas});
     }
   }, [pejlingData, watlevmp]);
@@ -157,15 +160,19 @@ const Boreholeno = () => {
     if (measurements !== undefined) {
       if (watlevmp && watlevmp.length > 0) {
         ctrls = measurements?.map((e) => {
-          const elev = watlevmp.filter((e2) => {
+          const elev = watlevmp.find((e2) => {
             return (
               e.timeofmeas.isSameOrAfter(e2.startdate) && e.timeofmeas.isSameOrBefore(e2.enddate)
             );
-          })[0].elevation;
+          })?.elevation;
 
           return {
             ...e,
-            waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
+            waterlevel: e.disttowatertable_m
+              ? elev
+                ? elev - e.disttowatertable_m
+                : -e.disttowatertable_m
+              : null,
           };
         });
       } else {

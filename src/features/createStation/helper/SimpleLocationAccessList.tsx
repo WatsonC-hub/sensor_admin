@@ -18,11 +18,11 @@ const SimpleLocationAccessList = ({values, onRemove}: Props) => {
         <SimpleTextView key="nokeys" primaryText={'Ingen adgangsnøgler tilføjet'} />
       )}
       {Array.isArray(values) &&
-        values.map((contact, index) => (
+        values.map((location_access, index) => (
           <SimpleTextView
-            key={index}
-            primaryText={contact.name}
-            secondaryText={contact.type}
+            key={location_access.name + location_access.type}
+            primaryText={location_access.name}
+            secondaryText={location_access.type}
             onRemove={() => onRemove(index)}
           />
         ))}

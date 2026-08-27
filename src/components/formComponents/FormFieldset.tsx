@@ -14,7 +14,9 @@ type Props = {
   legendProps?: TypographyProps;
 };
 
-const FormFieldset = ({children, sx = {}, label, icon, onClick, legendProps}: Props) => {
+const EMPTY_SX: SxProps = {};
+
+const FormFieldset = ({children, sx = EMPTY_SX, label, icon, onClick, legendProps}: Props) => {
   const legend_props = {
     position: 'relative',
     backgroundColor: 'background.paper',

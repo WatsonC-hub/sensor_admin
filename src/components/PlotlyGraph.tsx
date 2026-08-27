@@ -46,17 +46,20 @@ interface PlotlyGraphProps {
 }
 
 const Plot = createPlotlyComponent(Plotly);
+const EMPTY_SHAPES: Layout['shapes'] = [];
+const EMPTY_ANNOTATIONS: Layout['annotations'] = [];
+const EMPTY_DATA_TO_SHOW: Partial<DataToShow> = {};
 
 export default function PlotlyGraph({
   plotEventProps,
   initiateSelect,
   layout,
-  shapes = [],
-  annotations = [],
+  shapes = EMPTY_SHAPES,
+  annotations = EMPTY_ANNOTATIONS,
   data,
   xRange,
   setXRange,
-  dataToShow = {},
+  dataToShow = EMPTY_DATA_TO_SHOW,
 }: PlotlyGraphProps) {
   const {ts_id, boreholeno} = useAppContext([], ['ts_id', 'boreholeno']);
   const {data: metadata} = useTimeseriesData();

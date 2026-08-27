@@ -37,7 +37,9 @@ const TimeseriesContext = React.createContext<TimeseriesContextType>({
 });
 
 const StamdataTimeseries = ({children, boreholeno}: Props) => {
-  return <TimeseriesContext.Provider value={{boreholeno}}>{children}</TimeseriesContext.Provider>;
+  const contextValue = React.useMemo(() => ({boreholeno}), [boreholeno]);
+
+  return <TimeseriesContext.Provider value={contextValue}>{children}</TimeseriesContext.Provider>;
 };
 
 type TypeSelectProps = Omit<FormInputProps<DefaultAddTimeseries | BoreholeAddTimeseries>, 'name'>;
@@ -84,7 +86,7 @@ const TimeseriesTypeField = ({tstype_id}: {tstype_id: number | undefined}) => {
     <FormTextField
       disabled
       label="Tidsserie type"
-      value={timeseries_types?.filter((elem) => elem.tstype_id == tstype_id)[0]?.tstype_name ?? ''}
+      value={timeseries_types?.find((elem) => elem.tstype_id == tstype_id)?.tstype_name ?? ''}
     />
   );
 };

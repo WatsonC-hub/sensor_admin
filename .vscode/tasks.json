@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Vite Dev",
+      "type": "npm",
+      "script": "dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "TypeScript Watch",
+      "type": "npm",
+      "script": "check-types:watch",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev",
+      "dependsOn": ["Vite Dev", "TypeScript Watch"],
+      "dependsOrder": "parallel"
+    }
+  ]
+}

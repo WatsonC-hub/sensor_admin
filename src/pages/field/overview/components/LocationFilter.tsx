@@ -109,7 +109,7 @@ const LocationFilter = ({value, setValue, isParentClosed, onBlur, label, disable
               label={content}
               component={'div'}
               {...getTagProps({index})}
-              key={index}
+              key={option.name}
             />
           );
         });

@@ -136,10 +136,10 @@ const ControlSettingForm = ({id, values, setValues}: Props) => {
                 onChangeCallback();
               } else {
                 deleteState(id as `timeseries.${string}.control_settings`);
-                reset({
-                  controls_per_year: null,
-                  lead_time: null,
-                });
+                // reset({
+                //   controls_per_year: null,
+                //   lead_time: null,
+                // });
                 removeSubmitter(id);
               }
             }}

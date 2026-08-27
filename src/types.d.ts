@@ -237,15 +237,15 @@ export type ContactInfo = {
 };
 
 export type ContactTable = {
-  id: string;
+  id?: string;
   name: string;
   mobile: string | null;
   email: string | null;
   contact_role?: number | undefined;
   comment?: string;
   user_id?: string | null;
-  org: string;
-  relation_id: number;
+  org_id?: string;
+  relation_id?: number;
   contact_type?: string | undefined;
   contact_role_name?: string;
   notify_required?: boolean;

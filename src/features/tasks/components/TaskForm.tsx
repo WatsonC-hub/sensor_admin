@@ -2,7 +2,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Box, FormControlLabel, Switch, Typography} from '@mui/material';
 import {merge} from 'lodash';
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {Controller, FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
@@ -59,6 +59,10 @@ type Props = {
   schema?: z.ZodObject<any, any>;
 };
 
+const defaultOnError = (error: any) => {
+  void error;
+};
+
 const TaskFormContext = React.createContext(
   {} as {
     onSubmit: (data: FormValues) => Promise<void> | void;
@@ -69,7 +73,7 @@ const TaskFormContext = React.createContext(
 
 const TaskForm = ({
   onSubmit,
-  onError = (error) => console.log(error),
+  onError = defaultOnError,
   children,
   defaultValues,
   disabled,
@@ -84,12 +88,19 @@ const TaskForm = ({
     reset(defaultValues);
   }, [JSON.stringify(defaultValues), reset]);
 
-  const innerSubmit = async (data: FormValues) => {
-    await onSubmit(data);
-  };
+  const innerSubmit = useCallback(
+    async (data: FormValues) => {
+      await onSubmit(data);
+    },
+    [onSubmit]
+  );
+  const contextValue = useMemo(
+    () => ({onSubmit: innerSubmit, onError, disabled}),
+    [innerSubmit, onError, disabled]
+  );
 
   return (
-    <TaskFormContext.Provider value={{onSubmit: innerSubmit, onError, disabled}}>
+    <TaskFormContext.Provider value={contextValue}>
       <FormProvider {...formMethods}>{children}</FormProvider>
     </TaskFormContext.Provider>
   );
