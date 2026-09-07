@@ -2,7 +2,16 @@ import {useDroppable} from '@dnd-kit/react';
 import {Edit, ExpandLess, ExpandMore, Person} from '@mui/icons-material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import {Box, Card, IconButton, Link, Typography} from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
+import {useTaskState} from '~/features/tasks/api/useTaskState';
+
+import {useItineraries, useItineraryMutations} from '../api/useItinerary';
+
+import {useTaskUsers} from '../api/useTasks';
+import {Taskitinerary} from '../types';
+import {convertDate} from '~/helpers/dateConverter';
+import {displayStore, useDisplayState} from '~/hooks/ui';
 import {DatePicker} from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import {useAtom} from 'jotai';
@@ -85,6 +94,16 @@ function Droppable({id, children, color}: {id: string; children: ReactNode; colo
 const filterMapOverview = (data: MapOverview[]) =>
   data.filter((location) => location.itinerary_id !== null);
 
+let lastScrollTop = 0;
+
+let wasTripListOpen = displayStore.getState().trip_list;
+displayStore.subscribe((state) => {
+  if (wasTripListOpen && !state.trip_list) {
+    lastScrollTop = 0;
+  }
+  wasTripListOpen = state.trip_list;
+});
+
 const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -111,6 +130,14 @@ const TaskItiniaries = () => {
   const {tasks} = useTaskState();
   const {patch: updateItinerary} = useItineraryMutations();
 
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = lastScrollTop;
+    }
+  }, []);
+
   return (
     <Box
       sx={{
@@ -123,7 +150,13 @@ const TaskItiniaries = () => {
       <Typography variant="h6" sx={{padding: 1}}>
         Ture
       </Typography>
-      <Box sx={{overflowY: 'auto', overflowX: 'hidden'}}>
+      <Box
+        ref={scrollContainerRef}
+        onScroll={(e) => {
+          lastScrollTop = e.currentTarget.scrollTop;
+        }}
+        sx={{overflowY: 'auto', overflowX: 'hidden'}}
+      >
         <Box
           sx={{
             px: 1,
