@@ -2,20 +2,11 @@ import {useDroppable} from '@dnd-kit/react';
 import {Edit, ExpandLess, ExpandMore, Person} from '@mui/icons-material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-
-import {useTaskState} from '~/features/tasks/api/useTaskState';
-
-import {useItineraries, useItineraryMutations} from '../api/useItinerary';
-
-import {useTaskUsers} from '../api/useTasks';
-import {Taskitinerary} from '../types';
-import {convertDate} from '~/helpers/dateConverter';
-import {displayStore, useDisplayState} from '~/hooks/ui';
+import {Box, Card, IconButton, Link, Typography} from '@mui/material';
 import {DatePicker} from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import {useAtom} from 'jotai';
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 
 import Button from '~/components/Button';
 import TooltipWrapper from '~/components/TooltipWrapper';
@@ -23,12 +14,11 @@ import {useUser} from '~/features/auth/useUser';
 import {FlagEnum, ItineraryColors, sensorColors} from '~/features/notifications/consts';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {convertDate} from '~/helpers/dateConverter';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {displayStore, useDisplayState} from '~/hooks/ui';
+import {highlightedItinerariesAtom} from '~/state/atoms';
 
 import 'dayjs/locale/da';
-
-import {useMapOverview} from '~/hooks/query/useNotificationOverview';
-import {useDisplayState} from '~/hooks/ui';
-import {highlightedItinerariesAtom} from '~/state/atoms';
 
 import {useItineraries, useItineraryMutations} from '../api/useItinerary';
 import {useTaskUsers} from '../api/useTasks';
@@ -302,9 +292,9 @@ const TaskItiniaries = () => {
                                       sx={{
                                         cursor: 'pointer',
                                         textDecorationColor: 'rgba(255, 255, 255, 0.5)',
+                                        // textDecoration: 'underline',
                                       }}
                                       onClick={() => setItineraryId(itinerary.id)}
-                                      underline="always"
                                       color="inherit"
                                     >
                                       {itinerary.name}
