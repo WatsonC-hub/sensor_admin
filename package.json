@@ -103,12 +103,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devEngines": {
-    "packageManager": {
-      "name": "npm",
-      "version": "12.0.2",
-      "onFail": "download"
-    }
   }
 }
