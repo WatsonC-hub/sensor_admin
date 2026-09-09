@@ -8,16 +8,18 @@ import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
 import type {DefaultValues} from 'react-hook-form';
 
 const syncSchema = z.object({
-  dmp: z.union([
-    z.object({
-      owner_cvr: z.number({
-        message: 'Data ejer skal vælges',
+  dmp: z
+    .union([
+      z.object({
+        owner_cvr: z.number({
+          message: 'Data ejer skal vælges',
+        }),
+        owner_name: z.union([z.string(), z.literal('')]),
       }),
-      owner_name: z.union([z.string(), z.literal('')]),
-    }),
-    z.literal(false),
-    z.literal(null),
-  ]),
+      z.literal(false),
+      z.literal(null),
+    ])
+    .optional(),
   jupiter: z.boolean({message: 'Vælg venligst om der skal synkroniseres til Jupiter'}).nullish(),
 });
 
@@ -64,14 +66,6 @@ const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
   });
 
   const conditionalSchema = syncSchema.superRefine((data, ctx) => {
-    if (canSyncJupiter && (data.jupiter === undefined || data.jupiter === null)) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['jupiter'],
-        message: 'Vælg venligst om der skal synkroniseres til Jupiter',
-      });
-    }
-
     if (
       isDmpAllowed &&
       data.dmp !== undefined &&
@@ -86,25 +80,9 @@ const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
       });
     }
   });
-  // if (!canSyncJupiter) {
-  //   conditionalSchema = syncSchema.extend({
-  //     ...syncSchema.shape,
-  //     jupiter: syncSchema.shape.jupiter.optional(),
-  //   });
-  // }
-
-  // if (!isDmpAllowed) {
-  //   conditionalSchema = conditionalSchema.extend({
-  //     ...syncSchema.shape,
-  //     dmp: syncSchema.shape.dmp.optional(),
-  //   });
-  // }
 
   const owners: Array<{cvr: string; name: string}> = result.data;
-
-  // type conditionalType = z.infer<typeof conditionalSchema>;
   type conditionalOutputType = z.output<typeof conditionalSchema>;
-
   const syncFormMethods = useForm<SyncFormSchema, unknown, conditionalOutputType>({
     resolver: zodResolver(conditionalSchema),
     defaultValues: defaultValues,
