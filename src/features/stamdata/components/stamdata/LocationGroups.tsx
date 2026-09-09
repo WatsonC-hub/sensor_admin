@@ -56,7 +56,6 @@ const LocationGroups = ({
         marginBottom: '4px',
         pb: 1,
       }}
-      freeSolo
       forcePopupIcon={false}
       multiple
       fullWidth
