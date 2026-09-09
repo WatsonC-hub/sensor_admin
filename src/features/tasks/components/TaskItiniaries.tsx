@@ -85,6 +85,16 @@ function Droppable({id, children, color}: {id: string; children: ReactNode; colo
 const filterMapOverview = (data: MapOverview[]) =>
   data.filter((location) => location.itinerary_id !== null);
 
+let lastScrollTop = 0;
+
+let wasTripListOpen = displayStore.getState().trip_list;
+displayStore.subscribe((state) => {
+  if (wasTripListOpen && !state.trip_list) {
+    lastScrollTop = 0;
+  }
+  wasTripListOpen = state.trip_list;
+});
+
 const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -111,6 +121,14 @@ const TaskItiniaries = () => {
   const {tasks} = useTaskState();
   const {patch: updateItinerary} = useItineraryMutations();
 
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = lastScrollTop;
+    }
+  }, []);
+
   return (
     <Box
       sx={{
@@ -123,7 +141,13 @@ const TaskItiniaries = () => {
       <Typography variant="h6" sx={{padding: 1}}>
         Ture
       </Typography>
-      <Box sx={{overflowY: 'auto', overflowX: 'hidden'}}>
+      <Box
+        ref={scrollContainerRef}
+        onScroll={(e) => {
+          lastScrollTop = e.currentTarget.scrollTop;
+        }}
+        sx={{overflowY: 'auto', overflowX: 'hidden'}}
+      >
         <Box
           sx={{
             px: 1,
