@@ -9,6 +9,8 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {Box} from '@mui/material';
 import Overview from '~/features/tasks/components/Overview';
 import {MapFilterContextProvider} from '~/features/map/MapFilterProvider';
+import { queryKeys } from '~/helpers/QueryKeyFactoryHelper';
+import { queryClient } from '~/queryClient';
 
 const Home = () => {
   const {isMobile} = useBreakpoints();
@@ -45,6 +47,7 @@ const Home = () => {
                       icon: <AddLocationAlt fontSize="medium" />,
                       onClick: () => {
                         createStamdata();
+                        queryClient.invalidateQueries({queryKey: queryKeys.Groups.all()});
                       },
                     },
                   ]
