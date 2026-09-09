@@ -6,7 +6,7 @@ import {Box, Card, IconButton, Link, Typography} from '@mui/material';
 import {DatePicker} from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import {useAtom} from 'jotai';
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 
 import Button from '~/components/Button';
 import TooltipWrapper from '~/components/TooltipWrapper';
@@ -18,7 +18,7 @@ import {convertDate} from '~/helpers/dateConverter';
 import 'dayjs/locale/da';
 
 import {useMapOverview} from '~/hooks/query/useNotificationOverview';
-import {useDisplayState} from '~/hooks/ui';
+import {displayStore, useDisplayState} from '~/hooks/ui';
 import {highlightedItinerariesAtom} from '~/state/atoms';
 
 import {useItineraries, useItineraryMutations} from '../api/useItinerary';
