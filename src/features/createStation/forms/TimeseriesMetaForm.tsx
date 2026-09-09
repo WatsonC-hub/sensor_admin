@@ -1,9 +1,12 @@
 import {Grid} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
 
+import {apiClient} from '~/apiClient';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 import {useCreateStationStore} from '../state/useCreateStationStore';
@@ -41,11 +44,24 @@ const TimeseriesMetaForm = ({uuid, setValues, setTstype, setIntakeno}: Timeserie
     mode: 'Add',
   });
 
+  const {data: intake_list} = useQuery({
+    queryKey: queryKeys.Borehole.intakeList(locationMeta?.boreholeno),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<{intakeno: number}>>(
+        `/sensor_field/intake_list/${locationMeta?.boreholeno}`
+      );
+      return data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled: locationMeta?.boreholeno !== undefined && locationMeta?.boreholeno !== null,
+  });
+
   const {
     handleSubmit,
     watch,
     setError,
     clearErrors,
+    setValue,
     formState: {errors},
   } = timeseriesFormMethods;
 
@@ -72,6 +88,10 @@ const TimeseriesMetaForm = ({uuid, setValues, setTstype, setIntakeno}: Timeserie
       setIntakeno(intakeno);
     }
   }, [intakeno]);
+
+  useEffect(() => {
+    if (intake_list && intake_list.length === 1) setValue('intakeno', intake_list[0].intakeno);
+  }, [intake_list, setValue]);
 
   useEffect(() => {
     registerSubmitter(id, async () => {
