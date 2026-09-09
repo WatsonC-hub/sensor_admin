@@ -25,6 +25,7 @@ import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.min.css';
 
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -83,6 +84,7 @@ const Map = ({clickCallback}: MapProps) => {
                 y: parseFloat(coords.Northing.toFixed(2)),
               },
             });
+            queryClient.invalidateQueries({queryKey: queryKeys.Groups.all()});
           }
         },
         icon: '/leaflet-images/marker.png',
