@@ -43,6 +43,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
             marginBottom: '4px',
             pb: 1.5,
           }}
+          autoHighlight
           forcePopupIcon={false}
           value={selectedValue}
           onChange={(event, newValue) => {
