@@ -171,6 +171,8 @@ export const initiateSelectAtom = atom<boolean>(false);
 export const initiateConfirmTimeseriesAtom = atom<boolean>(false);
 export const levelCorrectionAtom = atom<boolean>(false);
 export const boreholeIsPumpAtom = atom<boolean>(false);
+export const pejlingPickCorrectionDateModeAtom = atom<boolean>(false);
+export const pejlingCorrectionDateSelectionAtom = atom<PlotDatum[] | undefined>(undefined);
 export const tempHorizontalAtom = atom<
   Array<Omit<HorizontalLine, 'unit' | 'parameter' | 'tstype_id'>> | undefined
 >([]);

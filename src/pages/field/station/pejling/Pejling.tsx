@@ -51,6 +51,11 @@ const Pejling = () => {
   const [formMethods, PejlingForm, Table, getInitialData, schema] = usePejlingForm({
     loctype_id: timeseries_data?.loctype_id,
     tstype_id: timeseries_data?.tstype_id,
+    correction_type: timeseries_data?.correction_type,
+    calculate_function: timeseries_data?.calculate_function,
+    calculated: timeseries_data?.calculated,
+    measurements,
+    gid,
   });
   const {reset} = formMethods;
 
