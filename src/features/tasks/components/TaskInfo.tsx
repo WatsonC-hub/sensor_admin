@@ -66,7 +66,10 @@ const TaskInfo = () => {
           <TaskInfoForm selectedTask={task} />
         </TaskForm>
       </Grid>
-      <Grid size={{xs: 12, lg: 6}} sx={{display: 'flex', flexDirection: 'column', overflow: 'hidden'}}>
+      <Grid
+        size={{xs: 12, lg: 6}}
+        sx={{display: 'flex', flexDirection: 'column', overflow: 'hidden'}}
+      >
         <TaskInfoCommentForm selectedTaskId={task.id} />
       </Grid>
     </Grid>

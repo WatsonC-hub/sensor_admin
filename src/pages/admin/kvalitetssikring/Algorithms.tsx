@@ -1,14 +1,14 @@
 import {Box, Divider, Grid, Typography} from '@mui/material';
+import dayjs from 'dayjs';
 import React, {useEffect} from 'react';
 
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
+import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import GraphManager from '~/features/station/components/GraphManager';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
-import { useUnitHistory } from '~/features/stamdata/api/useUnitHistory';
-import dayjs from 'dayjs';
 
 const Algorithms = () => {
   const {isMobile} = useBreakpoints();
@@ -22,7 +22,10 @@ const Algorithms = () => {
   const {data: unit_history} = useUnitHistory();
 
   const filtered_data = data?.filter((algorithm) => {
-    if (algorithm.algorithm === 'SendMeasureIntervalThreshold' && dayjs(unit_history?.[0].slutdato) < dayjs()) {
+    if (
+      algorithm.algorithm === 'SendMeasureIntervalThreshold' &&
+      dayjs(unit_history?.[0].slutdato) < dayjs()
+    ) {
       return false;
     }
     return true;
@@ -92,7 +95,10 @@ const Algorithms = () => {
           }}
         >
           {filtered_data?.map((algorithm) => (
-            <Grid key={algorithm.name} size={mobileRatio || filtered_data.length === 1 ? 12 : columns}>
+            <Grid
+              key={algorithm.name}
+              size={mobileRatio || filtered_data.length === 1 ? 12 : columns}
+            >
               <AlgorithmCard qaAlgorithm={algorithm} />
             </Grid>
           ))}

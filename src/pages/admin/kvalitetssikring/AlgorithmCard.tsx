@@ -9,7 +9,6 @@ import {
   FormControlLabel,
   Typography,
 } from '@mui/material';
-import dayjs from 'dayjs';
 import React, {useEffect, useMemo, useState} from 'react';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
@@ -19,7 +18,6 @@ import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import GenericCard from '~/components/GenericCard';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
-import { useUnitHistory } from '~/features/stamdata/api/useUnitHistory';
 import {useRunQA} from '~/hooks/useRunQA';
 import {useAppContext} from '~/state/contexts';
 
