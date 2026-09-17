@@ -82,12 +82,12 @@ const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
           <Box key={task.id}>
             {simpleTaskPermission === true ? (
               isSimpleTask(task) ? (
-                <TaskListItemSimpleCard task={task} />
+                <TaskListItemSimpleCard key={task.id} task={task} />
               ) : (
-                <TaskListItemAdvancedCard task={task} />
+                <TaskListItemAdvancedCard key={task.id} task={task} />
               )
             ) : (
-              <TaskListItemNoneCard task={task} />
+              <TaskListItemNoneCard key={task.id} task={task} />
             )}
           </Box>
         );

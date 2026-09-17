@@ -1,14 +1,17 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {Box} from '@mui/material';
+import {Box, Grid2} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {createTypedForm} from '~/components/formComponents/Form';
-import {metadataQueryOptions} from '~/hooks/query/useMetadata';
+import usePermissions from '~/features/permissions/api/usePermissions';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {Metadata, metadataQueryOptions} from '~/hooks/query/useMetadata';
 import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
 
 type VisibilityConfigProps = {
+  loc_id: number;
   ts_id: number;
 };
 
@@ -21,17 +24,22 @@ type Form = z.infer<typeof schema>;
 
 const Form = createTypedForm<Form>();
 
-const VisibilityConfig = ({ts_id}: VisibilityConfigProps) => {
+const metadataSelector = (data: Metadata) => ({
+  requires_auth: data.requires_auth,
+  hide_public: data.hide_public,
+});
+
+const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
+  const {location_permissions} = usePermissions(loc_id);
   const {data: timeseries} = useQuery(
     metadataQueryOptions<Form>(ts_id, {
-      select: (data) => ({
-        requires_auth: data.requires_auth,
-        hide_public: data.hide_public,
-      }),
+      select: metadataSelector,
     })
   );
 
-  const {updateTimeseries} = useUpdateTimeseries(ts_id);
+  const {
+    updateTimeseries: {mutateAsync},
+  } = useUpdateTimeseries(ts_id);
 
   const methods = useForm<Form>({
     resolver: zodResolver(schema),
@@ -42,27 +50,38 @@ const VisibilityConfig = ({ts_id}: VisibilityConfigProps) => {
     values: timeseries,
   });
 
-  const {reset} = methods;
+  const {
+    reset,
+    formState: {isDirty},
+  } = methods;
 
   return (
     <Box>
-      <Form useGrid={false} formMethods={methods}>
-        <Form.Checkbox name="requires_auth" label="Data tilgængelighed kræver login" />
-        <Form.Checkbox name="hide_public" label="Skjul i offentlige visninger" />
-        <Box display="flex" justifyContent="flex-end" gap={1}>
-          <Form.Cancel
-            cancel={() => {
-              reset();
-            }}
+      <Form gridSizes={12} formMethods={methods}>
+        <Form.Checkbox
+          name="requires_auth"
+          label="Data tilgængelighed kræver login"
+          disabled={location_permissions !== 'edit'}
+        />
+        <Form.Checkbox
+          name="hide_public"
+          label="Skjul i offentlige visninger"
+          disabled={location_permissions !== 'edit'}
+        />
+        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+          <UpdateProgressButton
+            loc_id={loc_id}
+            disabled={isDirty}
+            ts_id={ts_id}
+            progressKey="visibility"
           />
+          <Form.Cancel disabled={!isDirty} cancel={() => reset()} />
           <Form.Submit
             submit={async (values) => {
-              updateTimeseries.mutate(values);
+              await mutateAsync(values);
             }}
-          >
-            Gem
-          </Form.Submit>
-        </Box>
+          />
+        </Grid2>
       </Form>
     </Box>
   );

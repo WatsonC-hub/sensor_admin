@@ -21,7 +21,7 @@ import LocationList from './LocationList';
 import TaskItiniaries from './TaskItiniaries';
 import LocationRouter from '~/features/station/components/LocationRouter';
 import Trip from '~/pages/admin/opgaver/Trip';
-import useTaskItinerary from '../api/useTaskItinerary';
+import {useItineraryMutations} from '../api/useItinerary';
 import {useAtomValue} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
@@ -79,7 +79,7 @@ const Overview = () => {
 
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
-  const {addLocationToTrip} = useTaskItinerary();
+  const {addLocationToTrip} = useItineraryMutations();
 
   const {simpleTaskPermission} = useUser();
   const {isMobile, isTouch} = useBreakpoints();
@@ -256,10 +256,21 @@ const Overview = () => {
             priority={6}
             mobilePriority={9}
             show={selectedTask !== null}
-            minSize={2}
+            minSize={1}
             onClose={() => setSelectedTask(null)}
+            maxSize={2}
+            height="100%"
           >
-            <Box key={selectedTask} p={1} overflow="auto">
+            <Box
+              key={selectedTask}
+              p={1}
+              display="flex"
+              flexDirection="column"
+              flexGrow={1}
+              minHeight={0}
+              overflow="auto"
+              height={'100%'}
+            >
               <TaskInfo />
             </Box>
           </WindowManager.Window>

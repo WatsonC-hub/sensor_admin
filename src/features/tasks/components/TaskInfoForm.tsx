@@ -5,7 +5,7 @@ import React, {useState} from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {useTaskMutations, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {Task} from '~/features/tasks/types';
 import {useDisplayState} from '~/hooks/ui';
@@ -27,10 +27,12 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   //   : '';
   const {
     patch,
-    del,
-    getStatus: {data: taskStatus},
-    getUsers: {data: taskUsers},
-  } = useTasks();
+    del: {mutate: deleteTask, isPending: isDeletePending},
+  } = useTaskMutations();
+
+  const {data: taskStatus} = useTaskStatus();
+  const {data: taskUsers} = useTaskUsers();
+
   const {
     trigger,
     getValues,
@@ -87,10 +89,18 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     }
   };
 
-  const deleteTask = () => {
-    del.mutate({
-      path: `${selectedTask.id}`,
-    });
+  const handleDeleteTask = () => {
+    deleteTask(
+      {
+        path: `${selectedTask.id}`,
+      },
+      {
+        onSuccess: () => {
+          setDialogOpen(false);
+          setSelectedTask(null);
+        },
+      }
+    );
   };
 
   return (
@@ -209,6 +219,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
                 selectedTask.status_category === 'closed'
               }
               onClick={() => setDialogOpen(true)}
+              loading={isDeletePending}
               startIcon={<Delete />}
             >
               Slet
@@ -239,9 +250,9 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         setDialogOpen={setDialogOpen}
         measurementId={selectedTask.id}
         onOkDelete={() => {
-          deleteTask();
-          setSelectedTask(null);
+          handleDeleteTask();
         }}
+        loading={isDeletePending}
       />
       {/* <TaskForm.DueDateDialog
         ts_id={selectedTask.ts_id}

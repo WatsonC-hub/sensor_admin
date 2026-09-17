@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, InputAdornment, Typography} from '@mui/material';
+import {Box, Grid2, InputAdornment, Typography} from '@mui/material';
 import React, {ChangeEvent} from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
@@ -13,6 +13,8 @@ import {
 import {z} from 'zod';
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 const yearlyControlsSchema = z.object({
   controls_per_year: z.number({required_error: 'Kontrol interval er påkrævet'}).nullable(),
@@ -37,11 +39,18 @@ function intervalFromFrequencyPerYear(timesPerYear: number): string {
 }
 
 const YearlyControlsConfig = () => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
   const {superUser} = useUser();
   const {data: values} = useTimeseriesServiceInterval(ts_id);
-  const {mutate} = useTimeseriesServiceIntervalMutation(ts_id);
+
+  const {mutateAsync} = useTimeseriesServiceIntervalMutation(ts_id);
   const {isMobile} = useBreakpoints();
+  const {location_permissions} = usePermissions(loc_id);
+
+  const disabled =
+    (values?.isCustomerService && superUser) ||
+    (!values?.isCustomerService && !superUser) ||
+    location_permissions !== 'edit';
 
   const formMethods = useForm<ServiceIntervalSubmit>({
     resolver: zodResolver(yearlyControlsSchema),
@@ -53,7 +62,7 @@ const YearlyControlsConfig = () => {
     values: values && {
       controls_per_year: values.controlsPerYear,
       lead_time: values.leadTime ?? null,
-      dummy: values.controlsPerYear ? Number(values.controlsPerYear.toFixed(3)) : null,
+      dummy: values.controlsPerYear !== null ? Number(values.controlsPerYear.toFixed(3)) : null,
       selectValue: 1,
     },
     mode: 'onChange',
@@ -62,7 +71,7 @@ const YearlyControlsConfig = () => {
   const {
     handleSubmit,
     reset,
-    formState: {isSubmitting, dirtyFields},
+    formState: {isSubmitting, dirtyFields, isDirty},
     setValue,
     watch,
   } = formMethods;
@@ -70,14 +79,16 @@ const YearlyControlsConfig = () => {
   const controlsPerYear = watch('controls_per_year');
   const selectValue = watch('selectValue');
 
-  const onSubmit = (data: ServiceIntervalSubmit) => {
-    mutate(
+  const onSubmit = async (data: ServiceIntervalSubmit) => {
+    await mutateAsync(
       {
         controls_per_year: data.dummy !== null ? data.controls_per_year : null,
         lead_time: data.lead_time,
       },
       {
-        onSuccess: () => reset(),
+        onSuccess: () => {
+          reset();
+        },
       }
     );
   };
@@ -89,9 +100,7 @@ const YearlyControlsConfig = () => {
           name="dummy"
           label={values?.from_unit ? 'Kontrolhyppighed (fra udstyret)' : 'Kontrolhyppighed'}
           type="number"
-          disabled={
-            (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser)
-          }
+          disabled={disabled}
           fullWidth
           onChangeCallback={(e) => {
             if (typeof e == 'number') {
@@ -112,10 +121,7 @@ const YearlyControlsConfig = () => {
                     variant="standard"
                     sx={{width: 150}}
                     defaultValue={1}
-                    disabled={
-                      (values?.isCustomerService && superUser) ||
-                      (!values?.isCustomerService && !superUser)
-                    }
+                    disabled={disabled}
                     slotProps={{
                       select: {
                         disableUnderline: true,
@@ -161,9 +167,7 @@ const YearlyControlsConfig = () => {
           name="lead_time"
           label="Forsvarsling"
           type="number"
-          disabled={
-            (values?.isCustomerService && superUser) || (!values?.isCustomerService && !superUser)
-          }
+          disabled={disabled}
           fullWidth
           slotProps={{
             input: {
@@ -173,29 +177,37 @@ const YearlyControlsConfig = () => {
         />
       </Box>
 
-      <Box display="flex" justifyContent="flex-end">
-        <Button
-          bttype="tertiary"
-          onClick={() => {
-            reset();
-          }}
-          disabled={isSubmitting}
-        >
-          Annuller
-        </Button>
-        <Button
-          bttype="primary"
-          disabled={
-            isSubmitting ||
-            Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0
-          }
-          onClick={handleSubmit(onSubmit, (error) => console.log(error))}
-          startIcon={<Save />}
-          sx={{marginLeft: 1}}
-        >
-          Gem
-        </Button>
-      </Box>
+      {!disabled && (
+        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+          <UpdateProgressButton
+            loc_id={loc_id}
+            ts_id={ts_id}
+            progressKey="kontrolhyppighed"
+            disabled={disabled || isDirty}
+          />
+          <Button
+            bttype="tertiary"
+            onClick={() => {
+              reset();
+            }}
+            disabled={isSubmitting || !isDirty}
+          >
+            <Typography variant="body2">Annuller</Typography>
+          </Button>
+          <Button
+            bttype="primary"
+            disabled={
+              Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0 ||
+              !isDirty
+            }
+            loading={isSubmitting ?? null}
+            onClick={handleSubmit(onSubmit, (error) => console.log(error))}
+            startIcon={<Save />}
+          >
+            <Typography variant="body2">Gem</Typography>
+          </Button>
+        </Grid2>
+      )}
     </FormProvider>
   );
 };

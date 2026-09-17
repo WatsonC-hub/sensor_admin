@@ -6,12 +6,16 @@ import {z} from 'zod';
 import AlertDialog from '~/components/AlertDialog';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
-import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
+import {
+  useItineraryMutations,
+  useItineraries,
+  useItinerary,
+} from '~/features/tasks/api/useItinerary';
 import {useDisplayState} from '~/hooks/ui';
 import MoveUpIcon from '@mui/icons-material/MoveUp';
 
 type Props = {
-  itinerary_id: string | null;
+  itinerary_id: string;
   open: boolean;
   setOpen: (open: boolean) => void;
 };
@@ -23,11 +27,12 @@ type FormValues = {
 const TripMergeDialog = ({itinerary_id, open, setOpen}: Props) => {
   const [openDialog, setOpenDialog] = React.useState<boolean>(false);
   const setItineraryId = useDisplayState((state) => state.setItineraryId);
+  const {data: itinerary} = useItinerary(itinerary_id);
+  const {data: itineraries} = useItineraries();
+
   const {
-    mergeTrips,
-    get: {data: itineraries},
-    getItinerary: {data: itinerary},
-  } = useTaskItinerary(itinerary_id);
+    mergeTrips: {mutateAsync: mergeTripsAsync},
+  } = useItineraryMutations();
 
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(
@@ -38,25 +43,27 @@ const TripMergeDialog = ({itinerary_id, open, setOpen}: Props) => {
     mode: 'onTouched',
   });
 
-  const {handleSubmit, reset} = formMethods;
+  const {
+    handleSubmit,
+    reset,
+    formState: {isSubmitting},
+  } = formMethods;
 
   const onClose = () => {
     reset();
     setOpen(false);
   };
 
-  const handleSave: SubmitHandler<FormValues> = (data) => {
+  const handleSave: SubmitHandler<FormValues> = async (data) => {
     const payload = {
       path: `${itinerary_id}`,
       data: data,
     };
 
-    mergeTrips.mutate(payload, {
-      onSuccess: () => {
-        onClose();
-        setItineraryId(null);
-      },
-    });
+    await mergeTripsAsync(payload);
+
+    setItineraryId(null);
+    setOpenDialog(false);
   };
 
   return (
@@ -93,6 +100,7 @@ const TripMergeDialog = ({itinerary_id, open, setOpen}: Props) => {
           message="Er du sikker på, at du vil flytte alle lokationer fra denne tur til den valgte tur?"
           setOpen={setOpenDialog}
           handleOpret={handleSubmit(handleSave)}
+          loading={isSubmitting}
         />
       </FormProvider>
     </Dialog>

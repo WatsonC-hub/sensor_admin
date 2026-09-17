@@ -48,6 +48,7 @@ function ImageCard({image, deleteMutation, handleEdit, mobileSize}: ImageCardPro
       {
         onSuccess: () => {
           toast.success('Billedet er blevet slettet');
+          setDialogOpen(false);
         },
       }
     );
@@ -69,6 +70,7 @@ function ImageCard({image, deleteMutation, handleEdit, mobileSize}: ImageCardPro
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={handleDelete}
+        loading={deleteMutation.isPending}
       />
       <CardMedia
         sx={{

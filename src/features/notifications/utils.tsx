@@ -6,9 +6,9 @@ import {
   NotificationIDEnum,
   sensorColors,
 } from './consts';
-import {BoreholeDetails, IconDetails} from './types';
+import { BoreholeDetails, IconDetails } from './types';
 
-import {JSX} from 'react';
+import { JSX } from 'react';
 import dayjs from 'dayjs';
 
 const rawIcons = Object.fromEntries(
@@ -19,7 +19,7 @@ const rawIcons = Object.fromEntries(
       import: 'default',
     })
   ).map(([key, value]) => [key.split('/').pop()?.split('_')[0], value])
-) as Record<NotificationIDEnum | 'task' | 'trip' | 'borehole', string>;
+) as Record<NotificationIDEnum | 'task' | 'trip' | 'borehole' | 'default', string>;
 
 const reactIcons = Object.fromEntries(
   Object.entries(
@@ -30,7 +30,7 @@ const reactIcons = Object.fromEntries(
     })
   ).map(([key, value]) => [key.split('/').pop()?.split('_')[0], value])
 ) as Record<
-  NotificationIDEnum | 'task' | 'trip' | 'borehole',
+  NotificationIDEnum | 'task' | 'trip' | 'borehole' | 'default',
   React.FunctionComponent<React.SVGProps<SVGSVGElement>>
 >;
 
@@ -113,6 +113,10 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
       return rawIcons[iconDetails.notification_id];
     }
 
+    if (iconDetails.notification_id && !(iconDetails.notification_id in rawIcons)) {
+      return rawIcons['default']
+    }
+
     if (iconDetails.in_service && iconDetails.inactive_new) {
       return rawIcons['borehole'];
     }
@@ -141,6 +145,11 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }
 
+    if (iconDetails.notification_id && !(iconDetails.notification_id in reactIcons)) {
+      const Component = reactIcons['default'];
+      return <Component style={defaultStyling} viewBox="-4 -4 24 24" />;
+    }
+
     if (iconDetails.in_service && iconDetails.inactive_new) {
       const Component = reactIcons['borehole'];
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
@@ -164,4 +173,4 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
     return <></>;
   }
 }
-export {getIcon, getBoreholeIcon};
+export { getIcon, getBoreholeIcon };

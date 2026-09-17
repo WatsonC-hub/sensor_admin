@@ -7,12 +7,14 @@ type UseUnitFormProps<T> = {
   schema?: ZodType<T>;
   defaultValues?: DefaultValues<T>;
   mode?: 'Add' | 'Edit';
+  values?: T;
 };
 
 function useUnitForm<T extends Record<string, any>>({
   defaultValues,
   mode,
   schema,
+  values,
 }: UseUnitFormProps<T>) {
   const formMethods = useForm({
     resolver: (...opts) => {
@@ -26,6 +28,7 @@ function useUnitForm<T extends Record<string, any>>({
     },
     defaultValues,
     mode: 'onTouched',
+    values,
   });
 
   return formMethods;

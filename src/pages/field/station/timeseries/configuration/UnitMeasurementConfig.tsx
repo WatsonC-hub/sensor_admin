@@ -1,32 +1,34 @@
-import {zodResolver} from '@hookform/resolvers/zod';
-import {Save} from '@mui/icons-material';
-import {Box, Typography, TextField, InputAdornment, Alert} from '@mui/material';
-import React, {useEffect, useState} from 'react';
-import {useForm, FormProvider} from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Save } from '@mui/icons-material';
+import { Box, Typography, TextField, InputAdornment, Alert, Grid2 } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 import FormInput from '~/components/FormInput';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {
   useTimeseriesMeasureSampleSend,
   useTimeseriesMeasureSampleSendMutation,
 } from '~/features/station/api/useTimeseriesMeasureSampleSend';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {useAppContext} from '~/state/contexts';
+import { convertDateWithTimeStamp } from '~/helpers/dateConverter';
+import { useAppContext } from '~/state/contexts';
 import ConfigAlert from './ConfigAlert';
-import {z} from 'zod';
+import { z } from 'zod';
 import Button from '~/components/Button';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {APIError} from '~/queryClient';
-import {useMapOverview} from '~/hooks/query/useNotificationOverview';
-import {useUser} from '~/features/auth/useUser';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import { APIError } from '~/queryClient';
+import { useMapOverview } from '~/hooks/query/useNotificationOverview';
+import { useUser } from '~/features/auth/useUser';
+import { useTimeseriesData } from '~/hooks/query/useMetadata';
 import dayjs from 'dayjs';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 const ConfigurationSchema = z.object({
   sampleInterval: z
-    .number({required_error: 'Måleinterval er påkrævet'})
+    .number({ required_error: 'Måleinterval er påkrævet' })
     .min(1, 'Måleinterval skal være mindst 1 minut'),
   sendInterval: z
-    .number({required_error: 'Sendeinterval er påkrævet'})
+    .number({ required_error: 'Sendeinterval er påkrævet' })
     .min(1, 'Sendingsinterval skal være mindst 1 minut'),
 });
 
@@ -47,26 +49,26 @@ const convertMinutesToTime = (minutes: number) => {
 
 const getOptions = (sampleInterval: number | undefined) => {
   if (!sampleInterval) return [];
-  return Array.from({length: NUM_OPTIONS}, (_, i) => i + 1).map((value) => {
+  return Array.from({ length: NUM_OPTIONS }, (_, i) => i + 1).map((value) => {
     const interval = value * sampleInterval;
 
     const label = convertMinutesToTime(interval) + ` (${value} målinger)`;
 
-    return {[interval]: label};
+    return { [interval]: label };
   });
 };
 
 const UnitMeasurementConfig = () => {
-  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
-  const {data, isLoading, error} = useTimeseriesMeasureSampleSend(ts_id);
-  const {data: timeseriesData} = useTimeseriesData(ts_id);
-  const {data: currentLocation} = useMapOverview({
+  const { ts_id, loc_id } = useAppContext(['ts_id', 'loc_id']);
+  const { data, isLoading, error } = useTimeseriesMeasureSampleSend(ts_id);
+  const { data: timeseriesData } = useTimeseriesData(ts_id);
+  const { data: currentLocation } = useMapOverview({
     select: (data) => data.find((loc) => loc.loc_id === loc_id),
   });
-  const {mutate} = useTimeseriesMeasureSampleSendMutation(ts_id);
+  const { mutateAsync } = useTimeseriesMeasureSampleSendMutation(ts_id);
   const [options, setOptions] = useState<Array<Record<number, string>>>([]);
-  const {isMobile} = useBreakpoints();
-  const {superUser} = useUser();
+  const { isMobile } = useBreakpoints();
+  const { superUser } = useUser();
   const values = data?.savedConfig ? data.savedConfig : undefined;
 
   const formMethods = useForm<ConfigForm, unknown, ConfigSubmit>({
@@ -78,10 +80,18 @@ const UnitMeasurementConfig = () => {
     values: values,
   });
 
+  const { location_permissions } = usePermissions(loc_id);
+
+  const disabled =
+    !data?.configPossible ||
+    (currentLocation?.is_customer_service && superUser) ||
+    (!currentLocation?.is_customer_service && !superUser) ||
+    location_permissions !== 'edit';
+
   const {
     handleSubmit,
     reset,
-    formState: {isSubmitting, isDirty},
+    formState: { isSubmitting, isDirty },
     getValues,
   } = formMethods;
 
@@ -153,7 +163,7 @@ const UnitMeasurementConfig = () => {
           value={
             data?.currentConfig?.sendInterval
               ? convertMinutesToTime(data?.currentConfig?.sendInterval) +
-                ` (${num_measurements} målinger)`
+              ` (${num_measurements} målinger)`
               : ''
           }
           slotProps={{
@@ -180,7 +190,7 @@ const UnitMeasurementConfig = () => {
       <ConfigAlert
         status={data?.configState || null}
         timeseriesStatus={data?.currentPendingTimeseries || null}
-        handleResend={handleSubmit((data) => mutate(data))}
+        handleResend={handleSubmit(async (data) => await mutateAsync(data))}
       />
       <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} mb={-3}>
         <FormInput
@@ -211,11 +221,7 @@ const UnitMeasurementConfig = () => {
               formMethods.setValue('sendInterval', undefined);
             }
           }}
-          disabled={
-            !data?.configPossible ||
-            (currentLocation?.is_customer_service && superUser) ||
-            (!currentLocation?.is_customer_service && !superUser)
-          }
+          disabled={disabled}
           slotProps={{
             input: {
               startAdornment: <InputAdornment position="start">hvert</InputAdornment>,
@@ -252,28 +258,29 @@ const UnitMeasurementConfig = () => {
         />
       </Box>
 
-      <Typography variant="body2" color="textSecondary" sx={{mt: 1, mb: 2}}>
+      <Typography variant="body2" color="textSecondary" sx={{ mt: 1, mb: 2 }}>
         Forventet tidspunkt for omkonfigurering {configChange ? configChange : 'ukendt'}
       </Typography>
 
-      <Box display="flex" justifyContent="flex-end">
-        <Button
-          bttype="tertiary"
-          onClick={() => reset()}
-          disabled={isSubmitting || !data?.configPossible}
-        >
-          Annuller
-        </Button>
-        <Button
-          bttype="primary"
-          disabled={isSubmitting || !data?.configPossible || !isDirty}
-          onClick={handleSubmit((data) => mutate(data))}
-          startIcon={<Save />}
-          sx={{marginLeft: 1}}
-        >
-          Gem
-        </Button>
-      </Box>
+      {!disabled && (
+        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+          <Button
+            bttype="tertiary"
+            onClick={() => reset()}
+            disabled={isSubmitting || !isDirty || disabled}
+          >
+            <Typography variant="body2">Annuller</Typography>
+          </Button>
+          <Button
+            bttype="primary"
+            disabled={isSubmitting || !isDirty || disabled}
+            onClick={handleSubmit(async (data) => await mutateAsync(data))}
+            startIcon={<Save />}
+          >
+            <Typography variant="body2">Gem</Typography>
+          </Button>
+        </Grid2>
+      )}
     </FormProvider>
   );
 };

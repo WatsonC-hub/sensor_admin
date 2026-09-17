@@ -17,10 +17,10 @@ type YRangeData = {
 
 interface YRangeRowProps {
   data: YRangeData;
-  setOpen: () => void;
+  onClose: () => void;
 }
 
-const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
+const YRangeRow = ({data, onClose}: YRangeRowProps) => {
   const {post} = useYRangeMutations();
 
   const schema = z.object({
@@ -36,7 +36,7 @@ const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
   const {
     reset,
     handleSubmit,
-    formState: {dirtyFields},
+    formState: {dirtyFields, isDirty},
   } = formMethods;
 
   useEffect(() => {
@@ -51,9 +51,12 @@ const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
           mincutoff: values.mincutoff,
           maxcutoff: values.maxcutoff,
         },
+      }, {
+        onSuccess: () => {
+          onClose();
+        }
       });
     }
-    setOpen();
   };
 
   return (
@@ -81,7 +84,7 @@ const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
             size="small"
             onClick={() => {
               reset(data);
-              setOpen();
+              onClose();
             }}
           >
             Annuller
@@ -91,6 +94,8 @@ const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
             size="small"
             onClick={handleSubmit(submit, (values) => console.log(values))}
             startIcon={<SaveIcon />}
+            disabled={!isDirty}
+            loading={post.isPending}
           >
             Gem
           </Button>

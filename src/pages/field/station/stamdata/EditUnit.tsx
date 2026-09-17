@@ -1,12 +1,9 @@
 import {Box} from '@mui/material';
-import {useMutation} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useState} from 'react';
 import {FormProvider} from 'react-hook-form';
-import {toast} from 'react-toastify';
 import {z} from 'zod';
 
-import {apiClient} from '~/apiClient';
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
@@ -21,6 +18,7 @@ import {EditUnit as EditUnitType, editUnitSchema} from '~/features/station/schem
 import UnitHistoryTable from './UnitHistoryTable';
 import FloatingContainer from '~/components/ui/FloatingContainer';
 import FloatingButton from '~/components/ui/FloatingButton';
+import {useUnitMutations} from '~/features/stamdata/api/useUnit';
 
 const EditUnit = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
@@ -29,7 +27,9 @@ const EditUnit = () => {
   const [selectedUnit, setSelectedUnit] = useState<number | ''>(unit_history?.[0]?.gid ?? '');
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
-
+  const {
+    editUnit: {mutateAsync: editUnit},
+  } = useUnitMutations(ts_id);
   const {location_permissions} = usePermissions(loc_id);
   const tstype_id = metadata?.tstype_id;
   const disabled = location_permissions !== 'edit';
@@ -37,19 +37,6 @@ const EditUnit = () => {
   const hasActiveEquipment =
     unit_history && unit_history.length > 0 && moment(unit_history?.[0].slutdato) > moment();
   const fabText = hasActiveEquipment ? 'Hjemtag udstyr' : 'Tilføj udstyr';
-
-  const metadataEditUnitMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const {data: out} = await apiClient.put(`/sensor_field/stamdata/update_unit/${ts_id}`, data);
-      return out;
-    },
-    onSuccess: () => {
-      toast.success('Udstyr er opdateret');
-    },
-    meta: {
-      invalidates: [['metadata'], ['register']],
-    },
-  });
 
   const unit = unit_history?.find((item) => item.gid == selectedUnit);
 
@@ -60,8 +47,8 @@ const EditUnit = () => {
   });
 
   const formMethods = useUnitForm<EditUnitType>({
-    mode: unit?.gid && !openAddUdstyr ? 'Edit' : 'Add',
-    defaultValues: defaultValues,
+    mode: selectedUnit !== '' && !openAddUdstyr ? 'Edit' : 'Add',
+    values: defaultValues,
   });
 
   const Submit = async (data: z.infer<typeof editUnitSchema>) => {
@@ -69,7 +56,7 @@ const EditUnit = () => {
       gid: selectedUnit,
       ...data,
     };
-    metadataEditUnitMutation.mutate(payload);
+    await editUnit(payload);
   };
 
   return (
@@ -83,7 +70,12 @@ const EditUnit = () => {
           }}
         >
           <FormProvider {...formMethods}>
-            <UnitHistoryTable submit={Submit} setSelectedUnit={setSelectedUnit} />
+            <UnitHistoryTable
+              submit={Submit}
+              setSelectedUnit={setSelectedUnit}
+              ts_id={ts_id}
+              loc_id={loc_id}
+            />
             {openDialog && (
               <UnitEndDateDialog
                 openDialog={openDialog}
@@ -99,8 +91,8 @@ const EditUnit = () => {
             />
           </FormProvider>
         </Box>
-      </StationPageBoxLayout>
-      <FloatingContainer sx={{visibility: openAddUdstyr || openDialog ? 'hidden' : 'visible'}}>
+        <Box display="flex" justifyContent={'flex-end'}>
+          <FloatingContainer sx={{visibility: openAddUdstyr || openDialog ? 'hidden' : 'visible'}}>
         <FloatingButton
           icon={<BatteryAlertRounded />}
           text={'Skift batteri'}
@@ -112,13 +104,15 @@ const EditUnit = () => {
           }}
         />
         <FloatingButton
-          icon={<BuildRounded />}
-          text={fabText}
-          disabled={disabled}
-          onClick={() => (hasActiveEquipment ? setOpenDialog(true) : setOpenAddUdstyr(true))}
-          showText={true}
-        />
+              icon={<BuildRounded />}
+              text={fabText}
+              disabled={disabled}
+              onClick={() => (hasActiveEquipment ? setOpenDialog(true) : setOpenAddUdstyr(true))}
+                  showText={true}
+            />
       </FloatingContainer>
+        </Box>
+      </StationPageBoxLayout>
     </>
   );
 };

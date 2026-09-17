@@ -25,7 +25,7 @@ import OwnDatePicker from '~/components/OwnDatePicker';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {useAppContext} from '~/state/contexts';
-import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
+import {UnitPost, useUnit} from '~/features/stamdata/api/useUnit';
 import {AddUnit} from '~/features/station/schema';
 
 interface AddUnitFormProps {
@@ -46,7 +46,7 @@ export default function AddUnitForm({
 
   const {
     get: {data: availableUnits, isLoading},
-    post: addUnit,
+    post: {mutate: addUnit, isPending: isAddingUnit},
   } = useUnit();
 
   const {
@@ -54,13 +54,13 @@ export default function AddUnitForm({
     handleSubmit,
     reset,
     trigger,
-    formState: {isSubmitting},
+    formState: {isSubmitting, errors, isDirty},
   } = useFormContext<AddUnit>();
 
   const [unitData, setUnitData] = useState({
     calypso_id: '',
     uuid: '',
-    fra: dayjs(),
+    fra: dayjs().startOf('minute'),
   });
 
   const [openCaptureDialog, setOpenCaptureDialog] = useState(false);
@@ -75,16 +75,36 @@ export default function AddUnitForm({
     ...new Set(
       availableUnits
         ?.filter((unit) => unit.sensortypeid === tstype_id)
-        ?.map((x) => (x.calypso_id === 0 ? x.terminal_id.toString() : x.calypso_id.toString()))
+        ?.map((x) => (x.calypso_id === 0 ? x.terminal_id.toString() : x.calypso_id))
     ),
-  ].sort();
+  ]
+    .sort((a, b) => {
+      if (typeof a == 'number' && typeof b == 'number') {
+        return a - b;
+      } else if (typeof a == 'string' && typeof b == 'string') {
+        if (a < b) {
+          return -1;
+        }
+        if (a > b) {
+          return 1;
+        }
+      } else if (typeof a == 'string') {
+        return 1;
+      } else {
+        return -1;
+      }
+      return 0;
+    })
+    .map((id) => id.toString());
 
   const sensorsForCalyspoId = (id: string | number) =>
-    availableUnits?.filter(
-      (unit) =>
-        (unit.calypso_id.toString() === id.toString() || unit.terminal_id === id) &&
-        unit.sensortypeid === tstype_id
-    );
+    availableUnits
+      ?.filter(
+        (unit) =>
+          (unit.calypso_id.toString() === id.toString() || unit.terminal_id === id) &&
+          unit.sensortypeid === tstype_id
+      )
+      .sort((a, b) => a.signal_id - b.signal_id);
 
   const handleCalypsoIdChange = (
     option: {value: string; label: string} | SyntheticEvent<Element> | null
@@ -117,11 +137,13 @@ export default function AddUnitForm({
 
   const handleDateChange = (date: any) => {
     setUnitData((prev) => ({...prev, fra: dayjs(date)}));
-    if (mode === 'edit') setValue('startdate', dayjs(date), {shouldDirty: true});
+    if (mode === 'edit') {
+      setValue('startdate', dayjs(date), {shouldDirty: true});
+    }
   };
 
   const handleAddUnit = (payload: UnitPost) => {
-    addUnit.mutate(payload, {
+    addUnit(payload, {
       onSuccess: () => {
         toast.success('Udstyr tilføjet');
         setUdstyrDialogOpen(false);
@@ -175,13 +197,13 @@ export default function AddUnitForm({
 
   const handleClose = () => {
     setUdstyrDialogOpen(false);
-    setUnitData({calypso_id: '', uuid: '', fra: dayjs()});
+    setUnitData({calypso_id: '', uuid: '', fra: dayjs().startOf('minute')});
     trigger();
     reset();
   };
 
   useEffect(() => {
-    if (udstyrDialogOpen) setUnitData((prev) => ({...prev, fra: dayjs()}));
+    if (udstyrDialogOpen) setUnitData((prev) => ({...prev, fra: dayjs().startOf('minute')}));
   }, [udstyrDialogOpen]);
 
   return (
@@ -260,7 +282,7 @@ export default function AddUnitForm({
                 label="Fra"
                 value={dayjs(unitData.fra)}
                 onChange={handleDateChange}
-                helperText={!unitData.fra.isValid() ? 'Fejl i dato' : ''}
+                helperText={errors.startdate ? (errors.startdate.message as string) : ''}
               />
             </DialogContent>
 
@@ -276,10 +298,13 @@ export default function AddUnitForm({
                       })
                     : handleSaveOnAdd
                 }
+                loading={isAddingUnit}
                 bttype="primary"
                 startIcon={mode === 'edit' ? <Save /> : undefined}
                 disabled={
-                  !unitData.calypso_id || !unitData.uuid || !unitData.fra.isValid() || isSubmitting
+                  isSubmitting ||
+                  !unitData.fra.isValid() ||
+                  (mode === 'edit' && (!isDirty || Object.keys(errors).length > 0))
                 }
               >
                 {mode === 'edit' ? 'Gem' : 'Tilføj'}
@@ -320,6 +345,7 @@ export default function AddUnitForm({
               })
             }
             bttype="tertiary"
+            loading={isAddingUnit}
           >
             Nej
           </Button>
@@ -336,6 +362,7 @@ export default function AddUnitForm({
               })
             }
             bttype="primary"
+            loading={isAddingUnit}
           >
             Ja
           </Button>

@@ -12,7 +12,7 @@ import IconButton from '@mui/material/IconButton';
 
 import React, {useState, useRef, SyntheticEvent, MouseEventHandler} from 'react';
 import {useUser} from '~/features/auth/useUser';
-import {useMapFilterStore} from '~/features/map/store';
+import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
 
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -64,6 +64,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
   const {
     features: {boreholeAccess},
     superUser,
+    attributes: {has_own_service},
   } = useUser();
 
   const elasticSearch = (
@@ -114,7 +115,10 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
     setAnchorEl(null);
   };
 
-  const numFilters = getNumberOfNonDefaultFilters(mapFilter, defaultMapFilter(superUser));
+  const numFilters = getNumberOfNonDefaultFilters(
+    mapFilter,
+    defaultMapFilter(superUser, has_own_service)
+  );
   return (
     <>
       <Autocomplete
@@ -173,7 +177,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         }}
         sx={{'& .MuiPaper-root': {width: isMobile ? '90%' : 500, p: 1}}}
       >
-        <FilterOptions onClose={handleClose} />
+        <FilterOptions isParentClosed={!anchorEl} onClose={handleClose} />
       </Menu>
     </>
   );

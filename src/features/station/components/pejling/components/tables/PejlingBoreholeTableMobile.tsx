@@ -15,15 +15,15 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useQueryTable} from '~/hooks/useTable';
+import { useAppContext } from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
-  handleDelete: (gid: number) => void;
   disabled: boolean;
 }
 
-export default function PejlingBoreholeTableMobile({handleEdit, handleDelete, disabled}: Props) {
+export default function PejlingBoreholeTableMobile({handleEdit, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const {data: timeseries} = useTimeseriesData();
@@ -37,7 +37,18 @@ export default function PejlingBoreholeTableMobile({handleEdit, handleDelete, di
     setDialogOpen(true);
   };
 
-  const {get} = usePejling();
+  const {get, del: delPejling} = usePejling();
+  const {isPending, mutate} = delPejling;
+  const {ts_id} = useAppContext(['ts_id']);
+
+  const handleDelete = (gid: number | undefined) => {
+    const payload = {path: `${ts_id}/${gid}`};
+    mutate(payload, {
+      onSuccess: () => {
+        setDialogOpen(false);
+      },
+    });
+  };
 
   const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [
@@ -141,6 +152,7 @@ export default function PejlingBoreholeTableMobile({handleEdit, handleDelete, di
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={() => handleDelete(mpId)}
+        loading={isPending}
       />
       <Box>
         <MaterialReactTable table={table} />

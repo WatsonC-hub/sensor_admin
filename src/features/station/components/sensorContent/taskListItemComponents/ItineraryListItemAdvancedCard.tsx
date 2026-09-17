@@ -2,7 +2,7 @@ import {EditOutlined, Warning} from '@mui/icons-material';
 import {Box, Typography, Button, Grid2, TextField, Link} from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import React, {useMemo, useState} from 'react';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {useTaskMutations, useTaskStatus} from '~/features/tasks/api/useTasks';
 import {Task} from '~/features/tasks/types';
 import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
 
@@ -21,11 +21,9 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
   const {isMobile} = useBreakpoints();
   const [showAllComments, setShowAllComments] = useState<boolean>(false);
   const {station} = useNavigationFunctions();
-  const {
-    patch: updateTask,
-    getStatus: {data: taskStatus},
-  } = useTasks();
+  const {patch: updateTask} = useTaskMutations();
 
+  const {data: taskStatus} = useTaskStatus();
   const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
 
   const patchTaskStatus = (status_id: number) => {
@@ -43,9 +41,7 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
     updateTask.mutate(payload);
   };
 
-  const {
-    get: {data: comments},
-  } = useTaskHistory(task.id);
+  const {data: comments} = useTaskHistory(task.id);
 
   const defaultValues = useMemo(() => {
     if (!task) return;

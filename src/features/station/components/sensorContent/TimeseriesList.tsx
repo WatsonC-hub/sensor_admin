@@ -8,11 +8,12 @@ import {useAppContext} from '~/state/contexts';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import {useLocationInfo} from '../../api/useLocationInfo';
 import {useParkering} from '~/features/parkering/api/useParkering';
-import {utm} from '~/features/map/mapConsts';
+import {utm, zoomAtom} from '~/features/map/mapConsts';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import {useDisplayState} from '~/hooks/ui';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAtomValue} from 'jotai';
 const TimeseriesList = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const {station} = useNavigationFunctions();
@@ -20,6 +21,7 @@ const TimeseriesList = () => {
     state.setShowLocationRouter,
     state.setHideSensorContent,
   ]);
+  const zoom = useAtomValue(zoomAtom);
   const {isMobile} = useBreakpoints();
   const {data, isPending} = useTimeseriesStatus(loc_id);
   const {data: location_data} = useLocationInfo(loc_id);
@@ -96,7 +98,7 @@ const TimeseriesList = () => {
                   if (isMobile) setHideSensorContent(true);
                   window.dispatchEvent(
                     new CustomEvent('leaflet-pan', {
-                      detail: {lat: coords.lat, lng: coords.lng, zoom: 13},
+                      detail: {lat: coords.lat, lng: coords.lng, zoom: zoom},
                     })
                   );
                 }

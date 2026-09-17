@@ -22,12 +22,11 @@ interface SaveImageDialogProps {
     comment: string;
     public: boolean;
     date: Dayjs;
-    imageurl?: string; // Assuming this property exists
-    // Add any other properties as needed
+    imageurl?: string;
   };
   changeData: (field: string, value: any) => void;
   id: string | number;
-  type: string;
+  type: 'station' | 'borehole';
   open: boolean;
   dataUri: string | ArrayBuffer | null;
   handleCloseSave: () => void;
@@ -46,7 +45,10 @@ function SaveImageDialog({
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const imageUrl = `/static/images/${activeImage.imageurl}`;
 
-  const {post: uploadImage, put: editImage} = useImageUpload(type, id);
+  const {
+    post: {mutate: uploadImage, isPending: isUploading},
+    put: {mutate: editImage, isPending: isEditing},
+  } = useImageUpload(type, id);
 
   function saveImage() {
     if (activeImage.gid === -1) {
@@ -60,7 +62,7 @@ function SaveImageDialog({
         },
       };
 
-      uploadImage.mutate(payload, {
+      uploadImage(payload, {
         onSuccess: () => {
           toast.success('Billedet er uploadet');
         },
@@ -75,10 +77,8 @@ function SaveImageDialog({
         },
       };
 
-      editImage.mutateAsync(payload, {
-        onSuccess: () => {
-          toast.success('Billedet er opdateret');
-        },
+      editImage(payload, {
+        onSuccess: () => {},
       });
     }
     handleCloseSave();
@@ -156,7 +156,7 @@ function SaveImageDialog({
         <Button onClick={handleCloseSave} bttype="tertiary">
           Annuller
         </Button>
-        <Button onClick={saveImage} bttype="primary">
+        <Button onClick={saveImage} loading={isUploading || isEditing} bttype="primary">
           {activeImage.gid == -1 ? (
             <Box display={'flex'} gap={1} alignItems={'center'}>
               <Save />

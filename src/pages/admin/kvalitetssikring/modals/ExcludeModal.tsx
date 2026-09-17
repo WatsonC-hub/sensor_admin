@@ -56,29 +56,30 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
     mode: 'onTouched',
   });
 
-  const {handleSubmit, setValue, reset} = formMethods;
+  const {
+    handleSubmit,
+    setValue,
+    reset,
+    formState: {isSubmitting},
+  } = formMethods;
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
-  const {post: excludeMutation} = useExclude();
+  const {
+    post: {mutateAsync: excludeAsync},
+  } = useExclude();
 
-  const onAccept: SubmitHandler<ExcludeModalValues> = (values: ExcludeModalValues) => {
-    excludeMutation.mutate(
-      {
-        path: `${timeseries_data?.ts_id}`,
-        data: {
-          startdate: values.startDate,
-          enddate: values.endDate,
-          min_value: radio == 'selected' ? Number(values.startValue) : null,
-          max_value: radio == 'selected' ? Number(values.endValue) : null,
-          comment: values.comment ?? '',
-        },
+  const onAccept: SubmitHandler<ExcludeModalValues> = async (values: ExcludeModalValues) => {
+    await excludeAsync({
+      path: `${timeseries_data?.ts_id}`,
+      data: {
+        startdate: values.startDate,
+        enddate: values.endDate,
+        min_value: radio == 'selected' ? Number(values.startValue) : null,
+        max_value: radio == 'selected' ? Number(values.endValue) : null,
+        comment: values.comment ?? '',
       },
-      {
-        onSuccess: () => {
-          reset();
-        },
-      }
-    );
+    });
+    reset();
   };
 
   useEffect(() => {
@@ -163,7 +164,8 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
         </Button>
         <Button
           bttype="primary"
-          startIcon={<Save />}
+          loading={isSubmitting}
+          startIcon={isSubmitting ? undefined : <Save />}
           onClick={handleSubmit(onAccept, (e) => console.log(e))}
           color="secondary"
         >

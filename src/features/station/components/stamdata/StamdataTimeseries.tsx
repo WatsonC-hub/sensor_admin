@@ -44,7 +44,8 @@ const TypeSelect = (
     queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<{tstype_id: number; tstype_name: string}>>(
-        `/sensor_field/timeseries_types`
+        `/sensor_field/timeseries_types`,
+        {params: {filtered: true}}
       );
       return data;
     },
@@ -58,9 +59,7 @@ const TypeSelect = (
       label="Tidsserietype"
       select
       placeholder="Vælg type"
-      options={timeseries_types
-        ?.filter((type) => type.tstype_id !== 0)
-        .map((type) => ({[type.tstype_id]: type.tstype_name}))}
+      options={timeseries_types?.map((type) => ({[type.tstype_id]: type.tstype_name}))}
       keyType="number"
       required
       fullWidth
@@ -116,10 +115,14 @@ const Intakeno = (
       label="Indtag"
       select
       required
-      infoText="Vælg først et DGU nummer først"
+      infoText={boreholeno ? undefined : 'Vælg først et DGU nummer'}
       disabled={props.disabled || !boreholeno}
       placeholder="Vælg indtag"
-      options={intake_list?.map((item) => ({[item.intakeno]: item.intakeno}))}
+      options={
+        intake_list && intake_list.filter((item) => item.intakeno !== null).length > 0
+          ? intake_list.map((item) => ({[item.intakeno]: item.intakeno}))
+          : [{[-1]: 'Ingen indtag'}]
+      }
       keyType="number"
       fullWidth
       {...props}
@@ -127,13 +130,12 @@ const Intakeno = (
   );
 };
 
-const Prefix = (
-  props: Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'> & {
-    loc_name: string | undefined;
-  }
-) => {
-  // const {loc_name} = React.useContext(TimeseriesContext);
-  const loc_name = props.loc_name;
+const Prefix = ({
+  loc_name,
+  ...props
+}: Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'> & {
+  loc_name: string | undefined;
+}) => {
   return (
     <FormInput
       name="prefix"
@@ -211,7 +213,11 @@ const HidePublic = () => {
   );
 };
 
-const ScanCalypsoLabel = () => {
+type ScanCalypsoLabelProps = {
+  disabled?: boolean;
+};
+
+const ScanCalypsoLabel = ({disabled}: ScanCalypsoLabelProps) => {
   const [openCamera, setOpenCamera] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [calypso_id, setCalypso_id] = React.useState<number | null>(null);
@@ -243,6 +249,7 @@ const ScanCalypsoLabel = () => {
         color="primary"
         startIcon={<PhotoCameraRounded />}
         onClick={() => setOpenCamera(true)}
+        disabled={disabled}
       >
         {calypso_id_watch ? 'Skift ID' : 'Tilføj ID'}
       </Button>

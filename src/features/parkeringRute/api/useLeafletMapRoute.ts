@@ -1,9 +1,9 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useMutation} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {LeafletMapRoute} from '~/types';
+import {RouteFeature} from '~/types';
 
 interface LeafletMapRouteBase {
   path: string;
@@ -50,11 +50,10 @@ const leafletMapRouteDelOptions = {
 };
 
 export const useLeafletMapRoute = () => {
-  const queryClient = useQueryClient();
   const get = useQuery({
     queryKey: queryKeys.Routes.all(),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<LeafletMapRoute>>(`/sensor_field/leaflet_map_route`);
+      const {data} = await apiClient.get<Array<RouteFeature>>(`/sensor_field/leaflet_map_route`);
 
       return data;
     },
@@ -64,31 +63,25 @@ export const useLeafletMapRoute = () => {
   const post = useMutation({
     ...leafletMapRoutePostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Routes.all(),
-      });
       toast.success('Rute gemt');
     },
+    meta: {invalidates: [queryKeys.Routes.all()], optOutGeneralInvalidations: true},
   });
 
   const put = useMutation({
     ...leafletMapRoutePutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Routes.all(),
-      });
       toast.success('Rute ændret');
     },
+    meta: {invalidates: [queryKeys.Routes.all()], optOutGeneralInvalidations: true},
   });
 
   const del = useMutation({
     ...leafletMapRouteDelOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Routes.all(),
-      });
       toast.success('Rute slettet');
     },
+    meta: {invalidates: [queryKeys.Routes.all()], optOutGeneralInvalidations: true},
   });
 
   return {get, post, put, del};

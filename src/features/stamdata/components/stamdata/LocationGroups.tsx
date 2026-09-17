@@ -111,7 +111,7 @@ const LocationGroups = ({
               variant="outlined"
               label={
                 <Link
-                  href={getGroupLink(option.id)}
+                  href={option.id === '' || disableLink ? undefined : getGroupLink(option.id)}
                   target={!isMobile ? '_blank' : undefined}
                   rel={!isMobile ? 'noopener' : undefined}
                 >
@@ -120,7 +120,6 @@ const LocationGroups = ({
               }
               {...getTagProps({index})}
               key={index}
-              disabled={option.id === ''}
             />
           );
         });

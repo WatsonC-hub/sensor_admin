@@ -4,7 +4,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError, queryClient} from '~/queryClient';
+import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
@@ -67,7 +67,7 @@ export const pejlingGetOptions = (ts_id: number | undefined) =>
     staleTime: 1000 * 60 * 2, // 2 minutes
     enabled: ts_id !== 0 && ts_id !== null && ts_id !== undefined,
     meta: {
-      invalidates: ['register'],
+      invalidates: ['kontrol'],
     },
   });
 
@@ -79,13 +79,10 @@ export const usePejling = () => {
   const post = useMutation({
     ...pejlingPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Timeseries.pejling(ts_id!),
-      });
       toast.success('Pejling gemt');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [queryKeys.Timeseries.pejling(ts_id)],
     },
   });
 
@@ -95,7 +92,7 @@ export const usePejling = () => {
       toast.success('Pejling ændret');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [queryKeys.Timeseries.pejling(ts_id)],
     },
   });
 
@@ -105,7 +102,7 @@ export const usePejling = () => {
       toast.success('Pejling slettet');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [queryKeys.Timeseries.pejling(ts_id)],
     },
   });
 

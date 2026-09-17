@@ -16,10 +16,10 @@ interface ExcludeRowProps {
   data: ExcludeData;
   index: number | undefined;
   isWithYValues?: boolean;
-  setOpen: (open: boolean) => void;
+  onClose: () => void;
 }
 
-const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowProps) => {
+const ExcludeRow = ({data, index, isWithYValues = false, onClose}: ExcludeRowProps) => {
   const {put} = useExclude();
   const {isTouch, isLaptop} = useBreakpoints();
 
@@ -56,7 +56,7 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
 
   const {
     reset,
-    formState: {dirtyFields},
+    formState: {dirtyFields, isDirty},
     handleSubmit,
   } = formMethods;
 
@@ -71,9 +71,12 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
           min_value: values.min_value,
           max_value: values.max_value,
         },
+      }, {
+        onSuccess: () => {
+          onClose();
+        }
       });
     }
-    setOpen(false);
   };
 
   return (
@@ -143,7 +146,7 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
                 size="small"
                 onClick={() => {
                   reset(parsedData);
-                  setOpen(false);
+                  onClose();
                 }}
               >
                 Annuller
@@ -153,6 +156,8 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
                 size="small"
                 onClick={handleSubmit(submit, (values) => console.log(values))}
                 startIcon={<SaveIcon />}
+                disabled={!isDirty}
+                loading={put.isPending}
               >
                 Gem
               </Button>

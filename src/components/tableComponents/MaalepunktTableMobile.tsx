@@ -9,27 +9,21 @@ import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle, setTableBoxStyle} from '~/consts';
-import {
-  convertDate,
-  checkEndDateIsUnset,
-  convertDateWithTimeStamp,
-  limitDecimalNumbers,
-} from '~/helpers/dateConverter';
+import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
 import {useAppContext} from '~/state/contexts';
-import {Maalepunkt, MaalepunktTableData} from '~/types';
+import {MaalepunktAsDayjs} from '~/types';
 
 interface Props {
-  handleEdit: (maalepunkt: Maalepunkt) => void;
-  handleDelete: (gid: number | undefined) => void;
+  handleEdit: (maalepunkt: MaalepunktAsDayjs) => void;
   disabled: boolean;
 }
 
-export default function MaalepunktTableMobile({handleEdit, handleDelete, disabled}: Props) {
+export default function MaalepunktTableMobile({handleEdit, disabled }: Props) {
   const {ts_id} = useAppContext(['ts_id']);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
@@ -37,6 +31,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
 
   const {
     get: {data},
+    del: deleteWatlevmp,
   } = useMaalepunkt(ts_id);
 
   const onDeleteBtnClick = (id: number) => {
@@ -44,9 +39,17 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
     setDialogOpen(true);
   };
 
+ const handleDeleteMaalepunkt = (gid: number | undefined) => {
+    deleteWatlevmp.mutate({path: `${ts_id}/${gid}`}, {
+      onSuccess: () => {
+        setDialogOpen(false);
+      }
+    });
+  };
+  
   const unit = timeseries?.tstype_id === 1 ? ' m' : ` [${timeseries?.unit}]`;
 
-  const columns = useMemo<MRT_ColumnDef<Maalepunkt | MaalepunktTableData>[]>(
+  const columns = useMemo<MRT_ColumnDef<MaalepunktAsDayjs>[]>(
     () => [
       {
         accessorFn: (row) => row,
@@ -74,21 +77,12 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
               </Typography>
             </Box>
             <Typography margin={'0 auto'} alignSelf={'center'} variant="caption">
-              <b>Start: </b> {convertDate(row.original.startdate)}
-              {row.original.enddate && (
-                <>
-                  <br />
-                  <b>Slut: </b>
-                  {checkEndDateIsUnset(row.original.enddate)
-                    ? 'Nu'
-                    : convertDate(row.original.enddate)}
-                </>
-              )}
+              <b>Gældende fra: </b> {convertDate(row.original.startdate)}
             </Typography>
             <Box marginLeft={'auto'}>
               <RenderActions
                 handleEdit={() => {
-                  handleEdit(row.original as Maalepunkt);
+                  handleEdit(row.original);
                 }}
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
@@ -103,21 +97,13 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
     [unit, disabled, handleEdit]
   );
 
-  const options: Partial<MRT_TableOptions<Maalepunkt | MaalepunktTableData>> = {
+  const options: Partial<MRT_TableOptions<MaalepunktAsDayjs>> = {
     localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         <Typography>
-          <b>Start dato: </b> {convertDateWithTimeStamp(row.original.startdate)}
+          <b>Gældende fra: </b> {convertDateWithTimeStamp(row.original.startdate)}
         </Typography>
-        {row.original.enddate && (
-          <Typography>
-            <b>Slut dato: </b>
-            {checkEndDateIsUnset(row.original.enddate)
-              ? 'Nu'
-              : convertDateWithTimeStamp(row.original.enddate)}
-          </Typography>
-        )}
         {(row.original.display_name || row.index === 0) && (
           <Typography>
             <b>Oprettet af:</b> {row.original.display_name ?? 'Jupiter'}
@@ -132,7 +118,7 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
     ),
   };
 
-  const table = useTable<Maalepunkt | MaalepunktTableData>(
+  const table = useTable<MaalepunktAsDayjs>(
     columns,
     data,
     options,
@@ -146,7 +132,8 @@ export default function MaalepunktTableMobile({handleEdit, handleDelete, disable
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={() => handleDelete(mpId)}
+        onOkDelete={() => handleDeleteMaalepunkt(mpId)}
+        loading={deleteWatlevmp.isPending}
       />
       <MaterialReactTable table={table} />
     </Box>

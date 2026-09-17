@@ -1,7 +1,8 @@
 import {useFormContext} from 'react-hook-form';
 import Button from '../Button';
+import {Typography} from '@mui/material';
 
-const Cancel = ({cancel}: {cancel: () => void}) => {
+const Cancel = ({cancel, disabled}: {cancel: () => void; disabled?: boolean}) => {
   const {reset} = useFormContext();
   return (
     <Button
@@ -11,8 +12,9 @@ const Cancel = ({cancel}: {cancel: () => void}) => {
         reset();
         cancel();
       }}
+      disabled={disabled}
     >
-      Annuller
+      <Typography variant="body2">Annuller</Typography>
     </Button>
   );
 };

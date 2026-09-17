@@ -3,13 +3,17 @@ import {useQuery, queryOptions} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {TaskPermission} from '../tasks/types';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 type User = {
   user_id: number;
   org_id: number | null;
   superUser: boolean;
+  attributes: Attributes;
   features: Features;
+};
+
+type Attributes = {
+  has_own_service: boolean;
 };
 
 type Features = {
@@ -21,12 +25,14 @@ type Features = {
   ressources: boolean;
   routesAndParking: boolean;
   alarms: boolean;
+  stationProgress: boolean;
 };
 
 const defaultUser: UserAccessControl = {
   user_id: -1,
   org_id: null,
   superUser: false,
+
   features: {
     iotAccess: false,
     boreholeAccess: false,
@@ -36,6 +42,10 @@ const defaultUser: UserAccessControl = {
     ressources: false,
     routesAndParking: false,
     alarms: false,
+    stationProgress: false,
+  },
+  attributes: {
+    has_own_service: false,
   },
   advancedTaskPermission: false,
   simpleTaskPermission: false,
@@ -55,7 +65,6 @@ export const userQueryOptions = queryOptions({
 
 export const useUser = () => {
   const {data} = useQuery(userQueryOptions);
-  useNavigationFunctions();
 
   if (!data) return defaultUser;
 

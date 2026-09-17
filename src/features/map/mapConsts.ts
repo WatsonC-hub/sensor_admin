@@ -3,6 +3,7 @@ import utmObj from 'utm-latlng';
 
 import {isProduction, mapboxToken} from '~/consts';
 import {atomWithTimedStorage} from '~/state/atoms';
+import {RouteFeature} from '~/types';
 
 export const utm = new utmObj();
 
@@ -11,10 +12,20 @@ export const zoomThresholdForSmallMarkers = 8;
 export const zoomThreshold = 14;
 export const markerNumThreshold = 10;
 
-export const routeStyle: L.PathOptions = {
+export const drawStyle: L.PathOptions = {
   weight: 5,
   color: '#e50000',
   opacity: 0.8,
+};
+
+export const routeStyle = (feature: RouteFeature | undefined): L.PathOptions => {
+  if (!feature) return drawStyle;
+
+  return {
+    weight: 5,
+    color: feature.properties.type == 'walk' ? '#e50000' : 'blue',
+    opacity: 0.8,
+  };
 };
 
 export const zoomAtom = atomWithTimedStorage<number>('mapZoom', 7, 1000 * 60 * 30);

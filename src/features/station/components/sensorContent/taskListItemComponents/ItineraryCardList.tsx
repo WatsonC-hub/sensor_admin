@@ -11,10 +11,10 @@ import {
 } from '@mui/material';
 import React from 'react';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
-import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
+import {useItinerary} from '~/features/tasks/api/useItinerary';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {useAppContext} from '~/state/contexts';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {useTaskMutations, useTaskUsers} from '~/features/tasks/api/useTasks';
 import CloseIcon from '@mui/icons-material/Close';
 
 import ItineraryListItemSimpleCard from './ItineraryListItemSimpleCard';
@@ -40,16 +40,11 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
     (task) => task.loc_id === loc_id && task.itinerary_id == itinerary_id
   );
 
-  const {
-    getUsers: {data: taskUsers},
-    deleteTaskFromItinerary,
-  } = useTasks();
+  const {deleteTaskFromItinerary} = useTaskMutations();
 
-  const {
-    get: {data: itineraries},
-  } = useTaskItinerary();
+  const {data: taskUsers} = useTaskUsers();
 
-  const itinerary = itineraries?.find((itinerary) => itinerary.id === itinerary_id);
+  const {data: itinerary} = useItinerary(itinerary_id);
 
   const handleDelete = () => {
     const payload = {

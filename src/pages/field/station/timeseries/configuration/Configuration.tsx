@@ -21,6 +21,7 @@ const Configuration = ({ts_id}: ConfigurationProps) => {
   const isJupiterType = [1, 11, 12, 16].includes(metadata?.tstype_id || 0);
   const isBorehole = location_data?.loctype_id === 9;
   const isDmpAllowed = useDmpAllowedMapList(ts_id);
+
   return (
     <>
       <Layout>
@@ -55,7 +56,7 @@ const Configuration = ({ts_id}: ConfigurationProps) => {
         <Typography variant="h6" gutterBottom>
           Tilgængelighed
         </Typography>
-        <VisibilityConfig ts_id={ts_id} />
+        <VisibilityConfig loc_id={loc_id} ts_id={ts_id} />
       </Layout>
     </>
   );

@@ -30,9 +30,11 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
     formState: {defaultValues},
   } = formMethods;
 
-  const {post: postWatlevmp, put: putWatlevmp} = useMaalepunkt(ts_id);
-
-  const handleMaalepunktSubmit = (values: WatlevMPFormValues) => {
+  const {
+    post: {mutateAsync: postWatlevmpAsync},
+    put: {mutateAsync: putWatlevmpAsync},
+  } = useMaalepunkt(ts_id);
+  const handleMaalepunktSubmit = async (values: WatlevMPFormValues) => {
     const mutationOptions = {
       onSuccess: () => {
         reset(initialWatlevmpData());
@@ -43,22 +45,20 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
     const data = {
       ...values,
     };
-
     if (values.gid === undefined) {
       const payload = {
         data: data,
         path: `${ts_id}`,
       };
-      postWatlevmp.mutate(payload, mutationOptions);
+      await postWatlevmpAsync(payload, mutationOptions);
     } else {
       const payload = {
         data: data,
         path: `${ts_id}/${values.gid}`,
       };
-      putWatlevmp.mutate(payload, mutationOptions);
+      await putWatlevmpAsync(payload, mutationOptions);
     }
   };
-
   return (
     <Box maxWidth={600} margin="auto">
       <Form
@@ -70,18 +70,13 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
           label="Målepunkt [m DVR90]"
           required
           type="number"
-          gridSizes={defaultValues?.gid !== undefined ? 12 : undefined}
           slotProps={{
             input: {
               endAdornment: <Typography variant="body2">m</Typography>,
             },
           }}
         />
-        <Form.DateTime
-          name="startdate"
-          label={defaultValues?.gid !== undefined ? 'Start dato' : 'Dato'}
-        />
-        {defaultValues?.gid !== undefined && <Form.DateTime name="enddate" label="Slut dato" />}
+        <Form.DateTime name="startdate" label={'Gældende fra'} />
 
         <Grid2 size={12}>
           <Controller
@@ -95,8 +90,8 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
                   disableClearable
                   slotProps={{}}
                   options={options}
-                  inputValue={value}
-                  value={value}
+                  inputValue={value ?? ''}
+                  value={value ?? ''}
                   ref={ref}
                   fullWidth
                   onBlur={onBlur}
@@ -138,6 +133,7 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
           ml="auto"
         >
           <Form.Cancel
+            disabled={false}
             cancel={() => {
               if (defaultValues?.gid) reset(initialWatlevmpData());
               else reset();

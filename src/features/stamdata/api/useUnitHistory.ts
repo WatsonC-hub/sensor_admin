@@ -16,6 +16,7 @@ export type UnitHistory = {
   startdato: string;
   terminal_id: string;
   terminal_type: string;
+  signal_id: number;
 };
 
 export const useUnitHistory = () => {

@@ -13,6 +13,7 @@ import type {
   MultiSelectProps,
   Ressourcer,
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useAppContext} from '~/state/contexts';
 
 interface CheckboxesTagsProps extends MultiSelectProps {
@@ -29,7 +30,11 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
   } = useRessourcer();
 
   const [selected, setSelected] = useState<Array<Ressourcer> | undefined>(value);
-  const {trigger, watch} = useFormContext();
+  const {
+    trigger,
+    watch,
+    formState: {isDirty},
+  } = useFormContext();
 
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
@@ -148,12 +153,17 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
               setValue(newValue);
             }}
           />
-          <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+          <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} gap={1} mt={2}>
+            <UpdateProgressButton
+              loc_id={loc_id}
+              ts_id={-1}
+              disabled={disabled || isDirty}
+              progressKey="ressourcer"
+            />
             <Button
               bttype="primary"
-              disabled={disabled}
+              disabled={disabled || !isDirty}
               onClick={handleSave}
-              sx={{mt: 5}}
               startIcon={<Save />}
             >
               Gem

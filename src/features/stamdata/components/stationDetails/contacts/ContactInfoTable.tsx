@@ -4,7 +4,6 @@ import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-reac
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
-
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
@@ -22,8 +21,7 @@ import {useAppContext} from '~/state/contexts';
 import {ContactTable} from '~/types';
 
 type Props = {
-  delContact: (relation_id: number) => void;
-  editContact: (ContactInfo: ContactTable) => void;
+  editContact: (ContactInfo: ContactTable) => Promise<void>;
 };
 
 const onDeleteBtnClick = (
@@ -35,25 +33,46 @@ const onDeleteBtnClick = (
   setDialogOpen(true);
 };
 
-const ContactInfoTable = ({delContact, editContact}: Props) => {
+const ContactInfoTable = ({editContact}: Props) => {
   const {loc_id} = useAppContext(['loc_id']);
   const {
     features: {contacts},
   } = useUser();
-  const [contactID, setContactID] = useState<number>(-1);
-  const [dialogOpen, setDialogOpen] = useState(false);
+
   const {
     reset,
     handleSubmit,
-    formState: {dirtyFields},
+    formState: {dirtyFields, isSubmitting, isDirty},
   } = useFormContext<InferContactInfoTable>();
+
+  const [contactID, setContactID] = useState<number>(-1);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const [isUser, setIsUser] = useState<boolean>(false);
   const {isMobile} = useBreakpoints();
 
-  const {get} = useContactInfo(loc_id);
+  const {
+    get,
+    del: {mutate: delContact, isPending},
+  } = useContactInfo(loc_id);
+
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
+
+  const handleDelete = (relation_id: number) => {
+    const payload = {
+      path: `${relation_id}`,
+    };
+
+    delContact(payload, {
+      onSuccess: () => {
+        setDialogOpen(false);
+        setContactID(-1);
+        setOpenContactInfoDialog(false);
+      },
+    });
+  };
 
   const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
     () => [
@@ -101,8 +120,8 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
       },
       {
         header: 'Tlf.',
-        accessorKey: 'mobile',
-        size: 20,
+        id: 'mobile',
+        accessorFn: (row) => row.mobile ?? '',
         enableColumnActions: false,
       },
       {
@@ -238,7 +257,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
   };
 
   const handleSave: SubmitHandler<InferContactInfoTable> = async (details) => {
-    editContact({
+    await editContact({
       ...details,
       email: details.email ?? '',
       mobile: details.mobile ? details.mobile.toString() : null,
@@ -253,8 +272,9 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={() => {
-          delContact(contactID);
+          handleDelete(contactID);
         }}
+        loading={isPending}
       />
 
       <Dialog
@@ -271,7 +291,8 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
             Annuller
           </Button>
           <Button
-            disabled={Object.keys(dirtyFields).length === 0}
+            disabled={Object.keys(dirtyFields).length === 0 || !isDirty}
+            loading={isSubmitting}
             onClick={handleSubmit(handleSave, (error) => console.log(error))}
             bttype="primary"
           >

@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 
 export const initialData = () =>
   ({
-    timeofmeas: dayjs(),
+    timeofmeas: dayjs().startOf('minute'),
     measurement: 0,
     useforcorrection: 0,
     comment: '',
@@ -14,7 +14,7 @@ export const initialData = () =>
 
 export const boreholeInitialData = () =>
   ({
-    timeofmeas: dayjs(),
+    timeofmeas: dayjs().startOf('minute'),
     measurement: 0,
     useforcorrection: 0,
     comment: '',

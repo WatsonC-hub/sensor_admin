@@ -1,6 +1,9 @@
 import {SvgIconProps} from '@mui/material';
 import {Dayjs} from 'dayjs';
 import {ReactNode} from 'react';
+// import type {FeatureCollection, Geometry} from 'leaflet';
+import * as geojson from 'geojson';
+import {CertifyQa} from './features/kvalitetssikring/api/useCertifyQa';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -8,7 +11,7 @@ export interface Image {
   type: string;
   gid: number;
   loc_id?: number;
-  boreholeno: number;
+  boreholeno?: number;
   title: string;
   date: Dayjs;
   public: boolean;
@@ -119,7 +122,7 @@ export type BoreholeMeasurementAPI = {
   comment: string;
 };
 
-export type MaalepunktTableData = {
+export type BoreholeMaalepunktTableData = {
   startdate: string;
   enddate: string;
   elevation: number;
@@ -132,9 +135,20 @@ export type MaalepunktTableData = {
   display_name?: string;
 };
 
-export type Maalepunkt = {
+export type MaalepunktTableData = {
+  startdate: string;
+  elevation: number;
+  organisationid: number;
+  organisationname: string;
+  mp_description: string;
+  gid: number;
+  ts_id: number;
+  userid: string;
+  display_name?: string;
+};
+
+export type MaalepunktAsDayjs = {
   startdate: Dayjs;
-  enddate: Dayjs;
   elevation: number;
   mp_description: string;
   gid: number;
@@ -143,7 +157,7 @@ export type Maalepunkt = {
   display_name?: string;
 };
 
-export type MaalepunktPost = {
+export type BoreholeMaalepunktPost = {
   startdate: Dayjs;
   enddate: Dayjs;
   elevation: number | null;
@@ -180,11 +194,9 @@ export type Parking = {
   y: number;
 };
 
-export type LeafletMapRoute = {
-  route_id: number;
-  loc_id: number;
-  geo_route: JSON | GeoJsonObject;
-};
+type RouteProperties = {loc_id: number; id: number; comment: string | null; type: 'walk' | 'drive'};
+
+export type RouteFeature = geojson.Feature<geojson.Geometry, RouteProperties>;
 
 export type Group = {
   id: string;
@@ -340,6 +352,28 @@ export type QaAllData = {
   dataexclude: Array<DataExclude>;
 };
 
+export type AdjustmentData =
+  | {
+      type: AdjustmentTypes.LEVELCORRECTION;
+      data: LevelCorrection;
+    }
+  | {
+      type: AdjustmentTypes.MINMAX;
+      data: MinMaxCutoff;
+    }
+  | {
+      type: AdjustmentTypes.EXLUDETIME;
+      data: DataExclude;
+    }
+  | {
+      type: AdjustmentTypes.EXLUDEPOINTS;
+      data: DataExclude;
+    }
+  | {
+      type: AdjustmentTypes.APPROVED;
+      data: CertifyQa;
+    };
+
 export type GraphData = {
   x: Array<string>;
   y: Array<number>;
@@ -438,3 +472,5 @@ export type DmpSyncValidCombination = {
   loctype_id: number;
   tstype_id: number;
 };
+
+export type QueryType<F> = Omit<ReturnType<F>, 'queryKey' | 'queryFn'>;

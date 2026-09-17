@@ -25,10 +25,10 @@ import PejlingMeasurements from '~/pages/field/boreholeno/PejlingMeasurements';
 import {useAppContext} from '~/state/contexts';
 import {
   Kontrol,
-  MaalepunktPost,
+  BoreholeMaalepunktPost,
   BoreholeMeasurement,
   BoreholeMeasurementAPI,
-  MaalepunktTableData,
+  BoreholeMaalepunktTableData,
 } from '~/types';
 
 const dateUpdated = () => {
@@ -91,7 +91,7 @@ const Boreholeno = () => {
     type: boreholeno,
     comment: '',
     public: false,
-    date: dayjs(),
+    date: dayjs().startOf('minute'),
   });
 
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData<BoreholeMaalepunkt>({
@@ -105,24 +105,19 @@ const Boreholeno = () => {
   const [control, setcontrol] = useState<Array<BoreholeMeasurement> | undefined>();
   const [dynamic, setDynamic] = useState<{date: string; measurement: number} | null>(null);
 
-  const {data: measurements} = useQuery<
-    Array<BoreholeMeasurementAPI>,
-    Error,
-    Array<BoreholeMeasurement>
-  >({
+  const {data: measurements} = useQuery({
     queryKey: queryKeys.Borehole.measurementsWithIntake(boreholeno, intakeno),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<BoreholeMeasurementAPI>>(
         `/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`
       );
-      return data;
-    },
-    select: (data): Array<BoreholeMeasurement> =>
-      data.map((e) => ({
+      return data.map((e) => ({
         ...e,
         timeofmeas: dayjs(e.timeofmeas),
         pumpstop: e.pumpstop ? dayjs(e.pumpstop) : null,
-      })),
+      }));
+    },
+
     enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
     placeholderData: [],
   });
@@ -130,7 +125,7 @@ const Boreholeno = () => {
   const {data: watlevmp} = useQuery({
     queryKey: queryKeys.Borehole.watlevmpWithIntake(boreholeno, intakeno),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<MaalepunktTableData>>(
+      const {data} = await apiClient.get<Array<BoreholeMaalepunktTableData>>(
         `/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`
       );
       return data;
@@ -198,7 +193,7 @@ const Boreholeno = () => {
       }
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['measurements']],
     },
   });
 
@@ -218,7 +213,7 @@ const Boreholeno = () => {
     });
   };
   const addOrEditWatlevmp = useMutation({
-    mutationFn: async (data: MaalepunktPost) => {
+    mutationFn: async (data: BoreholeMaalepunktPost) => {
       if (data.gid === -1) {
         await apiClient.post(`/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`, data);
       } else {
@@ -226,7 +221,7 @@ const Boreholeno = () => {
       }
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [['borehole_watlevmp']],
     },
   });
 
@@ -305,7 +300,7 @@ const Boreholeno = () => {
       type: boreholeno,
       comment: '',
       public: false,
-      date: dayjs(),
+      date: dayjs().startOf('minute'),
     });
     setOpenSave(true);
   };

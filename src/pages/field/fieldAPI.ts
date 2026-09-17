@@ -10,7 +10,10 @@ async function getDTMQuota(x: number, y: number) {
 
 const resetPassword = async (body: {email: string}) => {
   const currentUrl = window.location.href;
-  const {data} = await apiClient.post(`/admin/forgot-password?redirect=${currentUrl}`, body);
+  const {data} = await apiClient.post(
+    `/admin/auth/forgot-password?redirect=${encodeURIComponent(currentUrl)}`,
+    body
+  );
   return data;
 };
 

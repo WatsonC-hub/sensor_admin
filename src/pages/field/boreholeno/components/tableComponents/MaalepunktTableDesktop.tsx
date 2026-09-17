@@ -11,13 +11,13 @@ import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {MaalepunktTableData} from '~/types';
+import {BoreholeMaalepunktTableData} from '~/types';
 import {BoreholeMaalepunkt} from '../../Boreholeno';
 import dayjs from 'dayjs';
 
 interface Props {
-  data: MaalepunktTableData[] | undefined;
-  handleEdit: (maalepuntk: BoreholeMaalepunkt) => void;
+  data: BoreholeMaalepunktTableData[] | undefined;
+  handleEdit: (maalepunkt: BoreholeMaalepunkt) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
@@ -32,7 +32,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
     setDialogOpen(true);
   };
 
-  const columns = useMemo<MRT_ColumnDef<MaalepunktTableData>[]>(
+  const columns = useMemo<MRT_ColumnDef<BoreholeMaalepunktTableData>[]>(
     () => [
       {
         accessorFn: (row) => (
@@ -67,9 +67,10 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
     ],
     []
   );
-  const [tableState, reset] = useStatefullTableAtom<MaalepunktTableData>('MaalepunktTableState');
+  const [tableState, reset] =
+    useStatefullTableAtom<BoreholeMaalepunktTableData>('MaalepunktTableState');
 
-  const options: Partial<MRT_TableOptions<MaalepunktTableData>> = {
+  const options: Partial<MRT_TableOptions<BoreholeMaalepunktTableData>> = {
     enableFullScreenToggle: false,
     enableRowActions: true,
     renderRowActions: ({row}) => (
@@ -93,7 +94,13 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
     },
   };
 
-  const table = useTable<MaalepunktTableData>(columns, data, options, tableState, TableTypes.TABLE);
+  const table = useTable<BoreholeMaalepunktTableData>(
+    columns,
+    data,
+    options,
+    tableState,
+    TableTypes.TABLE
+  );
 
   return (
     <Box sx={setTableBoxStyle(886)}>

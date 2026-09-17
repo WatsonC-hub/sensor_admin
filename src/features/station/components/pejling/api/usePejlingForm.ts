@@ -83,10 +83,7 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
       }
 
       const mp = mpData?.some((elem) => {
-        if (
-          values.timeofmeas.isSameOrAfter(elem.startdate) &&
-          values.timeofmeas.isBefore(elem.enddate)
-        ) {
+        if (values.timeofmeas.isSameOrAfter(elem.startdate)) {
           return true;
         }
       });

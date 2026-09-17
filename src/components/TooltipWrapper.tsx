@@ -1,4 +1,4 @@
-import {Box, Link, Tooltip} from '@mui/material';
+import { Box, Link, Tooltip } from '@mui/material';
 import InfoOutlined from '@mui/icons-material/InfoOutlined';
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import React from 'react';

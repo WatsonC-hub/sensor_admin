@@ -4,11 +4,11 @@ import LocationInfo from '~/features/station/components/sensorContent/LocationIn
 import TaskList from '~/features/station/components/sensorContent/TaskList';
 import TimeseriesList from '~/features/station/components/sensorContent/TimeseriesList';
 import {useAppContext} from '~/state/contexts';
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
 import TaskHistoryList from '~/features/station/components/sensorContent/TaskHistoryList';
-import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -26,14 +26,19 @@ const SensorContent = () => {
   const {advancedTaskPermission, simpleTaskPermission} = useUser();
   const {tasks} = useTaskState();
   const {data: location} = useMapOverview({
-    select: (data) => {
-      return data.find((location) => location.loc_id === loc_id);
-    },
+    select: useCallback(
+      (data: MapOverview[]) => {
+        return data.find((location) => location.loc_id === loc_id);
+      },
+      [loc_id]
+    ),
   });
 
-  const enableDragToTrip = tasks?.some(
-    (task) => task.loc_id === loc_id && task.status_id == StatusEnum.FIELD
-  );
+  const enableDragToTrip =
+    tasks?.some((task) => task.loc_id === loc_id && task.status_id == StatusEnum.FIELD) ||
+    (location?.not_serviced == true &&
+      location?.inactive_new == true &&
+      location?.in_service == false);
 
   const {ref} = useDraggable({
     id: 'location' + loc_id,
@@ -57,7 +62,7 @@ const SensorContent = () => {
             title={
               !enableDragToTrip
                 ? 'Lav en opgave til feltarbejde for at kunne trække til tur'
-                : 'Træk til tur for at tilføje opgaver'
+                : 'Træk lokationen til en tur for at tilføje den til turen'
             }
             arrow
           >

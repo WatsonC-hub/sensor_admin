@@ -1,4 +1,4 @@
-import {queryOptions, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
@@ -20,9 +20,9 @@ export type Configuration = {
   currentPendingTimeseries: string | null;
 };
 
-export const timeseriesMeasureSampleSendOptions = (ts_id: number) =>
+export const timeseriesMeasureSampleSendOptions = (ts_id: number | undefined) =>
   queryOptions<Configuration, APIError>({
-    queryKey: queryKeys.Timeseries.MeasureSampleSend(ts_id!),
+    queryKey: queryKeys.Timeseries.MeasureSampleSend(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<Configuration>(
         `/sensor_field/configuration/sample_send/${ts_id}`
@@ -32,7 +32,7 @@ export const timeseriesMeasureSampleSendOptions = (ts_id: number) =>
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-export const useTimeseriesMeasureSampleSend = (ts_id: number) => {
+export const useTimeseriesMeasureSampleSend = (ts_id: number | undefined) => {
   const {data: timeseriesData} = useTimeseriesData(ts_id);
   const {
     features: {iotAccess},
@@ -44,7 +44,6 @@ export const useTimeseriesMeasureSampleSend = (ts_id: number) => {
 };
 
 export const useTimeseriesMeasureSampleSendMutation = (ts_id: number) => {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: MeasureSampleSend) => {
       const {data: out} = await apiClient.post(
@@ -54,14 +53,11 @@ export const useTimeseriesMeasureSampleSendMutation = (ts_id: number) => {
       return out;
     },
     onSuccess: () => {
-      // Invalidate query to refetch updated configuration
       toast.success('Konfiguration gemt');
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Timeseries.MeasureSampleSend(ts_id),
-      });
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [queryKeys.Timeseries.MeasureSampleSend(ts_id)],
+      optOutGeneralInvalidations: true,
     },
   });
 };

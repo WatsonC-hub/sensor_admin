@@ -4,7 +4,6 @@ import {CircularProgress, Box, IconButton, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import dayjs, {Dayjs} from 'dayjs';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
-import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo} from 'react';
 import {apiClient} from '~/apiClient';
 import TooltipWrapper from '~/components/TooltipWrapper';
@@ -64,7 +63,6 @@ const JupiterMPTable = () => {
       data: {
         gid: -1,
         startdate: data.startdate,
-        enddate: dayjs('2099-01-01'),
         elevation: data.elevation,
         mp_description: data.description ?? '',
       },
@@ -75,7 +73,7 @@ const JupiterMPTable = () => {
   const columns = useMemo<MRT_ColumnDef<LastJupiterMPData>[]>(
     () => [
       {
-        header: 'Dato',
+        header: 'Gældende fra',
         accessorKey: 'startdate',
         size: 80,
         Cell: ({row}) => {
@@ -116,13 +114,6 @@ const JupiterMPTable = () => {
   );
 
   const options: Partial<MRT_TableOptions<LastJupiterMPData>> = {
-    // localization: {
-    //   ...MRT_Localization_DA,
-    //   noRecordsToDisplay:
-    //     intakeno === undefined
-    //       ? 'Det var ikke muligt at søge efter et målepunkt, da tidsserien ikke har et indtagsnummer'
-    //       : 'Kan ikke finde et målepunkt i Jupiter',
-    // },
     enableFullScreenToggle: false,
     positionExpandColumn: 'last',
     positionActionsColumn: 'last',

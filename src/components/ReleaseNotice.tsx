@@ -13,7 +13,7 @@ import {
 import Button from './Button';
 import {Close} from '@mui/icons-material';
 
-const RELEASE_NOTICE_KEY = 'fieldAppReleaseNotice_v2025_10';
+const RELEASE_NOTICE_KEY = 'fieldAppReleaseNotice_v2026_02';
 
 export default function ReleaseNoticeModal() {
   const [open, setOpen] = useState(false);
@@ -36,7 +36,7 @@ export default function ReleaseNoticeModal() {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>✨ Ny version af felt-appen</DialogTitle>
+      <DialogTitle>✨ Opdatering til målepunkter</DialogTitle>
       <IconButton
         aria-label="close"
         onClick={handleClose}
@@ -52,33 +52,27 @@ export default function ReleaseNoticeModal() {
       <DialogContent>
         <DialogContentText component="div" color="black">
           <Typography gutterBottom>
-            Vi har introduceret nye muligheder i appen, der giver dig større fleksibilitet med
-            <strong> konfigurering af sende- og måleforhold</strong> samt
-            <strong> kontrolhyppighed og forvarsling</strong> på tidsserier.
+            Vi har ændret på hvordan målepunkter fungerer for at gøre brugen af målepunkter mere{' '}
+            <strong>intuitiv</strong> og <strong>robust</strong>.
           </Typography>
 
           <Box component="ul" sx={{pl: 2, mt: 1, mb: 2}}>
-            <li>Konfigurer sende- og måleintervaller efter egne behov</li>
-            <li>Se de aktuelle standardindstillinger direkte på udstyret</li>
-            <li>Få vist hvornår terminalen forventes at opsamle nye indstillinger</li>
-            <li>Bestem hvor ofte kontrolmålinger skal udføres</li>
-            <li>Angiv forvarslingstid så kontrolopgaver vises i god tid</li>
+            <li>
+              Målepunkter bliver nu kun registreret med en <strong>gældende fra</strong>-dato
+            </li>
+            <li>Et målepunkt gælder altid fra denne dato og frem til dato for næste målepunkt</li>
+            <li>Seneste målepunkt gælder dermed frem indtil et nyt målepunkt bliver defineret</li>
+            <li>Dette gør at der ikke kommer nogle huller, hvor et målepunkt ikke er defineret</li>
           </Box>
 
           <Typography>
             📘{' '}
             <Link
-              href="https://www.watsonc.dk/guides/konfiguration-af-tidsserie/"
+              href="https://www.watsonc.dk/guides/malepunkter-vandstand/"
               target="_blank"
               rel="noopener"
             >
-              Læs guiden om konfiguration
-            </Link>
-          </Typography>
-          <Typography>
-            📘{' '}
-            <Link href="https://www.watsonc.dk/guides/01-10-2025/" target="_blank" rel="noopener">
-              Se release notes
+              Læs guide om målepunkter
             </Link>
           </Typography>
         </DialogContentText>

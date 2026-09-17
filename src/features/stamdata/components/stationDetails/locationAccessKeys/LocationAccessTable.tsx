@@ -22,8 +22,7 @@ import {useAppContext} from '~/state/contexts';
 import {AccessTable} from '~/types';
 
 type Props = {
-  delLocationAccess: (location_access_id: number | undefined) => void;
-  editLocationAccess: (LocationAccess: AccessTable) => void;
+  editLocationAccess: (LocationAccess: AccessTable) => Promise<void>;
 };
 
 const onDeleteBtnClick = (
@@ -35,16 +34,16 @@ const onDeleteBtnClick = (
   setDialogOpen(true);
 };
 
-const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => {
+const LocationAccessTable = ({editLocationAccess}: Props) => {
   const [locationAccessID, setLocationAccessID] = useState<number>();
   const [dialogOpen, setDialogOpen] = useState(false);
   const {
     watch,
     reset,
     handleSubmit,
-    formState: {dirtyFields},
+    formState: {dirtyFields, isSubmitting, isDirty},
   } = useFormContext<AdgangsforholdTable>();
-  const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
+  const [openLocationAccessDialog, setOpenLocationAccessDialog] = useState<boolean>(false);
   const {loc_id} = useAppContext(['loc_id']);
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
@@ -53,7 +52,24 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
     features: {keys: accessKeys},
   } = useUser();
 
-  const {get} = useLocationAccess(loc_id);
+  const {
+    get,
+    del: {mutate: delLocationAccess, isPending},
+  } = useLocationAccess(loc_id);
+
+  const handleDelete = (location_access_id: number | undefined) => {
+    const payload = {
+      path: `${loc_id}/${location_access_id}`,
+    };
+
+    delLocationAccess(payload, {
+      onSuccess: () => {
+        setDialogOpen(false);
+        setLocationAccessID(-1);
+        setOpenLocationAccessDialog(false);
+      },
+    });
+  };
 
   const navnLabel = watch('type');
   const columns = useMemo<MRT_ColumnDef<AccessTable>[]>(
@@ -186,7 +202,7 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
       <RenderActions
         handleEdit={() => {
           reset(row.original);
-          setOpenContactInfoDialog(true);
+          setOpenLocationAccessDialog(true);
         }}
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.id, setDialogOpen, setLocationAccessID);
@@ -223,13 +239,13 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
 
   const handleClose = () => {
     reset(initialLocationAccessData);
-    setOpenContactInfoDialog(false);
+    setOpenLocationAccessDialog(false);
   };
 
   const handleSave: SubmitHandler<AdgangsforholdTable> = async (details) => {
-    editLocationAccess(details);
+    await editLocationAccess(details);
 
-    setOpenContactInfoDialog(false);
+    setOpenLocationAccessDialog(false);
     reset(initialLocationAccessData);
   };
 
@@ -238,11 +254,12 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={() => delLocationAccess(locationAccessID)}
+        onOkDelete={() => handleDelete(locationAccessID)}
+        loading={isPending}
       />
 
       <Dialog
-        open={openContactInfoDialog}
+        open={openLocationAccessDialog}
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
         fullWidth
@@ -256,7 +273,8 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
             Annuller
           </Button>
           <Button
-            disabled={JSON.stringify(dirtyFields) === '{}'}
+            disabled={JSON.stringify(dirtyFields) === '{}' || !isDirty}
+            loading={isSubmitting}
             onClick={handleSubmit(handleSave, (error) => console.log(error))}
             bttype="primary"
           >

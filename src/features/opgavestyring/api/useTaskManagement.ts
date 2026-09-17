@@ -13,6 +13,7 @@ export const useTaskManagement = (itinerary_id: string | null) => {
       );
       return data;
     },
+    enabled: !!itinerary_id,
   });
 
   return data;

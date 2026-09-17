@@ -38,26 +38,28 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   );
   const y = (selection?.points?.[0]?.y as number)?.toFixed(4);
 
-  const {post: levelCorrectionMutation} = useLevelCorrection();
+  const {
+    post: {mutateAsync: levelCorrectionAsync},
+  } = useLevelCorrection();
 
   const formMethods = useForm<CorrectionValues>({resolver: zodResolver(schema), mode: 'onTouched'});
 
-  const {handleSubmit, setValue, watch, reset} = formMethods;
+  const {
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: {isDirty, isSubmitting},
+  } = formMethods;
 
-  const onAccept: SubmitHandler<CorrectionValues> = (values) => {
-    levelCorrectionMutation.mutate(
-      {
-        path: `${timeseries_data?.ts_id}`,
-        data: {date: values.date, comment: values.comment},
-      },
-      {
-        onSuccess: () => {
-          reset();
-          setDataAdjustment(null);
-          onClose();
-        },
-      }
-    );
+  const onAccept: SubmitHandler<CorrectionValues> = async (values) => {
+    await levelCorrectionAsync({
+      path: `${timeseries_data?.ts_id}`,
+      data: {date: values.date, comment: values.comment},
+    });
+    reset();
+    setDataAdjustment(null);
+    onClose();
   };
 
   const x = watch('date');
@@ -114,8 +116,10 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
         </Button>
         <Button
           bttype="primary"
+          loading={isSubmitting}
+          disabled={!isDirty}
           onClick={handleSubmit(onAccept, (e) => console.log(e))}
-          startIcon={<Save />}
+          startIcon={isSubmitting ? undefined : <Save />}
           color="secondary"
         >
           Gem

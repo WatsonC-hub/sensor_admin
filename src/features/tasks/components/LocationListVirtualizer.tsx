@@ -6,12 +6,12 @@ import LocationListItem from './LocationListItem';
 
 import {useDisplayState} from '~/hooks/ui';
 import {Box, Divider, Typography} from '@mui/material';
-import {useMapFilterStore} from '~/features/map/store';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {BoreholeMapData} from '~/types';
 import BoreholeListItem from './BoreholeListItem';
 import {createSmoothScrollToFn} from '../helpers';
+import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
 
 const LocationListVirtualizer = () => {
   const {listFilteredData} = useFilteredMapData();

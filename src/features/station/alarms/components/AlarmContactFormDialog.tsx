@@ -36,7 +36,7 @@ type Props = {
 const transformData = (data: ContactInfo[]) => {
   const alarmContacts = data.map((item) => ({
     contact_id: item.id,
-    name: item.name,
+    name: `${item.name} - ${item.email}`,
   }));
 
   return alarmContacts;
@@ -112,7 +112,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
       ? [
           {
             contact_id: currentContact.contact_id,
-            name: currentContact.name,
+            name: `${currentContact.name}`,
           },
         ]
       : []),

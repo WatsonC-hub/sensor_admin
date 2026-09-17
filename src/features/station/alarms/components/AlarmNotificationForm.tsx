@@ -13,8 +13,7 @@ const AlarmNotificationTypedForm = createTypedForm<AlarmsFormValues>();
 
 const AlarmNotificationForm = () => {
   const {setValue, watch} = useFormContext<AlarmsFormValues>();
-  const Notification_ids = watch('notification_ids');
-
+  const notification_ids = watch('notification_ids');
   const {data} = useNotificationTypes();
 
   return (
@@ -34,7 +33,7 @@ const AlarmNotificationForm = () => {
               'notification_ids',
               [
                 ...new Set([
-                  ...Notification_ids,
+                  ...notification_ids,
                   ...(data
                     ?.filter((item) => item.flag === FlagEnum.CRITICAL)
                     .map((item) => item.gid) ?? []),
@@ -61,7 +60,7 @@ const AlarmNotificationForm = () => {
               'notification_ids',
               [
                 ...new Set([
-                  ...Notification_ids,
+                  ...notification_ids,
                   ...(data
                     ?.filter((item) => item.flag === FlagEnum.WARNING)
                     .map((item) => item.gid) ?? []),
@@ -86,7 +85,7 @@ const AlarmNotificationForm = () => {
           onClick={() => {
             const alarmNotificationArray = [
               ...new Set([
-                ...Notification_ids,
+                ...notification_ids,
                 ...(data?.filter((item) => item.flag === FlagEnum.INFO).map((item) => item.gid) ??
                   []),
               ]),

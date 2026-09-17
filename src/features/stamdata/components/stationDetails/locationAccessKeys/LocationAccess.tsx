@@ -1,7 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import KeyIcon from '@mui/icons-material/Key';
-import {Dialog, DialogActions, DialogContent, DialogTitle, Divider} from '@mui/material';
+import {Box, Dialog, DialogActions, DialogContent, DialogTitle, Divider} from '@mui/material';
 import React, {useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 
@@ -19,6 +19,7 @@ import {
   AdgangsForhold,
 } from '~/features/stamdata/components/stationDetails/zodSchemas';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useAppContext} from '~/state/contexts';
 import {Access, AccessTable} from '~/types';
 
@@ -32,9 +33,8 @@ const LocationAccess = () => {
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
   const {
-    post: postLocationAccess,
-    put: editLocationAccess,
-    del: delLocationAccess,
+    post: {mutateAsync: postLocationAccessAsync},
+    put: {mutateAsync: editLocationAccessAsync},
   } = useLocationAccess(loc_id);
 
   const formMethods = useForm({
@@ -43,7 +43,12 @@ const LocationAccess = () => {
     mode: 'onSubmit',
   });
 
-  const {clearErrors, handleSubmit, reset} = formMethods;
+  const {
+    clearErrors,
+    handleSubmit,
+    reset,
+    formState: {isSubmitting},
+  } = formMethods;
 
   const handleClose = () => {
     reset(initialLocationAccessData);
@@ -66,21 +71,11 @@ const LocationAccess = () => {
       path: `${loc_id}`,
       data: test,
     };
-    postLocationAccess.mutate(payload, {
-      onSuccess: () => {
-        reset();
-        setOpenDialog(false);
-        setCreateNew(false);
-      },
-    });
-  };
+    await postLocationAccessAsync(payload);
 
-  const handleDelete = (location_access_id: number | undefined) => {
-    const payload = {
-      path: `${loc_id}/${location_access_id}`,
-    };
-
-    delLocationAccess.mutate(payload);
+    reset();
+    setOpenDialog(false);
+    setCreateNew(false);
   };
 
   const handleEdit = async (locationAccess: AccessTable) => {
@@ -97,18 +92,15 @@ const LocationAccess = () => {
       },
     };
 
-    editLocationAccess.mutate(payload, {
-      onSuccess: () => {
-        reset();
-      },
-    });
+    await editLocationAccessAsync(payload);
+    reset();
   };
 
   return (
     <>
       <StationPageBoxLayout>
         <FormProvider {...formMethods}>
-          <LocationAccessTable editLocationAccess={handleEdit} delLocationAccess={handleDelete} />
+          <LocationAccessTable editLocationAccess={handleEdit} />
           {openDialog && (
             <Dialog
               open={openDialog}
@@ -137,7 +129,8 @@ const LocationAccess = () => {
                 <Button
                   onClick={handleSubmit(handleSave, (error) => console.log(error))}
                   bttype="primary"
-                  startIcon={<Save />}
+                  loading={isSubmitting}
+                  startIcon={isSubmitting ? undefined : <Save />}
                 >
                   Gem
                 </Button>
@@ -145,14 +138,22 @@ const LocationAccess = () => {
             </Dialog>
           )}
         </FormProvider>
+        <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+          <UpdateProgressButton
+            loc_id={loc_id}
+            ts_id={-1}
+            progressKey="adgangsforhold"
+            alterStyle
+          />
+          <FabWrapper
+            icon={<KeyIcon />}
+            text="Tilføj nøgle eller kode"
+            disabled={!accessKeys || disabled}
+            onClick={() => setOpenDialog(true)}
+            sx={{visibility: openDialog ? 'hidden' : 'visible', ml: 0}}
+          />
+        </Box>
       </StationPageBoxLayout>
-      <FabWrapper
-        icon={<KeyIcon />}
-        text="Tilføj nøgle eller kode"
-        disabled={!accessKeys || disabled}
-        onClick={() => setOpenDialog(true)}
-        sx={{visibility: openDialog ? 'hidden' : 'visible'}}
-      />
     </>
   );
 };
