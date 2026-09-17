@@ -1,19 +1,19 @@
-import { ManageSearch } from "@mui/icons-material";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { Box, SpeedDial, SpeedDialAction, Tooltip, Typography } from "@mui/material";
-import React, { useState } from "react";
-import { toast } from "react-toastify";
+import {ManageSearch} from '@mui/icons-material';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import {Box, SpeedDial, SpeedDialAction, Tooltip, Typography} from '@mui/material';
+import React, {useState} from 'react';
+import {toast} from 'react-toastify';
 
-import useBreakpoints from "~/hooks/useBreakpoints";
+import useBreakpoints from '~/hooks/useBreakpoints';
 
-import type { DialAction } from "~/types";
+import type {DialAction} from '~/types';
 
 type CustomSpeedDialProps = {
   actions: Array<DialAction>;
 };
 
-const CustomSpeedDial = ({ actions }: CustomSpeedDialProps) => {
-  const { isMobile, isMonitor, isLargeLaptop } = useBreakpoints();
+const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
+  const {isMobile, isMonitor, isLargeLaptop} = useBreakpoints();
   const [open, setOpen] = useState<boolean>(isMonitor || isLargeLaptop);
   return (
     <SpeedDial
@@ -21,9 +21,9 @@ const CustomSpeedDial = ({ actions }: CustomSpeedDialProps) => {
       icon={
         <Box
           sx={{
-            display: "flex",
+            display: 'flex',
             px: 3,
-            flexDirection: "row",
+            flexDirection: 'row',
           }}
         >
           <ManageSearch />
@@ -31,7 +31,7 @@ const CustomSpeedDial = ({ actions }: CustomSpeedDialProps) => {
             <Typography
               sx={{
                 px: 1,
-                textTransform: "none",
+                textTransform: 'none',
               }}
             >
               Justér
@@ -41,12 +41,12 @@ const CustomSpeedDial = ({ actions }: CustomSpeedDialProps) => {
       }
       open={open}
       sx={{
-        position: "sticky",
+        position: 'sticky',
         bottom: 10,
         right: 20,
-        ml: "auto",
-        alignItems: "end",
-        ".MuiSpeedDial-actions": {
+        ml: 'auto',
+        alignItems: 'end',
+        '.MuiSpeedDial-actions': {
           height: 0,
         },
       }}
@@ -56,11 +56,11 @@ const CustomSpeedDial = ({ actions }: CustomSpeedDialProps) => {
           setOpen(!open);
         },
         sx: {
-          width: "fit-content",
+          width: 'fit-content',
           borderRadius: 4.5,
-          backgroundColor: "secondary.main",
-          ":hover": {
-            backgroundColor: "secondary.dark",
+          backgroundColor: 'secondary.main',
+          ':hover': {
+            backgroundColor: 'secondary.dark',
           },
         },
       }}
@@ -73,32 +73,32 @@ const CustomSpeedDial = ({ actions }: CustomSpeedDialProps) => {
             slotProps={{
               fab: {
                 sx: {
-                  color: "white",
-                  backgroundColor: "primary.main",
+                  color: 'white',
+                  backgroundColor: 'primary.main',
                   borderRadius: 4,
-                  ":hover": {
-                    backgroundColor: "secondary.main",
+                  ':hover': {
+                    backgroundColor: 'secondary.main',
                   },
                 },
                 onClick: () => {
                   action.onClick();
                   setOpen(!open);
-                  if (toast.isActive("juster") && action.dialog === false)
-                    toast.update("juster", { style: { display: "none" } });
+                  if (toast.isActive('juster') && action.dialog === false)
+                    toast.update('juster', {style: {display: 'none'}});
 
-                  if (toast.isActive("juster") && action.dialog !== false)
-                    toast.update("juster", {
+                  if (toast.isActive('juster') && action.dialog !== false)
+                    toast.update('juster', {
                       render: <CustomTooltip toastContent={action.toastTip} />,
-                      type: "default",
+                      type: 'default',
                     });
-                  else if (!toast.isActive("juster") && action.dialog !== false)
+                  else if (!toast.isActive('juster') && action.dialog !== false)
                     toast(<CustomTooltip toastContent={action.toastTip} />, {
                       autoClose: false,
-                      toastId: "juster",
+                      toastId: 'juster',
                       style: {
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "center",
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
                       },
                     });
                 },
@@ -120,7 +120,7 @@ const CustomSpeedDial = ({ actions }: CustomSpeedDialProps) => {
   );
 };
 
-export const CustomTooltip = ({ toastContent }: { toastContent: string }) => {
+export const CustomTooltip = ({toastContent}: {toastContent: string}) => {
   return (
     <Tooltip
       title=""
@@ -128,12 +128,12 @@ export const CustomTooltip = ({ toastContent }: { toastContent: string }) => {
       slotProps={{
         tooltip: {
           sx: {
-            bgcolor: "primary.main",
+            bgcolor: 'primary.main',
           },
         },
         arrow: {
           sx: {
-            color: "primary.main",
+            color: 'primary.main',
           },
         },
       }}
@@ -141,12 +141,12 @@ export const CustomTooltip = ({ toastContent }: { toastContent: string }) => {
     >
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "row",
-          width: "100%",
+          display: 'flex',
+          flexDirection: 'row',
+          width: '100%',
           gap: 1,
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
         <InfoOutlinedIcon color="info" />
