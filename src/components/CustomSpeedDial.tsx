@@ -13,7 +13,6 @@ type CustomSpeedDialProps = {
 };
 
 const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
-  const {isTouch} = useBreakpoints();
   const {isMobile, isMonitor, isLargeLaptop} = useBreakpoints();
   const [open, setOpen] = useState<boolean>(isMonitor || isLargeLaptop);
   return (
@@ -57,11 +56,11 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
           setOpen(!open);
         },
         sx: {
-          width: isTouch ? 75 : 'fit-content',
+          width: 'fit-content',
           borderRadius: 4.5,
           backgroundColor: 'secondary.main',
           ':hover': {
-            backgroundColor: 'secondary.main',
+            backgroundColor: 'secondary.dark',
           },
         },
       }}
@@ -73,6 +72,14 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
             icon={action.icon}
             slotProps={{
               fab: {
+                sx: {
+                  color: 'white',
+                  backgroundColor: 'primary.main',
+                  borderRadius: 4,
+                  ':hover': {
+                    backgroundColor: 'secondary.main',
+                  },
+                },
                 onClick: () => {
                   action.onClick();
                   setOpen(!open);
@@ -98,19 +105,12 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
               },
               tooltip: {
                 title: action.tooltip,
+                open: true,
               },
-            }}
-            sx={{
-              '.MuiSpeedDialAction-fab': {
-                borderRadius: 4,
-                backgroundColor: 'primary.main',
-                color: action.color,
-                ':hover': {
-                  backgroundColor: 'secondary.main',
+              staticTooltipLabel: {
+                sx: {
+                  borderRadius: 2.5,
                 },
-              },
-              '.MuiSpeedDialAction-staticTooltipLabel': {
-                borderRadius: 2.5,
               },
             }}
           />
