@@ -40,7 +40,6 @@ declare module '@tanstack/react-query' {
     mutationMeta: {
       invalidates?: Array<QueryKey>;
       optOutGeneralInvalidations?: boolean;
-      optOutGeneralInvalidations?: boolean;
     };
   }
 }
