@@ -2,10 +2,12 @@ import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
 
 import Button from '~/components/Button';
-import {useTasks} from '~/features/tasks/api/useTasks';
-import TaskForm, {FormValues} from '~/features/tasks/components/TaskForm';
+import {useTaskMutations} from '~/features/tasks/api/useTasks';
+import TaskForm from '~/features/tasks/components/TaskForm';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
+
+import type {FormValues} from '~/features/tasks/components/TaskForm';
 
 interface Props {
   open: boolean;
@@ -13,7 +15,9 @@ interface Props {
 }
 
 const CreateManuelTaskModal = ({open, closeModal}: Props) => {
-  const {post: createTask} = useTasks();
+  const {
+    post: {mutateAsync: createTask},
+  } = useTaskMutations();
   const ts_id_display = useDisplayState((state) => state.ts_id);
   const {data: metadata} = useLocationData();
 
@@ -39,7 +43,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
             : true,
       ts_id: values.ts_id,
     };
-    createTask.mutate(submit);
+    await createTask(submit);
     closeModal();
   };
 

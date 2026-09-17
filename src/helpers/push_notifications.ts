@@ -1,3 +1,4 @@
+// oxlint-disable check-file/filename-naming-convention
 import {apiClient} from '~/apiClient';
 
 export async function askPermission() {
@@ -6,6 +7,7 @@ export async function askPermission() {
       resolve(result);
     });
 
+    // oxlint-disable-next-line typescript/strict-boolean-expressions
     if (permissionResult) {
       permissionResult.then(resolve, reject);
     }

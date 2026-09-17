@@ -69,7 +69,7 @@ L.BasemapControl = L.Control.extend({
 
     this._updatePreview();
 
-    this._map.fire('basemapChange', {
+    this._map.fire('baselayerchange', {
       layer: this.options.layers[this._currentIndex].layer,
     });
   },

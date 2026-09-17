@@ -1,6 +1,7 @@
-import {useQueryState, parseAsInteger, parseAsString} from 'nuqs';
+import {parseAsInteger, parseAsString, useQueryState} from 'nuqs';
 import {useEffect} from 'react';
-import {useDisplayState, displayStore} from '~/hooks/ui';
+
+import {displayStore, useDisplayState} from '~/hooks/ui';
 
 const DisplayStateProvider = ({children}: {children: React.ReactNode}) => {
   // Read from URL

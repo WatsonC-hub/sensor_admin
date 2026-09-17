@@ -12,9 +12,7 @@
   "paths": {
     "/location/": {
       "get": {
-        "tags": [
-          "Location"
-        ],
+        "tags": ["Location"],
         "summary": "Get Locations",
         "operationId": "get_locations_location__get",
         "parameters": [
@@ -71,9 +69,7 @@
     },
     "/location/{loc_id}/": {
       "get": {
-        "tags": [
-          "Location"
-        ],
+        "tags": ["Location"],
         "summary": "Get Location",
         "operationId": "get_location_location__loc_id___get",
         "parameters": [
@@ -116,9 +112,7 @@
     },
     "/timeseries/": {
       "get": {
-        "tags": [
-          "Timeseries"
-        ],
+        "tags": ["Timeseries"],
         "summary": "Get Timeseries",
         "operationId": "get_timeseries_timeseries__get",
         "parameters": [
@@ -175,9 +169,7 @@
     },
     "/timeseries/{ts_id}/": {
       "get": {
-        "tags": [
-          "Timeseries"
-        ],
+        "tags": ["Timeseries"],
         "summary": "Get Timeseries",
         "operationId": "get_timeseries_timeseries__ts_id___get",
         "parameters": [
@@ -220,9 +212,7 @@
     },
     "/timeseries/location/{loc_id}/": {
       "get": {
-        "tags": [
-          "Timeseries"
-        ],
+        "tags": ["Timeseries"],
         "summary": "Get Timeseries",
         "operationId": "get_timeseries_timeseries_location__loc_id___get",
         "parameters": [
@@ -269,9 +259,7 @@
     },
     "/timeseries/projectno/{projectno}/": {
       "get": {
-        "tags": [
-          "Timeseries"
-        ],
+        "tags": ["Timeseries"],
         "summary": "Get Timeseries Project",
         "operationId": "get_timeseries_project_timeseries_projectno__projectno___get",
         "parameters": [
@@ -338,9 +326,7 @@
     },
     "/data/timeseries/{ts_id}": {
       "get": {
-        "tags": [
-          "Data"
-        ],
+        "tags": ["Data"],
         "summary": "Get Data",
         "operationId": "get_data_data_timeseries__ts_id__get",
         "parameters": [
@@ -396,9 +382,7 @@
     },
     "/data/excel/": {
       "get": {
-        "tags": [
-          "Data"
-        ],
+        "tags": ["Data"],
         "summary": "Get Excel Data",
         "operationId": "get_excel_data_data_excel__get",
         "parameters": [
@@ -496,9 +480,7 @@
     },
     "/misc/qhrelation/{ts_id}/": {
       "get": {
-        "tags": [
-          "Miscellaneous"
-        ],
+        "tags": ["Miscellaneous"],
         "summary": "Get QH relation parameters",
         "description": "Gets QH relation parameters to a given timestamp",
         "operationId": "get_relation_misc_qhrelation__ts_id___get",
@@ -555,9 +537,7 @@
     },
     "/misc/prognose/{ts_id}/": {
       "get": {
-        "tags": [
-          "Miscellaneous"
-        ],
+        "tags": ["Miscellaneous"],
         "summary": "Get latest pronosis data for timeseries",
         "description": "Get latest pronosis data for timeseries with upper, best and lower being based on max, best and min precipitation prognosis respectively.",
         "operationId": "get_prognose_misc_prognose__ts_id___get",
@@ -601,9 +581,7 @@
     },
     "/auth/login": {
       "post": {
-        "tags": [
-          "Authentication"
-        ],
+        "tags": ["Authentication"],
         "summary": "Login User",
         "operationId": "login_user_auth_login_post",
         "requestBody": {
@@ -645,9 +623,7 @@
     },
     "/auth/me": {
       "get": {
-        "tags": [
-          "Authentication"
-        ],
+        "tags": ["Authentication"],
         "summary": "Get User",
         "operationId": "get_user_auth_me_get",
         "responses": {
@@ -672,9 +648,7 @@
     },
     "/auth/oauth/redirect": {
       "get": {
-        "tags": [
-          "Authentication"
-        ],
+        "tags": ["Authentication"],
         "summary": "Oauth Redirect",
         "operationId": "oauth_redirect_auth_oauth_redirect_get",
         "responses": {
@@ -694,9 +668,7 @@
     },
     "/auth/oauth/callback": {
       "get": {
-        "tags": [
-          "Authentication"
-        ],
+        "tags": ["Authentication"],
         "summary": "Oauth Callback",
         "operationId": "oauth_callback_auth_oauth_callback_get",
         "parameters": [
@@ -737,9 +709,7 @@
     },
     "/sensor_field/stamdata/": {
       "post": {
-        "tags": [
-          "Stamdata"
-        ],
+        "tags": ["Stamdata"],
         "summary": "Add New Metadata",
         "operationId": "add_new_metadata_sensor_field_stamdata__post",
         "requestBody": {
@@ -779,9 +749,7 @@
     },
     "/sensor_field/stamdata/{ts_id}": {
       "put": {
-        "tags": [
-          "Stamdata"
-        ],
+        "tags": ["Stamdata"],
         "summary": "Edit Metadata",
         "operationId": "edit_metadata_sensor_field_stamdata__ts_id__put",
         "parameters": [
@@ -832,9 +800,7 @@
     },
     "/sensor_field/stamdata/locations": {
       "get": {
-        "tags": [
-          "Stamdata"
-        ],
+        "tags": ["Stamdata"],
         "summary": "Get Locations",
         "operationId": "get_locations_sensor_field_stamdata_locations_get",
         "parameters": [
@@ -891,9 +857,7 @@
     },
     "/sensor_field/stamdata/location_types": {
       "get": {
-        "tags": [
-          "Stamdata"
-        ],
+        "tags": ["Stamdata"],
         "summary": "Get Location Types",
         "operationId": "get_location_types_sensor_field_stamdata_location_types_get",
         "responses": {
@@ -913,9 +877,7 @@
     },
     "/sensor_field/stamdata/available_units": {
       "get": {
-        "tags": [
-          "Stamdata"
-        ],
+        "tags": ["Stamdata"],
         "summary": "Get Available Units",
         "operationId": "get_available_units_sensor_field_stamdata_available_units_get",
         "responses": {
@@ -935,9 +897,7 @@
     },
     "/sensor_field/stamdata/unit_history/{ts_id}": {
       "get": {
-        "tags": [
-          "Stamdata"
-        ],
+        "tags": ["Stamdata"],
         "summary": "Get Unit History",
         "operationId": "get_unit_history_sensor_field_stamdata_unit_history__ts_id__get",
         "parameters": [
@@ -982,9 +942,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Stamdata"
-        ],
+        "tags": ["Stamdata"],
         "summary": "Add Unit History",
         "operationId": "add_unit_history_sensor_field_stamdata_unit_history__ts_id__post",
         "parameters": [
@@ -1035,9 +993,7 @@
     },
     "/sensor_field/stamdata/unit_history/{ts_id}/{gid}": {
       "patch": {
-        "tags": [
-          "Stamdata"
-        ],
+        "tags": ["Stamdata"],
         "summary": "Patch Unit History",
         "operationId": "patch_unit_history_sensor_field_stamdata_unit_history__ts_id___gid__patch",
         "parameters": [
@@ -1097,9 +1053,7 @@
     },
     "/notifications/subscribe": {
       "post": {
-        "tags": [
-          "Notifications"
-        ],
+        "tags": ["Notifications"],
         "summary": "Add Subscription",
         "operationId": "add_subscription_notifications_subscribe_post",
         "requestBody": {
@@ -1139,9 +1093,7 @@
     },
     "/notifications/unsubscribe": {
       "post": {
-        "tags": [
-          "Notifications"
-        ],
+        "tags": ["Notifications"],
         "summary": "Remove Subscription",
         "operationId": "remove_subscription_notifications_unsubscribe_post",
         "responses": {
@@ -1161,9 +1113,7 @@
     },
     "/notifications/send-test": {
       "post": {
-        "tags": [
-          "Notifications"
-        ],
+        "tags": ["Notifications"],
         "summary": "Send Notification",
         "operationId": "send_notification_notifications_send_test_post",
         "responses": {
@@ -1183,9 +1133,7 @@
     },
     "/sensor_field/station_list": {
       "get": {
-        "tags": [
-          "Field"
-        ],
+        "tags": ["Field"],
         "summary": "Get Tabledata",
         "operationId": "get_tabledata_sensor_field_station_list_get",
         "responses": {
@@ -1205,9 +1153,7 @@
     },
     "/sensor_field/map_data": {
       "get": {
-        "tags": [
-          "Field"
-        ],
+        "tags": ["Field"],
         "summary": "Get Mapdata",
         "operationId": "get_mapdata_sensor_field_map_data_get",
         "responses": {
@@ -1227,9 +1173,7 @@
     },
     "/sensor_field/borehole_list": {
       "get": {
-        "tags": [
-          "Field"
-        ],
+        "tags": ["Field"],
         "summary": "Get Borehole Tabledata",
         "operationId": "get_borehole_tabledata_sensor_field_borehole_list_get",
         "responses": {
@@ -1249,9 +1193,7 @@
     },
     "/sensor_field/borehole_map": {
       "get": {
-        "tags": [
-          "Field"
-        ],
+        "tags": ["Field"],
         "summary": "Get Borehole Mapdata",
         "operationId": "get_borehole_mapdata_sensor_field_borehole_map_get",
         "responses": {
@@ -1271,9 +1213,7 @@
     },
     "/sensor_field/jupiter/search/{boreholeno}": {
       "get": {
-        "tags": [
-          "Field"
-        ],
+        "tags": ["Field"],
         "summary": "Get Borehole Search",
         "operationId": "get_borehole_search_sensor_field_jupiter_search__boreholeno__get",
         "parameters": [
@@ -1314,9 +1254,7 @@
     },
     "/sensor_field/timeseries_types": {
       "get": {
-        "tags": [
-          "Field"
-        ],
+        "tags": ["Field"],
         "summary": "Get Timeseries Types",
         "operationId": "get_timeseries_types_sensor_field_timeseries_types_get",
         "responses": {
@@ -1336,9 +1274,7 @@
     },
     "/sensor_field/calypso_id/{calypso_id}": {
       "get": {
-        "tags": [
-          "Field"
-        ],
+        "tags": ["Field"],
         "summary": "Get Loc Id From Calypso Id",
         "operationId": "get_loc_id_from_calypso_id_sensor_field_calypso_id__calypso_id__get",
         "parameters": [
@@ -1381,9 +1317,7 @@
     },
     "/sensor_field/borehole/jupiter/{boreholeno}": {
       "get": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Get Borehole",
         "operationId": "get_borehole_sensor_field_borehole_jupiter__boreholeno__get",
         "parameters": [
@@ -1424,9 +1358,7 @@
     },
     "/sensor_field/borehole/measurements/{boreholeno}/{intakeno}": {
       "get": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Get Our Waterlevel",
         "operationId": "get_our_waterlevel_sensor_field_borehole_measurements__boreholeno___intakeno__get",
         "parameters": [
@@ -1474,9 +1406,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Add Waterlevel",
         "operationId": "add_waterlevel_sensor_field_borehole_measurements__boreholeno___intakeno__post",
         "parameters": [
@@ -1536,9 +1466,7 @@
     },
     "/sensor_field/borehole/measurements/{gid}": {
       "put": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Edit Waterlevel",
         "operationId": "edit_waterlevel_sensor_field_borehole_measurements__gid__put",
         "parameters": [
@@ -1587,9 +1515,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Delete Waterlevel",
         "operationId": "delete_waterlevel_sensor_field_borehole_measurements__gid__delete",
         "parameters": [
@@ -1630,9 +1556,7 @@
     },
     "/sensor_field/borehole/jupiter/measurements/{boreholeno}/{intakeno}": {
       "get": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Get Jupiter Waterlevel",
         "operationId": "get_jupiter_waterlevel_sensor_field_borehole_jupiter_measurements__boreholeno___intakeno__get",
         "parameters": [
@@ -1682,9 +1606,7 @@
     },
     "/sensor_field/borehole/watlevmp/{boreholeno}/{intakeno}": {
       "get": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Get Our Watlevmp",
         "operationId": "get_our_watlevmp_sensor_field_borehole_watlevmp__boreholeno___intakeno__get",
         "parameters": [
@@ -1732,9 +1654,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Add Watlevmp",
         "operationId": "add_watlevmp_sensor_field_borehole_watlevmp__boreholeno___intakeno__post",
         "parameters": [
@@ -1794,9 +1714,7 @@
     },
     "/sensor_field/borehole/watlevmp/{gid}": {
       "put": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Edit Watlevmp",
         "operationId": "edit_watlevmp_sensor_field_borehole_watlevmp__gid__put",
         "parameters": [
@@ -1845,9 +1763,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Delete Watlevmp",
         "operationId": "delete_watlevmp_sensor_field_borehole_watlevmp__gid__delete",
         "parameters": [
@@ -1888,9 +1804,7 @@
     },
     "/sensor_field/borehole/last_mp/{boreholeno}/{intakeno}": {
       "get": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Get Last Jupiter Measurement",
         "operationId": "get_last_jupiter_measurement_sensor_field_borehole_last_mp__boreholeno___intakeno__get",
         "parameters": [
@@ -1940,9 +1854,7 @@
     },
     "/sensor_field/borehole/stamdata/{boreholeno}/{intakeno}": {
       "get": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Get Stamdata",
         "operationId": "get_stamdata_sensor_field_borehole_stamdata__boreholeno___intakeno__get",
         "parameters": [
@@ -1992,9 +1904,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Borehole"
-        ],
+        "tags": ["Borehole"],
         "summary": "Add Stamdata",
         "operationId": "add_stamdata_sensor_field_borehole_stamdata__boreholeno___intakeno__put",
         "parameters": [
@@ -2054,9 +1964,7 @@
     },
     "/sensor_field/station/metadata/{ts_id}": {
       "get": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Get Metadata",
         "operationId": "get_metadata_sensor_field_station_metadata__ts_id__get",
         "parameters": [
@@ -2097,9 +2005,7 @@
     },
     "/sensor_field/station/metadata_location/{loc_id}": {
       "get": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Get Metadata",
         "operationId": "get_metadata_sensor_field_station_metadata_location__loc_id__get",
         "parameters": [
@@ -2140,9 +2046,7 @@
     },
     "/sensor_field/station/measurements/{ts_id}": {
       "get": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Get Measurements",
         "operationId": "get_measurements_sensor_field_station_measurements__ts_id__get",
         "parameters": [
@@ -2191,9 +2095,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Add Control",
         "operationId": "add_control_sensor_field_station_measurements__ts_id__post",
         "parameters": [
@@ -2244,9 +2146,7 @@
     },
     "/sensor_field/station/measurements/{ts_id}/{gid}": {
       "put": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Edit Control",
         "operationId": "edit_control_sensor_field_station_measurements__ts_id___gid__put",
         "parameters": [
@@ -2304,9 +2204,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Delete Waterlevel",
         "operationId": "delete_waterlevel_sensor_field_station_measurements__ts_id___gid__delete",
         "parameters": [
@@ -2356,9 +2254,7 @@
     },
     "/sensor_field/station/watlevmp/{ts_id}": {
       "get": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Get Mp",
         "operationId": "get_mp_sensor_field_station_watlevmp__ts_id__get",
         "parameters": [
@@ -2397,9 +2293,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Add Watlevmp",
         "operationId": "add_watlevmp_sensor_field_station_watlevmp__ts_id__post",
         "parameters": [
@@ -2450,9 +2344,7 @@
     },
     "/sensor_field/station/watlevmp/{ts_id}/{gid}": {
       "put": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Edit Watlevmp",
         "operationId": "edit_watlevmp_sensor_field_station_watlevmp__ts_id___gid__put",
         "parameters": [
@@ -2510,9 +2402,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Delete Watlevmp",
         "operationId": "delete_watlevmp_sensor_field_station_watlevmp__ts_id___gid__delete",
         "parameters": [
@@ -2562,9 +2452,7 @@
     },
     "/sensor_field/station/service/{ts_id}": {
       "get": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Get Service",
         "operationId": "get_service_sensor_field_station_service__ts_id__get",
         "parameters": [
@@ -2603,9 +2491,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Add Service",
         "operationId": "add_service_sensor_field_station_service__ts_id__post",
         "parameters": [
@@ -2656,9 +2542,7 @@
     },
     "/sensor_field/station/service/{ts_id}/{gid}": {
       "put": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Edit Service",
         "operationId": "edit_service_sensor_field_station_service__ts_id___gid__put",
         "parameters": [
@@ -2716,9 +2600,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Delete Service",
         "operationId": "delete_service_sensor_field_station_service__ts_id___gid__delete",
         "parameters": [
@@ -2768,9 +2650,7 @@
     },
     "/sensor_field/station/images/{loc_id}": {
       "get": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Get Images",
         "operationId": "get_images_sensor_field_station_images__loc_id__get",
         "parameters": [
@@ -2811,9 +2691,7 @@
     },
     "/sensor_field/station/correct/{ts_id}": {
       "post": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Correct Timeseries",
         "operationId": "correct_timeseries_sensor_field_station_correct__ts_id__post",
         "parameters": [
@@ -2854,9 +2732,7 @@
     },
     "/sensor_field/station/correct/poll/{ts_id}": {
       "get": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Poll Correction",
         "operationId": "poll_correction_sensor_field_station_correct_poll__ts_id__get",
         "parameters": [
@@ -2897,9 +2773,7 @@
     },
     "/sensor_field/station/rawdata/{ts_id}": {
       "get": {
-        "tags": [
-          "Station"
-        ],
+        "tags": ["Station"],
         "summary": "Get Raw Data",
         "operationId": "get_raw_data_sensor_field_station_rawdata__ts_id__get",
         "parameters": [
@@ -2940,9 +2814,7 @@
     },
     "/sensor_field/station/image/{loc_id}": {
       "post": {
-        "tags": [
-          "image"
-        ],
+        "tags": ["image"],
         "summary": "Post Image",
         "operationId": "post_image_sensor_field_station_image__loc_id__post",
         "parameters": [
@@ -2993,9 +2865,7 @@
     },
     "/sensor_field/station/image/{loc_id}/{gid}": {
       "put": {
-        "tags": [
-          "image"
-        ],
+        "tags": ["image"],
         "summary": "Put Image",
         "operationId": "put_image_sensor_field_station_image__loc_id___gid__put",
         "parameters": [
@@ -3053,9 +2923,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "image"
-        ],
+        "tags": ["image"],
         "summary": "Delete Image",
         "operationId": "delete_image_sensor_field_station_image__loc_id___gid__delete",
         "parameters": [
@@ -3105,9 +2973,7 @@
     },
     "/sensor_field/borehole/image/{boreholeno}": {
       "get": {
-        "tags": [
-          "image"
-        ],
+        "tags": ["image"],
         "summary": "Get Images",
         "operationId": "get_images_sensor_field_borehole_image__boreholeno__get",
         "parameters": [
@@ -3146,9 +3012,7 @@
         }
       },
       "post": {
-        "tags": [
-          "image"
-        ],
+        "tags": ["image"],
         "summary": "Post Image",
         "operationId": "post_image_sensor_field_borehole_image__boreholeno__post",
         "parameters": [
@@ -3199,9 +3063,7 @@
     },
     "/sensor_field/borehole/image/{boreholeno}/{gid}": {
       "put": {
-        "tags": [
-          "image"
-        ],
+        "tags": ["image"],
         "summary": "Put Image",
         "operationId": "put_image_sensor_field_borehole_image__boreholeno___gid__put",
         "parameters": [
@@ -3259,9 +3121,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "image"
-        ],
+        "tags": ["image"],
         "summary": "Delete Image",
         "operationId": "delete_image_sensor_field_borehole_image__boreholeno___gid__delete",
         "parameters": [
@@ -3311,9 +3171,7 @@
     },
     "/landing-page/stats": {
       "get": {
-        "tags": [
-          "Landing page"
-        ],
+        "tags": ["Landing page"],
         "summary": "Get Stats",
         "operationId": "get_stats_landing_page_stats_get",
         "responses": {
@@ -3352,23 +3210,13 @@
     "schemas": {
       "AggregateEnum": {
         "title": "AggregateEnum",
-        "enum": [
-          "None",
-          "Hourly",
-          "Daily",
-          "Weekly",
-          "Monthly",
-          "Yearly"
-        ],
+        "enum": ["None", "Hourly", "Daily", "Weekly", "Monthly", "Yearly"],
         "type": "string",
         "description": "An enumeration."
       },
       "Body_login_user_auth_login_post": {
         "title": "Body_login_user_auth_login_post",
-        "required": [
-          "username",
-          "password"
-        ],
+        "required": ["username", "password"],
         "type": "object",
         "properties": {
           "username": {
@@ -3383,11 +3231,7 @@
       },
       "Body_post_image_sensor_field_borehole_image__boreholeno__post": {
         "title": "Body_post_image_sensor_field_borehole_image__boreholeno__post",
-        "required": [
-          "file",
-          "public",
-          "date"
-        ],
+        "required": ["file", "public", "date"],
         "type": "object",
         "properties": {
           "file": {
@@ -3412,11 +3256,7 @@
       },
       "Body_post_image_sensor_field_station_image__loc_id__post": {
         "title": "Body_post_image_sensor_field_station_image__loc_id__post",
-        "required": [
-          "file",
-          "public",
-          "date"
-        ],
+        "required": ["file", "public", "date"],
         "type": "object",
         "properties": {
           "file": {
@@ -3480,12 +3320,7 @@
       },
       "LocationPost": {
         "title": "LocationPost",
-        "required": [
-          "loc_name",
-          "x",
-          "y",
-          "loctype_id"
-        ],
+        "required": ["loc_name", "x", "y", "loctype_id"],
         "type": "object",
         "properties": {
           "loc_id": {
@@ -3536,12 +3371,7 @@
       },
       "LocationWithTimeseries": {
         "title": "LocationWithTimeseries",
-        "required": [
-          "loc_name",
-          "x",
-          "y",
-          "loctypename"
-        ],
+        "required": ["loc_name", "x", "y", "loctypename"],
         "type": "object",
         "properties": {
           "loc_id": {
@@ -3595,9 +3425,7 @@
       },
       "MeasurementPost": {
         "title": "MeasurementPost",
-        "required": [
-          "timeofmeas"
-        ],
+        "required": ["timeofmeas"],
         "type": "object",
         "properties": {
           "timeofmeas": {
@@ -3621,10 +3449,7 @@
       },
       "MeasurementPut": {
         "title": "MeasurementPut",
-        "required": [
-          "timeofmeas",
-          "gid"
-        ],
+        "required": ["timeofmeas", "gid"],
         "type": "object",
         "properties": {
           "timeofmeas": {
@@ -3699,12 +3524,7 @@
       },
       "PrognoseReponse": {
         "title": "PrognoseReponse",
-        "required": [
-          "x",
-          "upper",
-          "best",
-          "lower"
-        ],
+        "required": ["x", "upper", "best", "lower"],
         "type": "object",
         "properties": {
           "x": {
@@ -3740,11 +3560,7 @@
       },
       "QHResponse": {
         "title": "QHResponse",
-        "required": [
-          "A",
-          "H_0",
-          "n"
-        ],
+        "required": ["A", "H_0", "n"],
         "type": "object",
         "properties": {
           "A": {
@@ -3763,10 +3579,7 @@
       },
       "SensordataTableJSONResponse": {
         "title": "SensordataTableJSONResponse",
-        "required": [
-          "x",
-          "y"
-        ],
+        "required": ["x", "y"],
         "type": "object",
         "properties": {
           "x": {
@@ -3787,12 +3600,7 @@
       },
       "ServicePost": {
         "title": "ServicePost",
-        "required": [
-          "dato",
-          "batteriskift",
-          "tilsyn",
-          "kommentar"
-        ],
+        "required": ["dato", "batteriskift", "tilsyn", "kommentar"],
         "type": "object",
         "properties": {
           "dato": {
@@ -3816,11 +3624,7 @@
       },
       "StamdataPost": {
         "title": "StamdataPost",
-        "required": [
-          "location",
-          "timeseries",
-          "unit"
-        ],
+        "required": ["location", "timeseries", "unit"],
         "type": "object",
         "properties": {
           "location": {
@@ -3839,11 +3643,7 @@
       },
       "StamdataPut": {
         "title": "StamdataPut",
-        "required": [
-          "location",
-          "timeseries",
-          "unit"
-        ],
+        "required": ["location", "timeseries", "unit"],
         "type": "object",
         "properties": {
           "location": {
@@ -3859,9 +3659,7 @@
       },
       "TimeseriesPost": {
         "title": "TimeseriesPost",
-        "required": [
-          "tstype_id"
-        ],
+        "required": ["tstype_id"],
         "type": "object",
         "properties": {
           "prefix": {
@@ -3894,9 +3692,7 @@
       },
       "TimeseriesResponse": {
         "title": "TimeseriesResponse",
-        "required": [
-          "tstype_name"
-        ],
+        "required": ["tstype_name"],
         "type": "object",
         "properties": {
           "ts_id": {
@@ -3938,9 +3734,7 @@
       },
       "TimeseriesResponseInLocation": {
         "title": "TimeseriesResponseInLocation",
-        "required": [
-          "tstype_name"
-        ],
+        "required": ["tstype_name"],
         "type": "object",
         "properties": {
           "ts_id": {
@@ -3978,10 +3772,7 @@
       },
       "Token": {
         "title": "Token",
-        "required": [
-          "access_token",
-          "token_type"
-        ],
+        "required": ["access_token", "token_type"],
         "type": "object",
         "properties": {
           "access_token": {
@@ -4053,10 +3844,7 @@
       },
       "UnitTsHistoryPost": {
         "title": "UnitTsHistoryPost",
-        "required": [
-          "unit_uuid",
-          "startdate"
-        ],
+        "required": ["unit_uuid", "startdate"],
         "type": "object",
         "properties": {
           "unit_uuid": {
@@ -4079,11 +3867,7 @@
       },
       "UnitTsHistoryPut": {
         "title": "UnitTsHistoryPut",
-        "required": [
-          "unit_uuid",
-          "startdate",
-          "gid"
-        ],
+        "required": ["unit_uuid", "startdate", "gid"],
         "type": "object",
         "properties": {
           "unit_uuid": {
@@ -4126,11 +3910,7 @@
       },
       "ValidationError": {
         "title": "ValidationError",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "type": "object",
         "properties": {
           "loc": {
@@ -4159,11 +3939,7 @@
       },
       "WaterlevelPost": {
         "title": "WaterlevelPost",
-        "required": [
-          "timeofmeas",
-          "comment",
-          "service"
-        ],
+        "required": ["timeofmeas", "comment", "service"],
         "type": "object",
         "properties": {
           "timeofmeas": {
@@ -4196,12 +3972,7 @@
       },
       "WaterlevelPut": {
         "title": "WaterlevelPut",
-        "required": [
-          "timeofmeas",
-          "comment",
-          "service",
-          "gid"
-        ],
+        "required": ["timeofmeas", "comment", "service", "gid"],
         "type": "object",
         "properties": {
           "timeofmeas": {
@@ -4238,9 +4009,7 @@
       },
       "WebpushSubscriptionPost": {
         "title": "WebpushSubscriptionPost",
-        "required": [
-          "subscription"
-        ],
+        "required": ["subscription"],
         "type": "object",
         "properties": {
           "subscription": {
@@ -4251,12 +4020,7 @@
       },
       "app__generic__models__LocationResponse": {
         "title": "LocationResponse",
-        "required": [
-          "loc_name",
-          "x",
-          "y",
-          "loctypename"
-        ],
+        "required": ["loc_name", "x", "y", "loctypename"],
         "type": "object",
         "properties": {
           "loc_id": {
@@ -4302,10 +4066,7 @@
       },
       "app__sensor_field__borehole__image__models__ImagePut": {
         "title": "ImagePut",
-        "required": [
-          "date",
-          "public"
-        ],
+        "required": ["date", "public"],
         "type": "object",
         "properties": {
           "date": {
@@ -4325,11 +4086,7 @@
       },
       "app__sensor_field__borehole__models__WatlevmpPost": {
         "title": "WatlevmpPost",
-        "required": [
-          "startdate",
-          "enddate",
-          "mp_description"
-        ],
+        "required": ["startdate", "enddate", "mp_description"],
         "type": "object",
         "properties": {
           "startdate": {
@@ -4354,12 +4111,7 @@
       },
       "app__sensor_field__borehole__models__WatlevmpPut": {
         "title": "WatlevmpPut",
-        "required": [
-          "startdate",
-          "enddate",
-          "mp_description",
-          "gid"
-        ],
+        "required": ["startdate", "enddate", "mp_description", "gid"],
         "type": "object",
         "properties": {
           "startdate": {
@@ -4388,12 +4140,7 @@
       },
       "app__sensor_field__stamdata__models__LocationResponse": {
         "title": "LocationResponse",
-        "required": [
-          "loc_name",
-          "x",
-          "y",
-          "loctype_id"
-        ],
+        "required": ["loc_name", "x", "y", "loctype_id"],
         "type": "object",
         "properties": {
           "loc_id": {
@@ -4444,11 +4191,7 @@
       },
       "app__sensor_field__stamdata__models__WatlevmpPost": {
         "title": "WatlevmpPost",
-        "required": [
-          "startdate",
-          "elevation",
-          "description"
-        ],
+        "required": ["startdate", "elevation", "description"],
         "type": "object",
         "properties": {
           "startdate": {
@@ -4474,10 +4217,7 @@
       },
       "app__sensor_field__station__image__models__ImagePut": {
         "title": "ImagePut",
-        "required": [
-          "date",
-          "public"
-        ],
+        "required": ["date", "public"],
         "type": "object",
         "properties": {
           "date": {
@@ -4497,11 +4237,7 @@
       },
       "app__sensor_field__station__models__WatlevmpPost": {
         "title": "WatlevmpPost",
-        "required": [
-          "startdate",
-          "enddate",
-          "mp_description"
-        ],
+        "required": ["startdate", "enddate", "mp_description"],
         "type": "object",
         "properties": {
           "startdate": {
@@ -4526,12 +4262,7 @@
       },
       "app__sensor_field__station__models__WatlevmpPut": {
         "title": "WatlevmpPut",
-        "required": [
-          "startdate",
-          "enddate",
-          "mp_description",
-          "gid"
-        ],
+        "required": ["startdate", "enddate", "mp_description", "gid"],
         "type": "object",
         "properties": {
           "startdate": {

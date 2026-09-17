@@ -1,29 +1,31 @@
-import {Box, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
+import {Box} from '@mui/material';
 import {startCase} from 'lodash';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
-import {SubmitHandler, useFormContext} from 'react-hook-form';
+import {useFormContext} from 'react-hook-form';
 
-import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
+import {initialContactData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
-import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
-import {InferContactInfoTable} from '~/features/stamdata/components/stationDetails/zodSchemas';
-import {ContactInfoType, MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {ContactInfoType, MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-import {useQueryTable} from '~/hooks/useTable';
-import {useAppContext} from '~/state/contexts';
-import {ContactTable} from '~/types';
+import {useTable} from '~/hooks/useTable';
+
+import EditContactInfo from './EditContactInfo';
+import StationContactInfo from './StationContactInfo';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {SubmitHandler} from 'react-hook-form';
+import type {ContactTable} from '~/types';
 
 type Props = {
-  delContact: (relation_id: number) => void;
-  editContact: (ContactInfo: ContactTable) => void;
+  loc_id?: number;
 };
 
 const onDeleteBtnClick = (
@@ -35,23 +37,80 @@ const onDeleteBtnClick = (
   setDialogOpen(true);
 };
 
-const ContactInfoTable = ({delContact, editContact}: Props) => {
-  const {loc_id} = useAppContext(['loc_id']);
-  const user = useUser();
-  const [contactID, setContactID] = useState<number>(-1);
-  const [dialogOpen, setDialogOpen] = useState(false);
+const ContactInfoTable = ({loc_id}: Props) => {
+  const {
+    features: {contacts: contactsFeature},
+  } = useUser();
   const {
     reset,
     handleSubmit,
-    formState: {dirtyFields},
-  } = useFormContext<InferContactInfoTable>();
+    formState: {dirtyFields, isSubmitting, isDirty},
+  } = useFormContext<ContactTable>();
+
+  const [contactID, setContactID] = useState<number>(-1);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const [isUser, setIsUser] = useState<boolean>(false);
   const {isMobile} = useBreakpoints();
 
-  const {get} = useContactInfo(loc_id);
+  const {
+    get: {data},
+    put: {mutateAsync: editContact},
+    del: {mutate: delContact, isPending},
+  } = useContactInfo(loc_id);
+
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
+
+  const handleEdit = async (contactInfo: ContactTable) => {
+    const email = contactInfo.email !== '' ? contactInfo.email : null;
+    const payload = {
+      path: `${loc_id}`,
+      data: {
+        id: contactInfo.id,
+        name: contactInfo.name,
+        mobile: contactInfo.mobile,
+        email: email,
+        contact_role: contactInfo.contact_role,
+        comment: contactInfo.comment,
+        org_id: contactInfo.org_id,
+        user_id: contactInfo.user_id ?? null,
+        relation_id: contactInfo.relation_id,
+        contact_type: contactInfo.contact_type,
+        notify_required: contactInfo.notify_required ?? false,
+      },
+    };
+
+    await editContact(payload);
+
+    reset(initialContactData);
+  };
+
+  const handleSave: SubmitHandler<ContactTable> = async (details) => {
+    await handleEdit({
+      ...details,
+      email: details.email ?? '',
+      mobile: details.mobile ? details.mobile.toString() : null,
+    });
+
+    setOpenContactInfoDialog(false);
+    setIsUser(false);
+  };
+
+  const handleDelete = (relation_id: number) => {
+    const payload = {
+      path: `${relation_id}`,
+    };
+
+    delContact(payload, {
+      onSuccess: () => {
+        setDialogOpen(false);
+        setContactID(-1);
+        setOpenContactInfoDialog(false);
+      },
+    });
+  };
 
   const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
     () => [
@@ -65,7 +124,9 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         header: 'Rolle',
         id: 'contact_role_name',
         enableColumnActions: false,
-        accessorFn: (row) => row.contact_role_name,
+        accessorFn: (row) => {
+          return row.contact_role_name;
+        },
         size: 20,
       },
       {
@@ -99,8 +160,8 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
       },
       {
         header: 'Tlf.',
-        accessorKey: 'mobile',
-        size: 20,
+        id: 'mobile',
+        accessorFn: (row) => row.mobile ?? '',
         enableColumnActions: false,
       },
       {
@@ -153,17 +214,19 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
     muiTablePaperProps: {},
     muiTableContainerProps: {},
     enableColumnPinning: true,
-    enableEditing: true,
-    editDisplayMode: 'modal',
+    enableBottomToolbar: false,
     muiTableBodyRowProps: ({row, table}) => {
       return !isMobile
         ? {}
         : {
             onClick: (e) => {
-              if ((e.target as HTMLElement).innerText && !disabled) {
+              if (
+                (e.target as HTMLElement).innerText &&
+                (e.target as HTMLElement).innerText !== ''
+              ) {
                 reset({
                   ...row.original,
-                  mobile: row.original.mobile ? parseInt(row.original.mobile) : null,
+                  mobile: row.original.mobile ? row.original.mobile : null,
                 });
                 table.setEditingRow(row);
               }
@@ -172,7 +235,13 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
     },
     renderEditRowDialogContent: () => {
       return (
-        <Box py={4} px={2} boxShadow={6}>
+        <Box
+          sx={{
+            py: 4,
+            px: 2,
+            boxShadow: 6,
+          }}
+        >
           <StationContactInfo isEditing={true} isUser={true} tableModal={true} />
         </Box>
       );
@@ -185,15 +254,15 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         handleEdit={() => {
           reset({
             ...row.original,
-            mobile: row.original.mobile ? parseInt(row.original.mobile) : null,
+            mobile: row.original.mobile ? row.original.mobile : null,
           });
-          setIsUser(row.original.org !== '');
+          setIsUser(!!row.original.org_id);
           setOpenContactInfoDialog(true);
         }}
         onDeleteBtnClick={() => {
-          onDeleteBtnClick(row.original.relation_id, setDialogOpen, setContactID);
+          onDeleteBtnClick(row.original.relation_id!, setDialogOpen, setContactID);
         }}
-        disabled={!user?.features?.contacts || disabled}
+        disabled={!contactsFeature || disabled}
       />
     ),
     renderToolbarInternalActions: ({table}) => {
@@ -220,9 +289,9 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
     },
   };
 
-  const table = useQueryTable<ContactTable>(
+  const table = useTable<ContactTable>(
     isMobile ? mobileColumns : columns,
-    get,
+    data ?? [],
     options,
     tableState,
     TableTypes.TABLE,
@@ -235,48 +304,25 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
     setIsUser(false);
   };
 
-  const handleSave: SubmitHandler<InferContactInfoTable> = async (details) => {
-    editContact({
-      ...details,
-      email: details.email ?? '',
-      mobile: details.mobile ? details.mobile.toString() : null,
-    });
-    setOpenContactInfoDialog(false);
-    setIsUser(false);
-  };
-
   return (
     <Box sx={{minWidth: '300px'}}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={() => {
-          delContact(contactID);
+          handleDelete(contactID);
         }}
+        loading={isPending}
       />
 
-      <Dialog
-        open={openContactInfoDialog}
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
-      >
-        <DialogTitle id="form-dialog-title">Ændre kontakt information</DialogTitle>
-        <DialogContent>
-          <StationContactInfo isEditing={true} isUser={isUser} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} bttype="tertiary">
-            Annuller
-          </Button>
-          <Button
-            disabled={Object.keys(dirtyFields).length === 0}
-            onClick={handleSubmit(handleSave, (error) => console.log(error))}
-            bttype="primary"
-          >
-            Ændre kontakt
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <EditContactInfo
+        openContactInfoDialog={openContactInfoDialog}
+        handleClose={handleClose}
+        handleSave={async () => handleSubmit(handleSave, (e) => console.log(e))()}
+        isDisabled={Object.keys(dirtyFields).length === 0 || !isDirty}
+        loading={isSubmitting}
+        isUser={isUser}
+      />
       <MaterialReactTable table={table} />
     </Box>
   );

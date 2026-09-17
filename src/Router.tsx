@@ -1,20 +1,24 @@
+import {Home as HomeIcon, LocationOn, QueryStats, Timeline} from '@mui/icons-material';
 import React from 'react';
 import {Navigate, Route, Routes} from 'react-router-dom';
 
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
-import {AppContext} from './state/contexts';
-import ScanComponent from './components/ScanComponent';
-import GuardedHome from './pages/Home';
-import GuardedCreateStation from './features/station/components/CreateStation';
-import {useUser} from './features/auth/useUser';
-import AccessDenied from './accessDenied';
-import {QueryStats, LocationOn, Timeline, Home as HomeIcon} from '@mui/icons-material';
-import {SelectionCommand} from './features/commandpalette/components/CommandContext';
-import {usePageActions} from './features/commandpalette/hooks/usePageActions';
-import {useNavigationFunctions} from './hooks/useNavigationFunctions';
+import AccessDenied from './AccessDenied';
 import ReleaseNoticeModal from './components/ReleaseNotice';
-import useCmdPalette, {CommandPalette} from './hooks/query/useCmdPalette';
+import ScanComponent from './components/ScanComponent';
+import {useUser} from './features/auth/useUser';
+import {usePageActions} from './features/commandpalette/hooks/usePageActions';
+import useCmdPalette from './hooks/query/useCmdPalette';
+import {useNavigationFunctions} from './hooks/useNavigationFunctions';
+import GuardedCreateStation from './pages/CreateStation';
+import GuardedHome from './pages/Home';
+import {AppContext} from './state/contexts';
+
+import type {SelectionCommand} from './features/commandpalette/components/CommandContext';
+import type {CommandPalette} from './hooks/query/useCmdPalette';
+
+const EMPTY_CONTEXT_VALUE = {};
 
 const Router = () => {
   const user = useUser();
@@ -28,17 +32,14 @@ const Router = () => {
   } = useCmdPalette({
     select: (data) => {
       // remove duplicate ts_id and ts_name
-
       const uniqueTsIds = new Set();
-      const uniqueData = data
-        .filter((item) => item.active && item.calypso_id != null)
-        .filter((item) => {
-          if (item.ts_id === -1 || uniqueTsIds.has(item.ts_id)) {
-            return false; // Exclude items with ts_id -1 or duplicates
-          }
-          uniqueTsIds.add(item.ts_id);
-          return true;
-        });
+      const uniqueData = data.filter((item) => {
+        if (item.ts_id === -1 || uniqueTsIds.has(item.ts_id)) {
+          return false; // Exclude items with ts_id -1 or duplicates
+        }
+        uniqueTsIds.add(item.ts_id);
+        return true;
+      });
       return uniqueData;
     },
   });
@@ -47,7 +48,7 @@ const Router = () => {
     {
       id: 'home',
       name: 'Hjem',
-      perform: home,
+      perform: () => home(true),
       icon: <HomeIcon />,
       shortcut: 'H',
       type: 'action',
@@ -63,10 +64,12 @@ const Router = () => {
       },
       icon: <QueryStats />,
       shortcut: 'C',
-      options: calypsoIDData?.map((item) => ({
-        label: `${item.calypso_id} (${item.ts_name})`,
-        value: item,
-      })), // This will be populated dynamically
+      options: calypsoIDData
+        ?.filter((item) => item.active && item.calypso_id != null)
+        .map((item) => ({
+          label: `${item.calypso_id} (${item.ts_name})`,
+          value: item,
+        })), // This will be populated dynamically
       filter: (value, search) => {
         // Filter function to match calypso_id with search term
         return value.calypso_id?.toString().includes(search.toLowerCase()) ? 1 : 0;
@@ -88,24 +91,31 @@ const Router = () => {
     {
       id: 'openTimeseries',
       name: 'Åbn tidsserie via ID',
-      type: 'input',
+      type: 'selection',
       inputPlaceholder: 'Indtast tidsserie ID...',
+      options: calypsoIDData?.map((item) => ({
+        label: `${item.ts_id}`,
+        value: item,
+      })),
+      filter: (value, search) => {
+        return value.ts_id?.toString().includes(search.toLowerCase()) ? 1 : 0;
+      },
       perform: (input) => {
-        const tsId = Number(input);
-        if (tsId) {
-          station(tsId, true);
-        } else {
-          console.error('Invalid timeseries ID:', input);
-        }
+        const tsId = Number(input.ts_id);
+        const locId = Number(input.loc_id);
+        locationNavigation(locId, true);
+        station(tsId);
       },
       icon: <Timeline />,
       shortcut: 'I',
       group: 'Generelt',
-    },
+    } as SelectionCommand<CommandPalette>,
   ]);
 
-  if (user && !user?.features?.iotAccess && !user?.features?.boreholeAccess) {
-    return <AccessDenied message="Der er manglende rettigheder til at tilgå denne side." />;
+  if (!user.features.iotAccess && !user.features.boreholeAccess) {
+    return (
+      <AccessDenied message="Du har hverken IoT-adgang eller adgang til pejleboringer. Kontakt venligst WatsonC, hvis du ønsker opsætning af IoT-stationer eller pejleboringer, eller hvis du mener, dette er en fejl" />
+    );
   }
 
   return (
@@ -116,7 +126,7 @@ const Router = () => {
         <Route
           path="/"
           element={
-            <AppContext.Provider value={{}}>
+            <AppContext.Provider value={EMPTY_CONTEXT_VALUE}>
               <GuardedHome />
             </AppContext.Provider>
           }
@@ -124,7 +134,7 @@ const Router = () => {
         <Route
           path="stamdata"
           element={
-            <AppContext.Provider value={{}}>
+            <AppContext.Provider value={EMPTY_CONTEXT_VALUE}>
               <GuardedCreateStation />
             </AppContext.Provider>
           }

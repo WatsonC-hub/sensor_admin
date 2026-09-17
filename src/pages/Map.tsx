@@ -1,45 +1,46 @@
-import {Box} from '@mui/material';
+import {NotListedLocation} from '@mui/icons-material';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-import L, {ContextMenuItemClickEvent} from 'leaflet';
+import {Box} from '@mui/material';
+import L from 'leaflet';
+
 import '~/css/leaflet.css';
-import {useEffect, SyntheticEvent, useCallback} from 'react';
+import {debounce} from 'lodash';
+import {useCallback, useEffect} from 'react';
 import {toast} from 'react-toastify';
+
 import '~/features/map/map.css';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
-import {MapOverview, timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-
-import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
-
-import {useMapUtilityStore} from '~/state/store';
-import {BoreholeMapData} from '~/types';
+import {useUser} from '~/features/auth/useUser';
+import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
+import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
+import {getBoreholesIcon, getNotificationIcon} from '~/features/map/utils';
+import {findBorehole} from '~/features/station/api/useBorehole';
+import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
 
 import 'leaflet/dist/leaflet.css';
-
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.min.css';
-import useMap from '../features/map/components/useMap';
-import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
-import {
-  getBoreholesIcon,
-  getNotificationIcon,
-  preventClickAfterTouchend,
-} from '~/features/map/utils';
-import {utm} from '../features/map/mapConsts';
-import {queryClient} from '~/queryClient';
-import {useUser} from '~/features/auth/useUser';
-import {debounce} from 'lodash';
-import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
-import {findBorehole} from '~/features/station/api/useBorehole';
-import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
-import {SelectionCommand} from '~/features/commandpalette/components/CommandContext';
 
-import {NotListedLocation} from '@mui/icons-material';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import {timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
+import {queryClient} from '~/queryClient';
+import {useMapUtilityStore} from '~/state/store';
+
+import useMap from '../features/map/components/useMap';
+import {utm} from '../features/map/mapConsts';
+
+import type {ContextMenuItemClickEvent} from 'leaflet';
+import type {SyntheticEvent} from 'react';
+import type {SelectionCommand} from '~/features/commandpalette/components/CommandContext';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {BoreholeMapData} from '~/types';
 
 interface LocItems {
   name: string;
@@ -60,18 +61,15 @@ const Map = ({clickCallback}: MapProps) => {
     state.setEditParkingLayer,
   ]);
 
-  // const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
-  // const user_id = authStore().user_id;
-  // const {hiddenTasks, shownTasks} = useTaskStore();
-  // const selectedStyle = useAtomValue<TaskStyling>(taskStyleAtom);
-
-  const user = useUser();
+  const {
+    features: {iotAccess, routesAndParking},
+  } = useUser();
 
   const {data, mapFilteredData: filteredData, setExtraData} = useFilteredMapData();
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
-  if (user?.features?.iotAccess)
+  if (iotAccess)
     contextmenuItems.push(
       {
         text: 'Opret ny lokation',
@@ -86,6 +84,7 @@ const Map = ({clickCallback}: MapProps) => {
                 y: parseFloat(coords.Northing.toFixed(2)),
               },
             });
+            queryClient.invalidateQueries({queryKey: queryKeys.Groups.all()});
           }
         },
         icon: '/leaflet-images/marker.png',
@@ -169,7 +168,7 @@ const Map = ({clickCallback}: MapProps) => {
       },
     ];
 
-    if (user?.features.routesAndParking) {
+    if (routesAndParking) {
       locationMenu = [
         ...locationMenu,
         {
@@ -217,20 +216,6 @@ const Map = ({clickCallback}: MapProps) => {
       contextmenuInheritItems: false,
       contextmenuItems: [...locationMenu],
     });
-
-    // if (element.obsNotifications.length > 0) {
-    //   const smallMarker = L.circleMarker(point, {
-    //     ...defaultCircleMarkerStyle,
-    //     radius: defaultRadius + 4,
-    //     interactive: false,
-    //     fillOpacity: 1,
-    //     opacity: 1,
-    //     fillColor: getColor(element.obsNotifications[0]),
-    //   });
-    //   if (markerLayer) {
-    //     smallMarker.addTo(markerLayer);
-    //   }
-    // }
 
     return marker;
   };
@@ -369,14 +354,6 @@ const Map = ({clickCallback}: MapProps) => {
     markerLayer?.addLayers(markers);
   }, [filteredData, markerLayer]);
 
-  useEffect(() => {
-    document.getElementById('test')?.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-    });
-
-    preventClickAfterTouchend('test');
-  }, []);
-
   return (
     <>
       <DeleteAlert
@@ -397,7 +374,15 @@ const Map = ({clickCallback}: MapProps) => {
         message="Vælg venligst hvor parkeringen skal oprettes."
         handleOpret={() => null}
       />
-      <Box position={'absolute'} zIndex={401} p={0} mr={2} width={isMobile ? '100%' : undefined}>
+      <Box
+        sx={{
+          position: 'absolute',
+          zIndex: 401,
+          p: 0,
+          mr: 2,
+          width: isMobile ? '100%' : undefined,
+        }}
+      >
         <SearchAndFilterMap data={data} handleSearchSelect={handleSearchSelect} />
       </Box>
       <Box id="test" className="no-select" sx={{width: '100%', height: '100%'}} />

@@ -1,32 +1,35 @@
-import {Box} from '@mui/material';
-
-import React, {useCallback} from 'react';
-import WindowManager from '~/components/ui/WindowManager';
 import {DragDropProvider} from '@dnd-kit/react';
-import Map from '~/pages/Map';
-import TaskInfo from './TaskInfo';
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {AppContext} from '~/state/contexts';
-import Station from '~/pages/field/station/Station';
-
-import {BoreholeMapData} from '~/types';
-import SensorContent from '~/pages/field/overview/components/SensorContent';
-import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
-import {locationMetadataQueryOptions, metadataQueryOptions} from '~/hooks/query/useMetadata';
+import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {displayStore, useDisplayState} from '~/hooks/ui';
-import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import LocationList from './LocationList';
-import TaskItiniaries from './TaskItiniaries';
-import LocationRouter from '~/features/station/components/LocationRouter';
-import Trip from '~/pages/admin/opgaver/Trip';
-import useTaskItinerary from '../api/useTaskItinerary';
 import {useAtomValue} from 'jotai';
-import {fullScreenAtom} from '~/state/atoms';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
-import LocationHighlighter from '~/features/map/components/LocationHighlighter';
+import React, {useCallback, useMemo} from 'react';
+
+import WindowManager from '~/components/ui/WindowManager';
+import {useUser} from '~/features/auth/useUser';
 import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
+import LocationHighlighter from '~/features/map/components/LocationHighlighter';
+import LocationRouter from '~/features/station/components/LocationRouter';
+import {metadataQueryOptions} from '~/hooks/query/useMetadata';
+import {displayStore, useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
+import Trip from '~/pages/admin/opgaver/Trip';
+import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
+import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
+import SensorContent from '~/pages/field/overview/components/SensorContent';
+import Station from '~/pages/field/station/Station';
+import Map from '~/pages/Map';
+import {fullScreenAtom} from '~/state/atoms';
+import {AppContext} from '~/state/contexts';
+
+import {useItineraryMutations} from '../api/useItinerary';
+import LocationList from './LocationList';
+import OwnTaskList from './OwnTaskList';
+import TaskInfo from './TaskInfo';
+import TaskItiniaries from './TaskItiniaries';
+
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {BoreholeMapData} from '~/types';
 
 const Overview = () => {
   const [, setPageToShow] = useStationPages();
@@ -47,6 +50,11 @@ const Overview = () => {
     setItineraryId,
     selectedTask,
     setSelectedTask,
+    showLocationRouter,
+    own_task_list,
+    setOwnTaskList,
+    hideSensorContent,
+    setHideSensorContent,
   ] = useDisplayState((state) => [
     state.loc_id,
     state.setLocId,
@@ -63,15 +71,30 @@ const Overview = () => {
     state.setItineraryId,
     state.selectedTask,
     state.setSelectedTask,
+    state.showLocationRouter,
+    state.own_task_list,
+    state.setOwnTaskList,
+    state.hideSensorContent,
+    state.setHideSensorContent,
   ]);
 
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
-  const {data: locationData} = useQuery(locationMetadataQueryOptions(loc_id || undefined));
-  const {addLocationToTrip} = useTaskItinerary();
+  const {addLocationToTrip} = useItineraryMutations();
+  const stationContext = useMemo(
+    () => ({loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}),
+    [metadata, ts_id]
+  );
+  const boreholeContext = useMemo(
+    () => ({boreholeno: boreholeno!, intakeno: intakeno!}),
+    [boreholeno, intakeno]
+  );
+  const locationContext = useMemo(() => ({loc_id: loc_id!}), [loc_id]);
 
+  const {simpleTaskPermission} = useUser();
   const {isMobile, isTouch} = useBreakpoints();
   const fullScreen = useAtomValue(fullScreenAtom);
+  const locationRouterContext = useMemo(() => ({loc_id: loc_id ?? undefined}), [loc_id]);
 
   const handleDrop = (event: any) => {
     if (event.operation.source === null || event.operation.target === null) return;
@@ -96,6 +119,7 @@ const Overview = () => {
         setSelectedTask(null);
         setBoreholeNo(null);
         setPageToShow(null);
+        if (isMobile) setHideSensorContent(false);
         document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
           svg.classList.remove('selected-marker');
         });
@@ -121,11 +145,13 @@ const Overview = () => {
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      flexGrow={1}
-      alignItems="stretch"
-      position="relative"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        alignItems: 'stretch',
+        position: 'relative',
+      }}
     >
       <Box
         sx={{
@@ -162,16 +188,27 @@ const Overview = () => {
           </WindowManager.Window>
 
           <WindowManager.Window
+            key="owntasklist"
+            priority={2}
+            mobilePriority={2}
+            show={own_task_list && simpleTaskPermission === true}
+            minSize={1}
+            onClose={() => setOwnTaskList(false)}
+            sx={{
+              borderBottomLeftRadius: isMobile ? 0 : 3,
+            }}
+            height={isMobile ? '50%' : '100%'}
+          >
+            <OwnTaskList />
+          </WindowManager.Window>
+
+          <WindowManager.Window
             key="locationlist"
             priority={2}
             mobilePriority={2}
             show={loc_list}
             minSize={1}
-            onClose={() => {
-              // setSelectedData(null);
-              setLocList(false);
-            }}
-            // fullScreen={isMobile}
+            onClose={() => setLocList(false)}
             sx={{
               borderBottomLeftRadius: isMobile ? 0 : 3,
             }}
@@ -182,13 +219,12 @@ const Overview = () => {
 
           <WindowManager.Window
             key="location"
-            show={loc_id !== null}
+            show={loc_id !== null && !hideSensorContent}
             minSize={1}
             priority={3}
             mobilePriority={3}
             height={'100%'}
             onClose={() => {
-              // setSelectedData(null);
               closeLocation();
               setSelectedTask(null);
             }}
@@ -196,7 +232,7 @@ const Overview = () => {
               m: isMobile ? 0.5 : undefined,
             }}
           >
-            <AppContext.Provider value={{loc_id: loc_id!}}>
+            <AppContext.Provider value={locationContext}>
               <SensorContent key={loc_id} />
             </AppContext.Provider>
           </WindowManager.Window>
@@ -208,11 +244,10 @@ const Overview = () => {
             show={boreholeno !== null}
             minSize={1}
             onClose={() => {
-              // setSelectedData(null);
               setBoreholeNo(null);
             }}
           >
-            <AppContext.Provider value={{boreholeno: boreholeno!}}>
+            <AppContext.Provider value={boreholeContext}>
               <BoreholeContent key={boreholeno} />
             </AppContext.Provider>
           </WindowManager.Window>
@@ -237,7 +272,13 @@ const Overview = () => {
             minSize={2}
             onClose={() => setSelectedTask(null)}
           >
-            <Box key={selectedTask} p={1} overflow="auto">
+            <Box
+              key={selectedTask}
+              sx={{
+                p: 1,
+                overflow: 'auto',
+              }}
+            >
               <TaskInfo />
             </Box>
           </WindowManager.Window>
@@ -249,13 +290,13 @@ const Overview = () => {
             show={boreholeno !== null && intakeno !== null}
             minSize={2}
             maxSize={4}
-            fullScreen={isMobile || fullScreen}
+            fullScreen={isTouch || fullScreen}
             height="100%"
             sx={{
-              borderRadius: isMobile ? 0 : 3,
+              borderRadius: isTouch ? 0 : 3,
             }}
           >
-            <AppContext.Provider value={{boreholeno: boreholeno!, intakeno: intakeno!}}>
+            <AppContext.Provider value={boreholeContext}>
               <BoreholeRouter key={`${boreholeno}-${intakeno}`} />
             </AppContext.Provider>
           </WindowManager.Window>
@@ -268,29 +309,32 @@ const Overview = () => {
             show={ts_id !== null}
             minSize={2}
             maxSize={4}
-            fullScreen={isMobile || fullScreen}
+            fullScreen={isTouch || fullScreen}
             sx={{
-              borderRadius: isMobile ? 0 : 3,
+              borderRadius: isTouch ? 0 : 3,
             }}
             height="100%"
           >
-            <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}}>
+            <AppContext.Provider value={stationContext}>
               <Station key={ts_id} />
             </AppContext.Provider>
           </WindowManager.Window>
 
           <WindowManager.Window
             key="locationstation"
-            show={loc_id !== null && locationData?.timeseries.length === 0}
+            show={showLocationRouter}
             priority={9}
             mobilePriority={8}
             minSize={2}
             maxSize={4}
             onClose={() => setSelectedTask(null)}
-            fullScreen={isMobile || fullScreen}
+            fullScreen={isTouch || fullScreen}
+            sx={{
+              borderRadius: isTouch ? 0 : 3,
+            }}
             height="100%"
           >
-            <AppContext.Provider value={{loc_id: loc_id ?? undefined}}>
+            <AppContext.Provider value={locationRouterContext}>
               <LocationRouter key={`location-${loc_id}`} />
             </AppContext.Provider>
           </WindowManager.Window>

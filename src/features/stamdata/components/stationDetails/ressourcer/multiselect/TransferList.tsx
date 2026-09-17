@@ -12,12 +12,13 @@ import {useEffect, useState} from 'react';
 import Button from '~/components/Button';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {CategoryType} from '~/helpers/enumHelper';
+
 import type {
   MultiSelectProps,
   Ressourcer,
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
-import {CategoryType} from '~/helpers/EnumHelper';
-import {useAppContext} from '~/state/contexts';
 
 function not(a: Ressourcer[], b: Ressourcer[]) {
   return a.filter((value) => b.map((option) => option.navn).indexOf(value.navn) === -1);
@@ -46,13 +47,14 @@ function categoryNot(a: Array<Ressourcer>, b: Array<Ressourcer>) {
 }
 
 interface TransferListProps extends MultiSelectProps {
+  loc_id: number | undefined;
   value: Array<Ressourcer>;
   setValue: (ressourcer: Array<Ressourcer>) => void;
 }
 
-export default function TranserList({value, setValue}: TransferListProps) {
+export default function TranserList({loc_id, value, setValue}: TransferListProps) {
   const [checked, setChecked] = useState<Ressourcer[]>([]);
-  const [selected, setSelected] = useState<Ressourcer[]>(value);
+  const [selected, setSelected] = useState<Ressourcer[]>(value ?? []);
   const [selectedCategory, setSelectedCategory] = useState<Array<string>>([]);
   const [categories] = useState<Array<string>>(
     Object.keys(CategoryType).splice(
@@ -60,7 +62,6 @@ export default function TranserList({value, setValue}: TransferListProps) {
       Object.keys(CategoryType).length
     )
   );
-  const {loc_id} = useAppContext(['loc_id']);
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
   const [collapsed, setCollapsed] = useState<Array<string>>([]);
@@ -79,14 +80,14 @@ export default function TranserList({value, setValue}: TransferListProps) {
 
   useEffect(() => {
     if (value && options && options.length > 0) {
-      setSelectedCategory([...new Set([...value.map((ressource) => ressource.kategori)])]);
+      setSelectedCategory([...new Set(value.map((ressource) => ressource.kategori))]);
       setSelected(value);
     }
   }, [options, value]);
 
   useEffect(() => {
     if (related && related.length > 0) {
-      setSelectedCategory([...new Set([...related.map((ressource) => ressource.kategori)])]);
+      setSelectedCategory([...new Set(related.map((ressource) => ressource.kategori))]);
       setSelected(related);
     }
   }, [related]);
@@ -129,7 +130,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
     setSelectedCategory([
       ...new Set(selectedCategory.concat(leftChecked.map((ressource) => ressource.kategori))),
     ]);
-    handleSave(selected.concat(leftChecked));
+    if (loc_id !== undefined) handleSave(selected.concat(leftChecked));
   };
 
   const handleCheckedLeft = () => {
@@ -137,7 +138,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
     setValue(not(selected, rightChecked));
     setChecked(not(checked, rightChecked));
     setSelectedCategory(categoryNot(selected, rightChecked));
-    handleSave(not(selected, rightChecked));
+    if (loc_id !== undefined) handleSave(not(selected, rightChecked));
   };
 
   const handleSave = async (ressourcer: Array<Ressourcer>) => {
@@ -154,15 +155,26 @@ export default function TranserList({value, setValue}: TransferListProps) {
     if (!collapsed.includes(collapsedCategory)) {
       setCollapsed([...collapsed, collapsedCategory]);
     } else {
-      setCollapsed(...[collapsed.filter((category) => category !== collapsedCategory)]);
+      setCollapsed(collapsed.filter((category) => category !== collapsedCategory));
     }
   };
 
   const customList = (items: Ressourcer[], categoryList: Array<string>, title: string) => {
     return (
       <Paper sx={{width: 300, boxShadow: 3}}>
-        <Box display={'flex'} flexDirection={'column'}>
-          <Typography align="center" variant="h5" m={0.5}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Typography
+            align="center"
+            variant="h5"
+            sx={{
+              m: 0.5,
+            }}
+          >
             {title}
           </Typography>
           <Divider />
@@ -197,17 +209,26 @@ export default function TranserList({value, setValue}: TransferListProps) {
                     );
                     const labelId = `transfer-list-item-${category}-label`;
                     return (
-                      <Box gap={0} display={'flex'} flexDirection={'column'} key={category + 'box'}>
+                      <Box
+                        key={category + 'box'}
+                        sx={{
+                          gap: 0,
+                          display: 'flex',
+                          flexDirection: 'column',
+                        }}
+                      >
                         <ListItemText
                           id={labelId}
                           onClick={() => !disabled && handleClick(category)}
                         >
                           <Typography
-                            ml={2}
-                            fontWeight={'bold'}
-                            display={'flex'}
-                            flexDirection={'row'}
-                            justifyContent={'space-between'}
+                            sx={{
+                              ml: 2,
+                              fontWeight: 'bold',
+                              display: 'flex',
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                            }}
                           >
                             {category}
                             {title !== 'Udvalgt' && (
@@ -240,8 +261,10 @@ export default function TranserList({value, setValue}: TransferListProps) {
                                       }
                                       tabIndex={-1}
                                       disableRipple
-                                      inputProps={{
-                                        'aria-labelledby': labelId,
+                                      slotProps={{
+                                        input: {
+                                          'aria-labelledby': labelId,
+                                        },
                                       }}
                                     />
                                   </ListItemIcon>
@@ -262,11 +285,30 @@ export default function TranserList({value, setValue}: TransferListProps) {
   };
 
   return (
-    <>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       {options && options.length > 0 && categories && categories.length > 0 && (
-        <Box my={1} gap={1} display={'flex'} flexDirection={'row'}>
+        <Box
+          sx={{
+            my: 1,
+            gap: 1,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}
+        >
           {customList(left ?? [], leftCategory ?? [], 'Valgbare')}
-          <Box display={'flex'} flexDirection="column" justifyContent="center">
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
+          >
             <Button
               sx={{my: 0.5}}
               bttype="secondary"
@@ -291,6 +333,28 @@ export default function TranserList({value, setValue}: TransferListProps) {
           {customList(selected ?? [], selectedCategory ?? [], 'Udvalgt')}
         </Box>
       )}
-    </>
+      {loc_id !== undefined && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: 1,
+          }}
+        >
+          <UpdateProgressButton
+            loc_id={loc_id}
+            ts_id={-1}
+            disabled={
+              checked.length > 0 ||
+              (selected.length === value.length && selected.length > 0) ||
+              disabled
+            }
+            progressKey="ressourcer"
+            alterStyle
+          />
+        </Box>
+      )}
+    </Box>
   );
 }

@@ -1,13 +1,13 @@
-import {Box, Button, Grid2, Link} from '@mui/material';
-import React, {useMemo} from 'react';
-import {Task} from '~/features/tasks/types';
 import {EditOutlined} from '@mui/icons-material';
-import TaskForm from '~/features/tasks/components/TaskForm';
-
 import DescriptionIcon from '@mui/icons-material/Description';
+import {Box, Button, Grid, Link} from '@mui/material';
+import React, {useMemo} from 'react';
 
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import TaskForm from '~/features/tasks/components/TaskForm';
 import {useDisplayState} from '~/hooks/ui';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+
+import type {Task} from '~/features/tasks/types';
 
 type Props = {
   task: Task;
@@ -26,20 +26,40 @@ const ItineraryListItemSimpleCard = ({task}: Props) => {
 
   return (
     <TaskForm key={task.id} onSubmit={() => {}} defaultValues={defaultValues}>
-      <Grid2 container color="grey.700" spacing={0.5} width={'100%'}>
-        <Grid2 size={6} display={'flex'} flexDirection={'row'} alignItems="center">
+      <Grid
+        container
+        spacing={0.5}
+        sx={{
+          color: 'grey.700',
+          width: '100%',
+        }}
+      >
+        <Grid
+          size={6}
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
           {task.name && (
-            <Box alignItems={'center'} display="flex" gap={1}>
+            <Box
+              sx={{
+                alignItems: 'center',
+                display: 'flex',
+                gap: 1,
+              }}
+            >
               <DescriptionIcon fontSize="small" />
               <Link
                 onClick={() => station(task.ts_id)}
                 color="inherit"
                 variant="caption"
                 underline="always"
-                display="flex"
-                flexWrap="wrap"
-                gap={0.5}
                 sx={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 0.5,
                   cursor: 'pointer',
                   textDecorationColor: 'rgba(97, 97, 97, 0.6)',
                 }}
@@ -49,9 +69,21 @@ const ItineraryListItemSimpleCard = ({task}: Props) => {
               </Link>
             </Box>
           )}
-        </Grid2>
-        <Grid2 size={6} gap={1}>
-          <Box display={'flex'} flexDirection={'row'} alignItems="center" justifyContent="end">
+        </Grid>
+        <Grid
+          size={6}
+          sx={{
+            gap: 1,
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'end',
+            }}
+          >
             {task.can_edit && (
               <EditOutlined
                 fontSize="small"
@@ -69,8 +101,8 @@ const ItineraryListItemSimpleCard = ({task}: Props) => {
               {task.can_edit ? 'Rediger opgave' : 'Se opgave'}
             </Button>
           </Box>
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
     </TaskForm>
   );
 };

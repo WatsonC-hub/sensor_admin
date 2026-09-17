@@ -1,0 +1,123 @@
+import {zodResolver} from '@hookform/resolvers/zod';
+import {DoNotDisturb} from '@mui/icons-material';
+import React, {useEffect} from 'react';
+import {Controller, FormProvider, useForm} from 'react-hook-form';
+import {z} from 'zod';
+
+import Button from '~/components/Button';
+import CheckboxesTags from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/Autocomplete';
+import TranserList from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/TransferList';
+import useBreakpoints from '~/hooks/useBreakpoints';
+
+import {button_sx} from '../commonStyle';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+
+const ressourceSchema = z.object({
+  ressourcer: z
+    .array(
+      z.object({
+        id: z.number(),
+        navn: z.string(),
+        kategori: z.string(),
+        tstype_id: z
+          .number()
+          .array()
+          .nullable()
+          .transform((a) => a ?? []),
+        loctype_id: z
+          .number()
+          .array()
+          .nullable()
+          .transform((a) => a ?? []),
+        forudvalgt: z.boolean(),
+      })
+    )
+    .nullish()
+    .transform((r) => r ?? []),
+});
+
+export type RessourceInput = z.input<typeof ressourceSchema>;
+export type RessourceOutput = z.output<typeof ressourceSchema>;
+
+const RessourceForm = () => {
+  const {isMobile} = useBreakpoints();
+  const id = 'location.ressourcer';
+  const [ressourcer, setState, registerSubmitter, removeSubmitter, deleteState] =
+    useCreateStationStore((state) => [
+      state.formState.location?.ressourcer,
+      state.setState,
+      state.registerSubmitter,
+      state.removeSubmitter,
+      state.deleteState,
+    ]);
+
+  const formMethods = useForm({
+    resolver: zodResolver(ressourceSchema),
+    defaultValues: {
+      ressourcer: ressourcer,
+    },
+    mode: 'onTouched',
+  });
+
+  const {control, handleSubmit, watch} = formMethods;
+
+  useEffect(() => {
+    registerSubmitter(id, async () => {
+      let valid = false;
+      await handleSubmit((values) => {
+        setState('location.ressourcer', values.ressourcer);
+        valid = true;
+      })();
+      return valid;
+    });
+
+    return () => removeSubmitter(id);
+  }, [handleSubmit]);
+
+  const watchedRessourcer = watch('ressourcer');
+  return (
+    <>
+      <FormProvider {...formMethods}>
+        <Button
+          bttype="primary"
+          startIcon={<DoNotDisturb />}
+          onClick={() => {
+            deleteState('location.ressourcer');
+          }}
+          sx={{
+            ...button_sx(watchedRessourcer === undefined),
+            alignSelf: 'start',
+          }}
+        >
+          Ingen ressourcer
+        </Button>
+        <Controller
+          key={'ressourcer'}
+          name="ressourcer"
+          control={control}
+          render={({field: {onChange, value}}) => {
+            return (
+              <>
+                {!isMobile ? (
+                  <TranserList
+                    loc_id={undefined}
+                    value={value ?? []}
+                    setValue={(ressourcer) => onChange(ressourcer)}
+                  />
+                ) : (
+                  <CheckboxesTags
+                    loc_id={undefined}
+                    value={value ?? []}
+                    setValue={(ressourcer) => onChange(ressourcer)}
+                  />
+                )}
+              </>
+            );
+          }}
+        />
+      </FormProvider>
+    </>
+  );
+};
+
+export default RessourceForm;

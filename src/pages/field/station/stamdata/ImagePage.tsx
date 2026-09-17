@@ -1,6 +1,6 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
 import dayjs from 'dayjs';
-import React, {ChangeEvent, createRef, useState} from 'react';
+import React, {createRef, useState} from 'react';
 
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
@@ -9,6 +9,8 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
+
+import type {ChangeEvent} from 'react';
 
 const ImagePage = () => {
   const {loc_id} = useAppContext(['loc_id']);
@@ -22,7 +24,7 @@ const ImagePage = () => {
     type: loc_id?.toString(),
     comment: '',
     public: false,
-    date: dayjs(),
+    date: dayjs().startOf('minute'),
   });
 
   const changeActiveImageData = (field: string, value: string) => {
@@ -36,7 +38,7 @@ const ImagePage = () => {
       type: loc_id?.toString(),
       comment: '',
       public: false,
-      date: dayjs(),
+      date: dayjs().startOf('minute'),
     });
     setOpenSave(true);
   };
@@ -68,7 +70,7 @@ const ImagePage = () => {
       <StationPageBoxLayout>
         <Images
           type={'station'}
-          typeId={loc_id ? loc_id.toString() : ''}
+          typeId={loc_id}
           setOpenSave={setOpenSave}
           setActiveImage={setActiveImage}
           setShowForm={setShowForm}

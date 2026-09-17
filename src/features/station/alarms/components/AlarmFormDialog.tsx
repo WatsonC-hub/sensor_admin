@@ -1,0 +1,32 @@
+import {Dialog, DialogContent, DialogTitle} from '@mui/material';
+import React from 'react';
+
+import TooltipWrapper from '~/components/TooltipWrapper';
+
+import AlarmForm from './AlarmForm';
+
+import type {AlarmTableType} from '../types';
+
+type AlarmFormDialogProps = {
+  open: boolean;
+  onClose: () => void;
+  setOpen: (open: boolean) => void;
+  alarm?: AlarmTableType;
+};
+
+const AlarmFormDialog = ({open, onClose, setOpen, alarm}: AlarmFormDialogProps) => {
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle sx={{display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'left'}}>
+        <TooltipWrapper description="I denne dialog kan du registrere en alarm på en til flere notifikationer. Herunder meddeler du hvordan kontakter skal adviseres.">
+          Alarmer
+        </TooltipWrapper>
+      </DialogTitle>
+      <DialogContent>
+        <AlarmForm setOpen={setOpen} alarm={alarm} />
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default AlarmFormDialog;

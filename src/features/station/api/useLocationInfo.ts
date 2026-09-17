@@ -1,8 +1,10 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
+
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {Group} from '~/types';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {Group} from '~/types';
 
 type LocationInfo = {
   loc_name: string;
@@ -16,6 +18,8 @@ type LocationInfo = {
   ressources: string[];
   location_access: string[] | undefined;
   contact: boolean;
+  sla: number;
+  boreholeno: string | undefined;
 };
 
 export const locationInfoOptions = (loc_id: number) =>
@@ -32,9 +36,11 @@ export const locationInfoOptions = (loc_id: number) =>
   });
 
 export const useLocationInfo = (loc_id: number) => {
-  const user = useUser();
+  const {
+    features: {iotAccess},
+  } = useUser();
   return useQuery({
     ...locationInfoOptions(loc_id),
-    enabled: user?.features?.iotAccess && loc_id !== undefined,
+    enabled: iotAccess && loc_id !== undefined,
   });
 };

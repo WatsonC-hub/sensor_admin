@@ -1,10 +1,11 @@
-import {useQuery, useMutation} from '@tanstack/react-query';
-import {Dayjs} from 'dayjs';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
+
+import type {Dayjs} from 'dayjs';
 
 export interface CertifyQa {
   id?: number;
@@ -57,9 +58,42 @@ const certifyQaDelOptions = {
   },
 };
 
+export const useCertifyQaMutations = () => {
+  const post = useMutation({
+    ...certifyQaPostOptions,
+    onSuccess: () => {
+      toast.success('Kvalitetsstempel gemt');
+    },
+    meta: {
+      invalidates: [['certifyQa']],
+    },
+  });
+
+  const put = useMutation({
+    ...certifyQaPutOptions,
+    onSuccess: () => {
+      toast.success('Kvalitetsstempel ændret');
+    },
+    meta: {
+      invalidates: [['certifyQa']],
+    },
+  });
+
+  const del = useMutation({
+    ...certifyQaDelOptions,
+    onSuccess: () => {
+      toast.success('Kvalitetsstempel slettet');
+    },
+    meta: {
+      invalidates: [['certifyQa']],
+    },
+  });
+  return {post, put, del};
+};
+
 export const useCertifyQa = () => {
   const {ts_id} = useAppContext(['ts_id']);
-  const get = useQuery({
+  return useQuery({
     queryKey: queryKeys.Timeseries.certifyQa(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<CertifyQa>>(
@@ -70,36 +104,4 @@ export const useCertifyQa = () => {
     staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: ts_id !== undefined,
   });
-
-  const post = useMutation({
-    ...certifyQaPostOptions,
-    onSuccess: () => {
-      toast.success('Kvalitetsstempel gemt');
-    },
-    meta: {
-      invalidates: [['register']],
-    },
-  });
-
-  const put = useMutation({
-    ...certifyQaPutOptions,
-    onSuccess: () => {
-      toast.success('Kvalitetsstempel ændret');
-    },
-    meta: {
-      invalidates: [['register']],
-    },
-  });
-
-  const del = useMutation({
-    ...certifyQaDelOptions,
-    onSuccess: () => {
-      toast.success('Kvalitetsstempel slettet');
-    },
-    meta: {
-      invalidates: [['register']],
-    },
-  });
-
-  return {get, post, put, del};
 };

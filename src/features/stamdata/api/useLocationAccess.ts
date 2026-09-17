@@ -1,10 +1,11 @@
-import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
-import {Access, AccessTable} from '~/types';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {APIError} from '~/queryClient';
+import type {Access, AccessTable} from '~/types';
 
 interface LocationAccessBase {
   path: string;
@@ -51,7 +52,7 @@ const locationAccessDelOptions = {
   },
 };
 
-export const LocationAccessGetOptions = (loc_id: number) =>
+export const locationAccessGetOptions = (loc_id: number | undefined) =>
   queryOptions<Array<AccessTable>, APIError>({
     queryKey: queryKeys.Location.keys(loc_id),
     queryFn: async () => {
@@ -59,9 +60,10 @@ export const LocationAccessGetOptions = (loc_id: number) =>
 
       return data;
     },
+    enabled: loc_id !== undefined,
   });
 
-export const useSearchLocationAccess = (loc_id: number, searchString: string) => {
+export const useSearchLocationAccess = (loc_id: number | undefined, searchString: string) => {
   const searched_location_access = useQuery({
     queryKey: queryKeys.Location.searchKeys(searchString),
     queryFn: async () => {
@@ -73,41 +75,50 @@ export const useSearchLocationAccess = (loc_id: number, searchString: string) =>
         data = response.data;
       } else {
         const response = await apiClient.get<Array<Access>>(
-          `/sensor_field/stamdata/location_access/search_location_access/${loc_id}/${searchString}`
+          `/sensor_field/stamdata/location_access/search_location_access/${searchString}`,
+          {params: {loc_id}}
         );
         data = response.data;
       }
       return data;
     },
     staleTime: 10 * 1000,
-    enabled: loc_id !== undefined,
+    enabled: loc_id !== undefined || searchString !== '',
   });
   return searched_location_access;
 };
 
-export const useLocationAccess = (loc_id: number) => {
-  const queryClient = useQueryClient();
-  const get = useQuery(LocationAccessGetOptions(loc_id));
+export const useLocationAccess = (loc_id: number | undefined) => {
+  const get = useQuery(locationAccessGetOptions(loc_id));
 
   const post = useMutation({
     ...locationAccessPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.keys(loc_id),
-      });
-
       toast.success('Adgangsinformation gemt');
+    },
+    meta: {
+      invalidates: [
+        queryKeys.Location.keys(loc_id),
+        queryKeys.Location.info(loc_id),
+        queryKeys.StationProgress(),
+        ['collection'],
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 
   const put = useMutation({
     ...locationAccessPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.keys(loc_id),
-      });
-
       toast.success('Adgangsinformation ændret');
+    },
+    meta: {
+      invalidates: [
+        queryKeys.Location.keys(loc_id),
+        queryKeys.Location.info(loc_id),
+        ['collection'],
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -115,9 +126,14 @@ export const useLocationAccess = (loc_id: number) => {
     ...locationAccessDelOptions,
     onSuccess: () => {
       toast.success('Adgangsinformation slettet');
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Location.keys(loc_id),
-      });
+    },
+    meta: {
+      invalidates: [
+        queryKeys.Location.keys(loc_id),
+        queryKeys.Location.info(loc_id),
+        ['collection'],
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 

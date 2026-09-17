@@ -1,0 +1,23 @@
+import {Typography} from '@mui/material';
+import {useFormContext} from 'react-hook-form';
+
+import Button from '../Button';
+
+const Cancel = ({cancel, disabled}: {cancel: () => void; disabled?: boolean}) => {
+  const {reset} = useFormContext();
+  return (
+    <Button
+      bttype="tertiary"
+      fullWidth={false}
+      onClick={() => {
+        reset();
+        cancel();
+      }}
+      disabled={disabled}
+    >
+      <Typography variant="body2">Annuller</Typography>
+    </Button>
+  );
+};
+
+export default Cancel;

@@ -2,7 +2,8 @@ import {useMutation} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {rerunToast} from '~/helpers/toasts';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import {rerunToast} from '~/helpers/Toasts';
 import {useAppContext} from '~/state/contexts';
 
 type YRangePayload = {
@@ -48,7 +49,7 @@ export const useYRangeMutations = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [queryKeys.Timeseries.QAWithTsId(ts_id)],
     },
   });
 
@@ -61,7 +62,7 @@ export const useYRangeMutations = () => {
       rerunToast(ts_id);
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [queryKeys.Timeseries.QAWithTsId(ts_id)],
     },
   });
 

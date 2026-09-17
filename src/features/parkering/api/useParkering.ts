@@ -1,9 +1,10 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {Parking} from '~/types';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {Parking} from '~/types';
 
 interface ParkeringBase {
   path: string;
@@ -52,8 +53,6 @@ const parkeringDelOptions = {
 };
 
 export const useParkering = () => {
-  const queryClient = useQueryClient();
-
   const get = useQuery({
     queryKey: queryKeys.Parking.all(),
     queryFn: async () => {
@@ -67,31 +66,25 @@ export const useParkering = () => {
   const post = useMutation({
     ...parkeringPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Parking.all(),
-      });
       toast.success('Parkering gemt');
     },
+    meta: {invalidates: [queryKeys.Parking.all()], optOutGeneralInvalidations: true},
   });
 
   const put = useMutation({
     ...parkeringPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Parking.all(),
-      });
       toast.success('Parkering ændret');
     },
+    meta: {invalidates: [queryKeys.Parking.all()], optOutGeneralInvalidations: true},
   });
 
   const del = useMutation({
     ...parkeringDelOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.Parking.all(),
-      });
       toast.success('Parkering slettet');
     },
+    meta: {invalidates: [queryKeys.Parking.all()], optOutGeneralInvalidations: true},
   });
 
   return {get, post, put, del};

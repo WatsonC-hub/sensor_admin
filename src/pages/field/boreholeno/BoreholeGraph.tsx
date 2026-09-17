@@ -1,15 +1,16 @@
 import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {Layout, PlotData} from 'plotly.js';
 import React, {useEffect, useState} from 'react';
 
 import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
-import {BoreholeMeasurement} from '~/types';
+
+import type {Layout, PlotData} from 'plotly.js';
+import type {BoreholeMeasurement} from '~/types';
 
 type JupiterData = {
   data: {
@@ -29,7 +30,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
 
   const {isMobile} = useBreakpoints();
   const xOurData = ourData?.map((d) => d.timeofmeas.toISOString());
-  const yOurData = ourData?.map((d) => (d.waterlevel ? d.waterlevel : null));
+  const yOurData = ourData?.map((d) => (typeof d.waterlevel == 'number' ? d.waterlevel : null));
 
   const [xDynamicMeasurement, setXDynamicMeasurement] = useState<Array<string>>([]);
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState<Array<number>>([]);
@@ -78,6 +79,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
       line: {width: 2},
       mode: 'lines+markers',
       marker: {symbol: '100', size: 8},
+      uid: `jupiter-situation-${situation}`,
     };
     return trace;
   });
@@ -89,6 +91,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
     type: 'scattergl',
     mode: 'markers',
     marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
+    uid: 'calypso-data',
   };
 
   const dynamicMeas: Partial<PlotData> = {
@@ -99,6 +102,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
     mode: 'markers',
     showlegend: false,
     marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
+    uid: 'dynamic-measurement',
   };
 
   const data: Array<Partial<PlotData>> = [...jupiterTraces, plotOurData, dynamicMeas];
@@ -109,7 +113,9 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
       }
     : {
         yaxis: {
-          title: 'Vandstand',
+          title: {
+            text: 'Vandstand',
+          },
         },
         yaxis2: {},
       };

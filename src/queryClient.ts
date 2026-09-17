@@ -1,12 +1,22 @@
-import {createSyncStoragePersister} from '@tanstack/query-sync-storage-persister';
-import {matchQuery, MutationCache, QueryClient, QueryKey} from '@tanstack/react-query';
-import axios, {AxiosError} from 'axios';
+import {createAsyncStoragePersister} from '@tanstack/query-async-storage-persister';
+import {MutationCache, QueryClient, matchQuery} from '@tanstack/react-query';
+import axios from 'axios';
+import localforage from 'localforage';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {httpStatusDescriptions} from '~/consts';
 import {excludeDelOptions, excludePostOptions, excludePutOptions} from '~/hooks/query/useExclude';
-import {tags, queryKeys} from './helpers/QueryKeyFactoryHelper';
+
+import {queryKeys} from './helpers/queryKeyFactoryHelper';
+import {
+  deleteImageMutationOptions,
+  postImageMutationOptions,
+  putImageMutationOptions,
+} from './hooks/query/useImageUpload';
+
+import type {QueryKey, UseMutationOptions} from '@tanstack/react-query';
+import type {AxiosError} from 'axios';
 
 type ErrorDetail = {
   type: string;
@@ -19,15 +29,30 @@ type ErrorResponse = {
   detail: ErrorDetail | string;
 };
 
+export interface APIError extends Error {
+  response?: AxiosError<ErrorResponse>['response'];
+}
+
 declare module '@tanstack/react-query' {
   interface Register {
+    defaultError: APIError;
     mutationMeta: {
-      invalidates?: Array<QueryKey | Array<keyof typeof tags>>;
+      invalidates?: Array<QueryKey>;
+      optOutGeneralInvalidations?: boolean;
     };
   }
 }
 
-export type APIError = AxiosError<ErrorResponse>;
+type AppMutationOptions<TData, TVariables> = Omit<
+  UseMutationOptions<TData, APIError, TVariables>,
+  'mutationFn'
+> & {
+  mutationFn: (variables: TVariables) => Promise<TData>;
+};
+
+export const makeAppMutationOptions = <TData, TVariables>(
+  options: AppMutationOptions<TData, TVariables>
+) => options;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,16 +75,18 @@ const queryClient = new QueryClient({
         return false;
       },
     },
+    mutations: {
+      retry: 0,
+      networkMode: 'offlineFirst', // ensures they queue
+      meta: {
+        optOutGeneralInvalidations: false,
+      },
+    },
   },
   mutationCache: new MutationCache({
     onSuccess: (_data, _variables, _context, mutation) => {
       queryClient.invalidateQueries({
         predicate: (query) => {
-          if (matchQuery({queryKey: ['map']}, query)) return true;
-          if (matchQuery({queryKey: ['borehole_map']}, query)) return true;
-          if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
-          if (matchQuery({queryKey: ['tasks']}, query)) return true;
-
           return (
             mutation.meta?.invalidates?.some((queryKey) => {
               return queryKey.every((key) => query.queryKey.includes(key));
@@ -67,40 +94,56 @@ const queryClient = new QueryClient({
           );
         },
       });
+
+      if (mutation.meta?.optOutGeneralInvalidations != true)
+        queryClient.invalidateQueries({
+          predicate: (query) => {
+            if (matchQuery({queryKey: ['map']}, query)) return true;
+            if (matchQuery({queryKey: ['borehole_map']}, query)) return true;
+            if (matchQuery({queryKey: ['timeseries_status']}, query)) return true;
+            if (matchQuery({queryKey: ['all_tasks']}, query)) return true;
+
+            return false;
+          },
+        });
+      queryClient.getMutationCache().remove(mutation);
     },
     onError: (error) => {
-      if (axios.isAxiosError(error)) {
-        const localError = error as APIError;
-        const detail = localError.response?.data.detail;
-        if (detail) {
-          if (typeof detail === 'string') {
-            toast.error(detail);
-            return;
-          }
+      const detail = error.response?.data.detail;
 
-          if (Array.isArray(detail)) {
-            let errorString = 'Valideringsfejl:\n';
-            (detail as ErrorDetail[]).forEach((item) => {
-              errorString += `${item.loc.join('.')} - ${item.msg}\n`;
-            });
-            toast.error(errorString, {
-              style: {whiteSpace: 'pre-line'},
-            });
+      if (detail) {
+        if (typeof detail === 'string') {
+          toast.error(detail, {
+            autoClose: false,
+            closeOnClick: true,
+          });
+          return;
+        }
 
-            return;
-          }
+        if (Array.isArray(detail)) {
+          let errorString = 'Valideringsfejl:\n';
+          (detail as ErrorDetail[]).forEach((item) => {
+            errorString += `${item.loc.join('.')} - ${item.msg}\n`;
+          });
+          toast.error(errorString, {
+            style: {whiteSpace: 'pre-line'},
+            autoClose: false,
+            closeOnClick: true,
+          });
 
           return;
         }
 
-        const status = localError.response?.status.toString();
-
-        if (status && status in httpStatusDescriptions) {
-          toast.error(httpStatusDescriptions[status as keyof typeof httpStatusDescriptions]);
-          return;
-        }
-        toast.error('Der skete en fejl');
+        return;
       }
+
+      const status = error.response?.status.toString();
+
+      if (status && status in httpStatusDescriptions) {
+        toast.error(httpStatusDescriptions[status as keyof typeof httpStatusDescriptions]);
+        return;
+      }
+      toast.error('Der skete en fejl');
     },
     onMutate: async (_, mutation) => {
       if (mutation.state.isPaused) {
@@ -124,12 +167,20 @@ queryClient.setMutationDefaults(['pejling'], {
   },
 });
 
+const imageTypes = ['station', 'borehole'] as const;
+
+imageTypes.forEach((type) => {
+  queryClient.setMutationDefaults(['image_post', type], postImageMutationOptions(type));
+  queryClient.setMutationDefaults(['image_put', type], putImageMutationOptions(type));
+  queryClient.setMutationDefaults(['image_del', type], deleteImageMutationOptions(type));
+});
+
 queryClient.setMutationDefaults(excludePostOptions.mutationKey, excludePostOptions);
 queryClient.setMutationDefaults(excludePutOptions.mutationKey, excludePutOptions);
 queryClient.setMutationDefaults(excludeDelOptions.mutationKey, excludeDelOptions);
 
-const persister = createSyncStoragePersister({
-  storage: window.localStorage,
+const persister = createAsyncStoragePersister({
+  storage: localforage,
 });
 
 export {persister, queryClient};

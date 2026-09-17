@@ -1,5 +1,7 @@
 import {Typography} from '@mui/material';
 import * as Sentry from '@sentry/react';
+import {useQuery} from '@tanstack/react-query';
+import {usePostHog} from 'posthog-js/react';
 import React, {Suspense, useEffect} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 
@@ -8,17 +10,15 @@ import LoadingSkeleton from '~/LoadingSkeleton';
 import Router from '~/Router';
 import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
-import {useUser, userQueryOptions} from './features/auth/useUser';
-import {usePostHog} from 'posthog-js/react';
-import DisplayStateProvider from './helpers/DisplayStateProvider';
-import {useQuery} from '@tanstack/react-query';
+import {userQueryOptions} from './features/auth/useUser';
 import CommandPalette from './features/commandpalette/components/CommandPalette';
+import DisplayStateProvider from './helpers/DisplayStateProvider';
 
 function App() {
   const posthog = usePostHog();
-  const user = useUser();
+  // const user = useUser();
 
-  const {isPending, isFetched} = useQuery(userQueryOptions);
+  const {data: user, isPending, isFetched, isError} = useQuery(userQueryOptions);
 
   useEffect(() => {
     // prefetch user
@@ -44,11 +44,11 @@ function App() {
     }
   }, [user, posthog]);
 
-  if (user === null && isPending) {
+  if (!user && isPending) {
     return <LoadingSkeleton />;
   }
 
-  if (user === null && isFetched) {
+  if ((!user && isFetched) || isError) {
     return (
       <>
         <NavBar>

@@ -1,5 +1,5 @@
 import {Box, Checkbox, Typography} from '@mui/material';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -11,11 +11,13 @@ import {
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {BoreholeMeasurement} from '~/types';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {BoreholeMeasurement} from '~/types';
 
 interface Props {
   data: BoreholeMeasurement[] | undefined;
@@ -33,7 +35,7 @@ export default function PejlingMeasurementsTableDesktop({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const unit = 'Pejling (nedstik) [m]';
-  const user = useUser();
+  const {org_id} = useUser();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -97,7 +99,7 @@ export default function PejlingMeasurementsTableDesktop({
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        disabled={disabled || row.original.organisationid != user?.org_id}
+        disabled={disabled || row.original.organisationid != org_id}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

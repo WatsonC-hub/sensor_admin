@@ -1,21 +1,22 @@
-// A hook that returns whether the current screen size is mobile, tablet or desktop.
-import {UseQueryResult} from '@tanstack/react-query';
-import {merge, assign} from 'lodash';
+import {assign, merge} from 'lodash';
 import {
-  type MRT_RowData,
-  type MRT_TableOptions,
   type MRT_ColumnDef,
-  useMaterialReactTable,
+  type MRT_RowData,
   type MRT_TableInstance,
-  MRT_TableState,
+  type MRT_TableOptions,
+  useMaterialReactTable,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import {useMemo, useState} from 'react';
 
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {APIError} from '~/queryClient';
+
+// A hook that returns whether the current screen size is mobile, tablet or desktop.
+import type {UseQueryResult} from '@tanstack/react-query';
+import type {MRT_TableState} from 'material-react-table';
+import type {APIError} from '~/queryClient';
 
 const getOptions = <TData extends MRT_RowData>(
   breakpoints: ReturnType<typeof useBreakpoints>,
@@ -23,6 +24,7 @@ const getOptions = <TData extends MRT_RowData>(
 ) => {
   const globalOptions: Partial<MRT_TableOptions<TData>> = {
     localization: MRT_Localization_DA,
+    autoResetPageIndex: false,
     enablePagination: true,
     globalFilterFn: 'fuzzy',
     enableStickyFooter: true,
@@ -50,7 +52,6 @@ const getOptions = <TData extends MRT_RowData>(
         flex: '1 1 0',
         display: 'flex',
         flexFlow: 'column',
-        boxShadow: '3',
         zIndex: 0,
         borderRadius: 4,
         borderWidth: 1,
@@ -214,9 +215,8 @@ const excludeColumnFilterFnsOnFirst = <TData extends MRT_RowData>(
 ) => {
   if (isFirstRender) {
     if (state?.columnFilterFns) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const {columnFilterFns, ...rest} = state;
-      return rest;
+      delete state.columnFilterFns;
+      return state;
     }
   }
   return state;
@@ -246,6 +246,7 @@ export const useTable = <TData extends MRT_RowData>(
     data: data ?? [],
     ...tableOptions,
     ...state,
+    //@ts-expect-error A workaround for the type error that occurs when using the state prop in useMaterialReactTable. The state prop is not typed correctly in the library, so we need to cast it to any to avoid the type error.
     state: {
       ...tableState,
       isLoading: data === undefined,
@@ -257,11 +258,11 @@ export const useTable = <TData extends MRT_RowData>(
     // Sets the columnFilterFns on the first render to avoid a bug with the columnFilterFns not being set correctly
     table.setColumnFilterFns((prev) => ({
       ...prev,
-      ...(state?.state?.columnFilterFns ?? {}),
+      ...state?.state?.columnFilterFns,
     }));
     setIsFirstRender(false);
   }
-
+  //@ts-expect-error A workaround for the type error that occurs when using the state prop in useMaterialReactTable. The state prop is not typed correctly in the library, so we need to cast it to any to avoid the type error.
   return table;
 };
 
@@ -274,6 +275,7 @@ export const useQueryTable = <TData extends MRT_RowData>(
   merge_method: string | undefined = MergeType.RECURSIVEMERGE
 ): MRT_TableInstance<TData> => {
   const breakpoints = useBreakpoints();
+  const [isFirstRender, setIsFirstRender] = useState(true);
 
   const {data, isFetched, error} = queryResult;
 
@@ -301,6 +303,7 @@ export const useQueryTable = <TData extends MRT_RowData>(
     data: data ?? [],
     ...tableOptions,
     ...state,
+    //@ts-expect-error A workaround for the type error that occurs when using the state prop in useMaterialReactTable. The state prop is not typed correctly in the library, so we need to cast it to any to avoid the type error.
     state: {
       ...state?.state,
       isLoading: data === undefined && !isFetched,
@@ -308,5 +311,14 @@ export const useQueryTable = <TData extends MRT_RowData>(
     },
   });
 
+  if (isFirstRender) {
+    // Sets the columnFilterFns on the first render to avoid a bug with the columnFilterFns not being set correctly
+    table.setColumnFilterFns((prev) => ({
+      ...prev,
+      ...state?.state?.columnFilterFns,
+    }));
+    setIsFirstRender(false);
+  }
+  //@ts-expect-error A workaround for the type error that occurs when using the state prop in useMaterialReactTable. The state prop is not typed correctly in the library, so we need to cast it to any to avoid the type error.
   return table;
 };

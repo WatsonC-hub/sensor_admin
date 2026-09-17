@@ -1,10 +1,12 @@
-import {BottomNavigation, BottomNavigationAction, Box, SvgIconProps} from '@mui/material';
+import {BottomNavigation, BottomNavigationAction, Box} from '@mui/material';
 import React from 'react';
 
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 import CustomBottomNavigationActionLabel from './CustomLabel';
+
+import type {SvgIconProps} from '@mui/material';
 
 interface NavigationItem<T> {
   text: string;
@@ -41,6 +43,7 @@ const CustomBottomNavigation = <T extends string>({
 
   return (
     // <Box sx={{mt: isMobile ? 15 : 8, zIndex: (theme) => theme.zIndex.drawer + 8}}>
+    // </Box>
     <Box
       sx={{
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
@@ -68,7 +71,7 @@ const CustomBottomNavigation = <T extends string>({
             if (
               item.isCalculated !== undefined &&
               item.isCalculated &&
-              item.value === stationPages.TILSYN
+              (item.value === stationPages.TILSYN || item.value === stationPages.MAALEPUNKT)
             ) {
               return;
             }
@@ -86,7 +89,6 @@ const CustomBottomNavigation = <T extends string>({
           })}
       </BottomNavigation>
     </Box>
-    // </Box>
   );
 };
 

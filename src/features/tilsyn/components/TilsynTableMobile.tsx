@@ -1,21 +1,18 @@
 import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
-import {
-  MRT_ColumnDef,
-  MRT_ExpandButton,
-  MRT_TableOptions,
-  MaterialReactTable,
-} from 'material-react-table';
+import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle} from '~/consts';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useQueryTable} from '~/hooks/useTable';
-import {TilsynItem} from '~/types';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {TilsynItem} from '~/types';
 
 interface Props {
   handleEdit: (tilsyn: TilsynItem) => void;
@@ -47,12 +44,20 @@ export default function TilsynTableMobile({handleEdit, handleDelete, disabled}: 
               justifyContent: 'space-between',
               alignItems: 'center',
             }}
-            gap={1}
-            height={26}
+            sx={{
+              gap: 1,
+              height: 26,
+            }}
           >
             <MRT_ExpandButton row={row} table={table} staticRowIndex={staticRowIndex} />
 
-            <Box display="flex" marginRight="auto" gap={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                marginRight: 'auto',
+                gap: 1,
+              }}
+            >
               {row.original.batteriskift ? (
                 <BatteryAlertRounded sx={{color: 'grey.700', alignSelf: 'center'}} />
               ) : row.original.tilsyn ? (
@@ -60,26 +65,56 @@ export default function TilsynTableMobile({handleEdit, handleDelete, disabled}: 
               ) : (
                 ''
               )}
-              <Box display="flex" flexDirection="column">
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
                 {row.original.batteriskift && row.original.tilsyn ? (
-                  <Typography variant="caption" fontWeight="bold">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontWeight: 'bold',
+                    }}
+                  >
                     Batteri skiftet og tilsyn
                   </Typography>
                 ) : row.original.batteriskift && row.original.tilsyn !== true ? (
-                  <Typography variant="caption" fontWeight="bold">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontWeight: 'bold',
+                    }}
+                  >
                     Batteri skiftet
                   </Typography>
                 ) : row.original.batteriskift !== true && row.original.tilsyn ? (
-                  <Typography variant="caption" fontWeight="bold">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontWeight: 'bold',
+                    }}
+                  >
                     Tilsyn
                   </Typography>
                 ) : null}
-                <Typography variant="caption" fontWeight={700} color="grey.700">
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    color: 'grey.700',
+                  }}
+                >
                   {convertDate(row.original.dato)}
                 </Typography>
               </Box>
             </Box>
-            <Box marginLeft={'auto'}>
+            <Box
+              sx={{
+                marginLeft: 'auto',
+              }}
+            >
               <RenderActions
                 handleEdit={() => {
                   handleEdit(row.original);

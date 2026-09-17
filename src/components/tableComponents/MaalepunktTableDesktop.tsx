@@ -1,78 +1,93 @@
 import {Box} from '@mui/material';
-import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
-import {
-  checkEndDateIsUnset,
-  convertDateWithTimeStamp,
-  limitDecimalNumbers,
-} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {Maalepunkt} from '~/types';
+import {useAppContext} from '~/state/contexts';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {MaalepunktAsDayjs} from '~/types';
 
 interface Props {
-  handleEdit: (maalepunkt: Maalepunkt) => void;
-  handleDelete: (gid: number | undefined) => void;
+  handleEdit: (maalepunkt: MaalepunktAsDayjs) => void;
   disabled: boolean;
 }
 
-export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabled}: Props) {
+export default function MaalepunktTableDesktop({handleEdit, disabled}: Props) {
+  const {ts_id} = useAppContext(['ts_id']);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const {data: timeseries} = useTimeseriesData();
   const {
     get: {data},
-  } = useMaalepunkt();
+    del: deleteWatlevmp,
+  } = useMaalepunkt(ts_id);
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
   };
 
+  const handleDeleteMaalepunkt = (gid: number | undefined) => {
+    deleteWatlevmp.mutate(
+      {path: `${ts_id}/${gid}`},
+      {
+        onSuccess: () => {
+          setDialogOpen(false);
+        },
+      }
+    );
+  };
+
   const unit = timeseries?.tstype_id === 1 ? 'Kote [m (DVR90)]' : `Måling [${timeseries?.unit}]`;
 
-  const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
+  const columns = useMemo<MRT_ColumnDef<MaalepunktAsDayjs>[]>(
     () => [
       {
-        header: 'Dato',
+        header: 'Gældende fra',
         id: 'startdate',
-        accessorFn: (row) =>
-          convertDateWithTimeStamp(row.startdate) +
-          ' - ' +
-          (checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDateWithTimeStamp(row.enddate)),
+        accessorFn: (row) => convertDateWithTimeStamp(row.startdate),
         sortingFn: (a, b) => (a.original.startdate > b.original.startdate ? 1 : -1),
         enableHide: false,
         Cell: ({row}) => {
           const startDate: string = convertDateWithTimeStamp(row.original.startdate);
-          const endDate: string = convertDateWithTimeStamp(row.original.enddate);
 
           return (
             <>
               <span style={{display: 'inline-block'}}>{startDate}</span>
-              {' - '}
-              {/* <span style={{display: 'block'}}>-</span> */}
-              <span style={{display: 'inline-block'}}> {endDate}</span>
             </>
           );
         },
       },
       {accessorFn: (row) => limitDecimalNumbers(row.elevation), header: unit, id: 'elevation'},
       {header: 'Beskrivelse', accessorKey: 'mp_description'},
-      {header: 'Oprettet af', accessorKey: 'display_name'},
+      {
+        header: 'Oprettet af',
+        id: 'display_name',
+        accessorFn: (row) => row.display_name,
+        Cell: ({row, staticRowIndex}) => (
+          <span>
+            {!row.original.display_name && staticRowIndex === 0
+              ? 'Jupiter'
+              : row.original.display_name}
+          </span>
+        ),
+      },
     ],
     [unit]
   );
 
-  const [tableState, reset] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
+  const [tableState, reset] = useStatefullTableAtom<MaalepunktAsDayjs>('MaalepunktTableState');
 
-  const options: Partial<MRT_TableOptions<Maalepunkt>> = {
+  const options: Partial<MRT_TableOptions<MaalepunktAsDayjs>> = {
     localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
     enableFullScreenToggle: false,
     enableRowActions: true,
@@ -84,7 +99,7 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        disabled={disabled}
+        disabled={disabled || 'organisationid' in row.original}
       />
     ),
     renderToolbarInternalActions: ({table}) => {
@@ -92,9 +107,9 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
     },
   };
 
-  const table = useTable<Maalepunkt>(
+  const table = useTable<MaalepunktAsDayjs>(
     columns,
-    data,
+    data || [],
     options,
     tableState,
     TableTypes.TABLE,
@@ -106,7 +121,8 @@ export default function MaalepunktTableDesktop({handleEdit, handleDelete, disabl
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={() => handleDelete(mpId)}
+        onOkDelete={() => handleDeleteMaalepunkt(mpId)}
+        loading={deleteWatlevmp.isPending}
       />
       <MaterialReactTable table={table} />
     </Box>

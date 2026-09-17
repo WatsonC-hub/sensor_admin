@@ -9,6 +9,8 @@ import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 
+import type {SubmitHandler} from 'react-hook-form';
+
 type YRangeData = {
   ts_id: number;
   mincutoff: number;
@@ -17,16 +19,18 @@ type YRangeData = {
 
 interface YRangeRowProps {
   data: YRangeData;
-  setOpen: () => void;
+  onClose: () => void;
 }
 
-const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
-  const {post} = useYRangeMutations();
+const schema = z.object({
+  mincutoff: z.number(),
+  maxcutoff: z.number(),
+});
 
-  const schema = z.object({
-    mincutoff: z.number(),
-    maxcutoff: z.number(),
-  });
+type YRangeFormValues = z.infer<typeof schema>;
+
+const YRangeRow = ({data, onClose}: YRangeRowProps) => {
+  const {post} = useYRangeMutations();
 
   const formMethods = useForm({
     resolver: zodResolver(schema),
@@ -36,52 +40,73 @@ const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
   const {
     reset,
     handleSubmit,
-    formState: {dirtyFields},
+    formState: {dirtyFields, isDirty},
   } = formMethods;
 
   useEffect(() => {
     reset(data);
   }, [data]);
 
-  const submit = (values: YRangeData) => {
+  const submit: SubmitHandler<YRangeFormValues> = (values) => {
     if (Object.keys(dirtyFields).length > 0) {
-      post.mutate({
-        path: `${data.ts_id}`,
-        data: {
-          mincutoff: values.mincutoff,
-          maxcutoff: values.maxcutoff,
+      post.mutate(
+        {
+          path: `${data.ts_id}`,
+          data: {
+            mincutoff: values.mincutoff,
+            maxcutoff: values.maxcutoff,
+          },
         },
-      });
+        {
+          onSuccess: () => {
+            onClose();
+          },
+        }
+      );
     }
-    setOpen();
   };
 
   return (
     <FormProvider {...formMethods}>
       <Box
-        display="flex"
-        justifyContent="space-between"
-        flexDirection={'column'}
-        alignItems="center"
-        borderRadius={1}
-        borderColor="grey.500"
-        p={1}
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          flexDirection: 'column',
+          alignItems: 'center',
+          borderRadius: 1,
+          borderColor: 'grey.500',
+          p: 1,
+        }}
       >
         <Grid container>
-          <Grid item xs={12} sm={12}>
-            <Box display={'flex'} flexDirection={'row'} gap={1}>
+          <Grid size={{xs: 12, sm: 12}}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 1,
+              }}
+            >
               <FormInput name="mincutoff" label="Nedre grænse" fullWidth type="number" required />
               <FormInput name="maxcutoff" label="Øvre grænse" fullWidth type="number" required />
             </Box>
           </Grid>
         </Grid>
-        <Box display="flex" alignSelf={'end'} flexDirection="row" gap={1}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignSelf: 'end',
+            flexDirection: 'row',
+            gap: 1,
+          }}
+        >
           <Button
             bttype="tertiary"
             size="small"
             onClick={() => {
               reset(data);
-              setOpen();
+              onClose();
             }}
           >
             Annuller
@@ -91,6 +116,8 @@ const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
             size="small"
             onClick={handleSubmit(submit, (values) => console.log(values))}
             startIcon={<SaveIcon />}
+            disabled={!isDirty}
+            loading={post.isPending}
           >
             Gem
           </Button>

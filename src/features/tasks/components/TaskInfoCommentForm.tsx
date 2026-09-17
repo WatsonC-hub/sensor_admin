@@ -1,16 +1,18 @@
 import {Box} from '@mui/material';
 import React from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import FormInput from '~/components/FormInput';
-import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {useTaskHistory, useTaskHistoryMutations} from '~/features/tasks/api/useTaskHistory';
+import {useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import TaskInfoChanges from '~/features/tasks/components/TaskInfoChanges';
 import TaskInfoComment from '~/features/tasks/components/TaskInfoComment';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 import {useTaskState} from '../api/useTaskState';
-import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {SubmitHandler} from 'react-hook-form';
 
 const taskCommentSchema = z.object({
   id: z.string().optional(),
@@ -31,14 +33,10 @@ interface TaskInfoCommentFormProps {
 }
 
 const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
-  const {
-    get: {data: taskHistory},
-    addTaskComment,
-  } = useTaskHistory(selectedTaskId);
-  const {
-    getUsers: {data: taskUsers},
-    getStatus: {data: taskStatus},
-  } = useTasks();
+  const {data: taskHistory} = useTaskHistory(selectedTaskId);
+  const {addTaskComment} = useTaskHistoryMutations(selectedTaskId);
+  const {data: taskUsers} = useTaskUsers();
+  const {data: taskStatus} = useTaskStatus();
 
   const {selectedTask} = useTaskState();
 
@@ -67,19 +65,23 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      mt={isMonitor ? 3 : 0}
-      mb={isMonitor ? 5 : 0}
-      maxHeight={'100%'}
-      gap={2}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        mt: isMonitor ? 3 : 0,
+        mb: isMonitor ? 5 : 0,
+        maxHeight: '100%',
+        gap: 2,
+      }}
     >
       <Box
-        // maxHeight={'100%'}
-        display={'flex'}
-        flexDirection={'column'}
-        gap={2}
-        sx={{overflowY: 'auto', overflowX: 'hidden'}}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+        }}
       >
         {taskHistory?.map((row) => {
           if ('comment' in row) return <TaskInfoComment key={row.id} comment={row} />;

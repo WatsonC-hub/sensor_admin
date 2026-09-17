@@ -1,8 +1,10 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
+
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {BoreholeMapData} from '~/types';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {BoreholeMapData} from '~/types';
 
 export type Borehole = {
   boreholeno: string;
@@ -17,16 +19,14 @@ export const findBorehole = async (boreholeno: string | undefined | null) => {
 };
 
 const boreholeSearchOptions = (boreholeno: string | undefined | null) => {
-  const user = useUser();
+  const {
+    features: {boreholeAccess},
+  } = useUser();
   return queryOptions({
     queryKey: queryKeys.Borehole.findBorehole(boreholeno),
     queryFn: () => findBorehole(boreholeno),
     staleTime: 10 * 1000,
-    enabled:
-      boreholeno !== undefined &&
-      boreholeno !== null &&
-      boreholeno !== '' &&
-      user?.features?.boreholeAccess,
+    enabled: boreholeno !== undefined && boreholeno !== null && boreholeno !== '' && boreholeAccess,
   });
 };
 

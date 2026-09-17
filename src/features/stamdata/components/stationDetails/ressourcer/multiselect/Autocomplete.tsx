@@ -1,5 +1,5 @@
 import {ExpandLess, ExpandMore, Save} from '@mui/icons-material';
-import {Box, Collapse, List, ListItemText, Popper, Typography} from '@mui/material';
+import {Box, Collapse, List, ListItemText, Typography} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import * as React from 'react';
@@ -9,19 +9,20 @@ import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+
 import type {
   MultiSelectProps,
   Ressourcer,
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
-import {useAppContext} from '~/state/contexts';
 
 interface CheckboxesTagsProps extends MultiSelectProps {
+  loc_id: number | undefined;
   value: Array<Ressourcer>;
   setValue: (value: Array<Ressourcer>) => void;
 }
 
-export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
-  const {loc_id} = useAppContext(['loc_id']);
+export default function CheckboxesTags({loc_id, value, setValue}: CheckboxesTagsProps) {
   const {
     get: {data: options},
     post: postRessourcer,
@@ -29,7 +30,11 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
   } = useRessourcer();
 
   const [selected, setSelected] = useState<Array<Ressourcer> | undefined>(value);
-  const {trigger, watch} = useFormContext();
+  const {
+    trigger,
+    watch,
+    formState: {isDirty},
+  } = useFormContext();
 
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
@@ -74,14 +79,20 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
     if (!collapsed.includes(collapsedCategory)) {
       setCollapsed([...collapsed, collapsedCategory]);
     } else {
-      setCollapsed(...[collapsed.filter((category) => category !== collapsedCategory)]);
+      setCollapsed(collapsed.filter((category) => category !== collapsedCategory));
     }
   };
 
   return (
     <>
       {options && options.length > 0 && (
-        <Box display={'flex'} flexDirection={'column'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            flexGrow: 1,
+          }}
+        >
           <Autocomplete
             multiple
             disabled={disabled}
@@ -93,9 +104,9 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
             value={selected}
             filterSelectedOptions
             groupBy={(option) => option.kategori}
-            PopperComponent={(props) => <Popper {...props} placement="bottom" />}
-            componentsProps={{
+            slotProps={{
               popper: {
+                placement: 'bottom',
                 modifiers: [
                   {
                     name: 'flip',
@@ -108,7 +119,14 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
               return (
                 <>
                   <ListItemText id={key.toString()} onClick={() => handleClick(group)}>
-                    <Typography ml={2} fontWeight={'bold'} display={'flex'} flexDirection={'row'}>
+                    <Typography
+                      sx={{
+                        ml: 2,
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        flexDirection: 'row',
+                      }}
+                    >
                       {group}
                       <Typography>
                         <>{collapsed.includes(group) ? <ExpandMore /> : <ExpandLess />}</>
@@ -137,28 +155,49 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
             disableCloseOnSelect
             getOptionLabel={(option) => option.navn}
             isOptionEqualToValue={(option, value) => option.id === value.id}
-            sx={{
-              minWidth: 300,
-            }}
             renderInput={(params) => (
-              <TextField {...params} label="Huskeliste" placeholder="Udvalgt" />
+              <TextField
+                {...params}
+                fullWidth
+                slotProps={{
+                  select: {displayEmpty: true, fullWidth: true},
+                  inputLabel: {shrink: true},
+                }}
+                label="Ressourcer"
+                placeholder="Vælg ressourcer"
+              />
             )}
             onChange={(event, newValue: Ressourcer[]) => {
               setSelected(newValue);
               setValue(newValue);
             }}
           />
-          <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-            <Button
-              bttype="primary"
-              disabled={disabled}
-              onClick={handleSave}
-              sx={{mt: 5}}
-              startIcon={<Save />}
+          {loc_id !== undefined && (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'end',
+                gap: 1,
+                mt: 2,
+              }}
             >
-              Gem
-            </Button>
-          </Box>
+              <UpdateProgressButton
+                loc_id={loc_id}
+                ts_id={-1}
+                disabled={disabled || isDirty}
+                progressKey="ressourcer"
+              />
+              <Button
+                bttype="primary"
+                disabled={disabled || !isDirty}
+                onClick={handleSave}
+                startIcon={<Save />}
+              >
+                Gem
+              </Button>
+            </Box>
+          )}
         </Box>
       )}
     </>

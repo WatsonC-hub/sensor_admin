@@ -1,10 +1,10 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
-import {Dialog, DialogTitle, DialogContent, MenuItem, DialogActions} from '@mui/material';
-import {useQuery, useMutation} from '@tanstack/react-query';
+import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import moment from 'moment';
-import {useForm, FormProvider} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
 
@@ -13,10 +13,11 @@ import Button from '~/components/Button';
 import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
-import {UnitHistory} from '~/features/stamdata/api/useUnitHistory';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {zodDayjs} from '~/helpers/schemas';
 import {useAppContext} from '~/state/contexts';
+
+import type {UnitHistory} from '~/features/stamdata/api/useUnitHistory';
 
 interface UnitEndDateDialogProps {
   openDialog: boolean;
@@ -30,50 +31,65 @@ type Action = {action: string; label: string};
 
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogProps) => {
   const {ts_id} = useAppContext(['ts_id']);
-  const user = useUser();
+  const {superUser} = useUser();
 
-  let unitEndSchema;
+  // let unitEndSchema;
 
-  const requiredUnitEndSchema = z.object({
-    enddate: zodDayjs('slutdato er påkrævet'),
-    change_reason: z.number({required_error: 'Vælg årsag'}).default(-1),
-    action: z.string({required_error: 'Vælg handling'}).default('-1'),
-    comment: z.string().optional(),
-  });
-  type UnitEndFormValues = z.infer<typeof requiredUnitEndSchema>;
-
-  unitEndSchema = requiredUnitEndSchema;
-
-  if (!user?.superUser) {
-    unitEndSchema = unitEndSchema.omit({
-      change_reason: true,
-      action: true,
+  const BaseUnitEndSchema = z
+    .object({
+      enddate: zodDayjs('slutdato er påkrævet').refine((date) => date.isAfter(unit?.startdato), {
+        message: 'Slutdato skal være efter startdato',
+      }),
+      change_reason: z.number({message: 'Vælg årsag'}).optional(),
+      action: z.string({message: 'Vælg handling'}).optional(),
+      comment: z.string().optional(),
+    })
+    .refine((data) => {
+      if (superUser) {
+        return 'change_reason' in data && data.change_reason !== undefined;
+      }
+      return true;
     });
-  }
 
-  unitEndSchema = unitEndSchema.refine(
-    (data) => {
-      // Ensure enddate is after unit start date
-      return data.enddate.isAfter(unit?.startdato);
-    },
-    {
-      message: 'Enddato skal være efter startdato',
-    }
-  );
-
-  const {data: parsed} = unitEndSchema.safeParse({
+  const {data: parsed} = BaseUnitEndSchema.safeParse({
     ...unit,
-    enddate: dayjs(),
+    enddate: dayjs().startOf('minute'),
   });
 
-  const formMethods = useForm<UnitEndFormValues>({
-    resolver: zodResolver(unitEndSchema),
+  // if (!superUser) {
+  //   BaseUnitEndSchema = BaseUnitEndSchema.omit({
+  //     change_reason: true,
+  //     action: true,
+  //   });
+  // }
+
+  // if (superUser) {
+  //   BaseUnitEndSchema = BaseUnitEndSchema.extend({
+  //     change_reason: z.number({message: 'Vælg årsag'}),
+  //     action: z.string({message: 'Vælg handling'}),
+  //   }).refine((data) => 'change_reason' in data && data.change_reason !== undefined, {
+  //     path: ['change_reason'],
+  //     message: 'Vælg årsag',
+  //   });
+  // }
+
+  type UnitEndFormValues = z.output<typeof BaseUnitEndSchema>;
+
+  const formMethods = useForm({
+    resolver: zodResolver(BaseUnitEndSchema),
     defaultValues: parsed,
   });
 
+  const {
+    reset,
+    setValue,
+    handleSubmit,
+    formState: {isSubmitting},
+  } = formMethods;
+
   const handleClose = () => {
     setOpenDialog(false);
-    formMethods.reset({enddate: moment().toISOString()});
+    reset({enddate: moment().toISOString()});
   };
 
   const {data: changeReasons} = useQuery<ChangeReason[]>({
@@ -82,7 +98,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       const {data} = await apiClient.get(`/sensor_field/stamdata/change-reasons`);
       return data;
     },
-    enabled: user?.superUser,
+    enabled: superUser,
     staleTime: 1000 * 60 * 60,
   });
 
@@ -92,11 +108,11 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       const {data} = await apiClient.get(`/sensor_field/stamdata/unit-actions/${unit?.uuid}`);
       return data;
     },
-    enabled: user?.superUser && !!unit?.uuid,
+    enabled: superUser && !!unit?.uuid,
     staleTime: 1000 * 60 * 60,
   });
 
-  const takeHomeMutation = useMutation({
+  const {mutateAsync: takeHomeMutation} = useMutation({
     mutationFn: async (payload: UnitEndFormValues) => {
       const {data} = await apiClient.post(
         `/sensor_field/stamdata/unit_history/end/${ts_id}/${unit?.gid}`,
@@ -109,33 +125,30 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       toast.success('Udstyret er hjemtaget');
     },
     meta: {
-      invalidates: [['register']],
+      invalidates: [queryKeys.Timeseries.unitHistory(ts_id)],
     },
   });
 
-  const submit = (values: UnitEndFormValues) => {
-    takeHomeMutation.mutate(values);
+  const submit = async (values: UnitEndFormValues) => {
+    await takeHomeMutation(values);
   };
 
   return (
-    <Dialog open={openDialog}>
+    <Dialog open={openDialog} onClose={handleClose}>
       <DialogTitle>Angiv information</DialogTitle>
       <DialogContent sx={{width: 300, display: 'flex', flexDirection: 'column', gap: 1}}>
         <FormProvider {...formMethods}>
           <FormDateTime name="enddate" label="Fra" required minDate={dayjs(unit?.startdato)} />
 
-          {user?.superUser && (
+          {superUser && (
             <>
               <FormInput
                 name="change_reason"
                 fullWidth
                 select
                 label="Årsag"
-                slotProps={{
-                  select: {
-                    displayEmpty: true,
-                  },
-                }}
+                options={changeReasons?.map((reason) => ({[reason.id]: reason.reason}))}
+                keyType="number"
                 placeholder="Vælg årsag"
                 onChangeCallback={(e) => {
                   const reason = changeReasons?.find(
@@ -146,23 +159,14 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                     if (reason.default_actions?.includes('CLOSE')) {
                       const action = actions?.find((action) => action.action.includes('CLOSE'));
                       if (action) {
-                        formMethods.setValue('action', action.action);
+                        setValue('action', action.action);
                       }
                     } else {
-                      formMethods.setValue('action', reason.default_actions ?? 'DO_NOTHING');
+                      setValue('action', reason.default_actions ?? 'DO_NOTHING');
                     }
                   }
                 }}
-              >
-                <MenuItem value={-1} disabled>
-                  <em>Vælg årsag</em>
-                </MenuItem>
-                {changeReasons?.map((reason) => (
-                  <MenuItem key={reason.id} value={reason.id}>
-                    {reason.reason}
-                  </MenuItem>
-                ))}
-              </FormInput>
+              />
 
               <FormInput
                 name="action"
@@ -170,22 +174,8 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                 select
                 label="Handling"
                 placeholder="Handling"
-                // disabled={formMethods.watch('change_reason') !== 1}
-                slotProps={{
-                  select: {
-                    displayEmpty: true,
-                  },
-                }}
-              >
-                <MenuItem value={'-1'} disabled>
-                  <em>Vælg handling</em>
-                </MenuItem>
-                {actions?.map((action) => (
-                  <MenuItem key={action.action} value={action.action}>
-                    {action.label}
-                  </MenuItem>
-                ))}
-              </FormInput>
+                options={actions?.map((action) => ({[action.action]: action.label}))}
+              />
 
               <FormInput
                 name="comment"
@@ -205,7 +195,8 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
           <Button
             bttype="primary"
             startIcon={<SaveIcon />}
-            onClick={formMethods.handleSubmit(submit, (errors) => {
+            loading={isSubmitting}
+            onClick={handleSubmit(submit, (errors) => {
               console.log(errors);
             })}
           >

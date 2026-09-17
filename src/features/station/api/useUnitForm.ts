@@ -1,34 +1,28 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {DefaultValues, useForm} from 'react-hook-form';
-import {ZodType} from 'zod';
-import {addUnitSchema, editUnitSchema} from '../schema';
+import {useForm} from 'react-hook-form';
 
-type UseUnitFormProps<T> = {
-  schema?: ZodType<T>;
-  defaultValues?: DefaultValues<T>;
-  mode?: 'Add' | 'Edit';
+import type {DefaultValues} from 'react-hook-form';
+import type {z} from 'zod/v4';
+
+type UseUnitFormProps<TSchema extends z.ZodType<any, unknown, any>> = {
+  schema: TSchema;
+  defaultValues?: DefaultValues<z.input<TSchema>>;
+  values?: z.input<TSchema>;
 };
 
-const useUnitForm = <T extends Record<string, any>>({
+function useUnitForm<TSchema extends z.ZodType<any, unknown, any>>({
   defaultValues,
-  mode,
   schema,
-}: UseUnitFormProps<T>) => {
-  const formMethods = useForm({
-    resolver: (...opts) => {
-      if (schema) return zodResolver(schema)(...opts);
-
-      if (mode === 'Add') {
-        return zodResolver(addUnitSchema)(...opts);
-      }
-
-      return zodResolver(editUnitSchema)(...opts);
-    },
+  values,
+}: UseUnitFormProps<TSchema>) {
+  const formMethods = useForm<z.input<TSchema>, unknown, z.output<TSchema>>({
+    resolver: zodResolver(schema),
     defaultValues,
     mode: 'onTouched',
+    values,
   });
 
   return formMethods;
-};
+}
 
 export default useUnitForm;

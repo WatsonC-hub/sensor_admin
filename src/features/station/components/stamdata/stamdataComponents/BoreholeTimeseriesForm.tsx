@@ -1,23 +1,29 @@
-import {Grid2} from '@mui/material';
+import {Grid} from '@mui/material';
 import React from 'react';
+
 import StamdataTimeseries from '../StamdataTimeseries';
+
+import type {FormInputProps} from '~/components/FormInput';
+import type {BoreholeAddTimeseries} from '~/features/station/schema';
 
 type Props = {
   size: number;
+  required?: boolean;
+  slotProps?: {
+    TypeSelect?: Omit<FormInputProps<BoreholeAddTimeseries>, 'name'>;
+    intakeno?: Omit<FormInputProps<BoreholeAddTimeseries>, 'name'>;
+  };
 };
 
-const BoreholeTimeseriesForm = ({size}: Props) => {
+const BoreholeTimeseriesForm = ({size, required, slotProps}: Props) => {
   return (
     <>
-      <Grid2 size={size}>
-        <StamdataTimeseries.Intakeno />
-      </Grid2>
-      <Grid2 size={size}>
-        <StamdataTimeseries.TypeSelect />
-      </Grid2>
-      <Grid2 size={size}>
-        <StamdataTimeseries.SensorDepth />
-      </Grid2>
+      <Grid size={size}>
+        <StamdataTimeseries.Intakeno {...slotProps?.intakeno} />
+      </Grid>
+      <Grid size={size}>
+        <StamdataTimeseries.TypeSelect required={required} {...slotProps?.TypeSelect} />
+      </Grid>
     </>
   );
 };

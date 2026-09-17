@@ -1,8 +1,12 @@
-import {Box, TextField, TextFieldProps} from '@mui/material';
+import {Box, MenuItem, TextField} from '@mui/material';
 import moment from 'moment';
-import {ChangeEvent, FocusEvent} from 'react';
-import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-form';
+import {Controller, get, useFormContext} from 'react-hook-form';
+
 import TooltipWrapper from './TooltipWrapper';
+
+import type {TextFieldProps} from '@mui/material';
+import type {ChangeEvent, FocusEvent} from 'react';
+import type {FieldValues, Path} from 'react-hook-form';
 export type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
   name: Path<TFieldValues>;
   warning?: (value: any) => string | undefined;
@@ -13,12 +17,13 @@ export type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & 
   onBlurCallback?: (value: FocusEvent<HTMLInputElement | HTMLTextAreaElement> | number) => void;
   type?: string;
   infoText?: string;
+  options?: Array<Record<string | number, string | number>>;
+  keyType?: 'string' | 'number';
 };
 
 const FormInput = <TFieldValues extends FieldValues>({
   name,
   warning,
-  children,
   rules,
   transform,
   onChangeCallback,
@@ -33,6 +38,8 @@ const FormInput = <TFieldValues extends FieldValues>({
   helperText,
   infoText,
   fullWidth = true,
+  options,
+  keyType = 'string',
   ...otherProps
 }: FormInputProps<TFieldValues>) => {
   const {
@@ -51,18 +58,24 @@ const FormInput = <TFieldValues extends FieldValues>({
       control={control}
       name={name}
       key={name}
-      // defaultvalue={get(defaultValues, name) === undefined ? '' : get(defaultValues, name)}
       rules={rules}
       render={({field: {value, onChange, onBlur, ref, name}}) => {
         if (type === 'datetime-local' && value) {
           value = moment(value).format('YYYY-MM-DDTHH:mm') as any;
         }
 
+        if (type === 'time' && value) {
+          value = moment(value, 'HH:mm').format('HH:mm') as any;
+        }
+
         const errorMessage = !!get(errors, name) && get(errors, name).message;
         const warningMessage = warning && warning(value);
 
         return (
-          <Wrapper description={infoText} width={'100%'} sx={{position: 'relative'}}>
+          <Wrapper
+            description={infoText}
+            sx={{position: 'relative', width: fullWidth ? '100%' : undefined}}
+          >
             <TextField
               {...otherProps}
               key={name}
@@ -76,15 +89,6 @@ const FormInput = <TFieldValues extends FieldValues>({
               ref={ref}
               sx={{
                 pb: 1,
-                // '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-                // '& .MuiOutlinedInput-root': {
-                //   minHeight: '40px',
-                // },
-                // '.MuiFormHelperText-root': {
-                //   color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
-                //   position: 'absolute',
-                //   top: 'calc(100% - 8px)',
-                // },
                 ...sx,
               }}
               className={className ?? ''}
@@ -98,6 +102,24 @@ const FormInput = <TFieldValues extends FieldValues>({
                 if (onKeyDown) onKeyDown(e);
               }}
               slotProps={{
+                ...slotProps,
+                select: {
+                  displayEmpty: true,
+                  ...slotProps?.select,
+                  renderValue: (selected) => {
+                    if (selected === '' || selected === undefined || selected === null) {
+                      return otherProps.placeholder ?? 'Vælg...';
+                    }
+                    if (selected === 'false' && name === 'block_on_location') return 'tidsserie';
+                    if (selected === 'true' && name === 'block_on_location') return 'lokation';
+
+                    const option = options?.find((option) => {
+                      const key = Object.keys(option)[0];
+                      return key == selected;
+                    });
+                    return option?.[selected as string | number];
+                  },
+                },
                 htmlInput: {
                   ...slotProps?.htmlInput,
                   sx: {
@@ -130,9 +152,6 @@ const FormInput = <TFieldValues extends FieldValues>({
                       : {}),
                   },
                   ...slotProps?.input,
-                },
-                select: {
-                  displayEmpty: true,
                 },
                 formHelperText: {
                   sx: {
@@ -167,7 +186,20 @@ const FormInput = <TFieldValues extends FieldValues>({
               error={!!errorMessage}
               helperText={errorMessage || warningMessage || (helperText ?? '')}
             >
-              {children}
+              {options ? (
+                options?.map((option) => {
+                  const key =
+                    keyType === 'number' ? Number(Object.keys(option)[0]) : Object.keys(option)[0];
+                  const value = option[key];
+                  return (
+                    <MenuItem key={key} value={key}>
+                      {value as string}
+                    </MenuItem>
+                  );
+                })
+              ) : (
+                <div></div>
+              )}
             </TextField>
           </Wrapper>
         );

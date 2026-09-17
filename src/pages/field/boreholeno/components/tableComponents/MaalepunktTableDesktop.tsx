@@ -1,23 +1,25 @@
 import {Box, Typography} from '@mui/material';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import dayjs from 'dayjs';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
-import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {checkEndDateIsUnset, convertDate, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {MaalepunktTableData} from '~/types';
-import {BoreholeMaalepunkt} from '../../Boreholeno';
-import dayjs from 'dayjs';
+
+import type {BoreholeMaalepunkt} from '../../Boreholeno';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {BoreholeMaalepunktTableData} from '~/types';
 
 interface Props {
-  data: MaalepunktTableData[] | undefined;
-  handleEdit: (maalepuntk: BoreholeMaalepunkt) => void;
+  data: BoreholeMaalepunktTableData[] | undefined;
+  handleEdit: (maalepunkt: BoreholeMaalepunkt) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
@@ -25,14 +27,14 @@ interface Props {
 export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const user = useUser();
+  const {org_id} = useUser();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
   };
 
-  const columns = useMemo<MRT_ColumnDef<MaalepunktTableData>[]>(
+  const columns = useMemo<MRT_ColumnDef<BoreholeMaalepunktTableData>[]>(
     () => [
       {
         accessorFn: (row) => (
@@ -55,9 +57,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         accessorKey: 'organisationname',
         header: 'Organisation',
         Cell: ({row, renderedCellValue}) => (
-          <Typography>
-            {row.original.organisationid == user?.org_id ? renderedCellValue : '-'}
-          </Typography>
+          <Typography>{row.original.organisationid == org_id ? renderedCellValue : '-'}</Typography>
         ),
       },
       {
@@ -69,9 +69,10 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
     ],
     []
   );
-  const [tableState, reset] = useStatefullTableAtom<MaalepunktTableData>('MaalepunktTableState');
+  const [tableState, reset] =
+    useStatefullTableAtom<BoreholeMaalepunktTableData>('MaalepunktTableState');
 
-  const options: Partial<MRT_TableOptions<MaalepunktTableData>> = {
+  const options: Partial<MRT_TableOptions<BoreholeMaalepunktTableData>> = {
     enableFullScreenToggle: false,
     enableRowActions: true,
     renderRowActions: ({row}) => (
@@ -87,7 +88,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        disabled={disabled || row.original.organisationid != user?.org_id}
+        disabled={disabled || row.original.organisationid != org_id}
       />
     ),
     renderToolbarInternalActions: ({table}) => {
@@ -95,7 +96,13 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
     },
   };
 
-  const table = useTable<MaalepunktTableData>(columns, data, options, tableState, TableTypes.TABLE);
+  const table = useTable<BoreholeMaalepunktTableData>(
+    columns,
+    data,
+    options,
+    tableState,
+    TableTypes.TABLE
+  );
 
   return (
     <Box sx={setTableBoxStyle(886)}>

@@ -1,13 +1,15 @@
 import {Box, FormControlLabel, Switch, Typography} from '@mui/material';
 import {useSetAtom} from 'jotai';
 import React from 'react';
+
 import Button from '~/components/Button';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {dataToShowAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {DataToShow} from '~/types';
+
+import type {DataToShow} from '~/types';
 
 interface GraphSwitchProps {
   dataToShow: Partial<DataToShow>;
@@ -19,7 +21,7 @@ type DisableMap = {
 };
 
 const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, boreholeno} = useAppContext(['ts_id'], ['boreholeno']);
   const {data: metadata} = useTimeseriesData(ts_id);
   const {isMobile} = useBreakpoints();
   const setDataToShow = useSetAtom(dataToShowAtom);
@@ -32,6 +34,9 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
   };
 
   const items = Object.entries(dataToShow).map(([key, value]) => {
+    if (key === 'Jupiter' && (boreholeno === undefined || metadata?.tstype_id !== 1)) {
+      return null;
+    }
     return {
       key: key,
       label: key,
@@ -42,7 +47,6 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
   const disableMap: Partial<DisableMap> = {
     Rådata: !!metadata?.calculated,
     'Fjernet data': !!metadata?.calculated,
-    Algoritmer: !!metadata?.calculated,
     'Korrigerede spring': !!metadata?.calculated,
     'Valide værdier': !!metadata?.calculated,
     Godkendt: !!metadata?.calculated,
@@ -64,29 +68,45 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
         mt: 0.5,
       }}
     >
-      <Box px={0.5}>
+      <Box
+        sx={{
+          px: 0.5,
+        }}
+      >
         <TooltipWrapper description="Valg herunder hvilke elementer der skal vises i grafen" />
       </Box>
-
-      {items.map((item) => (
-        <Box key={item.key} mb={1}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={item.checked}
-                onChange={handleChange}
-                name={item.key}
-                disabled={disableMap[item.key as keyof DisableMap]}
-                size={'small'}
-                color="primary"
-              />
-            }
-            label={<Typography variant="caption">{item.label}</Typography>}
-          />
-        </Box>
-      ))}
-
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} mt={1}>
+      {items
+        .filter((item) => item !== null)
+        .map((item) => (
+          <Box
+            key={item.key}
+            sx={{
+              mb: 1,
+            }}
+          >
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={item.checked}
+                  onChange={handleChange}
+                  name={item.key}
+                  disabled={disableMap[item.key as keyof DisableMap]}
+                  size={'small'}
+                  color="primary"
+                />
+              }
+              label={<Typography variant="caption">{item.label}</Typography>}
+            />
+          </Box>
+        ))}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'end',
+          mt: 1,
+        }}
+      >
         <Button
           sx={{display: 'flex', justifySelf: 'end', mr: 1, textTransform: 'initial'}}
           onClick={() => {

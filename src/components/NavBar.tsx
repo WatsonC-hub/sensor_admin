@@ -1,12 +1,14 @@
-import {MapRounded, Person, Menu as MenuIcon, Help} from '@mui/icons-material';
+import {Help, MapRounded, Menu as MenuIcon, Notifications, Person} from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import PlaceIcon from '@mui/icons-material/Place';
-import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import {
   AppBar,
+  Badge,
   Box,
   IconButton,
   ListItemIcon,
@@ -16,26 +18,28 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-
-import {matchQuery, useQueryClient} from '@tanstack/react-query';
+import {useQueryClient} from '@tanstack/react-query';
 import {useAtom} from 'jotai';
-import {useState, ReactNode, MouseEventHandler} from 'react';
-// import {useNavigate} from 'react-router-dom';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
 import {appBarHeight} from '~/consts';
+import {useUser} from '~/features/auth/useUser';
+import {useTasks} from '~/features/tasks/api/useTasks';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
 import {drawerOpenAtom} from '~/state/atoms';
-import CloseIcon from '@mui/icons-material/Close';
+
 import Button from './Button';
-import {useDisplayState} from '~/hooks/ui';
-import {useNavigate} from 'react-router-dom';
-import {userQueryOptions} from '~/features/auth/useUser';
-import {toast} from 'react-toastify';
 import CaptureDialog from './CaptureDialog';
+
+import type {MouseEventHandler, ReactNode} from 'react';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();
@@ -43,18 +47,20 @@ const LogOut = ({children}: {children?: ReactNode}) => {
 
   const handleLogout = async () => {
     await apiClient.get('/auth/logout/secure');
-    queryClient.removeQueries({
-      predicate: (query) => !matchQuery({queryKey: userQueryOptions.queryKey}, query),
-    });
-    await queryClient.invalidateQueries({queryKey: userQueryOptions.queryKey});
-    home();
+    queryClient.setQueryData(queryKeys.user(), null);
+    queryClient.clear();
+    home(true);
   };
 
   return (
     <Box
       onClick={handleLogout}
-      width={'100%'}
-      sx={{cursor: 'pointer', display: 'flex', alignItems: 'center'}}
+      sx={{
+        width: '100%',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+      }}
     >
       {children}
     </Box>
@@ -69,7 +75,7 @@ const HomeButton = () => {
       <IconButton
         color="inherit"
         onClick={() => {
-          home();
+          home(true);
         }}
         size="large"
       >
@@ -83,6 +89,7 @@ const AppBarLayout = ({children, zIndex}: {children?: ReactNode; zIndex?: number
   return (
     <AppBar position="sticky" enableColorOnDark sx={{zIndex: zIndex}}>
       <Toolbar
+        disableGutters
         sx={{
           height: appBarHeight,
           pl: 1,
@@ -307,6 +314,55 @@ const LocationList = () => {
   );
 };
 
+const OwnTaskList = () => {
+  const [own_task_list, setOwnTaskList] = useDisplayState((state) => [
+    state.own_task_list,
+    state.setOwnTaskList,
+  ]);
+  const user = useUser();
+  const {data: tasks} = useTasks();
+
+  const task_list = tasks?.filter(
+    (task) => task.assigned_to === user.user_id.toString() && task.status_id !== 2
+  );
+
+  const disabled = task_list == undefined || task_list.length === 0;
+
+  return (
+    <IconButton
+      onClick={() => setOwnTaskList(!own_task_list)}
+      sx={{
+        backgroundColor: 'primary.main',
+        '&:hover': {
+          backgroundColor: 'primary.dark',
+        },
+      }}
+      disabled={disabled}
+    >
+      <Badge
+        badgeContent={
+          task_list && task_list.length > 0 ? (
+            <Typography
+              variant="caption"
+              color="white"
+              sx={{
+                pr: 0.2,
+              }}
+            >
+              {task_list.length}
+            </Typography>
+          ) : null
+        }
+        color="secondary"
+      >
+        <Notifications
+          sx={{color: own_task_list ? 'secondary.main' : disabled ? 'inherit' : 'white'}}
+        />
+      </Badge>
+    </IconButton>
+  );
+};
+
 const TripList = () => {
   const [trip_list, setTripList] = useDisplayState((state) => [state.trip_list, state.setTripList]);
   const {isMobile} = useBreakpoints();
@@ -376,19 +432,12 @@ const ScannerAsTitle = () => {
 
   return (
     <>
-      <IconButton
-        sx={{
-          position: 'absolute',
-          left: '50%',
-          transform: 'translateX(-50%)',
-        }}
-        color="inherit"
-        onClick={() => setOpen(true)}
-        size="large"
-      >
+      <IconButton color="inherit" onClick={() => setOpen(true)}>
         <QrCodeScannerIcon />
       </IconButton>
-      {open && <CaptureDialog open={open} handleClose={handleClose} handleScan={handleScan} />}
+      {open && (
+        <CaptureDialog open={open} handleClose={() => setOpen(false)} handleScan={handleScan} />
+      )}
     </>
   );
 };
@@ -396,7 +445,13 @@ const ScannerAsTitle = () => {
 const Title = ({title}: {title: string}) => {
   const {isMobile} = useBreakpoints();
   return (
-    <Box display={'flex'} justifyContent="center" alignContent="center">
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignContent: 'center',
+      }}
+    >
       <Typography sx={{}} variant={isMobile ? 'h6' : 'h4'}>
         {title}
       </Typography>
@@ -422,5 +477,6 @@ NavBar.Close = Close;
 NavBar.LocationList = LocationList;
 NavBar.TripList = TripList;
 NavBar.StationDrawerMenu = StationDrawerMenu;
+NavBar.OwnTaskList = OwnTaskList;
 
 export default NavBar;

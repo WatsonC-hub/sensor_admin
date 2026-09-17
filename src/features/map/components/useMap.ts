@@ -10,40 +10,44 @@ import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom, useAtomValue} from 'jotai';
 import L from 'leaflet';
 import {LocateControl} from 'leaflet.locatecontrol';
+
 import '~/css/leaflet.css';
+
 import './L.basemapControl';
 import {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
+import {useUser} from '~/features/auth/useUser';
+import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
+import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
+import {getColor} from '~/features/notifications/Utils';
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
-import {useMapUtilityStore, mapUtilityStore} from '~/state/store';
-import {BoreholeMapData, LeafletMapRoute, Parking, PartialBy} from '~/types';
-import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
+import {useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {highlightedItinerariesAtom, usedHeightAtom, usedWidthAtom} from '~/state/atoms';
+import {mapUtilityStore, useMapUtilityStore} from '~/state/store';
 
+import {useMapFilterStore} from '../hooks/useMapFilterStore';
 import {
-  satelitemapbox,
-  zoomThresholdForParking,
-  zoomThresholdForSmallMarkers,
-  zoomThreshold,
-  zoomAtom,
-  panAtom,
-  routeStyle,
-  utm,
-  parkingIcon,
+  defaultMapBox,
+  drawStyle,
   hightlightParkingIcon,
   markerNumThreshold,
-  defaultMapBox,
+  panAtom,
+  parkingIcon,
+  routeStyle,
+  satelitemapbox,
+  utm,
+  zoomAtom,
+  zoomThreshold,
+  zoomThresholdForParking,
+  zoomThresholdForSmallMarkers,
 } from '../mapConsts';
-import {useUser} from '~/features/auth/useUser';
-import {useMapFilterStore} from '../store';
-import {setIconSize} from '../utils';
-import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
-import {getColor} from '~/features/notifications/utils';
-import {useDisplayState} from '~/hooks/ui';
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {usedHeightAtom, usedWidthAtom} from '~/state/atoms';
-import useBreakpoints from '~/hooks/useBreakpoints';
+import {preventLeafletPostLongPress, setIconSize} from '../utils';
+
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {BoreholeMapData, Parking, PartialBy} from '~/types';
 
 const useMap = <TData extends object>(
   id: string,
@@ -65,15 +69,22 @@ const useMap = <TData extends object>(
   const usedHeight = useAtomValue(usedHeightAtom);
   const {isMobile} = useBreakpoints();
 
+  const highlightedItineraries = useAtomValue(highlightedItinerariesAtom);
   const [doneRendering, setDoneRendering] = useState(false);
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
   const [deleteId, setDeleteId] = useState<number>();
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
-  const {loc_id: selectedLocId} = useDisplayState((state) => state);
+  const [selectedLocId, baseMap, setBaseMap] = useDisplayState((state) => [
+    state.loc_id,
+    state.baseMap,
+    state.setBaseMap,
+  ]);
   const [type, setType] = useState<string>('parkering');
-  const user = useUser();
+  const {
+    features: {routesAndParking},
+  } = useUser();
   const [deleteTitle, setDeleteTitle] = useState<string>(
     'Er du sikker du vil slette denne parkering?'
   );
@@ -108,17 +119,10 @@ const useMap = <TData extends object>(
     {
       text: 'Google Maps',
       callback: function (e: L.ContextMenuItemClickEvent) {
-        if (e.relatedTarget && 'data' in e.relatedTarget.options) {
-          window.open(
-            `https://www.google.com/maps/search/?api=1&query=${e.relatedTarget.options.data.latitude},${e.relatedTarget.options.data.longitude}`,
-            '_blank'
-          );
-        } else {
-          window.open(
-            `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
-            '_blank'
-          );
-        }
+        window.open(
+          `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
+          '_blank'
+        );
       },
       icon: '/leaflet-images/directions.png',
     },
@@ -177,11 +181,16 @@ const useMap = <TData extends object>(
       position: 'bottomright',
     }).addTo(map);
 
+    //@ts-expect-error Valid code
     L.basemapControl({
       position: 'bottomleft',
-      layers: [{layer: defaultMapBox}, {layer: satelitemapbox}],
+      layers:
+        baseMap === 'street'
+          ? [{layer: defaultMapBox}, {layer: satelitemapbox}]
+          : [{layer: satelitemapbox}, {layer: defaultMapBox}],
     }).addTo(map);
 
+    preventLeafletPostLongPress(map);
     onMapClickEvent(map);
     onCreateRouteEvent(map);
     onMapMoveEndEvent(map);
@@ -226,7 +235,6 @@ const useMap = <TData extends object>(
           if (mapRef.current) mapRef.current.getContainer().style.cursor = '';
         }
       }
-      // if (pageToShow !== 'pejling' && selectedLocId) setPageToShow('pejling');
     });
   };
 
@@ -252,6 +260,10 @@ const useMap = <TData extends object>(
     });
   };
 
+  const onBaseMapChangeEvent = () => {
+    setBaseMap(baseMap === 'street' ? 'satelite' : 'street');
+  };
+
   const onMapMoveEndEvent = (map: L.Map) => {
     map.on('moveend', mapEvent);
   };
@@ -264,16 +276,11 @@ const useMap = <TData extends object>(
     setPan(map.getCenter());
 
     const layer = markerLayerRef.current;
-    // if (!layer) return;
 
     const parkingLayer = parkingLayerRef.current;
-    // if (!parkingLayer) return;
 
     const geoJsonLayer = geoJsonRef.current;
-    // if (!geoJsonLayer) return;
-
     const tooltipLayer = tooltipRef.current;
-    // if (!tooltipLayer) return;
 
     if (geoJsonLayer) {
       if (zoom > zoomThresholdForParking && leafletMapRoutes && leafletMapRoutes.length > 0) {
@@ -339,44 +346,50 @@ const useMap = <TData extends object>(
   const plotRoutesInLayer = () => {
     geoJsonRef.current?.clearLayers();
     if (geoJsonRef.current) {
-      const active_loc_ids = data.map((item) => {
-        if ('loc_id' in item) {
-          return item.loc_id;
-        }
-      });
+      const active_loc_ids = new Set(
+        data.map((item) => {
+          if ('loc_id' in item) {
+            return item.loc_id;
+          }
+        })
+      );
       if (mapRef && mapRef.current && data.length > 0 && zoom > zoomThresholdForParking) {
         if (leafletMapRoutes && leafletMapRoutes.length > 0) {
-          leafletMapRoutes.forEach((route: LeafletMapRoute) => {
-            if (active_loc_ids.includes(route.geo_route.loc_id)) {
-              const geo = L.geoJSON(route.geo_route, {
-                onEachFeature: function onEachFeature(feature, layer) {
-                  layer.bindContextMenu({
-                    contextmenu: user?.features?.routesAndParking,
-                    contextmenuInheritItems: false,
-                    contextmenuItems: [
-                      {
-                        text: 'Slet rute',
-                        callback: () => {
-                          setDeleteId(route.geo_route.route_id);
-                          setEditRouteLayer(route.geo_route.loc_id);
-                          setDisplayDelete(true);
-                          setType('rute');
-                          setDeleteTitle('Er du sikker på at du vil slette denne rute?');
-                        },
-                        icon: '/mapRoute.png',
-                      },
-                      {text: 'divider', separator: true},
-                      ...items.slice(2),
-                    ],
-                  });
-                },
+          const geo = L.geoJSON(leafletMapRoutes, {
+            style: routeStyle,
+            filter: (feature) => {
+              return active_loc_ids.has(feature.properties.loc_id);
+            },
+            onEachFeature: function onEachFeature(feature, layer) {
+              if (feature.properties.comment != null)
+                layer.bindTooltip(feature.properties.comment, {
+                  permanent: true,
+                  direction: 'center',
+                });
+              layer.bindContextMenu({
+                contextmenu: routesAndParking,
+                contextmenuInheritItems: false,
+                contextmenuItems: [
+                  {
+                    text: 'Slet rute',
+                    callback: () => {
+                      setDeleteId(feature.properties.id);
+                      setEditRouteLayer(feature.properties.loc_id);
+                      setDisplayDelete(true);
+                      setType('rute');
+                      setDeleteTitle('Er du sikker på at du vil slette denne rute?');
+                    },
+                    icon: '/mapRoute.png',
+                  },
+                  {text: 'divider', separator: true},
+                  ...items.slice(2),
+                ],
               });
-              if (geoJsonRef && geoJsonRef.current) {
-                geo.addTo(geoJsonRef.current);
-              }
-            }
+            },
           });
-          geoJsonRef.current.setStyle(routeStyle);
+          if (geoJsonRef && geoJsonRef.current) {
+            geo.addTo(geoJsonRef.current);
+          }
         }
       }
     }
@@ -410,17 +423,19 @@ const useMap = <TData extends object>(
       zoom &&
       zoom > zoomThresholdForParking
     ) {
-      const active_loc_ids = data.map((item) => {
-        if ('loc_id' in item) {
-          return item.loc_id;
-        }
-      });
+      const active_loc_ids = new Set(
+        data.map((item) => {
+          if ('loc_id' in item) {
+            return item.loc_id;
+          }
+        })
+      );
       parkings.forEach((parking: Parking) => {
-        if (parking.loc_id !== null && active_loc_ids.includes(parking.loc_id)) {
+        if (parking.loc_id !== null && active_loc_ids.has(parking.loc_id)) {
           const coords = utm.convertUtmToLatLng(parking.x, parking.y, 32, 'N');
           if (typeof coords != 'object') return;
 
-          const parkingMenu = user?.features?.routesAndParking
+          const parkingMenu = routesAndParking
             ? [
                 {
                   text: 'Slet parkering',
@@ -463,7 +478,7 @@ const useMap = <TData extends object>(
           });
 
           parkingMarker.bindContextMenu({
-            contextmenu: user?.features?.routesAndParking,
+            contextmenu: routesAndParking,
             contextmenuInheritItems: false,
             contextmenuItems: [
               ...parkingMenu,
@@ -531,7 +546,7 @@ const useMap = <TData extends object>(
         if (zoom < 10) return 60;
         if (zoom < 12) return 50;
         if (zoom < 17) return 30;
-        return 5;
+        return 8;
       },
       zoomToBoundsOnClick: true,
       showCoverageOnHover: false,
@@ -585,12 +600,14 @@ const useMap = <TData extends object>(
     tooltipRef.current = L.featureGroup();
     geoJsonRef.current = L.featureGroup().addTo(mapRef.current);
 
-    geoJsonRef.current?.setStyle(routeStyle);
+    // geoJsonRef.current?.setStyle(routeStyle);
     mapRef.current?.pm.setGlobalOptions({
       snappable: true,
       snapDistance: 5,
-      pathOptions: routeStyle,
+      pathOptions: drawStyle,
     });
+
+    mapRef.current?.on('baselayerchange', onBaseMapChangeEvent);
 
     setDoneRendering(true);
 
@@ -598,17 +615,18 @@ const useMap = <TData extends object>(
       setDoneRendering(false);
       if (mapRef.current && markerLayerRef.current) {
         mapRef.current.remove();
+        mapRef.current.removeEventListener('baselayerchange', onBaseMapChangeEvent);
       }
     };
   }, [mapRef.current == null, doneRendering]);
 
   useEffect(() => {
     plotRoutesInLayer();
-  }, [geoJsonRef.current, leafletMapRoutes, data, zoom > zoomThresholdForParking]);
+  }, [leafletMapRoutes, data, zoom > zoomThresholdForParking]);
 
   useEffect(() => {
     plotParkingsInLayer();
-  }, [parkingLayerRef.current, parkings, data, zoom > zoomThresholdForParking]);
+  }, [parkings, data, zoom > zoomThresholdForParking]);
 
   useEffect(() => {
     if (mapRef.current) onMapMoveEndEvent(mapRef.current);
@@ -619,12 +637,11 @@ const useMap = <TData extends object>(
   }, [leafletMapRoutes, parkings]);
 
   useEffect(() => {
-    if (mapRef.current && filters && filters.itineraries.length > 0) {
+    if (mapRef.current && filters && highlightedItineraries.length > 0) {
       const markers = markerLayerRef.current?.getLayers().filter((marker) => {
         if (marker instanceof L.Marker) {
-          return filters.itineraries
-            .map((itinerary) => itinerary.id)
-            .includes((marker.options.data as MapOverview).itinerary_id);
+          const itinerary_id = (marker.options.data as MapOverview).itinerary_id;
+          if (itinerary_id !== null) return highlightedItineraries.includes(itinerary_id);
         }
         return false;
       });
@@ -648,7 +665,7 @@ const useMap = <TData extends object>(
 
       fg.clearLayers();
     }
-  }, [filters.itineraries.length]);
+  }, [highlightedItineraries.length]);
 
   useEffect(() => {
     if (mapRef.current && doneRendering) {
@@ -663,13 +680,33 @@ const useMap = <TData extends object>(
           position: 'absolute',
           top: `${top}px`,
           left: `${left}px`,
-          right: `${right}px`,
+          right: `${right / 2}px`,
           bottom: `${bottom}px`,
         },
         true
       );
+      // console.log(mapRef.current.activeArea);
     }
   }, [usedWidth, usedHeight, doneRendering, isMobile]);
+
+  useEffect(() => {
+    if (mapRef.current) mapRef.current.on('baselayerchange', onBaseMapChangeEvent);
+
+    return () => {
+      if (mapRef.current) mapRef.current.removeEventListener('baselayerchange');
+    };
+  }, [baseMap]);
+
+  useEffect(() => {
+    const handler = (e: CustomEvent) => {
+      mapRef.current?.flyTo([e.detail.lat, e.detail.lng], e.detail.zoom || zoom, {
+        animate: false,
+      });
+    };
+
+    window.addEventListener('leaflet-pan', handler as EventListener);
+    return () => window.removeEventListener('leaflet-pan', handler as EventListener);
+  }, []);
 
   return {
     map: mapRef.current,
@@ -681,7 +718,6 @@ const useMap = <TData extends object>(
       deleteTitle,
       displayDelete,
       setDisplayDelete,
-      deleteParkering,
       deleteRoute,
       deleteParking,
       setDeleteTitle,

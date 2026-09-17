@@ -10,21 +10,18 @@ const LastMPCard = ({title, children}: MPCardProps) => {
   return (
     <Card
       sx={{
-        // textAlign: 'center',
-        justifyContent: 'center',
-        alignContent: 'center',
+        alignSelf: 'center',
         borderRadius: 2,
-        border: 2,
-        borderColor: 'secondary.main',
         backgroundColor: 'primary.light',
         color: 'primary.contrastText',
-        width: 300,
+        width: 'fit-content',
       }}
     >
-      <CardHeader title={title} sx={{}} />
+      <CardHeader title={title} sx={{py: 0.5, px: 1.5}} />
       <CardContent
         sx={{
-          p: 1,
+          p: 0,
+          px: 1,
           m: 0,
         }}
       >

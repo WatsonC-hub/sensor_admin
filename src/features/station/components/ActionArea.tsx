@@ -1,10 +1,15 @@
-import {AddCircle, PhotoLibraryRounded, PlaylistAddCheck} from '@mui/icons-material';
+import {
+  AddCircle,
+  PhotoLibraryRounded,
+  PlaylistAddCheck,
+  StraightenRounded,
+} from '@mui/icons-material';
 import RuleIcon from '@mui/icons-material/Rule';
 import {startCase} from 'lodash';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import {navIconStyle} from '~/consts';
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useStationList from '~/hooks/query/useStationList';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
@@ -23,23 +28,35 @@ export default function ActionArea() {
       setShowForm(null);
     }
   };
+  const has_unit = metadata?.unit_uuid !== null;
+  const isValidType = metadata?.tstype_id === 1 && !isCalculated;
   const navigationItems = [];
   if (ts_list && ts_list.length > 0) {
-    navigationItems.push(
-      {
-        text: 'Kontrol',
-        value: stationPages.PEJLING,
-        icon: <AddCircle />,
-        color: navIconStyle(pageToShow === stationPages.PEJLING),
-      },
-      {
+    navigationItems.push({
+      text: 'Kontrol',
+      value: stationPages.PEJLING,
+      icon: <AddCircle />,
+      color: navIconStyle(pageToShow === stationPages.PEJLING),
+    });
+
+    if (has_unit) {
+      navigationItems.push({
         text: startCase(stationPages.TILSYN),
         value: stationPages.TILSYN,
         icon: <PlaylistAddCheck />,
         color: navIconStyle(pageToShow === stationPages.TILSYN),
         isCalculated: isCalculated,
-      }
-    );
+      });
+    }
+
+    if (isValidType && !has_unit) {
+      navigationItems.push({
+        text: 'Målepunkt',
+        value: stationPages.MAALEPUNKT,
+        icon: <StraightenRounded />,
+        color: navIconStyle(pageToShow === stationPages.MAALEPUNKT),
+      });
+    }
   } else {
     navigationItems.push({
       text: 'Tidsserie',

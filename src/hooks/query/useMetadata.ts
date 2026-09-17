@@ -1,11 +1,15 @@
-import {useQuery, queryOptions} from '@tanstack/react-query';
+import {queryOptions, useQuery} from '@tanstack/react-query';
+import {useCallback} from 'react';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 
-type Metadata = {
+import type {UseQueryOptions} from '@tanstack/react-query';
+import type {APIError} from '~/queryClient';
+import type {Group} from '~/types';
+
+export type Metadata = {
   loc_id: number;
   loc_name: string;
   mainloc: string;
@@ -25,19 +29,25 @@ type Metadata = {
   projectno: string | undefined;
   batteriskift: string;
   calculated: boolean;
-  boreholeno: string;
+  boreholeno: string | null;
   suffix: string | undefined;
-  intakeno: number;
-  groups: string[];
+  intakeno: number | null;
+  groups: Group[];
   unit: string;
   prefix: string | null;
   unit_uuid: string | null;
+  startdato: string | null;
+  slutdato: string | null;
+  timeseries_calypso_id: number | null;
+  requires_auth: boolean;
+  hide_public: boolean;
+  is_customer_service: boolean;
 };
 
-type LocationMetadata = {
+export type LocationMetadata = {
   loc_id: number;
-  loc_name: string;
   boreholeno: string | undefined;
+  loc_name: string;
   suffix: string | undefined;
   mainloc: string;
   subloc: string;
@@ -47,22 +57,66 @@ type LocationMetadata = {
   y: number;
   terrainlevel: number;
   terrainqual: string;
-  groups: string[];
+  groups: Group[];
   projectno: string | undefined;
-  unit_uuid: string | undefined | null;
   timeseries: Array<{
     ts_id: number;
     tstype_id: number;
     ts_name: string;
     calculated: boolean;
     prefix: string | null;
+    slutdato: string | null;
     tstype_name: string;
-    intakeno: number;
+    intakeno: number | null;
+    timeseries_calypso_id?: number | null;
+    unit_uuid: string | null;
   }>;
 };
+//
+type MetadataQueryOptions<T> = Partial<
+  Omit<UseQueryOptions<Metadata, APIError, T>, 'queryKey' | 'queryFn'>
+>;
 
-export const metadataQueryOptions = (ts_id?: number) => {
-  return queryOptions<Metadata, APIError>({
+const transformMetadata = (data: Metadata[], ts_id: number | undefined): LocationMetadata => {
+  return {
+    loc_id: data[0].loc_id,
+    loc_name: data[0].loc_name,
+    boreholeno: data[0].boreholeno ?? undefined,
+    suffix: data[0].suffix ?? undefined,
+    mainloc: data[0].mainloc,
+    subloc: data[0].subloc,
+    description: data[0].description,
+    loctype_id: data[0].loctype_id,
+    x: data[0].x,
+    y: data[0].y,
+    terrainlevel: data[0].terrainlevel,
+    terrainqual: data[0].terrainqual ?? 'DTM',
+    groups: data[0].groups,
+    projectno: data.find((location) => location.ts_id === ts_id)?.projectno ?? data[0].projectno,
+    timeseries: data
+      .filter((item) => item.ts_id)
+      .map((data) => {
+        return {
+          ts_id: data.ts_id!,
+          tstype_id: data.tstype_id,
+          ts_name: data.ts_name,
+          calculated: data.calculated,
+          prefix: data.prefix,
+          tstype_name: data.tstype_name,
+          intakeno: data.intakeno,
+          timeseries_calypso_id: data.timeseries_calypso_id,
+          unit_uuid: data.unit_uuid,
+          slutdato: data.slutdato,
+        };
+      }),
+  };
+};
+
+export const metadataQueryOptions = <T extends Partial<Metadata>>(
+  ts_id?: number,
+  options?: MetadataQueryOptions<T>
+) => {
+  return queryOptions({
     queryKey: queryKeys.Timeseries.metadata(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/metadata/${ts_id}`);
@@ -71,10 +125,12 @@ export const metadataQueryOptions = (ts_id?: number) => {
     enabled: ts_id !== undefined,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 1, // 1 minute
+    ...options,
+    select: options?.select as (data: Metadata) => T,
   });
 };
 
-export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
+const locationMetadataQueryOptions = (loc_id: number | undefined) => {
   const {ts_id} = useAppContext([], ['ts_id']);
   return queryOptions({
     queryKey: queryKeys.Location.metadata(loc_id),
@@ -84,40 +140,7 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
       );
       return data;
     },
-    select: (data) => {
-      const location_data: LocationMetadata = {
-        loc_id: data[0].loc_id,
-        loc_name: data[0].loc_name,
-        boreholeno: data[0].boreholeno ?? undefined,
-        suffix: data[0].suffix ?? undefined,
-        loctype_id: data[0].loctype_id,
-        groups: data[0].groups,
-        description: data[0].description,
-        mainloc: data[0].mainloc,
-        projectno:
-          data.find((location) => location.ts_id === ts_id)?.projectno ?? data[0].projectno,
-        subloc: data[0].subloc,
-        terrainlevel: data[0].terrainlevel,
-        terrainqual: data[0].terrainqual ?? 'DTM',
-        x: data[0].x,
-        y: data[0].y,
-        unit_uuid: data.find((location) => location.unit_uuid !== undefined)?.unit_uuid,
-        timeseries: data
-          .filter((item) => item.ts_id)
-          .map((data) => {
-            return {
-              ts_id: data.ts_id!,
-              tstype_id: data.tstype_id,
-              ts_name: data.ts_name,
-              calculated: data.calculated,
-              prefix: data.prefix,
-              tstype_name: data.tstype_name,
-              intakeno: data.intakeno,
-            };
-          }),
-      };
-      return location_data;
-    },
+    select: useCallback((data: Metadata[]) => transformMetadata(data, ts_id), [ts_id]),
     enabled: loc_id !== undefined,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 1,

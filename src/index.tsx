@@ -1,15 +1,30 @@
+// oxlint-disable check-file/filename-naming-convention
 import {CssBaseline, StyledEngineProvider, ThemeProvider} from '@mui/material';
+import {LocalizationProvider} from '@mui/x-date-pickers';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import * as Sentry from '@sentry/react';
+import {onlineManager} from '@tanstack/react-query';
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
 import {PersistQueryClientProvider} from '@tanstack/react-query-persist-client';
+// import "moment/locale/da";
+import dayjs from 'dayjs';
+import dayDA from 'dayjs/locale/da';
+import 'react-toastify/dist/ReactToastify.css';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import minMax from 'dayjs/plugin/minMax';
+import moment from 'moment';
 import {NuqsAdapter} from 'nuqs/adapters/react';
+import 'leaflet/dist/leaflet.css';
+
+import '~/index.css';
+
+import {PostHogProvider} from 'posthog-js/react';
 import * as React from 'react';
 import {createRoot} from 'react-dom/client';
 import {BrowserRouter} from 'react-router-dom';
 import {ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import {PostHogProvider} from 'posthog-js/react';
-
 // @ts-expect-error this is a workaround for the missing types
 import {registerSW} from 'virtual:pwa-register';
 
@@ -18,20 +33,7 @@ import {persister, queryClient} from '~/queryClient';
 import theme from '~/theme';
 
 import App from './App';
-
-import '~/index.css';
 import {CommandProvider} from './features/commandpalette/components/CommandContext';
-import moment from 'moment';
-import 'moment/locale/da';
-import dayjs from 'dayjs';
-import dayDA from 'dayjs/locale/da';
-import {LocalizationProvider} from '@mui/x-date-pickers';
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import minMax from 'dayjs/plugin/minMax';
-
 dayjs.extend(localizedFormat);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -56,6 +58,11 @@ if ('serviceWorker' in navigator) {
   registerSW({immediate: true});
 }
 
+onlineManager.setOnline(navigator.onLine);
+
+window.addEventListener('online', () => onlineManager.setOnline(true));
+window.addEventListener('offline', () => onlineManager.setOnline(false));
+
 const container = document.getElementById('root');
 if (!container) {
   throw new Error('No root element found');
@@ -69,8 +76,21 @@ root.render(
         <ThemeProvider theme={theme}>
           <PersistQueryClientProvider
             client={queryClient}
-            persistOptions={{persister}}
+            persistOptions={{
+              persister,
+              dehydrateOptions: {
+                shouldDehydrateMutation: () => true,
+              },
+            }}
             onSuccess={() => {
+              queryClient
+                .getMutationCache()
+                .getAll()
+                .forEach((mutation) => {
+                  if (mutation.state.status === 'pending' && mutation.state.isPaused === false) {
+                    mutation.state.isPaused = true;
+                  }
+                });
               queryClient.resumePausedMutations().then(() => {
                 queryClient.resetQueries();
               });

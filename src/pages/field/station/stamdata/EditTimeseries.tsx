@@ -1,43 +1,43 @@
+import {Warning} from '@mui/icons-material';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
-import {useMutation} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
-import {toast} from 'react-toastify';
-import {z} from 'zod';
 
-import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import useDeleteTimeseries from '~/features/station/api/useDeleteTimeseries';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
+import ConfirmDeleteDialog from '~/features/station/components/ConfirmDeleteDialog';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
 import {boreholeEditTimeseriesSchema, defaultEditTimeseriesSchema} from '~/features/station/schema';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
+import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
 import {useAppContext} from '~/state/contexts';
 
+import type {BoreholeEditTimeseries, DefaultEditTimeseries} from '~/features/station/schema';
+
 const EditTimeseries = () => {
+  const setTsId = useDisplayState((state) => state.setTsId);
+  const [, setPage] = useStationPages();
   const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData(ts_id);
+  const {mutate: deleteTimeseries, isPending} = useDeleteTimeseries();
+  const [assertDeletion, setAssertDeletion] = React.useState(false);
+  const {superUser} = useUser();
+
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
 
-  const metadataEditTimeseriesMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const {data: out} = await apiClient.put(
-        `/sensor_field/stamdata/update_timeseries/${ts_id}`,
-        data
-      );
-      return out;
-    },
-    onSuccess: () => {
-      toast.success('Tidsserie er opdateret');
-    },
-    meta: {
-      invalidates: [['metadata']],
-    },
-  });
+  const {
+    updateTimeseries: {mutateAsync},
+  } = useUpdateTimeseries(ts_id);
 
   let schema;
 
@@ -49,30 +49,25 @@ const EditTimeseries = () => {
 
   const {data: defaultValues, error} = schema.safeParse({
     prefix: metadata?.prefix,
-    sensor_depth_m: metadata?.sensor_depth_m,
+    ...(metadata?.calculated ? {} : {sensor_depth_m: metadata?.sensor_depth_m}),
     intakeno: metadata?.intakeno,
+    requires_auth: metadata?.requires_auth ?? false,
+    hide_public: metadata?.hide_public ?? false,
+    calypso_id: metadata?.timeseries_calypso_id ?? undefined,
   });
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({
-    defaultValues: defaultValues,
+    defaultValues,
+    context: {loctype_id: metadata?.loctype_id, loc_id: metadata?.loc_id},
     mode: 'Edit',
-    context: {
-      loctype_id: metadata?.loctype_id,
-    },
   });
 
   const {
-    formState: {isDirty, isValid},
+    formState: {isDirty, isValid, isSubmitting},
     reset,
-    handleSubmit,
     trigger,
+    handleSubmit,
   } = formMethods;
-
-  useEffect(() => {
-    if (metadata != undefined) {
-      reset(defaultValues);
-    }
-  }, [metadata]);
 
   useEffect(() => {
     if (error) {
@@ -80,21 +75,22 @@ const EditTimeseries = () => {
     }
   }, []);
 
-  const Submit = async (data: z.infer<typeof schema>) => {
-    const payload = {
-      ...data,
-    };
-    metadataEditTimeseriesMutation.mutate(payload, {
-      onSuccess: () => {
-        toast.success('Tidsserie er opdateret');
-      },
-    });
+  const Submit = async (data: BoreholeEditTimeseries | DefaultEditTimeseries) => {
+    if (isValid && isDirty) {
+      const payload = {
+        ...data,
+      };
+      await mutateAsync(payload);
+    }
   };
 
   return (
     <Box
-      maxWidth={1080}
       sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        maxWidth: 1080,
         borderRadius: 4,
         boxShadow: 3,
         padding: 2,
@@ -104,11 +100,29 @@ const EditTimeseries = () => {
         <StamdataTimeseries boreholeno={metadata?.boreholeno ?? undefined}>
           <TimeseriesForm size={size} loc_name={metadata?.loc_name} />
         </StamdataTimeseries>
-        <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+
+        <Box sx={{display: 'flex', gap: 1, justifyContent: 'flex-end', justifySelf: 'end'}}>
+          {superUser && !metadata?.calculated && (
+            <TooltipWrapper
+              description="Slet tidsserien kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen"
+              withIcon={false}
+            >
+              <Button
+                bttype="danger"
+                startIcon={<Warning />}
+                disabled={metadata?.calculated || location_permissions !== 'edit'}
+                onClick={() => setAssertDeletion(true)}
+              >
+                Slet tidsserie
+              </Button>
+            </TooltipWrapper>
+          )}
           <Button
             bttype="tertiary"
-            onClick={() => reset(defaultValues)}
-            disabled={location_permissions !== 'edit'}
+            onClick={() => {
+              reset(defaultValues);
+            }}
+            disabled={location_permissions !== 'edit' || !isDirty}
           >
             Annuller
           </Button>
@@ -117,13 +131,35 @@ const EditTimeseries = () => {
             bttype="primary"
             disabled={!isDirty || !isValid || location_permissions !== 'edit'}
             onClick={handleSubmit(Submit)}
-            startIcon={<SaveIcon />}
+            loading={isSubmitting}
+            startIcon={isSubmitting ? undefined : <SaveIcon />}
             sx={{marginRight: 1}}
           >
             Gem
           </Button>
         </Box>
       </FormProvider>
+      <ConfirmDeleteDialog
+        open={assertDeletion}
+        description="Dette vil slette alle kontrolmålinger, opgaver, målepunkter og konfigurationer knyttet til denne tidsserie. Denne handling kan ikke fortrydes."
+        onClose={() => setAssertDeletion(false)}
+        isPending={isPending}
+        onDelete={() => {
+          const payload = {
+            path: ts_id.toString(),
+          };
+          deleteTimeseries(payload, {
+            onSuccess: () => {
+              setAssertDeletion(false);
+              setTsId(null);
+              setPage(null);
+            },
+            onError: () => {
+              setAssertDeletion(false);
+            },
+          });
+        }}
+      />
     </Box>
   );
 };

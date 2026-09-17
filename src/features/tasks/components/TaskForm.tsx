@@ -1,28 +1,34 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, FormControlLabel, MenuItem, Switch, TextFieldProps, Typography} from '@mui/material';
-import React, {useEffect} from 'react';
-import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
+import {Box, FormControlLabel, Switch, Typography} from '@mui/material';
+import {merge} from 'lodash';
+import React, {useCallback, useEffect, useMemo} from 'react';
+import {Controller, FormProvider, useForm, useFormContext} from 'react-hook-form';
+import {toast} from 'react-toastify';
 import {z} from 'zod';
 
-import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
+import ExtendedAutocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
-import FormInput, {FormInputProps} from '~/components/FormInput';
-import {useNextDueDate, useTasks} from '~/features/tasks/api/useTasks';
-import {TaskUser} from '~/features/tasks/types';
-
-import {useTaskState} from '../api/useTaskState';
-import {merge} from 'lodash';
-import {useLocationData} from '~/hooks/query/useMetadata';
+import FormDatePicker from '~/components/FormDatePicker';
+import FormInput from '~/components/FormInput';
+import {useNextDueDate, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import {zodDayjs} from '~/helpers/schemas';
-import FormDatePicker, {FormDatePickerProps} from '~/components/FormDatePicker';
-import {toast} from 'react-toastify';
+import {useLocationData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
 
+import {useTaskState} from '../api/useTaskState';
+
+import type {TextFieldProps} from '@mui/material';
+import type {UseFormReturn} from 'react-hook-form';
+import type {AutoCompleteFieldProps} from '~/components/Autocomplete';
+import type {FormDatePickerProps} from '~/components/FormDatePicker';
+import type {FormInputProps} from '~/components/FormInput';
+import type {TaskUser} from '~/features/tasks/types';
+
 const zodSchema = z.object({
-  ts_id: z.number({required_error: 'Tidsserie skal være angivet'}),
+  ts_id: z.number({message: 'Tidsserie skal være angivet'}),
   name: z
-    .string({required_error: 'Navn skal være angivet'})
+    .string({message: 'Navn skal være angivet'})
     .min(5, 'Navn skal være mindst 5 tegn')
     .max(255, 'Navn må maks være 255 tegn'),
   description: z.string().nullish(),
@@ -45,17 +51,21 @@ const zodSchema = z.object({
 export type FormValues = z.infer<typeof zodSchema>;
 
 type Props = {
-  onSubmit: (data: FormValues, formMethods?: UseFormReturn<FormValues>) => void;
+  onSubmit: (data: FormValues, formMethods?: UseFormReturn<FormValues>) => Promise<void> | void;
   onError?: (error: any) => void;
   defaultValues?: Partial<FormValues>;
   children?: React.ReactNode;
   disabled?: boolean;
-  schema?: z.ZodObject<any, any, any>;
+  schema?: z.ZodObject<any, any>;
+};
+
+const defaultOnError = (error: any) => {
+  void error;
 };
 
 const TaskFormContext = React.createContext(
   {} as {
-    onSubmit: (data: FormValues) => void;
+    onSubmit: (data: FormValues) => Promise<void> | void;
     onError?: (error: any) => void;
     disabled?: boolean;
   }
@@ -63,13 +73,13 @@ const TaskFormContext = React.createContext(
 
 const TaskForm = ({
   onSubmit,
-  onError = (error) => console.log(error),
+  onError = defaultOnError,
   children,
   defaultValues,
   disabled,
   schema = zodSchema,
 }: Props) => {
-  const formMethods = useForm<FormValues>({
+  const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: defaultValues,
   });
@@ -78,12 +88,19 @@ const TaskForm = ({
     reset(defaultValues);
   }, [JSON.stringify(defaultValues), reset]);
 
-  const innerSubmit = (data: FormValues) => {
-    onSubmit(data, formMethods);
-  };
+  const innerSubmit = useCallback(
+    async (data: FormValues) => {
+      await onSubmit(data);
+    },
+    [onSubmit]
+  );
+  const contextValue = useMemo(
+    () => ({onSubmit: innerSubmit, onError, disabled}),
+    [innerSubmit, onError, disabled]
+  );
 
   return (
-    <TaskFormContext.Provider value={{onSubmit: innerSubmit, onError, disabled}}>
+    <TaskFormContext.Provider value={contextValue}>
       <FormProvider {...formMethods}>{children}</FormProvider>
     </TaskFormContext.Provider>
   );
@@ -92,10 +109,18 @@ const TaskForm = ({
 const TaskSubmitButton = () => {
   const {onSubmit, onError} = React.useContext(TaskFormContext);
 
-  const {handleSubmit} = useFormContext<FormValues>();
+  const {
+    handleSubmit,
+    formState: {isSubmitting},
+  } = useFormContext<FormValues>();
 
   return (
-    <Button bttype="primary" onClick={handleSubmit(onSubmit, onError)} startIcon={<Save />}>
+    <Button
+      bttype="primary"
+      onClick={handleSubmit(onSubmit, onError)}
+      loading={isSubmitting}
+      startIcon={isSubmitting ? undefined : <Save />}
+    >
       Gem
     </Button>
   );
@@ -149,9 +174,7 @@ interface StatusSelectProps extends Omit<FormInputProps<FormValues>, 'name'> {
 
 const StatusSelect = ({disableClosedStatus = false, ...props}: StatusSelectProps) => {
   const {disabled} = React.useContext(TaskFormContext);
-  const {
-    getStatus: {data: task_status},
-  } = useTasks();
+  const {data: task_status} = useTaskStatus();
 
   return (
     <FormInput
@@ -160,28 +183,20 @@ const StatusSelect = ({disableClosedStatus = false, ...props}: StatusSelectProps
       select
       size="small"
       placeholder="Vælg status..."
+      options={task_status
+        ?.filter((item) => !(disableClosedStatus && item.category == 'closed'))
+        ?.map((status) => ({[status.id]: status.name}))}
+      keyType="number"
       fullWidth
       {...props}
       disabled={disabled || props.disabled}
-    >
-      {task_status
-        ?.filter((item) => !(disableClosedStatus && item.category == 'closed'))
-        .map((status) => {
-          return (
-            <MenuItem key={status.id} value={status.id}>
-              {status.name}
-            </MenuItem>
-          );
-        })}
-    </FormInput>
+    />
   );
 };
 
 const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
   const {disabled} = React.useContext(TaskFormContext);
-  const {
-    getUsers: {data: taskUsers},
-  } = useTasks();
+  const {data: taskUsers} = useTaskUsers();
   const {control} = useFormContext<FormValues>();
 
   const textfieldProps = {
@@ -228,7 +243,12 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
           renderOption={(props, option) => {
             return (
               <li {...props} key={option.id}>
-                <Box display={'flex'} flexDirection={'row'}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                  }}
+                >
                   <Typography variant="body2">{option.display_name}</Typography>
                 </Box>
               </li>
@@ -243,9 +263,7 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
 
 const AssignedToSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   const {disabled} = React.useContext(TaskFormContext);
-  const {
-    getUsers: {data: taskUsers},
-  } = useTasks();
+  const {data: taskUsers} = useTaskUsers();
 
   return (
     <FormInput
@@ -254,18 +272,11 @@ const AssignedToSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       select
       size="small"
       placeholder="Vælg ansvarlig..."
+      options={taskUsers?.map((user) => ({[user.id]: user.display_name}))}
       fullWidth
       {...props}
       disabled={disabled || props.disabled}
-    >
-      {taskUsers?.map((user) => {
-        return (
-          <MenuItem key={user.id} value={user.id}>
-            {user.display_name}
-          </MenuItem>
-        );
-      })}
-    </FormInput>
+    />
   );
 };
 
@@ -294,11 +305,13 @@ const BlockNotifications = ({notification_id, onChangeCallback}: BlockNotificati
 
         return (
           <Box
-            display={'flex'}
-            flexDirection={'row'}
-            alignItems={'center'}
-            justifyContent={'center'}
-            height={'100%'}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+            }}
           >
             <FormControlLabel
               control={
@@ -336,16 +349,10 @@ const BlockOnLocation = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       select
       size="small"
       placeholder="Vælg..."
+      options={[{false: 'tidsserie'}, {true: 'lokation'}]}
       {...props}
       disabled={disabled || props.disabled}
-    >
-      <MenuItem key={'bloker'} value={'false'}>
-        tidsserie
-      </MenuItem>
-      <MenuItem key={'bloker_alle'} value={'true'}>
-        lokation
-      </MenuItem>
-    </FormInput>
+    />
   );
 };
 
@@ -358,17 +365,19 @@ const BlockAll = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       name="block_all"
       select
       placeholder="Vælg..."
+      options={[
+        {
+          false:
+            !selectedTask || selectedTask?.blocks_notifications.length === 0
+              ? 'ingen'
+              : selectedTask?.name,
+        },
+        {true: 'alle'},
+      ]}
       size="small"
       {...props}
       disabled={disabled || props.disabled}
-    >
-      <MenuItem key={'bloker'} value={'false'}>
-        {selectedTask?.blocks_notifications.length === 0 ? 'ingen' : selectedTask?.name}
-      </MenuItem>
-      <MenuItem key={'bloker_alle'} value={'true'}>
-        alle
-      </MenuItem>
-    </FormInput>
+    />
   );
 };
 
@@ -383,17 +392,14 @@ const SelectTimeseries = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       size="small"
       placeholder="Vælg..."
       fullWidth
+      options={metadata?.timeseries.map((timeseries) => ({
+        [timeseries.ts_id]:
+          (timeseries.prefix ? timeseries.prefix + ' - ' : '') + ' ' + timeseries.tstype_name,
+      }))}
+      keyType="number"
       {...props}
       disabled={disabled || props.disabled}
-    >
-      {metadata?.timeseries?.map((timeseries) => {
-        return (
-          <MenuItem key={timeseries.ts_id} value={timeseries.ts_id}>
-            {(timeseries.prefix ? timeseries.prefix + ' - ' : '') + ' ' + timeseries.tstype_name}
-          </MenuItem>
-        );
-      })}
-    </FormInput>
+    />
   );
 };
 

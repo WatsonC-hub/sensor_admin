@@ -1,21 +1,25 @@
+import {zodResolver} from '@hookform/resolvers/zod';
+import React from 'react';
+import {useForm} from 'react-hook-form';
+import {z} from 'zod/v4';
+
+import {useUser} from '~/features/auth/useUser';
+
+import BaseLocationForm from '../components/stamdata/stamdataComponents/BaseLocationForm';
+import BoreholeLocationEditForm from '../components/stamdata/stamdataComponents/BoreholeLocationEditForm';
+import BoreholeLocationForm from '../components/stamdata/stamdataComponents/BoreholeLocationForm';
+import DefaultLocationEditForm from '../components/stamdata/stamdataComponents/DefaultLocationEditForm';
+import DefaultLocationForm from '../components/stamdata/stamdataComponents/DefaultLocationForm';
 import {
-  BaseLocation,
   baseLocationSchema,
   boreholeAddLocationSchema,
   boreholeEditLocationSchema,
   defaultAddLocationSchema,
   defaultEditLocationSchema,
 } from '../schema';
-import {DefaultValues, FieldValues, Path, useForm} from 'react-hook-form';
-import {z, ZodObject} from 'zod';
-import React from 'react';
-import DefaultLocationForm from '../components/stamdata/stamdataComponents/DefaultLocationForm';
-import BoreholeLocationForm from '../components/stamdata/stamdataComponents/BoreholeLocationForm';
-import BaseLocationForm from '../components/stamdata/stamdataComponents/BaseLocationForm';
-import BoreholeLocationEditForm from '../components/stamdata/stamdataComponents/BoreholeLocationEditForm';
-import DefaultLocationEditForm from '../components/stamdata/stamdataComponents/DefaultLocationEditForm';
-import {useUser} from '~/features/auth/useUser';
-import {zodResolver} from '@hookform/resolvers/zod';
+
+import type {DefaultValues, Path} from 'react-hook-form';
+import type {ZodObject} from 'zod/v4';
 
 type useLocationFormProps<T> =
   | {
@@ -31,7 +35,7 @@ type useLocationFormProps<T> =
       context: {loc_id: number};
     };
 
-const getSchemaAndForm = <T extends FieldValues>(
+const getSchemaAndForm = (
   loctype_id: number,
   mode: 'Add' | 'Edit',
   superUser: boolean | undefined,
@@ -41,7 +45,7 @@ const getSchemaAndForm = <T extends FieldValues>(
   let selectedForm = DefaultLocationForm;
 
   switch (true) {
-    case loctype_id === -1:
+    case loctype_id === undefined:
       selectedSchema = baseLocationSchema;
       selectedForm = BaseLocationForm;
       break;
@@ -69,30 +73,33 @@ const getSchemaAndForm = <T extends FieldValues>(
     });
   }
 
-  return [selectedSchema as ZodObject<T>, selectedForm] as const;
+  return [selectedSchema, selectedForm] as const;
 };
 
-const useLocationForm = <T extends BaseLocation>({
+const useLocationForm = <T extends Record<string, any>>({
   defaultValues,
   mode,
   context,
   initialLocTypeId = -1,
 }: useLocationFormProps<T>) => {
-  const user = useUser();
+  const {superUser} = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user?.superUser, context.loc_id);
+  const [schema, form] = getSchemaAndForm(loctype_id, mode, superUser, context.loc_id);
 
-  const {data, success} = schema.safeParse({
-    ...defaultValues,
-  });
-  const defaultValuesData = data as unknown as DefaultValues<T>;
+  let parsed_data = undefined;
 
-  const formMethods = useForm<T>({
+  if (context.loc_id !== undefined) {
+    const {data} = schema.safeParse({
+      ...defaultValues,
+    });
+    parsed_data = data as unknown as DefaultValues<T>;
+  }
+
+  const formMethods = useForm({
     resolver: zodResolver(schema),
-    defaultValues: success ? defaultValuesData : defaultValues,
+    defaultValues: parsed_data !== undefined ? parsed_data : defaultValues,
     mode: 'onTouched',
-    context: context,
   });
 
   const {watch} = formMethods;

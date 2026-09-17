@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import {useAtomValue} from 'jotai';
 import {parseAsString, useQueryState} from 'nuqs';
 import {useEffect} from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
@@ -16,13 +16,17 @@ import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {qaSelection} from '~/state/atoms';
 
+import type {Dayjs} from 'dayjs';
+import type {SubmitHandler} from 'react-hook-form';
+
 interface LevelCorrectionModal {
   onClose: () => void;
 }
 
 const schema = z.object({date: zodDayjs(), comment: z.string().optional()});
 
-type CorrectionValues = z.infer<typeof schema>;
+type CorrectionValues = z.input<typeof schema>;
+type CorrectionOutput = z.output<typeof schema>;
 
 const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const selection = useAtomValue(qaSelection);
@@ -38,29 +42,34 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   );
   const y = (selection?.points?.[0]?.y as number)?.toFixed(4);
 
-  const {post: levelCorrectionMutation} = useLevelCorrection();
+  const {
+    post: {mutateAsync: levelCorrectionAsync},
+  } = useLevelCorrection();
 
-  const formMethods = useForm<CorrectionValues>({resolver: zodResolver(schema), mode: 'onTouched'});
+  const formMethods = useForm<CorrectionValues, unknown, CorrectionOutput>({
+    resolver: zodResolver(schema),
+    mode: 'onTouched',
+  });
 
-  const {handleSubmit, setValue, watch, reset} = formMethods;
+  const {
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: {isDirty, isSubmitting},
+  } = formMethods;
 
-  const onAccept: SubmitHandler<CorrectionValues> = (values) => {
-    levelCorrectionMutation.mutate(
-      {
-        path: `${timeseries_data?.ts_id}`,
-        data: {date: values.date, comment: values.comment},
-      },
-      {
-        onSuccess: () => {
-          reset();
-          setDataAdjustment(null);
-          onClose();
-        },
-      }
-    );
+  const onAccept: SubmitHandler<CorrectionOutput> = async (values) => {
+    await levelCorrectionAsync({
+      path: `${timeseries_data?.ts_id}`,
+      data: {date: values.date, comment: values.comment},
+    });
+    reset();
+    setDataAdjustment(null);
+    onClose();
   };
 
-  const x = watch('date');
+  const x = watch('date') as Dayjs | undefined;
 
   useEffect(() => {
     setValue('date', dayjs(selection?.points?.[0]?.x));
@@ -73,11 +82,21 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
       </Typography>
       <Box>
         {prevY === undefined ? (
-          <Typography gutterBottom fontWeight={'bold'}>
+          <Typography
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             Ingen forrige datapunkt
           </Typography>
         ) : (
-          <Box display={'flex'} flexDirection={'row'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+          >
             <b style={{width: 150}}>Forrige punkt:</b>
             <Typography gutterBottom>
               {convertToLocalDate(prevX)} - {prevY + ' '}
@@ -85,7 +104,12 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
             </Typography>
           </Box>
         )}
-        <Box display={'flex'} flexDirection={'row'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+          }}
+        >
           <b style={{width: 150}}>Nuværende punkt:</b>
           <Typography gutterBottom>
             {convertToLocalDate(x)} - {y + ' '} {unit}
@@ -102,7 +126,15 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
           rows={3}
         />
       </FormProvider>
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} m={1} gap={1}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'end',
+          m: 1,
+          gap: 1,
+        }}
+      >
         <Button
           bttype="tertiary"
           onClick={() => {
@@ -114,8 +146,10 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
         </Button>
         <Button
           bttype="primary"
+          loading={isSubmitting}
+          disabled={!isDirty}
           onClick={handleSubmit(onAccept, (e) => console.log(e))}
-          startIcon={<Save />}
+          startIcon={isSubmitting ? undefined : <Save />}
           color="secondary"
         >
           Gem

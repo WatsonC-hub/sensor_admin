@@ -1,10 +1,16 @@
-import {Command} from 'cmdk';
-import {CommandAction, useCommandRegistry} from './CommandContext';
-import {useState, useEffect} from 'react';
-import '../styles/cmdk.css';
 import {Box} from '@mui/material';
-import useBreakpoints from '~/hooks/useBreakpoints';
+import {Command} from 'cmdk';
+import {useEffect, useState} from 'react';
+
 import Button from '~/components/Button';
+
+import '../styles/cmdk.css';
+
+import useBreakpoints from '~/hooks/useBreakpoints';
+
+import {useCommandRegistry} from './CommandContext';
+
+import type {CommandAction} from './CommandContext';
 
 function CommandPalette() {
   const [open, setOpen] = useState(false);
@@ -14,10 +20,6 @@ function CommandPalette() {
   const {getActions} = useCommandRegistry();
   const [page, setPage] = useState<'all' | 'input' | 'selection'>('all');
   const {isMobile} = useBreakpoints();
-
-  // const updateActions = useCallback(() => {
-  //   setActions(getActions());
-  // }, [getActions]);
 
   const onClose = () => {
     setOpen(false);
@@ -51,7 +53,6 @@ function CommandPalette() {
       }
 
       if (e.key === 'Escape' && page !== 'all') {
-        console.log("Escape pressed, resetting to 'all' page");
         e.preventDefault();
         setPage('all');
         setSelectedAction(null);
@@ -92,7 +93,7 @@ function CommandPalette() {
       open={open}
       onOpenChange={onClose}
       title="Command Palette"
-      label="Global Command Menu"
+      label="Kommandomenu"
       className={`cmdk-overlay ${isMobile ? 'mobile' : ''}`}
       aria-describedby="cmdk-description"
     >
@@ -119,9 +120,15 @@ function CommandPalette() {
           />
         )}
         <Command.List className="cmdk-list">
-          {page == 'all' && <Command.Empty className="cmdk-empty">Ingen resultater</Command.Empty>}
+          {page == 'all' && (
+            <Command.Empty key="empty_all" className="cmdk-empty">
+              Ingen resultater
+            </Command.Empty>
+          )}
           {page == 'selection' && (
-            <Command.Empty className="cmdk-empty">Ingen resultater</Command.Empty>
+            <Command.Empty key="empty_selection" className="cmdk-empty">
+              Ingen resultater
+            </Command.Empty>
           )}
           {page == 'selection' &&
             selectedAction?.type === 'selection' &&

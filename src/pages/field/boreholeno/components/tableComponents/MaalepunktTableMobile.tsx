@@ -1,30 +1,27 @@
 import {Box, Typography} from '@mui/material';
-import {
-  MaterialReactTable,
-  MRT_ColumnDef,
-  MRT_ExpandButton,
-  MRT_TableOptions,
-} from 'material-react-table';
+import dayjs from 'dayjs';
+import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import {
-  convertDate,
   checkEndDateIsUnset,
+  convertDate,
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
-import {MaalepunktTableData} from '~/types';
-import {BoreholeMaalepunkt} from '../../Boreholeno';
-import dayjs from 'dayjs';
+
+import type {BoreholeMaalepunkt} from '../../Boreholeno';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {BoreholeMaalepunktTableData} from '~/types';
 
 interface Props {
-  data: MaalepunktTableData[] | undefined;
+  data: BoreholeMaalepunktTableData[] | undefined;
   handleEdit: (maalepunkt: BoreholeMaalepunkt) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
@@ -33,14 +30,14 @@ interface Props {
 export default function MaalepunktTableMobile({data, handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
-  const user = useUser();
+  const {org_id} = useUser();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
   };
 
-  const columns = useMemo<MRT_ColumnDef<MaalepunktTableData>[]>(
+  const columns = useMemo<MRT_ColumnDef<BoreholeMaalepunktTableData>[]>(
     () => [
       {
         accessorFn: (row) => row,
@@ -49,12 +46,14 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, d
         enableHide: false,
         Cell: ({row, table, staticRowIndex}) => (
           <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{width: '100%'}}
-            gap={1}
-            height={26}
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 1,
+              height: 26,
+              width: '100%',
+            }}
           >
             <MRT_ExpandButton
               sx={{justifyContent: 'left'}}
@@ -62,19 +61,41 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, d
               table={table}
               staticRowIndex={staticRowIndex}
             />
-            <Box display="flex" justifyContent="space-between">
-              <Typography width={50} alignSelf={'center'} variant="caption" fontWeight="bold">
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  width: 50,
+                  alignSelf: 'center',
+                  fontWeight: 'bold',
+                }}
+              >
                 {limitDecimalNumbers(row.original.elevation)} m
               </Typography>
             </Box>
-            <Typography margin={'0 auto'} alignSelf={'center'} variant="caption">
+            <Typography
+              variant="caption"
+              sx={{
+                margin: '0 auto',
+                alignSelf: 'center',
+              }}
+            >
               <b>Start: </b> {convertDate(row.original.startdate)}
               <br />
               <b>Slut: </b>
               {checkEndDateIsUnset(row.original.enddate) ? 'Nu' : convertDate(row.original.enddate)}
             </Typography>
 
-            <Box marginLeft={'auto'}>
+            <Box
+              sx={{
+                marginLeft: 'auto',
+              }}
+            >
               <RenderActions
                 handleEdit={() => {
                   const maalepunkt: BoreholeMaalepunkt = {
@@ -87,7 +108,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, d
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                disabled={disabled || row.original.organisationid != user?.org_id}
+                disabled={disabled || row.original.organisationid != org_id}
               />
             </Box>
           </Box>
@@ -97,7 +118,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, d
     [disabled, handleEdit]
   );
 
-  const options: Partial<MRT_TableOptions<MaalepunktTableData>> = {
+  const options: Partial<MRT_TableOptions<BoreholeMaalepunktTableData>> = {
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         <Typography>
@@ -127,10 +148,20 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, d
     ),
   };
 
-  const table = useTable<MaalepunktTableData>(columns, data, options, undefined, TableTypes.LIST);
+  const table = useTable<BoreholeMaalepunktTableData>(
+    columns,
+    data,
+    options,
+    undefined,
+    TableTypes.LIST
+  );
 
   return (
-    <Box width={'100%'}>
+    <Box
+      sx={{
+        width: '100%',
+      }}
+    >
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}

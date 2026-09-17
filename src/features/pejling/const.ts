@@ -1,12 +1,13 @@
-import {
+import dayjs from 'dayjs';
+
+import type {
   PejlingBoreholeSchemaType,
   PejlingSchemaType,
-} from '../station/components/pejling/PejlingSchema';
-import dayjs from 'dayjs';
+} from '../station/components/pejling/pejlingSchema';
 
 export const initialData = () =>
   ({
-    timeofmeas: dayjs(),
+    timeofmeas: dayjs().startOf('minute'),
     measurement: 0,
     useforcorrection: 0,
     comment: '',
@@ -14,7 +15,7 @@ export const initialData = () =>
 
 export const boreholeInitialData = () =>
   ({
-    timeofmeas: dayjs(),
+    timeofmeas: dayjs().startOf('minute'),
     measurement: 0,
     useforcorrection: 0,
     comment: '',

@@ -11,8 +11,8 @@
 //     longitude: '{{floating(8.24402, 14.70664)}}'
 //   }
 
-import {Dayjs} from 'dayjs';
-import {FlagEnum} from '../notifications/consts';
+import type {FlagEnum} from '../notifications/consts';
+import type {Dayjs} from 'dayjs';
 
 type ID = string;
 
@@ -79,6 +79,7 @@ export type Task = {
   can_edit: boolean;
   flag: FlagEnum;
   prefix: string | null;
+  sla: Dayjs | null;
 };
 
 export type TaskAPI = Omit<Task, 'due_date'> & {
@@ -210,6 +211,11 @@ export type completeItinerary = {
 export type AddLocationToItinerary = {
   path: string;
   data: {loc_id: Array<number>};
+};
+
+export type MergeItinerary = {
+  path: string;
+  data: {target_itinerary_id: string};
 };
 
 export enum TaskPermission {

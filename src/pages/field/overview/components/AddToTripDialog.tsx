@@ -1,16 +1,17 @@
 import {
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  Select,
+  DialogContent,
+  DialogTitle,
   MenuItem,
+  Select,
   Typography,
 } from '@mui/material';
 import React from 'react';
+
 import Button from '~/components/Button';
-import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {useItineraries, useItineraryMutations} from '~/features/tasks/api/useItinerary';
+import {useTaskUsers} from '~/features/tasks/api/useTasks';
 
 type AddToTripDialogProps = {
   open: boolean;
@@ -20,14 +21,10 @@ type AddToTripDialogProps = {
 
 const AddToTripDialog = ({open, onClose, loc_id}: AddToTripDialogProps) => {
   const [itineraryId, setItineraryId] = React.useState<string | null>(null);
-  const {
-    get: {data: itineraries},
-    addLocationToTrip,
-  } = useTaskItinerary();
+  const {data: itineraries} = useItineraries();
+  const {addLocationToTrip} = useItineraryMutations();
 
-  const {
-    getUsers: {data: taskUsers},
-  } = useTasks();
+  const {data: taskUsers} = useTaskUsers();
 
   const handleClose = () => {
     onClose();
@@ -69,10 +66,22 @@ const AddToTripDialog = ({open, onClose, loc_id}: AddToTripDialogProps) => {
               value={itinerary.id}
               sx={{display: 'flex', flexDirection: 'column'}}
             >
-              <Typography variant="body1" ml={0} mr={'auto'}>
+              <Typography
+                variant="body1"
+                sx={{
+                  ml: 0,
+                  mr: 'auto',
+                }}
+              >
                 {itinerary.name}
               </Typography>
-              <Typography variant="caption" ml={1} mr={'auto'}>
+              <Typography
+                variant="caption"
+                sx={{
+                  ml: 1,
+                  mr: 'auto',
+                }}
+              >
                 {taskUsers?.find((user) => user.id === itinerary.assigned_to)?.display_name}{' '}
                 {itinerary.due_date}
               </Typography>

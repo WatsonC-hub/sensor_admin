@@ -1,17 +1,20 @@
-import {useQuery, useMutation, queryOptions, MutationOptions} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
-import {ContactInfo, ContactTable} from '~/types';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {InferContactInfo} from '../components/stationDetails/contacts/api/useContactForm';
+import type {MutationOptions} from '@tanstack/react-query';
+import type {APIError} from '~/queryClient';
+import type {ContactInfo, ContactTable} from '~/types';
 
 interface ContactInfoBase {
   path: string;
 }
 
 interface ContactInfoPost extends ContactInfoBase {
-  data: ContactInfo;
+  data: InferContactInfo;
 }
 
 interface ContactInfoPut extends ContactInfoBase {
@@ -53,8 +56,8 @@ const contactInfoDelOptions = {
   },
 };
 
-export const ContactInfoGetOptions = (loc_id: number) =>
-  queryOptions<Array<ContactTable>, APIError>({
+export const contactInfoGetOptions = (loc_id: number | undefined) =>
+  queryOptions({
     queryKey: queryKeys.Location.contacts(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<ContactTable>>(
@@ -66,32 +69,50 @@ export const ContactInfoGetOptions = (loc_id: number) =>
     enabled: loc_id !== undefined && loc_id !== null,
   });
 
-export const useSearchContact = (loc_id: number | undefined, searchString: string) => {
+export const useSearchContact = <T = ContactInfo[]>(
+  loc_id: number | undefined,
+  searchString: string,
+  select?: (data: ContactInfo[]) => T
+) => {
+  const searchEndpoint = `/sensor_field/stamdata/contact/search_contact_info/${searchString}`;
+  const relevantContactsEndpoint = `/sensor_field/stamdata/contact/relevant_contacts/${loc_id}`;
+
   const searched_contacts = useQuery({
     queryKey: queryKeys.Location.searchContacts(searchString),
     queryFn: async () => {
       let data;
       if (searchString == '') {
-        const response = await apiClient.get<Array<ContactInfo>>(
-          `/sensor_field/stamdata/contact/relevant_contacts/${loc_id}`
-        );
+        const response = await apiClient.get<Array<ContactInfo>>(relevantContactsEndpoint);
         data = response.data;
       } else {
-        const response = await apiClient.get<Array<ContactInfo>>(
-          `/sensor_field/stamdata/contact/search_contact_info/${searchString}`
-        );
+        const response = await apiClient.get<Array<ContactInfo>>(searchEndpoint);
         data = response.data;
       }
 
       return data;
     },
     staleTime: 10 * 1000,
+    select,
+    enabled: loc_id !== undefined || searchString !== '',
   });
   return searched_contacts;
 };
 
-export const useContactInfo = (loc_id: number) => {
-  const get = useQuery(ContactInfoGetOptions(loc_id));
+export const useProjectContacts = (project_no: string | undefined) => {
+  return useQuery({
+    queryKey: queryKeys.projectContacts(project_no),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<ContactTable>>(
+        `/sensor_field/stamdata/contact/project_contact_info/${project_no}`
+      );
+      return data;
+    },
+    enabled: project_no !== undefined,
+  });
+};
+
+export const useContactInfo = (loc_id: number | undefined) => {
+  const get = useQuery(contactInfoGetOptions(loc_id));
 
   const post = useMutation({
     ...contactInfoPostOptions,
@@ -99,7 +120,13 @@ export const useContactInfo = (loc_id: number) => {
       toast.success('Kontakt information tilføjet');
     },
     meta: {
-      invalidates: [['metadata']],
+      invalidates: [
+        queryKeys.Location.contacts(loc_id),
+        queryKeys.StationProgress(),
+        ['collection'],
+        queryKeys.Location.info(loc_id),
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -109,7 +136,12 @@ export const useContactInfo = (loc_id: number) => {
       toast.success('Kontakt information ændret');
     },
     meta: {
-      invalidates: [['metadata']],
+      invalidates: [
+        queryKeys.Location.contacts(loc_id),
+        ['collection'],
+        queryKeys.Location.info(loc_id),
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 
@@ -119,7 +151,12 @@ export const useContactInfo = (loc_id: number) => {
       toast.success('Kontakt information slettet');
     },
     meta: {
-      invalidates: [['metadata']],
+      invalidates: [
+        queryKeys.Location.contacts(loc_id),
+        ['collection'],
+        queryKeys.Location.info(loc_id),
+      ],
+      optOutGeneralInvalidations: true,
     },
   });
 

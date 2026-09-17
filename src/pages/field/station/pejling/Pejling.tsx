@@ -1,7 +1,7 @@
 import {AddCircle} from '@mui/icons-material';
-import {Card, Box, Divider, Typography} from '@mui/material';
-
+import {Box, Card, Divider, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import {useSetAtom} from 'jotai';
 import React, {useEffect, useState} from 'react';
 import {FormProvider} from 'react-hook-form';
 
@@ -10,28 +10,23 @@ import FabWrapper from '~/components/FabWrapper';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
 import usePermissions from '~/features/permissions/api/usePermissions';
-
 import GraphManager from '~/features/station/components/GraphManager';
 import usePejlingForm from '~/features/station/components/pejling/api/usePejlingForm';
 import CompoundPejling from '~/features/station/components/pejling/CompoundPejling';
-import {
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import {stationPages} from '~/helpers/enumHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
+import {boreholeIsPumpAtom} from '~/state/atoms';
+import {useAppContext} from '~/state/contexts';
+
+import type {
   PejlingBoreholeSchemaType,
   PejlingSchemaType,
-} from '~/features/station/components/pejling/PejlingSchema';
-import {PejlingItem, LatestMeasurement} from '~/types';
-import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import {stationPages} from '~/helpers/EnumHelper';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import {
-  useCreateTabState,
-  useShowFormState,
-  useStationPages,
-} from '~/hooks/useQueryStateParameters';
-import {APIError} from '~/queryClient';
-import {useAppContext} from '~/state/contexts';
-import {useSetAtom} from 'jotai';
-import {boreholeIsPumpAtom} from '~/state/atoms';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+} from '~/features/station/components/pejling/pejlingSchema';
+import type {APIError} from '~/queryClient';
+import type {LatestMeasurement, PejlingItem} from '~/types';
 
 const Pejling = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -41,12 +36,10 @@ const Pejling = () => {
   const {data: timeseries_data} = useTimeseriesData();
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
-  const [, setTabValue] = useCreateTabState();
   const {
     get: {data: measurements},
-    post: postPejling,
-    put: putPejling,
-    del: delPejling,
+    post: {mutateAsync: postPejlingAsync},
+    put: {mutateAsync: putPejlingAsync},
   } = usePejling();
 
   const {
@@ -74,14 +67,14 @@ const Pejling = () => {
       return data;
     },
     staleTime: 1000 * 60 * 2,
-    enabled: ts_id !== undefined && ts_id !== null && ts_id !== -1,
+    enabled: !!ts_id && !!timeseries_data?.unit_uuid,
   });
 
   useEffect(() => {
     setIsPump(measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false);
   }, [measurements]);
 
-  const handlePejlingSubmit = (values: PejlingSchemaType | PejlingBoreholeSchemaType) => {
+  const handlePejlingSubmit = async (values: PejlingSchemaType | PejlingBoreholeSchemaType) => {
     const payload = {
       path: `${ts_id}`,
       data: {
@@ -91,22 +84,17 @@ const Pejling = () => {
     };
 
     if (gid === undefined) {
-      postPejling.mutate(payload, {
-        onSuccess: () => {
-          reset(getInitialData());
-          setDynamic([]);
-          setShowForm(null);
-        },
-      });
+      await postPejlingAsync(payload);
+      reset(getInitialData());
+      setDynamic([]);
+      setShowForm(null);
     } else {
       payload.path = `${ts_id}/${gid}`;
-      putPejling.mutate(payload, {
-        onSuccess: () => {
-          reset(getInitialData());
-          setShowForm(null);
-          setGid(undefined);
-        },
-      });
+      await putPejlingAsync(payload);
+
+      reset(getInitialData());
+      setShowForm(null);
+      setGid(undefined);
     }
   };
 
@@ -117,22 +105,16 @@ const Pejling = () => {
   };
 
   const handleEdit = (data: PejlingItem) => {
-    // data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
-    const {data: parsedData} = schema.safeParse(data);
+    const {data: parsedData, error} = schema.safeParse(data);
+    console.log(data, parsedData, error);
     reset(parsedData);
     setShowForm(true);
     setGid(data.gid);
   };
 
-  const handleDelete = (gid: number | undefined) => {
-    const payload = {path: `${ts_id}/${gid}`};
-    delPejling.mutate(payload);
-  };
-
   const openAddMP = () => {
-    setPageToShow(stationPages.GENERELTUDSTYR);
-    setTabValue('udstyr');
-    setShowForm(true);
+    setShowForm(null);
+    setPageToShow(stationPages.MAALEPUNKT);
   };
 
   useEffect(() => {
@@ -155,14 +137,16 @@ const Pejling = () => {
       </Box>
       <Divider />
       <StationPageBoxLayout>
-        <LatestMeasurementTable
-          latestMeasurement={latestMeasurement}
-          errorMessage={
-            isError && typeof error?.response?.data.detail == 'string'
-              ? error?.response?.data.detail
-              : undefined
-          }
-        />
+        {timeseries_data?.unit_uuid && (
+          <LatestMeasurementTable
+            latestMeasurement={latestMeasurement}
+            errorMessage={
+              isError && typeof error?.response?.data.detail == 'string'
+                ? error?.response?.data.detail
+                : undefined
+            }
+          />
+        )}
         <FormProvider {...formMethods}>
           {showForm === true && (
             <Card
@@ -185,7 +169,14 @@ const Pejling = () => {
                 setDynamic={setDynamic}
               >
                 <PejlingForm />
-                <Box gap={1} display={'flex'} justifyContent={'center'} mt={2}>
+                <Box
+                  sx={{
+                    gap: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mt: 2,
+                  }}
+                >
                   <CompoundPejling.CancelButton />
                   <CompoundPejling.SubmitButton />
                 </Box>
@@ -193,10 +184,14 @@ const Pejling = () => {
             </Card>
           )}
         </FormProvider>
-        <Box display={'flex'} flexDirection={'column'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <Table
             handleEdit={handleEdit}
-            handleDelete={handleDelete}
             disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           />
         </Box>

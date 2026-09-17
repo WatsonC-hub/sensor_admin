@@ -1,4 +1,4 @@
-import {Grid, Alert, Typography} from '@mui/material';
+import {Alert, Grid, Typography} from '@mui/material';
 import React from 'react';
 
 import {limitDecimalNumbers} from '~/helpers/dateConverter';
@@ -22,16 +22,14 @@ const DisplayWaterlevelAlert = ({
 }: Props) => {
   return (
     <Grid
-      item
-      xs={12}
-      sm={7}
+      size={{xs: 12, sm: 7}}
       sx={{
+        mx: 'auto',
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
         gap: 2,
       }}
-      mx={'auto'}
     >
       {elevationDiff !== undefined && (
         <Alert
@@ -56,7 +54,11 @@ const DisplayWaterlevelAlert = ({
         }}
       >
         {pejlingOutOfRange ? (
-          <Typography maxWidth={200}>
+          <Typography
+            sx={{
+              maxWidth: 200,
+            }}
+          >
             Der er intet målepunkt registreret på det valgte tidspunkt.
           </Typography>
         ) : (

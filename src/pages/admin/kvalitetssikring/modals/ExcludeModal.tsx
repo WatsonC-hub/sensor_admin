@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import {useAtomValue} from 'jotai';
 import {parseAsString, useQueryState} from 'nuqs';
 import {useEffect, useState} from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
@@ -17,6 +17,8 @@ import {useExclude} from '~/hooks/query/useExclude';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {qaSelection} from '~/state/atoms';
+
+import type {SubmitHandler} from 'react-hook-form';
 
 interface ExcludeModalProps {
   onClose: () => void;
@@ -30,7 +32,8 @@ const schema = z.object({
   comment: z.string().optional(),
 });
 
-type ExcludeModalValues = z.infer<typeof schema>;
+type ExcludeModalValues = z.input<typeof schema>;
+type ExcludeModalOutput = z.output<typeof schema>;
 
 const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   const [radio, setRadio] = useState('selected');
@@ -50,35 +53,36 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
     comment: '',
   });
 
-  const formMethods = useForm<ExcludeModalValues>({
+  const formMethods = useForm<ExcludeModalValues, unknown, ExcludeModalOutput>({
     resolver: zodResolver(schema),
     defaultValues: parsedData,
     mode: 'onTouched',
   });
 
-  const {handleSubmit, setValue, reset} = formMethods;
+  const {
+    handleSubmit,
+    setValue,
+    reset,
+    formState: {isSubmitting},
+  } = formMethods;
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
-  const {post: excludeMutation} = useExclude();
+  const {
+    post: {mutateAsync: excludeAsync},
+  } = useExclude();
 
-  const onAccept: SubmitHandler<ExcludeModalValues> = (values: ExcludeModalValues) => {
-    excludeMutation.mutate(
-      {
-        path: `${timeseries_data?.ts_id}`,
-        data: {
-          startdate: values.startDate,
-          enddate: values.endDate,
-          min_value: radio == 'selected' ? Number(values.startValue) : null,
-          max_value: radio == 'selected' ? Number(values.endValue) : null,
-          comment: values.comment ?? '',
-        },
+  const onAccept: SubmitHandler<ExcludeModalOutput> = async (values) => {
+    await excludeAsync({
+      path: `${timeseries_data?.ts_id}`,
+      data: {
+        startdate: values.startDate,
+        enddate: values.endDate,
+        min_value: radio == 'selected' ? Number(values.startValue) : null,
+        max_value: radio == 'selected' ? Number(values.endValue) : null,
+        comment: values.comment ?? '',
       },
-      {
-        onSuccess: () => {
-          reset();
-        },
-      }
-    );
+    });
+    reset();
   };
 
   useEffect(() => {
@@ -92,40 +96,49 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
     <Box>
       <FormProvider {...formMethods}>
         <Box
-          display={'flex'}
-          flexDirection={'row'}
-          flexWrap={isMobile ? 'wrap' : 'inherit'}
-          justifyContent={'center'}
-          alignItems={'center'}
-          gap={2}
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: isMobile ? 'wrap' : 'inherit',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 2,
+          }}
         >
           <FormDateTime<ExcludeModalValues> name="startDate" label="Dato fra" required />
           <FormDateTime<ExcludeModalValues> name="endDate" label="Dato til" required />
         </Box>
         <Box
-          display={'flex'}
-          flexDirection={'row'}
-          flexWrap={isMobile ? 'wrap' : 'inherit'}
-          justifyContent={'center'}
-          alignItems={'center'}
-          gap={2}
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: isMobile ? 'wrap' : 'inherit',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 2,
+          }}
         >
           <FormInput<ExcludeModalValues>
             name="startValue"
             label={'Start interval'}
             type="number"
             disabled={radio !== 'selected'}
+            onChangeCallback={(value) => {
+              setValue('startValue', value.toString());
+            }}
           />
           <FormInput<ExcludeModalValues>
             name="endValue"
             label={'Slut interval'}
             type="number"
             disabled={radio !== 'selected'}
+            onChangeCallback={(value) => {
+              setValue('endValue', value.toString());
+            }}
           />
         </Box>
         <FormInput<ExcludeModalValues> name="comment" label="Kommentar" multiline rows={3} />
       </FormProvider>
-
       <Typography gutterBottom>
         Vil du fjerne alt inden for de to tidsstempler, eller kun de valgte punkter?
       </Typography>
@@ -140,7 +153,13 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
           <FormControlLabel control={<Radio />} label="Alt inden for tidsstempler" value="all" />
         </RadioGroup>
       </FormControl>
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }}
+      >
         <Button
           bttype="tertiary"
           onClick={() => {
@@ -153,7 +172,8 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
         </Button>
         <Button
           bttype="primary"
-          startIcon={<Save />}
+          loading={isSubmitting}
+          startIcon={isSubmitting ? undefined : <Save />}
           onClick={handleSubmit(onAccept, (e) => console.log(e))}
           color="secondary"
         >

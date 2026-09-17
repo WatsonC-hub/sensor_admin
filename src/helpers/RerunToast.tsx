@@ -1,8 +1,9 @@
 import {Box, Button, Icon, Typography} from '@mui/material';
-import type {ToastContentProps} from 'react-toastify';
 
 import {rerunIcon} from '~/helpers/plotlyIcons';
 import {useCorrectData} from '~/hooks/useCorrectData';
+
+import type {ToastContentProps} from 'react-toastify';
 
 const RerunToast = ({closeToast, data}: Partial<ToastContentProps<{ts_id: number}>>) => {
   const ts_id = data?.ts_id;
@@ -11,12 +12,14 @@ const RerunToast = ({closeToast, data}: Partial<ToastContentProps<{ts_id: number
 
   return (
     <Box
-      display={'flex'}
-      flexDirection="row"
-      alignItems="center"
-      justifyContent="center"
-      gap={1}
-      sx={{p: 0}}
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 1,
+        p: 0,
+      }}
     >
       <Typography variant="body1" sx={{mb: 1}}>
         Ændringer foretaget...

@@ -1,0 +1,66 @@
+import {merge} from 'lodash';
+import React, {useState} from 'react';
+import {createStore} from 'zustand';
+import {createJSONStorage, devtools, persist} from 'zustand/middleware';
+
+import {defaultMapFilter} from '~/pages/field/overview/components/filterConsts';
+
+import {useUser} from '../auth/useUser';
+
+import type {Filter} from '~/pages/field/overview/components/filterConsts';
+
+export type MapFilterState = {
+  search: string;
+  setSearch: (search: string) => void;
+  filters: Filter;
+  setFilters: (filters: Filter) => void;
+
+  locIds: (number | string)[];
+  setLocIds: (locIds: (number | string)[]) => void;
+};
+
+const createMapFilterStore = (superUser: boolean, has_own_service: boolean) => {
+  return createStore<MapFilterState>()(
+    persist(
+      devtools((set) => ({
+        search: '',
+        setSearch: (search) => set({search}),
+        filters: {...defaultMapFilter(superUser, has_own_service)},
+        setFilters: (filters) => set({filters}),
+        locIds: [],
+        setLocIds: (locIds) => set({locIds}),
+      })),
+      {
+        name: 'calypso-map-filter',
+        storage: createJSONStorage(() => localStorage),
+        version: 4,
+        merge: (persistedState, currentState) => {
+          const merged = merge(
+            {filters: {...defaultMapFilter(superUser, has_own_service)}},
+            currentState,
+            persistedState
+          );
+          return merged;
+        },
+      }
+    )
+  );
+};
+
+export const MapFilterContext = React.createContext<ReturnType<typeof createMapFilterStore> | null>(
+  null
+);
+
+interface MapFilterContextProviderProps {
+  children: React.ReactNode;
+}
+
+export const MapFilterContextProvider = ({children}: MapFilterContextProviderProps) => {
+  const {
+    superUser,
+    attributes: {has_own_service},
+  } = useUser();
+  const [store] = useState(() => createMapFilterStore(superUser, has_own_service));
+
+  return <MapFilterContext.Provider value={store}>{children}</MapFilterContext.Provider>;
+};

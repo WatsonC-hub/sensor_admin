@@ -1,0 +1,38 @@
+import {List} from '@mui/material';
+import React from 'react';
+
+import SimpleTextView from '~/components/SimpleTextView';
+
+import type {SimpleContact} from '../types';
+
+type Props = {
+  values: SimpleContact[] | undefined;
+  onRemove: (contact_id: string | undefined) => void;
+};
+
+const SimpleContactList = ({values, onRemove}: Props) => {
+  return (
+    <List disablePadding>
+      {values === undefined && <SimpleTextView primaryText={'Kontakter registreres senere'} />}
+      {Array.isArray(values) && values.length === 0 && (
+        <SimpleTextView key="nocontact" primaryText={'Ingen kontakter tilføjet'} />
+      )}
+      {Array.isArray(values) &&
+        values.map((contact) => {
+          return (
+            <SimpleTextView
+              key={contact.email}
+              primaryText={contact.name + ' - ' + (contact.contact_role_name?.toLowerCase() ?? '')}
+              secondaryText={contact.email}
+              onRemove={() => onRemove(contact.id)}
+              disabled={
+                contact.contact_role === 1 && contact.contact_type === 'projekt' && !!contact.id
+              }
+            />
+          );
+        })}
+    </List>
+  );
+};
+
+export default SimpleContactList;

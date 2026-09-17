@@ -1,11 +1,12 @@
-import {queryOptions, useQuery, type UseQueryOptions} from '@tanstack/react-query';
-import {Dayjs} from 'dayjs';
+import {queryOptions, useQuery} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
-import {FlagEnum, NotificationIDEnum} from '~/features/notifications/consts';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {Group} from '~/types';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {Dayjs} from 'dayjs';
+import type {FlagEnum, NotificationIDEnum} from '~/features/notifications/consts';
+import type {Group, QueryType} from '~/types';
 
 export interface MapOverview {
   loc_id: number;
@@ -16,7 +17,10 @@ export interface MapOverview {
   parking_id: number | null;
   itinerary_id: string | null;
   no_unit: boolean;
-  inactive: boolean | null;
+  not_serviced: boolean;
+  inactive: boolean;
+  inactive_new: boolean;
+  in_service: boolean;
   is_customer_service: boolean | null;
   projectno: string | null;
   has_task: boolean;
@@ -28,30 +32,31 @@ export interface MapOverview {
   mapicontype: 'notification' | 'task' | 'trip';
 }
 
-const mapOverviewOptions = queryOptions<MapOverview[]>({
-  queryKey: queryKeys.Map.all(),
-  queryFn: async () => {
-    const {data} = await apiClient.get<MapOverview[]>(`/sensor_field/map_data`);
-    return data;
-  },
-  staleTime: 30 * 1000, // Data is fresh for 30 seconds
-  refetchInterval: 60 * 1000, // Background refresh every 1 min
-  refetchOnWindowFocus: false,
-  refetchOnMount: false,
-});
+const mapOverviewOptions = <TData = MapOverview[]>(select?: (data: MapOverview[]) => TData) =>
+  queryOptions({
+    queryKey: queryKeys.Map.all(),
+    queryFn: async () => {
+      const {data} = await apiClient.get<MapOverview[]>(`/sensor_field/map_data`);
+      return data;
+    },
+    staleTime: 30 * 1000, // Data is fresh for 30 seconds
+    refetchInterval: 60 * 1000, // Background refresh every 1 min
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    select,
+  });
 
-type MapOverviewOptions<T> = Partial<
-  Omit<UseQueryOptions<MapOverview[], Error, T>, 'queryKey' | 'queryFn'>
->;
-
-export const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T>) => {
-  const user = useUser();
+export const useMapOverview = <T = MapOverview[]>(
+  options?: QueryType<typeof mapOverviewOptions<T>>
+) => {
+  const {
+    features: {iotAccess},
+  } = useUser();
 
   return useQuery({
-    ...mapOverviewOptions,
+    ...mapOverviewOptions(options?.select),
     ...options,
-    select: options?.select as (data: MapOverview[]) => T,
-    enabled: user?.features?.iotAccess,
+    enabled: iotAccess,
   });
 };
 
@@ -67,7 +72,9 @@ interface TimeseriesStatus {
   has_task: boolean;
   due_date: string | null;
   no_unit: boolean;
-  inactive: boolean | null;
+  not_serviced: boolean;
+  inactive: boolean;
+  in_service: boolean;
   projectno: string | null;
   is_customer_service: boolean | null;
 }
@@ -85,17 +92,20 @@ export const timeseriesStatusOptions = (loc_id: number) =>
   });
 
 export const useTimeseriesStatus = (loc_id: number) => {
-  const user = useUser();
+  const {
+    features: {iotAccess},
+  } = useUser();
   return useQuery({
     ...timeseriesStatusOptions(loc_id),
-    enabled: user?.features?.iotAccess,
+    enabled: iotAccess,
   });
 };
 
-type NotificationType = {
+export type NotificationType = {
   gid: number;
   name: string;
   flag: FlagEnum;
+  color: string;
 };
 
 export const useNotificationTypes = () => {
@@ -103,7 +113,12 @@ export const useNotificationTypes = () => {
     queryKey: queryKeys.notificationTypes(),
     queryFn: async () => {
       const {data} = await apiClient.get<NotificationType[]>('/sensor_admin/notification-types');
-      return data;
+      return data.sort((a, b) => {
+        if (a.flag === b.flag) {
+          return a.name.localeCompare(b.name);
+        }
+        return b.flag - a.flag;
+      });
     },
     staleTime: 1000 * 60 * 60,
   });

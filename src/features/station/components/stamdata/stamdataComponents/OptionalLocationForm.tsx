@@ -1,0 +1,33 @@
+import {Grid} from '@mui/material';
+import React from 'react';
+import {useFormContext} from 'react-hook-form';
+
+import StamdataLocation from '../StamdataLocation';
+
+type Props = {
+  size: number;
+  loc_id: number | undefined; // Optional prop for location ID
+};
+
+const OptionalLocationForm = ({size, loc_id}: Props) => {
+  const {watch} = useFormContext();
+  const disabled = loc_id !== undefined;
+  const loctype_id = watch('loctype_id');
+  return (
+    <Grid container spacing={2}>
+      {loctype_id === 9 && (
+        <Grid size={size}>
+          <StamdataLocation.BoreholeSuffix disabled={disabled} />
+        </Grid>
+      )}
+      <Grid size={size}>
+        <StamdataLocation.Groups disabled={disabled} />
+      </Grid>
+      <Grid size={size}>
+        <StamdataLocation.Description disabled={disabled} />
+      </Grid>
+    </Grid>
+  );
+};
+
+export default OptionalLocationForm;

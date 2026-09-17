@@ -1,21 +1,18 @@
 import {Call, Email} from '@mui/icons-material';
-import {
-  MenuItem,
-  Grid,
-  InputAdornment,
-  IconButton,
-  Checkbox,
-  FormControlLabel,
-} from '@mui/material';
+import {Checkbox, FormControlLabel, Grid, IconButton, InputAdornment} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import {isValidPhoneNumber} from 'libphonenumber-js';
 import {useEffect} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
+import {FormPhoneInput} from '~/components/formComponents/FormPhoneInput';
 import FormInput from '~/components/FormInput';
-import {InferContactInfo} from '~/features/stamdata/components/stationDetails/zodSchemas';
-import {ContactInfoType} from '~/helpers/EnumHelper';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {ContactInfoType} from '~/helpers/enumHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {InferContactInfo} from './api/useContactForm';
 
 interface ModalProps {
   isEditing: boolean;
@@ -24,7 +21,7 @@ interface ModalProps {
   isUser: boolean;
 }
 
-type ContactRole = {
+export type ContactRole = {
   id: number;
   name: string;
   default_type?: 'lokation' | 'projekt';
@@ -37,7 +34,7 @@ export default function StationContactInfo({
   tableModal = false,
 }: ModalProps) {
   const {setValue, getValues, watch, control} = useFormContext<InferContactInfo>();
-  const regEx = new RegExp(/(?:(?:00|\+)?45)?\d{8}/);
+  const {isMobile} = useBreakpoints();
   const {data: contactRoles} = useQuery({
     queryKey: queryKeys.contactRoles(),
     queryFn: async () => {
@@ -62,8 +59,15 @@ export default function StationContactInfo({
   }, [id]);
 
   return (
-    <Grid container spacing={1} my={1} alignItems="center">
-      <Grid item xs={12} sm={6}>
+    <Grid
+      container
+      spacing={1}
+      sx={{
+        my: 1,
+        alignItems: 'center',
+      }}
+    >
+      <Grid size={{xs: 12, sm: 6}}>
         <FormInput
           name="name"
           label="Navn"
@@ -73,7 +77,7 @@ export default function StationContactInfo({
           disabled={(!isEditing && isUser) || (isUser && isEditing)}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormInput
           name="email"
           label="Email"
@@ -81,52 +85,61 @@ export default function StationContactInfo({
           type={'email'}
           fullWidth
           disabled={(!isEditing && isUser) || (isUser && isEditing)}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => {
-                    window.location.href = `mailto:${getValues('email')}`;
-                  }}
-                >
-                  {tableModal && <Email />}
-                </IconButton>
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => {
+                      window.location.href = `mailto:${getValues('email')}`;
+                    }}
+                  >
+                    <Email />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
           }}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
-        <FormInput
+      <Grid size={{xs: 12, sm: 6}}>
+        <FormPhoneInput
           name="mobile"
-          label="Tlf. nummer"
+          control={control}
           placeholder="Telefonnummer..."
-          type={'number'}
           fullWidth
           disabled={(!isEditing && isUser) || (isUser && isEditing)}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  disabled={!mobile || !regEx.test(mobile.toString())}
-                  onClick={() => {
-                    window.location.href = `tel:${getValues('mobile')}`;
-                  }}
-                >
-                  {tableModal && <Call />}
-                </IconButton>
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              multiline: false,
+              endAdornment: isMobile && mobile && isValidPhoneNumber(mobile) && (
+                <InputAdornment position="end">
+                  <IconButton
+                    sx={{
+                      p: 0,
+                    }}
+                    onClick={() => {
+                      window.location.href = `tel:${getValues('mobile')}`;
+                    }}
+                  >
+                    <Call />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
           }}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormInput
           name="contact_role"
           label="Rolle"
-          placeholder="Hvilken rolle har kontakten..."
+          placeholder="Vælg rolle..."
           disabled={tableModal}
+          required
           select
+          options={contactRoles?.map((role) => ({[role.id]: role.name}))}
+          keyType="number"
           fullWidth
           onChangeCallback={(value) => {
             if (typeof value == 'number') return;
@@ -134,41 +147,32 @@ export default function StationContactInfo({
               (role) =>
                 role.id === Number((value as React.ChangeEvent<HTMLInputElement>).target.value)
             );
-            if (role) {
-              setValue('contact_type', role.default_type ?? '-1');
+
+            if (role?.id === 1 && getValues('notify_required') === true)
+              setValue('notify_required', false);
+
+            if (role && role.default_type !== null) {
+              setValue('contact_type', role.default_type);
             } else {
-              setValue('contact_type', '-1');
+              const contact_type = getValues('contact_type');
+              if (contact_type === undefined) setValue('contact_type', 'lokation');
             }
           }}
-        >
-          <MenuItem value={-1} key={-1}>
-            Vælg rolle
-          </MenuItem>
-          {contactRoles?.map((role) => (
-            <MenuItem key={role.id} value={role.id}>
-              {role.name}
-            </MenuItem>
-          ))}
-        </FormInput>
+        />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <FormInput
           name="contact_type"
           label="Tilknyt til"
           placeholder="Tilknyt..."
           disabled={tableModal}
           select
+          options={[{lokation: ContactInfoType.Lokation}, {projekt: ContactInfoType.Projekt}]}
           required
           fullWidth
-        >
-          <MenuItem value={'-1'} key={'-1'}>
-            Vælg type
-          </MenuItem>
-          <MenuItem value={ContactInfoType.Lokation}>Lokation</MenuItem>
-          <MenuItem value={ContactInfoType.Projekt}>Projekt</MenuItem>
-        </FormInput>
+        />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{xs: 12, sm: 6}}>
         <Controller
           control={control}
           name="notify_required"
@@ -177,7 +181,7 @@ export default function StationContactInfo({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={value}
+                  checked={value ?? false}
                   disabled={tableModal || contact_role === 1}
                   onChange={(checked) => onChange(checked)}
                   name="notify_required"
@@ -189,7 +193,7 @@ export default function StationContactInfo({
           )}
         />
       </Grid>
-      <Grid item xs={12} sm={12}>
+      <Grid size={{xs: 12, sm: 12}}>
         <FormInput
           name="comment"
           label="Kommentar"

@@ -10,15 +10,16 @@ import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
 import {zodDayjs} from '~/helpers/schemas';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
-import {LevelCorrection} from '~/types';
+
+import type {LevelCorrection} from '~/types';
 
 interface LevelCorrectionRowProps {
   data: LevelCorrection;
   index: number | undefined;
-  setOpen: () => void;
+  onClose: () => void;
 }
 
-const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => {
+const LevelCorrectionRow = ({data, index, onClose}: LevelCorrectionRowProps) => {
   const {put} = useLevelCorrection();
 
   const schema = z.object({
@@ -41,52 +42,73 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
   const {
     reset,
     handleSubmit,
-    formState: {dirtyFields},
+    formState: {dirtyFields, isDirty},
   } = formMethods;
 
   const submit = (values: z.infer<typeof schema>) => {
     if (Object.keys(dirtyFields).length > 0) {
-      put.mutate({
-        path: `${data.ts_id}/${data.gid}`,
-        data: values,
-      });
+      put.mutate(
+        {
+          path: `${data.ts_id}/${data.gid}`,
+          data: values,
+        },
+        {
+          onSuccess: () => {
+            onClose();
+          },
+        }
+      );
     }
-    setOpen();
   };
 
   return (
     <FormProvider {...formMethods}>
       <Box
         key={index}
-        display="flex"
-        flexDirection={'row'}
-        alignItems="center"
-        borderRadius={1}
-        borderColor="grey.500"
-        p={1}
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          borderRadius: 1,
+          borderColor: 'grey.500',
+          p: 1,
+        }}
       >
         <Grid container spacing={0.5}>
-          <Grid item xs={12} xl={5} alignSelf={'center'}>
+          <Grid
+            size={{xs: 12, xl: 5}}
+            sx={{
+              alignSelf: 'center',
+            }}
+          >
             <FormDateTime name="date" label="Dato" required />
           </Grid>
-          <Grid item xs={12} xl={7}>
+          <Grid size={{xs: 12, xl: 7}}>
             <FormInput name="comment" label="Kommentar" multiline rows={2} />
           </Grid>
           <Grid
-            item
-            xs={12}
-            sm={12}
-            display={'flex'}
-            flexDirection={'column'}
-            justifyContent={'end'}
+            size={{xs: 12, sm: 12}}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'end',
+            }}
           >
-            <Box display="flex" alignSelf={'end'} flexDirection="row" gap={1} minWidth="97.02px">
+            <Box
+              sx={{
+                display: 'flex',
+                alignSelf: 'end',
+                flexDirection: 'row',
+                gap: 1,
+                minWidth: '97.02px',
+              }}
+            >
               <Button
                 bttype="tertiary"
                 size="small"
                 onClick={() => {
                   reset(data);
-                  setOpen();
+                  onClose();
                 }}
               >
                 Annuller
@@ -96,6 +118,8 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
                 size="small"
                 onClick={handleSubmit(submit, (values) => console.log(values))}
                 startIcon={<SaveIcon />}
+                disabled={!isDirty}
+                loading={put.isPending}
               >
                 Gem
               </Button>

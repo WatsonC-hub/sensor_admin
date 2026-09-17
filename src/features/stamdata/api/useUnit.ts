@@ -1,0 +1,144 @@
+import {useMutation, useQuery} from '@tanstack/react-query';
+import {toast} from 'react-toastify';
+
+import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {Dayjs} from 'dayjs';
+
+export interface Unit {
+  terminal_type: string;
+  terminal_id: string;
+  sensor_id: string;
+  sensorinfo: string;
+  calypso_id: number;
+  batteriskift: string;
+  startdato: string;
+  slutdato: string;
+  unit_uuid: string;
+  gid: number;
+  channel: string;
+  sensortypeid: number;
+  sensortypename: string;
+  signal_id: number;
+}
+
+export interface TypeUnitPost {
+  unit_uuid: string;
+  startdate: Dayjs | undefined;
+  enddate: Dayjs;
+  inherit_invoice?: boolean;
+}
+
+interface UnitBase {
+  path: string;
+  data?: any;
+}
+export interface UnitPost extends UnitBase {
+  data: TypeUnitPost;
+}
+
+interface UnitBatchType {
+  startdate: Dayjs | undefined;
+  inherit_invoice?: boolean;
+  units: Record<number, TypeUnitPost>;
+}
+
+export interface UnitBatchPost {
+  data: UnitBatchType;
+}
+
+const unitPostOptions = {
+  mutationKey: ['unit_post'],
+  mutationFn: async (mutation_data: UnitPost) => {
+    const {path, data} = mutation_data;
+    const {data: result} = await apiClient.post(
+      `/sensor_field/stamdata/unit_history/${path}`,
+      data
+    );
+    return result;
+  },
+};
+
+const unitBatchPostOptions = {
+  mutationKey: ['unit_batch_post'],
+  mutationFn: async (mutation_data: UnitBatchPost) => {
+    const {data} = mutation_data;
+    const {data: result} = await apiClient.post(`/sensor_field/stamdata/unit_history_batch`, data);
+    return result;
+  },
+};
+
+const editUnitMutation = (ts_id: number) =>
+  useMutation({
+    mutationKey: ['edit_unit'],
+    mutationFn: async (data: any) => {
+      const {data: out} = await apiClient.put(`/sensor_field/stamdata/update_unit/${ts_id}`, data);
+      return out;
+    },
+    onSuccess: () => {
+      toast.success('Udstyr er opdateret');
+    },
+    meta: {
+      invalidates: [queryKeys.Timeseries.unitHistory(ts_id), queryKeys.AvailableUnits.all()],
+    },
+  });
+
+const deleteUnitMutation = (ts_id: number) =>
+  useMutation({
+    mutationKey: ['delete_unit'],
+    mutationFn: async (path: string) => {
+      const {data: out} = await apiClient.delete(
+        `/sensor_field/stamdata/delete_unit_history/${path}`
+      );
+      return out;
+    },
+    onSuccess: () => {
+      toast.success('Udstyr er slettet');
+    },
+    meta: {
+      invalidates: [
+        queryKeys.Timeseries.unitHistory(ts_id),
+        queryKeys.AvailableUnits.all(),
+        ['metadata'],
+      ],
+    },
+  });
+
+const postUnitMutation = () =>
+  useMutation({
+    ...unitPostOptions,
+    meta: {
+      invalidates: [queryKeys.AvailableUnits.all(), ['udstyr'], ['metadata']],
+    },
+  });
+
+const postUnitBatchMutation = () =>
+  useMutation({
+    ...unitBatchPostOptions,
+    meta: {
+      invalidates: [queryKeys.AvailableUnits.all(), ['udstyr'], ['metadata']],
+    },
+  });
+
+export const useUnitMutations = (ts_id: number) => {
+  const editUnit = editUnitMutation(ts_id);
+  const deleteUnit = deleteUnitMutation(ts_id);
+
+  return {editUnit, deleteUnit};
+};
+
+export const useUnit = () => {
+  const get = useQuery({
+    queryKey: queryKeys.AvailableUnits.all(),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<Unit>>(`/sensor_field/stamdata/available_units`);
+      return data;
+    },
+    staleTime: 0,
+  });
+
+  const post = postUnitMutation();
+  const postBatch = postUnitBatchMutation();
+  return {get, post, postBatch};
+};

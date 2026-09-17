@@ -1,36 +1,217 @@
-import {Grid2} from '@mui/material';
-import React from 'react';
+import {Box, CircularProgress, Grid, Skeleton, Typography} from '@mui/material';
+import {useMutationState, useQueryClient} from '@tanstack/react-query';
+import React, {useEffect} from 'react';
 
 import ImageCard from '~/components/ImageCard';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {Image} from '~/types';
+import {useFindBorehole} from '~/features/station/api/useBorehole';
+import {useImageUpload} from '~/hooks/query/useImageUpload';
+import {useLocationData} from '~/hooks/query/useMetadata';
+
+import Button from './Button';
+
+import type {Mutation} from '@tanstack/react-query';
+import type {ImagePayload} from '~/hooks/query/useImageUpload';
+import type {APIError} from '~/queryClient';
+import type {Image} from '~/types';
 
 type ImageViewerProps = {
-  images: Array<Image>;
+  images: Array<Image> | undefined;
   deleteMutation: any;
   handleEdit: any;
+  type: 'station' | 'borehole';
+  id: string | number;
 };
 
-function ImageViewer({images, deleteMutation, handleEdit}: ImageViewerProps) {
-  const {isTouch} = useBreakpoints();
+function downloadDataUri(dataUri: string, filename: string) {
+  // Convert base64/URLEncoded data component to raw binary data held in a string
+  const byteString = atob(dataUri.split(',')[1]);
+  const mimeString = dataUri.split(',')[0].split(':')[1].split(';')[0];
+  const imageFormat = mimeString.split('/')[1];
+
+  // Write the bytes of the string to an ArrayBuffer
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+
+  const blob = new Blob([ab], {type: mimeString});
+  const url = URL.createObjectURL(blob);
+
+  // --- Desktop browsers (Chrome, Edge, Firefox, etc.) ---
+  const link = document.createElement('a');
+  link.href = url;
+  // link.download = `${filename.replace(/\.[^/.]+$/, '')}.${imageFormat}`;
+  link.download = `${filename}.${imageFormat}`;
+  document.body.appendChild(link);
+
+  // Safari (iOS) ignores .click() on hidden links unless in user gesture
+
+  link.click();
+
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewerProps) {
+  const [columns, setColumns] = React.useState(6);
+  const [size, setSize] = React.useState(480);
+  const [mobileRatio, setMobileRatio] = React.useState(false);
+  useMutationState({filters: {exact: true, mutationKey: ['image_post', type, id]}});
+  const {data} = useLocationData(typeof id === 'number' ? id : undefined);
+  const {data: boreholeData} = useFindBorehole(typeof id === 'string' ? id : undefined);
+  const queryClient = useQueryClient();
+
+  const mutationCache = queryClient.getMutationCache();
+  const mutations = mutationCache
+    .findAll({exact: true, mutationKey: ['image_post', type, id]})
+    .filter((m) => m.state.status === 'error' || m.state.status === 'pending') as Mutation<
+    unknown,
+    APIError,
+    ImagePayload
+  >[];
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver((event) => {
+      const width = event[0].contentRect.width;
+      const mobileRatio = width < 800;
+      const size = mobileRatio ? 300 : 480;
+      setSize(size);
+      setMobileRatio(mobileRatio);
+      if (!mobileRatio && images && images.length > 2) {
+        const calculatedColumns = Math.floor(12 / Math.floor(width / size));
+        setColumns(calculatedColumns);
+      }
+    });
+    const main_content = document.getElementById('main_content');
+    if (resizeObserver && main_content !== null) resizeObserver.observe(main_content);
+
+    return () => resizeObserver.disconnect();
+  }, [images]);
+
+  const {post} = useImageUpload(type, id);
   return (
-    <Grid2 container spacing={2} mx="auto">
-      {images?.map((elem, index) => {
-        return (
-          <Grid2
-            size={{
-              mobile: 12,
-              laptop: images.length === 1 ? 12 : 6,
-            }}
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
+      <Grid container spacing={2}>
+        {mutations.map((m, index) => {
+          return (
+            <Grid
+              key={m.mutationId}
+              size={mobileRatio || (images || []).length + mutations.length === 1 ? 12 : columns}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  position: 'relative',
+                  width: size,
+                  height: size,
+                  borderRadius: 2,
+                }}
+              >
+                <Skeleton
+                  variant="rectangular"
+                  sx={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 2,
+                    zIndex: 1,
+                  }}
+                />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    alignContent: 'center',
+                    gap: 1,
+                    zIndex: 2,
+                  }}
+                >
+                  {!m.state.error && (
+                    <CircularProgress size={48} thickness={4} sx={{color: 'primary.main'}} />
+                  )}
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      textAlign: 'center',
+                      color: 'primary.main',
+                      width: 300,
+                      mx: 'auto',
+                    }}
+                  >
+                    {m.state.status === 'error'
+                      ? 'Upload fejlede...'
+                      : m.state.isPaused
+                        ? 'Afventer at blive genoptaget...'
+                        : 'Uploader...'}
+                  </Typography>
+                  <Button
+                    bttype="primary"
+                    onClick={async () => {
+                      try {
+                        const filename = data?.loc_name
+                          ? `${data.loc_name}_${index + (images?.length ?? 0)}`
+                          : `${boreholeData?.boreholeno}_${index + (images?.length ?? 0)}`;
+                        downloadDataUri(m.state.variables?.data.uri as string, filename);
+                        mutationCache.remove(m);
+                      } catch (err) {
+                        console.error('Failed to download image:', err);
+                      }
+                    }}
+                  >
+                    Gem billede lokalt
+                  </Button>
+                  {m.state.status === 'error' && (
+                    <Button
+                      bttype="tertiary"
+                      onClick={() => {
+                        mutationCache.remove(m);
+                        post.mutate(m.state.variables as ImagePayload);
+                      }}
+                    >
+                      Genupload
+                    </Button>
+                  )}
+                </Box>
+              </Box>
+            </Grid>
+          );
+        })}
+
+        {images?.map((elem) => (
+          <Grid
             key={elem.gid}
-            display={'flex'}
-            justifyContent={isTouch ? 'center' : index % 2 === 0 ? 'end' : 'start'}
+            size={mobileRatio || images.length + mutations.length === 1 ? 12 : columns}
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}
           >
-            <ImageCard image={elem} deleteMutation={deleteMutation} handleEdit={handleEdit} />
-          </Grid2>
-        );
-      })}
-    </Grid2>
+            <ImageCard
+              image={elem}
+              deleteMutation={deleteMutation}
+              handleEdit={handleEdit}
+              mobileSize={size}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 }
 

@@ -1,17 +1,24 @@
 import {Box, Typography} from '@mui/material';
 
-import LocationListFilter from './LocationListFilter';
-import LocationListVirtualizer from './LocationListVirtualizer';
 import {useUser} from '~/features/auth/useUser';
 
+import LocationListFilter from './LocationListFilter';
+import LocationListVirtualizer from './LocationListVirtualizer';
+
 const LocationList = () => {
-  const user = useUser();
+  const {simpleTaskPermission} = useUser();
   return (
-    <Box maxHeight={'100%'} display="flex" flexDirection="column">
+    <Box
+      sx={{
+        maxHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <Typography variant="h6" sx={{padding: 1}}>
         Lokationer
       </Typography>
-      {user?.simpleTaskPermission && <LocationListFilter />}
+      {simpleTaskPermission && <LocationListFilter />}
       <LocationListVirtualizer />
     </Box>
   );

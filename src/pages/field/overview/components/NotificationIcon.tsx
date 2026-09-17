@@ -1,7 +1,10 @@
-import {Box, BoxProps, Tooltip} from '@mui/material';
+import {Box, Tooltip} from '@mui/material';
 import React from 'react';
-import {IconDetails} from '~/features/notifications/types';
-import {getColor, getIcon} from '~/features/notifications/utils';
+
+import {getColor, getIcon} from '~/features/notifications/Utils';
+
+import type {BoxProps} from '@mui/material';
+import type {IconDetails} from '~/features/notifications/types';
 //Imports
 
 const flagStyling = (iconDetails: IconDetails) => {

@@ -1,0 +1,103 @@
+import {RemoveCircleOutlined} from '@mui/icons-material';
+import {Grid} from '@mui/material';
+import React from 'react';
+
+import Button from '~/components/Button';
+import {useDMPAllowedList} from '~/features/station/api/useDmpAllowedMapList';
+import useBreakpoints from '~/hooks/useBreakpoints';
+
+import TimeseriesMetaForm from '../forms/TimeseriesMetaForm';
+import ControlSettingSection from '../sections/ControlSettingSection';
+import SyncSection from '../sections/SyncSection';
+import UnitSection from '../sections/UnitSection';
+import WatlevmpSection from '../sections/WatlevmpSection';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+import {isSynchronizationAllowed} from './timeseriesStepHelper';
+
+import type {TimeseriesPayload} from '../types';
+
+type Props = {
+  index: string;
+  onRemove: () => void;
+  setControlSettings: (tstype_id: number) => void;
+};
+
+const TimeseriesEditor = ({index, onRemove, setControlSettings}: Props) => {
+  const [timeseries, location_meta, setState, deleteState] = useCreateStationStore((state) => [
+    state.formState.timeseries?.[index] as TimeseriesPayload,
+    state.formState.location?.meta,
+    state.setState,
+    state.deleteState,
+  ]);
+  const meta_tstype_id = timeseries.meta?.tstype_id;
+
+  const {data: dmpAllowedList} = useDMPAllowedList();
+
+  const {isMobile} = useBreakpoints();
+
+  const isSyncAllowed = isSynchronizationAllowed(
+    meta_tstype_id,
+    location_meta?.loctype_id,
+    dmpAllowedList
+  );
+
+  return (
+    <>
+      <TimeseriesMetaForm
+        uuid={index}
+        setValues={(meta) => {
+          setState(`timeseries.${index}.meta`, meta);
+        }}
+        setIntakeno={(intakeno) => {
+          setState(`timeseries.${index}.meta.intakeno`, intakeno);
+        }}
+        setTstype={(tstype_id) => {
+          setState(`timeseries.${index}.meta.tstype_id`, tstype_id);
+          deleteState(`timeseries.${index}.unit`);
+          deleteState(`timeseries.${index}.watlevmp`);
+          setState(`timeseries.${index}.sync`, undefined);
+
+          if (tstype_id !== meta_tstype_id) {
+            setControlSettings(tstype_id);
+          }
+
+          if (tstype_id == 1) {
+            setState(`timeseries.${index}.watlevmp`, {});
+          }
+        }}
+      />
+      {meta_tstype_id !== undefined && (
+        <>
+          {meta_tstype_id === 1 && <WatlevmpSection index={index} />}
+          <UnitSection key={meta_tstype_id} uuid={index} tstype_id={meta_tstype_id} />
+
+          <ControlSettingSection uuid={index} />
+
+          {isSyncAllowed && <SyncSection uuid={index} tstype_id={meta_tstype_id} />}
+        </>
+      )}
+      <Grid
+        size={isMobile ? 12 : 1}
+        sx={{
+          alignContent: 'center',
+          display: 'flex',
+          width: '100%',
+          justifyContent: 'end',
+        }}
+      >
+        <Button
+          bttype="tertiary"
+          startIcon={<RemoveCircleOutlined fontSize="small" />}
+          onClick={() => {
+            if (Object.keys(timeseries).length === 1) deleteState(`location.visibility`);
+            onRemove();
+          }}
+        >
+          Fjern tidsserie
+        </Button>
+      </Grid>
+    </>
+  );
+};
+
+export default TimeseriesEditor;

@@ -1,0 +1,103 @@
+import {zodResolver} from '@hookform/resolvers/zod';
+import {Box, Grid} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
+import React from 'react';
+import {useForm} from 'react-hook-form';
+import {z} from 'zod';
+
+import {createTypedForm} from '~/components/formComponents/Form';
+import usePermissions from '~/features/permissions/api/usePermissions';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {metadataQueryOptions} from '~/hooks/query/useMetadata';
+import useUpdateTimeseries from '~/hooks/useUpdateTimeseries';
+
+import type {Metadata} from '~/hooks/query/useMetadata';
+
+type VisibilityConfigProps = {
+  loc_id: number;
+  ts_id: number;
+};
+
+const schema = z.object({
+  requires_auth: z.boolean().optional(),
+  hide_public: z.boolean().optional(),
+});
+
+// type Form = z.infer<typeof schema>;
+
+type FormInput = z.input<typeof schema>;
+type FormOutput = z.output<typeof schema>;
+
+const Form = createTypedForm<FormInput, FormOutput>();
+
+const metadataSelector = (data: Metadata) => ({
+  requires_auth: data.requires_auth,
+  hide_public: data.hide_public,
+});
+
+const VisibilityConfig = ({loc_id, ts_id}: VisibilityConfigProps) => {
+  const {location_permissions} = usePermissions(loc_id);
+  const {data: timeseries} = useQuery(
+    metadataQueryOptions<FormInput>(ts_id, {
+      select: metadataSelector,
+    })
+  );
+
+  const {
+    updateTimeseries: {mutateAsync},
+  } = useUpdateTimeseries(ts_id);
+
+  const methods = useForm<FormInput, unknown, FormOutput>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      requires_auth: false,
+      hide_public: false,
+    },
+    values: timeseries,
+  });
+
+  const {
+    reset,
+    formState: {isDirty},
+  } = methods;
+
+  return (
+    <Box>
+      <Form gridSizes={12} formMethods={methods}>
+        <Form.Checkbox
+          name="requires_auth"
+          label="Data tilgængelighed kræver login"
+          disabled={location_permissions !== 'edit'}
+        />
+        <Form.Checkbox
+          name="hide_public"
+          label="Skjul i offentlige visninger"
+          disabled={location_permissions !== 'edit'}
+        />
+        <Grid
+          size={12}
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 1,
+          }}
+        >
+          <UpdateProgressButton
+            loc_id={loc_id}
+            disabled={isDirty}
+            ts_id={ts_id}
+            progressKey="visibility"
+          />
+          <Form.Cancel disabled={!isDirty} cancel={() => reset()} />
+          <Form.Submit
+            submit={async (values) => {
+              await mutateAsync(values);
+            }}
+          />
+        </Grid>
+      </Form>
+    </Box>
+  );
+};
+
+export default VisibilityConfig;

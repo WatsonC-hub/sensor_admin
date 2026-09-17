@@ -1,31 +1,36 @@
+import {Save} from '@mui/icons-material';
 import {
-  Typography,
-  InputAdornment,
+  Checkbox,
   FormControl,
   FormControlLabel,
   FormLabel,
+  InputAdornment,
   Radio,
   RadioGroup,
-  Checkbox,
+  Typography,
 } from '@mui/material';
-import React, {useContext, useEffect, useState} from 'react';
-import FormInput, {FormInputProps} from '~/components/FormInput';
-import {PejlingBoreholeSchemaType, PejlingSchemaType} from './PejlingSchema';
-import {Controller, useFormContext} from 'react-hook-form';
-import {correction_map} from '~/consts';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import IngenMPAlert from '~/features/pejling/components/IngenMPAlert';
-import Button from '~/components/Button';
-import {Save} from '@mui/icons-material';
 import {useAtom} from 'jotai';
-import {boreholeIsPumpAtom} from '~/state/atoms';
-import {LatestMeasurement, Maalepunkt} from '~/types';
-import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {get} from 'lodash';
-import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
+import {Controller, useFormContext} from 'react-hook-form';
+
+import Button from '~/components/Button';
+import FormDateTime from '~/components/FormDateTime';
+import FormInput from '~/components/FormInput';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
+import {correction_map} from '~/consts';
+import IngenMPAlert from '~/features/pejling/components/IngenMPAlert';
+import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
+import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {boreholeIsPumpAtom} from '~/state/atoms';
+import {useAppContext} from '~/state/contexts';
+
+import type {PejlingBoreholeSchemaType, PejlingSchemaType} from './pejlingSchema';
+import type {FormDateTimeProps} from '~/components/FormDateTime';
+import type {FormInputProps} from '~/components/FormInput';
+import type {LatestMeasurement, MaalepunktAsDayjs} from '~/types';
 
 interface PejlingProps {
   submit: (values: PejlingSchemaType | PejlingBoreholeSchemaType) => void;
@@ -40,7 +45,7 @@ interface CompoundPejlingProps extends PejlingProps {
   hide: boolean;
   isWaterLevel?: boolean;
   isFlow?: boolean;
-  currentMP?: Maalepunkt | null;
+  currentMP?: MaalepunktAsDayjs | null;
   elevationDiff?: number;
   notPossible: boolean;
   setNotPossible: (notPossible: boolean) => void;
@@ -70,6 +75,7 @@ const CompoundPejling = ({
   latestMeasurement,
 }: PejlingProps) => {
   const {watch, getValues} = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
+  const {ts_id} = useAppContext(['ts_id']);
   const timeofmeas = watch('timeofmeas');
   const measurement = watch('measurement');
   const [notPossible, setNotPossible] = useState<boolean>(!!getValues('extrema'));
@@ -79,11 +85,11 @@ const CompoundPejling = ({
   const isFlow = timeseries?.tstype_id === 2;
   const [elevationDiff, setElevationDiff] = useState<number | undefined>(undefined);
   const [hide, setHide] = useState<boolean>(false);
-  const [currentMP, setCurrentMP] = useState<Maalepunkt | null>(null);
+  const [currentMP, setCurrentMP] = useState<MaalepunktAsDayjs | null>(null);
   const tstype_id = timeseries?.tstype_id;
   const {
     get: {data: mpData},
-  } = useMaalepunkt();
+  } = useMaalepunkt(ts_id);
 
   useEffect(() => {
     let latestmeas: number | undefined = undefined;
@@ -98,11 +104,14 @@ const CompoundPejling = ({
 
     const formattedTimeofMeas = timeofmeas.format('YYYY-MM-DD HH:mm');
     if (isWaterLevel && mpData !== undefined && mpData.length > 0) {
-      const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
-        if (timeofmeas.isSameOrAfter(elem.startdate) && timeofmeas.isBefore(elem.enddate)) {
-          return true;
-        }
-      });
+      const mp = mpData
+        .filter((elem) => {
+          if (timeofmeas.isSameOrAfter(elem.startdate)) {
+            return true;
+          }
+        })
+        .sort((a, b) => b.startdate.diff(a.startdate));
+
       const internalCurrentMP = mp.length > 0 ? mp[0] : null;
       setCurrentMP(internalCurrentMP);
 
@@ -125,26 +134,42 @@ const CompoundPejling = ({
     else setElevationDiff(Math.abs(dynamicMeas - latestmeas));
   }, [mpData, measurement, timeofmeas, tstype_id]);
 
+  const contextValue = useMemo(
+    () => ({
+      submit,
+      openAddMP,
+      setDynamic,
+      cancel,
+      latestMeasurement,
+      hide,
+      currentMP,
+      isWaterLevel,
+      elevationDiff,
+      notPossible,
+      setNotPossible,
+      isFlow,
+    }),
+    [
+      submit,
+      openAddMP,
+      setDynamic,
+      cancel,
+      latestMeasurement,
+      hide,
+      currentMP,
+      isWaterLevel,
+      elevationDiff,
+      notPossible,
+      setNotPossible,
+      isFlow,
+    ]
+  );
+
   if (isWaterLevel && mpData !== undefined && mpData.length < 1)
     return <CompoundPejling.MPAlert openAddMP={openAddMP} />;
 
   return (
-    <CompoundPejlingContext.Provider
-      value={{
-        submit,
-        openAddMP,
-        setDynamic,
-        cancel,
-        latestMeasurement,
-        hide,
-        currentMP,
-        isWaterLevel,
-        elevationDiff,
-        notPossible,
-        setNotPossible,
-        isFlow,
-      }}
-    >
+    <CompoundPejlingContext.Provider value={contextValue}>
       {children}
     </CompoundPejlingContext.Provider>
   );
@@ -164,15 +189,15 @@ const SubmitButton = () => {
   const {submit} = React.useContext(CompoundPejlingContext);
   const {
     handleSubmit,
-    formState: {errors},
+    formState: {errors, isSubmitting},
   } = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
-
   return (
     <Button
       bttype="primary"
       fullWidth={false}
-      startIcon={<Save />}
+      startIcon={isSubmitting ? undefined : <Save />}
       disabled={Object.keys(errors).length > 0}
+      loading={isSubmitting}
       onClick={handleSubmit(submit, (errors) => console.log(errors))}
     >
       Gem
@@ -351,7 +376,11 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
 
 const NotPossible = () => {
   const {notPossible, setNotPossible} = useContext(CompoundPejlingContext);
-  const {setValue} = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
+  const {
+    setValue,
+    resetField,
+    formState: {defaultValues},
+  } = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
 
   return (
     <TooltipWrapper
@@ -363,8 +392,18 @@ const NotPossible = () => {
           <Checkbox
             checked={notPossible}
             onChange={(e) => {
-              setValue('measurement', e.target.checked ? null : 0);
-              setValue('extrema', e.target.checked ? 'A' : undefined);
+              console.log(defaultValues, 'defaultvalues');
+              setValue('measurement', e.target.checked ? null : 0, {
+                shouldDirty: e.target.checked,
+              });
+              if (!defaultValues || 'extrema' in defaultValues)
+                setValue('extrema', e.target.checked ? 'A' : undefined, {
+                  shouldDirty: e.target.checked,
+                });
+              if (!e.target.checked) {
+                resetField('measurement');
+                if (!defaultValues || 'extrema' in defaultValues) resetField('extrema');
+              }
               setNotPossible(e.target.checked);
             }}
           />

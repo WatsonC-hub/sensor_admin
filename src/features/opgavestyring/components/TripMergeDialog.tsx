@@ -1,0 +1,113 @@
+import {zodResolver} from '@hookform/resolvers/zod';
+import MoveUpIcon from '@mui/icons-material/MoveUp';
+import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
+import React from 'react';
+import {FormProvider, useForm} from 'react-hook-form';
+import {z} from 'zod';
+
+import AlertDialog from '~/components/AlertDialog';
+import Button from '~/components/Button';
+import FormInput from '~/components/FormInput';
+import {
+  useItineraries,
+  useItinerary,
+  useItineraryMutations,
+} from '~/features/tasks/api/useItinerary';
+import {useDisplayState} from '~/hooks/ui';
+
+import type {SubmitHandler} from 'react-hook-form';
+
+type Props = {
+  itinerary_id: string;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+};
+
+type FormValues = {
+  target_itinerary_id: string;
+};
+
+const TripMergeDialog = ({itinerary_id, open, setOpen}: Props) => {
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+  const setItineraryId = useDisplayState((state) => state.setItineraryId);
+  const {data: itinerary} = useItinerary(itinerary_id);
+  const {data: itineraries} = useItineraries();
+
+  const {
+    mergeTrips: {mutateAsync: mergeTripsAsync},
+  } = useItineraryMutations();
+
+  const formMethods = useForm<FormValues>({
+    resolver: zodResolver(
+      z.object({
+        target_itinerary_id: z.string({message: 'Vælg en tur'}).min(1, 'Vælg en tur'),
+      })
+    ),
+    mode: 'onTouched',
+  });
+
+  const {
+    handleSubmit,
+    reset,
+    formState: {isSubmitting},
+  } = formMethods;
+
+  const onClose = () => {
+    reset();
+    setOpen(false);
+  };
+
+  const handleSave: SubmitHandler<FormValues> = async (data) => {
+    const payload = {
+      path: `${itinerary_id}`,
+      data: data,
+    };
+
+    await mergeTripsAsync(payload);
+
+    setItineraryId(null);
+    setOpenDialog(false);
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <FormProvider {...formMethods}>
+        <DialogTitle>Overflyt lokationer for {itinerary?.name}</DialogTitle>
+        <DialogContent>
+          <FormInput
+            name="target_itinerary_id"
+            label="Turliste"
+            placeholder="Overflyt til..."
+            select
+            required
+            options={itineraries
+              ?.filter((itinerary) => itinerary.id !== itinerary_id)
+              ?.map((itinerary) => ({[itinerary.id.toString()]: itinerary.name}))}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button bttype="tertiary" onClick={onClose}>
+            Luk
+          </Button>
+          <Button
+            bttype="primary"
+            onClick={() => setOpenDialog(true)}
+            startIcon={<MoveUpIcon sx={{transform: 'rotate(90deg)'}} />}
+          >
+            Overflyt
+          </Button>
+        </DialogActions>
+        <AlertDialog
+          open={openDialog}
+          title="Bekræft flytning"
+          message="Er du sikker på, at du vil flytte alle lokationer fra denne tur til den valgte tur?"
+          setOpen={setOpenDialog}
+          handleOpret={handleSubmit(handleSave)}
+          loading={isSubmitting}
+        />
+      </FormProvider>
+    </Dialog>
+  );
+};
+
+export default TripMergeDialog;

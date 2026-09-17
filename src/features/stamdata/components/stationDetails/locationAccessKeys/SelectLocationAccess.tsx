@@ -2,73 +2,81 @@ import {Typography} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 
-import ExtendedAutocomplete from '~/components/Autocomplete';
-import {initialLocationAccessData} from '~/consts';
 import {useSearchLocationAccess} from '~/features/stamdata/api/useLocationAccess';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
-import {Access} from '~/types';
+
+import type {locationAccessSchema} from './api/useLocationAccessForm';
+import type {z} from 'zod';
+import type {TypedFormComponent} from '~/components/formComponents/Form';
+import type {Access} from '~/types';
 
 type Props = {
-  loc_id: number;
-  createNew: boolean;
-  setCreateNew: (createNew: boolean) => void;
+  loc_id: number | undefined;
+  showLocationAccessForm?: boolean;
+  setShowLocationAccessForm: (showLocationAccessForm: boolean) => void;
+  disabled?: boolean;
+  Form: TypedFormComponent<
+    z.input<typeof locationAccessSchema>,
+    z.output<typeof locationAccessSchema>
+  >;
 };
 
-const SelectLocationAccess = ({loc_id, createNew, setCreateNew}: Props) => {
-  const [selected, setSelected] = useState<Access | null>(null);
+const SelectLocationAccess = ({
+  loc_id,
+  showLocationAccessForm = false,
+  setShowLocationAccessForm,
+  disabled = false,
+  Form,
+}: Props) => {
   const [search, setSearch] = useState<string>('');
   const debouncedSearch = useDebouncedValue(search, 500);
-  const {reset} = useFormContext();
 
   const {data, isFetching} = useSearchLocationAccess(loc_id, debouncedSearch);
 
+  const {reset} = useFormContext<Access>();
+
   useEffect(() => {
-    if (!createNew) {
-      setSelected(null);
+    if (!showLocationAccessForm) {
       setSearch('');
     }
-  }, [createNew]);
+  }, [showLocationAccessForm]);
 
   return (
-    <>
-      <ExtendedAutocomplete<Access>
-        options={data ?? []}
-        loading={isFetching}
-        labelKey="navn"
-        onChange={(option) => {
-          setSelected(option);
-          if (option) {
-            reset(option);
-            setCreateNew(true);
-          } else {
-            setCreateNew(false);
-            reset(initialLocationAccessData);
-          }
-        }}
-        selectValue={selected ?? null!}
-        filterOptions={(options) => {
-          return options;
-        }}
-        inputValue={search}
-        renderOption={(props, option) => {
-          return (
-            <li {...props} key={option.id}>
-              <Typography>{option.navn}</Typography>
-            </li>
-          );
-        }}
-        textFieldsProps={{
-          label: 'Søg eksisterende nøgle/kode',
-          placeholder: 'Søg efter en nøgle eller kode...',
-        }}
-        onInputChange={(event, value) => {
-          setSearch(value);
-        }}
-        selectOnFocus
-        clearOnBlur
-        handleHomeEndKeys
-      />
-    </>
+    <Form.Autocomplete<Access, false>
+      options={data ?? []}
+      loading={isFetching}
+      labelKey="navn"
+      valueKey="id"
+      name="id"
+      filterOptions={(options) => {
+        return options;
+      }}
+      inputValue={search}
+      onChangeCallback={(value) => {
+        if (value !== null) {
+          reset(value);
+          setShowLocationAccessForm(true);
+        }
+      }}
+      renderOption={(props, option) => {
+        return (
+          <li {...props} key={option.id}>
+            <Typography>{option.navn}</Typography>
+          </li>
+        );
+      }}
+      textFieldsProps={{
+        label: 'Søg eksisterende nøgle/kode',
+        placeholder: 'Søg efter en nøgle eller kode...',
+      }}
+      onInputChange={(event, value) => {
+        setSearch(value);
+      }}
+      selectOnFocus
+      clearOnBlur
+      handleHomeEndKeys
+      disabled={disabled}
+    />
   );
 };
 

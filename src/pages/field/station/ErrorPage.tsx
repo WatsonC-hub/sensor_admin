@@ -23,7 +23,7 @@ const ErrorPage = ({error}: ErrorPageProps) => {
       </Typography>
       <Typography variant="body1" gutterBottom>
         Der er sket en fejl på siden.
-        <Link component="button" variant="body2" onClick={() => home()}>
+        <Link component="button" variant="body2" onClick={() => home(true)}>
           Gå til forside
         </Link>
       </Typography>

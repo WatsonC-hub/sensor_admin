@@ -1,5 +1,8 @@
+import {Fullscreen, FullscreenExit} from '@mui/icons-material';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {Box, Divider, IconButton, Tooltip, Typography} from '@mui/material';
-import React, {ReactNode, useEffect} from 'react';
+import {useAtom} from 'jotai';
+import React, {useEffect} from 'react';
 
 import NavBar from '~/components/NavBar';
 import {useUser} from '~/features/auth/useUser';
@@ -10,89 +13,158 @@ import LocationAccess from '~/features/stamdata/components/stationDetails/locati
 import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
 import ActionArea from '~/features/station/components/ActionArea';
 import BatteryStatus from '~/features/station/components/BatteryStatus';
+import GraphManager from '~/features/station/components/GraphManager';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
+import StationDrawer from '~/features/station/components/StationDrawer';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import AppContextProvider from '~/helpers/AppContextProvider';
+import {stationPages} from '~/helpers/enumHelper';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
 import Pejling from '~/pages/field/station/pejling/Pejling';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
-import {useAppContext} from '~/state/contexts';
-import EditUnit from './stamdata/EditUnit';
-import ImagePage from './stamdata/ImagePage';
-import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import StationDrawer from '~/features/station/components/StationDrawer';
-import {stationPages} from '~/helpers/EnumHelper';
-import {useAtom} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
-import {Fullscreen, FullscreenExit} from '@mui/icons-material';
-import GraphManager from '~/features/station/components/GraphManager';
+import {useAppContext} from '~/state/contexts';
+
+import Alarms from './alarms/Alarms';
+import LocationConfiguration from './location/Configuration';
 import EditLocation from './stamdata/EditLocation';
 import EditTimeseries from './stamdata/EditTimeseries';
+import EditUnit from './stamdata/EditUnit';
+import ImagePage from './stamdata/ImagePage';
+import TimeseriesConfiguration from './timeseries/configuration/Configuration';
+
+import type {ReactNode} from 'react';
 
 export default function Station() {
-  const {ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData();
   const [, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
-  const user = useUser();
+  const {
+    features: {iotAccess, contacts, keys: accessKeys, ressources},
+    superUser,
+  } = useUser();
 
   useEffect(() => {
-    setPageToShow(pageToShow);
     if (
       metadata?.calculated &&
-      (pageToShow == 'tilsyn' ||
-        pageToShow === 'gu' ||
-        pageToShow === 'målepunkt' ||
-        pageToShow === 'gt' ||
-        pageToShow === 'justeringer' ||
-        pageToShow === 'algoritmer')
+      (pageToShow == stationPages.TILSYN ||
+        pageToShow === stationPages.UDSTYR ||
+        pageToShow === stationPages.JUSTERINGER)
     )
-      setPageToShow('pejling');
+      setPageToShow(stationPages.PEJLING);
+
+    if (metadata?.tstype_id != 1 && pageToShow === stationPages.MAALEPUNKT)
+      setPageToShow(stationPages.PEJLING);
     setShowForm(null);
   }, [ts_id, pageToShow]);
 
+  /* Makes sure that if the location we are accessing has boreholeno and intakeno, then it adds these to the context so that we later can access them */
   return (
-    <Layout>
-      {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling />}
-      {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn />}
-      {pageToShow === stationPages.GENERELTUDSTYR && (
-        <>
-          <Box>
-            <GraphManager />
-          </Box>
-          <Divider />
-          <EditUnit />
-        </>
-      )}
-      {pageToShow === stationPages.GENERELTLOKATION && (
-        <StationPageBoxLayout>
-          <EditLocation />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.GENERELTIDSSERIE && (
-        <StationPageBoxLayout>
-          <EditTimeseries />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && <Algorithms />}
-      {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && <QAHistory />}
-      {pageToShow === stationPages.MAALEPUNKT && (
-        <>
-          <Box>
-            <GraphManager />
-          </Box>
-          <Divider />
-          <ReferenceForm />
-        </>
-      )}
-      {pageToShow === stationPages.NØGLER && user?.features.keys && <LocationAccess />}
-      {pageToShow === stationPages.KONTAKTER && user?.features.contacts && <ContactInfo />}
-      {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && <Huskeliste />}
-      {pageToShow === stationPages.BILLEDER && <ImagePage />}
-    </Layout>
+    <AppContextProvider
+      values={{
+        boreholeno: metadata?.boreholeno ?? undefined,
+        intakeno: metadata?.intakeno ?? undefined,
+      }}
+    >
+      <Layout>
+        {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling key={ts_id} />}
+        {pageToShow === stationPages.TILSYN &&
+          !metadata?.calculated &&
+          metadata?.unit_uuid !== null && <Tilsyn key={ts_id} />}
+        {pageToShow === stationPages.GENERELTUDSTYR && (
+          <>
+            <Box key={`graph-${ts_id}`}>
+              <GraphManager />
+            </Box>
+            <Divider />
+            <StationPageBoxLayout key={`unit-${ts_id}`}>
+              <EditUnit />
+            </StationPageBoxLayout>
+          </>
+        )}
+        {pageToShow === stationPages.GENERELTLOKATION && (
+          <StationPageBoxLayout key={`location-${loc_id}`}>
+            <EditLocation />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.GENERELTIDSSERIE && (
+          <StationPageBoxLayout key={`timeseries-${ts_id}`}>
+            <EditTimeseries />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.TIDSSERIEKONFIGURATION && (
+          <StationPageBoxLayout>
+            <TimeseriesConfiguration loc_id={loc_id} ts_id={ts_id} />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.ALGORITHMS && iotAccess && (
+          <Algorithms key={`algorithms-${ts_id}`} />
+        )}
+        {pageToShow === stationPages.JUSTERINGER && iotAccess && (
+          <QAHistory key={`justeringer-${ts_id}`} />
+        )}
+        {pageToShow === stationPages.MAALEPUNKT && metadata?.tstype_id === 1 && (
+          <>
+            <Box key={`graph-${ts_id}`}>
+              <GraphManager
+                defaultDataToShow={{
+                  Kontrolmålinger: true,
+                }}
+              />
+            </Box>
+            <Divider />
+            <StationPageBoxLayout key={`timeseries-${ts_id}`}>
+              <ReferenceForm />
+            </StationPageBoxLayout>
+          </>
+        )}
+        {pageToShow === stationPages.ALARM && (
+          <>
+            <Box key={`graph-${ts_id}`}>
+              <GraphManager
+                defaultDataToShow={{
+                  Kontrolmålinger: true,
+                }}
+              />
+            </Box>
+            <Divider />
+            <StationPageBoxLayout key={`alarm-${ts_id}`}>
+              <Alarms loc_id={loc_id} />
+            </StationPageBoxLayout>
+          </>
+        )}
+        {pageToShow === stationPages.NØGLER && accessKeys && (
+          <StationPageBoxLayout key={loc_id}>
+            <LocationAccess />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.KONTAKTER && contacts && (
+          <StationPageBoxLayout key={loc_id}>
+            <ContactInfo />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.HUSKELISTE && ressources && (
+          <StationPageBoxLayout key={loc_id}>
+            <Huskeliste loc_id={loc_id} />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.BILLEDER && (
+          <StationPageBoxLayout key={loc_id}>
+            <ImagePage />
+          </StationPageBoxLayout>
+        )}
+        {pageToShow === stationPages.LOKATIONKONFIGURATION && superUser && (
+          <StationPageBoxLayout>
+            <LocationConfiguration />
+          </StationPageBoxLayout>
+        )}
+      </Layout>
+    </AppContextProvider>
   );
 }
 
@@ -111,15 +183,35 @@ const Layout = ({children}: LayoutProps) => {
     <>
       <NavBar key={'station'} zIndex={9999}>
         {isTouch && <NavBar.StationDrawerMenu />}
-        <Box display="block" flexGrow={1} overflow="hidden">
+        <Box
+          sx={{
+            display: 'block',
+            flexGrow: 1,
+            overflow: 'hidden',
+          }}
+        >
           {!isTouch && (
-            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+            <Typography
+              sx={{
+                pl: 1.7,
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {locationdata?.loc_name}
             </Typography>
           )}
           {isTouch && <MinimalSelect />}
         </Box>
-        <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexShrink: 0,
+          }}
+        >
           {locationdata?.projectno && (
             <Tooltip title="Vis projektside" arrow>
               <IconButton
@@ -164,12 +256,15 @@ const Layout = ({children}: LayoutProps) => {
       >
         <StationDrawer />
         <Box
-          display="flex"
-          flexGrow={1}
-          minWidth={0}
-          gap={1}
-          flexDirection={'column'}
-          overflow="auto"
+          key={'main_content'}
+          id={'main_content'}
+          sx={{
+            display: 'flex',
+            flexGrow: 1,
+            minWidth: 0,
+            flexDirection: 'column',
+            overflow: 'auto',
+          }}
         >
           {children}
         </Box>

@@ -1,25 +1,20 @@
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
-import {
-  Autocomplete,
-  TextField,
-  InputAdornment,
-  Menu,
-  AutocompleteInputChangeReason,
-  Badge,
-} from '@mui/material';
+import {Autocomplete, Badge, InputAdornment, Menu, TextField} from '@mui/material';
 import IconButton from '@mui/material/IconButton';
+import React, {useRef, useState} from 'react';
 
-import React, {useState, useRef, SyntheticEvent, MouseEventHandler} from 'react';
 import {useUser} from '~/features/auth/useUser';
-import {useMapFilterStore} from '~/features/map/store';
-
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
+import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
-import {defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
+import {defaultMapFilter} from '~/pages/field/overview/components/filterConsts';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
-import {BoreholeMapData} from '~/types';
+
+import type {AutocompleteInputChangeReason} from '@mui/material';
+import type {MouseEventHandler, SyntheticEvent} from 'react';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {BoreholeMapData} from '~/types';
 
 interface LocItems {
   name: string;
@@ -61,7 +56,11 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
   const [locItems, setLocItems] = useState<LocItems[]>([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const {isMobile} = useBreakpoints();
-  const user = useUser();
+  const {
+    features: {boreholeAccess},
+    superUser,
+    attributes: {has_own_service},
+  } = useUser();
 
   const elasticSearch = (
     e: SyntheticEvent,
@@ -88,7 +87,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         .sort((a, b) => a.name.localeCompare(b.name));
 
       let filteredBorehole: LocItems[] = [];
-      if (user?.features.boreholeAccess) {
+      if (boreholeAccess) {
         const search = {query: {bool: {must: {query_string: {query: search_string}}}}};
         postElasticSearch(search).then((res) => {
           filteredBorehole = res.data.hits.hits.map((elem: any) => {
@@ -111,7 +110,10 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
     setAnchorEl(null);
   };
 
-  const numFilters = getNumberOfNonDefaultFilters(mapFilter, defaultMapFilter(user?.superUser));
+  const numFilters = getNumberOfNonDefaultFilters(
+    mapFilter,
+    defaultMapFilter(superUser, has_own_service)
+  );
   return (
     <>
       <Autocomplete
@@ -119,6 +121,8 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         freeSolo={true}
         forcePopupIcon={false}
         options={locItems}
+        autoHighlight
+        size="small"
         getOptionLabel={(option) => (typeof option == 'object' ? option.name : option)}
         groupBy={(option) => option.group}
         inputValue={typeAhead}
@@ -127,27 +131,32 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
             {...params}
             size="small"
             variant="outlined"
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <InputAdornment sx={{pl: 1}} position="start">
-                  <SearchRoundedIcon />
-                </InputAdornment>
-              ),
-              endAdornment: params.InputProps.endAdornment ? (
-                params.InputProps.endAdornment
-              ) : (
-                <InputAdornment sx={{pr: 1}} position="end">
-                  <IconButton edge="end" onClick={handleOpenFilter}>
-                    <Badge badgeContent={numFilters} color="primary">
-                      <TuneRoundedIcon color={numFilters > 0 ? 'primary' : undefined} />
-                    </Badge>
-                  </IconButton>
-                </InputAdornment>
-              ),
+            slotProps={{
+              ...params.slotProps,
+              input: {
+                ...params.slotProps.input,
+                startAdornment: (
+                  <InputAdornment sx={{pl: 1}} position="start">
+                    <SearchRoundedIcon />
+                  </InputAdornment>
+                ),
+                endAdornment: params.slotProps.input.endAdornment ? (
+                  params.slotProps.input.endAdornment
+                ) : (
+                  <InputAdornment sx={{pr: 1}} position="end">
+                    <IconButton edge="end" onClick={handleOpenFilter}>
+                      <Badge badgeContent={numFilters} color="primary">
+                        <TuneRoundedIcon color={numFilters > 0 ? 'primary' : undefined} />
+                      </Badge>
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
             }}
             placeholder="Søg efter lokation..."
-            sx={{'& .MuiOutlinedInput-root': {borderRadius: '9999px', backgroundColor: 'white'}}}
+            sx={{
+              '& .MuiOutlinedInput-root': {borderRadius: '9999px', backgroundColor: 'white'},
+            }}
           />
         )}
         sx={{
@@ -160,7 +169,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         onInputChange={elasticSearch}
       />
       <Menu
-        id="simple-menu"
+        id="filter-menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
@@ -169,7 +178,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         }}
         sx={{'& .MuiPaper-root': {width: isMobile ? '90%' : 500, p: 1}}}
       >
-        <FilterOptions onClose={handleClose} />
+        <FilterOptions isParentClosed={!anchorEl} onClose={handleClose} />
       </Menu>
     </>
   );

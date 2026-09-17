@@ -1,11 +1,14 @@
 import {Box, Typography} from '@mui/material';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import {useTable} from '~/hooks/useTable';
-import {TaskRessources} from '~/types';
-import {sharedTableOptions} from '../shared_options';
+
+import {sharedTableOptions} from '../sharedOptions';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {TaskRessources} from '~/types';
 
 type Props = {
   ressources: Array<TaskRessources> | undefined;
@@ -26,7 +29,13 @@ const TripContactTable = ({ressources}: Props) => {
     () => ({
       ...(sharedTableOptions as Partial<MRT_TableOptions<TaskRessources>>),
       renderTopToolbar: (
-        <Typography variant="body1" pt={1} px={1}>
+        <Typography
+          variant="body1"
+          sx={{
+            pt: 1,
+            px: 1,
+          }}
+        >
           Pakkeliste
         </Typography>
       ),
@@ -44,7 +53,11 @@ const TripContactTable = ({ressources}: Props) => {
   );
 
   return (
-    <Box p={1}>
+    <Box
+      sx={{
+        p: 1,
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

@@ -1,0 +1,82 @@
+import {Grid} from '@mui/material';
+import dayjs from 'dayjs';
+import React from 'react';
+import {FormProvider} from 'react-hook-form';
+import {z} from 'zod';
+
+import Button from '~/components/Button';
+import useUnitForm from '~/features/station/api/useUnitForm';
+import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
+import {zodDayjs} from '~/helpers/schemas';
+
+type Props = {
+  onClose: () => void;
+  setValues: (values: AddUnitType) => void;
+  tstype_id: number;
+  unit: AddUnitType | undefined;
+};
+
+const addSchema = z.object({
+  startdate: zodDayjs().default(dayjs()),
+  unit_uuid: z.string({message: 'Udstyrs UUID er påkrævet'}),
+  calypso_id: z.union([z.string(), z.number()]).optional(),
+});
+
+export type AddUnitType = z.infer<typeof addSchema>;
+
+const UnitForm = ({setValues, unit, tstype_id, onClose}: Props) => {
+  const unitFormMethods = useUnitForm<typeof addSchema>({
+    schema: addSchema,
+    values: unit,
+  });
+
+  const {handleSubmit} = unitFormMethods;
+
+  return (
+    <FormProvider {...unitFormMethods}>
+      <StamdataUnit tstype_id={tstype_id}>
+        <Grid container size={12} spacing={1} sx={{flexDirection: 'column'}}>
+          <Grid size={12}>
+            <StamdataUnit.CalypsoID />
+          </Grid>
+          <Grid size={12}>
+            <StamdataUnit.SensorID required />
+          </Grid>
+          <Grid size={12}>
+            <StamdataUnit.StartDate required />
+          </Grid>
+          <Grid
+            size={12}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              gap: 1,
+            }}
+          >
+            <Button
+              bttype="tertiary"
+              onClick={() => {
+                onClose();
+              }}
+            >
+              Annuller
+            </Button>
+            <Button
+              bttype="primary"
+              onClick={() => {
+                handleSubmit((values) => {
+                  setValues(values);
+                })();
+              }}
+            >
+              Tilføj udstyr
+            </Button>
+          </Grid>
+        </Grid>
+      </StamdataUnit>
+    </FormProvider>
+  );
+};
+
+export default UnitForm;

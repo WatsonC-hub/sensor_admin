@@ -1,17 +1,23 @@
+import AddLocationAlt from '@mui/icons-material/AddLocationAlt';
+import {Box} from '@mui/material';
 import React from 'react';
 
 import NavBar from '~/components/NavBar';
-
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useUser} from '~/features/auth/useUser';
-import AddLocationAlt from '@mui/icons-material/AddLocationAlt';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {Box} from '@mui/material';
+import {MapFilterContextProvider} from '~/features/map/MapFilterProvider';
 import Overview from '~/features/tasks/components/Overview';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {queryClient} from '~/queryClient';
 
 const Home = () => {
   const {isMobile} = useBreakpoints();
-  const user = useUser();
+  const {
+    simpleTaskPermission,
+    advancedTaskPermission,
+    features: {iotAccess},
+  } = useUser();
   const {createStamdata} = useNavigationFunctions();
 
   return (
@@ -23,31 +29,39 @@ const Home = () => {
           url="https://www.watsonc.dk/guides/kortet/"
           description="Læs mere om hvad du kan på kortet i Field appen"
         > */}
-        {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
-        {/* </TooltipWrapper> */}
-        <Box display={'flex'}>
+        {!isMobile && <NavBar.Title title="Field" />}
+        <Box
+          sx={{
+            alignItems: 'center',
+          }}
+        >
+          {isMobile && <NavBar.Scanner />}
+          {/* </TooltipWrapper> */}
+          {simpleTaskPermission && <NavBar.OwnTaskList />}
           <NavBar.LocationList />
-          {user?.advancedTaskPermission && <NavBar.TripList />}
+          {advancedTaskPermission && <NavBar.TripList />}
           <NavBar.Menu
             disableProfile={false}
-            items={[
-              ...(user?.features?.iotAccess
+            items={
+              iotAccess
                 ? [
                     {
                       title: 'Opret lokation',
                       icon: <AddLocationAlt fontSize="medium" />,
                       onClick: () => {
                         createStamdata();
+                        queryClient.invalidateQueries({queryKey: queryKeys.Groups.all()});
                       },
                     },
                   ]
-                : []),
-            ]}
+                : []
+            }
           />
         </Box>
       </NavBar>
-
-      <Overview />
+      <MapFilterContextProvider>
+        <Overview />
+      </MapFilterContextProvider>
     </>
   );
 };

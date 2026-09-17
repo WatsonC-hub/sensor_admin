@@ -1,5 +1,5 @@
 import {Edit, Save} from '@mui/icons-material';
-import {Grid, TextField, Typography, Box} from '@mui/material';
+import {Box, Grid, TextField, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import dayjs, {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
 import React from 'react';
 import {toast} from 'react-toastify';
 
@@ -16,18 +16,19 @@ import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
 
+import type {Dayjs} from 'dayjs';
+
 interface SaveImageDialogProps {
   activeImage: {
     gid: number;
     comment: string;
     public: boolean;
     date: Dayjs;
-    imageurl?: string; // Assuming this property exists
-    // Add any other properties as needed
+    imageurl?: string;
   };
   changeData: (field: string, value: any) => void;
   id: string | number;
-  type: string;
+  type: 'station' | 'borehole';
   open: boolean;
   dataUri: string | ArrayBuffer | null;
   handleCloseSave: () => void;
@@ -44,10 +45,12 @@ function SaveImageDialog({
 }: SaveImageDialogProps) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-
   const imageUrl = `/static/images/${activeImage.imageurl}`;
 
-  const {post: uploadImage, put: editImage} = useImageUpload(type);
+  const {
+    post: {mutate: uploadImage, isPending: isUploading},
+    put: {mutate: editImage, isPending: isEditing},
+  } = useImageUpload(type, id);
 
   function saveImage() {
     if (activeImage.gid === -1) {
@@ -61,15 +64,10 @@ function SaveImageDialog({
         },
       };
 
-      toast.promise(() => uploadImage.mutateAsync(payload), {
-        pending: 'Gemmer billede',
-        success: {
-          render() {
-            handleCloseSave();
-            return 'Billede gemt';
-          },
+      uploadImage(payload, {
+        onSuccess: () => {
+          toast.success('Billedet er uploadet');
         },
-        error: 'Der skete en fejl',
       });
     } else {
       const payload = {
@@ -81,12 +79,11 @@ function SaveImageDialog({
         },
       };
 
-      editImage.mutateAsync(payload, {
-        onSuccess: () => {
-          handleCloseSave();
-        },
+      editImage(payload, {
+        onSuccess: () => {},
       });
     }
+    handleCloseSave();
   }
 
   return (
@@ -101,9 +98,7 @@ function SaveImageDialog({
       <DialogContent>
         <Grid container spacing={3}>
           <Grid
-            item
-            xs={12}
-            sm={12}
+            size={{xs: 12, sm: 12}}
             sx={{
               display: 'flex',
             }}
@@ -121,7 +116,7 @@ function SaveImageDialog({
               loading="lazy"
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{xs: 12, sm: 6}}>
             <TextField
               label={
                 <Typography variant="h6" component="h3">
@@ -132,12 +127,12 @@ function SaveImageDialog({
               variant="outlined"
               multiline
               rows={4}
-              InputLabelProps={{shrink: true}}
+              slotProps={{inputLabel: {shrink: true}}}
               fullWidth
               onChange={(event) => changeData('comment', event.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{xs: 12, sm: 6}}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -161,18 +156,40 @@ function SaveImageDialog({
         <Button onClick={handleCloseSave} bttype="tertiary">
           Annuller
         </Button>
-        <Button onClick={saveImage} bttype="primary">
+        <Button onClick={saveImage} loading={isUploading || isEditing} bttype="primary">
           {activeImage.gid == -1 ? (
-            <Box display={'flex'} gap={1} alignItems={'center'}>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 1,
+                alignItems: 'center',
+              }}
+            >
               <Save />
-              <Typography variant="body2" fontSize={14}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 14,
+                }}
+              >
                 Gem
               </Typography>
             </Box>
           ) : (
-            <Box display="flex" alignItems="center" gap={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
               <Edit />
-              <Typography variant="body2" fontSize={14}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 14,
+                }}
+              >
                 Rediger
               </Typography>
             </Box>

@@ -1,29 +1,18 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  queryOptions,
-  MutationOptions,
-} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-// import {Notification} from '~/hooks/query/useNotificationOverview';
-import {APIError} from '~/queryClient';
-
-import {
-  type Task,
-  type PatchTask,
-  type TaskUser,
-  type TaskStatus,
-  DBTask,
-  DeleteTaskFromItinerary,
-  TaskAPI,
-} from '../types';
-import {useDisplayState} from '~/hooks/ui';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import dayjs, {Dayjs} from 'dayjs';
 import {useUser} from '~/features/auth/useUser';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import {useDisplayState} from '~/hooks/ui';
+
+import {type PatchTask, type Task, type TaskStatus, type TaskUser} from '../types';
+
+import type {DBTask, DeleteTaskFromItinerary, TaskAPI} from '../types';
+import type {MutationOptions} from '@tanstack/react-query';
+// import {Notification} from '~/hooks/query/useNotificationOverview';
+import type {APIError} from '~/queryClient';
 
 type Mutation<TData> = {
   path: string;
@@ -107,13 +96,10 @@ const deleteTaskFromItineraryOptions = {
 };
 
 const getNextDueDateOptions = (ts_id: number | undefined) =>
-  queryOptions<string, APIError, Dayjs>({
+  queryOptions({
     queryKey: queryKeys.Tasks.nextDueDate(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<string>(`/sensor_admin/tasks/next_due_date/${ts_id}`);
-      return data;
-    },
-    select: (data): Dayjs => {
       return dayjs(data);
     },
     enabled: ts_id !== undefined && ts_id !== null,
@@ -123,26 +109,46 @@ export const useNextDueDate = (ts_id: number | undefined) => {
   return useQuery(getNextDueDateOptions(ts_id));
 };
 
-// /location_related_tasks/{loc_id}
-export const useTasks = () => {
-  const queryClient = useQueryClient();
-
-  const [setSelectedTask] = useDisplayState((state) => [state.setSelectedTask]);
-  const user = useUser();
-
-  const get = useQuery<Array<TaskAPI>, APIError, Task[]>({
-    queryKey: queryKeys.Tasks.all(),
+const useTaskUsers = () => {
+  const {
+    features: {iotAccess},
+    simpleTaskPermission,
+  } = useUser();
+  return useQuery({
+    queryKey: queryKeys.Tasks.taskUsers(),
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<TaskAPI>>(`/sensor_admin/tasks`);
+      const {data} = await apiClient.get<TaskUser[]>('/sensor_admin/tasks/task_users');
+
       return data;
     },
-    select: (data): Array<Task> =>
-      data.map((task) => ({
-        ...task,
-        due_date: task.due_date ? dayjs(task.due_date) : null,
-      })),
-    staleTime: 1000 * 60 * 1, // 1 minute
+    staleTime: 1000 * 60 * 60,
+    enabled: simpleTaskPermission && iotAccess,
   });
+};
+
+const useTaskStatus = () => {
+  const {
+    features: {iotAccess},
+    simpleTaskPermission,
+  } = useUser();
+  return useQuery({
+    queryKey: queryKeys.Tasks.taskStatus(),
+    queryFn: async () => {
+      const {data} = await apiClient.get<TaskStatus[]>('/sensor_admin/tasks/status');
+
+      return data;
+    },
+    staleTime: 1000 * 60 * 60,
+    enabled: simpleTaskPermission && iotAccess,
+  });
+};
+
+const useTaskMutations = () => {
+  const queryClient = useQueryClient();
+  const [selectedTask, setSelectedTask] = useDisplayState((state) => [
+    state.selectedTask,
+    state.setSelectedTask,
+  ]);
 
   const post = useMutation({
     ...tasksPostOptions,
@@ -156,15 +162,14 @@ export const useTasks = () => {
     onMutate: async (mutation_data) => {
       const {path, data} = mutation_data;
       const previous = queryClient.getQueryData<Task[]>(queryKeys.Tasks.all());
+
       queryClient.setQueryData<Task[]>(
         queryKeys.Tasks.all(),
         previous?.map((task) => {
           if (task.id === path) {
-            const updated = {
-              ...task,
-              ...data,
+            const updated = Object.assign(task, data, {
               due_date: data?.due_date ? dayjs(data.due_date) : null,
-            };
+            });
             return updated;
           }
 
@@ -176,22 +181,29 @@ export const useTasks = () => {
       const {path} = variables;
       if (path != data.id) {
         const previous = queryClient.getQueryData<Task[]>(queryKeys.Tasks.all());
+
         queryClient.setQueryData<Task[]>(
           queryKeys.Tasks.all(),
           previous?.map((task) => {
             if (task.id === path) {
-              const updated = {...task, ...data};
+              const updated = Object.assign(task, data, {
+                due_date: data?.due_date ? dayjs(data.due_date) : null,
+              });
               return updated;
             }
+
             return task;
           })
         );
 
-        setSelectedTask(data.id);
+        if (path == selectedTask) setSelectedTask(data.id);
       }
     },
     onError: () => {
       queryClient.invalidateQueries({queryKey: queryKeys.Tasks.all()});
+    },
+    meta: {
+      invalidates: [queryKeys.Tasks.taskHistory(selectedTask ?? '')],
     },
   });
   const del = useMutation({
@@ -216,28 +228,6 @@ export const useTasks = () => {
     onSuccess: () => {},
   });
 
-  const getUsers = useQuery<TaskUser[], APIError>({
-    queryKey: queryKeys.Tasks.taskUsers(),
-    queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_admin/tasks/task_users');
-
-      return data;
-    },
-    staleTime: 1000 * 60 * 60,
-    enabled: user?.simpleTaskPermission && user?.features.iotAccess,
-  });
-
-  const getStatus = useQuery<TaskStatus[], APIError>({
-    queryKey: queryKeys.Tasks.taskStatus(),
-    queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_admin/tasks/status');
-
-      return data;
-    },
-    staleTime: 1000 * 60 * 60,
-    enabled: user?.simpleTaskPermission && user?.features.iotAccess,
-  });
-
   const deleteTaskFromItinerary = useMutation({
     ...deleteTaskFromItineraryOptions,
     onSuccess: (data, variables) => {
@@ -249,7 +239,7 @@ export const useTasks = () => {
         ['tasks'],
         previous?.map((task) => {
           if (task.id === id) {
-            const updated = {...task, itinerary_id: null};
+            const updated = Object.assign(task, {itinerary_id: null});
 
             return updated;
           }
@@ -259,17 +249,34 @@ export const useTasks = () => {
       toast.success('Opgaver fjernet fra tur');
     },
   });
-
   return {
-    get,
     post,
     patch,
     del,
     convertNotificationToTask,
     updateNotification,
-    getUsers,
-    getStatus,
+
     deleteTaskFromItinerary,
-    // getProjects,
   };
 };
+
+// /location_related_tasks/{loc_id}
+const useTasks = () => {
+  return useQuery<Task[], APIError, Task[]>({
+    queryKey: queryKeys.Tasks.all(),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<TaskAPI>>(`/sensor_admin/tasks`);
+
+      return data.map((task) =>
+        Object.assign(task, {
+          due_date: task.due_date ? dayjs(task.due_date) : null,
+          sla: task.sla ? dayjs(task.sla) : null,
+        })
+      );
+    },
+
+    staleTime: 1000 * 60 * 1, // 1 minute
+  });
+};
+
+export {useTasks, useTaskMutations, useTaskUsers, useTaskStatus};

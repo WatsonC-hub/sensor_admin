@@ -1,53 +1,67 @@
-import AddIcon from '@mui/icons-material/Add';
-
 import {
   AddCircle,
+  DoNotDisturb,
+  Edit,
   PhotoLibraryRounded,
   PlaylistAddCheck,
-  StraightenRounded,
-  Edit,
+  PriorityHigh,
   Router,
+  Settings,
+  StraightenRounded,
 } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
+import AlarmIcon from '@mui/icons-material/Alarm';
+import BackpackIcon from '@mui/icons-material/Backpack';
+import FunctionsIcon from '@mui/icons-material/Functions';
+import KeyIcon from '@mui/icons-material/Key';
+import PersonIcon from '@mui/icons-material/Person';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {
-  Drawer,
   Box,
+  ClickAwayListener,
+  Divider,
+  Drawer,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
-  Divider,
-  ListItemButton,
-  ClickAwayListener,
   Typography,
+  useTheme,
 } from '@mui/material';
 import {useAtom} from 'jotai';
-import React, {ReactNode} from 'react';
-import FunctionsIcon from '@mui/icons-material/Functions';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import React from 'react';
+
+import TooltipWrapper from '~/components/TooltipWrapper';
+import {useUser} from '~/features/auth/useUser';
+import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
+import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory';
+import {pejlingGetOptions} from '~/features/pejling/api/usePejling';
+import {contactInfoGetOptions} from '~/features/stamdata/api/useContactInfo';
+import {locationAccessGetOptions} from '~/features/stamdata/api/useLocationAccess';
+import {getRessourcerOptions} from '~/features/stamdata/api/useRessourcer';
+import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
+import {stationPages} from '~/helpers/enumHelper';
+import {useProgress} from '~/hooks/query/stationProgress';
+import {getMaalepunktOptions} from '~/hooks/query/useMaalepunkt';
+import {metadataQueryOptions, useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
-import PersonIcon from '@mui/icons-material/Person';
-import BackpackIcon from '@mui/icons-material/Backpack';
-import KeyIcon from '@mui/icons-material/Key';
+import {queryClient} from '~/queryClient';
 import {drawerOpenAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {metadataQueryOptions, useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
-import {useUser} from '~/features/auth/useUser';
-import {OmitKeyof, UseQueryOptions} from '@tanstack/react-query';
-import {APIError, queryClient} from '~/queryClient';
-import {pejlingGetOptions} from '~/features/pejling/api/usePejling';
-import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
-import {getMaalepunktOptions} from '~/hooks/query/useMaalepunkt';
-import {ContactInfoGetOptions} from '~/features/stamdata/api/useContactInfo';
-import {LocationAccessGetOptions} from '~/features/stamdata/api/useLocationAccess';
-import {getRessourcerOptions} from '~/features/stamdata/api/useRessourcer';
-import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory';
-import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
+
+import {alarmGetOptions} from '../alarms/api/useAlarm';
+import useDmpAllowedMapList, {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
 import {getImageOptions} from '../api/useImages';
-import {stationPages, StationPages} from '~/helpers/EnumHelper';
+import {timeseriesMeasureSampleSendOptions} from '../api/useTimeseriesMeasureSampleSend';
 import MinimalSelect from './MinimalSelect';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import TooltipWrapper from '~/components/TooltipWrapper';
+
+import type {QueryKey, UseQueryOptions} from '@tanstack/react-query';
+import type {ReactNode} from 'react';
+import type {StationPages} from '~/helpers/enumHelper';
+import type {Metadata} from '~/hooks/query/useMetadata';
 
 const drawerWidth = 200;
 
@@ -60,6 +74,7 @@ type Item = {
   requiredTsId: boolean;
   disabled?: boolean;
   tooltip?: string;
+  progress?: number;
 };
 
 type DrawerItems = {
@@ -80,17 +95,34 @@ const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
 };
 const StationDrawer = () => {
+  const theme = useTheme();
   const {ts_id, loc_id} = useAppContext(['loc_id'], ['ts_id']);
   const [pageToShow, setPageToShow] = useStationPages();
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
   const {isTouch} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
   const {data: locationdata} = useLocationData();
-  const user = useUser();
+  const {data: progress} = useProgress(loc_id, ts_id);
+
+  const isDmpAllowed = useDmpAllowedMapList(ts_id);
+
+  const configurationProgress =
+    progress?.kontrolhyppighed === false ||
+    (progress?.sync === false &&
+      (isDmpAllowed ||
+        (metadata?.loctype_id === 9 && [1, 11, 12, 16].includes(metadata?.tstype_id || 0)))) ||
+    progress?.visibility === false
+      ? 0
+      : undefined;
+
+  const {
+    superUser,
+    features: {iotAccess, alarms, contacts, keys: accessKeys, ressources, stationProgress},
+  } = useUser();
   const {createStamdata} = useNavigationFunctions();
 
-  const handlePrefetch = <TData extends object>(
-    options: OmitKeyof<UseQueryOptions<TData, APIError>, 'queryFn'>
+  const handlePrefetch = <TData, TError, TSelectData, TKey extends QueryKey>(
+    options: UseQueryOptions<TData, TError, TSelectData, TKey>
   ) => {
     queryClient.prefetchQuery({...options, staleTime: 1000 * 10});
   };
@@ -122,16 +154,26 @@ const StationDrawer = () => {
           icon: <Edit />,
           page: stationPages.GENERELTIDSSERIE,
           requiredTsId: true,
-          disabled: metadata?.calculated || !metadata?.ts_id,
-          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+          disabled: !metadata?.ts_id,
+          onHover: () => handlePrefetch(metadataQueryOptions<Metadata>(ts_id)),
         },
       ],
       items: [
+        ...(ts_id == undefined
+          ? [
+              {
+                text: 'Ingen tidsserier',
+                page: stationPages.PEJLING,
+                icon: <DoNotDisturb />,
+                requiredTsId: false,
+              },
+            ]
+          : []),
         {
           text: 'Kontrol',
           page: stationPages.PEJLING,
           icon: <AddCircle />,
-          requiredTsId: false,
+          requiredTsId: true,
           onHover: () => handlePrefetch(pejlingGetOptions(ts_id)),
         },
         {
@@ -139,18 +181,17 @@ const StationDrawer = () => {
           page: stationPages.TILSYN,
           icon: <PlaylistAddCheck />,
           requiredTsId: true,
-          disabled: metadata?.calculated,
+          disabled: metadata?.calculated || metadata?.unit_uuid === null,
           onHover: () => handlePrefetch(tilsynGetOptions(ts_id)),
-          // tooltip: 'På denne side kan du se og redigere tilsyn for din tidsserie.',
         },
         {
           text: 'Målepunkt',
           page: stationPages.MAALEPUNKT,
           icon: <StraightenRounded />,
           requiredTsId: true,
-          disabled: metadata?.tstype_id != 1 || metadata?.calculated,
+          disabled: metadata?.tstype_id != 1,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id!)),
-          // tooltip: 'På denne side kan du se og redigere målepunkter til din tidsserie.',
+          progress: progress?.watlevmp == false ? 0 : undefined,
         },
         {
           text: 'Udstyr',
@@ -158,15 +199,14 @@ const StationDrawer = () => {
           icon: <Router />,
           requiredTsId: true,
           disabled: metadata?.calculated,
-          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-          // tooltip: 'På denne side kan du se og redigere udstyr til din tidsserie.',
+          onHover: () => handlePrefetch(metadataQueryOptions<Metadata>(ts_id)),
         },
         {
           text: 'Juster data',
           page: stationPages.JUSTERINGER,
           icon: <QueryStatsIcon />,
           requiredTsId: true,
-          disabled: !user?.features?.iotAccess || metadata?.calculated,
+          disabled: !iotAccess || metadata?.calculated || metadata?.unit_uuid === null,
           onHover: () => handlePrefetch(getQAHistoryOptions(ts_id!)),
           tooltip:
             'På denne side kan du kvalitetssikre din tidsserie ved blandt andet at justere data, fjerne data og se historik for ændringer.',
@@ -176,9 +216,33 @@ const StationDrawer = () => {
           page: stationPages.ALGORITHMS,
           icon: <FunctionsIcon />,
           requiredTsId: true,
-          disabled: !user?.features?.iotAccess || metadata?.calculated,
+          disabled: !iotAccess || metadata?.unit_uuid === null,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id!)),
           tooltip: 'På denne side kan du justere advarsler for din tidsserie.',
+        },
+        {
+          text: 'Alarmer',
+          page: stationPages.ALARM,
+          icon: <AlarmIcon />,
+          requiredTsId: true,
+          onHover: () => handlePrefetch(alarmGetOptions(ts_id)),
+          disabled: !alarms,
+        },
+        {
+          text: 'Konfiguration',
+          page: stationPages.TIDSSERIEKONFIGURATION,
+          icon: <Settings />,
+          requiredTsId: true,
+          onHover: () => {
+            if (metadata?.unit_uuid && metadata?.calculated === false) {
+              handlePrefetch(timeseriesMeasureSampleSendOptions(ts_id!));
+            }
+            prefetchDmpAllowedMapList();
+          },
+          tooltip:
+            'På denne side kan du konfigurere din tidsserie, såsom at ændre måleinterval eller sendeinterval.',
+          // progress = kontrolhyppighed = true + sync = true = 2
+          progress: configurationProgress,
         },
       ],
     },
@@ -190,7 +254,7 @@ const StationDrawer = () => {
           page: stationPages.GENERELTLOKATION,
           icon: <Edit />,
           requiredTsId: false,
-          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+          onHover: () => handlePrefetch(metadataQueryOptions<Metadata>(ts_id)),
         },
       ],
       items: [
@@ -199,7 +263,8 @@ const StationDrawer = () => {
           page: stationPages.BILLEDER,
           icon: <PhotoLibraryRounded />,
           requiredTsId: false,
-          onHover: () => handlePrefetch(getImageOptions(loc_id, 'images', 'station')),
+          onHover: () => handlePrefetch(getImageOptions(loc_id, 'station')),
+          progress: progress?.images == false ? 0 : undefined,
         },
 
         {
@@ -207,24 +272,35 @@ const StationDrawer = () => {
           page: stationPages.KONTAKTER,
           icon: <PersonIcon />,
           requiredTsId: false,
-          disabled: !user?.features.contacts,
-          onHover: () => handlePrefetch(ContactInfoGetOptions(loc_id)),
+          disabled: !contacts,
+          onHover: () => handlePrefetch(contactInfoGetOptions(loc_id)),
+          progress: progress?.kontakter == false ? 0 : undefined,
         },
         {
           text: 'Nøgler',
           page: stationPages.NØGLER,
           icon: <KeyIcon />,
           requiredTsId: false,
-          disabled: !user?.features.keys,
-          onHover: () => handlePrefetch(LocationAccessGetOptions(loc_id)),
+          disabled: !accessKeys,
+          onHover: () => handlePrefetch(locationAccessGetOptions(loc_id)),
+          progress: progress?.adgangsforhold == false ? 0 : undefined,
         },
         {
           text: 'Huskeliste',
           page: stationPages.HUSKELISTE,
           icon: <BackpackIcon />,
           requiredTsId: false,
-          disabled: !user?.features.ressources,
+          disabled: !ressources,
           onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
+          progress: progress?.ressourcer == false ? 0 : undefined,
+        },
+        {
+          text: 'Konfiguration',
+          page: stationPages.LOKATIONKONFIGURATION,
+          icon: <Settings />,
+          requiredTsId: false,
+          disabled: !superUser,
+          progress: progress?.sla == false ? 0 : undefined,
         },
       ],
     },
@@ -250,13 +326,19 @@ const StationDrawer = () => {
           }}
         >
           <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
-          <Box alignItems={'center'} display="flex" gap={1}>
+          <Box
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+              gap: 1,
+            }}
+          >
             {category.settings &&
               category.settings
                 .filter((setting) => setting?.disabled == false || setting?.disabled == undefined)
-                .map((setting, index) => (
+                .map((setting) => (
                   <ListItemIcon
-                    key={index}
+                    key={setting.page}
                     sx={{
                       color: navIconStyle(pageToShow === setting.page),
                       minWidth: 0,
@@ -274,7 +356,6 @@ const StationDrawer = () => {
                 ))}
           </Box>
         </ListItem>
-
         {category.items
           .filter((item) => item.disabled == undefined || !item.disabled)
           .map((item) => {
@@ -285,7 +366,10 @@ const StationDrawer = () => {
             let timer = 0;
 
             const mouseEnter = () => {
-              timer = setTimeout(item.onHover ? item.onHover : () => {}, 100);
+              timer = setTimeout(
+                item.onHover && pageToShow !== item.page ? item.onHover : () => {},
+                100
+              );
             };
 
             const mouseLeave = () => {
@@ -310,6 +394,8 @@ const StationDrawer = () => {
                     borderRadius: '9999px',
                     color: navIconStyle(pageToShow === item.page),
                     py: 0,
+                    pr: 0,
+                    justifyContent: 'space-between',
                   }}
                   onClick={() => {
                     setPageToShow(item.page);
@@ -326,6 +412,9 @@ const StationDrawer = () => {
                       {item.text}
                     </Wrapper>
                   </ListItemText>
+                  {item.progress != undefined && stationProgress && (
+                    <PriorityHigh sx={{color: theme.palette.info.light}} />
+                  )}
                 </ListItemButton>
               </ListItem>
             );
@@ -348,17 +437,6 @@ const StationDrawer = () => {
       <List>{drawerItems}</List>
     </Layout>
   );
-
-  // return (
-  //   <Layout variant="permanent">
-  //     <Toolbar disableGutters sx={{justifyContent: 'center'}} onClick={() => toggleDrawer(!open)}>
-  //       <IconButton sx={{color: 'white'}}>
-  //         <Menu />
-  //       </IconButton>
-  //     </Toolbar>
-  //     <List>{drawerItems}</List>
-  //   </Layout>
-  // );
 };
 
 type LayoutProps = {
@@ -388,15 +466,25 @@ const Layout = ({children, variant}: LayoutProps) => {
         },
       }}
     >
-      <Box pt={2} px={1}>
-        {/* <TooltipWrapper description="" color="white"> */}
+      <Box
+        sx={{
+          pt: 2,
+          px: 1,
+        }}
+      >
         {!isTouch && <MinimalSelect />}
         {isTouch && (
-          <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
+          <Typography
+            color="white"
+            sx={{
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              whiteSpace: 'wrap',
+            }}
+          >
             {locationdata?.loc_name}
           </Typography>
         )}
-        {/* </TooltipWrapper> */}
       </Box>
       <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
         <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>

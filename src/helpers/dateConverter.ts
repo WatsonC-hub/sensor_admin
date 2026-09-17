@@ -1,8 +1,10 @@
-/* 
+/*
 Adding one to the month is mainly done because the method date.getMonth return a zero based value, which means it will show the previous month
 */
 
-import dayjs, {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
+
+import type {Dayjs} from 'dayjs';
 
 const convertDate = (date: string | Dayjs) => {
   if (dayjs.isDayjs(date)) {
@@ -11,17 +13,20 @@ const convertDate = (date: string | Dayjs) => {
   return dayjs(date).locale('da').format('L');
 };
 
-const convertDateWithTimeStamp = (dateString: string | Dayjs | Date | null | undefined) => {
-  if (dateString === null) {
+const convertDateWithTimeStamp = (dateInput: string | Dayjs | Date | null | undefined) => {
+  if (dateInput === null || dateInput === undefined) {
     return '';
   }
 
-  if (dayjs.isDayjs(dateString)) {
-    return dateString.format('L LT');
+  if (dayjs.isDayjs(dateInput)) {
+    return dateInput.format('L LT');
   }
 
-  const date = dayjs(dateString).format('L LT');
-  return date;
+  const date = dayjs(dateInput);
+  if (date.isValid()) {
+    return date.format('L LT');
+  }
+  return '';
 };
 
 const convertToLocalDate = (date: dayjs.Dayjs | undefined) => {
@@ -71,10 +76,6 @@ const splitTimeFromDate = (dateString: string) => {
   return time;
 };
 
-const convertToShorthandDate = (date: string | null | undefined) => {
-  return dayjs(date).format('ll');
-};
-
 export {
   convertDate,
   checkEndDateIsUnset,
@@ -82,6 +83,5 @@ export {
   calculatePumpstop,
   limitDecimalNumbers,
   splitTimeFromDate,
-  convertToShorthandDate,
   convertToLocalDate,
 };

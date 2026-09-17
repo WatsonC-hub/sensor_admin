@@ -1,6 +1,9 @@
-import {SvgIconProps} from '@mui/material';
-import {Dayjs} from 'dayjs';
-import {ReactNode} from 'react';
+import type {CertifyQa} from './features/kvalitetssikring/api/useCertifyQa';
+import type {SvgIconProps} from '@mui/material';
+import type {Dayjs} from 'dayjs';
+// import type {FeatureCollection, Geometry} from 'leaflet';
+import type * as geojson from 'geojson';
+import type {ReactNode} from 'react';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -8,7 +11,7 @@ export interface Image {
   type: string;
   gid: number;
   loc_id?: number;
-  boreholeno: number;
+  boreholeno?: number;
   title: string;
   date: Dayjs;
   public: boolean;
@@ -119,7 +122,7 @@ export type BoreholeMeasurementAPI = {
   comment: string;
 };
 
-export type MaalepunktTableData = {
+export type BoreholeMaalepunktTableData = {
   startdate: string;
   enddate: string;
   elevation: number;
@@ -132,9 +135,20 @@ export type MaalepunktTableData = {
   display_name?: string;
 };
 
-export type Maalepunkt = {
+export type MaalepunktTableData = {
+  startdate: string;
+  elevation: number;
+  organisationid: number;
+  organisationname: string;
+  mp_description: string;
+  gid: number;
+  ts_id: number;
+  userid: string;
+  display_name?: string;
+};
+
+export type MaalepunktAsDayjs = {
   startdate: Dayjs;
-  enddate: Dayjs;
   elevation: number;
   mp_description: string;
   gid: number;
@@ -143,7 +157,7 @@ export type Maalepunkt = {
   display_name?: string;
 };
 
-export type MaalepunktPost = {
+export type BoreholeMaalepunktPost = {
   startdate: Dayjs;
   enddate: Dayjs;
   elevation: number | null;
@@ -180,11 +194,20 @@ export type Parking = {
   y: number;
 };
 
-export type LeafletMapRoute = {
-  route_id: number;
-  loc_id: number;
-  geo_route: JSON | GeoJsonObject;
+export type Tstype = {
+  tstype_id: number;
+  tstype_name: string;
+  service_interval: number | null;
 };
+
+type RouteProperties = {
+  loc_id: number;
+  id: number;
+  comment: string | null;
+  type: 'walk' | 'drive';
+};
+
+export type RouteFeature = geojson.Feature<geojson.Geometry, RouteProperties>;
 
 export type Group = {
   id: string;
@@ -200,7 +223,7 @@ export type SimpleItinerary = {
 };
 
 export type ContactInfo = {
-  id?: string | null;
+  id: string;
   name: string;
   mobile?: string | null;
   email: string | null;
@@ -214,16 +237,16 @@ export type ContactInfo = {
 };
 
 export type ContactTable = {
-  id: string;
+  id?: string;
   name: string;
   mobile: string | null;
   email: string | null;
-  contact_role: number;
+  contact_role?: number | undefined;
   comment?: string;
   user_id?: string | null;
-  org: string;
-  relation_id: number;
-  contact_type: string;
+  org_id?: string;
+  relation_id?: number;
+  contact_type?: string | undefined;
   contact_role_name?: string;
   notify_required?: boolean;
 };
@@ -236,6 +259,9 @@ export type Access = {
   koden?: string;
   contact_id?: string | null;
   kommentar?: string;
+  contact_name?: string;
+  email?: string;
+  org_name?: string;
 };
 
 export type AccessTable = {
@@ -250,12 +276,11 @@ export type AccessTable = {
 };
 
 export type BatteryStatusType = {
-  current_bat: number;
-  usage_pr_day: number;
-  battery_percentage: number | null;
+  current_bat: number | null;
+  usage_pr_day: number | null;
+  battery_percentage: number;
   estimated_no_battery: string;
-  startdate: string;
-  enddate: string;
+  is_powered: boolean;
 };
 
 export type LatestMeasurement = {
@@ -297,7 +322,7 @@ export type QaAlgorithmParameters = {
 };
 
 export type QaAlgorithmsPut = {
-  algorithm: string;
+  // algorithm: string;
   parameters: Record<string, any>;
   disabled: boolean;
 };
@@ -337,6 +362,28 @@ export type QaAllData = {
   min_max_cutoff: MinMaxCutoff;
   dataexclude: Array<DataExclude>;
 };
+
+export type AdjustmentData =
+  | {
+      type: AdjustmentTypes.LEVELCORRECTION;
+      data: LevelCorrection;
+    }
+  | {
+      type: AdjustmentTypes.MINMAX;
+      data: MinMaxCutoff;
+    }
+  | {
+      type: AdjustmentTypes.EXLUDETIME;
+      data: DataExclude;
+    }
+  | {
+      type: AdjustmentTypes.EXLUDEPOINTS;
+      data: DataExclude;
+    }
+  | {
+      type: AdjustmentTypes.APPROVED;
+      data: CertifyQa;
+    };
 
 export type GraphData = {
   x: Array<string>;
@@ -380,23 +427,11 @@ type TaskLocationAccess = {
   loc_names: Array<string>;
 };
 
-type TaskNotifications = {
-  loc_id: number;
-  ts_id: number;
-  tstype_name: string;
-  ts_name: string;
-  notification_id: number;
-  opgave: string;
-  color: string;
-  flag: number;
-};
-
 export type TaskCollection = {
   contacts: Array<TaskContact>;
   location_access: Array<TaskLocationAccess>;
   ressourcer: Array<TaskRessources>;
   units: Array<TaskUnits>;
-  notifications: Array<TaskNotifications>;
   tasks: Array<LocationTasks>;
 };
 
@@ -430,6 +465,8 @@ export type DataToShow = {
   'Valide værdier': boolean;
   'Fjernet data': boolean;
   Rådata: boolean;
+  Jupiter: boolean;
+  'Alarm niveauer': boolean;
 };
 
 type HorizontalLine = {
@@ -441,3 +478,10 @@ type HorizontalLine = {
   line?: object;
   mode?: string;
 };
+
+export type DmpSyncValidCombination = {
+  loctype_id: number;
+  tstype_id: number;
+};
+
+export type QueryType<F> = Omit<ReturnType<F>, 'queryKey' | 'queryFn'>;

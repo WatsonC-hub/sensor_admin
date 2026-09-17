@@ -1,0 +1,59 @@
+import {Add} from '@mui/icons-material';
+import React from 'react';
+import {useFormContext} from 'react-hook-form';
+
+import Button from '~/components/Button';
+
+import AlarmContactTable from './AlarmContactTable';
+
+import type {AlarmContactFormOutput, AlarmFormOutput} from '../schema';
+
+const removeContact = (index: number, contacts: AlarmContactFormOutput[]) => {
+  return contacts.filter((_, i) => i !== index);
+};
+
+type AlarmContactFormProps = {
+  setContactDialogOpen: (open: boolean) => void;
+  setMode: (mode: 'add' | 'edit' | 'view') => void;
+  setCurrentIndex: (index: number) => void;
+};
+
+const AlarmContactForm = ({
+  setContactDialogOpen,
+  setMode,
+  setCurrentIndex,
+}: AlarmContactFormProps) => {
+  const {watch, setValue} = useFormContext<AlarmFormOutput>();
+  const contacts = watch('contacts');
+
+  return (
+    <>
+      {contacts &&
+        contacts.filter((contact) => contact !== undefined || contact !== null).length > 0 && (
+          <AlarmContactTable
+            alarmContacts={contacts}
+            onEdit={(index) => {
+              setMode('edit');
+              setCurrentIndex(index);
+              setContactDialogOpen(true);
+            }}
+            onDelete={(index) => setValue('contacts', removeContact(index, contacts))}
+          />
+        )}
+      <Button
+        bttype="primary"
+        startIcon={<Add />}
+        onClick={() => {
+          setMode('add');
+          setContactDialogOpen(true);
+          setCurrentIndex(-1);
+        }}
+        sx={{ml: 'auto'}}
+      >
+        Tilføj ny kontakt
+      </Button>
+    </>
+  );
+};
+
+export default AlarmContactForm;

@@ -1,5 +1,5 @@
 // components/CommandContext.tsx
-import React, {createContext, useContext, useRef} from 'react';
+import React, {createContext, useCallback, useContext, useMemo, useRef} from 'react';
 
 type BaseCommand<T = unknown> = {
   id: string;
@@ -47,17 +47,20 @@ const CommandContext = createContext<CommandContextType | null>(null);
 export const CommandProvider = ({children}: {children: React.ReactNode}) => {
   const actionsRef: CommandRegistry = useRef(new Map());
 
-  const register = (actions: CommandAction[]) => {
+  const register = useCallback((actions: CommandAction[]) => {
     actions.forEach((action) => actionsRef.current.set(action.id, action));
-  };
+  }, []);
 
-  const unregister = (ids: string[]) => {
+  const unregister = useCallback((ids: string[]) => {
     ids.forEach((id) => actionsRef.current.delete(id));
-  };
+  }, []);
 
-  const getActions = () => Array.from(actionsRef.current.values());
+  const getActions = useCallback(() => Array.from(actionsRef.current.values()), []);
 
-  const value = {register, unregister, getActions};
+  const value = useMemo(
+    () => ({register, unregister, getActions}),
+    [register, unregister, getActions]
+  );
 
   return <CommandContext.Provider value={value}>{children}</CommandContext.Provider>;
 };

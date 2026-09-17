@@ -1,16 +1,20 @@
+import {AddCircleOutlined} from '@mui/icons-material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {Link} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import {FieldError, Noop} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
-import useLocationProject, {Project} from '../../api/useLocationProject';
+
+import useLocationProject from '../../api/useLocationProject';
+
+import type {Project} from '../../api/useLocationProject';
+import type {FieldError, Noop} from 'react-hook-form';
 
 interface LocationProjectsProps {
   value: string | undefined | null;
-  setValue: (value: string | undefined) => void;
+  setValue: (value: string | null) => void;
   onBlur: Noop;
   error: FieldError | undefined;
   disable?: boolean;
@@ -26,7 +30,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
     get: {data: options},
   } = useLocationProject();
 
-  const user = useUser();
+  const {superUser} = useUser();
 
   const selectedValue = options?.find((option) => option.project_no == value) ?? null;
 
@@ -39,10 +43,11 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
             marginBottom: '4px',
             pb: 1.5,
           }}
+          autoHighlight
           forcePopupIcon={false}
           value={selectedValue}
           onChange={(event, newValue) => {
-            setValue(newValue ? newValue.project_no : undefined);
+            setValue(newValue ? newValue.project_no : null);
           }}
           id="tags-standard"
           options={options ?? []}
@@ -53,13 +58,15 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
               {...params}
               fullWidth
               onBlur={onBlur}
-              required={true}
+              required
               slotProps={{
+                ...params.slotProps,
                 inputLabel: {
+                  ...params.slotProps.inputLabel,
                   shrink: true,
                 },
                 input: {
-                  ...params.InputProps,
+                  ...params.slotProps.input,
                   endAdornment: (
                     <>
                       <Button
@@ -73,16 +80,16 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
                         rel="noopener"
                         sx={{textTransform: 'none'}}
                       >
-                        <OpenInNewIcon />
+                        {selectedValue ? <OpenInNewIcon /> : <AddCircleOutlined />}
                       </Button>
-                      {params.InputProps.endAdornment}
+                      {params.slotProps.input.endAdornment}
                     </>
                   ),
                 },
               }}
               variant="outlined"
-              error={Boolean(error) && user?.superUser}
-              helperText={Boolean(error) && user?.superUser && error?.message}
+              error={Boolean(error) && superUser}
+              helperText={Boolean(error) && superUser && error?.message}
               label="Projektnummer"
               placeholder="Vælg projektnummer..."
               sx={{
@@ -95,7 +102,6 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
               }}
             />
           )}
-          selectOnFocus
           clearOnBlur
           handleHomeEndKeys
         />
@@ -103,6 +109,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
       {disable == true && (
         <TextField
           fullWidth
+          required
           slotProps={{
             inputLabel: {
               shrink: true,

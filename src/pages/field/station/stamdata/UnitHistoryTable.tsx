@@ -1,44 +1,49 @@
-import {Box, Typography} from '@mui/material';
-import {
-  MaterialReactTable,
-  MRT_ColumnDef,
-  MRT_ExpandButton,
-  MRT_TableOptions,
-} from 'material-react-table';
-import React, {useEffect, useMemo} from 'react';
-import {useFormContext} from 'react-hook-form';
-import Button from '~/components/Button';
-import usePermissions from '~/features/permissions/api/usePermissions';
-import {UnitHistory, useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
-import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
-import {checkEndDateIsUnset, convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
-import RenderActions from '~/helpers/RowActions';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import {useTable} from '~/hooks/useTable';
-import {useAppContext} from '~/state/contexts';
 import SaveIcon from '@mui/icons-material/Save';
-import useBreakpoints from '~/hooks/useBreakpoints';
+import {Box, Typography} from '@mui/material';
+import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
+import React, {useMemo} from 'react';
+import {useFormContext} from 'react-hook-form';
+
+import Button from '~/components/Button';
+import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle} from '~/consts';
+import usePermissions from '~/features/permissions/api/usePermissions';
+import {useUnitMutations} from '~/features/stamdata/api/useUnit';
+import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
+import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import {editUnitSchema} from '~/features/station/schema';
+import {checkEndDateIsUnset, convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
+import RenderActions from '~/helpers/RowActions';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useTable} from '~/hooks/useTable';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {UnitHistory} from '~/features/stamdata/api/useUnitHistory';
+import type {EditUnit} from '~/features/station/schema';
 
 interface UnitHistoryTableProps {
-  submit: (data: any) => void;
+  submit: (data: EditUnit) => Promise<void>;
   setSelectedUnit: (ugid: number | '') => void;
+  ts_id: number;
+  loc_id: number;
 }
 
-const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
-  const {loc_id} = useAppContext(['loc_id']);
+const UnitHistoryTable = ({submit, setSelectedUnit, ts_id, loc_id}: UnitHistoryTableProps) => {
   const {data} = useUnitHistory();
   const {
     handleSubmit,
     reset,
-    formState: {isDirty},
-  } = useFormContext();
+    formState: {isDirty, errors, isSubmitting},
+  } = useFormContext<EditUnit>();
+  const {
+    deleteUnit: {mutate: deleteUnit, isPending: isDeletingUnit},
+  } = useUnitMutations(ts_id);
   const {isMobile} = useBreakpoints();
-  const {data: metadata} = useTimeseriesData();
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
+  const [deleteAlertOpen, setDeleteAlertOpen] = React.useState(false);
+  const [gid, setGid] = React.useState<number | undefined>(undefined);
 
   const resetToDefault = (unit: UnitHistory) => {
     const {data: parsedData} = editUnitSchema.safeParse({
@@ -80,46 +85,79 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
         Cell: ({row, table, staticRowIndex}) => (
           <Box
             style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}
-            gap={0.5}
-            height={26}
+            sx={{
+              gap: 0.5,
+              height: 26,
+            }}
           >
             <MRT_ExpandButton row={row} table={table} staticRowIndex={staticRowIndex} />
-            <Typography alignSelf={'center'} variant="caption" fontWeight="bold" width="2.5rem">
+            <Typography
+              variant="caption"
+              sx={{
+                alignSelf: 'center',
+                fontWeight: 'bold',
+                width: '2.5rem',
+              }}
+            >
               {row.original.calypso_id}
             </Typography>
-            <Box display={'flex'} flexDirection={'row'} gap={1}>
-              <Box display={'flex'} flexDirection={'column'}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 1,
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
                 <Typography
-                  alignSelf={'start'}
                   variant="caption"
-                  color="grey.700"
-                  fontWeight="bold"
+                  sx={{
+                    alignSelf: 'start',
+                    color: 'grey.700',
+                    fontWeight: 'bold',
+                  }}
                 >
                   Fra:
                 </Typography>
                 <Typography
-                  alignSelf={'start'}
                   variant="caption"
-                  color="grey.700"
-                  fontWeight="bold"
+                  sx={{
+                    alignSelf: 'start',
+                    color: 'grey.700',
+                    fontWeight: 'bold',
+                  }}
                 >
                   Til:
                 </Typography>
               </Box>
-              <Box display={'flex'} flexDirection={'column'}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
                 <Typography
-                  alignSelf={'start'}
                   variant="caption"
-                  color="grey.700"
-                  fontWeight="bold"
+                  sx={{
+                    alignSelf: 'start',
+                    color: 'grey.700',
+                    fontWeight: 'bold',
+                  }}
                 >
                   {convertDateWithTimeStamp(row.original.startdato)}
                 </Typography>
                 <Typography
-                  alignSelf={'start'}
                   variant="caption"
-                  color="grey.700"
-                  fontWeight="bold"
+                  sx={{
+                    alignSelf: 'start',
+                    color: 'grey.700',
+                    fontWeight: 'bold',
+                  }}
                 >
                   {checkEndDateIsUnset(row.original.slutdato)
                     ? 'Nu'
@@ -127,14 +165,21 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
                 </Typography>
               </Box>
             </Box>
-            <Box marginLeft={'auto'}>
+            <Box
+              sx={{
+                marginLeft: 'auto',
+              }}
+            >
               <RenderActions
                 handleEdit={() => {
                   setSelectedUnit(row.original.gid);
                   resetToDefault(row.original);
                   table.setEditingRow(row);
                 }}
-                onDeleteBtnClick={() => {}}
+                onDeleteBtnClick={() => {
+                  setGid(row.original.gid);
+                  setDeleteAlertOpen(true);
+                }}
                 size="small"
               />
             </Box>
@@ -154,10 +199,12 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
         <RenderActions
           handleEdit={() => {
             setSelectedUnit(row.original.gid);
-            resetToDefault(row.original);
             table.setEditingRow(row);
           }}
-          onDeleteBtnClick={() => {}}
+          onDeleteBtnClick={() => {
+            setGid(row.original.gid);
+            setDeleteAlertOpen(true);
+          }}
         />
       ),
     onEditingRowCancel: ({table}) => {
@@ -169,7 +216,14 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
       return (
         <Box sx={{p: 2}}>
           <UnitForm mode="edit" />
-          <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              justifyContent: 'flex-end',
+              justifySelf: 'end',
+            }}
+          >
             <Button
               bttype="tertiary"
               onClick={() => {
@@ -181,15 +235,21 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
             </Button>
             <Button
               bttype="primary"
-              disabled={!isDirty || !metadata?.unit_uuid || disabled}
+              disabled={!isDirty || disabled || Object.keys(errors).length > 0}
               onClick={async () => {
-                await handleSubmit(submit, (e) => {
-                  console.log('Form submitted:', e);
-                })();
+                await handleSubmit(
+                  (data) => {
+                    submit(data);
+                  },
+                  (e) => {
+                    console.log('Form submitted:', e);
+                  }
+                )();
                 setSelectedUnit('');
                 table.setEditingRow(null);
               }}
-              startIcon={<SaveIcon />}
+              loading={isSubmitting}
+              startIcon={isSubmitting ? undefined : <SaveIcon />}
               sx={{marginRight: 1}}
             >
               Gem
@@ -200,31 +260,96 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
     },
     renderDetailPanel: ({row}) => {
       return (
-        <Box display={'flex'} flexDirection={'row'} sx={isMobile ? {...renderDetailStyle} : {}}>
-          <Box display={'flex'} flexDirection={'column'} width="150px" gap={0.5}>
-            <Typography variant="body2" fontWeight={'bold'}>
+        <Box
+          sx={[
+            {
+              display: 'flex',
+              flexDirection: 'row',
+            },
+            isMobile ? {...renderDetailStyle} : {},
+          ]}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '150px',
+              gap: 0.5,
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Startdato:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Slutdato:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Calypso ID:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Terminal ID:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Terminal type:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Sensor ID:
             </Typography>
-            <Typography variant="body2" fontWeight={'bold'}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
+              Signal ID:
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Sensor:
             </Typography>
           </Box>
-          <Box display={'flex'} flexDirection={'column'} width="100%" gap={0.5}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              gap: 0.5,
+            }}
+          >
             <Typography variant="body2">
               {convertDateWithTimeStamp(row.original.startdato)}
             </Typography>
@@ -237,6 +362,7 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
             <Typography variant="body2">{row.original.terminal_id}</Typography>
             <Typography variant="body2">{row.original.terminal_type}</Typography>
             <Typography variant="body2">{row.original.sensor_id}</Typography>
+            <Typography variant="body2">{row.original.signal_id}</Typography>
             <Typography variant="body2">{row.original.sensorinfo}</Typography>
           </Box>
         </Box>
@@ -275,13 +401,27 @@ const UnitHistoryTable = ({submit, setSelectedUnit}: UnitHistoryTableProps) => {
     MergeType.RECURSIVEMERGE
   );
 
-  useEffect(() => {}, [isMobile]);
-
   return (
     <Box key={isMobile ? 'mobile' : 'desktop'}>
       <MaterialReactTable
         key={isMobile ? 'mobile' : 'desktop'}
         table={isMobile ? tableMobile : tableDesktop}
+      />
+      <DeleteAlert
+        measurementId={gid}
+        dialogOpen={deleteAlertOpen}
+        setDialogOpen={setDeleteAlertOpen}
+        title="Er du sikker på at slette udstyr historikken?"
+        onOkDelete={() => {
+          if (gid)
+            deleteUnit(`${ts_id}/${gid}`, {
+              onSuccess: () => {
+                setGid(undefined);
+                setDeleteAlertOpen(false);
+              },
+            });
+        }}
+        loading={isDeletingUnit}
       />
     </Box>
   );

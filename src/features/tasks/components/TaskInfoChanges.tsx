@@ -1,8 +1,9 @@
-import {Typography, Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import React from 'react';
 
-import {TaskChanges, TaskStatus, TaskUser} from '~/features/tasks/types';
 import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
+
+import type {TaskChanges, TaskStatus, TaskUser} from '~/features/tasks/types';
 
 type Props = {
   taskChanges: TaskChanges;
@@ -11,13 +12,13 @@ type Props = {
 };
 
 enum FieldsMap {
-  'name' = 'Navn',
-  'status_id' = 'Status',
-  'due_date' = 'Dato',
-  'assigned_to' = 'Ansvarlig',
-  'description' = 'Beskrivelse',
-  'block_all' = 'Bloker alle',
-  'block_on_location' = 'Bloker på lokation',
+  name = 'Navn',
+  status_id = 'Status',
+  due_date = 'Dato',
+  assigned_to = 'Ansvarlig',
+  description = 'Beskrivelse',
+  block_all = 'Bloker alle',
+  block_on_location = 'Bloker på lokation',
 }
 
 const TaskInfoChanges = ({taskChanges, taskUsers, taskStatus}: Props) => {
@@ -46,14 +47,20 @@ const TaskInfoChanges = ({taskChanges, taskUsers, taskStatus}: Props) => {
   }
 
   return (
-    <Box display="flex" justifyContent="space-between" key={taskChanges.id} flexDirection={'row'}>
+    <Box
+      key={taskChanges.id}
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+      }}
+    >
       <ChangeText
         old_value={old_value}
         new_value={new_value}
         field_name={field_name}
         taskChanges={taskChanges}
       />
-
       <Typography variant="body2">{convertDateWithTimeStamp(taskChanges.created_at)}</Typography>
     </Box>
   );
@@ -79,7 +86,13 @@ const ChangeText = ({old_value, new_value, field_name, taskChanges}: ChangeTextP
   }
 
   return (
-    <Typography whiteSpace={'pre-line'} variant="body2" sx={{wordWrap: 'break-word'}}>
+    <Typography
+      variant="body2"
+      sx={{
+        whiteSpace: 'pre-line',
+        wordWrap: 'break-word',
+      }}
+    >
       <b>{taskChanges.initials} </b> {text}
     </Typography>
   );

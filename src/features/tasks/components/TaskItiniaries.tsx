@@ -1,28 +1,34 @@
-import {Box, Typography, Card, IconButton, Link} from '@mui/material';
-import React, {ReactNode, useRef, useState} from 'react';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-
-import {useTaskState} from '~/features/tasks/api/useTaskState';
-
-import useTaskItinerary from '../api/useTaskItinerary';
-
-import {useTasks} from '../api/useTasks';
-import {Taskitinerary} from '../types';
-import {convertDate} from '~/helpers/dateConverter';
-import {useDisplayState} from '~/hooks/ui';
-import {DatePicker} from '@mui/x-date-pickers';
-import TaskForm from './TaskForm';
 import {useDroppable} from '@dnd-kit/react';
-import dayjs from 'dayjs';
-import 'dayjs/locale/da';
-import CreateItineraryDialog from './CreateItineraryDialog';
-import Button from '~/components/Button';
-import {useMapFilterStore} from '~/features/map/store';
-import {FlagEnum, ItineraryColors, sensorColors} from '~/features/notifications/consts';
-import {useUser} from '~/features/auth/useUser';
 import {Edit, ExpandLess, ExpandMore, Person} from '@mui/icons-material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import {Box, Card, IconButton, Link, Typography} from '@mui/material';
+import {DatePicker} from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
+import {useAtom} from 'jotai';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+
+import Button from '~/components/Button';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {useUser} from '~/features/auth/useUser';
+import {FlagEnum, ItineraryColors, sensorColors} from '~/features/notifications/consts';
+import {useTaskState} from '~/features/tasks/api/useTaskState';
+import {convertDate} from '~/helpers/dateConverter';
+
+import 'dayjs/locale/da';
+
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {displayStore, useDisplayState} from '~/hooks/ui';
+import {highlightedItinerariesAtom} from '~/state/atoms';
+
+import {useItineraries, useItineraryMutations} from '../api/useItinerary';
+import {useTaskUsers} from '../api/useTasks';
+import CreateItineraryDialog from './CreateItineraryDialog';
+import TaskForm from './TaskForm';
+
+import type {Taskitinerary} from '../types';
+import type {ReactNode} from 'react';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 
 const selectData = (data: Taskitinerary[], user_id: number | undefined) => {
   const reduced = data.reduce(
@@ -55,59 +61,98 @@ function Droppable({id, children, color}: {id: string; children: ReactNode; colo
 
   return (
     <Box
-      display="flex"
-      gap={1}
-      flexDirection={'row'}
+      ref={setNodeRef}
       sx={{
+        display: 'flex',
+        gap: 1,
+        flexDirection: 'row',
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
         borderRadius: 2,
         boxShadow: 8,
+
         background: !isDropTarget
           ? `linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), ${color}`
           : 'linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), #FFA137',
       }}
-      ref={setNodeRef}
     >
       {children}
     </Box>
   );
 }
 
+const filterMapOverview = (data: MapOverview[]) =>
+  data.filter((location) => location.itinerary_id !== null);
+
+let lastScrollTop = 0;
+
+let wasTripListOpen = displayStore.getState().trip_list;
+displayStore.subscribe((state) => {
+  if (wasTripListOpen && !state.trip_list) {
+    lastScrollTop = 0;
+  }
+  wasTripListOpen = state.trip_list;
+});
+
 const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
-  const user = useUser();
-  const {
-    get: {data},
-  } = useTaskItinerary(undefined, {
-    select: (itineraries) => selectData(itineraries, user?.user_id),
+  const {user_id} = useUser();
+  const {data} = useItineraries({
+    select: useCallback((data: Taskitinerary[]) => selectData(data, user_id), [user_id]),
+  });
+
+  const {data: mapOverview} = useMapOverview({
+    select: filterMapOverview,
   });
 
   const [openItineraryDialog, setOpenItineraryDialog] = useState<string | undefined>(undefined);
-  const [filters, setFilters] = useMapFilterStore((state) => [state.filters, state.setFilters]);
   const [expandItinerary, setExpandItinerary] = useState<Record<string, boolean>>({});
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const [highlightedItineraries, setHighlightedItineraries] = useAtom(highlightedItinerariesAtom);
   const [itinerary_id, setItineraryId, setLocId] = useDisplayState((state) => [
     state.itinerary_id,
     state.setItineraryId,
     state.setLocId,
   ]);
 
-  const {
-    getUsers: {data: users},
-  } = useTasks();
+  const {data: users} = useTaskUsers();
   const {tasks} = useTaskState();
-  const {patch: updateItinerary} = useTaskItinerary();
+  const {patch: updateItinerary} = useItineraryMutations();
+
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = lastScrollTop;
+    }
+  }, []);
 
   return (
-    <Box display="flex" maxHeight={'100%'} gap={1} flexDirection={'column'}>
+    <Box
+      sx={{
+        display: 'flex',
+        maxHeight: '100%',
+        gap: 1,
+        flexDirection: 'column',
+      }}
+    >
       <Typography variant="h6" sx={{padding: 1}}>
         Ture
       </Typography>
-      <Box sx={{overflowY: 'auto', overflowX: 'hidden'}}>
-        <Box px={1}>
+      <Box
+        ref={scrollContainerRef}
+        onScroll={(e) => {
+          lastScrollTop = e.currentTarget.scrollTop;
+        }}
+        sx={{overflowY: 'auto', overflowX: 'hidden'}}
+      >
+        <Box
+          sx={{
+            px: 1,
+          }}
+        >
           <TooltipWrapper
             description="Læs mere om ture i vores dokumentation for at få et bedre overblik over hvordan du kan bruge ture i Field appen"
             url="https://watsonc.dk/guides/opgavestyring/#serviceture"
@@ -130,11 +175,29 @@ const TaskItiniaries = () => {
           </TooltipWrapper>
         </Box>
         {data && (
-          <Box pb={0.5}>
+          <Box
+            sx={{
+              pb: 0.5,
+            }}
+          >
             {Object.entries(data).map(([month, itineraries]) => {
               return (
-                <Box key={month} display="flex" flexDirection={'column'} gap={1}>
-                  <Typography px={0.5} pt={1} variant="body2" fontWeight={'bold'}>
+                <Box
+                  key={month}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      px: 0.5,
+                      pt: 1,
+                      fontWeight: 'bold',
+                    }}
+                  >
                     {month}
                   </Typography>
                   {itineraries.map((itinerary) => {
@@ -142,14 +205,11 @@ const TaskItiniaries = () => {
                       (task) => task.itinerary_id === itinerary.id
                     );
 
-                    const loc_ids = [...new Set(itinerary_tasks?.map((task) => task.loc_id))];
-
-                    const locations = loc_ids
-                      .map((loc_id) => ({
-                        loc_id,
-                        loc_name:
-                          itinerary_tasks?.find((task) => task.loc_id === loc_id)?.location_name ??
-                          '',
+                    const locations = mapOverview
+                      ?.filter((location) => location.itinerary_id === itinerary.id)
+                      .map((loc) => ({
+                        loc_id: loc.loc_id,
+                        loc_name: loc.loc_name,
                       }))
                       .sort((a, b) =>
                         a.loc_name.localeCompare(b.loc_name, 'da', {sensitivity: 'base'})
@@ -157,8 +217,8 @@ const TaskItiniaries = () => {
 
                     let color = undefined;
 
-                    if (filters?.itineraries?.map((SI) => SI.id).includes(itinerary.id)) {
-                      const index = filters.itineraries.findIndex((SI) => SI.id === itinerary.id);
+                    if (highlightedItineraries.includes(itinerary.id)) {
+                      const index = highlightedItineraries.findIndex((id) => id === itinerary.id);
                       color = ItineraryColors[index];
                     }
 
@@ -183,16 +243,23 @@ const TaskItiniaries = () => {
                         }}
                       >
                         <Droppable id={itinerary.id} color={color}>
-                          <Box display={'flex'} flexDirection={'column'} width={'100%'}>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              width: '100%',
+                            }}
+                          >
                             <Box
-                              color={'white'}
-                              display={'flex'}
-                              flexDirection={'row'}
-                              alignItems={'center'}
-                              py={0.5}
-                              pr={1}
-                              justifyContent={'space-between'}
                               sx={{
+                                color: 'white',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                py: 0.5,
+                                pr: 1,
+                                justifyContent: 'space-between',
+
                                 backgroundColor: color
                                   ? color
                                   : dayjs(itinerary.due_date).isBefore(dayjs().toDate(), 'day')
@@ -201,15 +268,22 @@ const TaskItiniaries = () => {
                               }}
                             >
                               <Box
-                                display={'flex'}
-                                flexDirection={'column'}
-                                maxWidth={'70%'}
-                                gap={0.5}
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  maxWidth: '70%',
+                                  gap: 0.5,
+                                }}
                               >
-                                <Box display={'flex'} flexDirection={'row'}>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                  }}
+                                >
                                   <Typography
-                                    pl={1.5}
                                     sx={{
+                                      pl: 1.5,
                                       textOverflow: 'ellipsis',
                                       overflow: 'hidden',
                                       whiteSpace: 'nowrap',
@@ -229,11 +303,13 @@ const TaskItiniaries = () => {
                                   </Typography>
                                 </Box>
                                 <Box
-                                  display={'flex'}
-                                  flexDirection={'row'}
-                                  alignItems={'center'}
-                                  gap={0.5}
-                                  pl={1}
+                                  sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    gap: 0.5,
+                                    pl: 1,
+                                  }}
                                 >
                                   <TaskForm
                                     onSubmit={() => {}}
@@ -294,21 +370,27 @@ const TaskItiniaries = () => {
                                 </Box>
                               </Box>
                               <Box
-                                display={'flex'}
-                                flexDirection={'column'}
-                                alignItems={'end'}
-                                gap={0.5}
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  alignItems: 'end',
+                                  gap: 0.5,
+                                }}
                               >
                                 <Box
-                                  display={'flex'}
-                                  flexDirection={'row'}
-                                  gap={0.3}
-                                  alignItems={'center'}
+                                  sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    gap: 0.3,
+                                    alignItems: 'center',
+                                  }}
                                 >
                                   <Typography
                                     variant="caption"
-                                    fontSize={'small'}
-                                    sx={{cursor: 'default'}}
+                                    sx={{
+                                      fontSize: 'small',
+                                      cursor: 'default',
+                                    }}
                                   >
                                     {due_date}
                                   </Typography>
@@ -351,44 +433,30 @@ const TaskItiniaries = () => {
                                     <Edit sx={{color: 'white'}} fontSize="small" />
                                   </IconButton>
                                 </Box>
-                                <Box display="flex" flexDirection={'row'} gap={0.5}>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    gap: 0.5,
+                                  }}
+                                >
                                   <Typography variant="caption">Fremhæv</Typography>
                                   <IconButton
                                     sx={{p: 0}}
                                     onClick={() => {
-                                      if (
-                                        filters?.itineraries
-                                          ?.map((SI) => SI.id)
-                                          .includes(itinerary.id)
-                                      ) {
-                                        setFilters({
-                                          ...filters,
-                                          itineraries: filters.itineraries.filter(
-                                            (SI) => SI.id !== itinerary.id
-                                          ),
-                                        });
+                                      if (highlightedItineraries.includes(itinerary.id)) {
+                                        setHighlightedItineraries((prev) =>
+                                          prev.filter((id) => id !== itinerary.id)
+                                        );
                                       } else {
-                                        setFilters({
-                                          ...filters,
-                                          itineraries: [
-                                            ...(filters.itineraries ?? []),
-                                            {
-                                              name: itinerary.name,
-                                              id: itinerary.id,
-                                              assigned_to_name:
-                                                users?.find(
-                                                  (user) => user.id === itinerary.assigned_to
-                                                )?.display_name ?? '',
-                                              due_date: itinerary.due_date ?? '',
-                                            },
-                                          ],
-                                        });
+                                        setHighlightedItineraries((prev) => [
+                                          ...prev,
+                                          itinerary.id,
+                                        ]);
                                       }
                                     }}
                                   >
-                                    {filters?.itineraries
-                                      ?.map((SI) => SI.id)
-                                      .includes(itinerary.id) ? (
+                                    {highlightedItineraries.includes(itinerary.id) ? (
                                       <VisibilityOffIcon sx={{color: 'white'}} fontSize="small" />
                                     ) : (
                                       <VisibilityIcon sx={{color: 'white'}} fontSize="small" />
@@ -398,34 +466,57 @@ const TaskItiniaries = () => {
                               </Box>
                             </Box>
                             <Box
-                              px={1}
-                              py={1}
-                              gap={0.5}
-                              display={'flex'}
-                              flexDirection={'column'}
-                              justifyContent={'center'}
+                              sx={{
+                                px: 1,
+                                py: 1,
+                                gap: 0.5,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                              }}
                             >
                               <Box
-                                display="flex"
-                                gap={0.5}
-                                flexDirection={'row'}
-                                alignItems={'start'}
-                                justifyContent={'space-between'}
+                                sx={{
+                                  display: 'flex',
+                                  gap: 0.5,
+                                  flexDirection: 'row',
+                                  alignItems: 'start',
+                                  justifyContent: 'space-between',
+                                }}
                               >
-                                <Box display="flex" gap={0.5} flexDirection={'column'}>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    gap: 0.5,
+                                    flexDirection: 'column',
+                                  }}
+                                >
                                   {expanded
-                                    ? locations.map((location) => {
+                                    ? locations?.map((location) => {
                                         return (
                                           <Box
                                             key={location.loc_id}
-                                            display="flex"
-                                            gap={1}
-                                            alignItems={'center'}
-                                            flexWrap={'wrap'}
-                                            flexDirection={'row'}
+                                            sx={{
+                                              display: 'flex',
+                                              gap: 1,
+                                              alignItems: 'center',
+                                              flexWrap: 'wrap',
+                                              flexDirection: 'row',
+                                            }}
                                           >
-                                            <Box display="flex" gap={0.5} flexDirection={'row'}>
-                                              <Typography fontSize={'small'} width={'fit-content'}>
+                                            <Box
+                                              sx={{
+                                                display: 'flex',
+                                                gap: 0.5,
+                                                flexDirection: 'row',
+                                              }}
+                                            >
+                                              <Typography
+                                                sx={{
+                                                  fontSize: 'small',
+                                                  width: 'fit-content',
+                                                }}
+                                              >
                                                 <Link
                                                   sx={{cursor: 'pointer'}}
                                                   onClick={(e) => {
@@ -464,7 +555,12 @@ const TaskItiniaries = () => {
                                   />
                                 )}
                               </Box>
-                              <Typography fontSize={'small'} width={'fit-content'}>
+                              <Typography
+                                sx={{
+                                  fontSize: 'small',
+                                  width: 'fit-content',
+                                }}
+                              >
                                 Der er {itinerary_tasks?.length ?? 0} opgaver på denne tur.
                               </Typography>
                             </Box>

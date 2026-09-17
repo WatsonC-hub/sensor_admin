@@ -12,7 +12,11 @@ interface Props {
 
 const RenderActions = ({handleEdit, onDeleteBtnClick, disabled, size}: Props) => {
   return (
-    <Box margin="0 auto" display="flex" justifyContent="flex-end">
+    <Box
+      sx={{
+        display: 'flex',
+      }}
+    >
       {handleEdit && (
         <IconButton edge="end" onClick={handleEdit} disabled={disabled} size={size ?? 'large'}>
           <EditIcon />

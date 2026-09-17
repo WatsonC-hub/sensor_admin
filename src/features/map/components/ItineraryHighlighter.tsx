@@ -1,11 +1,11 @@
+import {useAtomValue} from 'jotai';
 import {useEffect} from 'react';
-import {useMapFilterStore} from '../store';
+
 import {ItineraryColors} from '~/features/notifications/consts';
+import {highlightedItinerariesAtom} from '~/state/atoms';
 
 const ItineraryHighlighter = () => {
-  const {filters} = useMapFilterStore((state) => ({
-    filters: state.filters,
-  }));
+  const highlightedItineraries = useAtomValue(highlightedItinerariesAtom);
 
   useEffect(() => {
     const styleId = 'dynamic-itinerary-style';
@@ -17,11 +17,11 @@ const ItineraryHighlighter = () => {
     styleTag.id = styleId;
 
     let rules = '';
-    if (filters?.itineraries && filters.itineraries.length > 0) {
-      rules = filters?.itineraries
+    if (highlightedItineraries && highlightedItineraries.length > 0) {
+      rules = highlightedItineraries
         .map((itinerary, index) => {
           return `
-      svg[data-itinerary-id="${itinerary.id}"] circle {
+      svg[data-itinerary-id="${itinerary}"] circle {
         fill: ${ItineraryColors[index]};
 
       }
@@ -38,7 +38,7 @@ const ItineraryHighlighter = () => {
       // Optional cleanup
       styleTag.remove();
     };
-  }, [filters.itineraries]);
+  }, [highlightedItineraries]);
   return null; // Nothing to render
 };
 

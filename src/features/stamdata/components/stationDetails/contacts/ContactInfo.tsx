@@ -1,90 +1,70 @@
-import {zodResolver} from '@hookform/resolvers/zod';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import {Box} from '@mui/material';
 import React, {useState} from 'react';
-import {FormProvider, useForm} from 'react-hook-form';
+import {FormProvider} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
 import {initialContactData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
+import AddContactInfo from '~/features/stamdata/components/stationDetails/contacts/AddContactInfo';
 import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
-import SelectContactInfo from '~/features/stamdata/components/stationDetails/contacts/SelectContactInfo';
-import {contact_info} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
 import {useAppContext} from '~/state/contexts';
-import {ContactTable} from '~/types';
+
+import useContactForm, {contactSchema} from './api/useContactForm';
 
 const ContactInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
-  const {del: deleteContact, put: editContact} = useContactInfo(loc_id);
   const {location_permissions} = usePermissions(loc_id);
 
-  const user = useUser();
+  const {
+    features: {contacts},
+  } = useUser();
 
-  const formMethods = useForm({
-    resolver: zodResolver(contact_info),
+  const contactFormMethods = useContactForm({
+    schema: contactSchema,
     defaultValues: initialContactData,
-    mode: 'onSubmit',
   });
 
-  const {reset} = formMethods;
-
-  const handleDelete = (relation_id: number) => {
-    const payload = {
-      path: `${relation_id}`,
-    };
-
-    deleteContact.mutate(payload);
-  };
-
-  const handleEdit = (contactInfo: ContactTable) => {
-    const email = contactInfo.email !== '' ? contactInfo.email : null;
-    const payload = {
-      path: `${loc_id}`,
-      data: {
-        id: contactInfo.id,
-        name: contactInfo.name,
-        mobile: contactInfo.mobile,
-        email: email,
-        contact_role: contactInfo.contact_role,
-        comment: contactInfo.comment,
-        org: contactInfo.org,
-        user_id: contactInfo.user_id ?? null,
-        relation_id: contactInfo.relation_id,
-        contact_type: contactInfo.contact_type,
-        notify_required: contactInfo.notify_required ?? false,
-      },
-    };
-
-    editContact.mutate(payload, {
-      onSuccess: () => {
-        reset(initialContactData);
-      },
-    });
-  };
+  const {reset} = contactFormMethods;
 
   return (
     <>
       <StationPageBoxLayout>
-        <FormProvider {...formMethods}>
+        <FormProvider {...contactFormMethods}>
           {openContactInfoDialog && (
-            <SelectContactInfo open={openContactInfoDialog} setOpen={setOpenContactInfoDialog} />
+            <AddContactInfo
+              open={openContactInfoDialog}
+              setOpen={setOpenContactInfoDialog}
+              loc_id={loc_id}
+            />
           )}
-          <ContactInfoTable delContact={handleDelete} editContact={handleEdit} />
+          <ContactInfoTable loc_id={loc_id} />
         </FormProvider>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: 1,
+          }}
+        >
+          <UpdateProgressButton progressKey="kontakter" loc_id={loc_id} ts_id={-1} alterStyle />
+          <FabWrapper
+            icon={<PersonAddIcon />}
+            text="Tilføj kontakt"
+            disabled={!contacts || location_permissions !== 'edit'}
+            onClick={() => {
+              reset(initialContactData);
+              setOpenContactInfoDialog(true);
+            }}
+            sx={{visibility: openContactInfoDialog ? 'hidden' : 'visible', ml: 0}}
+          />
+        </Box>
       </StationPageBoxLayout>
-      <FabWrapper
-        icon={<PersonAddIcon />}
-        text="Tilføj kontakt"
-        disabled={!user?.features?.contacts || location_permissions !== 'edit'}
-        onClick={() => {
-          reset();
-          setOpenContactInfoDialog(true);
-        }}
-        sx={{visibility: openContactInfoDialog ? 'hidden' : 'visible'}}
-      />
     </>
   );
 };
