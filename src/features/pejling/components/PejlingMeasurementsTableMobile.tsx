@@ -145,6 +145,11 @@ export default function PejlingMeasurementsTableMobile({handleEdit, disabled}: P
             ? correction_map[row.original.useforcorrection]
             : 'Kontrol'}
         </Typography>
+        {row.original.correction_date && (
+          <Typography>
+            <b>Korriger fra dato: </b> {convertDateWithTimeStamp(row.original.correction_date)}
+          </Typography>
+        )}
         <Typography>
           <b>Dato: </b> {convertDateWithTimeStamp(row.original.timeofmeas)}
         </Typography>

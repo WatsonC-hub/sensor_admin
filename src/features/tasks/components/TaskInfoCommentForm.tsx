@@ -64,59 +64,38 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        mt: isMonitor ? 3 : 0,
-        mb: isMonitor ? 5 : 0,
-        maxHeight: '100%',
-        gap: 2,
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          overflowY: 'auto',
-          overflowX: 'hidden',
-        }}
-      >
-        {taskHistory?.map((row) => {
-          if ('comment' in row) return <TaskInfoComment key={row.id} comment={row} />;
-          else
-            return (
-              <TaskInfoChanges
-                key={row.id}
-                taskChanges={row}
-                taskUsers={taskUsers}
-                taskStatus={taskStatus}
-              />
-            );
-        })}
-      </Box>
-      <Box>
-        <FormProvider {...formMethods}>
-          <FormInput
-            fullWidth
-            name="comment"
-            label={'Kommentar'}
-            disabled={
-              selectedTaskId.includes(':') ||
-              selectedTask?.can_edit === false ||
-              selectedTask === undefined
+    <Box display="flex" flexDirection="column" gap={2}>
+      {taskHistory?.map((row) => {
+        if ('comment' in row) return <TaskInfoComment key={row.id} comment={row} />;
+        else
+          return (
+            <TaskInfoChanges
+              key={row.id}
+              taskChanges={row}
+              taskUsers={taskUsers}
+              taskStatus={taskStatus}
+            />
+          );
+      })}
+      <FormProvider {...formMethods}>
+        <FormInput
+          fullWidth
+          name="comment"
+          label={'Kommentar'}
+          disabled={
+            selectedTaskId.includes(':') ||
+            selectedTask?.can_edit === false ||
+            selectedTask === undefined
+          }
+          multiline
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              const callback = handleSubmit(submit, (e) => console.log(e));
+              callback(e);
             }
-            multiline
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                const callback = handleSubmit(submit, (e) => console.log(e));
-                callback(e);
-              }
-            }}
-          />
-        </FormProvider>
-      </Box>
+          }}
+        />
+      </FormProvider>
     </Box>
   );
 };

@@ -8,6 +8,7 @@ const baseSchema = z.object({
   timeofmeas: zodDayjs('Tidspunkt skal udfyldes'),
   comment: z.string().nullish(),
   useforcorrection: z.coerce.number().default(0),
+  correction_date: zodDayjs().nullish(),
 });
 
 const pejlingSchema = baseSchema;
