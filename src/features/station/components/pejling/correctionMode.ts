@@ -1,6 +1,6 @@
 export type CorrectionMode = 'hidden' | 'simple_correction' | 'translation' | 'scale';
 
-const CALCULATED_FLOW_FUNCTIONS = ['calculate_Q', 'calculate_Q_multi'];
+const CALCULATED_FLOW_FUNCTIONS = new Set(['calculate_Q', 'calculate_Q_multi']);
 
 export const SCALE_CORRECTION_PICK_ON_GRAPH_VALUE = 7;
 
@@ -10,7 +10,7 @@ export const isCalculatedFlow = ({
 }: {
   isFlow?: boolean;
   calculate_function?: string | null;
-}): boolean => !!isFlow && CALCULATED_FLOW_FUNCTIONS.includes(calculate_function ?? '');
+}): boolean => !!isFlow && CALCULATED_FLOW_FUNCTIONS.has(calculate_function ?? '');
 
 export const getCorrectionMode = ({
   correction_type,

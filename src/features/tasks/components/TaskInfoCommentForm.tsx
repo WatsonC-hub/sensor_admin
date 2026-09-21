@@ -8,7 +8,6 @@ import {useTaskHistory, useTaskHistoryMutations} from '~/features/tasks/api/useT
 import {useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import TaskInfoChanges from '~/features/tasks/components/TaskInfoChanges';
 import TaskInfoComment from '~/features/tasks/components/TaskInfoComment';
-import useBreakpoints from '~/hooks/useBreakpoints';
 
 import {useTaskState} from '../api/useTaskState';
 
@@ -40,8 +39,6 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
 
   const {selectedTask} = useTaskState();
 
-  const {isMonitor} = useBreakpoints();
-
   const schemaData = taskCommentSchema.safeParse(initialValues);
 
   const formMethods = useForm<InferTaskComment>({
@@ -64,7 +61,7 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap={2}>
+    <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
       {taskHistory?.map((row) => {
         if ('comment' in row) return <TaskInfoComment key={row.id} comment={row} />;
         else

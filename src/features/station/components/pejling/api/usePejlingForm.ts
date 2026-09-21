@@ -1,4 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
+import dayjs from 'dayjs';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 
@@ -8,18 +9,17 @@ import {boreholeInitialData, initialData} from '~/features/pejling/const';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
-import {getCorrectionMode, SCALE_CORRECTION_PICK_ON_GRAPH_VALUE} from '../correctionMode';
-import dayjs from 'dayjs';
-import {PejlingItem} from '~/types';
 
 import PejlingBoreholeForm from '../components/PejlingBoreholeForm';
 import PejlingForm from '../components/PejlingForm';
 import PejlingBoreholeTableDesktop from '../components/tables/PejlingBoreholeTableDesktop';
 import PejlingBoreholeTableMobile from '../components/tables/PejlingBoreholeTableMobile';
+import {getCorrectionMode, SCALE_CORRECTION_PICK_ON_GRAPH_VALUE} from '../correctionMode';
 import {pejlingBoreholeSchema, pejlingSchema} from '../pejlingSchema';
 
 import type {PejlingBoreholeSchemaType, PejlingSchemaType} from '../pejlingSchema';
 import type {ZodObject, ZodType} from 'zod';
+import type {PejlingItem} from '~/types';
 
 type PejlingFormProps = {
   loctype_id: number | undefined;
@@ -123,7 +123,10 @@ const usePejlingForm = ({
         };
       }
 
-      if (requiresCorrectionDate && values.useforcorrection === SCALE_CORRECTION_PICK_ON_GRAPH_VALUE) {
+      if (
+        requiresCorrectionDate &&
+        values.useforcorrection === SCALE_CORRECTION_PICK_ON_GRAPH_VALUE
+      ) {
         const previousCorrection = otherMeasurements
           ?.filter(
             (measurement) =>
@@ -133,31 +136,22 @@ const usePejlingForm = ({
           .sort((a, b) => dayjs(b.timeofmeas).diff(dayjs(a.timeofmeas)))[0];
 
         if (!values.correction_date) {
-          out.errors = {
-            ...out.errors,
-            correction_date: {
-              type: 'required',
-              message: 'Vælg en dato at korrigere fra',
-            },
+          out.errors.correction_date = {
+            type: 'required',
+            message: 'Vælg en dato at korrigere fra',
           };
         } else if (values.correction_date.isAfter(values.timeofmeas)) {
-          out.errors = {
-            ...out.errors,
-            correction_date: {
-              type: 'maxDate',
-              message: 'Dato kan ikke være efter kontroltidspunktet',
-            },
+          out.errors.correction_date = {
+            type: 'maxDate',
+            message: 'Dato kan ikke være efter kontroltidspunktet',
           };
         } else if (
           previousCorrection &&
           values.correction_date.isBefore(dayjs(previousCorrection.timeofmeas))
         ) {
-          out.errors = {
-            ...out.errors,
-            correction_date: {
-              type: 'minDate',
-              message: 'Dato kan ikke være før forrige korrigerede kontrol',
-            },
+          out.errors.correction_date = {
+            type: 'minDate',
+            message: 'Dato kan ikke være før forrige korrigerede kontrol',
           };
         }
       }
@@ -172,12 +166,9 @@ const usePejlingForm = ({
         );
 
         if (conflictingFutureCorrection) {
-          out.errors = {
-            ...out.errors,
-            useforcorrection: {
-              type: 'futureCorrectionConflict',
-              message: 'En senere korrektion går tilbage til en dato før dette tidspunkt',
-            },
+          out.errors.useforcorrection = {
+            type: 'futureCorrectionConflict',
+            message: 'En senere korrektion går tilbage til en dato før dette tidspunkt',
           };
         }
       }
@@ -197,4 +188,3 @@ const usePejlingForm = ({
 };
 
 export default usePejlingForm;
-

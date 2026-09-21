@@ -65,57 +65,59 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
         },
       }}
     >
-      {actions.filter((action) => !action.hidden).map((action) => {
-        return (
-          <SpeedDialAction
-            key={action.key}
-            icon={action.icon}
-            slotProps={{
-              fab: {
-                sx: {
-                  color: 'white',
-                  backgroundColor: 'primary.main',
-                  borderRadius: 4,
-                  ':hover': {
-                    backgroundColor: 'secondary.main',
+      {actions
+        .filter((action) => !action.hidden)
+        .map((action) => {
+          return (
+            <SpeedDialAction
+              key={action.key}
+              icon={action.icon}
+              slotProps={{
+                fab: {
+                  sx: {
+                    color: 'white',
+                    backgroundColor: 'primary.main',
+                    borderRadius: 4,
+                    ':hover': {
+                      backgroundColor: 'secondary.main',
+                    },
+                  },
+                  onClick: () => {
+                    action.onClick();
+                    setOpen(!open);
+                    if (toast.isActive('juster') && action.dialog === false)
+                      toast.update('juster', {style: {display: 'none'}});
+
+                    if (toast.isActive('juster') && action.dialog !== false)
+                      toast.update('juster', {
+                        render: <CustomTooltip toastContent={action.toastTip} />,
+                        type: 'default',
+                      });
+                    else if (!toast.isActive('juster') && action.dialog !== false)
+                      toast(<CustomTooltip toastContent={action.toastTip} />, {
+                        autoClose: false,
+                        toastId: 'juster',
+                        style: {
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'center',
+                        },
+                      });
                   },
                 },
-                onClick: () => {
-                  action.onClick();
-                  setOpen(!open);
-                  if (toast.isActive('juster') && action.dialog === false)
-                    toast.update('juster', {style: {display: 'none'}});
-
-                  if (toast.isActive('juster') && action.dialog !== false)
-                    toast.update('juster', {
-                      render: <CustomTooltip toastContent={action.toastTip} />,
-                      type: 'default',
-                    });
-                  else if (!toast.isActive('juster') && action.dialog !== false)
-                    toast(<CustomTooltip toastContent={action.toastTip} />, {
-                      autoClose: false,
-                      toastId: 'juster',
-                      style: {
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                      },
-                    });
+                tooltip: {
+                  title: action.tooltip,
+                  open: true,
                 },
-              },
-              tooltip: {
-                title: action.tooltip,
-                open: true,
-              },
-              staticTooltipLabel: {
-                sx: {
-                  borderRadius: 2.5,
+                staticTooltipLabel: {
+                  sx: {
+                    borderRadius: 2.5,
+                  },
                 },
-              },
-            }}
-          />
-        );
-      })}
+              }}
+            />
+          );
+        })}
     </SpeedDial>
   );
 };

@@ -1,5 +1,4 @@
 import {Save} from '@mui/icons-material';
-import {Save} from '@mui/icons-material';
 import {
   Checkbox,
   FormControl,
@@ -14,21 +13,17 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import {useAtom} from 'jotai';
-import {useAtom} from 'jotai';
-import {get} from 'lodash';
 import {get} from 'lodash';
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
 
 import Button from '~/components/Button';
-import Button from '~/components/Button';
 import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import IngenMPAlert from '~/features/pejling/components/IngenMPAlert';
 import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
-import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -37,9 +32,7 @@ import {
   pejlingCorrectionDateSelectionAtom,
   pejlingPickCorrectionDateModeAtom,
 } from '~/state/atoms';
-import {boreholeIsPumpAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {LatestMeasurement, MaalepunktAsDayjs} from '~/types';
 
 import {getCorrectionMode, SCALE_CORRECTION_PICK_ON_GRAPH_VALUE} from './correctionMode';
 
@@ -173,6 +166,9 @@ const CompoundPejling = ({
       notPossible,
       setNotPossible,
       isFlow,
+      correction_type,
+      calculate_function,
+      calculated,
     }),
     [
       submit,

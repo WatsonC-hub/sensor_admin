@@ -5,8 +5,8 @@ import React, {useEffect} from 'react';
 import {toast} from 'react-toastify';
 
 import {qaAdjustmentLiteral} from '~/helpers/enumHelper';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {
   initiateConfirmTimeseriesAtom,
   initiateSelectAtom,
