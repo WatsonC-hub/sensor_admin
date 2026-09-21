@@ -1,29 +1,29 @@
-import { Box, Divider, Grid, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import {Box, Divider, Grid, Typography} from '@mui/material';
+import dayjs from 'dayjs';
+import React, {useEffect} from 'react';
 
-import TooltipWrapper from "~/components/TooltipWrapper";
-import { useAlgorithms } from "~/features/kvalitetssikring/api/useAlgorithms";
-import GraphManager from "~/features/station/components/GraphManager";
-import StationPageBoxLayout from "~/features/station/components/StationPageBoxLayout";
-import useBreakpoints from "~/hooks/useBreakpoints";
-import AlgorithmCard from "~/pages/admin/kvalitetssikring/AlgorithmCard";
-import { useUnitHistory } from "~/features/stamdata/api/useUnitHistory";
-import dayjs from "dayjs";
+import TooltipWrapper from '~/components/TooltipWrapper';
+import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
+import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
+import GraphManager from '~/features/station/components/GraphManager';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
 
 const Algorithms = () => {
-  const { isMobile } = useBreakpoints();
+  const {isMobile} = useBreakpoints();
   const {
-    get: { data },
+    get: {data},
   } = useAlgorithms();
 
   const [columns, setColumns] = React.useState(6);
   const [mobileRatio, setMobileRatio] = React.useState(false);
 
-  const { data: unit_history } = useUnitHistory();
+  const {data: unit_history} = useUnitHistory();
 
   const filtered_data = data?.filter((algorithm) => {
     if (
-      algorithm.algorithm === "SendMeasureIntervalThreshold" &&
+      algorithm.algorithm === 'SendMeasureIntervalThreshold' &&
       dayjs(unit_history?.[0].slutdato) < dayjs()
     ) {
       return false;
@@ -42,7 +42,7 @@ const Algorithms = () => {
         setColumns(calculatedColumns);
       }
     });
-    const main_content = document.getElementById("main_content");
+    const main_content = document.getElementById('main_content');
     if (resizeObserver && main_content !== null) resizeObserver.observe(main_content);
 
     return () => resizeObserver.disconnect();
@@ -51,13 +51,13 @@ const Algorithms = () => {
     <>
       <Box
         sx={{
-          display: "flex",
-          flexDirection: isMobile ? "column-reverse" : "row",
+          display: 'flex',
+          flexDirection: isMobile ? 'column-reverse' : 'row',
         }}
       >
         <Box
           sx={{
-            width: "100%",
+            width: '100%',
           }}
         >
           <GraphManager
@@ -74,9 +74,9 @@ const Algorithms = () => {
       <StationPageBoxLayout>
         <Box
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             minWidth: 800,
           }}
         >
@@ -89,15 +89,15 @@ const Algorithms = () => {
         </Box>
         <Grid
           container
-          direction={"row"}
+          direction={'row'}
           sx={{
-            justifyContent: filtered_data && filtered_data.length < 4 ? "center" : "start",
+            justifyContent: filtered_data && filtered_data.length < 4 ? 'center' : 'start',
           }}
         >
           {filtered_data?.map((algorithm) => (
             <Grid
               key={algorithm.name}
-              sx={{ size: mobileRatio || filtered_data.length === 1 ? 12 : columns }}
+              sx={{size: mobileRatio || filtered_data.length === 1 ? 12 : columns}}
             >
               <AlgorithmCard qaAlgorithm={algorithm} />
             </Grid>

@@ -1,15 +1,15 @@
-import { Grid } from "@mui/material";
+import {Grid} from '@mui/material';
 
-import CompoundPejling from "../CompoundPejling";
+import CompoundPejling from '../CompoundPejling';
 
 const PejlingForm = () => {
   return (
     <Grid
       container
       sx={{
-        justifyContent: "center",
-        flexDirection: "column",
-        alignItems: "center",
+        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center',
         p: 1,
         maxWidth: 350,
       }}

@@ -1,5 +1,5 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Save } from "@mui/icons-material";
+import {zodResolver} from '@hookform/resolvers/zod';
+import {Save} from '@mui/icons-material';
 import {
   Box,
   CardActions,
@@ -8,35 +8,35 @@ import {
   Checkbox,
   FormControlLabel,
   Typography,
-} from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import * as z from "zod";
+} from '@mui/material';
+import React, {useEffect, useMemo, useState} from 'react';
+import {Controller, FormProvider, useForm} from 'react-hook-form';
+import * as z from 'zod';
 
-import Button from "~/components/Button";
-import DeleteAlert from "~/components/DeleteAlert";
-import FormInput from "~/components/FormInput";
-import GenericCard from "~/components/GenericCard";
-import { useAlgorithms } from "~/features/kvalitetssikring/api/useAlgorithms";
-import { useRunQA } from "~/hooks/useRunQA";
-import { useAppContext } from "~/state/contexts";
+import Button from '~/components/Button';
+import DeleteAlert from '~/components/DeleteAlert';
+import FormInput from '~/components/FormInput';
+import GenericCard from '~/components/GenericCard';
+import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
+import {useRunQA} from '~/hooks/useRunQA';
+import {useAppContext} from '~/state/contexts';
 
-import type { QaAlgorithmParameters, QaAlgorithms, QaAlgorithmsPut } from "~/types";
+import type {QaAlgorithmParameters, QaAlgorithms, QaAlgorithmsPut} from '~/types';
 
 interface AlgorithCardProps {
   qaAlgorithm: QaAlgorithms;
 }
 
-const AlgorithmCard = ({ qaAlgorithm }: AlgorithCardProps) => {
-  const { ts_id } = useAppContext(["ts_id"]);
+const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
+  const {ts_id} = useAppContext(['ts_id']);
   const {
-    mutation: { mutateAsync: rerunQAMutation, isPending: isRerunPending },
+    mutation: {mutateAsync: rerunQAMutation, isPending: isRerunPending},
   } = useRunQA(ts_id);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const {
-    put: { mutate: submitData, isPending: isSubmitPending },
-    revert: { mutate: revertToDefaults, isPending: isRevertPending },
+    put: {mutate: submitData, isPending: isSubmitPending},
+    revert: {mutate: revertToDefaults, isPending: isRevertPending},
   } = useAlgorithms();
 
   const handleRevert = () => {
@@ -64,7 +64,7 @@ const AlgorithmCard = ({ qaAlgorithm }: AlgorithCardProps) => {
   const handleOkDelete = () => {
     const payload = {
       path: `${ts_id}/${qaAlgorithm.algorithm}`,
-      data: { algorithm: qaAlgorithm.algorithm },
+      data: {algorithm: qaAlgorithm.algorithm},
     };
     revertToDefaults(payload, {
       onSuccess: () => {
@@ -84,15 +84,15 @@ const AlgorithmCard = ({ qaAlgorithm }: AlgorithCardProps) => {
     });
 
     qaAlgorithm?.parameters?.forEach((option) => {
-      if (option.type === "number") {
+      if (option.type === 'number') {
         let zodValue = z.number();
 
         if (option.min !== undefined) {
-          zodValue = zodValue.min(option.min, { message: `Skal være større end ${option.min}` });
+          zodValue = zodValue.min(option.min, {message: `Skal være større end ${option.min}`});
         }
 
         if (option.max !== undefined) {
-          zodValue = zodValue.max(option.max, { message: `Skal være mindre end ${option.max}` });
+          zodValue = zodValue.max(option.max, {message: `Skal være mindre end ${option.max}`});
         }
 
         if (option.nullable == true) {
@@ -101,15 +101,15 @@ const AlgorithmCard = ({ qaAlgorithm }: AlgorithCardProps) => {
         }
         //@ts-expect-error zod types are not correct
         schema.shape.parameters.shape[option.name] = zodValue;
-      } else if (option.type === "string") {
+      } else if (option.type === 'string') {
         //@ts-expect-error zod types are not correct
         schema.shape.parameters.shape[option.name] = z.string();
-      } else if (option.type === "boolean") {
+      } else if (option.type === 'boolean') {
         //@ts-expect-error zod types are not correct
         schema.shape.parameters.shape[option.name] = z.boolean();
-      } else if (option.type === "select") {
+      } else if (option.type === 'select') {
         //@ts-expect-error zod types are not correct
-        schema.shape.parameters.shape[option.name] = z.string().default("latest_measurement");
+        schema.shape.parameters.shape[option.name] = z.string().default('latest_measurement');
       }
     });
 
@@ -132,7 +132,7 @@ const AlgorithmCard = ({ qaAlgorithm }: AlgorithCardProps) => {
   const {
     reset,
     handleSubmit,
-    formState: { isDirty },
+    formState: {isDirty},
   } = formMethods;
 
   useEffect(() => {
@@ -155,13 +155,13 @@ const AlgorithmCard = ({ qaAlgorithm }: AlgorithCardProps) => {
         loading={isRerunPending || isRevertPending}
       />
       <GenericCard
-        id={qaAlgorithm.name ?? ""}
+        id={qaAlgorithm.name ?? ''}
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
           borderRadius: 4,
-          height: "96%",
+          height: '96%',
           minWidth: 350,
           m: 1,
         }}
@@ -171,19 +171,19 @@ const AlgorithmCard = ({ qaAlgorithm }: AlgorithCardProps) => {
             <Box>
               <Box
                 sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                 }}
               >
-                <Typography variant={"h5"}>{qaAlgorithm.name}</Typography>
+                <Typography variant={'h5'}>{qaAlgorithm.name}</Typography>
                 <FormControlLabel
                   control={
                     <Controller
                       control={formMethods.control}
                       name="disabled"
-                      render={({ field: { value, ...field } }) => (
+                      render={({field: {value, ...field}}) => (
                         <Checkbox {...field} checked={!!value} />
                       )}
                     />
@@ -193,9 +193,9 @@ const AlgorithmCard = ({ qaAlgorithm }: AlgorithCardProps) => {
                       variant="body1"
                       component="span"
                       sx={{
-                        display: "flex",
+                        display: 'flex',
                         gap: 1,
-                        alignItems: "center",
+                        alignItems: 'center',
                       }}
                     >
                       Deaktiveret
@@ -216,20 +216,20 @@ const AlgorithmCard = ({ qaAlgorithm }: AlgorithCardProps) => {
               </Typography>
             </Box>
           }
-          sx={{ p: 1 }}
+          sx={{p: 1}}
         />
         <CardContent
           sx={{
             p: 1,
             m: 0,
-            marginBottom: "auto",
+            marginBottom: 'auto',
           }}
         >
           <FormProvider {...formMethods}>
             {qaAlgorithm?.parameters?.map((option: QaAlgorithmParameters) => {
               return (
                 <div key={option.name}>
-                  {option.type !== "select" ? (
+                  {option.type !== 'select' ? (
                     <FormInput
                       fullWidth
                       type={option.type}
@@ -241,7 +241,7 @@ const AlgorithmCard = ({ qaAlgorithm }: AlgorithCardProps) => {
                       fullWidth
                       select
                       label={option.label}
-                      options={option.options?.map((opt) => ({ [opt.value]: opt.label }))}
+                      options={option.options?.map((opt) => ({[opt.value]: opt.label}))}
                       name={`parameters.${option.name}`}
                     />
                   )}
@@ -250,7 +250,7 @@ const AlgorithmCard = ({ qaAlgorithm }: AlgorithCardProps) => {
             })}
           </FormProvider>
         </CardContent>
-        <CardActions sx={{ justifyContent: "center", marginTop: "auto", p: 1, m: 0 }}>
+        <CardActions sx={{justifyContent: 'center', marginTop: 'auto', p: 1, m: 0}}>
           <Button bttype="tertiary" loading={isRevertPending} onClick={handleRevert}>
             Tilbage til standard
           </Button>

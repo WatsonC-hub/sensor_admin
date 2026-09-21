@@ -1,10 +1,10 @@
-import { Box, Alert, Typography } from "@mui/material";
-import React from "react";
+import {Box, Alert, Typography} from '@mui/material';
+import React from 'react';
 
-import { limitDecimalNumbers } from "~/helpers/dateConverter";
+import {limitDecimalNumbers} from '~/helpers/dateConverter';
 
 type Props = {
-  latestMeasurementSeverity: "warning" | "info";
+  latestMeasurementSeverity: 'warning' | 'info';
   hide: boolean;
   MPTitle: string;
   koteTitle: string | number;
@@ -23,21 +23,21 @@ const DisplayWaterlevelAlert = ({
   return (
     <Box
       sx={{
-        mx: "auto",
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
+        mx: 'auto',
+        display: 'flex',
+        justifyContent: 'center',
+        flexDirection: 'column',
         gap: 1,
-        width: "100%",
+        width: '100%',
       }}
     >
       {elevationDiff !== undefined && (
         <Alert
           severity={latestMeasurementSeverity}
           sx={{
-            display: hide ? "none" : "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            display: hide ? 'none' : 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
           <Typography>
@@ -46,9 +46,9 @@ const DisplayWaterlevelAlert = ({
         </Alert>
       )}
       <Alert
-        severity={pejlingOutOfRange ? "error" : "info"}
+        severity={pejlingOutOfRange ? 'error' : 'info'}
         sx={{
-          alignItems: "center",
+          alignItems: 'center',
         }}
       >
         {pejlingOutOfRange ? (

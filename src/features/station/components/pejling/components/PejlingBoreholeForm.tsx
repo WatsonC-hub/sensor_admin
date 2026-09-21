@@ -1,19 +1,18 @@
-import React from "react";
-import { Box } from "@mui/material";
-import CompoundPejling from "../CompoundPejling";
-import { useAtomValue } from "jotai";
+import {Box} from '@mui/material';
+import {useAtomValue} from 'jotai';
+import React from 'react';
 
-import useBreakpoints from "~/hooks/useBreakpoints";
-import { boreholeIsPumpAtom } from "~/state/atoms";
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {boreholeIsPumpAtom} from '~/state/atoms';
+
+import CompoundPejling from '../CompoundPejling';
 
 const PejlingBoreholeForm = () => {
   const isPump = useAtomValue(boreholeIsPumpAtom);
-  const { isMobile } = useBreakpoints();
+  const {isMobile} = useBreakpoints();
   return (
-    <Box
-      sx={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: 350, p: 1 }}
-    >
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
+    <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: 350, p: 1}}>
+      <Box sx={{display: 'flex', justifyContent: 'center'}}>
         <CompoundPejling.NotPossible />
         <CompoundPejling.IsPump />
       </Box>
@@ -27,11 +26,11 @@ const PejlingBoreholeForm = () => {
         <Box
           sx={{
             flex: 1,
-            width: "100%",
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: isMobile ? "wrap" : "nowrap",
-            justifyContent: "center",
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: isMobile ? 'wrap' : 'nowrap',
+            justifyContent: 'center',
           }}
         >
           <CompoundPejling.Service />
