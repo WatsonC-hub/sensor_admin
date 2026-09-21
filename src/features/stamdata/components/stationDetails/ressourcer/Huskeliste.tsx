@@ -49,7 +49,7 @@ const Huskeliste = ({loc_id, onValidate}: HuskelisteProps) => {
 
   const {location_permissions} = usePermissions(loc_id);
 
-  const result = ressourcer.safeParse(related);
+  const result = ressourcer.safeParse({ressourcer: related});
   const formMethods = useForm<z.input<typeof ressourcer>>({
     resolver: zodResolver(ressourcer),
     defaultValues: result.data,

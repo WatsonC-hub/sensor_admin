@@ -250,7 +250,7 @@ export default function TranserList({loc_id, value, setValue}: TransferListProps
                                   key={ressource.navn}
                                   role="listitem"
                                   onClick={handleToggle(ressource)}
-                                  sx={{'&:hover': {bgcolor: 'grey.200'}, py: 0.0}}
+                                  sx={{'&:hover': {bgcolor: 'grey.200'}, py: 0.0, gap: 1}}
                                 >
                                   <ListItemIcon sx={{mr: -1.5}} key={ressource.id}>
                                     <Checkbox
