@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Grid2} from '@mui/material';
+import {Grid2} from '@mui/material';
 import CompoundPejling from '../CompoundPejling';
 import {useAtomValue} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
@@ -9,26 +9,31 @@ const PejlingBoreholeForm = () => {
   const isPump = useAtomValue(boreholeIsPumpAtom);
   const {isMobile} = useBreakpoints();
   return (
-    <Box
-    display={'flex'}
+    <Grid2
+      container
+      size={12}
       flexDirection={'column'}
       alignItems={'center'}
-      maxWidth={350}
+      maxWidth={'100%'}
       p={1}
     >
-      <Box display={'flex'} justifyContent={'center'}>
+      <Grid2 container size={12} justifyContent={'center'}>
         <CompoundPejling.NotPossible />
         <CompoundPejling.IsPump />
-      </Box>
+      </Grid2>
       <CompoundPejling.Extrema />
 
+      <Grid2 size={12}>
         <CompoundPejling.Measurement />
         <CompoundPejling.WaterlevelAlert />
+      </Grid2>
 
-      <CompoundPejling.TimeOfMeas label="Tidspunkt for pejling" />
+      <Grid2 size={12} display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+        <CompoundPejling.TimeOfMeas label="Tidspunkt for pejling" />
+      </Grid2>
       {isPump && (
-        <Box
-          flex={1}
+        <Grid2
+          size={12}
           width={'100%'}
           display={'flex'}
           flexDirection={'row'}
@@ -37,11 +42,13 @@ const PejlingBoreholeForm = () => {
         >
           <CompoundPejling.Service />
           <CompoundPejling.PumpStop />
-        </Box>
+        </Grid2>
       )}
       <CompoundPejling.Correction />
-      <CompoundPejling.Comment fullWidth />
-    </Box>
+      <Grid2 size={12}>
+        <CompoundPejling.Comment fullWidth />
+      </Grid2>
+    </Grid2>
   );
 };
 

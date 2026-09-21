@@ -1,4 +1,4 @@
-import {Box, Alert, Typography} from '@mui/material';
+import {Grid, Alert, Typography} from '@mui/material';
 import React from 'react';
 
 import {limitDecimalNumbers} from '~/helpers/dateConverter';
@@ -21,14 +21,17 @@ const DisplayWaterlevelAlert = ({
   hide,
 }: Props) => {
   return (
-    <Box
+    <Grid
+      item
+      xs={12}
+      sm={7}
       sx={{
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
-        gap: 1,
-        width: '100%',
+        gap: 2,
       }}
+      mx={'auto'}
     >
       {elevationDiff !== undefined && (
         <Alert
@@ -47,6 +50,8 @@ const DisplayWaterlevelAlert = ({
       <Alert
         severity={pejlingOutOfRange ? 'error' : 'info'}
         sx={{
+          display: 'flex',
+          justifyContent: 'center',
           alignItems: 'center',
         }}
       >
@@ -61,7 +66,7 @@ const DisplayWaterlevelAlert = ({
           </>
         )}
       </Alert>
-    </Box>
+    </Grid>
   );
 };
 
