@@ -23,8 +23,6 @@ export type Metadata = {
   terrainlevel: number;
   terrainqual: string;
   ts_name: string;
-  correction_type: 'scale' | 'translation' | null;
-  calculate_function: string | null;
   maalepunktskote: number;
   projectno: string | undefined;
   batteriskift: string;

@@ -29,8 +29,6 @@ import {
   initiateConfirmTimeseriesAtom,
   initiateSelectAtom,
   levelCorrectionAtom,
-  pejlingCorrectionDateSelectionAtom,
-  pejlingPickCorrectionDateModeAtom,
   qaSelection,
   tempHorizontalAtom,
 } from '~/state/atoms';
@@ -65,8 +63,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const [initiateSelect, setInitiateSelect] = useAtom(initiateSelectAtom);
   const levelCorrection = useAtomValue(levelCorrectionAtom);
   const initiateConfirmTimeseries = useAtomValue(initiateConfirmTimeseriesAtom);
-  const pickCorrectionDate = useAtomValue(pejlingPickCorrectionDateModeAtom);
-  const setCorrectionDateSelection = useSetAtom(pejlingCorrectionDateSelectionAtom);
 
   const tempLines = useAtomValue(tempHorizontalAtom);
   const [pageToShow] = useStationPages();
@@ -669,13 +665,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
         xRange={xRange}
         setXRange={setXRange}
         dataToShow={dataToShow}
-        plotEventProps={{
-          onClick: (e) => {
-            if (pickCorrectionDate && e.points[0].data.mode !== 'markers') {
-              setCorrectionDateSelection(e.points);
-            }
-          },
-        }}
       />
     </Box>
   );

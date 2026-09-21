@@ -7,25 +7,19 @@ import {
   Radio,
   RadioGroup,
   Checkbox,
-  TextField,
-  MenuItem,
 } from '@mui/material';
 import React, {useContext, useEffect, useState} from 'react';
 import FormInput, {FormInputProps} from '~/components/FormInput';
 import {PejlingBoreholeSchemaType, PejlingSchemaType} from './PejlingSchema';
 import {Controller, useFormContext} from 'react-hook-form';
-import {getCorrectionMode, SCALE_CORRECTION_PICK_ON_GRAPH_VALUE} from './correctionMode';
+import {correction_map} from '~/consts';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import IngenMPAlert from '~/features/pejling/components/IngenMPAlert';
 import Button from '~/components/Button';
 import {Save} from '@mui/icons-material';
 import {useAtom} from 'jotai';
-import {
-  boreholeIsPumpAtom,
-  pejlingCorrectionDateSelectionAtom,
-  pejlingPickCorrectionDateModeAtom,
-} from '~/state/atoms';
+import {boreholeIsPumpAtom} from '~/state/atoms';
 import {LatestMeasurement, MaalepunktAsDayjs} from '~/types';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {get} from 'lodash';
@@ -33,8 +27,6 @@ import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAler
 import TooltipWrapper from '~/components/TooltipWrapper';
 import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
 import {useAppContext} from '~/state/contexts';
-import dayjs from 'dayjs';
-import {toast} from 'react-toastify';
 
 interface PejlingProps {
   submit: (values: PejlingSchemaType | PejlingBoreholeSchemaType) => void;
@@ -53,9 +45,6 @@ interface CompoundPejlingProps extends PejlingProps {
   elevationDiff?: number;
   notPossible: boolean;
   setNotPossible: (notPossible: boolean) => void;
-  correction_type: 'scale' | 'translation' | null | undefined;
-  calculate_function?: string | null;
-  calculated?: boolean;
 }
 
 const CompoundPejlingContext = React.createContext<CompoundPejlingProps>({
@@ -70,9 +59,6 @@ const CompoundPejlingContext = React.createContext<CompoundPejlingProps>({
   currentMP: null,
   elevationDiff: 0,
   notPossible: false,
-  correction_type: undefined,
-  calculate_function: undefined,
-  calculated: undefined,
   setNotPossible: () => {},
 });
 
@@ -91,9 +77,6 @@ const CompoundPejling = ({
   const [notPossible, setNotPossible] = useState<boolean>(!!getValues('extrema'));
 
   const {data: timeseries} = useTimeseriesData();
-  const correction_type = timeseries?.correction_type;
-  const calculate_function = timeseries?.calculate_function;
-  const calculated = timeseries?.calculated;
   const isWaterLevel = timeseries?.tstype_id === 1;
   const isFlow = timeseries?.tstype_id === 2;
   const [elevationDiff, setElevationDiff] = useState<number | undefined>(undefined);
@@ -165,9 +148,6 @@ const CompoundPejling = ({
         notPossible,
         setNotPossible,
         isFlow,
-        correction_type,
-        calculate_function,
-        calculated,
       }}
     >
       {children}
@@ -290,49 +270,12 @@ const Comment = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
   );
 };
 
-const CORRECTION_DATE_TOAST_ID = 'pejling-correction-date';
-
-const CORRECTION_SUB_OPTION_LABELS: Record<number, string> = {
-  2: 'Til start af tidsserie',
-  4: 'Til start af udstyr',
-  5: 'Til niveau spring',
-  6: 'Til forrige korrigeret pejling',
-  [SCALE_CORRECTION_PICK_ON_GRAPH_VALUE]: 'Til brugerdefineret dato',
-};
-
-const correctionConfigByType: Record<
-  'translation' | 'scale',
-  {bagudrettetLabel: string; subOptionValues: number[]}
-> = {
-  translation: {
-    bagudrettetLabel: 'Korrektion bagud og fremadrettet',
-    subOptionValues: [2, 4, 5, 6, SCALE_CORRECTION_PICK_ON_GRAPH_VALUE],
-  },
-  scale: {
-    bagudrettetLabel: 'Lineær korrektion bagudrettet',
-    subOptionValues: [2, 4, 6, SCALE_CORRECTION_PICK_ON_GRAPH_VALUE],
-  },
-};
-
 const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
-  const {correction_type, isFlow, calculate_function, calculated} =
-    useContext(CompoundPejlingContext);
-  const mode = getCorrectionMode({correction_type, isFlow, calculate_function, calculated});
-
-  switch (mode) {
-    case 'hidden':
-      return null;
-    case 'simple_correction':
-      return <SimpleCorrection {...props} />;
-    case 'translation':
-    case 'scale':
-      return <FullCorrection {...props} />;
-  }
-};
-
-const SimpleCorrection = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
   const {isMobile} = useBreakpoints();
   const {control} = useFormContext();
+  const {isWaterLevel, isFlow} = useContext(CompoundPejlingContext);
+
+  if (!(isWaterLevel || isFlow)) return null;
 
   return (
     <Controller
@@ -340,67 +283,6 @@ const SimpleCorrection = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>
       name="useforcorrection"
       rules={{required: true}}
       render={({field: {value, onChange}, fieldState: {error}}) => {
-        return (
-          <FormControl component="fieldset">
-            <TooltipWrapper
-              description="Anvendelsen af en pejling er et vigtigt aspekt af at få en korrekt kotesat vandstand. Læs mere på linket hvis du er i tvivl om hvad anvendelserne gør."
-              url="https://www.watsonc.dk/guides/kontrolpejling/#anvendelsestyper"
-            >
-              <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>{' '}
-            </TooltipWrapper>
-            <RadioGroup value={value + ''} onChange={(e) => onChange(e.target.value)}>
-              <FormControlLabel
-                value={0}
-                control={<Radio />}
-                label={<Typography variant={isMobile ? 'body2' : 'body1'}>Kontrol</Typography>}
-              />
-              <FormControlLabel
-                value={1}
-                control={<Radio />}
-                label={<Typography variant={isMobile ? 'body2' : 'body1'}>Korrektion</Typography>}
-              />
-            </RadioGroup>
-            {error && (
-              <Typography variant="caption" color="error">
-                {error.message}
-              </Typography>
-            )}
-          </FormControl>
-        );
-      }}
-      {...props}
-    />
-  );
-};
-
-const FullCorrection = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
-  const {isMobile} = useBreakpoints();
-  const {control, setValue} = useFormContext();
-  const {correction_type} = useContext(CompoundPejlingContext);
-
-  const {bagudrettetLabel, subOptionValues} =
-    correctionConfigByType[correction_type === 'scale' ? 'scale' : 'translation'];
-  const subOptions = subOptionValues.map((value) => ({
-    value,
-    label: CORRECTION_SUB_OPTION_LABELS[value],
-  }));
-
-  return (
-    <Controller
-      control={control}
-      name="useforcorrection"
-      rules={{required: true}}
-      render={({field: {value, onChange}, fieldState: {error}}) => {
-        const isExpanded =
-          value.toString() === '-1' || subOptions.some((option) => option.value === Number(value));
-
-        const handleUseforcorrectionChange = (newValue: number) => {
-          onChange(newValue);
-          if (newValue !== SCALE_CORRECTION_PICK_ON_GRAPH_VALUE) {
-            setValue('correction_date', null, {shouldDirty: true});
-          }
-        };
-
         return (
           <FormControl component="fieldset">
             <TooltipWrapper
@@ -412,8 +294,8 @@ const FullCorrection = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) 
             <RadioGroup
               value={value + ''}
               onChange={(e) => {
-                if (e.target.value == '-1') handleUseforcorrectionChange(2);
-                else handleUseforcorrectionChange(Number(e.target.value));
+                if (e.target.value == '-1') onChange(2);
+                else onChange(e.target.value);
               }}
             >
               <FormControlLabel
@@ -434,108 +316,41 @@ const FullCorrection = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) 
                 value={value == '0' || value == '1' || value == '3' ? -1 : value}
                 control={<Radio />}
                 label={
-                  <Typography variant={isMobile ? 'body2' : 'body1'}>{bagudrettetLabel}</Typography>
+                  <Typography variant={isMobile ? 'body2' : 'body1'}>
+                    Korrektion bagud og fremadrettet
+                  </Typography>
                 }
               />
+              {['-1', '2', '4', '5', '6'].includes(value.toString()) && (
+                <>
+                  {Object.keys(correction_map)
+                    .filter((x) => !['0', '1', '3'].includes(x.toString()))
+                    .map((element, index) => {
+                      const value = Object.values(correction_map).filter(
+                        (x) => !['Kontrol', 'Korrektion fremadrettet', 'Lineær'].includes(x)
+                      )[index];
+                      return (
+                        <FormControlLabel
+                          key={element}
+                          value={Number(element)}
+                          control={<Radio />}
+                          label={value}
+                          sx={{ml: 2}}
+                        />
+                      );
+                    })}
+                </>
+              )}
             </RadioGroup>
-            {isExpanded && (
-              <TextField
-                select
-                label="Vælg korrektionstype"
-                value={
-                  subOptions.some((option) => option.value === Number(value)) ? Number(value) : ''
-                }
-                onChange={(e) => handleUseforcorrectionChange(Number(e.target.value))}
-                fullWidth
-                margin="dense"
-                sx={{maxWidth: 400, mt: 1}}
-                slotProps={{
-                  inputLabel: {
-                    sx: {
-                      color: 'primary.main',
-                    },
-                  },
-                  select: {
-                    sx: {
-                      '& > fieldset': {
-                        borderColor: 'primary.main',
-                      },
-                    },
-                  },
-                }}
-              >
-                {subOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
             {error && (
               <Typography variant="caption" color="error">
                 {error.message}
               </Typography>
             )}
-            {Number(value) === SCALE_CORRECTION_PICK_ON_GRAPH_VALUE && <CorrectionDate />}
           </FormControl>
         );
       }}
       {...props}
-    />
-  );
-};
-
-const CorrectionDate = () => {
-  const {setValue, watch} = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
-  const timeofmeas = watch('timeofmeas');
-  const [pickMode, setPickMode] = useAtom(pejlingPickCorrectionDateModeAtom);
-  const [selection, setSelection] = useAtom(pejlingCorrectionDateSelectionAtom);
-
-  useEffect(() => {
-    if (selection && selection.length > 0) {
-      const pickedDate = dayjs(selection[0].x);
-      setSelection(undefined);
-      setPickMode(false);
-      toast.dismiss(CORRECTION_DATE_TOAST_ID);
-
-      if (timeofmeas && pickedDate.isAfter(timeofmeas)) {
-        toast.error('Dato kan ikke være efter kontroltidspunktet');
-        return;
-      }
-
-      setValue('correction_date', pickedDate, {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      });
-    }
-  }, [selection]);
-
-  useEffect(() => {
-    return () => {
-      setPickMode(false);
-      setSelection(undefined);
-      toast.dismiss(CORRECTION_DATE_TOAST_ID);
-    };
-  }, [setPickMode, setSelection]);
-
-  return (
-    <FormDateTime
-      name="correction_date"
-      label="Korriger fra dato"
-      maxDate={timeofmeas}
-      customActionLabel="Vælg på graf"
-      customActionDisabled={pickMode}
-      customAction={() => {
-        setPickMode(true);
-        toast('Klik på et punkt i grafen for at vælge dato', {
-          toastId: CORRECTION_DATE_TOAST_ID,
-          type: 'info',
-          autoClose: false,
-          closeOnClick: true,
-          draggable: true,
-        });
-      }}
     />
   );
 };

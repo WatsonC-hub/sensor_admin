@@ -185,7 +185,6 @@ export type PejlingItem = {
   pumpstop: string | null;
   service: boolean | null;
   extrema: string | null;
-  correction_date?: string | null;
 };
 
 export type Parking = {
@@ -398,7 +397,6 @@ export type DialAction = {
   color: string;
   toastTip: string;
   dialog?: boolean;
-  hidden?: boolean;
 };
 
 type TaskContact = {
