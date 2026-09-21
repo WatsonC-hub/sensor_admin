@@ -319,7 +319,7 @@ const CORRECTION_SUB_OPTION_LABELS: Record<number, string> = {
   2: 'Til start af tidsserie',
   4: 'Til start af udstyr',
   5: 'Til niveau spring',
-  6: 'Til forrige korrigeret pejling',
+  6: 'Til forrige korrigerende pejling',
   [SCALE_CORRECTION_PICK_ON_GRAPH_VALUE]: 'Til brugerdefineret dato',
 };
 
@@ -328,11 +328,11 @@ const correctionConfigByType: Record<
   {bagudrettetLabel: string; subOptionValues: number[]}
 > = {
   translation: {
-    bagudrettetLabel: 'Korrektion bagud og fremadrettet',
+    bagudrettetLabel: 'Korrektion fremad og bagudrettet',
     subOptionValues: [2, 4, 5, 6, SCALE_CORRECTION_PICK_ON_GRAPH_VALUE],
   },
   scale: {
-    bagudrettetLabel: 'Lineær korrektion bagudrettet',
+    bagudrettetLabel: 'Lineær korrektion fremad og bagudrettet',
     subOptionValues: [2, 4, 6, SCALE_CORRECTION_PICK_ON_GRAPH_VALUE],
   },
 };

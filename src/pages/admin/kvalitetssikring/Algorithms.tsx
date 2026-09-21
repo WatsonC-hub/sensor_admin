@@ -97,7 +97,8 @@ const Algorithms = () => {
           {filtered_data?.map((algorithm) => (
             <Grid
               key={algorithm.name}
-              size={mobileRatio || filtered_data.length === 1 ? 12 : columns}
+
+              sx={{size: mobileRatio || filtered_data.length === 1 ? 12 : columns}}
             >
               <AlgorithmCard qaAlgorithm={algorithm} />
             </Grid>

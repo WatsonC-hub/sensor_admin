@@ -7,36 +7,17 @@ const PejlingForm = () => {
     <Grid
       container
       sx={{
-        flexDirection: 'column',
-        alignContent: 'center',
         justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center',
         p: 1,
+        maxWidth: 350,
       }}
     >
-      <Grid
-        size={12}
-        sx={{
-          justifyItems: 'center',
-        }}
-      >
-        <CompoundPejling.NotPossible />
-      </Grid>
-      <Grid
-        size={12}
-        sx={{
-          maxWidth: 400,
-        }}
-      >
-        <CompoundPejling.Measurement />
-        <CompoundPejling.WaterlevelAlert />
-      </Grid>
-      <Grid
-        sx={{
-          mb: 1,
-        }}
-      >
-        <CompoundPejling.TimeOfMeas label="Tidspunkt" />
-      </Grid>
+      <CompoundPejling.NotPossible />
+      <CompoundPejling.Measurement />
+      <CompoundPejling.WaterlevelAlert />
+      <CompoundPejling.TimeOfMeas label="Tidspunkt" />
       <CompoundPejling.Correction />
       <CompoundPejling.Comment fullWidth />
     </Grid>
