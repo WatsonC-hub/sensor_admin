@@ -76,8 +76,12 @@ export default function PejlingMeasurementsTableDesktop({handleEdit, disabled}: 
           ] as MRT_ColumnDef<PejlingItem>[])
         : []),
       {
-        accessorFn: (row) =>
-          correction_map[row.useforcorrection] ? correction_map[row.useforcorrection] : 'Kontrol',
+        accessorFn: (row) => {
+          const label = correction_map[row.useforcorrection] ?? 'Kontrol';
+          return row.correction_date
+            ? `${label} (${convertDateWithTimeStamp(row.correction_date)})`
+            : label;
+        },
         header: 'Anvendelse',
         id: 'useforcorrection',
         enableColumnFilter: true,

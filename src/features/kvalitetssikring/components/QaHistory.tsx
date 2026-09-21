@@ -22,6 +22,7 @@ import {navIconStyle, qaHistorySkeletonHeight} from '~/consts';
 import GraphManager from '~/features/station/components/GraphManager';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {AdjustmentTypes, qaAdjustment} from '~/helpers/enumHelper';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useAdjustmentState} from '~/hooks/useQueryStateParameters';
 import {
   initiateConfirmTimeseriesAtom,
@@ -40,6 +41,7 @@ import type {DialAction} from '~/types';
 export default function QAHistory() {
   const {ts_id} = useAppContext(['ts_id']);
   const [dataAdjustment, setDataAdjustment] = useAdjustmentState();
+  const {data: timeseries} = useTimeseriesData();
   const setInitiateSelect = useSetAtom(initiateSelectAtom);
   const setLevelCorrection = useSetAtom(levelCorrectionAtom);
   const setInitiateConfirmTimeseries = useSetAtom(initiateConfirmTimeseriesAtom);
@@ -95,6 +97,7 @@ export default function QAHistory() {
       },
       color: navIconStyle(dataAdjustment === qaAdjustment.CORRECTION),
       toastTip: 'Klik på et datapunkt på grafen',
+      hidden: timeseries?.correction_type !== 'translation',
     }
   );
   const adjustmentData = [

@@ -61,13 +61,7 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-      }}
-    >
+    <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
       {taskHistory?.map((row) => {
         if ('comment' in row) return <TaskInfoComment key={row.id} comment={row} />;
         else

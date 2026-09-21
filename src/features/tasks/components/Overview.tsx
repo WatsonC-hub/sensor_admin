@@ -277,13 +277,13 @@ const Overview = () => {
             <Box
               key={selectedTask}
               sx={{
-                p: 1,
                 display: 'flex',
                 flexDirection: 'column',
                 flexGrow: 1,
                 minHeight: 0,
                 overflow: 'auto',
                 height: '100%',
+                p: 1,
               }}
             >
               <TaskInfo />
