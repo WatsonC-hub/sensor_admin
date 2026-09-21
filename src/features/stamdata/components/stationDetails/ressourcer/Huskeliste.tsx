@@ -1,14 +1,14 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Box } from "@mui/material";
-import React from "react";
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import { z } from "zod";
+import {zodResolver} from '@hookform/resolvers/zod';
+import {Box} from '@mui/material';
+import React from 'react';
+import {Controller, FormProvider, useForm} from 'react-hook-form';
+import {z} from 'zod';
 
-import usePermissions from "~/features/permissions/api/usePermissions";
-import { useRessourcer } from "~/features/stamdata/api/useRessourcer";
-import Autocomplete from "~/features/stamdata/components/stationDetails/ressourcer/multiselect/Autocomplete";
-import TransferList from "~/features/stamdata/components/stationDetails/ressourcer/multiselect/TransferList";
-import useBreakpoints from "~/hooks/useBreakpoints";
+import usePermissions from '~/features/permissions/api/usePermissions';
+import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
+import Autocomplete from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/Autocomplete';
+import TransferList from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/TransferList';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 const ressourcer = z.object({
   ressourcer: z
@@ -28,7 +28,7 @@ const ressourcer = z.object({
           .nullable()
           .transform((array) => array ?? []),
         forudvalgt: z.boolean(),
-      }),
+      })
     )
     .nullish()
     .transform((ressourcer) => ressourcer ?? []),
@@ -41,36 +41,36 @@ type HuskelisteProps = {
 
 type RessourceInput = z.input<typeof ressourcer.shape.ressourcer>;
 
-const Huskeliste = ({ loc_id, onValidate }: HuskelisteProps) => {
-  const { isMobile } = useBreakpoints();
+const Huskeliste = ({loc_id, onValidate}: HuskelisteProps) => {
+  const {isMobile} = useBreakpoints();
   const {
-    relation: { data: related },
+    relation: {data: related},
   } = useRessourcer(loc_id);
 
-  const { location_permissions } = usePermissions(loc_id);
+  const {location_permissions} = usePermissions(loc_id);
 
-  const result = ressourcer.safeParse({ ressourcer: related });
+  const result = ressourcer.safeParse({ressourcer: related});
   const formMethods = useForm<z.input<typeof ressourcer>>({
     resolver: zodResolver(ressourcer),
     defaultValues: result.data,
     values: result.data,
-    mode: "onSubmit",
+    mode: 'onSubmit',
   });
 
-  const { control } = formMethods;
+  const {control} = formMethods;
 
   return (
     <FormProvider {...formMethods}>
       <Controller
-        key={"ressourcer"}
+        key={'ressourcer'}
         name="ressourcer"
         control={control}
-        disabled={location_permissions !== "edit"}
-        render={({ field: { onChange, value } }) => {
+        disabled={location_permissions !== 'edit'}
+        render={({field: {onChange, value}}) => {
           return (
             <Box
               sx={{
-                display: "flex",
+                display: 'flex',
                 flexGrow: 1,
                 minWidth: 275,
                 maxWidth: 1080,
