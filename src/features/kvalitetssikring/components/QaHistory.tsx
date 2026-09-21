@@ -35,10 +35,12 @@ import {toast} from 'react-toastify';
 import GraphManager from '~/features/station/components/GraphManager';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import dayjs from 'dayjs';
+import { useTimeseriesData } from '~/hooks/query/useMetadata';
 
 export default function QAHistory() {
   const {ts_id} = useAppContext(['ts_id']);
   const [dataAdjustment, setDataAdjustment] = useAdjustmentState();
+  const {data: timeseries} = useTimeseriesData();
   const setInitiateSelect = useSetAtom(initiateSelectAtom);
   const setLevelCorrection = useSetAtom(levelCorrectionAtom);
   const setInitiateConfirmTimeseries = useSetAtom(initiateConfirmTimeseriesAtom);
@@ -94,6 +96,7 @@ export default function QAHistory() {
       },
       color: navIconStyle(dataAdjustment === qaAdjustment.CORRECTION),
       toastTip: 'Klik på et datapunkt på grafen',
+      hidden: timeseries?.correction_type !== 'translation'
     }
   );
   const adjustmentData = [

@@ -10,6 +10,7 @@ export const initialData = () =>
     measurement: 0,
     useforcorrection: 0,
     comment: '',
+    correction_date: null,
   }) as PejlingSchemaType;
 
 export const boreholeInitialData = () =>
@@ -21,4 +22,5 @@ export const boreholeInitialData = () =>
     service: false,
     pumpstop: null,
     extrema: undefined,
+    correction_date: null,
   }) as PejlingBoreholeSchemaType;

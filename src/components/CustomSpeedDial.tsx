@@ -54,7 +54,7 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
         },
       }}
     >
-      {actions.map((action) => {
+      {actions.filter((action) => !action.hidden).map((action) => {
         return (
           <SpeedDialAction
             key={action.key}
