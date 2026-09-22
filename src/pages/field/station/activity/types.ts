@@ -4,15 +4,21 @@ import {zodDayjs} from '~/helpers/schemas';
 
 const FlagValues = z.union([z.string(), z.number(), z.null()]);
 
+const flagEntrySchema = z.object({
+  id: z.number(),
+  value: FlagValues,
+});
+
 const activitySchema = z.object({
   created_at: zodDayjs('Tidspunkt skal være udfyldt'),
   id: z.string().optional().default(''),
   flag_ids: z.array(z.number()).optional().default([]),
-  flags: z.record(z.string(), FlagValues),
+  flags: z.array(flagEntrySchema),
   // comment: z.string().default(''),
 });
 
 export type ActivitySchemaType = z.infer<typeof activitySchema>;
+export type FlagEntry = z.infer<typeof flagEntrySchema>;
 
 type BaseRow = {
   id: string;
@@ -55,4 +61,4 @@ export type ActivityPost = {
   flags: Record<number, number | string | null>;
 };
 
-export {activitySchema};
+export {activitySchema, flagEntrySchema};

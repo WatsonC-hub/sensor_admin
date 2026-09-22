@@ -1,11 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {ActivityOption, activitySchema, ActivitySchemaType} from './types';
+import React, {useMemo} from 'react';
+import {ActivityOption, activitySchema, ActivitySchemaType, flagEntrySchema} from './types';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm} from 'react-hook-form';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {Box, Card, Divider, Grid2, Typography} from '@mui/material';
 import {useActivityOptions, useActivityPost} from './activityQueries';
+import {z} from 'zod';
 
 import ActivityFlagForm from './ActivityFlagForm';
 
@@ -15,32 +16,68 @@ interface ActivityFormProps {
   loc_id: number;
   ts_id?: number;
   initialData: ActivitySchemaType;
+  values?: ActivitySchemaType;
 }
 
-const ActivityForm = ({loc_id, ts_id, initialData}: ActivityFormProps) => {
-  // const {data: activityData} = activitySchema.safeParse(
-  //   typeof initialData === 'function' ? initialData() : initialData
-  // );
+const ActivityForm = ({loc_id, ts_id, initialData, values}: ActivityFormProps) => {
   const [, setShowForm] = useShowFormState();
-  const [activityFlagFormValid, setActivityFlagFormValid] = useState(true);
+
 
   const {data: options} = useActivityOptions(ts_id);
 
   const mutation = useActivityPost();
 
+  const schema = useMemo(() => {
+    return activitySchema.extend({
+      flags: z.array(flagEntrySchema).superRefine((flags, ctx) => {
+        flags.forEach((flag, index) => {
+          const option = options?.find((o) => o.id === flag.id);
+          if (!option || option.input_type === 'null') return;
+
+          if (option.input_type === 'number' && typeof flag.value !== 'number') {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Skal være et tal',
+              path: [index, 'value'],
+            });
+          }
+
+          if (
+            (option.input_type === 'text' || option.input_type === 'textarea') &&
+            (typeof flag.value !== 'string' || flag.value.length < 3)
+          ) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Skal være minimum 3 karakterer',
+              path: [index, 'value'],
+            });
+          }
+        });
+      }),
+    });
+  }, [options]);
+
   const formMethods = useForm<ActivitySchemaType>({
-    resolver: zodResolver(activitySchema),
-    values: initialData,
+    resolver: zodResolver(schema),
+    defaultValues: initialData,
+    values: values,
     mode: 'onTouched',
   });
 
-  const {watch, setValue, getValues} = formMethods;
+  const {
+    watch,
+    control,
+    formState: {isValid, isDirty},
+  } = formMethods;
+
+
+  console.log(values !== undefined && isValid);
 
   const onSubmit = (values: ActivitySchemaType) => {
     mutation.mutate(
       {
         created_at: values.created_at,
-        flags: values.flags,
+        flags: Object.fromEntries(values.flags.map(({id, value}) => [id, value])),
         id: values.id,
         loc_id: loc_id,
       },
@@ -51,10 +88,6 @@ const ActivityForm = ({loc_id, ts_id, initialData}: ActivityFormProps) => {
       }
     );
   };
-
-  useEffect(() => {
-    if (initialData.id) setValue('id', initialData.id, {shouldDirty: true});
-  }, [initialData.id]);
 
   const flag_ids = watch('flag_ids');
 
@@ -95,18 +128,6 @@ const ActivityForm = ({loc_id, ts_id, initialData}: ActivityFormProps) => {
             required: true,
           }}
           options={options || []}
-          onChangeCallback={(value) => {
-            const ids = value.map((option) => option.id);
-            const flags = getValues('flags');
-            const newFlags = ids.reduce(
-              (acc, id) => {
-                acc[id] = flags[id] ?? null; // default value for new keys
-                return acc;
-              },
-              {} as typeof flags
-            );
-            setValue('flags', newFlags);
-          }}
           renderOption={(props, option) => (
             <li {...props} key={option.id}>
               <Box>
@@ -128,37 +149,8 @@ const ActivityForm = ({loc_id, ts_id, initialData}: ActivityFormProps) => {
           }}
         />
 
-        <ActivityFlagForm
-          ts_id={ts_id}
-          defaultValues={initialData.flags}
-          flag_ids={flag_ids}
-          onValid={(value) => setValue('flags', value, {shouldDirty: true})}
-          setValid={setActivityFlagFormValid}
-        />
+        <ActivityFlagForm ts_id={ts_id} flag_ids={flag_ids} control={control} />
 
-        {/* <Controller
-          name="flags"
-          control={formMethods.control}
-          render={({field: {value: fieldValue, onChange}}) => {
-            return (
-              <Box display="flex" flexDirection="column" gap={1} width="100%">
-                {flag_ids.map((flag) => (
-                  <ActivityInput
-                    key={flag}
-                    option={options?.find((option) => option.id == flag) as ActivityOption}
-                    value={fieldValue[flag]}
-                    setValue={(value) =>
-                      onChange({
-                        ...fieldValue,
-                        [flag]: value,
-                      })
-                    }
-                  />
-                ))}
-              </Box>
-            );
-          }}
-        /> */}
         {/* <Form.Input
           gridSizes={{xs: 12}}
           name="comment"
@@ -173,7 +165,7 @@ const ActivityForm = ({loc_id, ts_id, initialData}: ActivityFormProps) => {
               setShowForm(null);
             }}
           />
-          <Form.Submit submit={onSubmit} disabled={!activityFlagFormValid} />
+          <Form.Submit submit={onSubmit} disabled={values !== undefined && (!isValid || !isDirty)} />
         </Grid2>
       </Card>
     </Form>

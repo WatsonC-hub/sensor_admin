@@ -10,7 +10,7 @@ type SubmitProps<T> = ButtonProps & {
 const Submit = <T extends FieldValues>({submit, disabled}: SubmitProps<T>) => {
   const {
     handleSubmit,
-    formState: {errors, isDirty, isSubmitting},
+    formState: {errors, isSubmitting},
   } = useFormContext<T>();
 
   return (
@@ -18,7 +18,7 @@ const Submit = <T extends FieldValues>({submit, disabled}: SubmitProps<T>) => {
       bttype="primary"
       fullWidth={false}
       startIcon={isSubmitting ? undefined : <Save />}
-      disabled={disabled || Object.keys(errors).length > 0 || !isDirty}
+      disabled={disabled || Object.keys(errors).length > 0}
       loading={isSubmitting}
       onClick={handleSubmit(submit, (errors) => console.log('errors:', errors))}
     >

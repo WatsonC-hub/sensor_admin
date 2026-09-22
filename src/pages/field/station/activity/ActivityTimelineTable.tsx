@@ -325,7 +325,10 @@ export default function ActivityTimelineTable({
   );
 
   const handleDelete = () => {
-    if (deleteId) deleteActivity(deleteId);
+    if (deleteId) {
+      deleteActivity(deleteId);
+      setDeleteId(null);
+    }
   };
 
   const table = useMaterialReactTable({

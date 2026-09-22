@@ -19,7 +19,7 @@ const defaultData = () =>
   ({
     id: '',
     created_at: dayjs(),
-    flags: {},
+    flags: [],
     flag_ids: [],
   }) as ActivitySchemaType;
 
@@ -27,6 +27,7 @@ export default function ActivityTimeline() {
   const {ts_id, loc_id} = useAppContext(['loc_id'], ['ts_id']);
   const [showForm, setShowForm] = useShowFormState();
   const [formDefaults, setFormDefaults] = useState<ActivitySchemaType>(defaultData());
+  const [formValues, setFormValues] = useState<ActivitySchemaType | undefined >(undefined);
 
   const {location_permissions} = usePermissions(loc_id);
 
@@ -39,15 +40,16 @@ export default function ActivityTimeline() {
       </Box>
       <Divider />
       <StationPageBoxLayout>
-        {showForm && <ActivityForm initialData={formDefaults} loc_id={loc_id} ts_id={ts_id} />}
+        {showForm && <ActivityForm initialData={formDefaults} loc_id={loc_id} ts_id={ts_id} values={formValues} />}
         <ActivityTimelineTable
           data={data}
           setEditData={(values) => {
-            setFormDefaults({
+            const flagEntries = Object.entries(values.flags ?? {});
+            setFormValues({
               created_at: dayjs(values.created_at),
-              flags: values.flags ?? {},
+              flags: flagEntries.map(([id, value]) => ({id: Number(id), value})),
               id: values.id,
-              flag_ids: Object.keys(values.flags ?? {}).map((id) => Number(id)),
+              flag_ids: flagEntries.map(([id]) => Number(id)),
             });
             setShowForm(true);
           }}
@@ -59,6 +61,7 @@ export default function ActivityTimeline() {
         onClick={() => {
           setShowForm(true);
           setFormDefaults(defaultData());
+          setFormValues(undefined);
         }}
         disabled={location_permissions !== 'edit'}
         sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
