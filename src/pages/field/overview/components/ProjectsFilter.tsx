@@ -24,7 +24,6 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
         marginTop: '8px',
         marginBottom: '4px',
       }}
-      freeSolo
       forcePopupIcon={false}
       multiple
       fullWidth

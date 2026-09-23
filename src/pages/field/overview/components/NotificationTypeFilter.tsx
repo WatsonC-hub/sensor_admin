@@ -19,7 +19,6 @@ const NotificationTypeFilter = ({setValue, value, onBlur, label = 'Notifikatione
 
   return (
     <Autocomplete
-      freeSolo
       forcePopupIcon={false}
       multiple
       fullWidth
