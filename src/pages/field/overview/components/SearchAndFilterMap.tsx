@@ -118,7 +118,6 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
     <>
       <Autocomplete
         ref={searchRef}
-        freeSolo={true}
         forcePopupIcon={false}
         options={locItems}
         autoHighlight
