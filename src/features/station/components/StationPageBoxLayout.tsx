@@ -1,9 +1,9 @@
 import {Box} from '@mui/material';
 import React from 'react';
 
-import type {SxProps, Theme} from '@mui/material';
-
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {SxProps, Theme} from '@mui/material';
 
 type StationPageBoxLayoutProps = {
   children: React.ReactNode;
