@@ -162,7 +162,6 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           justifyContent: 'space-between',
           borderRadius: 4,
           height: '96%',
-          minWidth: 350,
           m: 1,
         }}
       >
@@ -175,6 +174,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
+                  flexWrap: 'wrap',
                 }}
               >
                 <Typography variant={'h5'}>{qaAlgorithm.name}</Typography>

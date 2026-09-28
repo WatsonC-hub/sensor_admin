@@ -3,36 +3,42 @@ import React from 'react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
 
+import type {SxProps, Theme} from '@mui/material';
+
 type StationPageBoxLayoutProps = {
   children: React.ReactNode;
+  sx?: SxProps<Theme>;
 };
 
-const StationPageBoxLayout = ({children}: StationPageBoxLayoutProps) => {
+const StationPageBoxLayout = ({children, sx}: StationPageBoxLayoutProps) => {
   const {isTouch} = useBreakpoints();
   return (
     <Box
       key={'station-page-box-layout'}
       id="station-page-box-layout"
-      sx={{
-        px: {
-          xs: 2,
-        },
+      sx={[
+        {
+          px: {
+            xs: 2,
+          },
 
-        pt: {
-          mobile: 2,
-          laptop: 4,
-        },
+          pt: {
+            mobile: 2,
+            laptop: 4,
+          },
 
-        pb: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        mx: 'auto',
-        minWidth: 0,
-        maxWidth: '100%',
-        gap: 1,
-        flexGrow: isTouch ? 1 : 0,
-      }}
+          pb: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          mx: 'auto',
+          minWidth: 0,
+          maxWidth: '100%',
+          gap: 1,
+          flexGrow: isTouch ? 1 : 0,
+        },
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
     >
       {children}
     </Box>
