@@ -1,23 +1,18 @@
-import {Box, Divider, Grid, Typography} from '@mui/material';
+import {Box, Divider, Typography} from '@mui/material';
 import dayjs from 'dayjs';
-import React, {useEffect} from 'react';
+import React from 'react';
 
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import GraphManager from '~/features/station/components/GraphManager';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
 
 const Algorithms = () => {
-  const {isMobile} = useBreakpoints();
   const {
     get: {data},
   } = useAlgorithms();
-
-  const [columns, setColumns] = React.useState(6);
-  const [mobileRatio, setMobileRatio] = React.useState(false);
 
   const {data: unit_history} = useUnitHistory();
 
@@ -31,53 +26,24 @@ const Algorithms = () => {
     return true;
   });
 
-  useEffect(() => {
-    const resizeObserver = new ResizeObserver((event) => {
-      const width = event[0].contentRect.width;
-      const mobileRatio = width < 800;
-      const size = mobileRatio ? 300 : 480;
-      setMobileRatio(mobileRatio);
-      if (!mobileRatio && filtered_data && filtered_data.length > 2) {
-        const calculatedColumns = Math.floor(12 / Math.floor(width / size));
-        setColumns(calculatedColumns);
-      }
-    });
-    const main_content = document.getElementById('main_content');
-    if (resizeObserver && main_content !== null) resizeObserver.observe(main_content);
-
-    return () => resizeObserver.disconnect();
-  }, [filtered_data]);
   return (
     <>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: isMobile ? 'column-reverse' : 'row',
-        }}
-      >
-        <Box
-          sx={{
-            width: '100%',
+      <Box>
+        <GraphManager
+          defaultDataToShow={{
+            Kontrolmålinger: true,
+            Godkendt: true,
+            Algoritmer: true,
           }}
-        >
-          <GraphManager
-            defaultDataToShow={{
-              Kontrolmålinger: true,
-              Godkendt: true,
-              Algoritmer: true,
-            }}
-          />
-        </Box>
-        {/* <DataToShow /> */}
+        />
       </Box>
       <Divider />
-      <StationPageBoxLayout>
+      <StationPageBoxLayout sx={{width: '100%'}}>
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            minWidth: 800,
           }}
         >
           <TooltipWrapper
@@ -87,22 +53,17 @@ const Algorithms = () => {
             <Typography variant="h5">Advarsler</Typography>
           </TooltipWrapper>
         </Box>
-        <Grid
-          container
-          direction={'row'}
+        <Box
           sx={{
-            justifyContent: filtered_data && filtered_data.length < 4 ? 'center' : 'start',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(350px, 100%), 480px))',
+            justifyContent: 'center',
           }}
         >
           {filtered_data?.map((algorithm) => (
-            <Grid
-              key={algorithm.name}
-              sx={{size: mobileRatio || filtered_data.length === 1 ? 12 : columns}}
-            >
-              <AlgorithmCard qaAlgorithm={algorithm} />
-            </Grid>
+            <AlgorithmCard key={algorithm.name} qaAlgorithm={algorithm} />
           ))}
-        </Grid>
+        </Box>
       </StationPageBoxLayout>
     </>
   );
