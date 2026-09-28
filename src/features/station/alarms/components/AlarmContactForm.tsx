@@ -5,6 +5,7 @@ import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 
 import AlarmContactTable from './AlarmContactTable';
+import {Box} from '@mui/material';
 
 import type {AlarmContactFormOutput, AlarmFormOutput} from '../schema';
 
@@ -27,7 +28,7 @@ const AlarmContactForm = ({
   const contacts = watch('contacts');
 
   return (
-    <>
+    <Box sx={{display: 'flex', flexDirection: 'column'}}>
       {contacts &&
         contacts.filter((contact) => contact !== undefined || contact !== null).length > 0 && (
           <AlarmContactTable
@@ -52,7 +53,7 @@ const AlarmContactForm = ({
       >
         Tilføj ny kontakt
       </Button>
-    </>
+    </Box>
   );
 };
 
