@@ -9,16 +9,19 @@ export type ContactTable = {
     selected: boolean;
     to: string | null;
     from: string | null;
+    disabled: boolean;
   };
   email: {
     selected: boolean;
     to: string | null;
     from: string | null;
+    disabled: boolean;
   };
   call: {
     selected: boolean;
     to: string | null;
     from: string | null;
+    disabled: boolean;
   };
 };
 

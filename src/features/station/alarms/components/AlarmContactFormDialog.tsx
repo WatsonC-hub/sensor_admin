@@ -15,6 +15,7 @@ import React, {useState} from 'react';
 import {useForm, useWatch} from 'react-hook-form';
 
 import {createTypedForm} from '~/components/formComponents/Form';
+import TooltipWrapper from '~/components/TooltipWrapper';
 import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
@@ -42,6 +43,8 @@ const transformData = (data: ContactInfo[]) => {
   const alarmContacts = data.map((item) => ({
     contact_id: item.id,
     name: `${item.name} - ${item.email}`,
+    mobile: item.mobile,
+    email: item.email,
   }));
 
   return alarmContacts;
@@ -54,6 +57,14 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
   const {isMobile} = useBreakpoints();
 
   const currentContact = values && currentIndex !== -1 ? values[currentIndex] : undefined;
+  const [mobileDisabled, setMobileDisabled] = useState<boolean>(
+    // currentContact ? currentContact.call.disabled || currentContact.sms.disabled : false
+    false
+  );
+  const [emailDisabled, setEmailDisabled] = useState<boolean>(
+    // currentContact ? currentContact.email.disabled : false
+    false
+  );
 
   const alarmContactFormMethods = useForm<AlarmContactFormInput, unknown, AlarmContactFormOutput>({
     resolver: zodResolver(alarmContactSchema),
@@ -64,16 +75,19 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
         selected: false,
         from: '08:00',
         to: '16:00',
+        disabled: false,
       },
       email: {
         selected: false,
         from: '08:00',
         to: '16:00',
+        disabled: false,
       },
       call: {
         selected: false,
         from: '08:00',
         to: '16:00',
+        disabled: false,
       },
     },
     values: currentContact,
@@ -165,6 +179,9 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
               }}
               onChangeCallback={(value) => {
                 setValue('name', value?.name ?? '', {shouldDirty: true});
+                const contact = data?.find((c) => c.contact_id === value?.contact_id);
+                setMobileDisabled(!contact?.mobile);
+                setEmailDisabled(!contact?.email);
               }}
             />
             <Box
@@ -187,6 +204,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                   }
                 }}
                 gridSizes={{sm: 1.5}}
+                disabled={mobileDisabled}
               />
               <Box
                 sx={{
@@ -201,7 +219,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                   label="Start interval"
                   type="time"
                   fullWidth
-                  disabled={!smsSelected}
+                  disabled={!smsSelected || mobileDisabled}
                   gridSizes={6}
                 />
                 <AlarmContactTypedForm.Input
@@ -209,9 +227,12 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                   label="Slut interval"
                   type="time"
                   fullWidth
-                  disabled={!smsSelected}
+                  disabled={!smsSelected || mobileDisabled}
                   gridSizes={6}
                 />
+                {mobileDisabled && (
+                  <TooltipWrapper description="Telefonnummer er ikke registreret på denne kontakt" />
+                )}
               </Box>
             </Box>
             <Box
@@ -237,6 +258,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                   }
                 }}
                 gridSizes={{sm: 1.5}}
+                disabled={emailDisabled}
               />
               <Box
                 sx={{
@@ -251,7 +273,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                   label="Start interval"
                   type="time"
                   fullWidth
-                  disabled={!emailSelected}
+                  disabled={!emailSelected || emailDisabled}
                   gridSizes={6}
                 />
                 <AlarmContactTypedForm.Input
@@ -259,9 +281,12 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                   label="Slut interval"
                   type="time"
                   fullWidth
-                  disabled={!emailSelected}
+                  disabled={!emailSelected || emailDisabled}
                   gridSizes={6}
                 />
+                {emailDisabled && (
+                  <TooltipWrapper description="Telefonnummer er ikke registreret på denne kontakt" />
+                )}
               </Box>
             </Box>
             <Box
@@ -286,6 +311,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                   }
                 }}
                 gridSizes={{sm: 1.5}}
+                disabled={mobileDisabled}
               />
               <Box
                 sx={{
@@ -300,7 +326,7 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                   label="Start interval"
                   type="time"
                   fullWidth
-                  disabled={!callSelected}
+                  disabled={!callSelected || mobileDisabled}
                   gridSizes={6}
                 />
                 <AlarmContactTypedForm.Input
@@ -308,9 +334,12 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                   label="Slut interval"
                   type="time"
                   fullWidth
-                  disabled={!callSelected}
+                  disabled={!callSelected || mobileDisabled}
                   gridSizes={6}
                 />
+                {mobileDisabled && (
+                  <TooltipWrapper description="Telefonnummer er ikke registreret på denne kontakt" />
+                )}
               </Box>
             </Box>
             <Grid

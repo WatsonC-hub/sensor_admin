@@ -2,6 +2,7 @@ import {Box, Typography} from '@mui/material';
 import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 
+import TooltipWrapper from '~/components/TooltipWrapper';
 import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
@@ -31,16 +32,20 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
         Cell: ({cell}) => {
           const {sms} = cell.row.original;
           const smsString = `${sms.from?.slice(0, 5)} - ${sms.to?.slice(0, 5)}`;
+          const Wrapper = sms.disabled ? TooltipWrapper : Box;
           return (
             <Box
               sx={{
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
               }}
             >
               {!sms.selected ? (
                 <Typography variant="body2">-</Typography>
+              ) : sms.disabled ? (
+                <Wrapper description="Telefonnummer er ikke registreret på denne kontakt">
+                  <Typography variant="body2">{smsString}</Typography>
+                </Wrapper>
               ) : (
                 <Typography variant="body2">{smsString}</Typography>
               )}
@@ -56,6 +61,8 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
         Cell: ({cell}) => {
           const {email} = cell.row.original;
           const emailString = `${email.from?.slice(0, 5)} - ${email.to?.slice(0, 5)}`;
+          const Wrapper = email.disabled ? TooltipWrapper : Box;
+
           return (
             <Box
               sx={{
@@ -66,6 +73,10 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
             >
               {!email.selected ? (
                 <Typography variant="body2">-</Typography>
+              ) : email.disabled ? (
+                <Wrapper description="Email på denne kontakt er ikke registreret" color="#FF9115">
+                  <Typography variant="body2">{emailString}</Typography>
+                </Wrapper>
               ) : (
                 <Typography variant="body2">{emailString}</Typography>
               )}
@@ -81,6 +92,7 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
         Cell: ({cell}) => {
           const {call} = cell.row.original;
           const callString = `${call.from?.slice(0, 5)} - ${call.to?.slice(0, 5)}`;
+          const Wrapper = call.disabled ? TooltipWrapper : Box;
           return (
             <Box
               sx={{
@@ -91,6 +103,13 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
             >
               {!call.selected ? (
                 <Typography variant="body2">-</Typography>
+              ) : call.disabled ? (
+                <Wrapper
+                  description="Telefonnummer på denne kontakt er ikke registreret"
+                  color="#FF9115"
+                >
+                  <Typography variant="body2">{callString}</Typography>
+                </Wrapper>
               ) : (
                 <Typography variant="body2">{callString}</Typography>
               )}
