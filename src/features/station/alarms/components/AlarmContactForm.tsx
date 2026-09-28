@@ -6,6 +6,7 @@ import {useFormContext} from 'react-hook-form';
 import {Add} from '@mui/icons-material';
 import Button from '~/components/Button';
 import AlarmContactTable from './AlarmContactTable';
+import {Box} from '@mui/material';
 
 const removeContact = (index: number, contacts: AlarmContactFormType[]) => {
   return contacts.filter((_, i) => i !== index);
@@ -26,7 +27,7 @@ const AlarmContactForm = ({
   const contacts = watch('contacts');
 
   return (
-    <>
+    <Box sx={{display: 'flex', flexDirection: 'column'}}>
       {contacts &&
         contacts.filter((contact) => contact !== undefined || contact !== null).length > 0 && (
           <AlarmContactTable
@@ -51,7 +52,7 @@ const AlarmContactForm = ({
       >
         Tilføj ny kontakt
       </Button>
-    </>
+    </Box>
   );
 };
 
