@@ -19,6 +19,7 @@ export const alarmContactSchema = z
         selected: z.boolean().default(false),
         to: z.string().nullable(),
         from: z.string().nullable(),
+        disabled: z.boolean(),
       })
       .superRefine((val, ctx) => {
         if (val?.selected) {
@@ -35,6 +36,7 @@ export const alarmContactSchema = z
         selected: z.boolean().default(false),
         to: z.string().nullable(),
         from: z.string().nullable(),
+        disabled: z.boolean(),
       })
       .superRefine((val, ctx) => {
         if (val?.selected) {
@@ -51,6 +53,7 @@ export const alarmContactSchema = z
         selected: z.boolean().default(false),
         to: z.string().nullable(),
         from: z.string().nullable(),
+        disabled: z.boolean(),
       })
       .superRefine((val, ctx) => {
         if (val?.selected) {

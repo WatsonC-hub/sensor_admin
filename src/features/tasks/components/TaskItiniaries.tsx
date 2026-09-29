@@ -1,5 +1,5 @@
 import {Box, Typography, Card, IconButton, Link} from '@mui/material';
-import React, {ReactNode, useCallback, useRef, useState} from 'react';
+import React, {ReactNode, useCallback, useEffect, useRef, useState} from 'react';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
@@ -10,7 +10,7 @@ import {useItineraries, useItineraryMutations} from '../api/useItinerary';
 import {useTaskUsers} from '../api/useTasks';
 import {Taskitinerary} from '../types';
 import {convertDate} from '~/helpers/dateConverter';
-import {useDisplayState} from '~/hooks/ui';
+import {displayStore, useDisplayState} from '~/hooks/ui';
 import {DatePicker} from '@mui/x-date-pickers';
 import TaskForm from './TaskForm';
 import {useDroppable} from '@dnd-kit/react';
@@ -80,6 +80,16 @@ function Droppable({id, children, color}: {id: string; children: ReactNode; colo
 const filterMapOverview = (data: MapOverview[]) =>
   data.filter((location) => location.itinerary_id !== null);
 
+let lastScrollTop = 0;
+
+let wasTripListOpen = displayStore.getState().trip_list;
+displayStore.subscribe((state) => {
+  if (wasTripListOpen && !state.trip_list) {
+    lastScrollTop = 0;
+  }
+  wasTripListOpen = state.trip_list;
+});
+
 const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -106,12 +116,26 @@ const TaskItiniaries = () => {
   const {tasks} = useTaskState();
   const {patch: updateItinerary} = useItineraryMutations();
 
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = lastScrollTop;
+    }
+  }, []);
+
   return (
     <Box display="flex" maxHeight={'100%'} gap={1} flexDirection={'column'}>
       <Typography variant="h6" sx={{padding: 1}}>
         Ture
       </Typography>
-      <Box sx={{overflowY: 'auto', overflowX: 'hidden'}}>
+      <Box
+        ref={scrollContainerRef}
+        onScroll={(e) => {
+          lastScrollTop = e.currentTarget.scrollTop;
+        }}
+        sx={{overflowY: 'auto', overflowX: 'hidden'}}
+      >
         <Box px={1}>
           <TooltipWrapper
             description="Læs mere om ture i vores dokumentation for at få et bedre overblik over hvordan du kan bruge ture i Field appen"

@@ -1,10 +1,14 @@
 import {Box, Typography} from '@mui/material';
-import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
-import {useTable} from '~/hooks/useTable';
-import {ContactTable} from '../types';
+
 import RenderActions from '~/helpers/RowActions';
+import {useTable} from '~/hooks/useTable';
+
+import type {ContactTable} from '../types';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 
 type AlarmContactTableProps = {
   alarmContacts: Array<ContactTable> | undefined;
@@ -28,10 +32,20 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
         Cell: ({cell}) => {
           const {sms} = cell.row.original;
           const smsString = `${sms.from?.slice(0, 5)} - ${sms.to?.slice(0, 5)}`;
+          const Wrapper = sms.disabled ? TooltipWrapper : Box;
           return (
-            <Box display="flex" flexDirection={'column'} alignItems="center">
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
               {!sms.selected ? (
                 <Typography variant="body2">-</Typography>
+              ) : sms.disabled ? (
+                <Wrapper description="Telefonnummer er ikke registreret på denne kontakt">
+                  <Typography variant="body2">{smsString}</Typography>
+                </Wrapper>
               ) : (
                 <Typography variant="body2">{smsString}</Typography>
               )}
@@ -47,10 +61,22 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
         Cell: ({cell}) => {
           const {email} = cell.row.original;
           const emailString = `${email.from?.slice(0, 5)} - ${email.to?.slice(0, 5)}`;
+          const Wrapper = email.disabled ? TooltipWrapper : Box;
+
           return (
-            <Box display="flex" flexDirection={'column'} alignItems="center">
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
               {!email.selected ? (
                 <Typography variant="body2">-</Typography>
+              ) : email.disabled ? (
+                <Wrapper description="Email på denne kontakt er ikke registreret" color="#FF9115">
+                  <Typography variant="body2">{emailString}</Typography>
+                </Wrapper>
               ) : (
                 <Typography variant="body2">{emailString}</Typography>
               )}
@@ -66,10 +92,24 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
         Cell: ({cell}) => {
           const {call} = cell.row.original;
           const callString = `${call.from?.slice(0, 5)} - ${call.to?.slice(0, 5)}`;
+          const Wrapper = call.disabled ? TooltipWrapper : Box;
           return (
-            <Box display="flex" flexDirection={'column'} alignItems="center">
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
               {!call.selected ? (
                 <Typography variant="body2">-</Typography>
+              ) : call.disabled ? (
+                <Wrapper
+                  description="Telefonnummer på denne kontakt er ikke registreret"
+                  color="#FF9115"
+                >
+                  <Typography variant="body2">{callString}</Typography>
+                </Wrapper>
               ) : (
                 <Typography variant="body2">{callString}</Typography>
               )}
@@ -129,7 +169,11 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
   );
 
   return (
-    <Box alignItems={'center'}>
+    <Box
+      sx={{
+        alignItems: 'center',
+      }}
+    >
       <MaterialReactTable table={table} />
     </Box>
   );

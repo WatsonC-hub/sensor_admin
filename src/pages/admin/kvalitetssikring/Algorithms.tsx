@@ -7,6 +7,8 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import GraphManager from '~/features/station/components/GraphManager';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import React, {useEffect} from 'react';
+import { useUnitHistory } from '~/features/stamdata/api/useUnitHistory';
+import dayjs from 'dayjs';
 
 const Algorithms = () => {
   const {isMobile} = useBreakpoints();
@@ -17,13 +19,22 @@ const Algorithms = () => {
   const [columns, setColumns] = React.useState(6);
   const [mobileRatio, setMobileRatio] = React.useState(false);
 
+  const {data: unit_history} = useUnitHistory();
+
+  const filtered_data = data?.filter((algorithm) => {
+    if (algorithm.algorithm === 'SendMeasureIntervalThreshold' && dayjs(unit_history?.[0].slutdato) < dayjs()) {
+      return false;
+    }
+    return true;
+  });
+
   useEffect(() => {
     const resizeObserver = new ResizeObserver((event) => {
       const width = event[0].contentRect.width;
       const mobileRatio = width < 800;
       const size = mobileRatio ? 300 : 480;
       setMobileRatio(mobileRatio);
-      if (!mobileRatio && data && data.length > 2) {
+      if (!mobileRatio && filtered_data && filtered_data.length > 2) {
         const calculatedColumns = Math.floor(12 / Math.floor(width / size));
         setColumns(calculatedColumns);
       }
@@ -32,7 +43,7 @@ const Algorithms = () => {
     if (resizeObserver && main_content !== null) resizeObserver.observe(main_content);
 
     return () => resizeObserver.disconnect();
-  }, [data]);
+  }, [filtered_data]);
   return (
     <>
       <Box display="flex" flexDirection={isMobile ? 'column-reverse' : 'row'}>
@@ -60,10 +71,10 @@ const Algorithms = () => {
         <Grid
           container
           direction={'row'}
-          justifyContent={data && data.length < 4 ? 'center' : 'start'}
+          justifyContent={filtered_data && filtered_data.length < 4 ? 'center' : 'start'}
         >
-          {data?.map((algorithm) => (
-            <Grid key={algorithm.name} size={mobileRatio || data.length === 1 ? 12 : columns}>
+          {filtered_data?.map((algorithm) => (
+            <Grid key={algorithm.name} size={mobileRatio || filtered_data.length === 1 ? 12 : columns}>
               <AlgorithmCard qaAlgorithm={algorithm} />
             </Grid>
           ))}

@@ -112,7 +112,8 @@ export const getMaxColor = (colors: string[]) => {
 108	Fejl i tidsstempler
 141	Delta funktion overskredet
 174	Delta funktion overskredet
-207	Kontrolmåling */
+207	Kontrolmåling
+339	Sende-/måleforhold overskredet */
 
 export enum NotificationIDEnum {
   UNKNOWN = 0,
@@ -127,6 +128,7 @@ export enum NotificationIDEnum {
   DELTA_FUNCTION_EXCEEDED = 141,
   DELTA_FUNCTION_EXCEEDED_2 = 174,
   CONTROL_MEASUREMENT = 207,
+  SEND_RATIO_EXCEEDED = 339,
 }
 
 export const ItineraryColors = [

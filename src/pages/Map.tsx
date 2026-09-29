@@ -39,6 +39,7 @@ import { SelectionCommand } from '~/features/commandpalette/components/CommandCo
 
 import { NotListedLocation } from '@mui/icons-material';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import { queryKeys } from '~/helpers/QueryKeyFactoryHelper';
 
 interface LocItems {
   name: string;
@@ -87,6 +88,7 @@ const Map = ({ clickCallback }: MapProps) => {
                 y: parseFloat(coords.Northing.toFixed(2)),
               },
             });
+            queryClient.invalidateQueries({queryKey: queryKeys.Groups.all()});
           }
         },
         icon: '/leaflet-images/marker.png',
