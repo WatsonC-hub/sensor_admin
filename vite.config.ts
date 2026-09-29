@@ -125,6 +125,13 @@ const pwaOptions: Partial<VitePWAOptions> = {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  test: {
+    // Vitest v4 compatibility: preserve mock call history.
+    // Remove after tests no longer rely on calls from setup or earlier tests.
+    // https://viteplus.dev/guide/vitest-v5#remove-unneeded-compatibility-settings
+    // https://vitest.dev/guide/migration/#clearmocks-is-enabled-by-default
+    clearMocks: false,
+  },
   staged: {
     '*': 'vpr fix',
   },
@@ -133,7 +140,7 @@ export default defineConfig({
   run: {
     tasks: {
       typeCheck: {
-        command: 'vpx oxlint --quiet --type-check --type-aware',
+        command: 'vp lint --quiet --type-check --type-aware',
       },
       check: {
         command: 'vp check --fix',

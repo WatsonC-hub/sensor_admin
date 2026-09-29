@@ -1,11 +1,11 @@
 import {Add} from '@mui/icons-material';
+import {Box} from '@mui/material';
 import React from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
 
 import AlarmContactTable from './AlarmContactTable';
-import {Box} from '@mui/material';
 
 import type {AlarmContactFormOutput, AlarmFormOutput} from '../schema';
 
