@@ -133,7 +133,7 @@ export default defineConfig({
     clearMocks: false,
   },
   staged: {
-    '*': 'vpr fix',
+    '*.{ts,tsx,js,jsx}': 'vp check --fix',
   },
   fmt: oxfmtOptions,
   lint: lintOptions,

@@ -8,6 +8,7 @@
     "build": "tsc -b && vp build",
     "dev": "vp dev",
     "check-types:watch": "tsc -b --pretty --noEmit --watch",
+    "prepare": "vp config",
     "typecheck": "vp lint --type-check --type-aware"
   },
   "dependencies": {
