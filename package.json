@@ -5,10 +5,11 @@
   "homepage": "https://watsonc-hub.github.io/",
   "type": "module",
   "scripts": {
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vp build",
     "dev": "vp dev",
     "check-types:watch": "tsc -b --pretty --noEmit --watch",
-    "typecheck": "oxlint --type-check --type-aware"
+    "prepare": "vp config",
+    "typecheck": "vp lint --type-check --type-aware"
   },
   "dependencies": {
     "@dnd-kit/helpers": "^0.5.0",
@@ -82,7 +83,7 @@
     "vite": "^8.0.0",
     "vite-plugin-pwa": "^1.3.0",
     "vite-plugin-svgr": "^5.2.0",
-    "vite-plus": "0.3.0",
+    "vite-plus": "1.0.0",
     "vite-tsconfig-paths": "^6.1.1",
     "workbox-cacheable-response": "^7.4.1",
     "workbox-core": "^7.4.1",
