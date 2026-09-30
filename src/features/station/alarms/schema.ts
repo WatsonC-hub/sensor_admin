@@ -76,6 +76,59 @@ export const alarmContactSchema = z
     }
   });
 
+const channelLabels = {sms: 'SMS', email: 'Email', call: 'Opkald'} as const;
+
+const dialogChannelSchema = (channel: keyof typeof channelLabels) =>
+  z
+    .object({
+      selected: z.boolean().default(false),
+      // Only lives in the dialog - 'all_day' is saved as from === to
+      mode: z.enum(['all_day', 'window']).nullable(),
+      to: z.string().nullable(),
+      from: z.string().nullable(),
+      disabled: z.boolean(),
+    })
+    .superRefine((val, ctx) => {
+      if (!val.selected) return;
+      if (!val.mode) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Vælg hele døgnet eller et tidsrum',
+          path: ['mode'],
+        });
+        return;
+      }
+      if (val.mode === 'window') {
+        if (!val.from) addIssue('from', `${channelLabels[channel]} interval er påkrævet`, ctx);
+        if (!val.to) addIssue('to', `${channelLabels[channel]} interval er påkrævet`, ctx);
+        if (val.from && val.to && val.from.slice(0, 5) === val.to.slice(0, 5)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Start og slut er ens – vælg 'Hele døgnet' i stedet",
+            path: ['to'],
+          });
+        }
+      }
+    });
+
+export const alarmContactDialogSchema = z
+  .object({
+    contact_id: alarmContactSchema.innerType().shape.contact_id,
+    name: z.string(),
+    sms: dialogChannelSchema('sms'),
+    email: dialogChannelSchema('email'),
+    call: dialogChannelSchema('call'),
+  })
+  .superRefine((val, ctx) => {
+    if (!val?.sms?.selected && !val?.email?.selected && !val?.call?.selected) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Mindst én kontaktmetode skal være valgt',
+        path: ['root'],
+      });
+    }
+  });
+
 const contactArray = z.object({
   contacts: z.array(alarmContactSchema),
 });
@@ -94,3 +147,4 @@ export const alarmsSchema = z.object({
 
 export type AlarmsFormValues = z.infer<typeof alarmsSchema>;
 export type AlarmContactFormType = z.infer<typeof alarmContactSchema>;
+export type AlarmContactDialogFormType = z.infer<typeof alarmContactDialogSchema>;

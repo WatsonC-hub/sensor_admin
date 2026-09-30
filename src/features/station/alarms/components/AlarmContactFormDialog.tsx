@@ -6,10 +6,17 @@ import {
   Box,
   DialogActions,
   Typography,
-  Tooltip,
+  ToggleButtonGroup,
+  ToggleButton,
+  FormHelperText,
 } from '@mui/material';
 import React, {useState} from 'react';
-import {AlarmContactFormType, alarmContactSchema, AlarmsFormValues} from '../schema';
+import {
+  AlarmContactDialogFormType,
+  alarmContactDialogSchema,
+  AlarmContactFormType,
+  AlarmsFormValues,
+} from '../schema';
 import {createTypedForm} from '~/components/formComponents/Form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {AlarmContactTypeDialog} from '../types';
@@ -20,11 +27,11 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import SmsIcon from '@mui/icons-material/Sms';
 import EmailIcon from '@mui/icons-material/Email';
 import CallIcon from '@mui/icons-material/Call';
-import {useForm, UseFormSetValue} from 'react-hook-form';
-import {InfoOutlined} from '@mui/icons-material';
+import {Controller, useForm, useFormContext, UseFormSetValue} from 'react-hook-form';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {Channel, DEFAULT_WINDOW, fromDialogValues, toDialogValues} from '../helpers';
 
-const AlarmContactTypedForm = createTypedForm<AlarmContactFormType>();
+const AlarmContactTypedForm = createTypedForm<AlarmContactDialogFormType>();
 
 type Props = {
   open: boolean;
@@ -47,11 +54,118 @@ const transformData = (data: ContactInfo[]) => {
   return alarmContacts;
 };
 
+const emptyChannel = {selected: false, mode: null, from: null, to: null, disabled: false};
+
+type ChannelRowProps = {
+  channel: Channel;
+  icon: React.ReactNode;
+  disabled: boolean;
+  disabledDescription: string;
+};
+
+const ChannelRow = ({channel, icon, disabled, disabledDescription}: ChannelRowProps) => {
+  const {control, watch, setValue} = useFormContext<AlarmContactDialogFormType>();
+  const {isMobile} = useBreakpoints();
+  const selected = watch(`${channel}.selected`);
+  const mode = watch(`${channel}.mode`);
+
+  return (
+    // Mobile: channel + switch on one line, times wrap onto their own full-width line
+    <Box
+      display="flex"
+      flexWrap={isMobile ? 'wrap' : 'nowrap'}
+      justifyContent={isMobile ? 'center' : 'flex-start'}
+      alignItems="center"
+      columnGap={1}
+      rowGap={0.5}
+      width="100%"
+      py={isMobile ? 0.5 : 0}
+    >
+      <Box display="flex" alignItems="center" gap={1} flexShrink={0} position="relative">
+        <AlarmContactTypedForm.Checkbox
+          name={`${channel}.selected`}
+          icon={icon}
+          onChangeCallback={(value) => {
+            // Ticking forces an active choice between whole day and a time window
+            setValue(`${channel}.mode`, null, {shouldDirty: true});
+            setValue(`${channel}.from`, value ? DEFAULT_WINDOW.from : null, {shouldDirty: true});
+            setValue(`${channel}.to`, value ? DEFAULT_WINDOW.to : null, {shouldDirty: true});
+          }}
+          gridSizes="auto"
+          disabled={disabled}
+        />
+        <Controller
+          name={`${channel}.mode`}
+          control={control}
+          render={({field: {value, onChange}, fieldState: {error}}) => (
+            <Box display="flex" flexDirection="column">
+              <ToggleButtonGroup
+                value={value}
+                exclusive
+                size="small"
+                color="primary"
+                disabled={!selected || disabled}
+                onChange={(_, newValue) => {
+                  if (newValue !== null) onChange(newValue);
+                }}
+              >
+                <ToggleButton value="all_day" sx={{textTransform: 'none', whiteSpace: 'nowrap'}}>
+                  Hele døgnet
+                </ToggleButton>
+                <ToggleButton value="window" sx={{textTransform: 'none'}}>
+                  Tidsrum
+                </ToggleButton>
+              </ToggleButtonGroup>
+              {error && (
+                // Wrap within the toggle's width so the message never widens the row
+                <FormHelperText error sx={{width: 0, minWidth: '100%'}}>
+                  {error.message}
+                </FormHelperText>
+              )}
+            </Box>
+          )}
+        />
+        {disabled && (
+          // Out of the flow on mobile so the centred ticks stay aligned across rows
+          <Box
+            {...(isMobile && {
+              position: 'absolute',
+              left: '100%',
+              ml: 1,
+            })}
+          >
+            <TooltipWrapper description={disabledDescription} />
+          </Box>
+        )}
+      </Box>
+      {selected && mode === 'window' && (
+        <Box display="flex" gap={1} flex={1} minWidth={isMobile ? '100%' : 0}>
+          <AlarmContactTypedForm.Input
+            name={`${channel}.from`}
+            label="Start interval"
+            type="time"
+            fullWidth
+            disabled={disabled}
+            gridSizes={6}
+          />
+          <AlarmContactTypedForm.Input
+            name={`${channel}.to`}
+            label="Slut interval"
+            type="time"
+            fullWidth
+            disabled={disabled}
+            gridSizes={6}
+          />
+        </Box>
+      )}
+    </Box>
+  );
+};
+
 const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, currentIndex}: Props) => {
   const {loc_id} = useAppContext(['loc_id']);
   const [search, setSearch] = useState<string>('');
   const {data} = useSearchContact(loc_id, search, transformData);
-  const {isMobile} = useBreakpoints();
 
   const currentContact = values && currentIndex !== -1 ? values[currentIndex] : undefined;
   const [mobileDisabled, setMobileDisabled] = useState<boolean | null>(
@@ -63,45 +177,30 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
     null
   );
 
-  const alarmContactFormMethods = useForm<AlarmContactFormType>({
-    resolver: zodResolver(alarmContactSchema),
+  const alarmContactFormMethods = useForm<AlarmContactDialogFormType>({
+    resolver: zodResolver(alarmContactDialogSchema),
     defaultValues: {
       contact_id: '',
       name: '',
-      sms: {
-        selected: false,
-        from: '08:00',
-        to: '16:00',
-        disabled: false,
-      },
-      email: {
-        selected: false,
-        from: '08:00',
-        to: '16:00',
-        disabled: false,
-      },
-      call: {
-        selected: false,
-        from: '08:00',
-        to: '16:00',
-        disabled: false,
-      },
+      sms: emptyChannel,
+      email: emptyChannel,
+      call: emptyChannel,
     },
-    values: currentContact,
+    values: currentContact && toDialogValues(currentContact),
     mode: 'onTouched',
   });
 
   const {
     watch,
     setValue,
-    trigger,
     formState: {isSubmitted},
   } = alarmContactFormMethods;
 
-  const handleSubmit = (data: AlarmContactFormType) => {
-    if (!data.call?.selected && !data.sms?.selected && !data.email?.selected) {
+  const handleSubmit = (dialogData: AlarmContactDialogFormType) => {
+    if (!dialogData.call?.selected && !dialogData.sms?.selected && !dialogData.email?.selected) {
       return;
     }
+    const data = fromDialogValues(dialogData);
 
     if (currentIndex !== -1) {
       setValues(
@@ -175,7 +274,6 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
               onChangeCallback={(value) => {
                 setValue('name', value?.name ?? '', {shouldDirty: true});
                 const contact = data?.find((c) => c.contact_id === value.contact_id);
-                console.log(contact);
                 if (contact) {
                   setMobileDisabled(!contact.mobile);
                   setEmailDisabled(!contact.email);
@@ -185,137 +283,24 @@ const AlarmContactFormDialog = ({open, onClose, mode, values, setValues, current
                 }
               }}
             />
-            <Box
-              display="flex"
-              flexDirection={isMobile ? 'column' : 'row'}
-              alignItems={'center'}
-              justifyContent={'center'}
-              gap={1}
-              width="100%"
-            >
-              <AlarmContactTypedForm.Checkbox
-                name={`sms.selected`}
-                icon={<SmsIcon color="primary" />}
-                onChangeCallback={(value) => {
-                  if (!value) {
-                    setValue(`sms.from`, null, {shouldDirty: true, shouldValidate: true});
-                    setValue(`sms.to`, null, {shouldDirty: true, shouldValidate: true});
-                  }
-                }}
-                gridSizes={{sm: 1.5}}
-                disabled={mobileDisabled === true}
-              />
-              <Box display={'flex'} flexDirection={'row'} gap={1} width="100%">
-                <AlarmContactTypedForm.Input
-                  name={`sms.from`}
-                  label="Start interval"
-                  type="time"
-                  fullWidth
-                  disabled={!smsSelected || mobileDisabled === true}
-                  gridSizes={6}
-                />
-                <AlarmContactTypedForm.Input
-                  name={`sms.to`}
-                  label="Slut interval"
-                  type="time"
-                  fullWidth
-                  disabled={!smsSelected || mobileDisabled === true}
-                  gridSizes={6}
-                />
-                {mobileDisabled === true && (
-                  <TooltipWrapper description="Telefonnummer er ikke registreret på denne kontakt" />
-                )}
-              </Box>
-            </Box>
-            <Box
-              display="flex"
-              flexDirection={isMobile ? 'column' : 'row'}
-              alignItems={'center'}
-              justifyContent={'center'}
-              gap={1}
-              width="100%"
-            >
-              <AlarmContactTypedForm.Checkbox
-                name={`email.selected`}
-                icon={<EmailIcon color="primary" />}
-                onChangeCallback={(value) => {
-                  if (!value) {
-                    setValue(`email.from`, '', {shouldDirty: true});
-                    setValue(`email.to`, '', {shouldDirty: true});
-                    trigger(`email.from`);
-                    trigger(`email.to`);
-                    // reset(getValues());
-                  }
-                }}
-                gridSizes={{sm: 1.5}}
-                disabled={emailDisabled === true}
-              />
-              <Box display={'flex'} flexDirection={'row'} gap={1} width="100%">
-                <AlarmContactTypedForm.Input
-                  name={`email.from`}
-                  label="Start interval"
-                  type="time"
-                  fullWidth
-                  disabled={!emailSelected || emailDisabled === true}
-                  gridSizes={6}
-                />
-                <AlarmContactTypedForm.Input
-                  name={`email.to`}
-                  label="Slut interval"
-                  type="time"
-                  fullWidth
-                  disabled={!emailSelected || emailDisabled === true}
-                  gridSizes={6}
-                />
-                {emailDisabled === true && (
-                  <TooltipWrapper description="Telefonnummer er ikke registreret på denne kontakt" />
-                )}
-              </Box>
-            </Box>
-            <Box
-              display="flex"
-              flexDirection={isMobile ? 'column' : 'row'}
-              alignItems={'center'}
-              justifyContent={'center'}
-              gap={1}
-              width="100%"
-            >
-              <AlarmContactTypedForm.Checkbox
-                name={`call.selected`}
-                icon={<CallIcon color="primary" />}
-                onChangeCallback={(value) => {
-                  if (!value) {
-                    setValue(`call.from`, '', {shouldDirty: true});
-                    setValue(`call.to`, '', {shouldDirty: true});
-                    trigger(`call.from`);
-                    trigger(`call.to`);
-                  }
-                }}
-                gridSizes={{sm: 1.5}}
-                disabled={mobileDisabled === true}
-              />
-              <Box display={'flex'} flexDirection={'row'} gap={1} width="100%">
-                <AlarmContactTypedForm.Input
-                  name={`call.from`}
-                  label="Start interval"
-                  type="time"
-                  fullWidth
-                  disabled={!callSelected || mobileDisabled === true}
-                  gridSizes={6}
-                />
-                <AlarmContactTypedForm.Input
-                  name={`call.to`}
-                  label="Slut interval"
-                  type="time"
-                  fullWidth
-                  disabled={!callSelected || mobileDisabled === true}
-                  gridSizes={6}
-                />
-                {mobileDisabled === true && (
-                  <TooltipWrapper description="Telefonnummer er ikke registreret på denne kontakt" />
-                )}
-              </Box>
-            </Box>
+            <ChannelRow
+              channel="sms"
+              icon={<SmsIcon color="primary" />}
+              disabled={mobileDisabled === true}
+              disabledDescription="Telefonnummer er ikke registreret på denne kontakt"
+            />
+            <ChannelRow
+              channel="email"
+              icon={<EmailIcon color="primary" />}
+              disabled={emailDisabled === true}
+              disabledDescription="Email er ikke registreret på denne kontakt"
+            />
+            <ChannelRow
+              channel="call"
+              icon={<CallIcon color="primary" />}
+              disabled={mobileDisabled === true}
+              disabledDescription="Telefonnummer er ikke registreret på denne kontakt"
+            />
             <Grid2 size={12} display={'flex'} flexDirection={'row'} justifyContent={'center'}>
               {!callSelected && !smsSelected && !emailSelected && isSubmitted && (
                 <Typography color="error" alignSelf="center">
