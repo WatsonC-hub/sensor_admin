@@ -7,6 +7,8 @@ import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 
+import {formatInterval} from '../helpers';
+
 import type {ContactTable} from '../types';
 import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 
@@ -31,7 +33,7 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
         maxSize: 20,
         Cell: ({cell}) => {
           const {sms} = cell.row.original;
-          const smsString = `${sms.from?.slice(0, 5)} - ${sms.to?.slice(0, 5)}`;
+          const smsString = formatInterval(sms);
           const Wrapper = sms.disabled ? TooltipWrapper : Box;
           return (
             <Box
@@ -60,7 +62,7 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
         maxSize: 20,
         Cell: ({cell}) => {
           const {email} = cell.row.original;
-          const emailString = `${email.from?.slice(0, 5)} - ${email.to?.slice(0, 5)}`;
+          const emailString = formatInterval(email);
           const Wrapper = email.disabled ? TooltipWrapper : Box;
 
           return (
@@ -91,7 +93,7 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
         maxSize: 20,
         Cell: ({cell}) => {
           const {call} = cell.row.original;
-          const callString = `${call.from?.slice(0, 5)} - ${call.to?.slice(0, 5)}`;
+          const callString = formatInterval(call);
           const Wrapper = call.disabled ? TooltipWrapper : Box;
           return (
             <Box
