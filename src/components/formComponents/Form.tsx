@@ -7,6 +7,7 @@ import FormController from './FormController';
 import FormDateTimeWrapper from './FormDateTimeWrapper';
 import FormInputWrapper from './FormInputWrapper';
 import FormRadio from './FormRadio';
+import FormToggleButton from './FormToggleButton';
 import Submit from './Submit';
 import TypedForm from './TypedForm';
 
@@ -27,6 +28,9 @@ export type TypedFormComponent<T extends FieldValues, S extends Record<string, a
   Cancel: React.FC<React.ComponentProps<typeof Cancel>>;
   Controller: <K extends Path<T>>(
     props: React.ComponentProps<typeof FormController<T, K>>
+  ) => JSX.Element;
+  ToggleButton: <K extends Path<T>>(
+    props: React.ComponentProps<typeof FormToggleButton<T, K>>
   ) => JSX.Element;
 };
 
@@ -58,6 +62,12 @@ export function createTypedForm<
   ) => <FormController<T, K> {...props} />;
   ControllerComponent.displayName = 'TypedForm.Controller';
   Form.Controller = ControllerComponent;
+
+  const ToggleButtonComponent = <K extends Path<T>>(
+    props: React.ComponentProps<typeof FormToggleButton<T, K>>
+  ) => <FormToggleButton<T, K> {...props} />;
+  ToggleButtonComponent.displayName = 'TypedForm.ToggleButton';
+  Form.ToggleButton = ToggleButtonComponent;
 
   const AutocompleteComponent = <K extends object, M extends boolean = false>(
     props: React.ComponentProps<typeof FormAutocomplete<T, K, M>>

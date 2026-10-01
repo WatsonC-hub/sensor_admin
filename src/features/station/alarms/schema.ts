@@ -102,7 +102,7 @@ const dialogChannelSchema = (channel: keyof typeof channelLabels) =>
         if (val.from && val.to && val.from.slice(0, 5) === val.to.slice(0, 5)) {
           ctx.addIssue({
             code: 'custom',
-            message: "Start og slut er ens – vælg 'Hele døgnet' i stedet",
+            message: 'Vælg Hele døgnet?',
             path: ['to'],
           });
         }

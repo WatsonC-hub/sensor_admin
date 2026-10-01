@@ -4,19 +4,17 @@ import EmailIcon from '@mui/icons-material/Email';
 import SmsIcon from '@mui/icons-material/Sms';
 import {
   Box,
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
   Typography,
-  ToggleButtonGroup,
-  ToggleButton,
-  FormHelperText,
 } from '@mui/material';
 import React, {useState} from 'react';
 import {useForm, useWatch} from 'react-hook-form';
-import {Controller, useFormContext} from 'react-hook-form';
+import {useFormContext} from 'react-hook-form';
 
 import {createTypedForm} from '~/components/formComponents/Form';
 import TooltipWrapper from '~/components/TooltipWrapper';
@@ -73,10 +71,34 @@ type ChannelRowProps = {
 };
 
 const ChannelRow = ({channel, icon, disabled, disabledDescription}: ChannelRowProps) => {
-  const {control, watch, setValue} = useFormContext<AlarmContactDialogFormInput>();
+  const {watch, setValue} = useFormContext<AlarmContactDialogFormInput>();
   const {isMobile} = useBreakpoints();
   const selected = watch(`${channel}.selected`);
   const mode = watch(`${channel}.mode`);
+  const showTimes = !!selected && mode === 'window';
+
+  const timeInputs = (
+    <>
+      <AlarmContactTypedForm.Input
+        name={`${channel}.from`}
+        label="Start interval"
+        type="time"
+        fullWidth
+        disabled={disabled}
+        gridSizes={6}
+        size="small"
+      />
+      <AlarmContactTypedForm.Input
+        name={`${channel}.to`}
+        label="Slut interval"
+        type="time"
+        fullWidth
+        disabled={disabled}
+        gridSizes={6}
+        size="small"
+      />
+    </>
+  );
 
   return (
     // Mobile: channel + switch on one line, times wrap onto their own full-width line
@@ -92,9 +114,7 @@ const ChannelRow = ({channel, icon, disabled, disabledDescription}: ChannelRowPr
         py: isMobile ? 0.5 : 0,
       }}
     >
-      <Box
-        sx={{display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0, position: 'relative'}}
-      >
+      <Box sx={{display: 'flex', alignItems: 'center', flexShrink: 0, position: 'relative'}}>
         <AlarmContactTypedForm.Checkbox
           name={`${channel}.selected`}
           icon={icon}
@@ -107,68 +127,47 @@ const ChannelRow = ({channel, icon, disabled, disabledDescription}: ChannelRowPr
           gridSizes="auto"
           disabled={disabled}
         />
-        <Controller
+        <AlarmContactTypedForm.ToggleButton
           name={`${channel}.mode`}
-          control={control}
-          render={({field: {value, onChange}, fieldState: {error}}) => (
-            <Box sx={{display: 'flex', flexDirection: 'column'}}>
-              <ToggleButtonGroup
-                value={value}
-                exclusive
-                size="small"
-                color="primary"
-                disabled={!selected || disabled}
-                onChange={(_, newValue) => {
-                  if (newValue !== null) onChange(newValue);
-                }}
-              >
-                <ToggleButton value="all_day" sx={{textTransform: 'none', whiteSpace: 'nowrap'}}>
-                  Hele døgnet
-                </ToggleButton>
-                <ToggleButton value="window" sx={{textTransform: 'none'}}>
-                  Tidsrum
-                </ToggleButton>
-              </ToggleButtonGroup>
-              {error && (
-                // Wrap within the toggle's width so the message never widens the row
-                <FormHelperText error sx={{width: 0, minWidth: '100%'}}>
-                  {error.message}
-                </FormHelperText>
-              )}
-            </Box>
-          )}
+          useGrid={false}
+          size="small"
+          toggleButtonProps={{size: 'small', sx: {px: 1, py: 0.25}}}
+          disabled={!selected || disabled}
+          options={[
+            {value: 'all_day', label: 'Hele døgnet'},
+            {value: 'window', label: 'Tidsrum'},
+          ]}
         />
         {disabled && (
           // Out of the flow on mobile so the centred ticks stay aligned across rows
           <Box
-            {...(isMobile && {
-              position: 'absolute',
-              left: '100%',
-              ml: 1,
-            })}
+            sx={{
+              display: 'flex',
+              ...(isMobile && {position: 'absolute', left: '100%', ml: 1}),
+            }}
           >
             <TooltipWrapper description={disabledDescription} />
           </Box>
         )}
       </Box>
-      {selected && mode === 'window' && (
-        <Box sx={{display: 'flex', gap: 1, flex: 1, minWidth: isMobile ? '100%' : 0}}>
-          <AlarmContactTypedForm.Input
-            name={`${channel}.from`}
-            label="Start interval"
-            type="time"
-            fullWidth
-            disabled={disabled}
-            gridSizes={6}
-          />
-          <AlarmContactTypedForm.Input
-            name={`${channel}.to`}
-            label="Slut interval"
-            type="time"
-            fullWidth
-            disabled={disabled}
-            gridSizes={6}
-          />
+      {isMobile ? (
+        // Own line on mobile - slide it open instead of making the dialog jump
+        <Collapse in={showTimes} sx={{width: '100%'}} unmountOnExit>
+          <Box sx={{display: 'flex', gap: 1, pt: 0.5}}>{timeInputs}</Box>
+        </Collapse>
+      ) : (
+        // Same line on desktop - always reserve the space so the row never changes size
+        <Box
+          aria-hidden={!showTimes}
+          sx={{
+            display: 'flex',
+            gap: 1,
+            flex: 1,
+            minWidth: 0,
+            visibility: showTimes ? 'visible' : 'hidden',
+          }}
+        >
+          {timeInputs}
         </Box>
       )}
     </Box>
