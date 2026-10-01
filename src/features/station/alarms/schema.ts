@@ -74,6 +74,59 @@ export const alarmContactSchema = z
     }
   });
 
+const channelLabels = {sms: 'SMS', email: 'Email', call: 'Opkald'} as const;
+
+const dialogChannelSchema = (channel: keyof typeof channelLabels) =>
+  z
+    .object({
+      selected: z.boolean().default(false),
+      // Only lives in the dialog - 'all_day' is saved as from === to
+      mode: z.enum(['all_day', 'window']).nullable(),
+      to: z.string().nullable(),
+      from: z.string().nullable(),
+      disabled: z.boolean(),
+    })
+    .superRefine((val, ctx) => {
+      if (!val.selected) return;
+      if (!val.mode) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Vælg hele døgnet eller et tidsrum',
+          path: ['mode'],
+        });
+        return;
+      }
+      if (val.mode === 'window') {
+        if (!val.from) addIssue('from', `${channelLabels[channel]} interval er påkrævet`, ctx);
+        if (!val.to) addIssue('to', `${channelLabels[channel]} interval er påkrævet`, ctx);
+        if (val.from && val.to && val.from.slice(0, 5) === val.to.slice(0, 5)) {
+          ctx.addIssue({
+            code: 'custom',
+            message: 'Vælg Hele døgnet?',
+            path: ['to'],
+          });
+        }
+      }
+    });
+
+export const alarmContactDialogSchema = z
+  .object({
+    contact_id: alarmContactSchema.shape.contact_id,
+    name: z.string(),
+    sms: dialogChannelSchema('sms'),
+    email: dialogChannelSchema('email'),
+    call: dialogChannelSchema('call'),
+  })
+  .superRefine((val, ctx) => {
+    if (!val?.sms?.selected && !val?.email?.selected && !val?.call?.selected) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Mindst én kontaktmetode skal være valgt',
+        path: ['root'],
+      });
+    }
+  });
+
 const contactArray = z.object({
   contacts: z.array(alarmContactSchema),
 });
@@ -96,3 +149,5 @@ export type AlarmFormOutput = z.output<typeof alarmsSchema>;
 // export type AlarmContactFormType = z.infer<typeof alarmContactSchema>;
 export type AlarmContactFormInput = z.input<typeof alarmContactSchema>;
 export type AlarmContactFormOutput = z.output<typeof alarmContactSchema>;
+export type AlarmContactDialogFormInput = z.input<typeof alarmContactDialogSchema>;
+export type AlarmContactDialogFormOutput = z.output<typeof alarmContactDialogSchema>;

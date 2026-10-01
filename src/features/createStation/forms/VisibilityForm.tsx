@@ -35,11 +35,7 @@ const VisibilityForm = ({visibility, setValues}: VisibilityFormProps) => {
     },
   });
 
-  const {
-    handleSubmit,
-    formState: {errors},
-    setValue,
-  } = methods;
+  const {handleSubmit, setValue} = methods;
 
   useEffect(() => {
     registerSubmitter('location.visibility', async () => {
@@ -76,12 +72,6 @@ const VisibilityForm = ({visibility, setValues}: VisibilityFormProps) => {
         onChangeCallback={(value) => {
           console.log(value);
           if (value === null) setValue('requires_auth', value);
-        }}
-        warning={(value) => {
-          if (value === undefined && errors.requires_auth) {
-            return errors.requires_auth.message;
-          }
-          return '';
         }}
       />
     </Form>
