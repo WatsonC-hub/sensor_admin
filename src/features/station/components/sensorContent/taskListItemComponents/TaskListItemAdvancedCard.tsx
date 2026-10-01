@@ -22,6 +22,7 @@ import {getColor} from '~/features/notifications/Utils';
 import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
 import {useTaskMutations, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
+import {taskTargetLabel} from '~/features/tasks/helpers';
 import {convertDate} from '~/helpers/dateConverter';
 import {useDisplayState} from '~/hooks/ui';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -160,7 +161,9 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
                   >
                     <Link
                       onClick={() =>
-                        showLocationLink ? location(task.loc_id) : station(task.ts_id)
+                        showLocationLink || task.ts_id === null
+                          ? location(task.loc_id)
+                          : station(task.ts_id)
                       }
                       color="inherit"
                       variant="caption"
@@ -173,15 +176,13 @@ const TaskListItemAdvancedCard = ({task, showLocationLink}: Props) => {
                         textDecorationColor: 'rgba(255, 255, 255, 0.6)',
                       }}
                     >
-                      {!showLocationLink
-                        ? `${task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:`
-                        : ''}
+                      {!showLocationLink ? `${taskTargetLabel(task)}:` : ''}
                       <Box>{showLocationLink ? task.location_name : task.name}</Box>
                     </Link>
                     {showLocationLink && (
                       <Box>
                         <Typography variant="caption">
-                          {task.tstype_name} - {task.name}
+                          {task.tstype_name ?? 'Lokation'} - {task.name}
                         </Typography>
                       </Box>
                     )}

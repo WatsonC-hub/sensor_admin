@@ -8,6 +8,7 @@ import {useUser} from '~/features/auth/useUser';
 import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/Utils';
 import TaskForm from '~/features/tasks/components/TaskForm';
+import {taskTargetLabel} from '~/features/tasks/helpers';
 import {convertDate} from '~/helpers/dateConverter';
 import {useDisplayState} from '~/hooks/ui';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -21,7 +22,7 @@ type Props = {
 
 const TaskListItemSimpleCard = ({task}: Props) => {
   const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
-  const {station} = useNavigationFunctions();
+  const {location, station} = useNavigationFunctions();
   const {superUser} = useUser();
   const defaultValues = useMemo(() => {
     if (!task) return;
@@ -93,7 +94,9 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                   }}
                 >
                   <Link
-                    onClick={() => station(task.ts_id)}
+                    onClick={() =>
+                      task.ts_id === null ? location(task.loc_id) : station(task.ts_id)
+                    }
                     color="inherit"
                     variant="caption"
                     underline="always"
@@ -105,8 +108,7 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                       textDecorationColor: 'rgba(255, 255, 255, 0.6)',
                     }}
                   >
-                    {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
-                    <Box>{task.name}</Box>
+                    {taskTargetLabel(task)}:<Box>{task.name}</Box>
                   </Link>
                   {task.sla && superUser && (
                     <Typography

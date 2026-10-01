@@ -44,6 +44,12 @@ type SLA = {
   days_to_visitation: number | null;
 };
 
+export type LocationTaskDraft = {
+  name: string;
+  description?: string | null;
+  due_date?: string | null;
+};
+
 type LocationFormState = {
   meta: CreateLocationData | AddTimeseriesLocationData;
   visibility?: VisibilityFormState;
@@ -51,6 +57,7 @@ type LocationFormState = {
   location_access?: AccessTable[];
   ressourcer?: Ressourcer[];
   sla?: SLA;
+  tasks?: LocationTaskDraft[];
 };
 
 type TimeseriesFormState = {

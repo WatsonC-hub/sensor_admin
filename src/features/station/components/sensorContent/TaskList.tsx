@@ -1,12 +1,11 @@
 import AddIcon from '@mui/icons-material/Add';
-import {Box, IconButton, Tooltip, Typography} from '@mui/material';
+import {Box, IconButton, Typography} from '@mui/material';
 import React from 'react';
 
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {useUser} from '~/features/auth/useUser';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {isSimpleTask} from '~/features/tasks/helpers';
-import {useLocationData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
 
 import TaskListItemAdvancedCard from './taskListItemComponents/TaskListItemAdvancedCard';
@@ -32,7 +31,6 @@ const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
   const {loc_id} = useAppContext(['loc_id']);
   const {tasks} = useTaskState();
   const {advancedTaskPermission, simpleTaskPermission} = useUser();
-  const {data: location_data} = useLocationData(loc_id);
 
   const location_tasks = tasks
     ?.filter(
@@ -71,23 +69,9 @@ const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
         </TooltipWrapper>
         <>
           {simpleTaskPermission && (
-            <Tooltip
-              title={
-                location_data?.timeseries.length === 0
-                  ? 'Ingen tidsserie er fundet på denne lokation'
-                  : ''
-              }
-              arrow
-            >
-              <Box>
-                <IconButton
-                  onClick={() => setCreateTaskDialog(true)}
-                  disabled={location_data?.timeseries.length === 0}
-                >
-                  <AddIcon />
-                </IconButton>
-              </Box>
-            </Tooltip>
+            <IconButton onClick={() => setCreateTaskDialog(true)}>
+              <AddIcon />
+            </IconButton>
           )}
         </>
       </Box>

@@ -4,6 +4,7 @@ import {Box, Button, Grid, Link} from '@mui/material';
 import React, {useMemo} from 'react';
 
 import TaskForm from '~/features/tasks/components/TaskForm';
+import {taskTargetLabel} from '~/features/tasks/helpers';
 import {useDisplayState} from '~/hooks/ui';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
@@ -15,7 +16,7 @@ type Props = {
 
 const ItineraryListItemSimpleCard = ({task}: Props) => {
   const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
-  const {station} = useNavigationFunctions();
+  const {location, station} = useNavigationFunctions();
   const defaultValues = useMemo(() => {
     if (!task) return;
     return {
@@ -52,7 +53,7 @@ const ItineraryListItemSimpleCard = ({task}: Props) => {
             >
               <DescriptionIcon fontSize="small" />
               <Link
-                onClick={() => station(task.ts_id)}
+                onClick={() => (task.ts_id === null ? location(task.loc_id) : station(task.ts_id))}
                 color="inherit"
                 variant="caption"
                 underline="always"
@@ -64,8 +65,7 @@ const ItineraryListItemSimpleCard = ({task}: Props) => {
                   textDecorationColor: 'rgba(97, 97, 97, 0.6)',
                 }}
               >
-                {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
-                <Box>{task.name}</Box>
+                {taskTargetLabel(task)}:<Box>{task.name}</Box>
               </Link>
             </Box>
           )}

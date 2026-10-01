@@ -8,6 +8,7 @@ import React, {useMemo, useState} from 'react';
 import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
 import {useTaskMutations, useTaskStatus} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
+import {taskTargetLabel} from '~/features/tasks/helpers';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -20,7 +21,7 @@ type Props = {
 const ItineraryListItemAdvancedCard = ({task}: Props) => {
   const {isMobile} = useBreakpoints();
   const [showAllComments, setShowAllComments] = useState<boolean>(false);
-  const {station} = useNavigationFunctions();
+  const {location, station} = useNavigationFunctions();
   const {patch: updateTask} = useTaskMutations();
 
   const {data: taskStatus} = useTaskStatus();
@@ -117,7 +118,9 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
                   }}
                 >
                   <Link
-                    onClick={() => station(task.ts_id)}
+                    onClick={() =>
+                      task.ts_id === null ? location(task.loc_id) : station(task.ts_id)
+                    }
                     color="inherit"
                     variant="caption"
                     underline="always"
@@ -129,8 +132,7 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
                       textDecorationColor: 'rgba(97, 97, 97, 0.6)',
                     }}
                   >
-                    {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
-                    <Box>{task.name}</Box>
+                    {taskTargetLabel(task)}:<Box>{task.name}</Box>
                   </Link>
                   <Typography variant="caption" sx={{wordBreak: 'break-word'}}>
                     {task.description}

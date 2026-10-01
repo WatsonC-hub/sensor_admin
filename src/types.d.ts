@@ -452,7 +452,7 @@ export type LocationTasks = {
   count: number;
   name: string;
   blocks_notifications: Array<number>;
-  tstype_name: string;
+  tstype_name: string | null;
   link_name: Array<string>;
   ts_ids: Array<number>;
 };

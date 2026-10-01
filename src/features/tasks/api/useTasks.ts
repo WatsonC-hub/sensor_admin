@@ -39,9 +39,9 @@ type TaskConvert = {
   block_on_location?: boolean;
 };
 
-type PostTask = Omit<TaskConvert, 'notification_id' | 'due_date'> & {
+type PostTask = Omit<TaskConvert, 'notification_id' | 'due_date' | 'ts_id'> & {
   due_date?: string | null;
-};
+} & ({ts_id: number; loc_id?: never} | {ts_id?: null; loc_id: number});
 
 const tasksPostOptions = {
   mutationKey: ['tasks_post'],

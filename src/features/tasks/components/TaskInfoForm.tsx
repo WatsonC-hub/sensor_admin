@@ -123,8 +123,14 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         Opgaveoplysninger
       </Typography>
       <Typography>
-        Tidsserie: {selectedTask.tstype_name}{' '}
-        {selectedTask.prefix ? ' - ' + selectedTask.prefix : ''}
+        {selectedTask.ts_id === null ? (
+          'Opgave på lokationen'
+        ) : (
+          <>
+            Tidsserie: {selectedTask.tstype_name}{' '}
+            {selectedTask.prefix ? ' - ' + selectedTask.prefix : ''}
+          </>
+        )}
       </Typography>
       <Grid container spacing={1}>
         <Grid size={{xs: 12, sm: 6}}>
@@ -183,53 +189,55 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             />
           )}
         </Grid>
-        <Grid
-          size={{xs: 12}}
-          sx={{
-            pb: 1,
-          }}
-        >
+        {selectedTask.ts_id !== null && (
           <Grid
-            container
-            spacing={0}
+            size={{xs: 12}}
             sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'start',
+              pb: 1,
             }}
           >
             <Grid
-              size={{xs: 12, sm: 12}}
+              container
+              spacing={0}
               sx={{
                 display: 'flex',
                 flexDirection: 'row',
-                alignItems: 'center',
-                gap: 1,
+                alignItems: 'start',
               }}
             >
-              <Typography>Bloker</Typography>
-              <TaskForm.BlockAll
-                sx={{pb: 0}}
-                onBlurCallback={async () => handlePatch('block_all')}
-              />
-            </Grid>
-            <Grid
-              size={{xs: 12, sm: 12}}
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 1,
-              }}
-            >
-              <Typography>på</Typography>
-              <TaskForm.BlockOnLocation
-                sx={{pb: 0}}
-                onBlurCallback={async () => handlePatch('block_on_location')}
-              />
+              <Grid
+                size={{xs: 12, sm: 12}}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
+                <Typography>Bloker</Typography>
+                <TaskForm.BlockAll
+                  sx={{pb: 0}}
+                  onBlurCallback={async () => handlePatch('block_all')}
+                />
+              </Grid>
+              <Grid
+                size={{xs: 12, sm: 12}}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
+                <Typography>på</Typography>
+                <TaskForm.BlockOnLocation
+                  sx={{pb: 0}}
+                  onBlurCallback={async () => handlePatch('block_on_location')}
+                />
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
+        )}
         {/* <Grid size={{xs: 12, sm: 6}}>
         </Grid> */}
 

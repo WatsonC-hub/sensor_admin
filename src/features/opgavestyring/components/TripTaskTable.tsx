@@ -62,7 +62,7 @@ const TripTaskTable = ({tasks}: Props) => {
               </Box>
             </Box>
             <Typography variant="body2">
-              {cell.getValue<string>().concat(' - ', row.original.tstype_name)}
+              {cell.getValue<string>().concat(' - ', row.original.tstype_name ?? 'Lokation')}
             </Typography>
           </Box>
         ),

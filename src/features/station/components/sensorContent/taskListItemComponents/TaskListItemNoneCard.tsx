@@ -5,6 +5,7 @@ import React from 'react';
 
 import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/Utils';
+import {taskTargetLabel} from '~/features/tasks/helpers';
 import {convertDate} from '~/helpers/dateConverter';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
@@ -16,7 +17,7 @@ type Props = {
 };
 
 const TaskListItemNoneCard = ({task}: Props) => {
-  const {station} = useNavigationFunctions();
+  const {location, station} = useNavigationFunctions();
   const color = getColor({
     flag: task.flag,
     has_task: task.is_created,
@@ -72,7 +73,7 @@ const TaskListItemNoneCard = ({task}: Props) => {
                 noCircle={true}
               />
               <Link
-                onClick={() => station(task.ts_id)}
+                onClick={() => (task.ts_id === null ? location(task.loc_id) : station(task.ts_id))}
                 color="inherit"
                 variant="caption"
                 underline="always"
@@ -84,8 +85,7 @@ const TaskListItemNoneCard = ({task}: Props) => {
                   textDecorationColor: 'rgba(255, 255, 255, 0.6)',
                 }}
               >
-                {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
-                <Box>{task.name}</Box>
+                {taskTargetLabel(task)}:<Box>{task.name}</Box>
               </Link>
             </Box>
             {task.due_date && (

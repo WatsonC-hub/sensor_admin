@@ -11,6 +11,11 @@ export const isSimpleTask = (task: Task) => {
   );
 };
 
+export const taskTargetLabel = (task: Pick<Task, 'ts_id' | 'prefix' | 'tstype_name'>) => {
+  if (task.ts_id === null) return 'Lokation';
+  return task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name;
+};
+
 export const createSmoothScrollToFn = (
   getScrollElement: () => HTMLElement | null,
   duration = 1000

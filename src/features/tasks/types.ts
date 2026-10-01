@@ -49,7 +49,8 @@ export enum StatusEnum {
 
 export type Task = {
   id: ID;
-  ts_id: number;
+  /** null for an opgave on the lokation itself, not tied to a tidsserie */
+  ts_id: number | null;
   loc_id: number;
   location_name: string;
   longitude: number;
@@ -68,7 +69,7 @@ export type Task = {
   created_at: string;
   updated_at: string;
   updated_by: string;
-  tstype_name: string;
+  tstype_name: string | null;
   loctypename: string;
   projectno: string | null;
   project_text: string | null;
@@ -88,7 +89,7 @@ export type TaskAPI = Omit<Task, 'due_date'> & {
 
 export type DBTask = {
   id: ID;
-  ts_id: number;
+  ts_id: number | null;
   name: string;
   description?: string | null | undefined;
   status_id: number;

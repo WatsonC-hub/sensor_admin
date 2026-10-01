@@ -6,6 +6,7 @@ import {useTaskMutations} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
+import {useAppContext} from '~/state/contexts';
 
 import type {FormValues} from '~/features/tasks/components/TaskForm';
 
@@ -19,12 +20,13 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
     post: {mutateAsync: createTask},
   } = useTaskMutations();
   const ts_id_display = useDisplayState((state) => state.ts_id);
+  const {loc_id} = useAppContext(['loc_id']);
   const {data: metadata} = useLocationData();
 
   const ts_id = metadata?.timeseries.length === 1 ? metadata.timeseries[0].ts_id : ts_id_display;
 
   const submitTask = async (values: FormValues) => {
-    if (values.ts_id === undefined) return;
+    const target = values.ts_id ? {ts_id: values.ts_id} : {ts_id: null, loc_id};
     const submit = {
       ...values,
       name: values.name!,
@@ -41,7 +43,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
           : values.block_all === 'false'
             ? false
             : true,
-      ts_id: values.ts_id,
+      ...target,
     };
     await createTask(submit);
     closeModal();

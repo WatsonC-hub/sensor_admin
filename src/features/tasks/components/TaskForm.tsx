@@ -26,7 +26,7 @@ import type {FormInputProps} from '~/components/FormInput';
 import type {TaskUser} from '~/features/tasks/types';
 
 const zodSchema = z.object({
-  ts_id: z.number({message: 'Tidsserie skal være angivet'}),
+  ts_id: z.number().nullish(),
   name: z
     .string({message: 'Navn skal være angivet'})
     .min(5, 'Navn skal være mindst 5 tegn')
@@ -42,13 +42,15 @@ const zodSchema = z.object({
   block_on_location: z.string().optional(),
   block_all: z.string().optional(),
   loctypename: z.string().optional(),
-  tstype_name: z.string().optional(),
+  tstype_name: z.string().nullish(),
   project_text: z.string().nullish(),
   projectno: z.string().nullish(),
   location_name: z.string().optional(),
 });
 
 export type FormValues = z.infer<typeof zodSchema>;
+
+const LOCATION_OPTION_LABEL = 'Lokation (ingen tidsserie)';
 
 type Props = {
   onSubmit: (data: FormValues, formMethods?: UseFormReturn<FormValues>) => Promise<void> | void;
@@ -136,8 +138,9 @@ const DueDate = (props: Omit<FormDatePickerProps<FormValues>, 'name'>) => {
   const {setValue, watch} = useFormContext<FormValues>();
   const ts_id_display = useDisplayState((state) => state.ts_id);
   const selectedTimeseriesTsId = watch('ts_id');
-  const ts_id = ts_id_display ?? selectedTimeseriesTsId;
-  const {data: nextDueDate, error, isPending} = useNextDueDate(ts_id);
+  // null in the form means a lokation opgave, so only fall back when the field is absent
+  const ts_id = selectedTimeseriesTsId === undefined ? ts_id_display : selectedTimeseriesTsId;
+  const {data: nextDueDate, error, isPending} = useNextDueDate(ts_id ?? undefined);
 
   return (
     <FormDatePicker
@@ -385,18 +388,22 @@ const SelectTimeseries = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   const {disabled} = React.useContext(TaskFormContext);
   const {data: metadata} = useLocationData();
 
+  // An empty value means the opgave is on the lokation itself
   return (
     <FormInput
       name="ts_id"
       select
       size="small"
-      placeholder="Vælg..."
+      placeholder={LOCATION_OPTION_LABEL}
       fullWidth
-      options={metadata?.timeseries.map((timeseries) => ({
-        [timeseries.ts_id]:
-          (timeseries.prefix ? timeseries.prefix + ' - ' : '') + ' ' + timeseries.tstype_name,
-      }))}
-      keyType="number"
+      options={[
+        {'': LOCATION_OPTION_LABEL},
+        ...(metadata?.timeseries.map((timeseries) => ({
+          [timeseries.ts_id]:
+            (timeseries.prefix ? timeseries.prefix + ' - ' : '') + ' ' + timeseries.tstype_name,
+        })) ?? []),
+      ]}
+      transform={(e) => (e.target.value === '' ? null : Number(e.target.value))}
       {...props}
       disabled={disabled || props.disabled}
     />

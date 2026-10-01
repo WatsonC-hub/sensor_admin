@@ -5,6 +5,7 @@ import {useUser} from '~/features/auth/useUser';
 
 import ContactForm from '../forms/ContactForm';
 import LocationAccessForm from '../forms/LocationAccessForm';
+import LocationTaskForm from '../forms/LocationTaskForm';
 import RessourceSection from '../sections/RessourceSection';
 import SlaSection from '../sections/SlaSection';
 import VisibilitySection from '../sections/VisibilitySection';
@@ -23,6 +24,7 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
   ]);
   const {
     superUser,
+    simpleTaskPermission,
     features: {ressources},
   } = useUser();
 
@@ -45,6 +47,7 @@ const AdditionalStep = ({activeStep, setActiveStep}: Props) => {
           {superUser && <SlaSection />}
           <ContactForm />
           <LocationAccessForm />
+          {simpleTaskPermission && <LocationTaskForm />}
           {ressources && <RessourceSection />}
 
           <FormStepButtons
