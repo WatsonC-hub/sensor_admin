@@ -1,4 +1,5 @@
-import {Fullscreen, FullscreenExit} from '@mui/icons-material';
+import Fullscreen from '@mui/icons-material/Fullscreen';
+import FullscreenExit from '@mui/icons-material/FullscreenExit';
 import {Box, IconButton} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import {useAtom} from 'jotai';

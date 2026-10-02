@@ -1,4 +1,4 @@
-import {Directions} from '@mui/icons-material';
+import Directions from '@mui/icons-material/Directions';
 import {Box, Chip, Grid, IconButton, Link, Typography} from '@mui/material';
 
 import {useFindBorehole} from '~/features/station/api/useBorehole';

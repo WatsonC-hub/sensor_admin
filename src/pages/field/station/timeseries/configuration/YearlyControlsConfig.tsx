@@ -1,4 +1,4 @@
-import {Save} from '@mui/icons-material';
+import Save from '@mui/icons-material/Save';
 import {Grid, Typography} from '@mui/material';
 import React from 'react';
 import {FormProvider} from 'react-hook-form';

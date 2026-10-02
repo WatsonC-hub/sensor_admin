@@ -1,4 +1,4 @@
-import {Save} from '@mui/icons-material';
+import Save from '@mui/icons-material/Save';
 import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
 import {useFormContext} from 'react-hook-form';

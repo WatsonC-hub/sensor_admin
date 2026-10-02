@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import react from '@vitejs/plugin-react';
 import {VitePWA} from 'vite-plugin-pwa';
 import svgrPlugin from 'vite-plugin-svgr';
@@ -8,6 +10,23 @@ import {lintOptions} from './oxlint.config.ts';
 
 import type {VitePWAOptions} from 'vite-plugin-pwa';
 import type {PluginOption} from 'vite-plus';
+
+const MAX_COMMAND_LENGTH = 7000;
+
+function chunkCommands(command: string, files: readonly string[]): string[] {
+  const commands: string[] = [];
+  let current = command;
+  for (const file of files) {
+    const arg = ` "${path.relative(process.cwd(), file)}"`;
+    if (current !== command && current.length + arg.length > MAX_COMMAND_LENGTH) {
+      commands.push(current);
+      current = command;
+    }
+    current += arg;
+  }
+  if (current !== command) commands.push(current);
+  return commands;
+}
 
 const pwaOptions: Partial<VitePWAOptions> = {
   devOptions: {enabled: true, type: 'module'},
@@ -133,7 +152,8 @@ export default defineConfig({
     clearMocks: false,
   },
   staged: {
-    '*.{ts,tsx,js,jsx}': 'vp check --fix',
+    // Split into several commands so each stays under cmd.exe's 8191-char limit on Windows.
+    '*.{ts,tsx,js,jsx}': (files: readonly string[]) => chunkCommands('vp check --fix', files),
   },
   fmt: oxfmtOptions,
   lint: lintOptions,

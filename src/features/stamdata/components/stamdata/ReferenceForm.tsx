@@ -1,5 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {AddCircle} from '@mui/icons-material';
+import AddCircle from '@mui/icons-material/AddCircle';
 import {Box} from '@mui/material';
 import {useEffect} from 'react';
 import {useForm} from 'react-hook-form';

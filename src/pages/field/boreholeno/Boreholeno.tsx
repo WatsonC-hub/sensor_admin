@@ -1,4 +1,5 @@
-import {AddAPhotoRounded, AddCircle} from '@mui/icons-material';
+import AddAPhotoRounded from '@mui/icons-material/AddAPhotoRounded';
+import AddCircle from '@mui/icons-material/AddCircle';
 import {Box, Divider} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import dayjs from 'dayjs';

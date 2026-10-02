@@ -1,4 +1,4 @@
-import {Download} from '@mui/icons-material';
+import Download from '@mui/icons-material/Download';
 import {Box, CircularProgress, IconButton, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';

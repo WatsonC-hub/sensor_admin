@@ -1,5 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {Save} from '@mui/icons-material';
+import Save from '@mui/icons-material/Save';
 import {Box, FormControlLabel, Switch, Typography} from '@mui/material';
 import {merge} from 'lodash';
 import React, {useCallback, useEffect, useMemo} from 'react';

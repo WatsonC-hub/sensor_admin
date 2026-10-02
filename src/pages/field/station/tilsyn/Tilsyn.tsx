@@ -1,5 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {PlaylistAddRounded} from '@mui/icons-material';
+import PlaylistAddRounded from '@mui/icons-material/PlaylistAddRounded';
 import {Box, Divider} from '@mui/material';
 import dayjs from 'dayjs';
 import {useEffect} from 'react';

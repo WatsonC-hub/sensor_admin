@@ -1,5 +1,5 @@
-import {Person} from '@mui/icons-material';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
+import Person from '@mui/icons-material/Person';
 import {Box, Button, Card, CardContent, Typography} from '@mui/material';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import React from 'react';

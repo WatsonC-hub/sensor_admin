@@ -1,4 +1,5 @@
-import {CloseOutlined, RestartAlt} from '@mui/icons-material';
+import CloseOutlined from '@mui/icons-material/CloseOutlined';
+import RestartAlt from '@mui/icons-material/RestartAlt';
 import {Box, Grid, Typography} from '@mui/material';
 import React from 'react';
 import {Controller, FormProvider, useForm} from 'react-hook-form';

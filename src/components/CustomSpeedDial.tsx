@@ -1,5 +1,5 @@
-import {ManageSearch} from '@mui/icons-material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import ManageSearch from '@mui/icons-material/ManageSearch';
 import {Box, SpeedDial, SpeedDialAction, Tooltip, Typography} from '@mui/material';
 import React, {useState} from 'react';
 import {toast} from 'react-toastify';

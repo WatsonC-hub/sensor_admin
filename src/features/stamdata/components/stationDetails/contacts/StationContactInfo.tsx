@@ -1,4 +1,5 @@
-import {Call, Email} from '@mui/icons-material';
+import Call from '@mui/icons-material/Call';
+import Email from '@mui/icons-material/Email';
 import {Checkbox, FormControlLabel, Grid, IconButton, InputAdornment} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {isValidPhoneNumber} from 'libphonenumber-js';

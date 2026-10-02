@@ -1,4 +1,5 @@
-import {AddCircleOutlined, RemoveCircleOutlined} from '@mui/icons-material';
+import AddCircleOutlined from '@mui/icons-material/AddCircleOutlined';
+import RemoveCircleOutlined from '@mui/icons-material/RemoveCircleOutlined';
 import RouterIcon from '@mui/icons-material/Router';
 import {Dialog, DialogContent, DialogTitle, Typography} from '@mui/material';
 import dayjs from 'dayjs';

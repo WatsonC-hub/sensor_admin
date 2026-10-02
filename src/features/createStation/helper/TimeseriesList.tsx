@@ -1,4 +1,5 @@
-import {Router, Timeline} from '@mui/icons-material';
+import Router from '@mui/icons-material/Router';
+import Timeline from '@mui/icons-material/Timeline';
 import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useState} from 'react';

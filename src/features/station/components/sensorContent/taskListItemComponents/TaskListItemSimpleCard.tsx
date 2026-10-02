@@ -1,4 +1,4 @@
-import {EditOutlined} from '@mui/icons-material';
+import EditOutlined from '@mui/icons-material/EditOutlined';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import {Box, Button, Card, CardContent, CardHeader, Link, Typography} from '@mui/material';
 import dayjs from 'dayjs';

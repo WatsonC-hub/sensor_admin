@@ -1,5 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {EditRounded, PhotoCameraRounded, Save} from '@mui/icons-material';
+import EditRounded from '@mui/icons-material/EditRounded';
+import PhotoCameraRounded from '@mui/icons-material/PhotoCameraRounded';
+import Save from '@mui/icons-material/Save';
 import {Box, Card, CardContent, Grid, InputAdornment, Typography} from '@mui/material';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';

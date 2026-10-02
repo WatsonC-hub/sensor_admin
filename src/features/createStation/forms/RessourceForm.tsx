@@ -1,5 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {DoNotDisturb} from '@mui/icons-material';
+import DoNotDisturb from '@mui/icons-material/DoNotDisturb';
 import React, {useEffect} from 'react';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
