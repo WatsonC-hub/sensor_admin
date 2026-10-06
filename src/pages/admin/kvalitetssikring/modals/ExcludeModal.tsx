@@ -153,9 +153,6 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
           <FormControlLabel control={<Radio />} label="Alt inden for tidsstempler" value="all" />
         </RadioGroup>
       </FormControl>
-      {radio == 'selected' && (
-        <Typography gutterBottom>Ekskluderer {selection.points?.length} punkter</Typography>
-      )}
       <Box
         sx={{
           display: 'flex',
@@ -165,7 +162,6 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
       >
         <Button
           bttype="tertiary"
-          // startIcon={<KeyboardReturnIcon />}
           onClick={() => {
             setDataAdjustment(null);
             onClose();

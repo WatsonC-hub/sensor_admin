@@ -316,12 +316,17 @@ const AdjustmentDataTable = ({data}: Props): JSX.Element => {
     renderRowActions: ({row, staticRowIndex}) =>
       row.original.type !== AdjustmentTypes.APPROVED && (
         <RenderActions
-          handleEdit={() => {
-            setEditDialogOpen(true);
-            setType(row.original.type);
-            setIndex(staticRowIndex);
-            table.setEditingRow(row);
-          }}
+          handleEdit={
+            row.original.type !== AdjustmentTypes.EXLUDEPOINTS &&
+            row.original.type !== AdjustmentTypes.EXLUDETIME
+              ? () => {
+                  setEditDialogOpen(true);
+                  setType(row.original.type);
+                  setIndex(staticRowIndex);
+                  table.setEditingRow(row);
+                }
+              : undefined
+          }
           disabled={false}
           onDeleteBtnClick={() => {
             setDialogOpen(true);
