@@ -14,7 +14,7 @@ import React, {useEffect, useState} from 'react';
 
 import Button from './Button';
 
-const RELEASE_NOTICE_KEY = 'fieldAppReleaseNotice_v2026_08';
+const RELEASE_NOTICE_KEY = 'fieldAppReleaseNotice_v2026_10';
 
 export default function ReleaseNoticeModal() {
   const [open, setOpen] = useState(false);
@@ -37,9 +37,7 @@ export default function ReleaseNoticeModal() {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{pb: 0}}>
-        ✨ Nyt flow til oprettelse af lokation og hjemtagning og opsætning af udstyr i Calypso Field
-      </DialogTitle>
+      <DialogTitle sx={{pb: 0}}>✨ Nyheder i Calypso Field</DialogTitle>
 
       <IconButton
         aria-label="close"
@@ -57,22 +55,22 @@ export default function ReleaseNoticeModal() {
       <DialogContent>
         <DialogContentText component="div" color="black">
           <Typography gutterBottom>
-            Vi har moderniseret oprettelsen af lokationer og tidsserier for at gøre arbejdsgangen
-            mere <strong>fleksibel</strong> og <strong>enkel</strong>.
+            Vi har lavet en række forbedringer, der gør dit daglige arbejde i Calypso Field nemmere.
+            Her er et overblik.
           </Typography>
 
-          <Box component="ul" sx={{pl: 2, mt: 1, mb: 2}}>
+          <Typography variant="h6" sx={{mt: 2}}>
+            Nemmere oprettelse af lokation og tidsserier
+          </Typography>
+          <Box component="ul" sx={{pl: 2, mt: 1, mb: 1}}>
+            <li>Opret flere tidsserier på samme lokation på én gang</li>
+            <li>Tilknyt udstyr til tidsserierne med det samme - eller tilføj udstyret senere</li>
             <li>
-              Opret nu <strong>flere tidsserier</strong> i samme flow
+              Opret tidsserier ud fra udstyrets sensorer med <strong>Tilføj fra udstyr</strong>
             </li>
             <li>
-              Tilknyt udstyr direkte til tidsserier – eller <strong>tilføj udstyr senere</strong>
-            </li>
-            <li>
-              Opret tidsserier direkte fra udstyr med <strong>Tilføj fra udstyr</strong>
-            </li>
-            <li>
-              Mangler du oplysninger, kan du vælge <strong>Registrer senere</strong>
+              Mangler du en oplysning, kan du vælge <strong>Registrer senere</strong> og gøre den
+              færdig en anden dag
             </li>
           </Box>
           <Typography>
@@ -82,29 +80,21 @@ export default function ReleaseNoticeModal() {
               target="_blank"
               rel="noopener"
             >
-              Læs mere om det nye oprettelses-flow
+              Se guiden: Opret ny lokation/tidsserie
             </Link>
           </Typography>
 
-          <Typography gutterBottom sx={{mt: 2}}>
-            Vi har samtidig gjort det lettere at arbejde med flere tidsserier på én gang:
+          <Typography variant="h6" sx={{mt: 3}}>
+            Hjemtagning og opsætning af udstyr på flere tidsserier
           </Typography>
-
-          <Box component="ul" sx={{pl: 2, mt: 1, mb: 2}}>
+          <Box component="ul" sx={{pl: 2, mt: 1, mb: 1}}>
+            <li>Hjemtag udstyr fra flere tidsserier i én samlet hjemtagning</li>
+            <li>Opsæt udstyr på flere tidsserier på én gang</li>
             <li>
-              <strong>Hjemtag flere tidsserier</strong> i én samlet proces, så du ikke behøver at
-              gennemføre hjemtagningen flere gange
-            </li>
-            <li>
-              <strong>Opsæt flere tidsserier</strong> på én gang med automatisk matchning af
-              sensorer, hvor det er muligt
-            </li>
-            <li>
-              Vælg selv, hvilke tidsserier der skal opsættes, og hvilken sensor der skal bruges, når
-              der er flere muligheder
+              Sensorerne kobles automatisk til de rigtige tidsserier - og er der flere muligheder,
+              vælger du selv
             </li>
           </Box>
-
           <Typography>
             📘{' '}
             <Link
@@ -112,7 +102,58 @@ export default function ReleaseNoticeModal() {
               target="_blank"
               rel="noopener"
             >
-              Læs mere om det nye hjemtagning og opsætnings-flow
+              Se guiden: Opsætning af udstyr
+            </Link>
+          </Typography>
+
+          <Typography variant="h6" sx={{mt: 3}}>
+            Korrektion med kontrolmålinger på flere tidsserietyper
+          </Typography>
+          <Box component="ul" sx={{pl: 2, mt: 1, mb: 1}}>
+            <li>
+              Kontrolmålinger kan nu bruges til korrektion af flere tidsserietyper - ikke kun
+              vandstand
+            </li>
+            <li>
+              Afhængigt af tidsserietypen korrigeres data med enten en{' '}
+              <strong>parallelforskydning</strong> eller en <strong>lineær korrektion</strong>
+            </li>
+            <li>
+              Vælg selv, hvor langt bagud korrektionen skal gælde - også ved at vælge datoen direkte
+              i grafen
+            </li>
+          </Box>
+          <Typography>
+            📘{' '}
+            <Link
+              href="https://www.watsonc.dk/guides/kontrolmaling-og-korrektion"
+              target="_blank"
+              rel="noopener"
+            >
+              Se guiden: Korrektion med kontrolmålinger
+            </Link>
+          </Typography>
+
+          <Typography variant="h6" sx={{mt: 3}}>
+            Mere fleksible tidsrum for alarmkontakter
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{mt: 0.5}}>
+            Alarmer er for nu kun i brug hos udvalgte superbrugere af Field. Har du lyst til at
+            prøve kræfter med det, så tag endelig kontakt til os.
+          </Typography>
+          <Box component="ul" sx={{pl: 2, mt: 1, mb: 1}}>
+            <li>
+              Vælg for hver kontaktmetode (SMS, e-mail og opkald), om alarmkontakten skal modtage
+              alarmer <strong>hele døgnet</strong> eller i et bestemt tidsrum
+            </li>
+            <li>
+              Tidsrummet kan nu gå <strong>over midnat</strong>, fx fra kl. 22 til kl. 6
+            </li>
+          </Box>
+          <Typography>
+            📘{' '}
+            <Link href="https://www.watsonc.dk/guides/alarmer" target="_blank" rel="noopener">
+              Se guiden: Alarmer
             </Link>
           </Typography>
         </DialogContentText>
