@@ -8,12 +8,49 @@ A React + TypeScript app that Watsonc uses to manage environmental monitoring st
 - Architecture decisions: `docs/adr/`.
 - Feature specs: `docs/features/` (see the template in its README).
 
+## Domain terms in code
+
+`CONTEXT.md` is the glossary. The code often uses older or English names for the same concepts. New code should use the `CONTEXT.md` term or its direct English equivalent. Never introduce the word "station": it can mean a tidsserie, a lokation or an opsætning. Keep legacy names until you touch that code substantially.
+
+| Term | Code names today |
+|---|---|
+| Tidsserie | `ts_id`, `timeseries`, `station` |
+| Lokation | `loc_id`, `location` |
+| Udstyr | `unit`, `unit_uuid` |
+| Terminal-ID | `terminal_id` |
+| Calypso ID | `calypso_id`, `labelid` |
+| Pejling | `kontrol`, `pejling`, `measurement` |
+| Korrektionsomfang | `useforcorrection` (`correction_map` in `src/consts.ts`; 0 = kontrolpejling) |
+| Korrektionstype | `correction_type` (`translation` = parallelforskydning, `scale` = lineær korrektion) |
+| Driftpejling | `service` on a pejling |
+| Tilsyn | `service`, `tilsyn` |
+| Målepunkt | `watlevmp`, `maalepunkt`, `MP` |
+| Opgave | `task`; `is_created` is true for an oprettet opgave, false for a notifikationsopgave |
+| Feltarbejde (opgavestatus) | `status_id = 2` (`StatusEnum.FIELD`) |
+| Tur | `itinerary`, `trip` |
+| Nøgle / adgang | `location_access` |
+| Parkering | `parking` |
+| Serviceansvar | `is_customer_service` |
+| Egen service | `has_own_service` |
+| Kontrolhyppighed | `controls_per_year`, `yearly_controls`, `ServiceInterval` |
+| Forvarsling | `lead_time` |
+| Løsningsfrist / SLA | `sla`, `days_to_visitation` |
+| Tjekliste | `stationProgress`, `stamdata/progress` |
+| Synlighed | `requires_auth` (kræver login), `hide_public` (skjult offentligt) |
+| Algoritme | `algorithms` ("Advarsler" in the UI) |
+| Justering kinds | `confirm`, `remove`, `bounds`, `correction` |
+| Tidsserietype | `tstype` |
+| Lokationstype | `loctype` (9 = Boring) |
+| Projekt | `projectno`, `initial_project_no` |
+| Funktionsadgang | `user.features.*` |
+
 ## App shape: one page, map with windows
 
 The whole app is a single page: a map background with windows on top, and each feature lives in a window (see ADR 0001).
 - `src/features/tasks/components/Overview.tsx` decides which windows to show, using `src/components/ui/WindowManager.tsx` (`WindowManager.Window` with `show` and `priority`).
 - **Navigation changes state, not the URL.** Use `src/hooks/useNavigationFunctions.ts` (`location`, `station`, `boreholeIntake`, `home`, `createStamdata`). It writes to the zustand display store in `src/hooks/ui.ts` (`loc_id`, `ts_id`, `boreholeno`, `intakeno`, `itinerary_id`, …).
-- `src/Router.tsx` has only a few routes: `/` (Home), `/stamdata` (create station), `/:labelid` (QR scan), and a catch-all that redirects to `/`. Don't add routes for features; add a window instead.
+- The window for a lokation or tidsserie is the **lokationsvindue**. Its left-side page menu is the **lokationsmenu** (code: `StationDrawer`, `src/features/station/`). These are UI names, not domain terms.
+- `src/Router.tsx` has only a few routes: `/` (Home), `/stamdata` (opsætning), `/:labelid` (QR scan), and a catch-all that redirects to `/`. Don't add routes for features; add a window instead.
 
 **Legacy structure:** `src/pages/admin/*` and `src/pages/field/*` are left over from when the app had separate Field and Admin pages. Much of that code is still imported, but the split means nothing now. Don't copy the structure and don't add to it. Put new code in `src/features/<feature>/`, and move legacy code there when you touch it substantially.
 
