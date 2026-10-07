@@ -1,21 +1,19 @@
-import {
-  AddCircle,
-  DoNotDisturb,
-  Edit,
-  PhotoLibraryRounded,
-  PlaylistAddCheck,
-  PriorityHigh,
-  Router,
-  Settings,
-  StraightenRounded,
-} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
+import AddCircle from '@mui/icons-material/AddCircle';
 import AlarmIcon from '@mui/icons-material/Alarm';
 import BackpackIcon from '@mui/icons-material/Backpack';
+import DoNotDisturb from '@mui/icons-material/DoNotDisturb';
+import Edit from '@mui/icons-material/Edit';
 import FunctionsIcon from '@mui/icons-material/Functions';
 import KeyIcon from '@mui/icons-material/Key';
 import PersonIcon from '@mui/icons-material/Person';
+import PhotoLibraryRounded from '@mui/icons-material/PhotoLibraryRounded';
+import PlaylistAddCheck from '@mui/icons-material/PlaylistAddCheck';
+import PriorityHigh from '@mui/icons-material/PriorityHigh';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import Router from '@mui/icons-material/Router';
+import Settings from '@mui/icons-material/Settings';
+import StraightenRounded from '@mui/icons-material/StraightenRounded';
 import {
   Box,
   ClickAwayListener,

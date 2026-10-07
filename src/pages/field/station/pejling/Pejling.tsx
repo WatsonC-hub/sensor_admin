@@ -1,4 +1,4 @@
-import {AddCircle} from '@mui/icons-material';
+import AddCircle from '@mui/icons-material/AddCircle';
 import {Box, Card, Divider, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useSetAtom} from 'jotai';

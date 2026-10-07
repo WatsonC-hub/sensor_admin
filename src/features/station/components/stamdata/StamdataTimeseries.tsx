@@ -1,4 +1,4 @@
-import {PhotoCameraRounded} from '@mui/icons-material';
+import PhotoCameraRounded from '@mui/icons-material/PhotoCameraRounded';
 import {Box, Checkbox, FormControlLabel, InputAdornment, TextField} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';

@@ -1,4 +1,5 @@
-import {Edit, Save} from '@mui/icons-material';
+import Edit from '@mui/icons-material/Edit';
+import Save from '@mui/icons-material/Save';
 import {Box, Grid, TextField, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';

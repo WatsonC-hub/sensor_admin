@@ -1,5 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {ExpandLess, ExpandMore} from '@mui/icons-material';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import {Box, ButtonGroup, Typography} from '@mui/material';
 import React, {useState} from 'react';
 import {useForm} from 'react-hook-form';

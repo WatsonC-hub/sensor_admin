@@ -1,4 +1,5 @@
-import {RadioButtonCheckedOutlined, RadioButtonUncheckedOutlined} from '@mui/icons-material';
+import RadioButtonCheckedOutlined from '@mui/icons-material/RadioButtonCheckedOutlined';
+import RadioButtonUncheckedOutlined from '@mui/icons-material/RadioButtonUncheckedOutlined';
 import {Box, Grid} from '@mui/material';
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';

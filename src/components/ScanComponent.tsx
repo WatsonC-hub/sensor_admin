@@ -1,13 +1,15 @@
 import {CircularProgress} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import React from 'react';
-import {Navigate, useParams} from 'react-router-dom';
+import React, {useEffect} from 'react';
+import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 export default function ScanComponent() {
   const params = useParams();
+  const {home, location, station, boreholeIntake} = useNavigationFunctions();
 
   const {data, isError, isPending} = useQuery({
     queryKey: ['labelid', params.labelid],
@@ -17,32 +19,24 @@ export default function ScanComponent() {
     },
   });
 
-  if (isPending) {
-    return <CircularProgress />;
-  }
+  useEffect(() => {
+    if (isPending) return;
 
-  if (isError) {
-    return <Navigate to="/" replace={true} />;
-  }
-
-  let redirect = '/field';
-  if (data.loc_id) {
-    if (data.ts_id) {
-      redirect = `/field/location/${data.loc_id}/${data.ts_id}`;
-    } else {
-      redirect = `/field/location/${data.loc_id}`;
+    if (!isError) {
+      if (data.loc_id) {
+        location(data.loc_id);
+        if (data.ts_id) station(data.ts_id);
+      } else if (data.boreholeno) {
+        if (data.intakeno) boreholeIntake(data.boreholeno, data.intakeno);
+      } else {
+        toast.error('Ukendt fejl', {
+          autoClose: 2000,
+        });
+      }
     }
-  } else if (data.boreholeno) {
-    if (data.intakeno) {
-      redirect = `/field/borehole/${data.boreholeno}/${data.intakeno}`;
-    } else {
-      redirect = `/field/borehole/${data.boreholeno}`;
-    }
-  } else {
-    toast.error('Ukendt fejl', {
-      autoClose: 2000,
-    });
-  }
 
-  return <Navigate to={redirect} replace={true} />;
+    home();
+  }, [isPending, isError, data, home, location, station, boreholeIntake]);
+
+  return <CircularProgress />;
 }

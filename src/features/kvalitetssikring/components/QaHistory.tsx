@@ -1,6 +1,8 @@
-import {Delete, Save, Verified} from '@mui/icons-material';
+import Delete from '@mui/icons-material/Delete';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
+import Save from '@mui/icons-material/Save';
+import Verified from '@mui/icons-material/Verified';
 import {
   Box,
   Dialog,

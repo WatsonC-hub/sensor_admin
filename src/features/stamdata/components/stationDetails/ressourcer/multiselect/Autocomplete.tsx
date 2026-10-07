@@ -1,4 +1,6 @@
-import {ExpandLess, ExpandMore, Save} from '@mui/icons-material';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Save from '@mui/icons-material/Save';
 import {Box, Collapse, List, ListItemText, Typography} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';

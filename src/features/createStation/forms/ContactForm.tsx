@@ -1,4 +1,6 @@
-import {AddCircleOutlined, DoNotDisturb, Edit} from '@mui/icons-material';
+import AddCircleOutlined from '@mui/icons-material/AddCircleOutlined';
+import DoNotDisturb from '@mui/icons-material/DoNotDisturb';
+import Edit from '@mui/icons-material/Edit';
 import {Box} from '@mui/material';
 import {lowerCase} from 'lodash';
 import React, {useEffect, useState} from 'react';

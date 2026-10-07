@@ -1,4 +1,4 @@
-import {NotListedLocation} from '@mui/icons-material';
+import NotListedLocation from '@mui/icons-material/NotListedLocation';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';

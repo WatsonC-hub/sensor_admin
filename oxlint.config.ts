@@ -32,6 +32,19 @@ export const lintOptions: OxlintConfig = {
         // set of custom rules
 
         'no-console': 'warn',
+        'no-restricted-imports': [
+          'error',
+          {
+            paths: [
+              {
+                name: '@mui/icons-material',
+                message:
+                  "Import each icon from its own path, e.g. import Add from '@mui/icons-material/Add'. The barrel pre-bundles every icon in dev and its source map freezes DevTools.",
+                allowTypeImports: true,
+              },
+            ],
+          },
+        ],
         'react/button-has-type': 'error',
         'react/react-in-jsx-scope': ['off'],
         'jsx-a11y/anchor-is-valid': 'off',

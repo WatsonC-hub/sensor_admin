@@ -1,4 +1,4 @@
-import {Person} from '@mui/icons-material';
+import Person from '@mui/icons-material/Person';
 import {Box, Grid, Link, Typography} from '@mui/material';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import React from 'react';

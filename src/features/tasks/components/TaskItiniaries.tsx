@@ -1,5 +1,8 @@
 import {useDroppable} from '@dnd-kit/react';
-import {Edit, ExpandLess, ExpandMore, Person} from '@mui/icons-material';
+import Edit from '@mui/icons-material/Edit';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Person from '@mui/icons-material/Person';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {Box, Card, IconButton, Link, Typography} from '@mui/material';

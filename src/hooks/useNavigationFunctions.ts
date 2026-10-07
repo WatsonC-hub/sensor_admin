@@ -26,10 +26,6 @@ export const useNavigationFunctions = () => {
     },
   };
 
-  const adminFunctions = {
-    tasks: () => navigate('/admin/opgaver'),
-  };
-
   const fieldFunctions = {
     location: (loc_id: number, navigateHome?: boolean) => {
       if (navigateHome) homeFunctions.home();
@@ -51,7 +47,6 @@ export const useNavigationFunctions = () => {
   const out = useMemo(() => {
     return {
       ...homeFunctions,
-      ...adminFunctions,
       ...fieldFunctions,
     };
   }, []);

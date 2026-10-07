@@ -1,4 +1,4 @@
-import {Add} from '@mui/icons-material';
+import Add from '@mui/icons-material/Add';
 import {Box} from '@mui/material';
 import React from 'react';
 import {useFormContext} from 'react-hook-form';
