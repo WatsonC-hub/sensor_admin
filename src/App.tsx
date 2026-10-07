@@ -9,7 +9,7 @@ import NavBar from '~/components/NavBar';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import Router from '~/Router';
 
-import {isProduction} from './consts';
+import {authUrl} from './consts';
 import {userQueryOptions} from './features/auth/useUser';
 import CommandPalette from './features/commandpalette/components/CommandPalette';
 import DisplayStateProvider from './helpers/DisplayStateProvider';
@@ -48,7 +48,7 @@ function App() {
   }
 
   if ((!user && isFetched) || isError) {
-    window.location.href = `${isProduction ? 'https://admin.watsonc.dk' : 'http://localhost:5173'}/login?redirect_uri=${encodeURIComponent(window.location.href)}`;
+    window.location.href = `${authUrl}/login?redirect_uri=${encodeURIComponent(window.location.href)}`;
 
     return null;
   }
