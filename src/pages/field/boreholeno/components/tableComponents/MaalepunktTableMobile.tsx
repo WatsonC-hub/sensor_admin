@@ -5,7 +5,7 @@ import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle} from '~/consts';
-import {useUser} from '~/features/auth/useUser';
+import {useUser, sameId} from '~/features/auth/useUser';
 import {
   checkEndDateIsUnset,
   convertDate,
@@ -108,7 +108,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, d
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                disabled={disabled || row.original.organisationid != org_id}
+                disabled={disabled || !sameId(row.original.organisationid, org_id)}
               />
             </Box>
           </Box>

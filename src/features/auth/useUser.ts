@@ -5,9 +5,11 @@ import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 
 import {TaskPermission} from '../tasks/types';
 
+// The ids are strings: they have 15 or 16 digits, which a JavaScript number cannot hold exactly
 type User = {
-  user_id: number;
-  org_id: number | null;
+  user_id: string;
+  org_id: string | null;
+  email: string;
   superUser: boolean;
   attributes: Attributes;
   features: Features;
@@ -30,8 +32,9 @@ type Features = {
 };
 
 const defaultUser: UserAccessControl = {
-  user_id: -1,
+  user_id: '',
   org_id: null,
+  email: '',
   superUser: false,
 
   features: {
@@ -51,6 +54,15 @@ const defaultUser: UserAccessControl = {
   advancedTaskPermission: false,
   simpleTaskPermission: false,
 };
+
+// Whether two ids are the same. The user's ids are exact strings, but some APIs still send ids as JSON
+// numbers, which a JavaScript number only holds exactly up to 2^53 (a few of the 16-digit ids are above).
+// Comparing both as numbers rounds both alike, so they still match; comparing the string with
+// String(number) would not.
+export const sameId = (
+  id: string | number | null | undefined,
+  other: string | number | null | undefined
+) => id != null && other != null && Number(id) === Number(other);
 
 export const userQueryOptions = queryOptions({
   queryKey: queryKeys.user(),

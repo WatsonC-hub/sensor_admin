@@ -8,20 +8,15 @@ import {ErrorBoundary} from 'react-error-boundary';
 import NavBar from '~/components/NavBar';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import Router from '~/Router';
-import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
+import {isProduction} from './consts';
 import {userQueryOptions} from './features/auth/useUser';
 import CommandPalette from './features/commandpalette/components/CommandPalette';
-import { useNavigate } from 'react-router-dom';
-import { isProduction } from './consts';
 import DisplayStateProvider from './helpers/DisplayStateProvider';
-import { userQueryOptions } from './features/auth/useUser';
-import CommandPalette from './features/commandpalette/components/CommandPalette';
 
 function App() {
   const posthog = usePostHog();
   // const user = useUser();
-  const navigate = useNavigate();
   const {data: user, isPending, isFetched, isError} = useQuery(userQueryOptions);
 
   useEffect(() => {

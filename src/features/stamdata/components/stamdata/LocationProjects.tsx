@@ -30,7 +30,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
     get: {data: options},
   } = useLocationProject();
 
-  const {superUser} = useUser();
+  const {superUser, org_id} = useUser();
 
   const selectedValue = options?.find((option) => option.project_no == value) ?? null;
 
@@ -74,7 +74,9 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
                         href={
                           selectedValue !== null
                             ? `https://www.watsonc.dk/calypso/projekt/?project=${selectedValue?.project_no}`
-                            : 'https://admin.watsonc.dk/projects'
+                            : org_id
+                              ? `https://admin.watsonc.dk/org/${org_id}?tab=projects`
+                              : 'https://admin.watsonc.dk/profile'
                         }
                         target="_blank"
                         rel="noopener"
