@@ -1,0 +1,198 @@
+import {Stack, Typography} from '@mui/material';
+import React, {useEffect, useState} from 'react';
+
+import Button from '~/components/Button';
+import {createTypedForm} from '~/components/formComponents/Form';
+import useSyncForm from '~/features/synchronization/api/useSyncForm';
+
+import {button_sx} from '../commonStyle';
+import {useCreateStationStore} from '../state/useCreateStationStore';
+
+import type {SyncFormState} from '../types';
+import type {
+  SyncFormSchema,
+  SyncFormSchemaOutput,
+} from '~/features/synchronization/api/useSyncForm';
+
+type SyncFormProps = {
+  id: string;
+  loctype_id?: number;
+  tstype_id?: number;
+  values: SyncFormSchema | undefined;
+  setValues: (values: SyncFormSchema) => void;
+};
+
+const Form = createTypedForm<SyncFormSchema, SyncFormSchemaOutput>();
+
+const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps) => {
+  const [dmpActive, setDmpActive] = useState(!!values?.dmp && values.dmp !== null);
+  const [registerSubmitter, removeSubmitter, deleteState] = useCreateStationStore((state) => [
+    state.registerSubmitter,
+    state.removeSubmitter,
+    state.deleteState,
+  ]);
+  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm({
+    context: {
+      loctype_id,
+      tstype_id,
+    },
+    defaultValues: {
+      dmp: null,
+      jupiter: null,
+    },
+    values: values,
+  });
+
+  const {setValue, handleSubmit, watch} = syncFormMethods;
+
+  const watchedDmp = watch('dmp');
+  const watchedJupiter = watch('jupiter');
+
+  useEffect(() => {
+    registerSubmitter(id, async () => {
+      let valid = false;
+      await handleSubmit((values) => {
+        if (!isDmpAllowed || values.dmp === null) delete (values as Partial<typeof values>).dmp;
+        if (!canSyncJupiter || values.jupiter === null)
+          delete (values as Partial<typeof values>).jupiter;
+        if (Object.keys(values).length === 0) {
+          deleteState(id as `timeseries.${string}.sync`);
+          valid = true;
+          return;
+        }
+        setValues(values);
+        valid = true;
+      })();
+      return valid;
+    });
+
+    return () => removeSubmitter(id);
+  }, [handleSubmit, isDmpAllowed, canSyncJupiter]);
+
+  const toggleJupiterOptions = [
+    {
+      selected: (val: SyncFormState['jupiter']) => val === true,
+      onChange: () => {
+        if (watchedJupiter === true) return;
+        setValue('jupiter', true);
+      },
+      label: 'Ja',
+    },
+    {
+      selected: (val: SyncFormState['jupiter']) => val === false,
+      onChange: () => {
+        if (watchedJupiter === false) return;
+        setValue('jupiter', false);
+      },
+      label: 'Nej',
+    },
+    {
+      selected: (val: SyncFormState['jupiter']) => val === null,
+      onChange: () => {
+        if (watchedJupiter === null) return;
+        setValue('jupiter', null);
+      },
+      label: 'Registrer senere',
+    },
+  ];
+
+  const toggleDmpOptions = [
+    {
+      selected: (val: SyncFormState['dmp']) => val !== null && typeof val === 'object',
+      onChange: () => {
+        if (watchedDmp !== null && typeof watchedDmp === 'object') return;
+        setValue('dmp', Object());
+        setDmpActive(true);
+      },
+      label: 'Ja',
+    },
+    {
+      selected: (val: SyncFormState['dmp']) => val === false,
+      onChange: () => {
+        if (watchedDmp === false) return;
+        setValue('dmp', false);
+        setDmpActive(false);
+      },
+      label: 'Nej',
+    },
+    {
+      selected: (val: SyncFormState['dmp']) => val === null,
+      onChange: () => {
+        if (watchedDmp === null) return;
+        setValue('dmp', null);
+        setDmpActive(false);
+      },
+      label: 'Registrer senere',
+    },
+  ];
+
+  return (
+    <>
+      {(canSyncJupiter || isDmpAllowed) && (
+        <Form formMethods={syncFormMethods} gridSizes={12}>
+          {canSyncJupiter && (
+            <Stack direction={'column'}>
+              <Typography gutterBottom>Synkroniser til Jupiter?</Typography>
+              <Stack direction={'row'} spacing={1}>
+                {toggleJupiterOptions.map((option) => (
+                  <Button
+                    key={option.label}
+                    onClick={option.onChange}
+                    bttype={option.selected(watchedJupiter) ? 'primary' : 'tertiary'}
+                  >
+                    {option.label}
+                  </Button>
+                ))}
+              </Stack>
+            </Stack>
+          )}
+          {isDmpAllowed && (
+            <>
+              <Stack direction={'column'}>
+                <Typography>Skal tidsserien synkroniseres med Danmarks Miljøportal?</Typography>
+                <Stack direction={'row'} spacing={1}>
+                  {toggleDmpOptions.map((option) => (
+                    <Button
+                      key={option.label}
+                      onClick={option.onChange}
+                      bttype={option.selected(watchedDmp) ? 'primary' : 'tertiary'}
+                      sx={{...button_sx(option.selected(watchedDmp))}}
+                    >
+                      {option.label}
+                    </Button>
+                  ))}
+                </Stack>
+              </Stack>
+
+              {dmpActive && (
+                <Form.Input
+                  select
+                  name="dmp.owner_cvr"
+                  label="Data ejer"
+                  required
+                  fullWidth={false}
+                  placeholder="Vælg data ejer"
+                  options={owners?.map((owner) => ({
+                    [owner.cvr]: owner.name + ` (${owner.cvr})`,
+                  }))}
+                  onChangeCallback={(value) => {
+                    const owner_cvr = (
+                      value as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+                    ).target.value;
+                    const owner = owners?.find((owner) => owner.cvr === owner_cvr);
+                    if (owner) {
+                      setValue('dmp.owner_cvr', parseInt(owner.cvr), {shouldValidate: true});
+                      setValue('dmp.owner_name', owner.name, {shouldValidate: true});
+                    }
+                  }}
+                />
+              )}
+            </>
+          )}
+        </Form>
+      )}
+    </>
+  );
+};
+
+export default SyncForm;

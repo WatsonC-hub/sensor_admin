@@ -1,14 +1,10 @@
-import {
-  Autocomplete,
-  AutocompleteProps,
-  Box,
-  InputAdornment,
-  TextField,
-  TextFieldProps,
-} from '@mui/material';
-import React from 'react';
-import LinkableTooltip from './LinkableTooltip';
+import {Autocomplete, Box, InputAdornment, TextField} from '@mui/material';
 import {merge} from 'lodash';
+import React from 'react';
+
+import LinkableTooltip from './LinkableTooltip';
+
+import type {AutocompleteProps, TextFieldProps} from '@mui/material';
 
 // notice we add M extends boolean to control multiple
 export type AutoCompleteFieldProps<T extends object, M extends boolean = false> = Omit<
@@ -17,10 +13,11 @@ export type AutoCompleteFieldProps<T extends object, M extends boolean = false> 
 > & {
   selectValue: M extends true ? T[] : T | null;
   onChange: (value: M extends true ? T[] : T | null) => void;
+  onChangeCallback?: (value: M extends true ? T[] : T | null) => void;
   labelKey: keyof T;
   options: T[];
   error?: string | undefined;
-  textFieldsProps: Partial<TextFieldProps>;
+  textFieldsProps?: Partial<TextFieldProps>;
   fieldDescriptionText?: string;
 };
 
@@ -33,6 +30,7 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
   textFieldsProps,
   fieldDescriptionText,
   onInputChange,
+  onChangeCallback,
   inputValue,
   ...autocompleteProps
 }: AutoCompleteFieldProps<T, M>): React.ReactElement => {
@@ -43,6 +41,10 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
       options={options}
       onChange={(event, newValue) => {
         onChange(newValue);
+
+        if (onChangeCallback) {
+          onChangeCallback(newValue);
+        }
       }}
       fullWidth
       selectOnFocus
@@ -72,7 +74,9 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
         if (onInputChange && reason === 'blur') onInputChange(event, newInputValue, reason);
       }}
       renderInput={(params) => {
-        const {InputProps} = params;
+        const {
+          slotProps: {input: InputProps, inputLabel: InputLabelProps, ...otherSlotProps} = {},
+        } = params;
         let sx = {
           pb: 0,
           '& .MuiInputBase-input.Mui-disabled': {
@@ -93,7 +97,7 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
           },
         };
 
-        if (textFieldsProps.sx) {
+        if (textFieldsProps?.sx) {
           sx = merge(sx, textFieldsProps.sx);
         }
         return (
@@ -103,12 +107,13 @@ const ExtendedAutocomplete = <T extends object, M extends boolean = false>({
             fullWidth
             margin="dense"
             slotProps={{
-              inputLabel: {shrink: true},
+              ...otherSlotProps,
+              inputLabel: {...InputLabelProps, shrink: true},
               input: {
                 ...InputProps,
                 endAdornment: (
                   <>
-                    {InputProps.endAdornment}
+                    {InputProps?.endAdornment}
                     <Box sx={{display: 'flex', alignItems: 'center'}}>
                       <InputAdornment position="end">
                         {fieldDescriptionText && (

@@ -11,17 +11,30 @@ interface WizardValueBoundsProps {
 const ValueBounds = ({onClose}: WizardValueBoundsProps) => {
   const {isMobile} = useBreakpoints();
   return (
-    <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
+    <Box
+      sx={{
+        alignSelf: 'center',
+        width: 'inherit',
+        height: 'inherit',
+        justifySelf: 'center',
+      }}
+    >
       <Typography
-        alignSelf={'center'}
         variant={isMobile ? 'h6' : 'h5'}
         component="h2"
-        textAlign={'center'}
-        fontWeight={'bold'}
+        sx={{
+          alignSelf: 'center',
+          textAlign: 'center',
+          fontWeight: 'bold',
+        }}
       >
         Øvre og nedre værdigrænser
       </Typography>
-      <Box alignSelf={'center'}>
+      <Box
+        sx={{
+          alignSelf: 'center',
+        }}
+      >
         <YRangeModal onClose={onClose} />
       </Box>
     </Box>

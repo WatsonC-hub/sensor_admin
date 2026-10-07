@@ -1,5 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {Save} from '@mui/icons-material';
+import Save from '@mui/icons-material/Save';
 import {
   Box,
   CardActions,
@@ -9,9 +9,8 @@ import {
   FormControlLabel,
   Typography,
 } from '@mui/material';
-import dayjs from 'dayjs';
 import React, {useEffect, useMemo, useState} from 'react';
-import {Controller, FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {Controller, FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import Button from '~/components/Button';
@@ -19,10 +18,10 @@ import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import GenericCard from '~/components/GenericCard';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
-import { useUnitHistory } from '~/features/stamdata/api/useUnitHistory';
 import {useRunQA} from '~/hooks/useRunQA';
 import {useAppContext} from '~/state/contexts';
-import {QaAlgorithmParameters, QaAlgorithms, QaAlgorithmsPut} from '~/types';
+
+import type {QaAlgorithmParameters, QaAlgorithms, QaAlgorithmsPut} from '~/types';
 
 interface AlgorithCardProps {
   qaAlgorithm: QaAlgorithms;
@@ -44,7 +43,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
     setDeleteDialogOpen(true);
   };
 
-  const submit: SubmitHandler<QaAlgorithmsPut> = (data) => {
+  const submit = (data: QaAlgorithmsPut) => {
     const payload = {
       path: `${ts_id}`,
       data: {
@@ -125,7 +124,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
       parameters: qaAlgorithm.parameter_values,
     });
   if (schemaData.success) defaultValues = schemaData.data;
-  const formMethods = useForm<QaAlgorithmsPut>({
+  const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: defaultValues,
   });
@@ -163,7 +162,6 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           justifyContent: 'space-between',
           borderRadius: 4,
           height: '96%',
-          minWidth: 350,
           m: 1,
         }}
       >
@@ -171,10 +169,13 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           title={
             <Box>
               <Box
-                display={'flex'}
-                flexDirection={'row'}
-                justifyContent={'space-between'}
-                alignItems={'center'}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                }}
               >
                 <Typography variant={'h5'}>{qaAlgorithm.name}</Typography>
                 <FormControlLabel
@@ -205,7 +206,12 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
                   }}
                 />
               </Box>
-              <Typography fontSize={13} variant="body2">
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 13,
+                }}
+              >
                 {qaAlgorithm.description}
               </Typography>
             </Box>

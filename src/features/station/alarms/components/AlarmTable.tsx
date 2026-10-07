@@ -1,20 +1,24 @@
 import {Box, Dialog, Typography} from '@mui/material';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
-import {useTable} from '~/hooks/useTable';
-import RenderActions from '~/helpers/RowActions';
-import {useAppContext} from '~/state/contexts';
+
 import Button from '~/components/Button';
-import AlarmHistoryTable from './AlarmHistoryTable';
-import {AlarmTableType} from '../types';
-import AlarmFormDialog from './AlarmFormDialog';
-import AlarmContactTable from './AlarmContactTable';
-import AlarmNotificationTable from './AlarmNotificationTable';
-import {useAlarm} from '../api/useAlarm';
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
+import RenderActions from '~/helpers/RowActions';
 import {useLocationData} from '~/hooks/query/useMetadata';
+import {useTable} from '~/hooks/useTable';
+import {useAppContext} from '~/state/contexts';
+
+import {useAlarm} from '../api/useAlarm';
+import AlarmContactTable from './AlarmContactTable';
+import AlarmFormDialog from './AlarmFormDialog';
+import AlarmHistoryTable from './AlarmHistoryTable';
+import AlarmNotificationTable from './AlarmNotificationTable';
+
+import type {AlarmTableType} from '../types';
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 type AlarmTableProps = {
   alarms: Array<AlarmTableType> | undefined;
 };
@@ -90,45 +94,70 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
       return (
         (alarmNotification.length > 0 || alarmContacts.length > 0) && (
           <Box
-            display={'flex'}
-            flexDirection={'row'}
-            height={'100%'}
-            justifyContent={'space-between'}
-            gap={2}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              height: '100%',
+              justifyContent: 'space-between',
+              gap: 2,
+            }}
           >
             {alarmNotification.length > 0 && (
               <Box>
-                <Typography variant="body2" fontWeight={'bold'} alignContent={'center'}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 'bold',
+                    alignContent: 'center',
+                  }}
+                >
                   Notifikationer
                 </Typography>
                 <AlarmNotificationTable alarm_notifications={alarmNotification} />
               </Box>
             )}
             {alarmContacts && alarmContacts.length > 0 && (
-              <Box display={'flex'} flexDirection={'column'}>
-                <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
-                  <Typography variant="body2" alignContent={'center'} fontWeight={'bold'}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      alignContent: 'center',
+                      fontWeight: 'bold',
+                    }}
+                  >
                     Kontakter
                   </Typography>
                   {/* <Tooltip title="Ingen historik tilgængelig" arrow>
-                    <Box>
-                      <IconButton
-                        onClick={() => {
-                          setAlarmHistoryOpen(true);
-                        }}
-                        disabled={alarmHistory?.length === 0}
-                        sx={{
-                          backgroundColor: 'transparent',
-                        }}
-                        size="small"
-                      >
-                        <RestoreIcon />
-                        <Typography variant="caption" sx={{textDecoration: 'underline'}} ml={1}>
-                          Se historik
-                        </Typography>
-                      </IconButton>
-                    </Box>
-                  </Tooltip> */}
+                <Box>
+                  <IconButton
+                    onClick={() => {
+                      setAlarmHistoryOpen(true);
+                    }}
+                    disabled={alarmHistory?.length === 0}
+                    sx={{
+                      backgroundColor: 'transparent',
+                    }}
+                    size="small"
+                  >
+                    <RestoreIcon />
+                    <Typography variant="caption" sx={{textDecoration: 'underline'}} ml={1}>
+                      Se historik
+                    </Typography>
+                  </IconButton>
+                </Box>
+              </Tooltip> */}
                 </Box>
                 <AlarmContactTable alarmContacts={alarmContacts} />
               </Box>
@@ -176,7 +205,15 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
   );
 
   return (
-    <Box sx={setTableBoxStyle(800)} overflow={'hidden'} pb={1}>
+    <Box
+      sx={[
+        {
+          overflow: 'hidden',
+          pb: 1,
+        },
+        setTableBoxStyle(800),
+      ]}
+    >
       <Dialog
         open={alarmHistoryOpen}
         onClose={() => {
@@ -196,11 +233,13 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
             <Typography variant="body2">Ingen historik tilgængelig</Typography>
           )}
           <Box
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="center"
-            sx={{paddingTop: 1}}
-            gap={1}
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              gap: 1,
+              paddingTop: 1,
+            }}
           >
             <Button bttype="tertiary" onClick={() => setAlarmHistoryOpen(false)}>
               Luk

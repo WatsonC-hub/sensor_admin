@@ -1,19 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import Close from '@mui/icons-material/Close';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-  Typography,
-  Link,
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
+  Link,
+  Typography,
 } from '@mui/material';
-import Button from './Button';
-import {Close} from '@mui/icons-material';
+import React, {useEffect, useState} from 'react';
 
-const RELEASE_NOTICE_KEY = 'fieldAppReleaseNotice_v2026_02';
+import Button from './Button';
+
+const RELEASE_NOTICE_KEY = 'fieldAppReleaseNotice_v2026_10';
 
 export default function ReleaseNoticeModal() {
   const [open, setOpen] = useState(false);
@@ -36,7 +37,8 @@ export default function ReleaseNoticeModal() {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>✨ Opdatering til målepunkter</DialogTitle>
+      <DialogTitle sx={{pb: 0}}>✨ Nyheder i Calypso Field</DialogTitle>
+
       <IconButton
         aria-label="close"
         onClick={handleClose}
@@ -49,30 +51,109 @@ export default function ReleaseNoticeModal() {
       >
         <Close />
       </IconButton>
+
       <DialogContent>
         <DialogContentText component="div" color="black">
           <Typography gutterBottom>
-            Vi har ændret på hvordan målepunkter fungerer for at gøre brugen af målepunkter mere{' '}
-            <strong>intuitiv</strong> og <strong>robust</strong>.
+            Vi har lavet en række forbedringer, der gør dit daglige arbejde i Calypso Field nemmere.
+            Her er et overblik.
           </Typography>
 
-          <Box component="ul" sx={{pl: 2, mt: 1, mb: 2}}>
+          <Typography variant="h6" sx={{mt: 2}}>
+            Nemmere oprettelse af lokation og tidsserier
+          </Typography>
+          <Box component="ul" sx={{pl: 2, mt: 1, mb: 1}}>
+            <li>Opret flere tidsserier på samme lokation på én gang</li>
+            <li>Tilknyt udstyr til tidsserierne med det samme - eller tilføj udstyret senere</li>
             <li>
-              Målepunkter bliver nu kun registreret med en <strong>gældende fra</strong>-dato
+              Opret tidsserier ud fra udstyrets sensorer med <strong>Tilføj fra udstyr</strong>
             </li>
-            <li>Et målepunkt gælder altid fra denne dato og frem til dato for næste målepunkt</li>
-            <li>Seneste målepunkt gælder dermed frem indtil et nyt målepunkt bliver defineret</li>
-            <li>Dette gør at der ikke kommer nogle huller, hvor et målepunkt ikke er defineret</li>
+            <li>
+              Mangler du en oplysning, kan du vælge <strong>Registrer senere</strong> og gøre den
+              færdig en anden dag
+            </li>
           </Box>
-
           <Typography>
             📘{' '}
             <Link
-              href="https://www.watsonc.dk/guides/malepunkter-vandstand/"
+              href="https://www.watsonc.dk/guides/opret-ny-lokation-tidsserie"
               target="_blank"
               rel="noopener"
             >
-              Læs guide om målepunkter
+              Se guiden: Opret ny lokation/tidsserie
+            </Link>
+          </Typography>
+
+          <Typography variant="h6" sx={{mt: 3}}>
+            Hjemtagning og opsætning af udstyr på flere tidsserier
+          </Typography>
+          <Box component="ul" sx={{pl: 2, mt: 1, mb: 1}}>
+            <li>Hjemtag udstyr fra flere tidsserier i én samlet hjemtagning</li>
+            <li>Opsæt udstyr på flere tidsserier på én gang</li>
+            <li>
+              Sensorerne kobles automatisk til de rigtige tidsserier - og er der flere muligheder,
+              vælger du selv
+            </li>
+          </Box>
+          <Typography>
+            📘{' '}
+            <Link
+              href="https://www.watsonc.dk/guides/opsaetning-af-udstyr"
+              target="_blank"
+              rel="noopener"
+            >
+              Se guiden: Opsætning af udstyr
+            </Link>
+          </Typography>
+
+          <Typography variant="h6" sx={{mt: 3}}>
+            Korrektion med kontrolmålinger på flere tidsserietyper
+          </Typography>
+          <Box component="ul" sx={{pl: 2, mt: 1, mb: 1}}>
+            <li>
+              Kontrolmålinger kan nu bruges til korrektion af flere tidsserietyper - ikke kun
+              vandstand
+            </li>
+            <li>
+              Afhængigt af tidsserietypen korrigeres data med enten en{' '}
+              <strong>parallelforskydning</strong> eller en <strong>lineær korrektion</strong>
+            </li>
+            <li>
+              Vælg selv, hvor langt bagud korrektionen skal gælde - også ved at vælge datoen direkte
+              i grafen
+            </li>
+          </Box>
+          <Typography>
+            📘{' '}
+            <Link
+              href="https://www.watsonc.dk/guides/kontrolmaling-og-korrektion"
+              target="_blank"
+              rel="noopener"
+            >
+              Se guiden: Korrektion med kontrolmålinger
+            </Link>
+          </Typography>
+
+          <Typography variant="h6" sx={{mt: 3}}>
+            Mere fleksible tidsrum for alarmkontakter
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{mt: 0.5}}>
+            Alarmer er for nu kun i brug hos udvalgte superbrugere af Field. Har du lyst til at
+            prøve kræfter med det, så tag endelig kontakt til os.
+          </Typography>
+          <Box component="ul" sx={{pl: 2, mt: 1, mb: 1}}>
+            <li>
+              Vælg for hver kontaktmetode (SMS, e-mail og opkald), om alarmkontakten skal modtage
+              alarmer <strong>hele døgnet</strong> eller i et bestemt tidsrum
+            </li>
+            <li>
+              Tidsrummet kan nu gå <strong>over midnat</strong>, fx fra kl. 22 til kl. 6
+            </li>
+          </Box>
+          <Typography>
+            📘{' '}
+            <Link href="https://www.watsonc.dk/guides/alarmer" target="_blank" rel="noopener">
+              Se guiden: Alarmer
             </Link>
           </Typography>
         </DialogContentText>

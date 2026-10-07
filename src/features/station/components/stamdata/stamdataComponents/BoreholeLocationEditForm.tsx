@@ -1,8 +1,10 @@
-import {Grid2} from '@mui/material';
+import {Grid} from '@mui/material';
 import React from 'react';
-import StamdataLocation from '../StamdataLocation';
-import usePermissions from '~/features/permissions/api/usePermissions';
+
 import {useUser} from '~/features/auth/useUser';
+import usePermissions from '~/features/permissions/api/usePermissions';
+
+import StamdataLocation from '../StamdataLocation';
 
 type Props = {
   size: number;
@@ -15,50 +17,62 @@ const BoreholeLocationEditForm = ({size, loc_id}: Props) => {
   const disabled = location_permissions !== 'edit';
 
   return (
-    <Grid2 container spacing={2}>
-      <Grid2 size={size}>
+    <Grid container spacing={2}>
+      <Grid size={size}>
         <StamdataLocation.LoctypeSelect disabled={disabled} />
-      </Grid2>
-      {superUser && <Grid2 size={size}></Grid2>}
-      <Grid2 size={size}>
+      </Grid>
+      {superUser && <Grid size={size}></Grid>}
+      <Grid size={size}>
         <StamdataLocation.Boreholeno
           disabled={disabled}
           editing={true}
           // fieldDescriptionText="Borehole number"
         />
-      </Grid2>
-      <Grid2 size={size}>
+      </Grid>
+      <Grid size={size}>
         <StamdataLocation.BoreholeSuffix disabled={disabled} />
-      </Grid2>
-      <Grid2 size={size}>
+      </Grid>
+      <Grid size={size}>
         <StamdataLocation.Groups disabled={disabled} />
-      </Grid2>
+      </Grid>
       {superUser && (
-        <Grid2 size={size}>
+        <Grid size={size}>
           <StamdataLocation.InitialProjectNo disabled={disabled} />
-        </Grid2>
+        </Grid>
       )}
-      <Grid2 size={size}>
+      <Grid size={size}>
         <StamdataLocation.X disabled={disabled} />
-      </Grid2>
-      <Grid2 size={size}>
+      </Grid>
+      <Grid size={size}>
         <StamdataLocation.Y disabled={disabled} />
-      </Grid2>
-      <Grid2 display={'flex'} flexDirection={'row'} size={size} gap={2}>
-        <Grid2 size={9}>
+      </Grid>
+      <Grid
+        size={size}
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 2,
+        }}
+      >
+        <Grid size={9}>
           <StamdataLocation.TerrainQuote disabled={disabled} />
-        </Grid2>
-        <Grid2 size={3}>
+        </Grid>
+        <Grid size={3}>
           <StamdataLocation.TerrainQuality disabled={disabled} />
-        </Grid2>
-      </Grid2>
-      <Grid2 size={size}>
+        </Grid>
+      </Grid>
+      <Grid size={size}>
         <StamdataLocation.Description disabled={disabled} />
-      </Grid2>
-      <Grid2 size={size} alignContent={'center'}>
+      </Grid>
+      <Grid
+        size={size}
+        sx={{
+          alignContent: 'center',
+        }}
+      >
         <StamdataLocation.LocationID />
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 };
 

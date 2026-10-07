@@ -1,8 +1,9 @@
 import {useQuery} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {APIError} from '~/queryClient';
 
 type EdgeDates = {
   firstDate: string;

@@ -1,50 +1,28 @@
-import {zodResolver} from '@hookform/resolvers/zod';
-import {Save} from '@mui/icons-material';
-import {Box, Grid2, InputAdornment, Typography} from '@mui/material';
-import React, {ChangeEvent} from 'react';
-import {useForm, FormProvider} from 'react-hook-form';
-import FormInput from '~/components/FormInput';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useAppContext} from '~/state/contexts';
+import Save from '@mui/icons-material/Save';
+import {Grid, Typography} from '@mui/material';
+import React from 'react';
+import {FormProvider} from 'react-hook-form';
+
+import Button from '~/components/Button';
+import {useUser} from '~/features/auth/useUser';
+import useControlSettingsForm from '~/features/configuration/api/useControlSettingsForm';
+import EditControlSettings from '~/features/configuration/components/EditControlSettings';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {
   useTimeseriesServiceInterval,
   useTimeseriesServiceIntervalMutation,
 } from '~/features/station/api/useTimeseriesServiceInterval';
-import {z} from 'zod';
-import Button from '~/components/Button';
-import {useUser} from '~/features/auth/useUser';
 import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
-import usePermissions from '~/features/permissions/api/usePermissions';
+import {useAppContext} from '~/state/contexts';
 
-const yearlyControlsSchema = z.object({
-  controls_per_year: z.number({required_error: 'Kontrol interval er påkrævet'}).nullable(),
-  // .refine((val) => (val == null ? null : val), 'Kontrol interval skal være et tal'),
-  dummy: z.number().nullish().optional(),
-  lead_time: z.number({required_error: 'Forvarselstid er påkrævet'}).nullable(),
-  selectValue: z.number().default(1),
-});
-
-type ServiceIntervalSubmit = z.infer<typeof yearlyControlsSchema>;
-
-function intervalFromFrequencyPerYear(timesPerYear: number): string {
-  if (timesPerYear <= 0) return 'Ingen interval';
-
-  const months = 12 / timesPerYear;
-
-  // Round to 1 decimal if it's not an integer
-  const display = Number.isInteger(months) ? months : months.toFixed(1);
-
-  if (months === 1) return 'måned';
-  return `${display}. måned`;
-}
+import type {ControlSettingsFormValues} from '~/features/configuration/api/useControlSettingsForm';
 
 const YearlyControlsConfig = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
-  const {superUser} = useUser();
   const {data: values} = useTimeseriesServiceInterval(ts_id);
 
   const {mutateAsync} = useTimeseriesServiceIntervalMutation(ts_id);
-  const {isMobile} = useBreakpoints();
+  const {superUser} = useUser();
   const {location_permissions} = usePermissions(loc_id);
 
   const disabled =
@@ -52,133 +30,48 @@ const YearlyControlsConfig = () => {
     (!values?.isCustomerService && !superUser) ||
     location_permissions !== 'edit';
 
-  const formMethods = useForm<ServiceIntervalSubmit>({
-    resolver: zodResolver(yearlyControlsSchema),
+  const formMethods = useControlSettingsForm({
     defaultValues: {
-      controls_per_year: null,
-      dummy: null,
+      controls_per_year: undefined,
       lead_time: null,
-    },
-    values: values && {
-      controls_per_year: values.controlsPerYear,
-      lead_time: values.leadTime ?? null,
-      dummy: values.controlsPerYear !== null ? Number(values.controlsPerYear.toFixed(3)) : null,
+      dummy: null,
       selectValue: 1,
     },
-    mode: 'onChange',
+    values: {
+      controls_per_year: values?.controlsPerYear ?? null,
+      lead_time: values?.leadTime ?? null,
+      dummy: values?.controlsPerYear !== null ? Number(values?.controlsPerYear.toFixed(3)) : null,
+      selectValue: 1,
+    },
   });
 
   const {
     handleSubmit,
     reset,
     formState: {isSubmitting, dirtyFields, isDirty},
-    setValue,
-    watch,
   } = formMethods;
 
-  const controlsPerYear = watch('controls_per_year');
-  const selectValue = watch('selectValue');
+  const onSubmit = async (data: ControlSettingsFormValues) => {
+    await mutateAsync({
+      controls_per_year: data.controls_per_year,
+      lead_time: data.lead_time,
+    });
 
-  const onSubmit = async (data: ServiceIntervalSubmit) => {
-    await mutateAsync(
-      {
-        controls_per_year: data.dummy !== null ? data.controls_per_year : null,
-        lead_time: data.lead_time,
-      },
-      {
-        onSuccess: () => {
-          reset();
-        },
-      }
-    );
+    reset();
   };
 
   return (
     <FormProvider {...formMethods}>
-      <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={2} alignItems={'center'}>
-        <FormInput
-          name="dummy"
-          label={values?.from_unit ? 'Kontrolhyppighed (fra udstyret)' : 'Kontrolhyppighed'}
-          type="number"
-          disabled={disabled}
-          fullWidth
-          onChangeCallback={(e) => {
-            if (typeof e == 'number') {
-              if (selectValue === 1) setValue('controls_per_year', Number(e), {shouldDirty: true});
-              else if (selectValue === 2 && Number(e) !== 0)
-                setValue('controls_per_year', Number((12 / Number(e)).toFixed(3)), {
-                  shouldDirty: true,
-                });
-            }
-          }}
-          slotProps={{
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <FormInput
-                    name="selectValue"
-                    select
-                    variant="standard"
-                    sx={{width: 150}}
-                    defaultValue={1}
-                    disabled={disabled}
-                    slotProps={{
-                      select: {
-                        disableUnderline: true,
-                      },
-                    }}
-                    options={[{1: 'kontrol/år'}, {2: 'mdr. mellem kontrol'}]}
-                    keyType="number"
-                    onChangeCallback={(e) => {
-                      const value = (e as ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)
-                        .target.value;
-                      if (controlsPerYear) {
-                        if (Number(value) === 1)
-                          setValue('dummy', controlsPerYear, {
-                            shouldDirty: false,
-                          });
-                        else if (Number(value) === 2)
-                          setValue('dummy', Number((12 / controlsPerYear).toFixed(3)), {
-                            shouldDirty: false,
-                          });
-                      }
-                    }}
-                  />
-                </InputAdornment>
-              ),
-            },
-          }}
-          helperText={
-            controlsPerYear ? (
-              selectValue === 1 ? (
-                <Typography variant="caption">
-                  Kontrolmåles hver {intervalFromFrequencyPerYear(controlsPerYear ?? 0)}
-                </Typography>
-              ) : (
-                <Typography variant="caption">
-                  Kontrolmåles {controlsPerYear} gange om året
-                </Typography>
-              )
-            ) : null
-          }
-        />
-
-        <FormInput
-          name="lead_time"
-          label="Forsvarsling"
-          type="number"
-          disabled={disabled}
-          fullWidth
-          slotProps={{
-            input: {
-              endAdornment: <InputAdornment position="end">dage før kontrol</InputAdornment>,
-            },
-          }}
-        />
-      </Box>
-
+      <EditControlSettings disabled={disabled} />
       {!disabled && (
-        <Grid2 size={12} display="flex" justifyContent={'flex-end'} gap={1}>
+        <Grid
+          size={12}
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 1,
+          }}
+        >
           <UpdateProgressButton
             loc_id={loc_id}
             ts_id={ts_id}
@@ -200,13 +93,13 @@ const YearlyControlsConfig = () => {
               Object.keys(dirtyFields).filter((key) => key !== 'selectValue').length === 0 ||
               !isDirty
             }
-            loading={isSubmitting ?? null}
+            loading={isSubmitting}
             onClick={handleSubmit(onSubmit, (error) => console.log(error))}
-            startIcon={<Save />}
+            startIcon={isSubmitting ? undefined : <Save />}
           >
             <Typography variant="body2">Gem</Typography>
           </Button>
-        </Grid2>
+        </Grid>
       )}
     </FormProvider>
   );

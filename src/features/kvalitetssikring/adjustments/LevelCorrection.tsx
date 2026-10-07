@@ -12,16 +12,29 @@ const LevelCorrection = ({onClose}: WizardLevelCorrectionProps) => {
   const {isMobile} = useBreakpoints();
 
   return (
-    <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
+    <Box
+      sx={{
+        alignSelf: 'center',
+        width: 'inherit',
+        height: 'inherit',
+        justifySelf: 'center',
+      }}
+    >
       <Typography
-        alignSelf={'center'}
         variant={isMobile ? 'h6' : 'h5'}
-        textAlign={'center'}
-        fontWeight={'bold'}
+        sx={{
+          alignSelf: 'center',
+          textAlign: 'center',
+          fontWeight: 'bold',
+        }}
       >
         Korriger spring
       </Typography>
-      <Box alignSelf={'center'}>
+      <Box
+        sx={{
+          alignSelf: 'center',
+        }}
+      >
         <LevelCorrectionModal onClose={onClose} />
       </Box>
     </Box>

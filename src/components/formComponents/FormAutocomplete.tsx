@@ -1,10 +1,19 @@
-import {Grid2, GridBaseProps} from '@mui/material';
+import {Grid} from '@mui/material';
 import React from 'react';
-import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
-import {FormContext} from './const';
-import ExtendedAutocomplete, {AutoCompleteFieldProps} from '../Autocomplete';
+import {Controller, useFormContext} from 'react-hook-form';
 
-type FormAutocompleteProps<T extends FieldValues, K extends object, M extends boolean = false> = {
+import ExtendedAutocomplete from '../Autocomplete';
+import {FormContext} from './const';
+
+import type {AutoCompleteFieldProps} from '../Autocomplete';
+import type {GridBaseProps} from '@mui/material';
+import type {FieldValues, Path} from 'react-hook-form';
+
+export type FormAutocompleteProps<
+  T extends FieldValues,
+  K extends object,
+  M extends boolean = false,
+> = {
   name: Path<T>;
   gridSizes?: GridBaseProps['size'];
   valueKey: keyof K;
@@ -28,7 +37,7 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
   const {gridSizes: contextGridSizes} = React.useContext(FormContext);
 
   return (
-    <Grid2 size={gridSizes ?? contextGridSizes}>
+    <Grid size={gridSizes ?? contextGridSizes}>
       <Controller
         name={name}
         control={control}
@@ -65,7 +74,7 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
           );
         }}
       />
-    </Grid2>
+    </Grid>
   );
 };
 

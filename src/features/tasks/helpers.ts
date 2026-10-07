@@ -1,5 +1,7 @@
-import {elementScroll, VirtualizerOptions} from '@tanstack/react-virtual';
-import {Task} from './types';
+import {elementScroll} from '@tanstack/react-virtual';
+
+import type {Task} from './types';
+import type {VirtualizerOptions} from '@tanstack/react-virtual';
 
 export const isSimpleTask = (task: Task) => {
   return (
@@ -11,7 +13,7 @@ export const isSimpleTask = (task: Task) => {
 
 export const createSmoothScrollToFn = (
   getScrollElement: () => HTMLElement | null,
-  duration: number = 1000
+  duration = 1000
 ): VirtualizerOptions<any, any>['scrollToFn'] => {
   let scrollingRef = 0;
 

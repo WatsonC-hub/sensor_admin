@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useRunQA} from '~/hooks/useRunQA';
 
 const TOAST_ID = 'correct-toast';

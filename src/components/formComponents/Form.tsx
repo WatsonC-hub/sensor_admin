@@ -1,16 +1,21 @@
-import React, {JSX} from 'react';
-import {FieldValues} from 'react-hook-form';
-import FormCheckbox from './FormCheckbox';
-import FormInputWrapper from './FormInputWrapper';
-import Submit from './Submit';
-import TypedForm from './TypedForm';
+import React from 'react';
+
 import Cancel from './Cancel';
 import FormAutocomplete from './FormAutocomplete';
-import FormRadio from './FormRadio';
+import FormCheckbox from './FormCheckbox';
+import FormController from './FormController';
 import FormDateTimeWrapper from './FormDateTimeWrapper';
+import FormInputWrapper from './FormInputWrapper';
+import FormRadio from './FormRadio';
+import FormToggleButton from './FormToggleButton';
+import Submit from './Submit';
+import TypedForm from './TypedForm';
 
-type TypedFormComponent<T extends FieldValues> = React.FC<
-  React.ComponentProps<typeof TypedForm<T>>
+import type {JSX} from 'react';
+import type {FieldValues, Path} from 'react-hook-form';
+
+export type TypedFormComponent<T extends FieldValues, S extends Record<string, any> = T> = React.FC<
+  React.ComponentProps<typeof TypedForm<T, S>>
 > & {
   Input: React.FC<React.ComponentProps<typeof FormInputWrapper<T>>>;
   Checkbox: React.FC<React.ComponentProps<typeof FormCheckbox<T>>>;
@@ -19,8 +24,14 @@ type TypedFormComponent<T extends FieldValues> = React.FC<
   Autocomplete: <K extends object, M extends boolean = false>(
     props: React.ComponentProps<typeof FormAutocomplete<T, K, M>>
   ) => JSX.Element;
-  Submit: React.FC<React.ComponentProps<typeof Submit<T>>>;
+  Submit: React.FC<React.ComponentProps<typeof Submit<S>>>;
   Cancel: React.FC<React.ComponentProps<typeof Cancel>>;
+  Controller: <K extends Path<T>>(
+    props: React.ComponentProps<typeof FormController<T, K>>
+  ) => JSX.Element;
+  ToggleButton: <K extends Path<T>>(
+    props: React.ComponentProps<typeof FormToggleButton<T, K>>
+  ) => JSX.Element;
 };
 
 function wrap<TProps extends object>(
@@ -32,16 +43,31 @@ function wrap<TProps extends object>(
   return Wrapped;
 }
 
-export function createTypedForm<T extends FieldValues = never>(): TypedFormComponent<T> {
-  const Form = ((props) => <TypedForm<T> {...props} />) as TypedFormComponent<T>;
+export function createTypedForm<
+  T extends FieldValues = never,
+  S extends FieldValues = never,
+>(): TypedFormComponent<T, S> {
+  const Form = ((props) => <TypedForm<T, S> {...props} />) as TypedFormComponent<T, S>;
 
   Form.displayName = 'TypedForm';
   Form.Input = wrap(FormInputWrapper<T>, 'TypedForm.Input');
   Form.Checkbox = wrap(FormCheckbox<T>, 'TypedForm.Checkbox');
   Form.Radio = wrap(FormRadio<T>, 'TypedForm.Radio');
   Form.DateTime = wrap(FormDateTimeWrapper<T>, 'TypedForm.DateTime');
-  Form.Submit = wrap(Submit<T>, 'TypedForm.Submit');
+  Form.Submit = wrap(Submit<S>, 'TypedForm.Submit');
   Form.Cancel = wrap(Cancel, 'TypedForm.Cancel');
+
+  const ControllerComponent = <K extends Path<T>>(
+    props: React.ComponentProps<typeof FormController<T, K>>
+  ) => <FormController<T, K> {...props} />;
+  ControllerComponent.displayName = 'TypedForm.Controller';
+  Form.Controller = ControllerComponent;
+
+  const ToggleButtonComponent = <K extends Path<T>>(
+    props: React.ComponentProps<typeof FormToggleButton<T, K>>
+  ) => <FormToggleButton<T, K> {...props} />;
+  ToggleButtonComponent.displayName = 'TypedForm.ToggleButton';
+  Form.ToggleButton = ToggleButtonComponent;
 
   const AutocompleteComponent = <K extends object, M extends boolean = false>(
     props: React.ComponentProps<typeof FormAutocomplete<T, K, M>>

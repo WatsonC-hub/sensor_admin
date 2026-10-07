@@ -1,26 +1,28 @@
 import {Box, Typography} from '@mui/material';
 import React from 'react';
 
-import UnitMeasurementConfig from './UnitMeasurementConfig';
-import YearlyControlsConfig from './YearlyControlsConfig';
-import Synchronization from './Synchronization';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import useDMPAllowed from '~/features/station/api/useDmpAllowedMapList';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+
+import Synchronization from './Synchronization';
+import UnitMeasurementConfig from './UnitMeasurementConfig';
 import VisibilityConfig from './VisibilityConfig';
-import {useAppContext} from '~/state/contexts';
-import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
-import useDmpAllowedMapList from '~/features/station/api/useDmpAllowedMapList';
+import YearlyControlsConfig from './YearlyControlsConfig';
 
 type ConfigurationProps = {
+  loc_id: number;
   ts_id: number;
 };
 
-const Configuration = ({ts_id}: ConfigurationProps) => {
-  const {loc_id} = useAppContext(['loc_id']);
-  const {data: location_data} = useLocationData(loc_id);
+const Configuration = ({loc_id, ts_id}: ConfigurationProps) => {
   const {data: metadata} = useTimeseriesData(ts_id);
   const isJupiterType = [1, 11, 12, 16].includes(metadata?.tstype_id || 0);
-  const isBorehole = location_data?.loctype_id === 9;
-  const isDmpAllowed = useDmpAllowedMapList(ts_id);
+  const isBorehole = metadata?.loctype_id === 9;
+
+  const isDmpAllowed = useDMPAllowed(ts_id);
+
+  const canSyncJupiter = isBorehole && isJupiterType;
 
   return (
     <>
@@ -31,7 +33,12 @@ const Configuration = ({ts_id}: ConfigurationProps) => {
         <UnitMeasurementConfig />
       </Layout>
       <Layout>
-        <Box width="fit-content" alignItems="center">
+        <Box
+          sx={{
+            width: 'fit-content',
+            alignItems: 'center',
+          }}
+        >
           <TooltipWrapper
             color="info"
             description="Kontrolhyppighed definerer hvor ofte der skal foretages kontrolmålinger. Forvarslingstiden angiver hvor lang tid i forvejen, der skal vises en opgave om at en kontrolmåling skal udføres"
@@ -41,15 +48,9 @@ const Configuration = ({ts_id}: ConfigurationProps) => {
         </Box>
         <YearlyControlsConfig />
       </Layout>
-      {(isDmpAllowed || (isJupiterType && isBorehole)) && (
+      {(isDmpAllowed || canSyncJupiter) && (
         <Layout>
-          <Typography variant="h6" gutterBottom>
-            Synkronisering
-          </Typography>
-          <Synchronization
-            canSyncJupiter={isJupiterType && isBorehole}
-            isDmpAllowed={isDmpAllowed ?? false}
-          />
+          <Synchronization />
         </Layout>
       )}
       <Layout>

@@ -1,22 +1,27 @@
-import {Box, Tooltip} from '@mui/material';
-import Button from '~/components/Button';
-import LocationInfo from '~/features/station/components/sensorContent/LocationInfo';
-import TaskList from '~/features/station/components/sensorContent/TaskList';
-import TimeseriesList from '~/features/station/components/sensorContent/TimeseriesList';
-import {useAppContext} from '~/state/contexts';
-import {useCallback, useState} from 'react';
-import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
-import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
-import TaskHistoryList from '~/features/station/components/sensorContent/TaskHistoryList';
-import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import {Feedback} from '@dnd-kit/dom';
 import {useDraggable} from '@dnd-kit/react';
-import useBreakpoints from '~/hooks/useBreakpoints';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
-import AddToTripDialog from './AddToTripDialog';
+import {Box, Tooltip} from '@mui/material';
+import {useCallback, useState} from 'react';
+
+import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
+import LocationInfo from '~/features/station/components/sensorContent/LocationInfo';
+import TaskHistoryList from '~/features/station/components/sensorContent/TaskHistoryList';
+import TaskList from '~/features/station/components/sensorContent/TaskList';
+import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
+import TimeseriesList from '~/features/station/components/sensorContent/TimeseriesList';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
+import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import {StatusEnum} from '~/features/tasks/types';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAppContext} from '~/state/contexts';
+
+import AddToTripDialog from './AddToTripDialog';
+
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext(['loc_id'], []);
@@ -40,24 +45,39 @@ const SensorContent = () => {
       location?.inactive_new == true &&
       location?.in_service == false);
 
-  const {ref} = useDraggable({
+  const {ref, handleRef} = useDraggable({
     id: 'location' + loc_id,
     data: {loc_id},
-    feedback: 'clone',
+    plugins: [Feedback.configure({feedback: 'clone'})],
     disabled: !enableDragToTrip,
   });
 
   return (
-    <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        py: 3,
+        px: 2,
+        gap: 3,
+        overflow: 'auto',
+      }}
+    >
       <LocationInfo />
       <TimeseriesList />
       <TaskList setCreateTaskDialog={setCreateTaskDialog} />
       {location?.itinerary_id && advancedTaskPermission && (
         <ItineraryCardList itinerary_id={location.itinerary_id} />
       )}
-
       {advancedTaskPermission && (
-        <Box display="flex" gap={2} flexDirection={'row'} alignSelf={'center'}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+            flexDirection: 'row',
+            alignSelf: 'center',
+          }}
+        >
           <Tooltip
             title={
               !enableDragToTrip
@@ -68,22 +88,32 @@ const SensorContent = () => {
           >
             {!isMobile ? (
               <Box
-                display="flex"
                 ref={ref}
-                flexDirection={'row'}
-                alignItems={'center'}
-                alignSelf={'center'}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                }}
               >
                 <Button
                   bttype="primary"
                   startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
+                  ref={handleRef}
                   disabled={!enableDragToTrip}
                 >
                   {!location?.itinerary_id ? 'Træk til tur' : 'Træk til anden tur'}
                 </Button>
               </Box>
             ) : (
-              <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                }}
+              >
                 <Button
                   bttype="primary"
                   onClick={() => setOpenTripDialog(true)}
@@ -97,9 +127,7 @@ const SensorContent = () => {
           </Tooltip>
         </Box>
       )}
-
       {simpleTaskPermission && <TaskHistoryList />}
-
       {simpleTaskPermission && (
         <CreateManuelTaskModal
           open={createTaskDialog}

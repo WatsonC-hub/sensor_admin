@@ -1,6 +1,7 @@
-import {useFormContext} from 'react-hook-form';
-import Button from '../Button';
 import {Typography} from '@mui/material';
+import {useFormContext} from 'react-hook-form';
+
+import Button from '../Button';
 
 const Cancel = ({cancel, disabled}: {cancel: () => void; disabled?: boolean}) => {
   const {reset} = useFormContext();

@@ -1,10 +1,10 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 
-import {DBTaskComment, PostComment, TaskChanges, TaskComment} from '../types';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import type {DBTaskComment, PostComment, TaskChanges, TaskComment} from '../types';
 interface TaskCommentBase {
   path: string;
   data?: any;

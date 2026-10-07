@@ -1,10 +1,11 @@
 import {Box, Typography} from '@mui/material';
-
-import {useUser} from '~/features/auth/useUser';
-import {useTasks} from '../api/useTasks';
-import TaskListItemAdvancedCard from '~/features/station/components/sensorContent/taskListItemComponents/TaskListItemAdvancedCard';
 import {useVirtualizer} from '@tanstack/react-virtual';
 import {useCallback, useMemo, useRef} from 'react';
+
+import {useUser} from '~/features/auth/useUser';
+import TaskListItemAdvancedCard from '~/features/station/components/sensorContent/taskListItemComponents/TaskListItemAdvancedCard';
+
+import {useTasks} from '../api/useTasks';
 import {createSmoothScrollToFn} from '../helpers';
 
 const OwnTaskList = () => {
@@ -40,7 +41,13 @@ const OwnTaskList = () => {
   const items = virtualizer.getVirtualItems();
 
   return (
-    <Box maxHeight={'100%'} display="flex" flexDirection="column">
+    <Box
+      sx={{
+        maxHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <Typography variant="h6" sx={{padding: 1}}>
         Mine Opgaver
       </Typography>

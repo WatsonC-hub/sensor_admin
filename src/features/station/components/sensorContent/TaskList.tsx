@@ -1,18 +1,19 @@
-import {Box, Typography, Tooltip, IconButton} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-
+import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import React from 'react';
-import {useTaskState} from '~/features/tasks/api/useTaskState';
-import {useAppContext} from '~/state/contexts';
-import TaskListItemSimpleCard from './taskListItemComponents/TaskListItemSimpleCard';
-import TaskListItemAdvancedCard from './taskListItemComponents/TaskListItemAdvancedCard';
-import {Task} from '~/features/tasks/types';
-import {isSimpleTask} from '~/features/tasks/helpers';
 
-import {useLocationData} from '~/hooks/query/useMetadata';
-import {useUser} from '~/features/auth/useUser';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {useUser} from '~/features/auth/useUser';
+import {useTaskState} from '~/features/tasks/api/useTaskState';
+import {isSimpleTask} from '~/features/tasks/helpers';
+import {useLocationData} from '~/hooks/query/useMetadata';
+import {useAppContext} from '~/state/contexts';
+
+import TaskListItemAdvancedCard from './taskListItemComponents/TaskListItemAdvancedCard';
 import TaskListItemNoneCard from './taskListItemComponents/TaskListItemNoneCard';
+import TaskListItemSimpleCard from './taskListItemComponents/TaskListItemSimpleCard';
+
+import type {Task} from '~/features/tasks/types';
 
 const sortTasks = (a: Task, b: Task) => {
   if ((a.blocks_notifications.includes(1) || a.blocks_notifications.includes(207)) && !a.is_created)
@@ -40,18 +41,31 @@ const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
     .sort(sortTasks);
 
   return (
-    <Box display="flex" gap={1} flexDirection={'column'}>
+    <Box
+      sx={{
+        display: 'flex',
+        gap: 1,
+        flexDirection: 'column',
+      }}
+    >
       <Box
-        display="flex"
-        flexDirection={'row'}
-        justifyContent={'space-between'}
-        alignItems={'center'}
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
       >
         <TooltipWrapper
           description="Opgaver kan oprettes ud fra notifikationer eller som manuelle opgaver. En opgave kan være simpel eller avanceret. En simpel opgave er en opgave, der ikke kræver yderligere information, mens en avanceret opgave kan have flere detaljer og krav. Dette har en betydning når man skal lave ture. Læs mere om opgaver i dokumentationen."
           url="https://www.watsonc.dk/guides/opgavestyring/"
         >
-          <Typography variant="h6" fontWeight={'bold'}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             Opgaver
           </Typography>
         </TooltipWrapper>

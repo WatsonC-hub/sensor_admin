@@ -1,14 +1,14 @@
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import {Box, IconButton, Tooltip} from '@mui/material';
 import {
-  MRT_RowData,
-  MRT_TableInstance,
-  MRT_ToggleFiltersButton,
   MRT_ShowHideColumnsButton,
+  MRT_ToggleFiltersButton,
   MRT_ToggleFullScreenButton,
 } from 'material-react-table';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {MRT_RowData, MRT_TableInstance} from 'material-react-table';
 
 const RenderInternalActions = <TData extends MRT_RowData>({
   table,
@@ -19,7 +19,11 @@ const RenderInternalActions = <TData extends MRT_RowData>({
 }) => {
   const {isTouch} = useBreakpoints();
   return (
-    <Box alignSelf={'flex-end'}>
+    <Box
+      sx={{
+        alignSelf: 'flex-end',
+      }}
+    >
       {reset ? (
         <Tooltip arrow title="Nulstil tabel">
           <IconButton onClick={reset}>
@@ -27,7 +31,6 @@ const RenderInternalActions = <TData extends MRT_RowData>({
           </IconButton>
         </Tooltip>
       ) : null}
-
       {isTouch ? null : <MRT_ToggleFiltersButton table={table} />}
       {isTouch ? null : <MRT_ShowHideColumnsButton table={table} />}
       {isTouch ? null : <MRT_ToggleFullScreenButton table={table} />}
