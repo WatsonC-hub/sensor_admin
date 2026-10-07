@@ -1,4 +1,5 @@
 import {z} from 'zod';
+
 import {zodDayjs} from '~/helpers/schemas';
 
 const baseLocationSchema = z.object({
@@ -11,10 +12,10 @@ const baseLocationSchema = z.object({
     )
     .nullish(),
   x: z
-    .number({required_error: 'X-koordinat skal udfyldes'})
+    .number({message: 'X-koordinat skal udfyldes'})
     .transform((val) => (typeof val === 'number' ? val : parseFloat(val))),
   y: z
-    .number({required_error: 'Y-koordinat skal udfyldes'})
+    .number({message: 'Y-koordinat skal udfyldes'})
     .transform((val) => (typeof val === 'number' ? val : parseFloat(val))),
   terrainqual: z.string(),
   terrainlevel: z.number().nullish(),
@@ -45,13 +46,12 @@ const boreholeEditLocationSchema = boreholeAddLocationSchema.extend({
 });
 
 const baseTimeseriesSchema = z.object({
-  sensor_depth_m: z.number().nullish(),
   prefix: z.string().nullish(),
   calypso_id: z.number().optional(),
 });
 
 const baseAddTimeseriesSchema = baseTimeseriesSchema.extend({
-  tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
+  tstype_id: z.number({message: 'Vælg tidsserietype'}),
 });
 
 const baseEditTimeseriesSchema = baseTimeseriesSchema.extend({
@@ -72,15 +72,22 @@ const boreholeAddTimeseriesSchema = baseAddTimeseriesSchema.extend({
 });
 
 const watlevmpAddSchema = z.object({
-  elevation: z.number({required_error: 'Målepunkt skal udfyldes'}).nullable(),
-  description: z
-    .string({required_error: 'Beskrivelse skal udfyldes'})
-    .min(3, {message: 'Beskrivelse skal være mindst 3 tegn'}),
+  elevation: z.number({message: 'Målepunkt skal udfyldes'}),
+  description: z.string({message: 'Beskrivelse skal udfyldes'}).min(3, {
+    message: 'Beskrivelse skal være mindst 3 tegn',
+  }),
+  startdate: zodDayjs('Startdato skal udfyldes').optional(),
 });
 
-const addUnitSchema = z
+const addUnitSchema = z.object({
+  calypso_id: z.string().optional(),
+  unit_uuid: z.string().optional(),
+  startdate: zodDayjs('Startdato skal udfyldes'),
+});
+
+const editAddUnitSchema = z
   .object({
-    unit_uuid: z.string({required_error: 'Vælg calypso ID'}).min(1, {message: 'Vælg calypso ID'}),
+    unit_uuid: z.string().optional(),
     startdate: zodDayjs('Startdato skal udfyldes'),
   })
   .refine((unit) => unit.startdate !== undefined, {
@@ -95,22 +102,15 @@ const editUnitSchema = z
   })
   .superRefine((unit, ctx) => {
     if (unit.startdate.isSameOrAfter(unit.enddate)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.invalid_date,
-        message: 'start dato må ikke være senere end slut dato',
-        path: ['startdate'],
-      });
-      ctx.addIssue({
-        code: z.ZodIssueCode.invalid_date,
-        message: 'slut dato må ikke være tidligere end start dato',
-        path: ['enddate'],
-      });
+      ctx.addIssue('slut dato må ikke være tidligere end start dato');
+      ctx.addIssue('slut dato må ikke være tidligere end start dato');
     }
   });
 
 export {
   baseLocationSchema,
   addUnitSchema,
+  editAddUnitSchema,
   editUnitSchema,
   baseTimeseriesSchema,
   defaultAddLocationSchema,

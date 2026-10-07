@@ -1,27 +1,29 @@
-import {Typography, InputAdornment, TextField} from '@mui/material';
-import {RefetchOptions, useQuery} from '@tanstack/react-query';
-import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
-import {useFormContext, Controller} from 'react-hook-form';
+import {InputAdornment, TextField, Typography} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {Controller, useFormContext} from 'react-hook-form';
+
 import {apiClient} from '~/apiClient';
-import FormInput, {FormInputProps} from '~/components/FormInput';
+import ExtendedAutocomplete from '~/components/Autocomplete';
+import FormInput from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
+import {utm} from '~/features/map/mapConsts';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
-import {
-  BoreholeAddLocation,
-  BoreholeEditLocation,
-  DefaultAddLocation,
-  DefaultEditLocation,
-} from '../../schema';
-import {getDTMQuota} from '~/pages/field/fieldAPI';
-import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
-import {Borehole} from '../../api/useBorehole';
-import {utm} from '~/features/map/mapConsts';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
-import {useAppContext} from '~/state/contexts';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {getDTMQuota} from '~/pages/field/fieldAPI';
 import {queryClient} from '~/queryClient';
-import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {useAppContext} from '~/state/contexts';
+
+import type {Borehole} from '../../api/useBorehole';
+import type {BoreholeAddLocation, BoreholeEditLocation, DefaultAddLocation} from '../../schema';
+import type {RefetchOptions} from '@tanstack/react-query';
+import type {ChangeEvent} from 'react';
+import type {AutoCompleteFieldProps} from '~/components/Autocomplete';
+import type {FormInputProps} from '~/components/FormInput';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 
 type Props = {
   children: React.ReactNode;
@@ -34,15 +36,16 @@ type locationType = {
 
 const LocationContext = React.createContext(
   {} as {
-    refetchDTM: (options?: RefetchOptions | undefined) => void;
+    refetchDTM: (options?: RefetchOptions) => void;
   }
 );
 
 const StamdataLocation = ({children}: Props) => {
+  const {loc_id} = useAppContext(undefined, ['loc_id']);
   const {setValue, watch} = useFormContext<
-    DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
-
+  console.log(loc_id);
   const x = watch('x');
   const y = watch('y');
   const terrainqual = watch('terrainqual');
@@ -54,7 +57,7 @@ const StamdataLocation = ({children}: Props) => {
     queryKey: queryKeys.dtm(),
     queryFn: () => getDTMQuota(x, y),
     refetchOnWindowFocus: false,
-    enabled: x !== undefined && y !== undefined && terrainqual === 'DTM',
+    enabled: x !== undefined && y !== undefined && terrainqual === 'DTM' && !loc_id,
   });
 
   useEffect(() => {
@@ -78,22 +81,21 @@ const StamdataLocation = ({children}: Props) => {
       });
   }, [x, y]);
 
+  const locationContextValue = useMemo(
+    () => ({
+      refetchDTM,
+    }),
+    [refetchDTM]
+  );
+
   return (
-    <LocationContext.Provider
-      value={{
-        refetchDTM,
-      }}
-    >
-      {children}
-    </LocationContext.Provider>
+    <LocationContext.Provider value={locationContextValue}>{children}</LocationContext.Provider>
   );
 };
 
 const LoctypeSelect = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
@@ -129,15 +131,11 @@ const LoctypeSelect = (
 
 const X = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
-  const {watch} = useFormContext<
-    DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-  >();
+  const {watch} = useFormContext<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>();
   const {refetchDTM} = React.useContext(LocationContext);
   const watchTerrainqual = watch('terrainqual');
 
@@ -165,15 +163,11 @@ const X = (
 
 const Y = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
-  const {watch} = useFormContext<
-    DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-  >();
+  const {watch} = useFormContext<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>();
   const {refetchDTM} = React.useContext(LocationContext);
   const watchTerrainqual = watch('terrainqual');
 
@@ -201,9 +195,7 @@ const Y = (
 
 const TerrainQuote = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
@@ -230,9 +222,7 @@ const TerrainQuote = (
 
 const TerrainQuality = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
@@ -259,9 +249,7 @@ const TerrainQuality = (
 
 const Locname = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
@@ -323,7 +311,6 @@ const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
           <>
             {loctype_id === 9 && (
               <ExtendedAutocomplete<Borehole>
-                {...props}
                 options={filteredOptions ?? []}
                 labelKey="boreholeno"
                 onChange={async (option) => {
@@ -400,6 +387,7 @@ const Boreholeno = ({editing = false, ...props}: BoreholeNoProps) => {
 
                   return searchValue;
                 }}
+                {...props}
               />
             )}
           </>
@@ -427,7 +415,7 @@ const BoreholeSuffix = (
           ),
         },
       }}
-      placeholder="f.eks. A"
+      placeholder="f.eks. et lokalnummer"
       fullWidth
       {...props}
     />
@@ -436,9 +424,7 @@ const BoreholeSuffix = (
 
 const Groups = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
@@ -462,15 +448,13 @@ const Groups = (
 
 const InitialProjectNo = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {
   const {superUser} = useUser();
   const {control} = useFormContext<
-    DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
   const {loc_id} = useAppContext(undefined, ['loc_id']);
 
@@ -503,9 +487,7 @@ const InitialProjectNo = (
 
 const Description = (
   props: Omit<
-    FormInputProps<
-      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
-    >,
+    FormInputProps<DefaultAddLocation | BoreholeAddLocation | BoreholeEditLocation>,
     'name'
   >
 ) => {

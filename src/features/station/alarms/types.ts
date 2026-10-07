@@ -9,16 +9,19 @@ export type ContactTable = {
     selected: boolean;
     to: string | null;
     from: string | null;
+    disabled: boolean;
   };
   email: {
     selected: boolean;
     to: string | null;
     from: string | null;
+    disabled: boolean;
   };
   call: {
     selected: boolean;
     to: string | null;
     from: string | null;
+    disabled: boolean;
   };
 };
 
@@ -28,7 +31,7 @@ export type AlarmHistory = {
   alarm: boolean;
   alarm_low: boolean;
   name: string;
-  signal_warning: boolean;
+  notification_name: string;
 };
 
 export type AlarmTableType = {

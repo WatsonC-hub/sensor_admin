@@ -1,14 +1,15 @@
+import AddLocationAlt from '@mui/icons-material/AddLocationAlt';
+import {Box} from '@mui/material';
 import React from 'react';
 
 import NavBar from '~/components/NavBar';
-
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useUser} from '~/features/auth/useUser';
-import AddLocationAlt from '@mui/icons-material/AddLocationAlt';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {Box} from '@mui/material';
-import Overview from '~/features/tasks/components/Overview';
 import {MapFilterContextProvider} from '~/features/map/MapFilterProvider';
+import Overview from '~/features/tasks/components/Overview';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {queryClient} from '~/queryClient';
 
 const Home = () => {
   const {isMobile} = useBreakpoints();
@@ -29,7 +30,11 @@ const Home = () => {
           description="Læs mere om hvad du kan på kortet i Field appen"
         > */}
         {!isMobile && <NavBar.Title title="Field" />}
-        <Box alignItems={'center'}>
+        <Box
+          sx={{
+            alignItems: 'center',
+          }}
+        >
           {isMobile && <NavBar.Scanner />}
           {/* </TooltipWrapper> */}
           {simpleTaskPermission && <NavBar.OwnTaskList />}
@@ -37,19 +42,20 @@ const Home = () => {
           {advancedTaskPermission && <NavBar.TripList />}
           <NavBar.Menu
             disableProfile={false}
-            items={[
-              ...(iotAccess
+            items={
+              iotAccess
                 ? [
                     {
                       title: 'Opret lokation',
                       icon: <AddLocationAlt fontSize="medium" />,
                       onClick: () => {
                         createStamdata();
+                        queryClient.invalidateQueries({queryKey: queryKeys.Groups.all()});
                       },
                     },
                   ]
-                : []),
-            ]}
+                : []
+            }
           />
         </Box>
       </NavBar>

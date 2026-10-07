@@ -2,22 +2,21 @@ import {Box, useTheme} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import {useAtom, useAtomValue, useSetAtom} from 'jotai';
-
-import {Layout, PlotData} from 'plotly.js';
 import React, {useEffect, useMemo, useState} from 'react';
 import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {
   correction_map,
-  setGraphHeight,
   defaultDataToShow as globalDefaultDataToShow,
+  setGraphHeight,
 } from '~/consts';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import {useGraphData} from '~/hooks/query/useGraphData';
@@ -29,11 +28,15 @@ import {
   initiateConfirmTimeseriesAtom,
   initiateSelectAtom,
   levelCorrectionAtom,
+  pejlingCorrectionDateSelectionAtom,
+  pejlingPickCorrectionDateModeAtom,
   qaSelection,
   tempHorizontalAtom,
 } from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {DataToShow, HorizontalLine, QaGraphLabel} from '~/types';
+
+import type {Layout, PlotData} from 'plotly.js';
+import type {DataToShow, HorizontalLine, QaGraphLabel} from '~/types';
 
 interface GraphManagerProps {
   dynamicMeasurement?: Array<string | number>;
@@ -63,6 +66,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const [initiateSelect, setInitiateSelect] = useAtom(initiateSelectAtom);
   const levelCorrection = useAtomValue(levelCorrectionAtom);
   const initiateConfirmTimeseries = useAtomValue(initiateConfirmTimeseriesAtom);
+  const pickCorrectionDate = useAtomValue(pejlingPickCorrectionDateModeAtom);
+  const setCorrectionDateSelection = useSetAtom(pejlingCorrectionDateSelectionAtom);
 
   const tempLines = useAtomValue(tempHorizontalAtom);
   const [pageToShow] = useStationPages();
@@ -621,7 +626,9 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
         style={{
           height: setGraphHeight(isMobile),
         }}
-        my={1}
+        sx={{
+          my: 1,
+        }}
       >
         <PlotlyGraph
           plotEventProps={{
@@ -655,7 +662,9 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       style={{
         height: setGraphHeight(isMobile),
       }}
-      my={1}
+      sx={{
+        my: 1,
+      }}
     >
       <PlotlyGraph
         layout={layout}
@@ -665,6 +674,13 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
         xRange={xRange}
         setXRange={setXRange}
         dataToShow={dataToShow}
+        plotEventProps={{
+          onClick: (e) => {
+            if (pickCorrectionDate && e.points[0].data.mode !== 'markers') {
+              setCorrectionDateSelection(e.points);
+            }
+          },
+        }}
       />
     </Box>
   );

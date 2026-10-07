@@ -1,29 +1,18 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  queryOptions,
-  MutationOptions,
-} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-// import {Notification} from '~/hooks/query/useNotificationOverview';
-import {APIError} from '~/queryClient';
-
-import {
-  type Task,
-  type PatchTask,
-  type TaskUser,
-  type TaskStatus,
-  DBTask,
-  DeleteTaskFromItinerary,
-  TaskAPI,
-} from '../types';
-import {useDisplayState} from '~/hooks/ui';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import dayjs from 'dayjs';
 import {useUser} from '~/features/auth/useUser';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import {useDisplayState} from '~/hooks/ui';
+
+import {type PatchTask, type Task, type TaskStatus, type TaskUser} from '../types';
+
+import type {DBTask, DeleteTaskFromItinerary, TaskAPI} from '../types';
+import type {MutationOptions} from '@tanstack/react-query';
+// import {Notification} from '~/hooks/query/useNotificationOverview';
+import type {APIError} from '~/queryClient';
 
 type Mutation<TData> = {
   path: string;
@@ -178,11 +167,9 @@ const useTaskMutations = () => {
         queryKeys.Tasks.all(),
         previous?.map((task) => {
           if (task.id === path) {
-            const updated = {
-              ...task,
-              ...data,
+            const updated = Object.assign(task, data, {
               due_date: data?.due_date ? dayjs(data.due_date) : null,
-            };
+            });
             return updated;
           }
 
@@ -199,11 +186,9 @@ const useTaskMutations = () => {
           queryKeys.Tasks.all(),
           previous?.map((task) => {
             if (task.id === path) {
-              const updated = {
-                ...task,
-                ...data,
+              const updated = Object.assign(task, data, {
                 due_date: data?.due_date ? dayjs(data.due_date) : null,
-              };
+              });
               return updated;
             }
 
@@ -254,7 +239,7 @@ const useTaskMutations = () => {
         ['tasks'],
         previous?.map((task) => {
           if (task.id === id) {
-            const updated = {...task, itinerary_id: null};
+            const updated = Object.assign(task, {itinerary_id: null});
 
             return updated;
           }
@@ -282,11 +267,12 @@ const useTasks = () => {
     queryFn: async () => {
       const {data} = await apiClient.get<Array<TaskAPI>>(`/sensor_admin/tasks`);
 
-      return data.map((task) => ({
-        ...task,
-        due_date: task.due_date ? dayjs(task.due_date) : null,
-        sla: task.sla ? dayjs(task.sla) : null,
-      }));
+      return data.map((task) =>
+        Object.assign(task, {
+          due_date: task.due_date ? dayjs(task.due_date) : null,
+          sla: task.sla ? dayjs(task.sla) : null,
+        })
+      );
     },
 
     staleTime: 1000 * 60 * 1, // 1 minute

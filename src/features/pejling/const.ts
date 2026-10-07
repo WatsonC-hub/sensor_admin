@@ -1,8 +1,9 @@
-import {
+import dayjs from 'dayjs';
+
+import type {
   PejlingBoreholeSchemaType,
   PejlingSchemaType,
-} from '../station/components/pejling/PejlingSchema';
-import dayjs from 'dayjs';
+} from '../station/components/pejling/pejlingSchema';
 
 export const initialData = () =>
   ({
@@ -10,6 +11,7 @@ export const initialData = () =>
     measurement: 0,
     useforcorrection: 0,
     comment: '',
+    correction_date: null,
   }) as PejlingSchemaType;
 
 export const boreholeInitialData = () =>
@@ -21,4 +23,5 @@ export const boreholeInitialData = () =>
     service: false,
     pumpstop: null,
     extrema: undefined,
+    correction_date: null,
   }) as PejlingBoreholeSchemaType;

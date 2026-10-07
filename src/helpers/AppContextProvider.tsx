@@ -1,5 +1,8 @@
-import React from 'react';
-import {AppContext, AppContextType, useAppContext} from '~/state/contexts';
+import React, {useMemo} from 'react';
+
+import {AppContext, useAppContext} from '~/state/contexts';
+
+import type {AppContextType} from '~/state/contexts';
 
 type Props = {
   children?: React.ReactNode;
@@ -9,7 +12,9 @@ type Props = {
 const AppContextProvider = ({children, values}: Props) => {
   const {loc_id, ts_id} = useAppContext(undefined, ['loc_id', 'ts_id']);
 
-  return <AppContext.Provider value={{loc_id, ts_id, ...values}}>{children}</AppContext.Provider>;
+  const contextValue = useMemo(() => ({loc_id, ts_id, ...values}), [loc_id, ts_id, values]);
+
+  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
 };
 
 export default AppContextProvider;

@@ -1,13 +1,15 @@
+import Add from '@mui/icons-material/Add';
+import {Box} from '@mui/material';
 import React from 'react';
-import {AlarmContactFormType, AlarmsFormValues} from '../schema';
-
 import {useFormContext} from 'react-hook-form';
 
-import {Add} from '@mui/icons-material';
 import Button from '~/components/Button';
+
 import AlarmContactTable from './AlarmContactTable';
 
-const removeContact = (index: number, contacts: AlarmContactFormType[]) => {
+import type {AlarmContactFormOutput, AlarmFormOutput} from '../schema';
+
+const removeContact = (index: number, contacts: AlarmContactFormOutput[]) => {
   return contacts.filter((_, i) => i !== index);
 };
 
@@ -22,11 +24,11 @@ const AlarmContactForm = ({
   setMode,
   setCurrentIndex,
 }: AlarmContactFormProps) => {
-  const {watch, setValue} = useFormContext<AlarmsFormValues>();
+  const {watch, setValue} = useFormContext<AlarmFormOutput>();
   const contacts = watch('contacts');
 
   return (
-    <>
+    <Box sx={{display: 'flex', flexDirection: 'column'}}>
       {contacts &&
         contacts.filter((contact) => contact !== undefined || contact !== null).length > 0 && (
           <AlarmContactTable
@@ -51,7 +53,7 @@ const AlarmContactForm = ({
       >
         Tilføj ny kontakt
       </Button>
-    </>
+    </Box>
   );
 };
 

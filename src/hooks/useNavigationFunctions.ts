@@ -1,8 +1,10 @@
 // import {parseAsArrayOf, parseAsInteger, useQueryState} from 'nuqs';
 import {useMemo} from 'react';
-import {NavigateOptions, useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 import {useDisplayState} from './ui';
+
+import type {NavigateOptions} from 'react-router-dom';
 
 export const useNavigationFunctions = () => {
   const navigate = useNavigate();
@@ -18,14 +20,10 @@ export const useNavigationFunctions = () => {
   });
 
   const homeFunctions = {
-    home: () => {
+    home: (replace?: boolean) => {
       navigate('/', {replace: true});
-      reset();
+      if (replace) reset();
     },
-  };
-
-  const adminFunctions = {
-    tasks: () => navigate('/admin/opgaver'),
   };
 
   const fieldFunctions = {
@@ -49,7 +47,6 @@ export const useNavigationFunctions = () => {
   const out = useMemo(() => {
     return {
       ...homeFunctions,
-      ...adminFunctions,
       ...fieldFunctions,
     };
   }, []);

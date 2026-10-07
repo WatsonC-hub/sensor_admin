@@ -1,10 +1,12 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
+
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {queryClient} from '~/queryClient';
-import {DmpSyncValidCombination} from '~/types';
+
+import type {DmpSyncValidCombination} from '~/types';
 
 const getDmpAllowedMapList = queryOptions({
   queryKey: queryKeys.dmpAllowedMapList(),
@@ -21,7 +23,12 @@ export const prefetchDmpAllowedMapList = async () => {
   await queryClient.ensureQueryData(getDmpAllowedMapList);
 };
 
-const useDmpAllowedMapList = (ts_id: number | undefined) => {
+export const useDMPAllowedList = () => {
+  const data = useQuery(getDmpAllowedMapList);
+  return data;
+};
+
+const useDMPAllowed = (ts_id?: number) => {
   const {data: metadata} = useTimeseriesData(ts_id);
 
   const {data: dmpAllowedMap} = useQuery(getDmpAllowedMapList);
@@ -41,4 +48,4 @@ const useDmpAllowedMapList = (ts_id: number | undefined) => {
   return isDmpAllowed;
 };
 
-export default useDmpAllowedMapList;
+export default useDMPAllowed;

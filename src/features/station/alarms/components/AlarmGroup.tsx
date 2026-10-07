@@ -1,10 +1,12 @@
+import {Box} from '@mui/material';
 import React from 'react';
+
 import FormAutocomplete from '~/components/formComponents/FormAutocomplete';
+import TooltipWrapper from '~/components/TooltipWrapper';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useAppContext} from '~/state/contexts';
-import {AlarmsFormValues} from '../schema';
-import TooltipWrapper from '~/components/TooltipWrapper';
-import {Box} from '@mui/material';
+
+import type {AlarmFormInput} from '../schema';
 
 type AlarmGroupOptions = {
   group_id: string;
@@ -25,14 +27,20 @@ const AlarmGroup = ({disableClearable = false}: AlarmGroupProps) => {
     })) ?? [];
 
   return (
-    <Box display={'flex'} flexDirection={'column'} width={'100%'}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+      }}
+    >
       <TooltipWrapper
         description={
           'Når du tilknytter en alarm til en gruppe, vises den på alle gruppens lokationer, men mister tilknytningen til tidsserien. Fjernes gruppen senere, forsvinder alarmen fra disse lokationer.' +
           (location_data?.groups ? ' ' : ' (Ingen grupper tilgængelige)')
         }
       >
-        <FormAutocomplete<AlarmsFormValues, AlarmGroupOptions, false>
+        <FormAutocomplete<AlarmFormInput, AlarmGroupOptions, false>
           labelKey="group_name"
           valueKey="group_id"
           disabled={options === undefined || options.length === 0}

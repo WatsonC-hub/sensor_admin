@@ -2,8 +2,8 @@ export type Ressourcer = {
   id: number;
   navn: string;
   kategori: string;
-  tstype_id: Array<number>;
-  loctype_id: Array<number>;
+  tstype_id: Array<number> | null;
+  loctype_id: Array<number> | null;
   forudvalgt: boolean;
 };
 

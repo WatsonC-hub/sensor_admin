@@ -1,8 +1,10 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
+
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {Image} from '~/types';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {Image} from '~/types';
 
 export const getImageOptions = (typeId: string | number, type: 'station' | 'borehole') =>
   queryOptions({
@@ -12,11 +14,9 @@ export const getImageOptions = (typeId: string | number, type: 'station' | 'bore
       const {data} = await apiClient.get<Image[]>(
         `/sensor_field/${type}/${endpointName}/${typeId}`
       );
-      return data.map((image) => ({
-        ...image,
-        date: dayjs(image.date), // Ensure date is a Date object
-      }));
+      return data.map((image) => Object.assign(image, {date: dayjs(image.date)}));
     },
+    enabled: !!typeId,
   });
 
 const useImages = (typeId: string | number, type: 'station' | 'borehole') => {

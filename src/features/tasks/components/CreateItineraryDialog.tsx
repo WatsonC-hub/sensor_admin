@@ -1,15 +1,13 @@
-import {Dialog, DialogTitle, DialogContent, Box, DialogActions} from '@mui/material';
+import {Box, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
+import {z} from 'zod';
 
 import Button from '~/components/Button';
+import FormInput from '~/components/FormInput';
+import {zodDayjs} from '~/helpers/schemas';
 
 import {useItineraryMutations} from '../api/useItinerary';
-
 import TaskForm from './TaskForm';
-import FormInput from '~/components/FormInput';
-
-import {z} from 'zod';
-import {zodDayjs} from '~/helpers/schemas';
 
 type CreateItineraryDialogProps = {
   dialogOpen: boolean;
@@ -18,7 +16,7 @@ type CreateItineraryDialogProps = {
 
 const zodSchema = z.object({
   name: z
-    .string({required_error: 'Navn skal være angivet'})
+    .string({message: 'Navn skal være angivet'})
     .max(255, 'Navn må maks være 255 tegn')
     .optional(),
   due_date: zodDayjs().nullish(),
@@ -55,7 +53,7 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
     <Dialog open={dialogOpen} onClose={onClose}>
       <DialogTitle>Lav ny tur</DialogTitle>
       <TaskForm
-        onSubmit={async (data) => await onSubmit(data)}
+        onSubmit={async (data) => onSubmit(data)}
         defaultValues={{
           name: '',
           assigned_to: null,
@@ -71,7 +69,12 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
             minWidth: 400,
           }}
         >
-          <Box display={'flex'} flexDirection={'row'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+          >
             <FormInput
               name="name"
               size="small"
@@ -80,13 +83,28 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
               required={false}
             />
           </Box>
-          <Box display={'flex'} flexDirection={'row'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+          >
             <TaskForm.DueDate />
           </Box>
-          <Box display={'flex'} flexDirection={'row'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+          >
             <TaskForm.AssignedTo />
           </Box>
-          <Box display={'flex'} flexDirection={'row'}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+          >
             <FormInput
               name="comment"
               size="small"

@@ -1,11 +1,10 @@
-import {Warning} from '@mui/icons-material';
 import SaveIcon from '@mui/icons-material/Save';
+import Warning from '@mui/icons-material/Warning';
 import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 import {FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
-import {z} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
@@ -16,13 +15,15 @@ import useDeleteLocation from '~/features/station/api/useDeleteLocation';
 import useLocationForm from '~/features/station/api/useLocationForm';
 import ConfirmDeleteDialog from '~/features/station/components/ConfirmDeleteDialog';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
-import {BaseLocation} from '~/features/station/schema';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
+
+import type {z} from 'zod';
+import type {BaseLocation} from '~/features/station/schema';
 
 const EditLocation = () => {
   const setLocId = useDisplayState((state) => state.setLocId);
@@ -55,9 +56,8 @@ const EditLocation = () => {
   });
 
   const default_data = {...metadata, initial_project_no: metadata?.projectno} as BaseLocation;
-
   const [formMethods, LocationForm, locationSchema] = useLocationForm({
-    defaultValues: default_data,
+    defaultValues: metadata ? default_data : undefined,
     mode: 'Edit',
     context: {
       loc_id,
@@ -85,16 +85,13 @@ const EditLocation = () => {
       onSuccess: () => {
         toast.success('Lokation opdateret');
       },
-      onError: () => {
-        toast.error('Der skete en fejl ved opdatering af lokationen');
-      },
     });
   };
 
   return (
     <Box
-      maxWidth={1080}
       sx={{
+        maxWidth: 1080,
         borderRadius: 4,
         boxShadow: 3,
         padding: 2,
@@ -104,7 +101,14 @@ const EditLocation = () => {
         <StamdataLocation>
           <LocationForm size={size} loc_id={loc_id} />
         </StamdataLocation>
-        <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            justifyContent: 'flex-end',
+            justifySelf: 'end',
+          }}
+        >
           {superUser && (
             <TooltipWrapper
               description="Slet lokationen kun hvis du er helt sikker. Det er ikke muligt at fortryde handlingen"

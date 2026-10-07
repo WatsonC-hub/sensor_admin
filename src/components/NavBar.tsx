@@ -1,10 +1,15 @@
-import {MapRounded, Person, Menu as MenuIcon, Help, Notifications} from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import Help from '@mui/icons-material/Help';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
+import MapRounded from '@mui/icons-material/MapRounded';
+import MenuIcon from '@mui/icons-material/Menu';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import Notifications from '@mui/icons-material/Notifications';
+import Person from '@mui/icons-material/Person';
 import PlaceIcon from '@mui/icons-material/Place';
-import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import {
   AppBar,
   Badge,
@@ -17,27 +22,28 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-
 import {useQueryClient} from '@tanstack/react-query';
 import {useAtom} from 'jotai';
-import {useState, ReactNode, MouseEventHandler} from 'react';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
 import {appBarHeight} from '~/consts';
+import {useUser} from '~/features/auth/useUser';
+import {useTasks} from '~/features/tasks/api/useTasks';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
 import {drawerOpenAtom} from '~/state/atoms';
-import CloseIcon from '@mui/icons-material/Close';
+
 import Button from './Button';
-import {useDisplayState} from '~/hooks/ui';
-import {useNavigate} from 'react-router-dom';
-import {useUser} from '~/features/auth/useUser';
-import {toast} from 'react-toastify';
 import CaptureDialog from './CaptureDialog';
-import {useTasks} from '~/features/tasks/api/useTasks';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+
+import type {MouseEventHandler, ReactNode} from 'react';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();
@@ -47,14 +53,18 @@ const LogOut = ({children}: {children?: ReactNode}) => {
     await apiClient.get('/auth/logout/secure');
     queryClient.setQueryData(queryKeys.user(), null);
     queryClient.clear();
-    home();
+    home(true);
   };
 
   return (
     <Box
       onClick={handleLogout}
-      width={'100%'}
-      sx={{cursor: 'pointer', display: 'flex', alignItems: 'center'}}
+      sx={{
+        width: '100%',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+      }}
     >
       {children}
     </Box>
@@ -69,7 +79,7 @@ const HomeButton = () => {
       <IconButton
         color="inherit"
         onClick={() => {
-          home();
+          home(true);
         }}
         size="large"
       >
@@ -83,6 +93,7 @@ const AppBarLayout = ({children, zIndex}: {children?: ReactNode; zIndex?: number
   return (
     <AppBar position="sticky" enableColorOnDark sx={{zIndex: zIndex}}>
       <Toolbar
+        disableGutters
         sx={{
           height: appBarHeight,
           pl: 1,
@@ -335,7 +346,13 @@ const OwnTaskList = () => {
       <Badge
         badgeContent={
           task_list && task_list.length > 0 ? (
-            <Typography variant="caption" color="white" pr={0.2}>
+            <Typography
+              variant="caption"
+              color="white"
+              sx={{
+                pr: 0.2,
+              }}
+            >
               {task_list.length}
             </Typography>
           ) : null
@@ -432,7 +449,13 @@ const ScannerAsTitle = () => {
 const Title = ({title}: {title: string}) => {
   const {isMobile} = useBreakpoints();
   return (
-    <Box display={'flex'} justifyContent="center" alignContent="center">
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignContent: 'center',
+      }}
+    >
       <Typography sx={{}} variant={isMobile ? 'h6' : 'h4'}>
         {title}
       </Typography>

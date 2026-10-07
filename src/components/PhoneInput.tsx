@@ -21,8 +21,10 @@ const PhoneInput = ({slotProps, error, helperText, ...rest}: PhoneInputProps) =>
         },
       }}
       MenuProps={{
-        TransitionProps: {
-          timeout: 0,
+        slotProps: {
+          transition: {
+            timeout: 0,
+          },
         },
       }}
       margin="dense"

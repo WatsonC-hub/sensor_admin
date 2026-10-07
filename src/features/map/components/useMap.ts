@@ -10,41 +10,44 @@ import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom, useAtomValue} from 'jotai';
 import L from 'leaflet';
 import {LocateControl} from 'leaflet.locatecontrol';
+
 import '~/css/leaflet.css';
+
 import './L.basemapControl';
 import {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
+import {useUser} from '~/features/auth/useUser';
+import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
+import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
+import {getColor} from '~/features/notifications/Utils';
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
-import {useMapUtilityStore, mapUtilityStore} from '~/state/store';
-import {BoreholeMapData, Parking, PartialBy} from '~/types';
-import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
+import {useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {highlightedItinerariesAtom, usedHeightAtom, usedWidthAtom} from '~/state/atoms';
+import {mapUtilityStore, useMapUtilityStore} from '~/state/store';
 
+import {useMapFilterStore} from '../hooks/useMapFilterStore';
 import {
-  satelitemapbox,
-  zoomThresholdForParking,
-  zoomThresholdForSmallMarkers,
-  zoomThreshold,
-  zoomAtom,
-  panAtom,
+  defaultMapBox,
   drawStyle,
-  utm,
-  parkingIcon,
   hightlightParkingIcon,
   markerNumThreshold,
-  defaultMapBox,
+  panAtom,
+  parkingIcon,
   routeStyle,
+  satelitemapbox,
+  utm,
+  zoomAtom,
+  zoomThreshold,
+  zoomThresholdForParking,
+  zoomThresholdForSmallMarkers,
 } from '../mapConsts';
-import {useUser} from '~/features/auth/useUser';
-import {setIconSize} from '../utils';
-import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
-import {getColor} from '~/features/notifications/utils';
-import {useDisplayState} from '~/hooks/ui';
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {highlightedItinerariesAtom, usedHeightAtom, usedWidthAtom} from '~/state/atoms';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useMapFilterStore} from '../hooks/useMapFilterStore';
+import {preventLeafletPostLongPress, setIconSize} from '../utils';
+
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {BoreholeMapData, Parking, PartialBy} from '~/types';
 
 const useMap = <TData extends object>(
   id: string,
@@ -73,7 +76,11 @@ const useMap = <TData extends object>(
   const [deleteId, setDeleteId] = useState<number>();
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
-  const [selectedLocId] = useDisplayState((state) => [state.loc_id]);
+  const [selectedLocId, baseMap, setBaseMap] = useDisplayState((state) => [
+    state.loc_id,
+    state.baseMap,
+    state.setBaseMap,
+  ]);
   const [type, setType] = useState<string>('parkering');
   const {
     features: {routesAndParking},
@@ -174,11 +181,16 @@ const useMap = <TData extends object>(
       position: 'bottomright',
     }).addTo(map);
 
+    //@ts-expect-error Valid code
     L.basemapControl({
       position: 'bottomleft',
-      layers: [{layer: defaultMapBox}, {layer: satelitemapbox}],
+      layers:
+        baseMap === 'street'
+          ? [{layer: defaultMapBox}, {layer: satelitemapbox}]
+          : [{layer: satelitemapbox}, {layer: defaultMapBox}],
     }).addTo(map);
 
+    preventLeafletPostLongPress(map);
     onMapClickEvent(map);
     onCreateRouteEvent(map);
     onMapMoveEndEvent(map);
@@ -248,6 +260,10 @@ const useMap = <TData extends object>(
     });
   };
 
+  const onBaseMapChangeEvent = () => {
+    setBaseMap(baseMap === 'street' ? 'satelite' : 'street');
+  };
+
   const onMapMoveEndEvent = (map: L.Map) => {
     map.on('moveend', mapEvent);
   };
@@ -264,7 +280,6 @@ const useMap = <TData extends object>(
     const parkingLayer = parkingLayerRef.current;
 
     const geoJsonLayer = geoJsonRef.current;
-
     const tooltipLayer = tooltipRef.current;
 
     if (geoJsonLayer) {
@@ -331,17 +346,19 @@ const useMap = <TData extends object>(
   const plotRoutesInLayer = () => {
     geoJsonRef.current?.clearLayers();
     if (geoJsonRef.current) {
-      const active_loc_ids = data.map((item) => {
-        if ('loc_id' in item) {
-          return item.loc_id;
-        }
-      });
+      const active_loc_ids = new Set(
+        data.map((item) => {
+          if ('loc_id' in item) {
+            return item.loc_id;
+          }
+        })
+      );
       if (mapRef && mapRef.current && data.length > 0 && zoom > zoomThresholdForParking) {
         if (leafletMapRoutes && leafletMapRoutes.length > 0) {
           const geo = L.geoJSON(leafletMapRoutes, {
             style: routeStyle,
             filter: (feature) => {
-              return active_loc_ids.includes(feature.properties.loc_id);
+              return active_loc_ids.has(feature.properties.loc_id);
             },
             onEachFeature: function onEachFeature(feature, layer) {
               if (feature.properties.comment != null)
@@ -406,13 +423,15 @@ const useMap = <TData extends object>(
       zoom &&
       zoom > zoomThresholdForParking
     ) {
-      const active_loc_ids = data.map((item) => {
-        if ('loc_id' in item) {
-          return item.loc_id;
-        }
-      });
+      const active_loc_ids = new Set(
+        data.map((item) => {
+          if ('loc_id' in item) {
+            return item.loc_id;
+          }
+        })
+      );
       parkings.forEach((parking: Parking) => {
-        if (parking.loc_id !== null && active_loc_ids.includes(parking.loc_id)) {
+        if (parking.loc_id !== null && active_loc_ids.has(parking.loc_id)) {
           const coords = utm.convertUtmToLatLng(parking.x, parking.y, 32, 'N');
           if (typeof coords != 'object') return;
 
@@ -588,23 +607,26 @@ const useMap = <TData extends object>(
       pathOptions: drawStyle,
     });
 
+    mapRef.current?.on('baselayerchange', onBaseMapChangeEvent);
+
     setDoneRendering(true);
 
     return () => {
       setDoneRendering(false);
       if (mapRef.current && markerLayerRef.current) {
         mapRef.current.remove();
+        mapRef.current.removeEventListener('baselayerchange', onBaseMapChangeEvent);
       }
     };
   }, [mapRef.current == null, doneRendering]);
 
   useEffect(() => {
     plotRoutesInLayer();
-  }, [geoJsonRef.current, leafletMapRoutes, data, zoom > zoomThresholdForParking]);
+  }, [leafletMapRoutes, data, zoom > zoomThresholdForParking]);
 
   useEffect(() => {
     plotParkingsInLayer();
-  }, [parkingLayerRef.current, parkings, data, zoom > zoomThresholdForParking]);
+  }, [parkings, data, zoom > zoomThresholdForParking]);
 
   useEffect(() => {
     if (mapRef.current) onMapMoveEndEvent(mapRef.current);
@@ -668,13 +690,23 @@ const useMap = <TData extends object>(
   }, [usedWidth, usedHeight, doneRendering, isMobile]);
 
   useEffect(() => {
+    if (mapRef.current) mapRef.current.on('baselayerchange', onBaseMapChangeEvent);
+
+    return () => {
+      if (mapRef.current) mapRef.current.removeEventListener('baselayerchange');
+    };
+  }, [baseMap]);
+
+  useEffect(() => {
     const handler = (e: CustomEvent) => {
-      mapRef.current?.flyTo([e.detail.lat, e.detail.lng], e.detail.zoom || zoom, {animate: false});
+      mapRef.current?.flyTo([e.detail.lat, e.detail.lng], e.detail.zoom || zoom, {
+        animate: false,
+      });
     };
 
     window.addEventListener('leaflet-pan', handler as EventListener);
     return () => window.removeEventListener('leaflet-pan', handler as EventListener);
-  }, [mapRef.current]);
+  }, []);
 
   return {
     map: mapRef.current,

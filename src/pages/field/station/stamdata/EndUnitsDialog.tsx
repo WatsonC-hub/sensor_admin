@@ -1,0 +1,361 @@
+import {
+  Box,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  List,
+  Grid,
+  Typography,
+} from '@mui/material';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import dayjs, {type Dayjs} from 'dayjs';
+import React, {useEffect, useState} from 'react';
+import {FormProvider} from 'react-hook-form';
+import {toast} from 'react-toastify';
+import {z} from 'zod';
+
+import {apiClient} from '~/apiClient';
+import Button from '~/components/Button';
+import FormInput from '~/components/FormInput';
+import {useUser} from '~/features/auth/useUser';
+import {
+  type LocationActiveUnits,
+  useLocationActiveUnits,
+} from '~/features/stamdata/api/useUnitHistory';
+import useUnitForm from '~/features/station/api/useUnitForm';
+import StamdataUnit from '~/features/station/components/stamdata/StamdataUnit';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import {zodDayjs} from '~/helpers/schemas';
+import {useLocationData} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAppContext} from '~/state/contexts';
+
+type UnitDialogProps = {
+  open: boolean;
+  onClose: () => void;
+};
+
+type ChangeReason = {id: number; reason: string; default_actions: string | null};
+
+type Action = {action: string; label: string};
+
+type UnitEnd = {
+  ts_id: number;
+  gid: number;
+  startdate: Dayjs;
+};
+
+type UnitEndPayload = {
+  enddate: Dayjs;
+  change_reason?: number;
+  action?: string;
+  comment?: string;
+  unitHistory: Array<UnitEnd>;
+};
+
+const baseSchema = z.object({
+  enddate: zodDayjs('Slutdato er påkrævet'),
+  change_reason: z.number().optional(),
+  action: z.string().optional(),
+  comment: z.string().optional(),
+});
+
+const superUserSchema = baseSchema.extend({
+  change_reason: z.number({error: 'Vælg årsag'}),
+  action: z.string({error: 'Vælg handling'}),
+});
+
+const EndUnitsDialog = ({open, onClose}: UnitDialogProps) => {
+  const {ts_id} = useAppContext(['ts_id']);
+  const {data: location_data} = useLocationData();
+  const {superUser} = useUser();
+  const {isMobile} = useBreakpoints();
+
+  const {data: unit_history} = useLocationActiveUnits(ts_id);
+
+  const activeTimeseries = location_data?.timeseries.filter(
+    (ts) => dayjs(ts.slutdato).isAfter(dayjs()) && unit_history?.some((uh) => uh.ts_id === ts.ts_id)
+  );
+
+  const activeGroupedSensors = unit_history?.reduce(
+    (acc, curr) => {
+      if (!acc[curr.sensor_id]) {
+        acc[curr.sensor_id] = [];
+      }
+      acc[curr.sensor_id].push(curr);
+      return acc;
+    },
+    {} as Record<string, LocationActiveUnits[]>
+  );
+
+  const [checkedUnits, setCheckedUnits] = useState<LocationActiveUnits[]>([]);
+
+  const tstype_ids = activeTimeseries?.map((ts) => ts.tstype_id);
+
+  const {data: changeReasons} = useQuery<ChangeReason[]>({
+    queryKey: queryKeys.changeReasons(),
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/stamdata/change-reasons`);
+      return data;
+    },
+    enabled: superUser,
+    staleTime: 1000 * 60 * 60,
+  });
+
+  const {data: actions} = useQuery<Action[]>({
+    queryKey: queryKeys.actions(checkedUnits?.map((uh) => uh.unit_uuid)),
+    queryFn: async () => {
+      const {data} = await apiClient.get(
+        `/sensor_field/stamdata/unit-actions?${checkedUnits?.map((uh) => `uuid=${uh.unit_uuid}`).join('&')}`
+      );
+      return data;
+    },
+    enabled: superUser && checkedUnits !== undefined && checkedUnits.length > 0,
+    staleTime: 1000 * 60 * 60,
+  });
+
+  const {mutateAsync: takeHomeMutation} = useMutation({
+    mutationFn: async (payload: UnitEndPayload) => {
+      const {data} = await apiClient.post(`/sensor_field/stamdata/end_unit_history_batch`, payload);
+      return data;
+    },
+    onSuccess: () => {
+      handleClose();
+      toast.success('Udstyret er hjemtaget');
+    },
+    meta: {
+      invalidates: [
+        queryKeys.Timeseries.unitHistory2(),
+        queryKeys.AvailableUnits.all(),
+        ['udstyr'],
+        queryKeys.Timeseries.metadata(ts_id),
+      ],
+    },
+  });
+
+  useEffect(() => {
+    if (unit_history && unit_history.length > 0) {
+      const initialCheckedSensors = unit_history.filter((sensor) => sensor.ts_id === ts_id);
+      setCheckedUnits(initialCheckedSensors);
+    }
+  }, [unit_history]);
+
+  const formMethods = useUnitForm({
+    schema: superUser ? superUserSchema : baseSchema,
+    defaultValues: {
+      enddate: dayjs(),
+      change_reason: undefined,
+      action: undefined,
+      comment: '',
+    },
+  });
+
+  const {
+    handleSubmit,
+    setValue,
+    formState: {errors},
+  } = formMethods;
+
+  const handleClose = () => {
+    setCheckedUnits([]);
+    onClose();
+  };
+
+  return (
+    <Dialog open={open} onClose={handleClose} fullWidth={isMobile}>
+      <DialogTitle>Hjemtag en eller flere udstyr</DialogTitle>
+      <DialogContent>
+        <FormProvider {...formMethods}>
+          <StamdataUnit tstype_id={tstype_ids}>
+            <Grid container>
+              <StamdataUnit.EndDate required />
+            </Grid>
+          </StamdataUnit>
+
+          {superUser && (
+            <Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
+              <FormInput
+                name="change_reason"
+                fullWidth
+                select
+                label="Årsag"
+                options={changeReasons?.map((reason) => ({[reason.id]: reason.reason}))}
+                keyType="number"
+                placeholder="Vælg årsag"
+                onChangeCallback={(e) => {
+                  const reason = changeReasons?.find(
+                    (reason) =>
+                      reason.id === Number((e as React.ChangeEvent<HTMLInputElement>).target.value)
+                  );
+                  if (reason) {
+                    if (reason.default_actions?.includes('CLOSE')) {
+                      const action = actions?.find((action) => action.action.includes('CLOSE'));
+                      if (action) {
+                        setValue('action', action.action);
+                      }
+                    } else {
+                      setValue('action', reason.default_actions ?? 'DO_NOTHING');
+                    }
+                  }
+                }}
+              />
+
+              <FormInput
+                name="action"
+                fullWidth
+                select
+                label="Handling"
+                placeholder="Handling"
+                options={actions?.map((action) => ({[action.action]: action.label}))}
+              />
+
+              <FormInput
+                name="comment"
+                label="Kommentar"
+                fullWidth
+                multiline
+                rows={4}
+                placeholder="Skriv en kommentar"
+              />
+            </Box>
+          )}
+        </FormProvider>
+        <Box>
+          {activeGroupedSensors && Object.keys(activeGroupedSensors).length > 0 && (
+            <List>
+              <Typography variant="subtitle1" sx={{mt: 2}}>
+                Tilgængelige tidsserier:
+              </Typography>
+
+              {Object.entries(activeGroupedSensors).map(([sensor_id, sensors]) => {
+                const isTerminalChecked = sensors.every((s) =>
+                  checkedUnits.some((sensor) => sensor.ts_id === s.ts_id)
+                );
+
+                const isTerminalIndeterminate =
+                  sensors.length !==
+                    checkedUnits.filter((sensor) => sensor.sensor_id === sensor_id).length &&
+                  sensors.some((s) => checkedUnits.some((sensor) => sensor.ts_id === s.ts_id));
+
+                return (
+                  <Box
+                    key={sensor_id}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: isMobile ? 0.5 : undefined,
+                    }}
+                  >
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={isTerminalChecked}
+                          indeterminate={isTerminalIndeterminate}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setCheckedUnits((prev) => [
+                                ...prev,
+                                ...sensors.filter(
+                                  (s) => !prev.some((ps) => ps.unit_uuid === s.unit_uuid)
+                                ),
+                              ]);
+                            } else {
+                              setCheckedUnits((prev) =>
+                                prev.filter(
+                                  (s) => !sensors.some((sensor) => sensor.unit_uuid === s.unit_uuid)
+                                )
+                              );
+                            }
+                          }}
+                        />
+                      }
+                      label={<Typography>Sensor {sensor_id}</Typography>}
+                    />
+                    {sensors.map((sensor) => {
+                      const at = activeTimeseries?.find((ts) => ts.ts_id === sensor.ts_id);
+                      return (
+                        <Box
+                          key={sensor.unit_uuid}
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            pl: 1.5,
+                          }}
+                        >
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={checkedUnits.some((s) => s.unit_uuid === sensor.unit_uuid)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setCheckedUnits((prev) => [...prev, sensor]);
+                                  } else {
+                                    setCheckedUnits((prev) =>
+                                      prev.filter((s) => s.unit_uuid !== sensor.unit_uuid)
+                                    );
+                                  }
+                                }}
+                              />
+                            }
+                            label={
+                              <Typography
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: isMobile ? 'column' : 'row',
+                                  gap: 0.5,
+                                }}
+                              >
+                                <Typography>{sensor.signal_id}</Typography>
+                                <Typography>
+                                  (
+                                  {at?.prefix
+                                    ? at.prefix + ' - ' + at.tstype_name
+                                    : at?.tstype_name}
+                                  )
+                                </Typography>
+                              </Typography>
+                            }
+                          />
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                );
+              })}
+            </List>
+          )}
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button bttype="tertiary" onClick={handleClose}>
+          Annuller
+        </Button>
+        <Button
+          bttype="primary"
+          disabled={checkedUnits.length === 0 || Object.keys(errors).length > 0}
+          onClick={handleSubmit(async (data) => {
+            await takeHomeMutation({
+              enddate: data.enddate,
+              change_reason: data.change_reason,
+              action: data.action,
+              comment: data.comment,
+              unitHistory: checkedUnits.map((sensor) => ({
+                ts_id: sensor.ts_id,
+                gid: sensor.gid,
+                startdate: dayjs(sensor.startdate),
+              })),
+            });
+          })}
+        >
+          Hjemtag udstyr
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default EndUnitsDialog;

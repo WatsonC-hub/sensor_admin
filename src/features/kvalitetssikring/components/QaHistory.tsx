@@ -1,3 +1,8 @@
+import Delete from '@mui/icons-material/Delete';
+import DensityLargeIcon from '@mui/icons-material/DensityLarge';
+import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
+import Save from '@mui/icons-material/Save';
+import Verified from '@mui/icons-material/Verified';
 import {
   Box,
   Dialog,
@@ -7,38 +12,38 @@ import {
   Skeleton,
   Typography,
 } from '@mui/material';
-import React, {useState} from 'react';
-import DensityLargeIcon from '@mui/icons-material/DensityLarge';
-import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
-import {navIconStyle, qaHistorySkeletonHeight} from '~/consts';
-import {AdjustmentTypes, qaAdjustment} from '~/helpers/EnumHelper';
-import {useAppContext} from '~/state/contexts';
-
-import {useCertifyQa, useCertifyQaMutations} from '../api/useCertifyQa';
-
-import AdjustmentDataTable from './AdjustmentDataTable';
-import CustomSpeedDial, {CustomTooltip} from '~/components/CustomSpeedDial';
-import {Verified, Delete, Save} from '@mui/icons-material';
-import {DialAction} from '~/types';
-import {useAdjustmentState} from '~/hooks/useQueryStateParameters';
+import dayjs from 'dayjs';
 import {useSetAtom} from 'jotai';
+import React, {useState} from 'react';
+import {toast} from 'react-toastify';
+
+import Button from '~/components/Button';
+import CustomSpeedDial, {CustomTooltip} from '~/components/CustomSpeedDial';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import {navIconStyle, qaHistorySkeletonHeight} from '~/consts';
+import GraphManager from '~/features/station/components/GraphManager';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import {AdjustmentTypes, qaAdjustment} from '~/helpers/enumHelper';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useAdjustmentState} from '~/hooks/useQueryStateParameters';
 import {
   initiateConfirmTimeseriesAtom,
   initiateSelectAtom,
   levelCorrectionAtom,
 } from '~/state/atoms';
+import {useAppContext} from '~/state/contexts';
+
 import AdjustmentChooser from '../adjustments/AdjustmentChooser';
-import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import {useCertifyQa, useCertifyQaMutations} from '../api/useCertifyQa';
 import useQAHistory from '../api/useQAHistory';
-import Button from '~/components/Button';
-import {toast} from 'react-toastify';
-import GraphManager from '~/features/station/components/GraphManager';
-import TooltipWrapper from '~/components/TooltipWrapper';
-import dayjs from 'dayjs';
+import AdjustmentDataTable from './AdjustmentDataTable';
+
+import type {DialAction} from '~/types';
 
 export default function QAHistory() {
   const {ts_id} = useAppContext(['ts_id']);
   const [dataAdjustment, setDataAdjustment] = useAdjustmentState();
+  const {data: timeseries} = useTimeseriesData();
   const setInitiateSelect = useSetAtom(initiateSelectAtom);
   const setLevelCorrection = useSetAtom(levelCorrectionAtom);
   const setInitiateConfirmTimeseries = useSetAtom(initiateConfirmTimeseriesAtom);
@@ -94,6 +99,7 @@ export default function QAHistory() {
       },
       color: navIconStyle(dataAdjustment === qaAdjustment.CORRECTION),
       toastTip: 'Klik på et datapunkt på grafen',
+      hidden: timeseries?.correction_type !== 'translation',
     }
   );
   const adjustmentData = [
@@ -138,8 +144,19 @@ export default function QAHistory() {
   const dialog = (
     <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
       <DialogContent>
-        <Box display={'flex'} flexDirection="column" gap={1}>
-          <Typography variant="body2" fontWeight={'bold'}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             Vil du gerne godkende tidsserien frem til dagens dato? <br />
           </Typography>
         </Box>
@@ -200,7 +217,13 @@ export default function QAHistory() {
       <StationPageBoxLayout>
         <Box>
           <AdjustmentChooser />
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <TooltipWrapper
               description="På denne side kan du se historikken for justeringer af tidsserien. Læs mere om justeringer i guiden."
               url="https://www.watsonc.dk/guides/side-oversigt/#juster-data"

@@ -1,6 +1,6 @@
 import {Box} from '@mui/material';
 import React from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import FormInput from '~/components/FormInput';
@@ -10,7 +10,8 @@ import TaskInfoChanges from '~/features/tasks/components/TaskInfoChanges';
 import TaskInfoComment from '~/features/tasks/components/TaskInfoComment';
 
 import {useTaskState} from '../api/useTaskState';
-import useBreakpoints from '~/hooks/useBreakpoints';
+
+import type {SubmitHandler} from 'react-hook-form';
 
 const taskCommentSchema = z.object({
   id: z.string().optional(),
@@ -38,8 +39,6 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
 
   const {selectedTask} = useTaskState();
 
-  const {isMonitor} = useBreakpoints();
-
   const schemaData = taskCommentSchema.safeParse(initialValues);
 
   const formMethods = useForm<InferTaskComment>({
@@ -62,55 +61,38 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      mt={isMonitor ? 3 : 0}
-      mb={isMonitor ? 5 : 0}
-      maxHeight={'100%'}
-      gap={2}
-    >
-      <Box
-        // maxHeight={'100%'}
-        display={'flex'}
-        flexDirection={'column'}
-        gap={2}
-        sx={{overflowY: 'auto', overflowX: 'hidden'}}
-      >
-        {taskHistory?.map((row) => {
-          if ('comment' in row) return <TaskInfoComment key={row.id} comment={row} />;
-          else
-            return (
-              <TaskInfoChanges
-                key={row.id}
-                taskChanges={row}
-                taskUsers={taskUsers}
-                taskStatus={taskStatus}
-              />
-            );
-        })}
-      </Box>
-      <Box>
-        <FormProvider {...formMethods}>
-          <FormInput
-            fullWidth
-            name="comment"
-            label={'Kommentar'}
-            disabled={
-              selectedTaskId.includes(':') ||
-              selectedTask?.can_edit === false ||
-              selectedTask === undefined
+    <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
+      {taskHistory?.map((row) => {
+        if ('comment' in row) return <TaskInfoComment key={row.id} comment={row} />;
+        else
+          return (
+            <TaskInfoChanges
+              key={row.id}
+              taskChanges={row}
+              taskUsers={taskUsers}
+              taskStatus={taskStatus}
+            />
+          );
+      })}
+      <FormProvider {...formMethods}>
+        <FormInput
+          fullWidth
+          name="comment"
+          label={'Kommentar'}
+          disabled={
+            selectedTaskId.includes(':') ||
+            selectedTask?.can_edit === false ||
+            selectedTask === undefined
+          }
+          multiline
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              const callback = handleSubmit(submit, (e) => console.log(e));
+              callback(e);
             }
-            multiline
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                const callback = handleSubmit(submit, (e) => console.log(e));
-                callback(e);
-              }
-            }}
-          />
-        </FormProvider>
-      </Box>
+          }}
+        />
+      </FormProvider>
     </Box>
   );
 };

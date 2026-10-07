@@ -1,70 +1,65 @@
 import AddIcon from '@mui/icons-material/Add';
-
-import {
-  AddCircle,
-  PhotoLibraryRounded,
-  PlaylistAddCheck,
-  StraightenRounded,
-  Edit,
-  Router,
-  Settings,
-  PriorityHigh,
-  DoNotDisturb,
-} from '@mui/icons-material';
+import AddCircle from '@mui/icons-material/AddCircle';
 import AlarmIcon from '@mui/icons-material/Alarm';
+import BackpackIcon from '@mui/icons-material/Backpack';
+import DoNotDisturb from '@mui/icons-material/DoNotDisturb';
+import Edit from '@mui/icons-material/Edit';
+import FunctionsIcon from '@mui/icons-material/Functions';
+import KeyIcon from '@mui/icons-material/Key';
+import PersonIcon from '@mui/icons-material/Person';
+import PhotoLibraryRounded from '@mui/icons-material/PhotoLibraryRounded';
+import PlaylistAddCheck from '@mui/icons-material/PlaylistAddCheck';
+import PriorityHigh from '@mui/icons-material/PriorityHigh';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import Router from '@mui/icons-material/Router';
+import Settings from '@mui/icons-material/Settings';
+import StraightenRounded from '@mui/icons-material/StraightenRounded';
 import {
-  Drawer,
   Box,
+  ClickAwayListener,
+  Divider,
+  Drawer,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
-  Divider,
-  ListItemButton,
-  ClickAwayListener,
   Typography,
   useTheme,
 } from '@mui/material';
 import {useAtom} from 'jotai';
-import React, {ReactNode} from 'react';
-import FunctionsIcon from '@mui/icons-material/Functions';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
-import PersonIcon from '@mui/icons-material/Person';
-import BackpackIcon from '@mui/icons-material/Backpack';
-import KeyIcon from '@mui/icons-material/Key';
-import {drawerOpenAtom} from '~/state/atoms';
-import {useAppContext} from '~/state/contexts';
-import {
-  Metadata,
-  metadataQueryOptions,
-  useLocationData,
-  useTimeseriesData,
-} from '~/hooks/query/useMetadata';
+import React from 'react';
+
+import TooltipWrapper from '~/components/TooltipWrapper';
 import {useUser} from '~/features/auth/useUser';
-import {QueryKey, UseQueryOptions} from '@tanstack/react-query';
-import {queryClient} from '~/queryClient';
+import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
+import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory';
 import {pejlingGetOptions} from '~/features/pejling/api/usePejling';
-import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
-import {getMaalepunktOptions} from '~/hooks/query/useMaalepunkt';
 import {contactInfoGetOptions} from '~/features/stamdata/api/useContactInfo';
 import {locationAccessGetOptions} from '~/features/stamdata/api/useLocationAccess';
 import {getRessourcerOptions} from '~/features/stamdata/api/useRessourcer';
-import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory';
-import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
-import {getImageOptions} from '../api/useImages';
-import {stationPages, StationPages} from '~/helpers/EnumHelper';
-import MinimalSelect from './MinimalSelect';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import TooltipWrapper from '~/components/TooltipWrapper';
-import {
-  timeseriesMeasureSampleSendOptions,
-  useTimeseriesMeasureSampleSend,
-} from '../api/useTimeseriesMeasureSampleSend';
-import useDmpAllowedMapList, {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
-import {alarmGetOptions} from '../alarms/api/useAlarm';
+import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
+import {stationPages} from '~/helpers/enumHelper';
 import {useProgress} from '~/hooks/query/stationProgress';
+import {getMaalepunktOptions} from '~/hooks/query/useMaalepunkt';
+import {metadataQueryOptions, useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
+import {queryClient} from '~/queryClient';
+import {drawerOpenAtom} from '~/state/atoms';
+import {useAppContext} from '~/state/contexts';
+
+import {alarmGetOptions} from '../alarms/api/useAlarm';
+import useDmpAllowedMapList, {prefetchDmpAllowedMapList} from '../api/useDmpAllowedMapList';
+import {getImageOptions} from '../api/useImages';
+import {timeseriesMeasureSampleSendOptions} from '../api/useTimeseriesMeasureSampleSend';
+import MinimalSelect from './MinimalSelect';
+
+import type {QueryKey, UseQueryOptions} from '@tanstack/react-query';
+import type {ReactNode} from 'react';
+import type {StationPages} from '~/helpers/enumHelper';
+import type {Metadata} from '~/hooks/query/useMetadata';
 
 const drawerWidth = 200;
 
@@ -106,7 +101,6 @@ const StationDrawer = () => {
   const {data: metadata} = useTimeseriesData();
   const {data: locationdata} = useLocationData();
   const {data: progress} = useProgress(loc_id, ts_id);
-  const {data, error} = useTimeseriesMeasureSampleSend(ts_id);
 
   const isDmpAllowed = useDmpAllowedMapList(ts_id);
 
@@ -115,8 +109,7 @@ const StationDrawer = () => {
     (progress?.sync === false &&
       (isDmpAllowed ||
         (metadata?.loctype_id === 9 && [1, 11, 12, 16].includes(metadata?.tstype_id || 0)))) ||
-    progress?.visibility === false ||
-    (progress?.samplesend === false && data !== undefined && !error)
+    progress?.visibility === false
       ? 0
       : undefined;
 
@@ -232,7 +225,6 @@ const StationDrawer = () => {
           requiredTsId: true,
           onHover: () => handlePrefetch(alarmGetOptions(ts_id)),
           disabled: !alarms,
-          progress: progress?.alarm == false ? 0 : undefined,
         },
         {
           text: 'Konfiguration',
@@ -332,13 +324,19 @@ const StationDrawer = () => {
           }}
         >
           <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
-          <Box alignItems={'center'} display="flex" gap={1}>
+          <Box
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+              gap: 1,
+            }}
+          >
             {category.settings &&
               category.settings
                 .filter((setting) => setting?.disabled == false || setting?.disabled == undefined)
-                .map((setting, index) => (
+                .map((setting) => (
                   <ListItemIcon
-                    key={index}
+                    key={setting.page}
                     sx={{
                       color: navIconStyle(pageToShow === setting.page),
                       minWidth: 0,
@@ -356,7 +354,6 @@ const StationDrawer = () => {
                 ))}
           </Box>
         </ListItem>
-
         {category.items
           .filter((item) => item.disabled == undefined || !item.disabled)
           .map((item) => {
@@ -467,10 +464,22 @@ const Layout = ({children, variant}: LayoutProps) => {
         },
       }}
     >
-      <Box pt={2} px={1}>
+      <Box
+        sx={{
+          pt: 2,
+          px: 1,
+        }}
+      >
         {!isTouch && <MinimalSelect />}
         {isTouch && (
-          <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
+          <Typography
+            color="white"
+            sx={{
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              whiteSpace: 'wrap',
+            }}
+          >
             {locationdata?.loc_name}
           </Typography>
         )}

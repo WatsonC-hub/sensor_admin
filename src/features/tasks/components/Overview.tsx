@@ -1,34 +1,35 @@
-import {Box} from '@mui/material';
-
-import React, {useCallback} from 'react';
-import WindowManager from '~/components/ui/WindowManager';
 import {DragDropProvider} from '@dnd-kit/react';
-import Map from '~/pages/Map';
-import TaskInfo from './TaskInfo';
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
-import {AppContext} from '~/state/contexts';
-import Station from '~/pages/field/station/Station';
-
-import {BoreholeMapData} from '~/types';
-import SensorContent from '~/pages/field/overview/components/SensorContent';
-import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
-import {metadataQueryOptions} from '~/hooks/query/useMetadata';
+import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {displayStore, useDisplayState} from '~/hooks/ui';
-import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import LocationList from './LocationList';
-import TaskItiniaries from './TaskItiniaries';
-import LocationRouter from '~/features/station/components/LocationRouter';
-import Trip from '~/pages/admin/opgaver/Trip';
-import {useItineraryMutations} from '../api/useItinerary';
 import {useAtomValue} from 'jotai';
-import {fullScreenAtom} from '~/state/atoms';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
-import LocationHighlighter from '~/features/map/components/LocationHighlighter';
-import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
-import OwnTaskList from './OwnTaskList';
+import React, {useCallback, useMemo} from 'react';
+
+import WindowManager from '~/components/ui/WindowManager';
 import {useUser} from '~/features/auth/useUser';
+import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
+import LocationHighlighter from '~/features/map/components/LocationHighlighter';
+import LocationRouter from '~/features/station/components/LocationRouter';
+import {metadataQueryOptions} from '~/hooks/query/useMetadata';
+import {displayStore, useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
+import Trip from '~/pages/admin/opgaver/Trip';
+import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
+import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
+import SensorContent from '~/pages/field/overview/components/SensorContent';
+import Station from '~/pages/field/station/Station';
+import Map from '~/pages/Map';
+import {fullScreenAtom} from '~/state/atoms';
+import {AppContext} from '~/state/contexts';
+
+import {useItineraryMutations} from '../api/useItinerary';
+import LocationList from './LocationList';
+import OwnTaskList from './OwnTaskList';
+import TaskInfo from './TaskInfo';
+import TaskItiniaries from './TaskItiniaries';
+
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {BoreholeMapData} from '~/types';
 
 const Overview = () => {
   const [, setPageToShow] = useStationPages();
@@ -80,10 +81,20 @@ const Overview = () => {
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
   const {addLocationToTrip} = useItineraryMutations();
+  const stationContext = useMemo(
+    () => ({loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}),
+    [metadata, ts_id]
+  );
+  const boreholeContext = useMemo(
+    () => ({boreholeno: boreholeno!, intakeno: intakeno!}),
+    [boreholeno, intakeno]
+  );
+  const locationContext = useMemo(() => ({loc_id: loc_id!}), [loc_id]);
 
   const {simpleTaskPermission} = useUser();
   const {isMobile, isTouch} = useBreakpoints();
   const fullScreen = useAtomValue(fullScreenAtom);
+  const locationRouterContext = useMemo(() => ({loc_id: loc_id ?? undefined}), [loc_id]);
 
   const handleDrop = (event: any) => {
     if (event.operation.source === null || event.operation.target === null) return;
@@ -134,11 +145,13 @@ const Overview = () => {
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      flexGrow={1}
-      alignItems="stretch"
-      position="relative"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        alignItems: 'stretch',
+        position: 'relative',
+      }}
     >
       <Box
         sx={{
@@ -219,7 +232,7 @@ const Overview = () => {
               m: isMobile ? 0.5 : undefined,
             }}
           >
-            <AppContext.Provider value={{loc_id: loc_id!}}>
+            <AppContext.Provider value={locationContext}>
               <SensorContent key={loc_id} />
             </AppContext.Provider>
           </WindowManager.Window>
@@ -234,7 +247,7 @@ const Overview = () => {
               setBoreholeNo(null);
             }}
           >
-            <AppContext.Provider value={{boreholeno: boreholeno!}}>
+            <AppContext.Provider value={boreholeContext}>
               <BoreholeContent key={boreholeno} />
             </AppContext.Provider>
           </WindowManager.Window>
@@ -256,10 +269,23 @@ const Overview = () => {
             priority={6}
             mobilePriority={9}
             show={selectedTask !== null}
-            minSize={2}
+            minSize={1}
             onClose={() => setSelectedTask(null)}
+            maxSize={2}
+            height="100%"
           >
-            <Box key={selectedTask} p={1} overflow="auto">
+            <Box
+              key={selectedTask}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                flexGrow: 1,
+                minHeight: 0,
+                overflow: 'auto',
+                height: '100%',
+                p: 1,
+              }}
+            >
               <TaskInfo />
             </Box>
           </WindowManager.Window>
@@ -277,7 +303,7 @@ const Overview = () => {
               borderRadius: isTouch ? 0 : 3,
             }}
           >
-            <AppContext.Provider value={{boreholeno: boreholeno!, intakeno: intakeno!}}>
+            <AppContext.Provider value={boreholeContext}>
               <BoreholeRouter key={`${boreholeno}-${intakeno}`} />
             </AppContext.Provider>
           </WindowManager.Window>
@@ -296,7 +322,7 @@ const Overview = () => {
             }}
             height="100%"
           >
-            <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}}>
+            <AppContext.Provider value={stationContext}>
               <Station key={ts_id} />
             </AppContext.Provider>
           </WindowManager.Window>
@@ -315,7 +341,7 @@ const Overview = () => {
             }}
             height="100%"
           >
-            <AppContext.Provider value={{loc_id: loc_id ?? undefined}}>
+            <AppContext.Provider value={locationRouterContext}>
               <LocationRouter key={`location-${loc_id}`} />
             </AppContext.Provider>
           </WindowManager.Window>

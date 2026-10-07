@@ -1,7 +1,9 @@
 import {DateTimePicker} from '@mui/x-date-pickers';
-import {PickerValue} from '@mui/x-date-pickers/internals';
-import dayjs, {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
 import React from 'react';
+
+import type {PickerValue} from '@mui/x-date-pickers/internals';
+import type {Dayjs} from 'dayjs';
 
 interface OwnDatePickerProps {
   label: string | React.ReactNode;
@@ -43,13 +45,13 @@ const OwnDatePicker = ({
         textField: {
           fullWidth: fullWidth,
           margin: 'dense',
-          InputLabelProps: {
-            shrink: true,
-          },
-          InputProps: {
-            sx: {
-              '& > fieldset': {
-                borderColor: 'primary.main',
+          slotProps: {
+            inputLabel: {shrink: true},
+            input: {
+              sx: {
+                '& > fieldset': {
+                  borderColor: 'primary.main',
+                },
               },
             },
           },

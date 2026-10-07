@@ -4,7 +4,8 @@ import {parseAsStringLiteral, useQueryState} from 'nuqs';
 import React, {useEffect} from 'react';
 import {toast} from 'react-toastify';
 
-import {qaAdjustmentLiteral} from '~/helpers/EnumHelper';
+import {qaAdjustmentLiteral} from '~/helpers/enumHelper';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {
   initiateConfirmTimeseriesAtom,
@@ -22,6 +23,8 @@ const AdjustmentChooser = () => {
   const [dataAdjustment] = useQueryState('adjust', parseAsStringLiteral(qaAdjustmentLiteral));
   const [selection, setSelection] = useAtom(qaSelection);
   const {isMobile} = useBreakpoints();
+  const {data: timeseries} = useTimeseriesData();
+  const canLevelCorrect = timeseries?.correction_type === 'translation';
   const setInitiateSelect = useSetAtom(initiateSelectAtom);
   const setLevelCorrection = useSetAtom(levelCorrectionAtom);
   const [initiateConfirmTimeseries, setInitiateConfirmTimeseries] = useAtom(
@@ -32,8 +35,8 @@ const AdjustmentChooser = () => {
     setSelection({});
     setInitiateSelect(dataAdjustment === 'bounds' || dataAdjustment === 'remove');
     setInitiateConfirmTimeseries(dataAdjustment === 'confirm');
-    setLevelCorrection(dataAdjustment === 'correction');
-  }, [dataAdjustment]);
+    setLevelCorrection(dataAdjustment === 'correction' && canLevelCorrect);
+  }, [dataAdjustment, canLevelCorrect]);
 
   useEffect(() => {
     const points =
@@ -60,7 +63,12 @@ const AdjustmentChooser = () => {
   };
 
   return (
-    <Box height={'fit-content'} alignItems={'center'}>
+    <Box
+      sx={{
+        height: 'fit-content',
+        alignItems: 'center',
+      }}
+    >
       {(selection.range || selection.points) && dataAdjustment !== null && (
         <Card
           raised={true}
@@ -81,7 +89,9 @@ const AdjustmentChooser = () => {
               )}
               {dataAdjustment === 'remove' && <DataExclude onClose={handleOnClose} />}
               {dataAdjustment === 'bounds' && <ValueBounds onClose={handleOnClose} />}
-              {dataAdjustment === 'correction' && <LevelCorrection onClose={handleOnClose} />}
+              {dataAdjustment === 'correction' && canLevelCorrect && (
+                <LevelCorrection onClose={handleOnClose} />
+              )}
             </Box>
           </CardContent>
         </Card>

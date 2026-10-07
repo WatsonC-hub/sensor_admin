@@ -1,20 +1,27 @@
+import HomeIcon from '@mui/icons-material/Home';
+import LocationOn from '@mui/icons-material/LocationOn';
+import QueryStats from '@mui/icons-material/QueryStats';
+import Timeline from '@mui/icons-material/Timeline';
 import React from 'react';
 import {Navigate, Route, Routes} from 'react-router-dom';
 
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
-import {AppContext} from './state/contexts';
-import ScanComponent from './components/ScanComponent';
-import GuardedHome from './pages/Home';
-import GuardedCreateStation from './features/station/components/CreateStation';
-import {useUser} from './features/auth/useUser';
-import AccessDenied from './accessDenied';
-import {QueryStats, LocationOn, Timeline, Home as HomeIcon} from '@mui/icons-material';
-import {SelectionCommand} from './features/commandpalette/components/CommandContext';
-import {usePageActions} from './features/commandpalette/hooks/usePageActions';
-import {useNavigationFunctions} from './hooks/useNavigationFunctions';
+import AccessDenied from './AccessDenied';
 import ReleaseNoticeModal from './components/ReleaseNotice';
-import useCmdPalette, {CommandPalette} from './hooks/query/useCmdPalette';
+import ScanComponent from './components/ScanComponent';
+import {useUser} from './features/auth/useUser';
+import {usePageActions} from './features/commandpalette/hooks/usePageActions';
+import useCmdPalette from './hooks/query/useCmdPalette';
+import {useNavigationFunctions} from './hooks/useNavigationFunctions';
+import GuardedCreateStation from './pages/CreateStation';
+import GuardedHome from './pages/Home';
+import {AppContext} from './state/contexts';
+
+import type {SelectionCommand} from './features/commandpalette/components/CommandContext';
+import type {CommandPalette} from './hooks/query/useCmdPalette';
+
+const EMPTY_CONTEXT_VALUE = {};
 
 const Router = () => {
   const user = useUser();
@@ -28,7 +35,6 @@ const Router = () => {
   } = useCmdPalette({
     select: (data) => {
       // remove duplicate ts_id and ts_name
-
       const uniqueTsIds = new Set();
       const uniqueData = data.filter((item) => {
         if (item.ts_id === -1 || uniqueTsIds.has(item.ts_id)) {
@@ -45,7 +51,7 @@ const Router = () => {
     {
       id: 'home',
       name: 'Hjem',
-      perform: home,
+      perform: () => home(true),
       icon: <HomeIcon />,
       shortcut: 'H',
       type: 'action',
@@ -123,7 +129,7 @@ const Router = () => {
         <Route
           path="/"
           element={
-            <AppContext.Provider value={{}}>
+            <AppContext.Provider value={EMPTY_CONTEXT_VALUE}>
               <GuardedHome />
             </AppContext.Provider>
           }
@@ -131,7 +137,7 @@ const Router = () => {
         <Route
           path="stamdata"
           element={
-            <AppContext.Provider value={{}}>
+            <AppContext.Provider value={EMPTY_CONTEXT_VALUE}>
               <GuardedCreateStation />
             </AppContext.Provider>
           }
