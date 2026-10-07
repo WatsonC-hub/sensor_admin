@@ -16,8 +16,20 @@ A React + TypeScript app that Watsonc uses to manage environmental monitoring st
 |---|---|
 | Tidsserie | `ts_id`, `timeseries`, `station` |
 | Lokation | `loc_id`, `location` |
-| Udstyr | `unit`, `unit_uuid` |
+| Terminal | `terminal_id`, `terminal_type` |
+| Sensor | `terminal_id` + `sensor_id` |
+| Udstyr | `unit`, `unit_uuid` (one per `signal_id`) |
+| Sensortype | `sensortypeid`, `sensortypename` (must equal `tstype_id`) |
+| Hjemtagning | `end_unit_history_batch`, `change_reason` (årsag) |
+| Handling | `action`: `DO_NOTHING`, `CLOSE_UNIT`, `CLOSE_SENSOR`, `CLOSE_ALL_UNITS`, `CLOSE_UNIT_INVOICE`, `CLOSE_INVOICE_ADD_INVENTORY` |
+| Overført fakturering | `inherit_invoice` |
 | Terminal-ID | `terminal_id` |
+| Tidsseriestatus / Lokationsstatus | backend flags `not_serviced`, `inactive_new`, `in_service` (combined in `src/features/notifications/Utils.tsx`) |
+| Anlæg | `plantid`, `plantname` |
+| Pejlestatus | `BoreHoleFlagEnum` |
+| Projektejer | `org_id_owner`; drives `can_edit` on opgaver |
+| Ansvarlig | `assigned_to` |
+| Uplanlagt | opgave with `itinerary_id === null` |
 | Calypso ID | `calypso_id`, `labelid` |
 | Pejling | `kontrol`, `pejling`, `measurement` |
 | Korrektionsomfang | `useforcorrection` (`correction_map` in `src/consts.ts`; 0 = kontrolpejling) |
