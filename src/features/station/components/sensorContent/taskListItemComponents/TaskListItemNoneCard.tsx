@@ -1,13 +1,15 @@
-import {Card, CardHeader, Box, Typography, Link} from '@mui/material';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import {Box, Card, CardHeader, Link, Typography} from '@mui/material';
+import dayjs from 'dayjs';
 import React from 'react';
-import {getColor} from '~/features/notifications/utils';
-import {Task} from '~/features/tasks/types';
+
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import {getColor} from '~/features/notifications/Utils';
 import {convertDate} from '~/helpers/dateConverter';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import dayjs from 'dayjs';
-import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+
+import type {Task} from '~/features/tasks/types';
 
 type Props = {
   task: Task;
@@ -44,12 +46,22 @@ const TaskListItemNoneCard = ({task}: Props) => {
         }}
         title={
           <Box
-            display="flex"
-            flexDirection={'row'}
-            alignItems="center"
-            justifyContent={'space-between'}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
           >
-            <Box display={'flex'} flexDirection={'row'} gap={0.5} alignItems="center" fontSize={14}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 0.5,
+                alignItems: 'center',
+                fontSize: 14,
+              }}
+            >
               <NotificationIcon
                 iconDetails={{
                   notification_id: task.blocks_notifications[0],
@@ -64,10 +76,10 @@ const TaskListItemNoneCard = ({task}: Props) => {
                 color="inherit"
                 variant="caption"
                 underline="always"
-                display="flex"
-                flexWrap="wrap"
-                gap={0.5}
                 sx={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 0.5,
                   cursor: 'pointer',
                   textDecorationColor: 'rgba(255, 255, 255, 0.6)',
                 }}
@@ -77,7 +89,13 @@ const TaskListItemNoneCard = ({task}: Props) => {
               </Link>
             </Box>
             {task.due_date && (
-              <Box display="flex" flexDirection={'row'} gap={1}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 1,
+                }}
+              >
                 <PendingActionsIcon
                   fontSize="small"
                   sx={{

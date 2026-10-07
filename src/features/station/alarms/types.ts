@@ -31,7 +31,7 @@ export type AlarmHistory = {
   alarm: boolean;
   alarm_low: boolean;
   name: string;
-  signal_warning: boolean;
+  notification_name: string;
 };
 
 export type AlarmTableType = {

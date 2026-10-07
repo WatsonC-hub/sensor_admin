@@ -1,8 +1,10 @@
-/* 
+/*
 Adding one to the month is mainly done because the method date.getMonth return a zero based value, which means it will show the previous month
 */
 
-import dayjs, {Dayjs} from 'dayjs';
+import dayjs from 'dayjs';
+
+import type {Dayjs} from 'dayjs';
 
 const convertDate = (date: string | Dayjs) => {
   if (dayjs.isDayjs(date)) {

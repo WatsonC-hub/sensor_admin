@@ -1,0 +1,117 @@
+import {Box, Grid, Typography} from '@mui/material';
+
+import {createTypedForm} from '~/components/formComponents/Form';
+import {initialWatlevmpData} from '~/features/stamdata/components/stamdata/const';
+import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
+import {useShowFormState} from '~/hooks/useQueryStateParameters';
+import {useAppContext} from '~/state/contexts';
+
+import MPDescription from '../stamdata/MPDescription';
+
+import type {SubmitHandler, UseFormReturn} from 'react-hook-form';
+import type {
+  WatlevMPFormValues,
+  WatlevMPFormValuesOutput,
+} from '~/features/stamdata/components/stamdata/ReferenceForm';
+
+interface WatlevMPFormProps {
+  formMethods: UseFormReturn<WatlevMPFormValues, unknown, WatlevMPFormValuesOutput>;
+}
+
+const Form = createTypedForm<WatlevMPFormValues, WatlevMPFormValuesOutput>();
+
+const StationMPForm = ({formMethods}: WatlevMPFormProps) => {
+  const {ts_id} = useAppContext(['ts_id']);
+  const [, setShowForm] = useShowFormState();
+  const {
+    reset,
+    formState: {defaultValues},
+  } = formMethods;
+
+  const {
+    post: {mutateAsync: postWatlevmpAsync},
+    put: {mutateAsync: putWatlevmpAsync},
+  } = useMaalepunkt(ts_id);
+  const handleMaalepunktSubmit: SubmitHandler<WatlevMPFormValuesOutput> = async (values) => {
+    const mutationOptions = {
+      onSuccess: () => {
+        reset(initialWatlevmpData());
+        setShowForm(null);
+      },
+    };
+
+    const data = {
+      ...values,
+    };
+    if (values.gid === undefined) {
+      const payload = {
+        data: data,
+        path: `${ts_id}`,
+      };
+      await postWatlevmpAsync(payload, mutationOptions);
+    } else {
+      const payload = {
+        data: data,
+        path: `${ts_id}/${values.gid}`,
+      };
+      await putWatlevmpAsync(payload, mutationOptions);
+    }
+  };
+  return (
+    <Box
+      sx={{
+        maxWidth: 600,
+        margin: 'auto',
+      }}
+    >
+      <Form
+        formMethods={formMethods}
+        label={defaultValues?.gid ? 'Rediger målepunkt' : 'Indberet målepunkt'}
+      >
+        <Form.Input
+          name="elevation"
+          label="Målepunkt [m DVR90]"
+          required
+          type="number"
+          slotProps={{
+            input: {
+              endAdornment: <Typography variant="body2">m</Typography>,
+            },
+          }}
+        />
+        <Form.DateTime name="startdate" label={'Gældende fra'} />
+
+        <Grid size={12}>
+          <Form.Controller
+            name="mp_description"
+            render={({field}) => {
+              return <MPDescription {...field} value={field.value ?? ''} />;
+            }}
+          />
+        </Grid>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            justifySelf: 'flex-end',
+            justifyContent: 'flex-end',
+            mr: 0,
+            ml: 'auto',
+          }}
+        >
+          <Form.Cancel
+            disabled={false}
+            cancel={() => {
+              if (defaultValues?.gid) reset(initialWatlevmpData());
+              else reset();
+              setShowForm(null);
+            }}
+          />
+          <Form.Submit submit={handleMaalepunktSubmit} />
+        </Box>
+      </Form>
+    </Box>
+  );
+};
+
+export default StationMPForm;

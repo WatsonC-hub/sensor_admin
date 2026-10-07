@@ -1,14 +1,18 @@
-import {Box, CircularProgress, Grid2, Skeleton, Typography} from '@mui/material';
-import {Mutation, useMutationState, useQueryClient} from '@tanstack/react-query';
+import {Box, CircularProgress, Grid, Skeleton, Typography} from '@mui/material';
+import {useMutationState, useQueryClient} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 
 import ImageCard from '~/components/ImageCard';
-import {Image} from '~/types';
-import Button from './Button';
-import {ImagePayload, useImageUpload} from '~/hooks/query/useImageUpload';
-import {APIError} from '~/queryClient';
-import {useLocationData} from '~/hooks/query/useMetadata';
 import {useFindBorehole} from '~/features/station/api/useBorehole';
+import {useImageUpload} from '~/hooks/query/useImageUpload';
+import {useLocationData} from '~/hooks/query/useMetadata';
+
+import Button from './Button';
+
+import type {Mutation} from '@tanstack/react-query';
+import type {ImagePayload} from '~/hooks/query/useImageUpload';
+import type {APIError} from '~/queryClient';
+import type {Image} from '~/types';
 
 type ImageViewerProps = {
   images: Array<Image> | undefined;
@@ -93,18 +97,20 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
         justifyContent: 'center',
       }}
     >
-      <Grid2 container spacing={2}>
+      <Grid container spacing={2}>
         {mutations.map((m, index) => {
           return (
-            <Grid2
+            <Grid
               key={m.mutationId}
               size={mobileRatio || (images || []).length + mutations.length === 1 ? 12 : columns}
-              display={'flex'}
-              justifyContent={'center'}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
             >
               <Box
-                display={'flex'}
                 sx={{
+                  display: 'flex',
                   position: 'relative',
                   width: size,
                   height: size,
@@ -140,8 +146,12 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
                   )}
                   <Typography
                     variant="body2"
-                    sx={{color: 'primary.main', width: 300, mx: 'auto'}}
-                    textAlign={'center'}
+                    sx={{
+                      textAlign: 'center',
+                      color: 'primary.main',
+                      width: 300,
+                      mx: 'auto',
+                    }}
                   >
                     {m.state.status === 'error'
                       ? 'Upload fejlede...'
@@ -178,17 +188,19 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
                   )}
                 </Box>
               </Box>
-            </Grid2>
+            </Grid>
           );
         })}
 
         {images?.map((elem) => (
-          <Grid2
+          <Grid
             key={elem.gid}
-            display={'flex'}
-            flexWrap={'wrap'}
             size={mobileRatio || images.length + mutations.length === 1 ? 12 : columns}
-            justifyContent={'center'}
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}
           >
             <ImageCard
               image={elem}
@@ -196,9 +208,9 @@ function ImageViewer({images, deleteMutation, handleEdit, type, id}: ImageViewer
               handleEdit={handleEdit}
               mobileSize={size}
             />
-          </Grid2>
+          </Grid>
         ))}
-      </Grid2>
+      </Grid>
     </Box>
   );
 }

@@ -1,28 +1,34 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {Save} from '@mui/icons-material';
-import {Box, FormControlLabel, Switch, TextFieldProps, Typography} from '@mui/material';
-import React, {useEffect} from 'react';
-import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
+import Save from '@mui/icons-material/Save';
+import {Box, FormControlLabel, Switch, Typography} from '@mui/material';
+import {merge} from 'lodash';
+import React, {useCallback, useEffect, useMemo} from 'react';
+import {Controller, FormProvider, useForm, useFormContext} from 'react-hook-form';
+import {toast} from 'react-toastify';
 import {z} from 'zod';
 
-import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
+import ExtendedAutocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
-import FormInput, {FormInputProps} from '~/components/FormInput';
+import FormDatePicker from '~/components/FormDatePicker';
+import FormInput from '~/components/FormInput';
 import {useNextDueDate, useTaskStatus, useTaskUsers} from '~/features/tasks/api/useTasks';
-import {TaskUser} from '~/features/tasks/types';
-
-import {useTaskState} from '../api/useTaskState';
-import {merge} from 'lodash';
-import {useLocationData} from '~/hooks/query/useMetadata';
 import {zodDayjs} from '~/helpers/schemas';
-import FormDatePicker, {FormDatePickerProps} from '~/components/FormDatePicker';
-import {toast} from 'react-toastify';
+import {useLocationData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
 
+import {useTaskState} from '../api/useTaskState';
+
+import type {TextFieldProps} from '@mui/material';
+import type {UseFormReturn} from 'react-hook-form';
+import type {AutoCompleteFieldProps} from '~/components/Autocomplete';
+import type {FormDatePickerProps} from '~/components/FormDatePicker';
+import type {FormInputProps} from '~/components/FormInput';
+import type {TaskUser} from '~/features/tasks/types';
+
 const zodSchema = z.object({
-  ts_id: z.number({required_error: 'Tidsserie skal være angivet'}),
+  ts_id: z.number({message: 'Tidsserie skal være angivet'}),
   name: z
-    .string({required_error: 'Navn skal være angivet'})
+    .string({message: 'Navn skal være angivet'})
     .min(5, 'Navn skal være mindst 5 tegn')
     .max(255, 'Navn må maks være 255 tegn'),
   description: z.string().nullish(),
@@ -50,7 +56,11 @@ type Props = {
   defaultValues?: Partial<FormValues>;
   children?: React.ReactNode;
   disabled?: boolean;
-  schema?: z.ZodObject<any, any, any>;
+  schema?: z.ZodObject<any, any>;
+};
+
+const defaultOnError = (error: any) => {
+  void error;
 };
 
 const TaskFormContext = React.createContext(
@@ -63,13 +73,13 @@ const TaskFormContext = React.createContext(
 
 const TaskForm = ({
   onSubmit,
-  onError = (error) => console.log(error),
+  onError = defaultOnError,
   children,
   defaultValues,
   disabled,
   schema = zodSchema,
 }: Props) => {
-  const formMethods = useForm<FormValues>({
+  const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: defaultValues,
   });
@@ -78,12 +88,19 @@ const TaskForm = ({
     reset(defaultValues);
   }, [JSON.stringify(defaultValues), reset]);
 
-  const innerSubmit = async (data: FormValues) => {
-    await onSubmit(data, formMethods);
-  };
+  const innerSubmit = useCallback(
+    async (data: FormValues) => {
+      await onSubmit(data);
+    },
+    [onSubmit]
+  );
+  const contextValue = useMemo(
+    () => ({onSubmit: innerSubmit, onError, disabled}),
+    [innerSubmit, onError, disabled]
+  );
 
   return (
-    <TaskFormContext.Provider value={{onSubmit: innerSubmit, onError, disabled}}>
+    <TaskFormContext.Provider value={contextValue}>
       <FormProvider {...formMethods}>{children}</FormProvider>
     </TaskFormContext.Provider>
   );
@@ -226,7 +243,12 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
           renderOption={(props, option) => {
             return (
               <li {...props} key={option.id}>
-                <Box display={'flex'} flexDirection={'row'}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                  }}
+                >
                   <Typography variant="body2">{option.display_name}</Typography>
                 </Box>
               </li>
@@ -283,11 +305,13 @@ const BlockNotifications = ({notification_id, onChangeCallback}: BlockNotificati
 
         return (
           <Box
-            display={'flex'}
-            flexDirection={'row'}
-            alignItems={'center'}
-            justifyContent={'center'}
-            height={'100%'}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+            }}
           >
             <FormControlLabel
               control={

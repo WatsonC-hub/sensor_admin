@@ -1,7 +1,8 @@
+import {useAtomValue} from 'jotai';
 import {useEffect} from 'react';
+
 import {ItineraryColors} from '~/features/notifications/consts';
 import {highlightedItinerariesAtom} from '~/state/atoms';
-import {useAtomValue} from 'jotai';
 
 const ItineraryHighlighter = () => {
   const highlightedItineraries = useAtomValue(highlightedItinerariesAtom);

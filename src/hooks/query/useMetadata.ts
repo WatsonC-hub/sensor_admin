@@ -1,11 +1,13 @@
-import {useQuery, queryOptions, UseQueryOptions} from '@tanstack/react-query';
+import {queryOptions, useQuery} from '@tanstack/react-query';
 import {useCallback} from 'react';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
-import {Group} from '~/types';
+
+import type {UseQueryOptions} from '@tanstack/react-query';
+import type {APIError} from '~/queryClient';
+import type {Group} from '~/types';
 
 export type Metadata = {
   loc_id: number;
@@ -23,13 +25,15 @@ export type Metadata = {
   terrainlevel: number;
   terrainqual: string;
   ts_name: string;
+  correction_type: 'scale' | 'translation' | null;
+  calculate_function: string | null;
   maalepunktskote: number;
   projectno: string | undefined;
   batteriskift: string;
   calculated: boolean;
-  boreholeno: string;
+  boreholeno: string | null;
   suffix: string | undefined;
-  intakeno: number;
+  intakeno: number | null;
   groups: Group[];
   unit: string;
   prefix: string | null;
@@ -42,7 +46,7 @@ export type Metadata = {
   is_customer_service: boolean;
 };
 
-type LocationMetadata = {
+export type LocationMetadata = {
   loc_id: number;
   boreholeno: string | undefined;
   loc_name: string;
@@ -63,8 +67,9 @@ type LocationMetadata = {
     ts_name: string;
     calculated: boolean;
     prefix: string | null;
+    slutdato: string | null;
     tstype_name: string;
-    intakeno: number;
+    intakeno: number | null;
     timeseries_calypso_id?: number | null;
     unit_uuid: string | null;
   }>;
@@ -103,6 +108,7 @@ const transformMetadata = (data: Metadata[], ts_id: number | undefined): Locatio
           intakeno: data.intakeno,
           timeseries_calypso_id: data.timeseries_calypso_id,
           unit_uuid: data.unit_uuid,
+          slutdato: data.slutdato,
         };
       }),
   };

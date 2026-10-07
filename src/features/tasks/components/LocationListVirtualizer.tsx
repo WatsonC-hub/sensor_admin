@@ -1,17 +1,18 @@
-import React, {useCallback, useRef} from 'react';
+import {Box, Divider, Typography} from '@mui/material';
 import {useVirtualizer} from '@tanstack/react-virtual';
+import React, {useCallback, useRef} from 'react';
 
+import TooltipWrapper from '~/components/TooltipWrapper';
 import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
+import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
+import {useDisplayState} from '~/hooks/ui';
+
+import {createSmoothScrollToFn} from '../helpers';
+import BoreholeListItem from './BoreholeListItem';
 import LocationListItem from './LocationListItem';
 
-import {useDisplayState} from '~/hooks/ui';
-import {Box, Divider, Typography} from '@mui/material';
-import {MapOverview} from '~/hooks/query/useNotificationOverview';
-import TooltipWrapper from '~/components/TooltipWrapper';
-import {BoreholeMapData} from '~/types';
-import BoreholeListItem from './BoreholeListItem';
-import {createSmoothScrollToFn} from '../helpers';
-import {useMapFilterStore} from '~/features/map/hooks/useMapFilterStore';
+import type {MapOverview} from '~/hooks/query/useNotificationOverview';
+import type {BoreholeMapData} from '~/types';
 
 const LocationListVirtualizer = () => {
   const {listFilteredData} = useFilteredMapData();
@@ -102,7 +103,14 @@ const LocationListVirtualizer = () => {
                   transform: `translateY(${virtualRow.start}px)`,
                 }}
               >
-                <Box px={1} py={2} borderTop={2} borderColor="grey.700">
+                <Box
+                  sx={{
+                    px: 1,
+                    py: 2,
+                    borderTop: 2,
+                    borderColor: 'grey.700',
+                  }}
+                >
                   <TooltipWrapper description=" Uden for zoom viser de lokationer som ligger udenfor det nuværende kortudsnit som er tilknyttet den valgte bruger i filtreringen.">
                     <Typography variant="h6">Uden for zoom</Typography>
                   </TooltipWrapper>

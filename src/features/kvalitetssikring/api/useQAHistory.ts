@@ -1,8 +1,10 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
+
 import {apiClient} from '~/apiClient';
-import {AdjustmentTypes} from '~/helpers/EnumHelper';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {AdjustmentData, QaAllData} from '~/types';
+import {AdjustmentTypes} from '~/helpers/enumHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {AdjustmentData, QaAllData} from '~/types';
 
 const transformQAHistory = (data: QaAllData) => {
   const out: AdjustmentData[] = [];

@@ -1,71 +1,70 @@
+import {Typography} from '@mui/material';
 import Box from '@mui/material/Box';
+import {merge} from 'lodash';
 import React from 'react';
+
+import type {SxProps, TypographyProps} from '@mui/material';
 
 type Props = {
   children: React.ReactNode;
-  sx?: object;
-  label: string;
+  sx?: SxProps;
+  label: React.ReactNode;
   icon?: React.ReactNode;
   onClick?: () => void;
+  legendProps?: TypographyProps;
 };
 
-const FormFieldset = ({children, sx = {}, label, icon, onClick}: Props) => {
+const EMPTY_SX: SxProps = {};
+
+const FormFieldset = ({children, sx = EMPTY_SX, label, icon, onClick, legendProps}: Props) => {
+  const legend_props = {
+    position: 'relative',
+    backgroundColor: 'background.paper',
+    color: 'grey.700',
+    px: 1,
+    fontSize: '0.875rem',
+  };
+  const merged_legend_props = merge({}, legend_props, legendProps);
+
+  const fieldset_sx = merge(
+    {},
+    {
+      border: '2px solid',
+      borderColor: 'grey.300',
+      borderRadius: 2,
+      p: 2,
+      mt: 1,
+    },
+    sx
+  );
+
   return (
-    <Box
-      sx={{
-        // position: 'relative',
-        border: '2px solid',
-        borderColor: 'grey.300',
-        borderRadius: 2,
-        padding: 2,
-        marginTop: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 1,
-        width: 'fit-content',
-        height: 'fit-content',
-        ...sx,
-      }}
-    >
-      <Box display={'flex'} flexDirection={'row'} justifyContent="space-between">
+    <Box component={'fieldset'} sx={fieldset_sx}>
+      <Typography
+        component={'legend'}
+        {...legendProps}
+        sx={[
+          {
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+          },
+          ...(Array.isArray(merged_legend_props) ? merged_legend_props : [merged_legend_props]),
+          legendProps?.sx,
+        ]}
+      >
+        {label}
         <Box
-          component="legend"
+          onClick={onClick}
           sx={{
-            position: 'relative',
-            top: -28,
-            //   left: 5,
-            width: 'fit-content',
-            height: 'fit-content',
-            backgroundColor: 'background.paper',
-            color: 'grey.700',
-            px: 1,
-            fontSize: '0.875rem',
-            mb: -4,
+            display: 'flex',
+            alignItems: 'center',
+            cursor: 'pointer',
           }}
         >
-          {label}
+          {icon}
         </Box>
-        {icon && (
-          <Box
-            component="legend"
-            sx={{
-              position: 'relative',
-              top: -28,
-              //   left: 5,
-              right: 5,
-              width: 'fit-content',
-              height: 'fit-content',
-              backgroundColor: 'background.paper',
-              color: 'grey.700',
-              mb: -4,
-            }}
-          >
-            <Box onClick={onClick} sx={{cursor: 'pointer'}}>
-              {icon}
-            </Box>
-          </Box>
-        )}
-      </Box>
+      </Typography>
       {children}
     </Box>
   );

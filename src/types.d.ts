@@ -1,9 +1,9 @@
-import {SvgIconProps} from '@mui/material';
-import {Dayjs} from 'dayjs';
-import {ReactNode} from 'react';
+import type {CertifyQa} from './features/kvalitetssikring/api/useCertifyQa';
+import type {SvgIconProps} from '@mui/material';
+import type {Dayjs} from 'dayjs';
 // import type {FeatureCollection, Geometry} from 'leaflet';
-import * as geojson from 'geojson';
-import {CertifyQa} from './features/kvalitetssikring/api/useCertifyQa';
+import type * as geojson from 'geojson';
+import type {ReactNode} from 'react';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -185,6 +185,7 @@ export type PejlingItem = {
   pumpstop: string | null;
   service: boolean | null;
   extrema: string | null;
+  correction_date?: string | null;
 };
 
 export type Parking = {
@@ -194,7 +195,18 @@ export type Parking = {
   y: number;
 };
 
-type RouteProperties = {loc_id: number; id: number; comment: string | null; type: 'walk' | 'drive'};
+export type Tstype = {
+  tstype_id: number;
+  tstype_name: string;
+  service_interval: number | null;
+};
+
+type RouteProperties = {
+  loc_id: number;
+  id: number;
+  comment: string | null;
+  type: 'walk' | 'drive';
+};
 
 export type RouteFeature = geojson.Feature<geojson.Geometry, RouteProperties>;
 
@@ -226,15 +238,15 @@ export type ContactInfo = {
 };
 
 export type ContactTable = {
-  id: string;
+  id?: string;
   name: string;
   mobile: string | null;
   email: string | null;
   contact_role?: number | undefined;
   comment?: string;
   user_id?: string | null;
-  org: string;
-  relation_id: number;
+  org_id?: string;
+  relation_id?: number;
   contact_type?: string | undefined;
   contact_role_name?: string;
   notify_required?: boolean;
@@ -311,7 +323,7 @@ export type QaAlgorithmParameters = {
 };
 
 export type QaAlgorithmsPut = {
-  algorithm: string;
+  // algorithm: string;
   parameters: Record<string, any>;
   disabled: boolean;
 };
@@ -397,6 +409,7 @@ export type DialAction = {
   color: string;
   toastTip: string;
   dialog?: boolean;
+  hidden?: boolean;
 };
 
 type TaskContact = {

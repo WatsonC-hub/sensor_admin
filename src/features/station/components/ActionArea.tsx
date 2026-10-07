@@ -1,15 +1,13 @@
-import {
-  AddCircle,
-  PhotoLibraryRounded,
-  PlaylistAddCheck,
-  StraightenRounded,
-} from '@mui/icons-material';
+import AddCircle from '@mui/icons-material/AddCircle';
+import PhotoLibraryRounded from '@mui/icons-material/PhotoLibraryRounded';
+import PlaylistAddCheck from '@mui/icons-material/PlaylistAddCheck';
 import RuleIcon from '@mui/icons-material/Rule';
+import StraightenRounded from '@mui/icons-material/StraightenRounded';
 import {startCase} from 'lodash';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import {navIconStyle} from '~/consts';
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useStationList from '~/hooks/query/useStationList';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';

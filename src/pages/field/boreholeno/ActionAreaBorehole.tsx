@@ -1,15 +1,13 @@
-import {
-  AddCircle,
-  StraightenRounded,
-  PhotoLibraryRounded,
-  ConstructionRounded,
-} from '@mui/icons-material';
+import AddCircle from '@mui/icons-material/AddCircle';
+import ConstructionRounded from '@mui/icons-material/ConstructionRounded';
+import PhotoLibraryRounded from '@mui/icons-material/PhotoLibraryRounded';
+import StraightenRounded from '@mui/icons-material/StraightenRounded';
 import {startCase} from 'lodash';
 import React from 'react';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import {stationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/enumHelper';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 const navIconStyle = (isSelected: boolean) => {

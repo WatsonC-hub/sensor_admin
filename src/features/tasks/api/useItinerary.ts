@@ -1,21 +1,22 @@
-import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 // import {Notification} from '~/hooks/query/useNotificationOverview';
+import {useUser} from '~/features/auth/useUser';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 
 import {
-  type completeItinerary,
   type AddLocationToItinerary,
   type PatchTaskitinerary,
   type PostTaskitinerary,
-  type Taskitinerary,
   TaskPermission,
-  MergeItinerary,
+  type Taskitinerary,
+  type completeItinerary,
 } from '../types';
-import {useUser} from '~/features/auth/useUser';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {QueryType} from '~/types';
+
+import type {MergeItinerary} from '../types';
+import type {QueryType} from '~/types';
 
 const itineraryPostOptions = {
   mutationKey: ['itinerary_post'],

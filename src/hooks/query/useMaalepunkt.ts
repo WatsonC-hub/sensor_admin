@@ -1,9 +1,11 @@
-import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
-import dayjs, {Dayjs} from 'dayjs';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {Dayjs} from 'dayjs';
 
 export type Maalepunkt = {
   startdate: string;
@@ -72,10 +74,7 @@ export const getMaalepunktOptions = (ts_id: number | undefined) =>
         `/sensor_field/station/watlevmp/${ts_id}`
       );
 
-      return data.map((mp) => ({
-        ...mp,
-        startdate: dayjs(mp.startdate),
-      }));
+      return data.map((mp) => Object.assign(mp, {startdate: dayjs(mp.startdate)}));
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
     enabled: ts_id !== null && ts_id !== undefined,

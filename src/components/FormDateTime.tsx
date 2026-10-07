@@ -1,13 +1,17 @@
+import {Box, type TextFieldVariants} from '@mui/material';
+import {DateTimePicker} from '@mui/x-date-pickers/DateTimePicker';
+import dayjs from 'dayjs';
 import React from 'react';
-import {TextFieldVariants} from '@mui/material';
-import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
-import {DateTimePicker, DateTimePickerProps} from '@mui/x-date-pickers/DateTimePicker';
+import {Controller, useFormContext} from 'react-hook-form';
 
-import dayjs, {Dayjs} from 'dayjs';
-import {PickersActionBarAction} from '@mui/x-date-pickers';
+import CustomActionBar from '~/helpers/CustomActionBar';
+
+import type {PickersActionBarAction} from '@mui/x-date-pickers';
+import type {DateTimePickerProps} from '@mui/x-date-pickers/DateTimePicker';
+import type {FieldValues, Path} from 'react-hook-form';
 
 export type FormDateTimeProps<TFieldValues extends FieldValues> = Omit<
-  DateTimePickerProps<false>,
+  DateTimePickerProps,
   'value' | 'onChange' | 'renderInput'
 > & {
   name: Path<TFieldValues>;
@@ -18,6 +22,9 @@ export type FormDateTimeProps<TFieldValues extends FieldValues> = Omit<
   margin?: 'none' | 'dense' | undefined;
   variant?: TextFieldVariants;
   onChangeCallback?: (value: dayjs.Dayjs | null) => void;
+  customAction?: () => void;
+  customActionLabel?: string;
+  customActionDisabled?: boolean;
 };
 
 const FormDateTime = <TFieldValues extends FieldValues>({
@@ -27,6 +34,9 @@ const FormDateTime = <TFieldValues extends FieldValues>({
   disabled = false,
   margin = 'dense',
   onChangeCallback,
+  customAction,
+  customActionLabel,
+  customActionDisabled,
   slotProps,
   ...pickerProps
 }: FormDateTimeProps<TFieldValues>) => {
@@ -35,7 +45,6 @@ const FormDateTime = <TFieldValues extends FieldValues>({
     <Controller
       name={name}
       control={control}
-      rules={{required}}
       render={({field: {onChange, onBlur, value}, fieldState: {error}}) => {
         return (
           <DateTimePicker
@@ -43,8 +52,8 @@ const FormDateTime = <TFieldValues extends FieldValues>({
             label={label}
             value={value}
             onChange={(newValue) => {
-              onChange(newValue);
-              if (onChangeCallback) onChangeCallback(newValue);
+              onChange(newValue ? dayjs(newValue) : null);
+              if (onChangeCallback) onChangeCallback(newValue ? dayjs(newValue) : null);
             }}
             reduceAnimations
             timeSteps={{
@@ -52,6 +61,22 @@ const FormDateTime = <TFieldValues extends FieldValues>({
             }}
             disabled={disabled}
             ampmInClock={false}
+            slots={
+              customActionLabel
+                ? {
+                    actionBar: (actionBarProps) => (
+                      <Box {...actionBarProps}>
+                        <CustomActionBar
+                          customAction={customAction}
+                          disabled={customActionDisabled}
+                          label={customActionLabel}
+                          {...actionBarProps}
+                        />
+                      </Box>
+                    ),
+                  }
+                : undefined
+            }
             slotProps={{
               ...slotProps,
               toolbar: {
@@ -69,15 +94,30 @@ const FormDateTime = <TFieldValues extends FieldValues>({
                     textTransform: 'inherit',
                   },
                 },
-                actions: ['cancel', 'clear', 'today', 'accept'] as PickersActionBarAction[],
+                actions: [
+                  'cancel',
+                  'clear',
+                  'today',
+                  'accept',
+                  ...(customActionLabel ? [customActionLabel] : []),
+                ] as PickersActionBarAction[],
                 disableSpacing: true,
               },
               textField: {
                 ...slotProps?.textField,
-                InputProps: {
-                  sx: {
-                    '& > fieldset': {
-                      borderColor: 'primary.main',
+                required: required,
+                slotProps: {
+                  input: {
+                    sx: {
+                      '& > fieldset': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                  },
+                  inputLabel: {
+                    shrink: true,
+                    sx: {
+                      color: 'primary.main',
                     },
                   },
                 },
@@ -86,12 +126,6 @@ const FormDateTime = <TFieldValues extends FieldValues>({
                 fullWidth: true,
                 error: !!error,
                 helperText: error?.message,
-                InputLabelProps: {
-                  shrink: true,
-                  sx: {
-                    color: 'primary.main',
-                  },
-                },
               },
             }}
           />

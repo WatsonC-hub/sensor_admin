@@ -1,11 +1,13 @@
-import {useQuery, useMutation, queryOptions, MutationOptions} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
-import {ContactInfo, ContactTable} from '~/types';
-import {InferContactInfo} from '../components/stationDetails/zodSchemas';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {InferContactInfo} from '../components/stationDetails/contacts/api/useContactForm';
+import type {MutationOptions} from '@tanstack/react-query';
+import type {APIError} from '~/queryClient';
+import type {ContactInfo, ContactTable} from '~/types';
 
 interface ContactInfoBase {
   path: string;
@@ -54,7 +56,7 @@ const contactInfoDelOptions = {
   },
 };
 
-export const contactInfoGetOptions = (loc_id: number) =>
+export const contactInfoGetOptions = (loc_id: number | undefined) =>
   queryOptions({
     queryKey: queryKeys.Location.contacts(loc_id),
     queryFn: async () => {
@@ -91,11 +93,25 @@ export const useSearchContact = <T = ContactInfo[]>(
     },
     staleTime: 10 * 1000,
     select,
+    enabled: loc_id !== undefined || searchString !== '',
   });
   return searched_contacts;
 };
 
-export const useContactInfo = (loc_id: number) => {
+export const useProjectContacts = (project_no: string | undefined) => {
+  return useQuery({
+    queryKey: queryKeys.projectContacts(project_no),
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<ContactTable>>(
+        `/sensor_field/stamdata/contact/project_contact_info/${project_no}`
+      );
+      return data;
+    },
+    enabled: project_no !== undefined,
+  });
+};
+
+export const useContactInfo = (loc_id: number | undefined) => {
   const get = useQuery(contactInfoGetOptions(loc_id));
 
   const post = useMutation({

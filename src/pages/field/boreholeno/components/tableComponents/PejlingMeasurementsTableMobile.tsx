@@ -1,10 +1,5 @@
 import {Box, Checkbox, Typography} from '@mui/material';
-import {
-  MRT_ColumnDef,
-  MRT_TableOptions,
-  MRT_ExpandButton,
-  MaterialReactTable,
-} from 'material-react-table';
+import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -15,10 +10,12 @@ import {
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
-import {BoreholeMeasurement} from '~/types';
+
+import type {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import type {BoreholeMeasurement} from '~/types';
 
 interface Props {
   data: BoreholeMeasurement[] | undefined;
@@ -58,24 +55,52 @@ export default function PejlingMeasurementsTableMobile({
               justifyContent: 'space-between',
               alignItems: 'center',
             }}
-            gap={1}
-            height={26}
+            sx={{
+              gap: 1,
+              height: 26,
+            }}
           >
             <MRT_ExpandButton row={row} table={table} staticRowIndex={staticRowIndex} />
-            <Box display="flex" flexDirection={'column'}>
-              <Typography alignSelf={'center'} variant="caption" fontWeight="bold">
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  alignSelf: 'center',
+                  fontWeight: 'bold',
+                }}
+              >
                 {limitDecimalNumbers(row.original.disttowatertable_m)} {unit}
               </Typography>
-              <Typography alignSelf={'center'} variant="caption" color="grey.700" fontWeight="bold">
+              <Typography
+                variant="caption"
+                sx={{
+                  alignSelf: 'center',
+                  color: 'grey.700',
+                  fontWeight: 'bold',
+                }}
+              >
                 {convertDate(row.original.timeofmeas)}
               </Typography>
             </Box>
 
-            <Typography margin="0 auto">
+            <Typography
+              sx={{
+                margin: '0 auto',
+              }}
+            >
               {row.original.organisationid !== null ? row.original.organisationname : '-'}
             </Typography>
 
-            <Box marginLeft={'auto'}>
+            <Box
+              sx={{
+                marginLeft: 'auto',
+              }}
+            >
               <RenderActions
                 handleEdit={() => {
                   handleEdit(row.original);

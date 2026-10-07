@@ -1,9 +1,11 @@
-import {useMutation, MutationOptions} from '@tanstack/react-query';
-import {Dayjs} from 'dayjs';
+import {useMutation} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+
+import type {MutationOptions} from '@tanstack/react-query';
+import type {Dayjs} from 'dayjs';
 
 type ImageData = {
   comment: string;

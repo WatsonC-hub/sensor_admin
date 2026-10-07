@@ -1,16 +1,20 @@
-import {Box, CircularProgress, Typography, Stack, Divider} from '@mui/material';
-import {UseMutationResult, useQuery} from '@tanstack/react-query';
-import dayjs, {Dayjs} from 'dayjs';
+import {Box, CircularProgress, Divider, Stack, Typography} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import React from 'react';
 import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import {convertDate} from '~/helpers/dateConverter';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import LastMPCard from '~/pages/field/boreholeno/components/LastMPCard';
 import {useAppContext} from '~/state/contexts';
-import {BoreholeMaalepunktPost, MaalepunktTableData} from '~/types';
+
+import type {UseMutationResult} from '@tanstack/react-query';
+import type {Dayjs} from 'dayjs';
+import type {BoreholeMaalepunktPost, MaalepunktTableData} from '~/types';
 
 interface JupiterMPProps {
   lastOurMP: MaalepunktTableData | undefined;
@@ -20,8 +24,8 @@ interface JupiterMPProps {
 }
 
 export type LastJupiterMPData = {
-  descriptio: string | undefined;
-  elevation: number | null;
+  description: string;
+  elevation: number;
   startdate: Dayjs;
 };
 
@@ -41,7 +45,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
         `/sensor_field/borehole/last_mp/${boreholeno}/${intakeno}`
       );
       return {
-        descriptio: data.descriptio,
+        description: data.descriptio,
         elevation: data.elevation,
         startdate: dayjs(data.startdate),
       } as LastJupiterMPData;
@@ -66,7 +70,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
           startdate: data.startdate,
           enddate: dayjs('2099-01-01'),
           elevation: data.elevation,
-          mp_description: data.descriptio ?? '',
+          mp_description: data.description ?? '',
         },
       };
       addWatlevmp.mutate(payload, {
@@ -82,7 +86,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
         startdate: data.startdate,
         enddate: dayjs('2099-01-01'),
         elevation: data.elevation,
-        mp_description: data.descriptio ?? '',
+        mp_description: data.description ?? '',
       };
       watlevmpMutate.mutate(payload, {
         onSuccess: () => {
@@ -96,7 +100,13 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
 
   return (
     <LastMPCard title="">
-      <Stack direction={'row'} spacing={2} justifyContent="space-between">
+      <Stack
+        direction={'row'}
+        spacing={2}
+        sx={{
+          justifyContent: 'space-between',
+        }}
+      >
         <Box
           sx={{
             flex: 1,
@@ -109,7 +119,13 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
             gap: 0.5,
           }}
         >
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <Typography variant="subtitle2">I app</Typography>
           </Stack>
 
@@ -138,12 +154,24 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
             gap: 0.5,
           }}
         >
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <Typography variant="subtitle2">Jupiter</Typography>
           </Stack>
 
           {isLoading && (
-            <Stack direction="row" alignItems="center" spacing={1}>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <CircularProgress size={16} />
               <Typography variant="body2">Indlæser data...</Typography>
             </Stack>
@@ -157,7 +185,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
               <Typography variant="body2" color="white">
                 {data.startdate.format('L')}
               </Typography>
-              <Typography variant="body2">Placering: {data.descriptio}</Typography>
+              <Typography variant="body2">Placering: {data.description}</Typography>
             </>
           )}
         </Box>

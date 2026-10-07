@@ -1,26 +1,25 @@
-import { Box } from '@mui/material';
-import React from 'react';
-import FabWrapper from '~/components/FabWrapper';
-import AlarmTable from '~/features/station/alarms/components/AlarmTable';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
-import { useShowFormState, useStationPages } from '~/hooks/useQueryStateParameters';
-import AlarmFormDialog from '~/features/station/alarms/components/AlarmFormDialog';
-import { useAlarm } from '~/features/station/alarms/api/useAlarm';
-import UpdateProgressButton from '~/features/station/components/UpdateProgressButton';
+import {Box} from '@mui/material';
+import React from 'react';
+
+import FabWrapper from '~/components/FabWrapper';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import {useAlarm} from '~/features/station/alarms/api/useAlarm';
+import AlarmFormDialog from '~/features/station/alarms/components/AlarmFormDialog';
+import AlarmTable from '~/features/station/alarms/components/AlarmTable';
+import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 
 type AlarmsProps = {
-  ts_id?: number;
   loc_id?: number;
 };
 
-const Alarms = ({ ts_id, loc_id }: AlarmsProps) => {
+const Alarms = ({loc_id}: AlarmsProps) => {
   const [pageToShow] = useStationPages();
   const [showForm] = useShowFormState();
-  const { location_permissions } = usePermissions(loc_id);
+  const {location_permissions} = usePermissions(loc_id);
   const [open, setOpen] = React.useState(false);
   const {
-    get: { data: alarms },
+    get: {data: alarms},
   } = useAlarm();
 
   const cancel = () => {
@@ -28,10 +27,22 @@ const Alarms = ({ ts_id, loc_id }: AlarmsProps) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <AlarmFormDialog open={open} onClose={cancel} setOpen={setOpen} />
       <AlarmTable alarms={alarms} />
-      <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: 1,
+        }}
+      >
         <FabWrapper
           icon={<MoreTimeIcon />}
           text="Tilføj Alarm"

@@ -1,27 +1,30 @@
-import {MutationOptions, queryOptions, useMutation, useQuery} from '@tanstack/react-query';
+import {queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
-import {APIError} from '~/queryClient';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
+
+import type {MutationOptions} from '@tanstack/react-query';
+import type {SyncFormSchema} from '~/features/synchronization/api/useSyncForm';
 
 interface SyncBase {
   path: string;
 }
 
-type Sync = {
-  sync_dmp?: boolean;
-  owner_cvr?: number;
-  owner_name?: string;
-  jupiter?: boolean;
-};
+// type Sync = {
+//   sync_dmp?: boolean;
+//   owner_cvr?: number;
+//   owner_name?: string;
+//   jupiter?: boolean;
+// };
 
 interface SyncPost extends SyncBase {
-  data: Sync;
+  data: SyncFormSchema;
 }
 
 interface SyncPut extends SyncBase {
-  data: Sync;
+  data: SyncFormSchema;
 }
 
 const syncPostOptions: MutationOptions<unknown, unknown, SyncPost> = {
@@ -61,10 +64,10 @@ const syncDelOptions: MutationOptions<unknown, unknown, SyncBase> = {
 };
 
 const syncGetOptions = (ts_id: number) =>
-  queryOptions<Sync, APIError>({
+  queryOptions({
     queryKey: queryKeys.Timeseries.SyncData(ts_id),
     queryFn: async () => {
-      const {data} = await apiClient.get<Sync>(`/sensor_field/stamdata/sync/${ts_id}`);
+      const {data} = await apiClient.get<SyncFormSchema>(`/sensor_field/stamdata/sync/${ts_id}`);
       return data;
     },
     enabled: ts_id !== undefined,

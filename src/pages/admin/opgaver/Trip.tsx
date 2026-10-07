@@ -14,7 +14,15 @@ const Trip = () => {
   const data = useTaskManagement(itinerary_id);
 
   return (
-    <Box display={'flex'} flexDirection={'column'} mt={4} mb={isMobile ? 0 : 2} overflow={'hidden'}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        mt: 4,
+        mb: isMobile ? 0 : 2,
+        overflow: 'hidden',
+      }}
+    >
       <TripPreparation data={data} />
     </Box>
   );

@@ -1,7 +1,7 @@
 import {useQuery} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
-import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 
 type MinimalSelectType = {
   ts_id: number;

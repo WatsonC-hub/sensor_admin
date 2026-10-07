@@ -11,13 +11,22 @@ interface WizardDataExcludeProps {
 const DataExclude = ({onClose}: WizardDataExcludeProps) => {
   const {isMobile} = useBreakpoints();
   return (
-    <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
+    <Box
+      sx={{
+        alignSelf: 'center',
+        width: 'inherit',
+        height: 'inherit',
+        justifySelf: 'center',
+      }}
+    >
       <Typography
         variant={isMobile ? 'h6' : 'h5'}
         component="h2"
-        textAlign={'center'}
-        fontWeight={'bold'}
-        mb={0.5}
+        sx={{
+          textAlign: 'center',
+          fontWeight: 'bold',
+          mb: 0.5,
+        }}
       >
         Fjern punkter fra tidsserien
       </Typography>
