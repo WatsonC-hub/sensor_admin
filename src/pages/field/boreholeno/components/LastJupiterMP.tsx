@@ -132,13 +132,13 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
           {lastOurMP ? (
             <>
               <Typography>Kote: {lastOurMP.elevation} m</Typography>
-              <Typography variant="body2" color="white">
+              <Typography variant="body2" sx={{color: 'white'}}>
                 {convertDate(lastOurMP.startdate)}
               </Typography>
               <Typography variant="body2">Placering: {lastOurMP.mp_description}</Typography>
             </>
           ) : (
-            <Typography color="white">Ingen målepunkt registreret i appen.</Typography>
+            <Typography sx={{color: 'white'}}>Ingen målepunkt registreret i appen.</Typography>
           )}
         </Box>
 
@@ -177,12 +177,12 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen, ts_id}: Jupiter
             </Stack>
           )}
 
-          {isError && <Typography color="white">Ingen data i Jupiter.</Typography>}
+          {isError && <Typography sx={{color: 'white'}}>Ingen data i Jupiter.</Typography>}
 
           {isSuccess && (
             <>
               <Typography>Kote: {data.elevation} m</Typography>
-              <Typography variant="body2" color="white">
+              <Typography variant="body2" sx={{color: 'white'}}>
                 {data.startdate.format('L')}
               </Typography>
               <Typography variant="body2">Placering: {data.description}</Typography>

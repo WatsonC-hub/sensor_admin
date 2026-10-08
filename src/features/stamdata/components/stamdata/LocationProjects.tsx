@@ -5,6 +5,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
 import Button from '~/components/Button';
+import {authUrl} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 
 import useLocationProject from '../../api/useLocationProject';
@@ -30,7 +31,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
     get: {data: options},
   } = useLocationProject();
 
-  const {superUser} = useUser();
+  const {superUser, org_id} = useUser();
 
   const selectedValue = options?.find((option) => option.project_no == value) ?? null;
 
@@ -74,7 +75,9 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
                         href={
                           selectedValue !== null
                             ? `https://www.watsonc.dk/calypso/projekt/?project=${selectedValue?.project_no}`
-                            : 'https://admin.watsonc.dk/projects'
+                            : org_id
+                              ? `${authUrl}/org/${org_id}?tab=projects`
+                              : `${authUrl}/profile`
                         }
                         target="_blank"
                         rel="noopener"

@@ -30,7 +30,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
-import {appBarHeight} from '~/consts';
+import {appBarHeight, authUrl} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
@@ -213,7 +213,7 @@ const NavBarMenu = ({
           <MenuItem
             key="profile"
             onClick={() => {
-              window.location.href = 'https://admin.watsonc.dk/profile';
+              window.location.href = `${authUrl}/profile`;
             }}
           >
             <ListItemIcon>
@@ -348,8 +348,8 @@ const OwnTaskList = () => {
           task_list && task_list.length > 0 ? (
             <Typography
               variant="caption"
-              color="white"
               sx={{
+                color: 'white',
                 pr: 0.2,
               }}
             >

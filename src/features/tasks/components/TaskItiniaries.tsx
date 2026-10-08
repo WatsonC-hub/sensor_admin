@@ -32,7 +32,7 @@ import type {Taskitinerary} from '../types';
 import type {ReactNode} from 'react';
 import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 
-const selectData = (data: Taskitinerary[], user_id: number | undefined) => {
+const selectData = (data: Taskitinerary[], user_id: string | undefined) => {
   const reduced = data.reduce(
     (acc: Record<string, Taskitinerary[]>, itinerary: Taskitinerary) => {
       if (itinerary.assigned_to === user_id) {

@@ -6,7 +6,7 @@ import React, {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
-import {useUser} from '~/features/auth/useUser';
+import {useUser, sameId} from '~/features/auth/useUser';
 import {checkEndDateIsUnset, convertDate, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/enumHelper';
 import RenderActions from '~/helpers/RowActions';
@@ -57,7 +57,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         accessorKey: 'organisationname',
         header: 'Organisation',
         Cell: ({row, renderedCellValue}) => (
-          <Typography>{row.original.organisationid == org_id ? renderedCellValue : '-'}</Typography>
+          <Typography>{sameId(row.original.organisationid, org_id) ? renderedCellValue : '-'}</Typography>
         ),
       },
       {
@@ -88,7 +88,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        disabled={disabled || row.original.organisationid != org_id}
+        disabled={disabled || !sameId(row.original.organisationid, org_id)}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

@@ -2,14 +2,16 @@ import {Typography} from '@mui/material';
 import * as Sentry from '@sentry/react';
 import {useQuery} from '@tanstack/react-query';
 import {usePostHog} from 'posthog-js/react';
-import React, {Suspense, useEffect} from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 
 import NavBar from '~/components/NavBar';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import Router from '~/Router';
-import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
+import {forgetLoginRedirect, wasJustSentToLogin} from './features/auth/loginRedirectGuard';
+import SignedOut from './features/auth/SignedOut';
+import SignInProblem from './features/auth/SignInProblem';
 import {userQueryOptions} from './features/auth/useUser';
 import CommandPalette from './features/commandpalette/components/CommandPalette';
 import DisplayStateProvider from './helpers/DisplayStateProvider';
@@ -17,7 +19,6 @@ import DisplayStateProvider from './helpers/DisplayStateProvider';
 function App() {
   const posthog = usePostHog();
   // const user = useUser();
-
   const {data: user, isPending, isFetched, isError} = useQuery(userQueryOptions);
 
   useEffect(() => {
@@ -44,19 +45,22 @@ function App() {
     }
   }, [user, posthog]);
 
+  const needsLogin = (!user && isFetched) || isError;
+  // The login page is calypso-auth's. A visitor without a user presses "Log ind" (SignedOut) to go there.
+  // One who comes back from it still without a user gets a message instead of another round (that
+  // would loop, see loginRedirectGuard.ts).
+  const [loginLoop, setLoginLoop] = useState(() => wasJustSentToLogin(window.sessionStorage));
+
+  useEffect(() => {
+    if (user) forgetLoginRedirect(window.sessionStorage);
+  }, [user]);
+
   if (!user && isPending) {
     return <LoadingSkeleton />;
   }
 
-  if ((!user && isFetched) || isError) {
-    return (
-      <>
-        <NavBar>
-          <NavBar.Logo />
-        </NavBar>
-        <UnAuntenticatedApp />
-      </>
-    );
+  if (needsLogin) {
+    return loginLoop ? <SignInProblem /> : <SignedOut onLoginLoop={() => setLoginLoop(true)} />;
   }
   return (
     <ErrorBoundary

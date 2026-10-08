@@ -3,7 +3,7 @@ import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {useUser} from '~/features/auth/useUser';
+import {useUser, sameId} from '~/features/auth/useUser';
 import {
   calculatePumpstop,
   convertDate,
@@ -108,7 +108,7 @@ export default function PejlingMeasurementsTableMobile({
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                disabled={disabled || row.original.organisationid != org_id}
+                disabled={disabled || !sameId(row.original.organisationid, org_id)}
               />
             </Box>
           </Box>

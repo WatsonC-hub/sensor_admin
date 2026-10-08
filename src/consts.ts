@@ -2,6 +2,11 @@ import type {DataToShow} from './types';
 
 export const isProduction = import.meta.env.PROD;
 
+// calypso-auth, which has the login page and the profile. VITE_AUTH_URL points a build at another one
+// (the test environment uses https://admin-new.watsonc.dk until admin.watsonc.dk is switched over).
+export const authUrl: string =
+  import.meta.env.VITE_AUTH_URL ?? (isProduction ? 'https://admin.watsonc.dk' : 'http://localhost:5173');
+
 export const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 export const navIconStyle = (isSelected: boolean) => {
