@@ -1,4 +1,4 @@
-import {RemoveCircleOutlined} from '@mui/icons-material';
+import RemoveCircleOutlined from '@mui/icons-material/RemoveCircleOutlined';
 import {Grid} from '@mui/material';
 import React from 'react';
 

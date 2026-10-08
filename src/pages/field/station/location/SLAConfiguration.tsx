@@ -1,5 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {Save} from '@mui/icons-material';
+import Save from '@mui/icons-material/Save';
 import {Box, Grid, InputAdornment, Typography} from '@mui/material';
 import React from 'react';
 import {FormProvider, useForm} from 'react-hook-form';

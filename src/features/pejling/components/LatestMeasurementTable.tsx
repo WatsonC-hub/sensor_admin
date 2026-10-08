@@ -1,4 +1,4 @@
-import {Update} from '@mui/icons-material';
+import Update from '@mui/icons-material/Update';
 import {Box, IconButton, Skeleton, Typography} from '@mui/material';
 import {MaterialReactTable} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';

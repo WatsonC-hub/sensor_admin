@@ -1,4 +1,5 @@
-import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
+import BatteryAlertRounded from '@mui/icons-material/BatteryAlertRounded';
+import RemoveRedEyeRounded from '@mui/icons-material/RemoveRedEyeRounded';
 import {Box, Typography} from '@mui/material';
 import {MRT_ExpandButton, MaterialReactTable} from 'material-react-table';
 import {useMemo, useState} from 'react';

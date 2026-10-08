@@ -1,5 +1,5 @@
-import {EditOutlined} from '@mui/icons-material';
 import DescriptionIcon from '@mui/icons-material/Description';
+import EditOutlined from '@mui/icons-material/EditOutlined';
 import {Box, Button, Grid, Link} from '@mui/material';
 import React, {useMemo} from 'react';
 

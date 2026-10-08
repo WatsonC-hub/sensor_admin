@@ -1,4 +1,7 @@
-import {Home as HomeIcon, LocationOn, QueryStats, Timeline} from '@mui/icons-material';
+import HomeIcon from '@mui/icons-material/Home';
+import LocationOn from '@mui/icons-material/LocationOn';
+import QueryStats from '@mui/icons-material/QueryStats';
+import Timeline from '@mui/icons-material/Timeline';
 import React from 'react';
 import {Navigate, Route, Routes} from 'react-router-dom';
 

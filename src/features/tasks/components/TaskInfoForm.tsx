@@ -1,4 +1,4 @@
-import {Delete} from '@mui/icons-material';
+import Delete from '@mui/icons-material/Delete';
 // import DragHandleIcon from '@mui/icons-material/DragHandle';
 import {Box, Grid, TextField, Tooltip, Typography} from '@mui/material';
 import dayjs from 'dayjs';

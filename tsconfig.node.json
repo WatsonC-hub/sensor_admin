@@ -13,7 +13,7 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "types": ["vite-plugin-svgr/client"],
+    "types": ["node", "vite-plugin-svgr/client"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",

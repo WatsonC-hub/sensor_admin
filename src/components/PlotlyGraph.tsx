@@ -1,4 +1,4 @@
-import {Download} from '@mui/icons-material';
+import Download from '@mui/icons-material/Download';
 import ReplayIcon from '@mui/icons-material/Replay';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import {Box, ClickAwayListener, Tooltip} from '@mui/material';

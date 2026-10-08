@@ -1,4 +1,4 @@
-import {AddCircleOutlined} from '@mui/icons-material';
+import AddCircleOutlined from '@mui/icons-material/AddCircleOutlined';
 import React from 'react';
 
 import Button from '~/components/Button';

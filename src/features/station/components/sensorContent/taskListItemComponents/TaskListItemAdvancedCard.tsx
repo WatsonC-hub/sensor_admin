@@ -1,7 +1,9 @@
-import {EditOutlined, Person, Warning} from '@mui/icons-material';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import DescriptionIcon from '@mui/icons-material/Description';
+import EditOutlined from '@mui/icons-material/EditOutlined';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import Person from '@mui/icons-material/Person';
+import Warning from '@mui/icons-material/Warning';
 import {
   Box,
   Button,

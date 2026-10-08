@@ -1,4 +1,4 @@
-import {BuildRounded} from '@mui/icons-material';
+import BuildRounded from '@mui/icons-material/BuildRounded';
 import {Box} from '@mui/material';
 import dayjs from 'dayjs';
 import React, {useState} from 'react';

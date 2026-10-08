@@ -1,4 +1,4 @@
-import {AddAPhotoRounded} from '@mui/icons-material';
+import AddAPhotoRounded from '@mui/icons-material/AddAPhotoRounded';
 import dayjs from 'dayjs';
 import React, {createRef, useState} from 'react';
 

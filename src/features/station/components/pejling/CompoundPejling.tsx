@@ -1,4 +1,4 @@
-import {Save} from '@mui/icons-material';
+import Save from '@mui/icons-material/Save';
 import {
   Checkbox,
   FormControl,
@@ -315,25 +315,31 @@ const Comment = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
 
 const CORRECTION_DATE_TOAST_ID = 'pejling-correction-date';
 
-const CORRECTION_SUB_OPTION_LABELS: Record<number, string> = {
-  2: 'Til start af tidsserie',
-  4: 'Til start af udstyr',
-  5: 'Til niveau spring',
-  6: 'Til forrige korrigerende pejling',
-  [SCALE_CORRECTION_PICK_ON_GRAPH_VALUE]: 'Til brugerdefineret dato',
-};
-
 const correctionConfigByType: Record<
   'translation' | 'scale',
-  {bagudrettetLabel: string; subOptionValues: number[]}
+  {bagudrettetLabel: string; guideUrl: string; subOptions: {value: number; label: string}[]}
 > = {
   translation: {
     bagudrettetLabel: 'Korrektion fremad og bagudrettet',
-    subOptionValues: [2, 4, 5, 6, SCALE_CORRECTION_PICK_ON_GRAPH_VALUE],
+    guideUrl: 'https://www.watsonc.dk/guides/parallelforskydning/#anvendelsestyper',
+    subOptions: [
+      {value: 2, label: 'Til start af tidsserie'},
+      {value: 4, label: 'Til start af udstyr'},
+      {value: 5, label: 'Til niveau spring'},
+      {value: 6, label: 'Til forrige korrigerende pejling'},
+      {value: SCALE_CORRECTION_PICK_ON_GRAPH_VALUE, label: 'Til brugerdefineret dato'},
+    ],
   },
   scale: {
-    bagudrettetLabel: 'Lineær korrektion fremad og bagudrettet',
-    subOptionValues: [2, 4, 6, SCALE_CORRECTION_PICK_ON_GRAPH_VALUE],
+    bagudrettetLabel: 'Korrektion fremad og bagudrettet',
+    guideUrl: 'https://www.watsonc.dk/guides/linear-korrektion/#anvendelsestyper',
+    subOptions: [
+      {value: 3, label: 'Lineær'},
+      {value: 2, label: 'Til start af tidsserie (Konstant)'},
+      {value: 4, label: 'Til start af udstyr (Konstant)'},
+      {value: 6, label: 'Til forrige korrigerende pejling (Udjævnet)'},
+      {value: SCALE_CORRECTION_PICK_ON_GRAPH_VALUE, label: 'Til brugerdefineret dato (Udjævnet)'},
+    ],
   },
 };
 
@@ -366,8 +372,8 @@ const SimpleCorrection = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>
         return (
           <FormControl component="fieldset">
             <TooltipWrapper
-              description="Anvendelsen af en pejling er et vigtigt aspekt af at få en korrekt kotesat vandstand. Læs mere på linket hvis du er i tvivl om hvad anvendelserne gør."
-              url="https://www.watsonc.dk/guides/kontrolpejling/#anvendelsestyper"
+              description="Anvendelsen af en kontrolmåling afgør, om og hvordan data korrigeres. Læs mere på linket, hvis du er i tvivl om, hvad anvendelserne gør."
+              url="https://www.watsonc.dk/guides/korrektion-vandforing/#anvendelsestyper"
             >
               <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>{' '}
             </TooltipWrapper>
@@ -401,12 +407,8 @@ const FullCorrection = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) 
   const {control, setValue} = useFormContext();
   const {correction_type} = useContext(CompoundPejlingContext);
 
-  const {bagudrettetLabel, subOptionValues} =
+  const {bagudrettetLabel, guideUrl, subOptions} =
     correctionConfigByType[correction_type === 'scale' ? 'scale' : 'translation'];
-  const subOptions = subOptionValues.map((value) => ({
-    value,
-    label: CORRECTION_SUB_OPTION_LABELS[value],
-  }));
 
   return (
     <Controller
@@ -427,8 +429,8 @@ const FullCorrection = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) 
         return (
           <FormControl component="fieldset">
             <TooltipWrapper
-              description="Anvendelsen af en pejling er et vigtigt aspekt af at få en korrekt kotesat vandstand. Læs mere på linket hvis du er i tvivl om hvad anvendelserne gør."
-              url="https://www.watsonc.dk/guides/kontrolpejling/#anvendelsestyper"
+              description="Anvendelsen af en kontrolmåling afgør, om og hvordan data korrigeres. Læs mere på linket, hvis du er i tvivl om, hvad anvendelserne gør."
+              url={guideUrl}
             >
               <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>{' '}
             </TooltipWrapper>
@@ -454,7 +456,7 @@ const FullCorrection = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) 
                 }
               />
               <FormControlLabel
-                value={value == '0' || value == '1' || value == '3' ? -1 : value}
+                value={subOptions.some((option) => option.value === Number(value)) ? value : -1}
                 control={<Radio />}
                 label={
                   <Typography variant={isMobile ? 'body2' : 'body1'}>{bagudrettetLabel}</Typography>

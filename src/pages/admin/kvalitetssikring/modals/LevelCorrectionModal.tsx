@@ -1,5 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {Save} from '@mui/icons-material';
+import Save from '@mui/icons-material/Save';
 import {Box, Typography} from '@mui/material';
 import dayjs from 'dayjs';
 import {useAtomValue} from 'jotai';

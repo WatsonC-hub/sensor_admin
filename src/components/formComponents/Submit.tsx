@@ -1,4 +1,4 @@
-import {Save} from '@mui/icons-material';
+import Save from '@mui/icons-material/Save';
 import {Typography} from '@mui/material';
 import {useFormContext} from 'react-hook-form';
 

@@ -1,5 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {Save} from '@mui/icons-material';
+import Save from '@mui/icons-material/Save';
 import {Alert, Box, Grid, InputAdornment, TextField, Typography} from '@mui/material';
 import dayjs from 'dayjs';
 import React, {useEffect, useState} from 'react';

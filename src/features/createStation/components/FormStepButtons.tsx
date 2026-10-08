@@ -1,5 +1,6 @@
-import {ArrowBack, Save} from '@mui/icons-material';
+import ArrowBack from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import Save from '@mui/icons-material/Save';
 import {Grid} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
 import React, {useState} from 'react';

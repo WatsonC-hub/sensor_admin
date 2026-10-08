@@ -1,4 +1,5 @@
-import {Check, PriorityHigh} from '@mui/icons-material';
+import Check from '@mui/icons-material/Check';
+import PriorityHigh from '@mui/icons-material/PriorityHigh';
 import {Typography} from '@mui/material';
 import React from 'react';
 

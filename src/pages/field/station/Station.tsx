@@ -1,4 +1,5 @@
-import {Fullscreen, FullscreenExit} from '@mui/icons-material';
+import Fullscreen from '@mui/icons-material/Fullscreen';
+import FullscreenExit from '@mui/icons-material/FullscreenExit';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {Box, Divider, IconButton, Tooltip, Typography} from '@mui/material';
 import {useAtom} from 'jotai';

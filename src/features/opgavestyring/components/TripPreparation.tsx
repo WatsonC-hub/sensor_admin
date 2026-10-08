@@ -1,4 +1,4 @@
-import {Check} from '@mui/icons-material';
+import Check from '@mui/icons-material/Check';
 import MoveUpIcon from '@mui/icons-material/MoveUp';
 import {Box} from '@mui/material';
 import React, {useState} from 'react';

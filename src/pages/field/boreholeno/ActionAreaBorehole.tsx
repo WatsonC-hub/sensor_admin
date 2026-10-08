@@ -1,9 +1,7 @@
-import {
-  AddCircle,
-  ConstructionRounded,
-  PhotoLibraryRounded,
-  StraightenRounded,
-} from '@mui/icons-material';
+import AddCircle from '@mui/icons-material/AddCircle';
+import ConstructionRounded from '@mui/icons-material/ConstructionRounded';
+import PhotoLibraryRounded from '@mui/icons-material/PhotoLibraryRounded';
+import StraightenRounded from '@mui/icons-material/StraightenRounded';
 import {startCase} from 'lodash';
 import React from 'react';
 

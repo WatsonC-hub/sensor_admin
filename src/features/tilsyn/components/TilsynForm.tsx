@@ -1,4 +1,5 @@
-import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
+import BatteryAlertRounded from '@mui/icons-material/BatteryAlertRounded';
+import RemoveRedEyeRounded from '@mui/icons-material/RemoveRedEyeRounded';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Card, CardContent, Grid, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
