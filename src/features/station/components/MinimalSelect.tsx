@@ -38,7 +38,8 @@ const MinimalSelect = () => {
 
   if (error || isPending) return;
 
-  if (!hasTimeseries) return <Typography color={'white'}>Ingen tidsserie på locationen</Typography>;
+  if (!hasTimeseries)
+    return <Typography sx={{color: 'white'}}>Ingen tidsserie på locationen</Typography>;
 
   if (metadata.timeseries.length == 1 && ts_id === undefined) {
     station(metadata.timeseries[0].ts_id);

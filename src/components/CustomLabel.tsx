@@ -16,7 +16,7 @@ function CustomBottomNavigationActionLabel({text, icon, color, typographyProps}:
       <SvgIcon component="span" sx={{fontSize: '1.2rem', marginRight: '4px', color: color}}>
         {icon}
       </SvgIcon>
-      <Typography variant="body2" color={color} {...typographyProps}>
+      <Typography variant="body2" sx={{color: color}} {...typographyProps}>
         {text}
       </Typography>
     </div>

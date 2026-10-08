@@ -82,7 +82,7 @@ const AlarmContactTable = ({alarmContacts, onEdit, onDelete}: AlarmContactTableP
             <Box sx={{wordBreak: 'break-word'}}>
               <Typography variant="body2">{name}</Typography>
               {email && (
-                <Typography variant="caption" component="div" color="text.secondary">
+                <Typography variant="caption" component="div" sx={{color: 'text.secondary'}}>
                   {email}
                 </Typography>
               )}
