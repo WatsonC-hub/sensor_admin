@@ -2,7 +2,7 @@ import {Typography} from '@mui/material';
 import * as Sentry from '@sentry/react';
 import {useQuery} from '@tanstack/react-query';
 import {usePostHog} from 'posthog-js/react';
-import React, {Suspense, useEffect, useState} from 'react';
+import React, {Suspense, useEffect, useRef, useState} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 
 import NavBar from '~/components/NavBar';
@@ -48,11 +48,17 @@ function App() {
   const needsLogin = (!user && isFetched) || isError;
   // The login page is calypso-auth's. A visitor without a user presses "Log ind" (SignedOut) to go there.
   // One who comes back from it still without a user gets a message instead of another round (that
-  // would loop, see loginRedirectGuard.ts).
-  const [loginLoop, setLoginLoop] = useState(() => wasJustSentToLogin(window.sessionStorage));
+  // would loop, see loginRedirectGuard.ts). That is only a visitor who has not had a user on this page:
+  // one who signs out here (no reload) was not sent anywhere, however recently they signed in (a
+  // passkey login takes only a few seconds, so the mark from the click on "Log ind" can still be fresh).
+  const [loginLoop, setLoginLoop] = useState(false);
+  const hadUser = useRef(false);
 
   useEffect(() => {
-    if (user) forgetLoginRedirect(window.sessionStorage);
+    if (user) {
+      hadUser.current = true;
+      forgetLoginRedirect(window.sessionStorage);
+    }
   }, [user]);
 
   if (!user && isPending) {
@@ -60,7 +66,8 @@ function App() {
   }
 
   if (needsLogin) {
-    return loginLoop ? <SignInProblem /> : <SignedOut onLoginLoop={() => setLoginLoop(true)} />;
+    const backFromLogin = loginLoop || (!hadUser.current && wasJustSentToLogin(window.sessionStorage));
+    return backFromLogin ? <SignInProblem /> : <SignedOut onLoginLoop={() => setLoginLoop(true)} />;
   }
   return (
     <ErrorBoundary
