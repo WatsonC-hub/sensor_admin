@@ -2,15 +2,15 @@ import {Typography} from '@mui/material';
 import * as Sentry from '@sentry/react';
 import {useQuery} from '@tanstack/react-query';
 import {usePostHog} from 'posthog-js/react';
-import React, {Suspense, useEffect, useRef, useState} from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 
 import NavBar from '~/components/NavBar';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import Router from '~/Router';
 
-import {authUrl} from './consts';
-import {forgetLoginRedirect, mayRedirectToLogin} from './features/auth/loginRedirectGuard';
+import {forgetLoginRedirect, wasJustSentToLogin} from './features/auth/loginRedirectGuard';
+import SignedOut from './features/auth/SignedOut';
 import SignInProblem from './features/auth/SignInProblem';
 import {userQueryOptions} from './features/auth/useUser';
 import CommandPalette from './features/commandpalette/components/CommandPalette';
@@ -46,31 +46,21 @@ function App() {
   }, [user, posthog]);
 
   const needsLogin = (!user && isFetched) || isError;
-  const [loginLoop, setLoginLoop] = useState(false);
-  const redirected = useRef(false);
+  // The login page is calypso-auth's. A visitor without a user presses "Log ind" (SignedOut) to go there.
+  // One who comes back from it still without a user gets a message instead of another round (that
+  // would loop, see loginRedirectGuard.ts).
+  const [loginLoop, setLoginLoop] = useState(() => wasJustSentToLogin(window.sessionStorage));
 
   useEffect(() => {
     if (user) forgetLoginRedirect(window.sessionStorage);
   }, [user]);
-
-  // The login page is calypso-auth's. A visitor who comes back from it without a user is not sent a
-  // second time at once (that would loop, see loginRedirectGuard.ts): they get a message instead.
-  useEffect(() => {
-    if (!needsLogin || redirected.current) return;
-    redirected.current = true;
-    if (mayRedirectToLogin(window.sessionStorage)) {
-      window.location.href = `${authUrl}/login?redirect_uri=${encodeURIComponent(window.location.href)}`;
-    } else {
-      setLoginLoop(true);
-    }
-  }, [needsLogin]);
 
   if (!user && isPending) {
     return <LoadingSkeleton />;
   }
 
   if (needsLogin) {
-    return loginLoop ? <SignInProblem /> : null;
+    return loginLoop ? <SignInProblem /> : <SignedOut onLoginLoop={() => setLoginLoop(true)} />;
   }
   return (
     <ErrorBoundary
