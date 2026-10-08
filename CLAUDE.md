@@ -81,6 +81,7 @@ The whole app is a single page: a map background with windows on top, and each f
 - **Forms:** react-hook-form + zod. Prefer the typed form helper in `src/components/formComponents/Form.tsx` (`createTypedForm<T>()`) over the older `FormInput`/`FormTextField`.
 - **Tables:** material-react-table through `src/hooks/useTable.ts`. Persist table state with `src/hooks/useStatefulTableAtom.ts`. Desktop and mobile usually have separate `*TableDesktop.tsx`/`*TableMobile.tsx` files.
 - **Responsive layout:** use `useBreakpoints()` (`isMobile`) for layout differences.
+- **Styling (MUI v9):** put style values in `sx`. On `Typography`, use the `color` prop only with a palette key (`primary`, `secondary`, `error`, `textSecondary`, …). MUI silently ignores anything else (`"white"`, `"text.secondary"`, `"secondary.main"`), and the type check won't catch it, so use `sx={{color: …}}` for those.
 - **Toasts:** react-toastify. User-facing text is in Danish.
 
 ## Commands
