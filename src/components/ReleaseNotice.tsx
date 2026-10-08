@@ -137,7 +137,7 @@ export default function ReleaseNoticeModal() {
           <Typography variant="h6" sx={{mt: 3}}>
             Mere fleksible tidsrum for alarmkontakter
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{mt: 0.5}}>
+          <Typography variant="body2" sx={{color: 'text.secondary', mt: 0.5}}>
             Alarmer er for nu kun i brug hos udvalgte superbrugere af Field. Har du lyst til at
             prøve kræfter med det, så tag endelig kontakt til os.
           </Typography>
