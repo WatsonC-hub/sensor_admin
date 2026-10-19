@@ -8,8 +8,9 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {Box, Card, IconButton, Link, Typography} from '@mui/material';
 import {DatePicker} from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
-import {useAtom} from 'jotai';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {useAtomValue, useSetAtom} from 'jotai';
+import {selectAtom} from 'jotai/utils';
+import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import Button from '~/components/Button';
 import TooltipWrapper from '~/components/TooltipWrapper';
@@ -19,7 +20,7 @@ import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {convertDate} from '~/helpers/dateConverter';
 import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {displayStore, useDisplayState} from '~/hooks/ui';
-import {highlightedItinerariesAtom} from '~/state/atoms';
+import {expandedItinerariesAtom, highlightedItinerariesAtom} from '~/state/atoms';
 
 import 'dayjs/locale/da';
 
@@ -97,6 +98,380 @@ displayStore.subscribe((state) => {
   wasTripListOpen = state.trip_list;
 });
 
+type ItineraryLocation = {
+  loc_id: number;
+  loc_name: string;
+};
+
+type ItineraryCardProps = {
+  itinerary: Taskitinerary;
+  selected: boolean;
+  taskCount: number;
+  locations: ItineraryLocation[] | undefined;
+};
+
+// Each card subscribes only to its own expanded/highlight state, so toggling one tur
+// doesn't re-render the rest of the list.
+const ItineraryCard = memo(function ItineraryCard({
+  itinerary,
+  selected,
+  taskCount,
+  locations,
+}: ItineraryCardProps) {
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+
+  const expanded = useAtomValue(
+    useMemo(
+      () => selectAtom(expandedItinerariesAtom, (expanded) => expanded[itinerary.id] ?? false),
+      [itinerary.id]
+    )
+  );
+  const setExpandItinerary = useSetAtom(expandedItinerariesAtom);
+
+  const highlightIndex = useAtomValue(
+    useMemo(
+      () => selectAtom(highlightedItinerariesAtom, (ids) => ids.indexOf(itinerary.id)),
+      [itinerary.id]
+    )
+  );
+  const setHighlightedItineraries = useSetAtom(highlightedItinerariesAtom);
+  const highlighted = highlightIndex !== -1;
+  const color = highlighted ? ItineraryColors[highlightIndex] : undefined;
+
+  const [setItineraryId, setLocId] = useDisplayState((state) => [
+    state.setItineraryId,
+    state.setLocId,
+  ]);
+
+  const {data: users} = useTaskUsers();
+  const {patch: updateItinerary} = useItineraryMutations();
+
+  const due_date = itinerary.due_date ? convertDate(itinerary.due_date) : 'Ingen dato';
+
+  return (
+    <Card
+      sx={{
+        borderRadius: 2.5,
+        mx: 1,
+        outlineWidth: '2px',
+        outlineStyle: 'solid',
+        outlineColor: selected ? `oklch(70.8% 0.243 264.376)` : 'transparent',
+      }}
+    >
+      <Droppable id={itinerary.id} color={color}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+          }}
+        >
+          <Box
+            sx={{
+              color: 'white',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              py: 0.5,
+              pr: 1,
+              justifyContent: 'space-between',
+
+              backgroundColor: color
+                ? color
+                : dayjs(itinerary.due_date).isBefore(dayjs().toDate(), 'day')
+                  ? sensorColors[FlagEnum.WARNING].color
+                  : 'primary.main',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                maxWidth: '70%',
+                gap: 0.5,
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                }}
+              >
+                <Typography
+                  sx={{
+                    pl: 1.5,
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <Link
+                    sx={{
+                      cursor: 'pointer',
+                      textDecorationColor: 'rgba(255, 255, 255, 0.5)',
+                    }}
+                    onClick={() => setItineraryId(itinerary.id)}
+                    underline="always"
+                    color="inherit"
+                  >
+                    {itinerary.name}
+                  </Link>
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  pl: 1,
+                }}
+              >
+                <TaskForm
+                  onSubmit={() => {}}
+                  defaultValues={{
+                    assigned_to: itinerary.assigned_to,
+                  }}
+                >
+                  <Person fontSize="small" />
+                  <TaskForm.AssignedTo
+                    fullWidth={false}
+                    onBlur={({target}) => {
+                      if ('value' in target) {
+                        const user = users?.find((user) => user.display_name === target.value);
+                        if (user !== undefined && itinerary.assigned_to !== user.id) {
+                          const payload = {
+                            path: `${itinerary.id}`,
+                            data: {
+                              assigned_to: user.id,
+                            },
+                          };
+                          updateItinerary.mutate(payload);
+                        }
+                      }
+                    }}
+                    textFieldsProps={{
+                      placeholder: 'Ansvarlig',
+                      label: '',
+                      sx: {
+                        fontSize: 'small',
+                        width: 175,
+                        margin: 0,
+                        '& .MuiOutlinedInput-root, .MuiAutocomplete-popupIndicator, .MuiAutocomplete-clearIndicator':
+                          {
+                            fontSize: 'small',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: 2.5,
+                            borderColor: 'white',
+                            '& > fieldset': {
+                              color: 'white',
+                              borderColor: 'white',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                              color: 'white ',
+                              borderColor: 'white',
+                            },
+                            padding: '0px !important',
+                          },
+                      },
+                    }}
+                  />
+                </TaskForm>
+              </Box>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'end',
+                gap: 0.5,
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 0.3,
+                  alignItems: 'center',
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontSize: 'small',
+                    cursor: 'default',
+                  }}
+                >
+                  {due_date}
+                </Typography>
+
+                <DatePicker
+                  onChange={(date) => {
+                    if (date) {
+                      const payload = {
+                        path: `${itinerary.id}`,
+                        data: {
+                          due_date: date?.format('YYYY-MM-DD'),
+                        },
+                      };
+                      updateItinerary.mutate(payload, {
+                        onSuccess: () => {
+                          setDatePickerOpen(false);
+                        },
+                      });
+                    }
+                  }}
+                  open={datePickerOpen}
+                  onClose={() => setDatePickerOpen(false)}
+                  slots={{
+                    field: () => null,
+                  }}
+                  slotProps={{
+                    popper: {
+                      anchorEl: () => buttonRef.current ?? document.body,
+                      placement: 'bottom-start',
+                      disablePortal: true,
+                    },
+                  }}
+                />
+                <IconButton ref={buttonRef} onClick={() => setDatePickerOpen(true)} sx={{p: 0}}>
+                  <Edit sx={{color: 'white'}} fontSize="small" />
+                </IconButton>
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 0.5,
+                }}
+              >
+                <Typography variant="caption">Fremhæv</Typography>
+                <IconButton
+                  sx={{p: 0}}
+                  onClick={() => {
+                    if (highlighted) {
+                      setHighlightedItineraries((prev) => prev.filter((id) => id !== itinerary.id));
+                    } else {
+                      setHighlightedItineraries((prev) => [...prev, itinerary.id]);
+                    }
+                  }}
+                >
+                  {highlighted ? (
+                    <VisibilityOffIcon sx={{color: 'white'}} fontSize="small" />
+                  ) : (
+                    <VisibilityIcon sx={{color: 'white'}} fontSize="small" />
+                  )}
+                </IconButton>
+              </Box>
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              px: 1,
+              py: 1,
+              gap: 0.5,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 0.5,
+                flexDirection: 'row',
+                alignItems: 'start',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 0.5,
+                  flexDirection: 'column',
+                }}
+              >
+                {expanded
+                  ? locations?.map((location) => {
+                      return (
+                        <Box
+                          key={location.loc_id}
+                          sx={{
+                            display: 'flex',
+                            gap: 1,
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                            flexDirection: 'row',
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              gap: 0.5,
+                              flexDirection: 'row',
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                fontSize: 'small',
+                                width: 'fit-content',
+                              }}
+                            >
+                              <Link
+                                sx={{cursor: 'pointer'}}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setLocId(location.loc_id);
+                                }}
+                              >
+                                {location.loc_name}
+                              </Link>
+                            </Typography>
+                          </Box>
+                        </Box>
+                      );
+                    })
+                  : null}
+              </Box>
+              {expanded ? (
+                <ExpandLess
+                  sx={{cursor: 'pointer'}}
+                  onClick={() => {
+                    setExpandItinerary((prev) => ({
+                      ...prev,
+                      [itinerary.id]: false,
+                    }));
+                  }}
+                />
+              ) : (
+                <ExpandMore
+                  sx={{cursor: 'pointer'}}
+                  onClick={() => {
+                    setExpandItinerary((prev) => ({
+                      ...prev,
+                      [itinerary.id]: true,
+                    }));
+                  }}
+                />
+              )}
+            </Box>
+            <Typography
+              sx={{
+                fontSize: 'small',
+                width: 'fit-content',
+              }}
+            >
+              Der er {taskCount} opgaver på denne tur.
+            </Typography>
+          </Box>
+        </Box>
+      </Droppable>
+    </Card>
+  );
+});
+
 const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -109,19 +484,9 @@ const TaskItiniaries = () => {
     select: filterMapOverview,
   });
 
-  const [openItineraryDialog, setOpenItineraryDialog] = useState<string | undefined>(undefined);
-  const [expandItinerary, setExpandItinerary] = useState<Record<string, boolean>>({});
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const [highlightedItineraries, setHighlightedItineraries] = useAtom(highlightedItinerariesAtom);
-  const [itinerary_id, setItineraryId, setLocId] = useDisplayState((state) => [
-    state.itinerary_id,
-    state.setItineraryId,
-    state.setLocId,
-  ]);
+  const itinerary_id = useDisplayState((state) => state.itinerary_id);
 
-  const {data: users} = useTaskUsers();
   const {tasks} = useTaskState();
-  const {patch: updateItinerary} = useItineraryMutations();
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -217,358 +582,14 @@ const TaskItiniaries = () => {
                         a.loc_name.localeCompare(b.loc_name, 'da', {sensitivity: 'base'})
                       );
 
-                    let color = undefined;
-
-                    if (highlightedItineraries.includes(itinerary.id)) {
-                      const index = highlightedItineraries.findIndex((id) => id === itinerary.id);
-                      color = ItineraryColors[index];
-                    }
-
-                    const due_date = itinerary.due_date
-                      ? convertDate(itinerary.due_date)
-                      : 'Ingen dato';
-
-                    const expanded = expandItinerary?.[itinerary.id] ?? true;
-
                     return (
-                      <Card
+                      <ItineraryCard
                         key={itinerary.id}
-                        sx={{
-                          borderRadius: 2.5,
-                          mx: 1,
-                          outlineWidth: '2px',
-                          outlineStyle: 'solid',
-                          outlineColor:
-                            itinerary_id === itinerary.id
-                              ? `oklch(70.8% 0.243 264.376)`
-                              : 'transparent',
-                        }}
-                      >
-                        <Droppable id={itinerary.id} color={color}>
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              width: '100%',
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                color: 'white',
-                                display: 'flex',
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                py: 0.5,
-                                pr: 1,
-                                justifyContent: 'space-between',
-
-                                backgroundColor: color
-                                  ? color
-                                  : dayjs(itinerary.due_date).isBefore(dayjs().toDate(), 'day')
-                                    ? sensorColors[FlagEnum.WARNING].color
-                                    : 'primary.main',
-                              }}
-                            >
-                              <Box
-                                sx={{
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  maxWidth: '70%',
-                                  gap: 0.5,
-                                }}
-                              >
-                                <Box
-                                  sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                  }}
-                                >
-                                  <Typography
-                                    sx={{
-                                      pl: 1.5,
-                                      textOverflow: 'ellipsis',
-                                      overflow: 'hidden',
-                                      whiteSpace: 'nowrap',
-                                    }}
-                                  >
-                                    <Link
-                                      sx={{
-                                        cursor: 'pointer',
-                                        textDecorationColor: 'rgba(255, 255, 255, 0.5)',
-                                        // textDecoration: 'underline',
-                                      }}
-                                      onClick={() => setItineraryId(itinerary.id)}
-                                      color="inherit"
-                                    >
-                                      {itinerary.name}
-                                    </Link>
-                                  </Typography>
-                                </Box>
-                                <Box
-                                  sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    gap: 0.5,
-                                    pl: 1,
-                                  }}
-                                >
-                                  <TaskForm
-                                    onSubmit={() => {}}
-                                    defaultValues={{
-                                      assigned_to: itinerary.assigned_to,
-                                    }}
-                                  >
-                                    <Person fontSize="small" />
-                                    <TaskForm.AssignedTo
-                                      fullWidth={false}
-                                      onBlur={({target}) => {
-                                        if ('value' in target) {
-                                          const user = users?.find(
-                                            (user) => user.display_name === target.value
-                                          );
-                                          if (
-                                            user !== undefined &&
-                                            itinerary.assigned_to !== user.id
-                                          ) {
-                                            const payload = {
-                                              path: `${itinerary.id}`,
-                                              data: {
-                                                assigned_to: user.id,
-                                              },
-                                            };
-                                            updateItinerary.mutate(payload);
-                                          }
-                                        }
-                                      }}
-                                      textFieldsProps={{
-                                        placeholder: 'Ansvarlig',
-                                        label: '',
-                                        sx: {
-                                          fontSize: 'small',
-                                          width: 175,
-                                          margin: 0,
-                                          '& .MuiOutlinedInput-root, .MuiAutocomplete-popupIndicator, .MuiAutocomplete-clearIndicator':
-                                            {
-                                              fontSize: 'small',
-                                              color: 'white',
-                                              border: 'none',
-                                              borderRadius: 2.5,
-                                              borderColor: 'white',
-                                              '& > fieldset': {
-                                                color: 'white',
-                                                borderColor: 'white',
-                                              },
-                                              '& .MuiOutlinedInput-notchedOutline': {
-                                                color: 'white ',
-                                                borderColor: 'white',
-                                              },
-                                              padding: '0px !important',
-                                            },
-                                        },
-                                      }}
-                                    />
-                                  </TaskForm>
-                                </Box>
-                              </Box>
-                              <Box
-                                sx={{
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  alignItems: 'end',
-                                  gap: 0.5,
-                                }}
-                              >
-                                <Box
-                                  sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    gap: 0.3,
-                                    alignItems: 'center',
-                                  }}
-                                >
-                                  <Typography
-                                    variant="caption"
-                                    sx={{
-                                      fontSize: 'small',
-                                      cursor: 'default',
-                                    }}
-                                  >
-                                    {due_date}
-                                  </Typography>
-
-                                  <DatePicker
-                                    key={itinerary.id}
-                                    onChange={(date) => {
-                                      if (date) {
-                                        const payload = {
-                                          path: `${itinerary.id}`,
-                                          data: {
-                                            due_date: date?.format('YYYY-MM-DD'),
-                                          },
-                                        };
-                                        updateItinerary.mutate(payload, {
-                                          onSuccess: () => {
-                                            setOpenItineraryDialog(undefined);
-                                          },
-                                        });
-                                      }
-                                    }}
-                                    open={openItineraryDialog === itinerary.id}
-                                    onClose={() => setOpenItineraryDialog(undefined)}
-                                    slots={{
-                                      field: () => null,
-                                    }}
-                                    slotProps={{
-                                      popper: {
-                                        anchorEl: () => buttonRef.current ?? document.body,
-                                        placement: 'bottom-start',
-                                        disablePortal: true,
-                                      },
-                                    }}
-                                  />
-                                  <IconButton
-                                    ref={openItineraryDialog === itinerary.id ? buttonRef : null}
-                                    onClick={() => setOpenItineraryDialog(itinerary.id)}
-                                    sx={{p: 0}}
-                                  >
-                                    <Edit sx={{color: 'white'}} fontSize="small" />
-                                  </IconButton>
-                                </Box>
-                                <Box
-                                  sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    gap: 0.5,
-                                  }}
-                                >
-                                  <Typography variant="caption">Fremhæv</Typography>
-                                  <IconButton
-                                    sx={{p: 0}}
-                                    onClick={() => {
-                                      if (highlightedItineraries.includes(itinerary.id)) {
-                                        setHighlightedItineraries((prev) =>
-                                          prev.filter((id) => id !== itinerary.id)
-                                        );
-                                      } else {
-                                        setHighlightedItineraries((prev) => [
-                                          ...prev,
-                                          itinerary.id,
-                                        ]);
-                                      }
-                                    }}
-                                  >
-                                    {highlightedItineraries.includes(itinerary.id) ? (
-                                      <VisibilityOffIcon sx={{color: 'white'}} fontSize="small" />
-                                    ) : (
-                                      <VisibilityIcon sx={{color: 'white'}} fontSize="small" />
-                                    )}
-                                  </IconButton>
-                                </Box>
-                              </Box>
-                            </Box>
-                            <Box
-                              sx={{
-                                px: 1,
-                                py: 1,
-                                gap: 0.5,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                              }}
-                            >
-                              <Box
-                                sx={{
-                                  display: 'flex',
-                                  gap: 0.5,
-                                  flexDirection: 'row',
-                                  alignItems: 'start',
-                                  justifyContent: 'space-between',
-                                }}
-                              >
-                                <Box
-                                  sx={{
-                                    display: 'flex',
-                                    gap: 0.5,
-                                    flexDirection: 'column',
-                                  }}
-                                >
-                                  {expanded
-                                    ? locations?.map((location) => {
-                                        return (
-                                          <Box
-                                            key={location.loc_id}
-                                            sx={{
-                                              display: 'flex',
-                                              gap: 1,
-                                              alignItems: 'center',
-                                              flexWrap: 'wrap',
-                                              flexDirection: 'row',
-                                            }}
-                                          >
-                                            <Box
-                                              sx={{
-                                                display: 'flex',
-                                                gap: 0.5,
-                                                flexDirection: 'row',
-                                              }}
-                                            >
-                                              <Typography
-                                                sx={{
-                                                  fontSize: 'small',
-                                                  width: 'fit-content',
-                                                }}
-                                              >
-                                                <Link
-                                                  sx={{cursor: 'pointer'}}
-                                                  onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setLocId(location.loc_id);
-                                                  }}
-                                                >
-                                                  {location.loc_name}
-                                                </Link>
-                                              </Typography>
-                                            </Box>
-                                          </Box>
-                                        );
-                                      })
-                                    : null}
-                                </Box>
-                                {expanded ? (
-                                  <ExpandLess
-                                    sx={{cursor: 'pointer'}}
-                                    onClick={() => {
-                                      setExpandItinerary((prev) => ({
-                                        ...prev,
-                                        [itinerary.id]: false,
-                                      }));
-                                    }}
-                                  />
-                                ) : (
-                                  <ExpandMore
-                                    sx={{cursor: 'pointer'}}
-                                    onClick={() => {
-                                      setExpandItinerary((prev) => ({
-                                        ...prev,
-                                        [itinerary.id]: true,
-                                      }));
-                                    }}
-                                  />
-                                )}
-                              </Box>
-                              <Typography
-                                sx={{
-                                  fontSize: 'small',
-                                  width: 'fit-content',
-                                }}
-                              >
-                                Der er {itinerary_tasks?.length ?? 0} opgaver på denne tur.
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </Droppable>
-                      </Card>
+                        itinerary={itinerary}
+                        selected={itinerary_id === itinerary.id}
+                        taskCount={itinerary_tasks?.length ?? 0}
+                        locations={locations}
+                      />
                     );
                   })}
                 </Box>
