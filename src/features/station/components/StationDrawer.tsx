@@ -473,8 +473,8 @@ const Layout = ({children, variant}: LayoutProps) => {
         {!isTouch && <MinimalSelect />}
         {isTouch && (
           <Typography
-            color="white"
             sx={{
+              color: 'white',
               textOverflow: 'ellipsis',
               overflow: 'hidden',
               whiteSpace: 'wrap',

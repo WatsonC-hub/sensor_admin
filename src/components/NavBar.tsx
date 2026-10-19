@@ -348,8 +348,8 @@ const OwnTaskList = () => {
           task_list && task_list.length > 0 ? (
             <Typography
               variant="caption"
-              color="white"
               sx={{
+                color: 'white',
                 pr: 0.2,
               }}
             >
