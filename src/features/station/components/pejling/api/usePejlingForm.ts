@@ -75,6 +75,7 @@ const usePejlingForm = ({
     isFlow: tstype_id === 2,
     calculate_function,
     calculated,
+    isWaterLevel: tstype_id === 1,
   });
   const requiresCorrectionDate = correctionMode === 'scale' || correctionMode === 'translation';
 

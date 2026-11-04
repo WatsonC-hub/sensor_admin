@@ -344,9 +344,15 @@ const correctionConfigByType: Record<
 };
 
 const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
-  const {correction_type, isFlow, calculate_function, calculated} =
+  const {correction_type, isFlow, calculate_function, calculated, isWaterLevel} =
     useContext(CompoundPejlingContext);
-  const mode = getCorrectionMode({correction_type, isFlow, calculate_function, calculated});
+  const mode = getCorrectionMode({
+    correction_type,
+    isFlow,
+    calculate_function,
+    calculated,
+    isWaterLevel,
+  });
 
   switch (mode) {
     case 'hidden':
