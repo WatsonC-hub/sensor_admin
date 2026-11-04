@@ -34,7 +34,6 @@ export const getCorrectionMode = ({
 }): CorrectionMode => {
   const hasCorrectionType = !!correction_type;
   // No correction_type, but a calculated flow timeseries -> simple correction only.
-  console.log(hasCorrectionType, calculated, calculate_function, correction_type);
   if (
     !hasCorrectionType &&
     calculated &&
