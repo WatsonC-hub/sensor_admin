@@ -9,7 +9,7 @@ import UpdateProgressButton from '~/features/station/components/UpdateProgressBu
 
 import useSyncForm from '../api/useSyncForm';
 
-import type {SyncFormSchema, SyncFormSchemaOutput} from '../api/useSyncForm';
+import type {Owner, SyncFormSchema, SyncFormSchemaOutput} from '../api/useSyncForm';
 
 const Form = createTypedForm<SyncFormSchema, SyncFormSchemaOutput>();
 
@@ -30,7 +30,7 @@ const JupiterDmpSync = ({
   intakeno,
   ts_id,
 }: JupiterDmpSyncProps) => {
-  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm({
+  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners, isOwnersLoading} = useSyncForm({
     context: {
       loctype_id,
       tstype_id,
@@ -106,29 +106,21 @@ const JupiterDmpSync = ({
                   />
                 </TooltipWrapper>
                 {showInput && (
-                  <Form.Input
-                    select
+                  <Form.Autocomplete<Owner>
                     name="dmp.owner_cvr"
-                    label="Data ejer"
                     disabled={disabled}
-                    placeholder="Vælg data ejer"
-                    options={owners?.map((owner) => ({
-                      [owner.cvr]: owner.name + ` (${owner.cvr})`,
-                    }))}
-                    onChangeCallback={(value) => {
-                      const owner_cvr = (
-                        value as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-                      ).target.value;
-                      const owner = owners?.find((owner) => owner.cvr === owner_cvr);
-                      if (owner) {
-                        setValue('dmp.owner_cvr', parseInt(owner.cvr), {
-                          shouldDirty: true,
-                        });
-                        setValue('dmp.owner_name', owner.name, {
-                          shouldDirty: true,
-                        });
-                        trigger('dmp');
-                      }
+                    valueKey="cvr"
+                    labelKey="label"
+                    options={owners ?? []}
+                    loading={isOwnersLoading}
+                    onChangeCallback={(owner) => {
+                      setValue('dmp.owner_name', owner?.name ?? '', {shouldDirty: true});
+                      trigger('dmp');
+                    }}
+                    textFieldsProps={{
+                      label: 'Data ejer',
+                      placeholder: 'Søg på navn eller CVR...',
+                      required: true,
                     }}
                   />
                 )}

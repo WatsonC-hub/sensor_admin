@@ -38,6 +38,14 @@ type SyncFormProps = {
   context: SyncContext;
 };
 
+export type Owner = {
+  cvr: number;
+  name: string;
+  label: string;
+};
+
+type MetadataOwner = {cvr?: string; name?: string};
+
 const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
   const isJupiterType = [1, 11, 12, 16].includes(context?.tstype_id || 0);
   const isBorehole = context?.loctype_id === 9;
@@ -56,8 +64,27 @@ const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
     queryFn: async () => {
       const data = await fetch(`https://kemidata.miljoeportal.dk/api/metadata?language=da`).then(
         async (res) => {
-          const metadata = await res.json();
-          return metadata.stationOwners;
+          const metadata: {stationOwners?: MetadataOwner[]; dataResponsibles?: MetadataOwner[]} =
+            await res.json();
+          // The same CVR can appear in both lists, sometimes with the CVR as its name.
+          const byCvr = new Map<string, string>();
+          for (const {cvr, name} of [
+            ...(metadata.stationOwners ?? []),
+            ...(metadata.dataResponsibles ?? []),
+          ]) {
+            const key = cvr?.trim();
+            if (!key) continue;
+            const trimmedName = name?.trim();
+            const existing = byCvr.get(key);
+            if (!existing || (existing === key && trimmedName)) {
+              byCvr.set(key, trimmedName || key);
+            }
+          }
+          return Array.from(byCvr, ([cvr, name]): Owner => ({
+            cvr: parseInt(cvr),
+            name,
+            label: name === cvr ? cvr : `${name} (${cvr})`,
+          })).sort((a, b) => a.name.localeCompare(b.name, 'da'));
         }
       );
       return data;
@@ -81,7 +108,7 @@ const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
     }
   });
 
-  const owners: Array<{cvr: string; name: string}> = result.data;
+  const owners: Array<Owner> | undefined = result.data;
   type conditionalOutputType = z.output<typeof conditionalSchema>;
   const syncFormMethods = useForm<SyncFormSchema, unknown, conditionalOutputType>({
     resolver: zodResolver(conditionalSchema),
@@ -90,7 +117,7 @@ const useSyncForm = ({defaultValues, values, context}: SyncFormProps) => {
     values: values,
   });
 
-  return {syncFormMethods, isDmpAllowed, canSyncJupiter, owners};
+  return {syncFormMethods, isDmpAllowed, canSyncJupiter, owners, isOwnersLoading: result.isLoading};
 };
 
 export default useSyncForm;
