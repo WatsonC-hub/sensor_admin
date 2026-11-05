@@ -7,9 +7,9 @@ import {Navigate, Route, Routes} from 'react-router-dom';
 
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
-import AccessDenied from './AccessDenied';
 import ReleaseNoticeModal from './components/ReleaseNotice';
 import ScanComponent from './components/ScanComponent';
+import AccessDenied from './features/auth/components/AccessDenied';
 import {useUser} from './features/auth/useUser';
 import {usePageActions} from './features/commandpalette/hooks/usePageActions';
 import useCmdPalette from './hooks/query/useCmdPalette';
@@ -116,9 +116,7 @@ const Router = () => {
   ]);
 
   if (!user.features.iotAccess && !user.features.boreholeAccess) {
-    return (
-      <AccessDenied message="Du har hverken IoT-adgang eller adgang til pejleboringer. Kontakt venligst WatsonC, hvis du ønsker opsætning af IoT-stationer eller pejleboringer, eller hvis du mener, dette er en fejl" />
-    );
+    return <AccessDenied />;
   }
 
   return (
