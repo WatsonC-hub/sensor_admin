@@ -1,4 +1,4 @@
-import {Stack, Typography} from '@mui/material';
+import {Box, Stack, Typography} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
@@ -10,6 +10,7 @@ import {useCreateStationStore} from '../state/useCreateStationStore';
 
 import type {SyncFormState} from '../types';
 import type {
+  Owner,
   SyncFormSchema,
   SyncFormSchemaOutput,
 } from '~/features/synchronization/api/useSyncForm';
@@ -31,7 +32,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
     state.removeSubmitter,
     state.deleteState,
   ]);
-  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners} = useSyncForm({
+  const {syncFormMethods, isDmpAllowed, canSyncJupiter, owners, isOwnersLoading} = useSyncForm({
     context: {
       loctype_id,
       tstype_id,
@@ -147,7 +148,7 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
             </Stack>
           )}
           {isDmpAllowed && (
-            <>
+            <Box>
               <Stack direction={'column'}>
                 <Typography>Skal tidsserien synkroniseres med Danmarks Miljøportal?</Typography>
                 <Stack direction={'row'} spacing={1}>
@@ -165,29 +166,23 @@ const SyncForm = ({id, loctype_id, tstype_id, values, setValues}: SyncFormProps)
               </Stack>
 
               {dmpActive && (
-                <Form.Input
-                  select
+                <Form.Autocomplete<Owner>
                   name="dmp.owner_cvr"
-                  label="Data ejer"
-                  required
-                  fullWidth={false}
-                  placeholder="Vælg data ejer"
-                  options={owners?.map((owner) => ({
-                    [owner.cvr]: owner.name + ` (${owner.cvr})`,
-                  }))}
-                  onChangeCallback={(value) => {
-                    const owner_cvr = (
-                      value as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-                    ).target.value;
-                    const owner = owners?.find((owner) => owner.cvr === owner_cvr);
-                    if (owner) {
-                      setValue('dmp.owner_cvr', parseInt(owner.cvr), {shouldValidate: true});
-                      setValue('dmp.owner_name', owner.name, {shouldValidate: true});
-                    }
+                  valueKey="cvr"
+                  labelKey="label"
+                  options={owners ?? []}
+                  loading={isOwnersLoading}
+                  onChangeCallback={(owner) => {
+                    setValue('dmp.owner_name', owner?.name ?? '', {shouldValidate: true});
+                  }}
+                  textFieldsProps={{
+                    label: 'Data ejer',
+                    placeholder: 'Søg på navn eller CVR...',
+                    required: true,
                   }}
                 />
               )}
-            </>
+            </Box>
           )}
         </Form>
       )}

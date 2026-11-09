@@ -30,10 +30,7 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
   labelKey,
   ...props
 }: FormAutocompleteProps<T, K, M>) => {
-  const {
-    control,
-    formState: {errors},
-  } = useFormContext<T>();
+  const {control} = useFormContext<T>();
   const {gridSizes: contextGridSizes} = React.useContext(FormContext);
 
   return (
@@ -41,7 +38,7 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
       <Controller
         name={name}
         control={control}
-        render={({field: {value, onChange}}) => {
+        render={({field: {value, onChange}, fieldState: {error}}) => {
           let selectValue = (props.multiple ? ([] as K[]) : null) as M extends true
             ? K[]
             : K | null;
@@ -50,7 +47,7 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
               ? K[]
               : K | null;
           } else {
-            selectValue = (options.find((o) => o[valueKey] === value) ?? '') as M extends true
+            selectValue = (options.find((o) => o[valueKey] === value) ?? null) as M extends true
               ? K[]
               : K | null;
           }
@@ -58,7 +55,7 @@ const FormAutocomplete = <T extends FieldValues, K extends object, M extends boo
           return (
             <ExtendedAutocomplete<K, M>
               selectValue={selectValue}
-              error={errors[name]?.message as string | undefined}
+              error={error?.message}
               onChange={(value) => {
                 if (Array.isArray(value)) {
                   onChange((value as K[]).map((v) => v[valueKey]));

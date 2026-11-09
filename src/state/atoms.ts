@@ -180,3 +180,4 @@ export const tempHorizontalAtom = atom<
 export const usedWidthAtom = atom<number>(0);
 export const usedHeightAtom = atom<number>(0);
 export const highlightedItinerariesAtom = atom<Array<string>>([]);
+export const expandedItinerariesAtom = atom<Record<string, boolean>>({});
