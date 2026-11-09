@@ -130,7 +130,7 @@ const filterBorehole = (data: BoreholeMapData, filter: Filter) => {
 const filterData = (
   data: (MapOverview | BoreholeMapData)[],
   filter: Filter,
-  user_id: number,
+  user_id: string,
   tasks: Array<Task> | undefined
 ) => {
   let filteredData = data;
@@ -160,7 +160,7 @@ const filterData = (
 
     if (hasNoFilter && hasLocId) {
       showElem =
-        showElem && showElement(elem as MapOverview, filter, tasks ?? [], user_id.toString());
+        showElem && showElement(elem as MapOverview, filter, tasks ?? [], user_id);
     }
 
     if (hasNotificationFilter) {
