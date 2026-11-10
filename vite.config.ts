@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
 import react from '@vitejs/plugin-react';
@@ -142,6 +144,16 @@ const pwaOptions: Partial<VitePWAOptions> = {
 //   "prepare": "vp config"
 // },
 
+// Development against the production login (calypso-auth on admin.watsonc.dk). Its session cookie
+// lives on .watsonc.dk and is Secure, so the dev server has to be https on a watsonc.dk name: a hosts
+// entry `127.0.0.1 local.watsonc.dk` and a mkcert certificate in ~/.watsonc-cert (see README). Then
+// Field is https://local.watsonc.dk:5174 (5173 is a local calypso-auth's). Without the certificate
+// this is off and the dev server runs on localhost as before.
+const certDir = process.env.WATSONC_CERT_DIR ?? path.join(os.homedir(), '.watsonc-cert');
+const cert = path.join(certDir, 'local.watsonc.dk.pem');
+const key = path.join(certDir, 'local.watsonc.dk-key.pem');
+const localHttps = fs.existsSync(cert) && fs.existsSync(key);
+
 // https://vitejs.dev/config/
 export default defineConfig({
   test: {
@@ -246,6 +258,13 @@ export default defineConfig({
     },
   },
   server: {
+    ...(localHttps && {
+      host: 'local.watsonc.dk',
+      allowedHosts: ['local.watsonc.dk'],
+      https: {cert: fs.readFileSync(cert), key: fs.readFileSync(key)},
+      port: 5174,
+      strictPort: true,
+    }),
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8080',
