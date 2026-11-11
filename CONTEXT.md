@@ -297,6 +297,29 @@ The umbrella term for service deadlines on a lokation. So far it holds only the 
 Sending a tidsserie's data on to external systems (DMP, Jupiter). DMP synkronisering requires a **dataejer**, the CVR owner of the data.
 _Avoid_: sync
 
+## Feltobservationer
+
+**Feltobservation**:
+Something a consultant or underleverandør documents on site, such as a drænbrønd, a jordprøve or a vandløbsopmåling. It has a geometry (punkt, linje or polygon), an observationstype, a note and photos, and optionally a projekt. Without a projekt, only the person who created it can see it.
+_Avoid_: registrering, observation, field documentation
+
+**Observationstype**:
+The kind of feltobservation, for example generel or drænbrønd. It decides which geometries are allowed and which typefelter it has.
+
+**Typefelt**:
+A field defined on an observationstype, for example jordart on a jordprøve. Typefelter are data, not code. A typefelt can be archived but never removed or changed in kind.
+
+**Forberedelse**:
+Drawing or importing feltobservationer before fieldwork, usually on desktop. In the field, the team fills in their typefelter.
+Not the same as turforberedelse, which gathers what a tur needs (kontakter, adgang, ressourcer).
+
+**Intern note**:
+A note on a feltobservation that is never shown to customers.
+
+**Overførsel**:
+Exchanging feltobservationer between the device and the server: sending local changes and fetching colleagues' changes. Its mode is **Auto** (it pauses by itself on a poor connection) or **Manuel** (only when the user presses Overfør).
+_Avoid_: synkronisering, sync (synkronisering means sending tidsserie data to DMP or Jupiter)
+
 ## Rettigheder
 
 **Superbruger**:

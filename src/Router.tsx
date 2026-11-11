@@ -2,8 +2,8 @@ import HomeIcon from '@mui/icons-material/Home';
 import LocationOn from '@mui/icons-material/LocationOn';
 import QueryStats from '@mui/icons-material/QueryStats';
 import Timeline from '@mui/icons-material/Timeline';
-import React from 'react';
-import {Navigate, Route, Routes} from 'react-router-dom';
+import React, {lazy} from 'react';
+import {Navigate, Route, Routes, useMatch} from 'react-router-dom';
 
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
@@ -12,6 +12,7 @@ import ScanComponent from './components/ScanComponent';
 import AccessDenied from './features/auth/components/AccessDenied';
 import {useUser} from './features/auth/useUser';
 import {usePageActions} from './features/commandpalette/hooks/usePageActions';
+import {OBSERVATION_PATH, useRestoreLastMode} from './features/fieldObservation/appMode';
 import useCmdPalette from './hooks/query/useCmdPalette';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import GuardedCreateStation from './pages/CreateStation';
@@ -23,8 +24,16 @@ import type {CommandPalette} from './hooks/query/useCmdPalette';
 
 const EMPTY_CONTEXT_VALUE = {};
 
+// Feltobservation PoC: its own route on purpose, as an exception to ADR 0001
+// (see docs/features/feltobservation.md). Lazy, so Dexie stays out of the main bundle.
+const ObservationPage = lazy(
+  () => import('~/features/fieldObservation/components/ObservationPage')
+);
+
 const Router = () => {
   const user = useUser();
+  const isObservationRoute = useMatch(OBSERVATION_PATH) !== null;
+  useRestoreLastMode();
   // early return of no IoT access or borehole access
   // redirect component
 
@@ -115,7 +124,8 @@ const Router = () => {
     } as SelectionCommand<CommandPalette>,
   ]);
 
-  if (!user.features.iotAccess && !user.features.boreholeAccess) {
+  // Consultants and underleverandører may have neither flag; /observation only needs a login.
+  if (!user.features.iotAccess && !user.features.boreholeAccess && !isObservationRoute) {
     return <AccessDenied />;
   }
 
@@ -140,6 +150,7 @@ const Router = () => {
             </AppContext.Provider>
           }
         />
+        <Route path={OBSERVATION_PATH} element={<ObservationPage />} />
         <Route path="/:labelid" element={<ScanComponent />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
