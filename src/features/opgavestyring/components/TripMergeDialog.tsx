@@ -12,7 +12,7 @@ import {
   useItineraries,
   useItinerary,
   useItineraryMutations,
-} from '~/features/tasks/api/useItinerary';
+} from '~/features/itinerary/api/useItinerary';
 import {useDisplayState} from '~/hooks/ui';
 
 import type {SubmitHandler} from 'react-hook-form';

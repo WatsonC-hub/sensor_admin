@@ -240,8 +240,37 @@ The date a person plans for an opgave to be done.
 Not on a tur. An **uplanlagt opgave** is an open opgave that no tur includes; **uplanlagt feltarbejde** is an opgave in Feltarbejde that has not been put on a tur yet.
 
 **Tur**:
-A field trip with at most one ansvarlig and an optional name and date. An opgave is on a tur only while its status is Feltarbejde. A tur is **afsluttet** when the last opgave on it leaves Feltarbejde. Only the organisation that created a tur can change it.
+A field trip with at most one ansvarlig and an optional name and date. Lokationer are put on a tur, and the tur remembers each of them through a tilknytning. An opgave is worked on through a tur only while its status is Feltarbejde: simpel opgaver get Feltarbejde automatically when their lokation is on a tur, oprettede opgaver must be set to Feltarbejde by hand. Only the organisation that created a tur can change it.
 _Avoid_: trip, itinerary
+
+**Tilknytning**:
+One period a lokation is on a tur, from when it is added until it is besøgt, fjernet, frigivet or flettet ud. A lokation can have several tilknytninger to the same tur. How a tilknytning ended: **besøgt**, **fjernet**, **flyttet**, **frigivet** or **flettet ud**.
+
+**Besøgt lokation**:
+A lokation whose tilknytning ended because work was done there during it: an opgave was lukket, or a pejling or tilsyn was made. A tilsyn counts even when nothing could be fixed (the key didn't fit, wasps in the box): someone was there. It stays on the tur, shown as done. This also holds when the lokation is removed from the tur or moved to another tur after the work was done. If the tilknytning ends without any work done, the lokation is **fjernet** instead. A lokation counts as besøgt on a tur if any of its tilknytninger to that tur ended besøgt, also when it was put on the tur again later and then moved or removed.
+
+**Fjernet lokation**:
+A lokation that was taken off a tur, by hand or because its opgave left Feltarbejde without being lukket, with no work done there while it was on the tur.
+
+**Flyttet lokation**:
+A fjernet lokation that was put on another tur right after (within a few seconds), for example with "Flyt til". Worked out from the lokation's next tilknytning, not stored.
+
+**Frigivet lokation**:
+A lokation that was still on the tur when the tur was afsluttet by hand, and where no work was done while it was on the tur. If work was done (often a pejling while an opgave is still unfinished), it counts as besøgt instead. Either way its opgaver stay in Feltarbejde as uplanlagt feltarbejde.
+
+**Afsluttet tur**:
+A tur that is finished and can no longer be changed. A tur is afsluttet by hand, or automatically when its last tilknytning ends and at least one lokation is besøgt. Ending a tur by hand **frigiver** its remaining lokationer: their opgaver stay in Feltarbejde as uplanlagt feltarbejde.
+_Avoid_: arkiveret tur
+
+**Afslutningsårsag**:
+Why a tur was afsluttet: manuel, automatisk, or flettet (merged into another tur; its open lokationer are **flettet ud** of it and **flettet ind** on the other tur). Worked out from the tilknytninger, not stored. Ture afsluttet before Turhistorik have ukendt årsag.
+
+**Turforløb**:
+What happened on a tur: the opgaver lukket and the pejlinger and tilsyn made at its lokationer while they were on it, plus the lokationer that left without work. Shown oldest first, by day and by visit, with a summary per projekt on top (the projekt of the udstyr at the time, else the initialt projekt).
+_Avoid_: aktivitetslog, turlog
+
+**Turhistorik**:
+The list of afsluttede ture. A tur from before Turhistorik existed has **ufuldstændig historik**: its end times are guessed or missing. The app doesn't flag this.
 
 **Turforberedelse**:
 Gathering the kontakter, adgang, ressourcer and udstyr needed before a tur.

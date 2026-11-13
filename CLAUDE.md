@@ -6,7 +6,7 @@ A React + TypeScript app that Watsonc uses to manage environmental monitoring st
 
 - Domain vocabulary: see `CONTEXT.md`. Use those terms, and add new ones there when a feature introduces them.
 - Architecture decisions: `docs/adr/`.
-- Feature specs: `docs/features/` (see the template in its README).
+- Feature descriptions: Linear issues in the project **Field - Generel** (team Watsonc).
 
 ## Domain terms in code
 
@@ -40,6 +40,8 @@ A React + TypeScript app that Watsonc uses to manage environmental monitoring st
 | Opgave | `task`; `is_created` is true for an oprettet opgave, false for a notifikationsopgave |
 | Feltarbejde (opgavestatus) | `status_id = 2` (`StatusEnum.FIELD`) |
 | Tur | `itinerary`, `trip` |
+| Tilknytning | one row in `itinerary_loc_id_history` (`start_event`, `end_event`); active ones via the view `itinerary_loc_id_relation` |
+| Afsluttet tur | `completed`, `completed_at`; Afslutningsårsag is `completion_reason` (derived) |
 | Nøgle / adgang | `location_access` |
 | Parkering | `parking` |
 | Serviceansvar | `is_customer_service` |
@@ -93,13 +95,24 @@ The whole app is a single page: a map background with windows on top, and each f
 
 There is no test suite yet. Verify UI changes by running the app.
 
+## Ture (itinerary)
+
+Turhistorik is WAT-975, and tidsregistrering på ture (not built) is WAT-976. Frontend: `src/features/itinerary/`. Backend: `python_api`, `app/sensor_admin/tasks/` (data model in ADR 0002).
+
+- **One writer.** `itinerary_links.py` in python_api is the only code that opens or closes tilknytninger in `itinerary_loc_id_history`. Endpoints, pejling and tilsyn call it (`end_link`, `close_check`, `release_open_links`, `open_link`).
+- **Old row shape kept.** `done` keeps its old meaning: true only when the last opgave in Feltarbejde at the lokation was finished. Removing or moving a lokation inserts a row without a tur after it. How a tilknytning ended lives in `end_event`/`ended_at`/`ended_by`. Open means the `OPEN` condition: the lokation's newest row, with a tur, `done = false` and no `end_event`. The view `itinerary_loc_id_relation` is unchanged and still means "which tur is the lokation on now".
+- **Besøgt rule.** A tilknytning ends besøgt when an opgave changed to a `closed`-category status, or a pejling (`timeofmeas`) or tilsyn (`dato`) happened at the lokation inside its window; otherwise fjernet (or frigivet when the tur is ended by hand). Every tilsyn counts, also a visit where nothing could be fixed; every pejling counts, since we can't tell afterwards which notifikation it cleared. But only a tilsyn with batteriskift triggers `close_check` (it's the only tilsyn that clears an opgave), so a plain tilsyn never ends a tilknytning by itself. The same rule is in `resolve_end_event`, the Forløb (`buildForloeb`) and the migration scripts; change all of them together.
+- **Worked out, not stored:** Afslutningsårsag (`completion_reason`), flyttet (`moved_to(...)`: a fjernet row followed within 5 seconds by a row on another tur), and the projekt of each Forløb event (udstyr mounted at the time, else `initial_project_no`).
+- **Old rows keep arriving.** Until the backend is deployed, the live API writes rows without `end_event`. After deploying, rerun `migrations/2026-11-itinerary-history.sql` (rerunnable), then the fix-up scripts next to it. The shared database is changed only by the user running those scripts; query it read-only.
+- **Cache.** Anything that can close a tilknytning (opgave patch, pejling, tilsyn) invalidates `Itineraries.all()`, which by prefix also refreshes history, links and Forløb.
+
 ## Workflow for new features
 1. Sharpen the idea (`/grilling`), and optionally prototype it (`/prototype`).
-2. Write `docs/features/<name>.md` from the template. Add any new terms to `CONTEXT.md`.
+2. Describe the feature in a Linear issue in **Field - Generel**: Danish, non-technical, written for the field users (goal, how it works, rules, what's left out). Add any new terms to `CONTEXT.md`.
 3. Plan in plan mode, then build on a feature branch off `development`.
 4. Run `vp check`, then verify in the running app.
 5. Review with `/code-review`, and `/simplify` if needed.
 6. Capture what you learned:
-   - Update the spec's "Notes after shipping".
+   - Update the Linear issue if what shipped differs from it.
    - Add an ADR only if the decision is hard to reverse, would surprise a reader, and involved a real trade-off.
    - Update this file if a new convention appeared.

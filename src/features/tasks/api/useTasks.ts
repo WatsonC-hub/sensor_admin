@@ -9,8 +9,9 @@ import {useDisplayState} from '~/hooks/ui';
 
 import {type PatchTask, type Task, type TaskStatus, type TaskUser} from '../types';
 
-import type {DBTask, DeleteTaskFromItinerary, TaskAPI} from '../types';
+import type {DBTask, TaskAPI} from '../types';
 import type {MutationOptions} from '@tanstack/react-query';
+import type {DeleteTaskFromItinerary} from '~/features/itinerary/types';
 // import {Notification} from '~/hooks/query/useNotificationOverview';
 import type {APIError} from '~/queryClient';
 
@@ -203,7 +204,8 @@ const useTaskMutations = () => {
       queryClient.invalidateQueries({queryKey: queryKeys.Tasks.all()});
     },
     meta: {
-      invalidates: [queryKeys.Tasks.taskHistory(selectedTask ?? '')],
+      // A status change can make a lokation besøgt or afslut a tur.
+      invalidates: [queryKeys.Tasks.taskHistory(selectedTask ?? ''), queryKeys.Itineraries.all()],
     },
   });
   const del = useMutation({
@@ -230,23 +232,11 @@ const useTaskMutations = () => {
 
   const deleteTaskFromItinerary = useMutation({
     ...deleteTaskFromItineraryOptions,
-    onSuccess: (data, variables) => {
-      const {path} = variables;
-      const splitted = path.split('/');
-      const id = splitted[splitted.length - 1];
-      const previous = queryClient.getQueryData<Task[]>(['tasks']);
-      queryClient.setQueryData<Task[]>(
-        ['tasks'],
-        previous?.map((task) => {
-          if (task.id === id) {
-            const updated = Object.assign(task, {itinerary_id: null});
-
-            return updated;
-          }
-          return task;
-        })
-      );
+    onSuccess: () => {
       toast.success('Opgaver fjernet fra tur');
+    },
+    meta: {
+      invalidates: [queryKeys.Itineraries.all()],
     },
   });
   return {

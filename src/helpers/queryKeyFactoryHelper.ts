@@ -93,6 +93,12 @@ export const queryKeys = {
       ['tasks', itinerary_id, 'itineraries'] as const,
     itineraryCollection: (itinerary_id: string | null) =>
       ['tasks', 'collection', itinerary_id, 'itineraries'] as const,
+    history: (filters: {assigned_to: string | null; search: string}) =>
+      ['tasks', 'itineraries', 'history', filters] as const,
+    links: (itinerary_id: string | null) =>
+      ['tasks', 'itineraries', itinerary_id, 'links'] as const,
+    forloeb: (itinerary_id: string | null) =>
+      ['tasks', 'itineraries', itinerary_id, 'forloeb'] as const,
   },
   Parking: {
     all: () => ['parking'] as const,

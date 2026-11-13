@@ -16,8 +16,8 @@ import dayjs from 'dayjs';
 import React from 'react';
 
 import Button from '~/components/Button';
+import {useItinerary} from '~/features/itinerary/api/useItinerary';
 import {FlagEnum, sensorColors} from '~/features/notifications/consts';
-import {useItinerary} from '~/features/tasks/api/useItinerary';
 import {useTaskMutations, useTaskUsers} from '~/features/tasks/api/useTasks';
 import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {isSimpleTask} from '~/features/tasks/helpers';

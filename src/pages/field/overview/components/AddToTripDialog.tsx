@@ -10,7 +10,7 @@ import {
 import React from 'react';
 
 import Button from '~/components/Button';
-import {useItineraries, useItineraryMutations} from '~/features/tasks/api/useItinerary';
+import {useItineraries, useItineraryMutations} from '~/features/itinerary/api/useItinerary';
 import {useTaskUsers} from '~/features/tasks/api/useTasks';
 
 type AddToTripDialogProps = {
