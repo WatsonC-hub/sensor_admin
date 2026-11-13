@@ -159,8 +159,7 @@ const filterData = (
     }
 
     if (hasNoFilter && hasLocId) {
-      showElem =
-        showElem && showElement(elem as MapOverview, filter, tasks ?? [], user_id);
+      showElem = showElem && showElement(elem as MapOverview, filter, tasks ?? [], user_id);
     }
 
     if (hasNotificationFilter) {

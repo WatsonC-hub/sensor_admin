@@ -4,12 +4,12 @@ import {CalendarIcon} from '@mui/x-date-pickers';
 import React from 'react';
 
 import {useUser} from '~/features/auth/useUser';
+import {useItinerary} from '~/features/itinerary/api/useItinerary';
 import {getIcon} from '~/features/notifications/Utils';
 import {convertDate} from '~/helpers/dateConverter';
 import {useDisplayState} from '~/hooks/ui';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 
-import {useItinerary} from '../api/useItinerary';
 import {useTaskState} from '../api/useTaskState';
 
 import type {MapOverview} from '~/hooks/query/useNotificationOverview';

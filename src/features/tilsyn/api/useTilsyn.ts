@@ -82,7 +82,8 @@ export const useTilsyn = () => {
       toast.success('Tilsyn gemt');
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.tilsyn(ts_id)],
+      // A tilsyn can make the lokation besøgt on its tur.
+      invalidates: [queryKeys.Timeseries.tilsyn(ts_id), queryKeys.Itineraries.all()],
     },
   });
 

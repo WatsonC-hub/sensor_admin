@@ -181,3 +181,5 @@ export const usedWidthAtom = atom<number>(0);
 export const usedHeightAtom = atom<number>(0);
 export const highlightedItinerariesAtom = atom<Array<string>>([]);
 export const expandedItinerariesAtom = atom<Record<string, boolean>>({});
+/** Whether the turliste window shows active ture or the Turhistorik. */
+export const turlisteModeAtom = atom<'active' | 'history'>('active');

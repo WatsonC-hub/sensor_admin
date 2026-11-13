@@ -6,6 +6,9 @@ import React, {useCallback, useMemo} from 'react';
 
 import WindowManager from '~/components/ui/WindowManager';
 import {useUser} from '~/features/auth/useUser';
+import {useItineraryMutations} from '~/features/itinerary/api/useItinerary';
+import ItineraryList from '~/features/itinerary/components/ItineraryList';
+import ItineraryWindow from '~/features/itinerary/components/ItineraryWindow';
 import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
 import LocationHighlighter from '~/features/map/components/LocationHighlighter';
 import LocationRouter from '~/features/station/components/LocationRouter';
@@ -13,7 +16,6 @@ import {metadataQueryOptions} from '~/hooks/query/useMetadata';
 import {displayStore, useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
-import Trip from '~/pages/admin/opgaver/Trip';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
@@ -22,11 +24,9 @@ import Map from '~/pages/Map';
 import {fullScreenAtom} from '~/state/atoms';
 import {AppContext} from '~/state/contexts';
 
-import {useItineraryMutations} from '../api/useItinerary';
 import LocationList from './LocationList';
 import OwnTaskList from './OwnTaskList';
 import TaskInfo from './TaskInfo';
-import TaskItiniaries from './TaskItiniaries';
 
 import type {MapOverview} from '~/hooks/query/useNotificationOverview';
 import type {BoreholeMapData} from '~/types';
@@ -184,7 +184,7 @@ const Overview = () => {
             }}
             height={isMobile ? '50%' : '100%'}
           >
-            <TaskItiniaries />
+            <ItineraryList />
           </WindowManager.Window>
 
           <WindowManager.Window
@@ -261,7 +261,7 @@ const Overview = () => {
             onClose={() => setItineraryId(null)}
             height="100%"
           >
-            {itinerary_id !== null && <Trip key={itinerary_id} />}
+            {itinerary_id !== null && <ItineraryWindow key={itinerary_id} />}
           </WindowManager.Window>
 
           <WindowManager.Window

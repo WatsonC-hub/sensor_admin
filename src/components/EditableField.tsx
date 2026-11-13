@@ -29,33 +29,30 @@ const EditableField = ({
     }
   };
 
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1,
+  const button = (
+    <IconButton
+      onClick={() => {
+        if (editing) {
+          handleSave();
+        } else {
+          setEditing(true);
+        }
       }}
+      size="small"
+      aria-label={editing ? 'Gem' : 'Rediger'}
+      sx={{color: 'primary.main'}}
     >
-      <IconButton
-        onClick={() => {
-          if (editing) {
-            handleSave();
-          } else {
-            setEditing(true);
-          }
-        }}
-        size="small"
-        sx={{color: 'primary.main'}}
-      >
-        {editing ? <CheckIcon fontSize="small" /> : <EditIcon fontSize="small" />}
-      </IconButton>
+      {editing ? <CheckIcon fontSize="small" /> : <EditIcon fontSize="small" />}
+    </IconButton>
+  );
+
+  return (
+    <Box sx={{display: 'flex', alignItems: 'center', gap: 0.5}}>
       {!editing ? (
         <Typography
-          color={editing ? 'textPrimary' : 'textSecondary'}
-          sx={{
-            fontWeight: variant === 'title' ? 'bold' : undefined,
-          }}
+          variant={variant === 'title' ? 'h6' : 'body2'}
+          // The placeholder is greyed out; a real value reads as normal text.
+          sx={{color: label ? 'text.primary' : 'text.secondary'}}
         >
           {label || placeholder}
         </Typography>
@@ -68,8 +65,10 @@ const EditableField = ({
           fullWidth
           multiline={multiline}
           placeholder={placeholder}
+          autoFocus
         />
       )}
+      {button}
     </Box>
   );
 };

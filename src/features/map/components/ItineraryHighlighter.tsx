@@ -1,45 +1,41 @@
 import {useAtomValue} from 'jotai';
-import {useEffect} from 'react';
+import React, {useMemo} from 'react';
 
+import {useItinerariesLinks} from '~/features/itinerary/api/useItinerary';
+import {locationsOnTur} from '~/features/itinerary/helpers';
 import {ItineraryColors} from '~/features/notifications/consts';
 import {highlightedItinerariesAtom} from '~/state/atoms';
 
+/**
+ * Colours the map markers of the highlighted ture. Renders a <style> element, so React only
+ * touches the DOM when the CSS text actually changes.
+ */
 const ItineraryHighlighter = () => {
   const highlightedItineraries = useAtomValue(highlightedItinerariesAtom);
+  const linksPerItinerary = useItinerariesLinks(highlightedItineraries);
 
-  useEffect(() => {
-    const styleId = 'dynamic-itinerary-style';
-    let styleTag = document.getElementById(styleId);
+  const css = useMemo(() => {
+    // Besøgte lokationer are no longer on the tur in the map data, so they are matched by
+    // loc_id and drawn dimmed. These rules come first, so a lokation that is active on a
+    // highlighted tur gets that tur's full colour.
+    const visitedRules = highlightedItineraries.map((_, index) => {
+      const selectors = locationsOnTur(linksPerItinerary[index] ?? [])
+        .filter((location) => location.besoegt)
+        .map((location) => `svg[data-loc-id~="${location.loc_id}"] circle`);
+      return selectors.length > 0
+        ? `${selectors.join(',\n')} {fill: ${ItineraryColors[index]}; fill-opacity: 0.35;}`
+        : '';
+    });
 
-    if (styleTag) styleTag.remove();
+    const activeRules = highlightedItineraries.map(
+      (itinerary, index) =>
+        `svg[data-itinerary-id="${itinerary}"] circle {fill: ${ItineraryColors[index]}; fill-opacity: 1;}`
+    );
 
-    styleTag = document.createElement('style');
-    styleTag.id = styleId;
+    return [...visitedRules, ...activeRules].filter(Boolean).join('\n');
+  }, [highlightedItineraries, linksPerItinerary]);
 
-    let rules = '';
-    if (highlightedItineraries && highlightedItineraries.length > 0) {
-      rules = highlightedItineraries
-        .map((itinerary, index) => {
-          return `
-      svg[data-itinerary-id="${itinerary}"] circle {
-        fill: ${ItineraryColors[index]};
-
-      }
-    `;
-        })
-        .join('');
-    }
-
-    styleTag.textContent = rules;
-
-    document.head.appendChild(styleTag);
-
-    return () => {
-      // Optional cleanup
-      styleTag.remove();
-    };
-  }, [highlightedItineraries]);
-  return null; // Nothing to render
+  return css ? <style>{css}</style> : null;
 };
 
 export default ItineraryHighlighter;

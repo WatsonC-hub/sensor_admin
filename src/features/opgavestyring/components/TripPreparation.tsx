@@ -3,12 +3,11 @@ import MoveUpIcon from '@mui/icons-material/MoveUp';
 import {Box} from '@mui/material';
 import React, {useState} from 'react';
 
-import AlertDialog from '~/components/AlertDialog';
 import Button from '~/components/Button';
-import EditableField from '~/components/EditableField';
+import {useItinerary} from '~/features/itinerary/api/useItinerary';
+import CompleteItineraryDialog from '~/features/itinerary/components/CompleteItineraryDialog';
 import TripRessourcesTable from '~/features/opgavestyring/components/TripRessourcesTable';
 import TripUnitTable from '~/features/opgavestyring/components/TripUnitTable';
-import {useItinerary, useItineraryMutations} from '~/features/tasks/api/useItinerary';
 import {useDisplayState} from '~/hooks/ui';
 import LoadingSkeleton from '~/LoadingSkeleton';
 
@@ -32,47 +31,21 @@ const TripPreparation = ({data}: TripPreparationProps) => {
     state.setItineraryId,
   ]);
 
-  const {
-    complete: {mutate: completeItinerary, isPending: isCompletePending},
-    patch: {mutate: updateItinerary},
-  } = useItineraryMutations();
-
   const {data: itinerary} = useItinerary(itinerary_id);
 
   if (!itinerary) {
     return <LoadingSkeleton />;
   }
 
-  const updateField = (field: 'name' | 'comment', value: string | null) => {
-    updateItinerary({
-      path: `${itinerary.id}`,
-      data: {
-        [field]: value,
-      },
-    });
-  };
-
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'auto',
         gap: 1,
       }}
     >
-      <EditableField
-        label={itinerary.name}
-        placeholder="Indtast navn..."
-        variant="title"
-        onSave={(value) => updateField('name', value)}
-      />
-      <EditableField
-        label={itinerary.comment}
-        placeholder="Indtast kommentar..."
-        multiline
-        onSave={(value) => updateField('comment', value)}
-      />
+      {/* The name and comment are in the turvindue's header (ItineraryWindow). */}
       <TripRessourcesTable ressources={data?.ressourcer} />
       <TripLocationAccess keys={data?.location_access} />
       <TripContacts contacts={data?.contacts} />
@@ -104,23 +77,11 @@ const TripPreparation = ({data}: TripPreparationProps) => {
         </Button>
       </Box>
       <TripMergeDialog itinerary_id={itinerary_id!} open={mergeOpen} setOpen={setMergeOpen} />
-      <AlertDialog
+      <CompleteItineraryDialog
+        itinerary_id={itinerary.id}
         open={completeOpen}
         setOpen={setCompleteOpen}
-        title="Afslut tur"
-        message="Er du sikker på at du vil færdiggøre turen?"
-        handleOpret={() => {
-          completeItinerary(
-            {path: `${itinerary_id}`},
-            {
-              onSuccess: () => {
-                setItineraryId(null);
-                setCompleteOpen(false);
-              },
-            }
-          );
-        }}
-        loading={isCompletePending}
+        onCompleted={() => setItineraryId(null)}
       />
     </Box>
   );

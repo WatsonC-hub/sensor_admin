@@ -83,7 +83,8 @@ export const usePejling = () => {
       toast.success('Pejling gemt');
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.pejling(ts_id)],
+      // A pejling can make the lokation besøgt on its tur.
+      invalidates: [queryKeys.Timeseries.pejling(ts_id), queryKeys.Itineraries.all()],
     },
   });
 
