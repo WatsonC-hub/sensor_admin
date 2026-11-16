@@ -416,7 +416,15 @@ const ObservationMap = ({
     }
     if (!map.hasLayer(marker)) marker.addTo(map);
     const cone = marker.getElement()?.querySelector<HTMLElement>('.heading-cone');
-    if (cone) cone.style.transform = `rotate(${heading}deg)`;
+    if (!cone) return;
+    // Turn the shortest way: keep an unwrapped angle on the element (359° → 1° is +2°, not
+    // −358°), so the CSS transition doesn't spin the cone a full turn when crossing north.
+    // The element is rebuilt when the marker is added again, which resets the angle.
+    const previous = Number(cone.dataset.rotation ?? heading);
+    const delta = ((((heading - previous) % 360) + 540) % 360) - 180;
+    const rotation = previous + delta;
+    cone.dataset.rotation = String(rotation);
+    cone.style.transform = `rotate(${rotation}deg)`;
   }, [heading]);
 
   // The geometry being built with the crosshair. Lines and flader follow the crosshair while
