@@ -24,6 +24,7 @@ export class SingleTileWms extends L.Layer {
   private readonly url: string;
   private readonly wmsParams: Record<string, string | number | boolean>;
   private zIndex: number;
+  private opacity = 1;
   private images: [HTMLImageElement, HTMLImageElement] | null = null;
   /** Index of the image currently shown. */
   private visible = 0;
@@ -74,10 +75,17 @@ export class SingleTileWms extends L.Layer {
     return this;
   }
 
+  setOpacity(opacity: number) {
+    this.opacity = opacity;
+    this.images?.forEach((image) => (image.style.opacity = String(opacity)));
+    return this;
+  }
+
   private createImage(index: number, pane: HTMLElement | undefined) {
     const image = L.DomUtil.create('img', 'leaflet-image-layer') as HTMLImageElement;
     image.style.visibility = 'hidden';
     image.style.zIndex = String(this.zIndex);
+    image.style.opacity = String(this.opacity);
     image.alt = '';
     image.onload = () => this.onImageLoad(index);
     pane?.appendChild(image);

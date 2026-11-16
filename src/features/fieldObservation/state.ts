@@ -17,6 +17,12 @@ export const ortofotoYearAtom = atomWithStorage<number | null>(
 /** Ids ("schema.table") of the Explorer GIS layers turned on in /observation. */
 export const activeGisLayersAtom = atomWithStorage<string[]>('fieldObservation.gisLayers', []);
 
+/** Opacity (0–1) per GIS layer id; a missing id is fully opaque. */
+export const gisLayerOpacityAtom = atomWithStorage<Record<string, number>>(
+  'fieldObservation.gisLayerOpacity',
+  {}
+);
+
 export const selectedProjectAtom = atomWithStorage<string | null>('fieldObservation.project', null);
 
 /** Ids of projektlag the user has hidden. Projektlag are shown unless hidden. */

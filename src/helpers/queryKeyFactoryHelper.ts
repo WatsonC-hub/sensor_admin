@@ -114,6 +114,7 @@ export const queryKeys = {
   },
   contactRoles: () => ['contact_roles'] as const,
   explorerGisLayers: () => ['explorer_gis_layers'] as const,
+  explorerGisLegend: (layerId: string) => ['explorer_gis_legend', layerId] as const,
   ortofotoYears: () => ['ortofoto_years'] as const,
   fieldObservationProjectLayers: (projectNo?: string) =>
     projectNo === undefined

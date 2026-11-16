@@ -38,7 +38,7 @@ import {setLastMode} from '~/features/fieldObservation/appMode';
 import {useOrtofotoYears} from '~/features/fieldObservation/backgroundMaps';
 import {useCompass} from '~/features/fieldObservation/compass';
 import ImportDialog from '~/features/fieldObservation/components/ImportDialog';
-import LayerMenu from '~/features/fieldObservation/components/LayerMenu';
+import LayerPanel, {LayerButton} from '~/features/fieldObservation/components/LayerPanel';
 import Legend from '~/features/fieldObservation/components/Legend';
 import ObservationDialog from '~/features/fieldObservation/components/ObservationDialog';
 import ObservationMap from '~/features/fieldObservation/components/ObservationMap';
@@ -52,6 +52,7 @@ import {
   activeGisLayersAtom,
   backgroundMapAtom,
   editModeAtom,
+  gisLayerOpacityAtom,
   hiddenLegendAtom,
   hiddenProjectLayersAtom,
   ortofotoYearAtom,
@@ -172,6 +173,7 @@ const ObservationPage = () => {
   const projects = useLiveQuery(() => db.projects.toArray(), [db], []);
   const [selectedProject, setSelectedProject] = useAtom(selectedProjectAtom);
   const activeGisLayers = useAtomValue(activeGisLayersAtom);
+  const gisLayerOpacity = useAtomValue(gisLayerOpacityAtom);
   const background = useAtomValue(backgroundMapAtom);
   const chosenOrtofotoYear = useAtomValue(ortofotoYearAtom);
   // No year chosen means the newest one the ortofoto WMS offers.
@@ -200,6 +202,7 @@ const ObservationPage = () => {
   const [target, setTarget] = useState<DialogTarget | null>(null);
   const [dialOpen, setDialOpen] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [layersOpen, setLayersOpen] = useState(false);
   const compass = useCompass();
   const locationPermission = useLocationPermission();
   const [editMode, setEditMode] = useAtom(editModeAtom);
@@ -324,9 +327,262 @@ const ObservationPage = () => {
               </IconButton>
             </Tooltip>
           )}
-          <LayerMenu
+          <LayerButton open={layersOpen} onClick={() => setLayersOpen((open) => !open)} />
+          <OverfoerselMenu overfoersel={overfoersel} notPersisted={!persisted} />
+          <NavBar.Menu disableProfile={false} />
+        </Box>
+      </NavBar>
+
+      {/* On desktop the layer panel docks beside the map; on a phone it is full screen. */}
+      <Box sx={{flex: 1, display: 'flex', minHeight: 0}}>
+        <Box sx={{position: 'relative', flex: 1, overflow: 'hidden'}}>
+          <ObservationMap
+            observations={shownObservations}
+            types={types}
+            gisLayerIds={activeGisLayers}
+            gisLayerOpacity={gisLayerOpacity}
+            background={background}
+            ortofotoYear={ortofotoYear}
+            draft={draft}
+            projectLayers={visibleProjectLayers}
+            heading={compass.heading}
+            onSelect={(id) => mode.kind === 'idle' && setTarget({kind: 'existing', id})}
+            onReady={(api) => {
+              mapApi.current = api;
+            }}
+          />
+
+          <Paper
+            elevation={3}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              left: 8,
+              right: 8,
+              maxWidth: 480,
+              mx: 'auto',
+              zIndex: 1000,
+              display: 'flex',
+              p: 0.5,
+            }}
+          >
+            <ProjectField
+              projects={projects}
+              observations={observations}
+              value={selectedProject}
+              onChange={setSelectedProject}
+            />
+          </Paper>
+
+          {mode.kind === 'crosshair' && <Crosshair />}
+
+          {/* Map controls on the left. Compass and GPS only show when permission is missing. */}
+          <Stack
+            spacing={1}
+            sx={{
+              position: 'absolute',
+              left: 16,
+              bottom: 40,
+              zIndex: 1000,
+              alignItems: 'flex-start',
+            }}
+          >
+            <Legend
+              observations={projectObservations}
+              types={types}
+              projectLayers={projectLayers}
+            />
+            {compass.needsPermission && (
+              <Tooltip title="Vis retning (kompas)">
+                <Fab size="small" aria-label="Vis retning" onClick={compass.requestPermission}>
+                  <ExploreIcon />
+                </Fab>
+              </Tooltip>
+            )}
+            {(locationPermission === 'prompt' || locationPermission === 'denied') && (
+              <Tooltip title="Vis min placering">
+                <Fab
+                  size="small"
+                  aria-label="Vis min placering"
+                  onClick={() => {
+                    if (locationPermission === 'denied') {
+                      toast.info(
+                        'Placering er blokeret for siden. Giv adgang i browserens indstillinger.'
+                      );
+                    }
+                    mapApi.current?.relocate();
+                  }}
+                >
+                  <LocationDisabledIcon />
+                </Fab>
+              </Tooltip>
+            )}
+            {mode.kind === 'idle' && (
+              <Tooltip
+                title={
+                  editMode ? 'Redigeringstilstand er slået til' : 'Slå redigeringstilstand til'
+                }
+              >
+                <Fab
+                  size="small"
+                  color={editMode ? 'primary' : 'default'}
+                  aria-label="Redigeringstilstand"
+                  aria-pressed={editMode}
+                  onClick={() => setEditMode(!editMode)}
+                >
+                  <EditIcon />
+                </Fab>
+              </Tooltip>
+            )}
+          </Stack>
+
+          {hint && (
+            <Paper
+              elevation={3}
+              sx={{
+                position: 'absolute',
+                bottom: isMobile ? 132 : 88,
+                left: 8,
+                right: 8,
+                maxWidth: 480,
+                mx: 'auto',
+                zIndex: 1000,
+                px: 2,
+                py: 1,
+              }}
+            >
+              <Typography variant="body2">{hint}</Typography>
+            </Paper>
+          )}
+
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            sx={{
+              position: 'absolute',
+              bottom: 24,
+              right: 16,
+              left: isMobile ? 16 : 'auto',
+              justifyContent: 'flex-end',
+              flexWrap: 'wrap',
+              zIndex: 1000,
+            }}
+          >
+            {mode.kind === 'crosshair' && mode.draft.shape === 'Point' && (
+              <>
+                <Button bttype="tertiary" startIcon={<CloseIcon />} onClick={cancel}>
+                  Annuller
+                </Button>
+                <Button bttype="primary" startIcon={<CheckIcon />} onClick={confirmPoint}>
+                  Bekræft placering
+                </Button>
+              </>
+            )}
+            {mode.kind === 'crosshair' && mode.draft.shape !== 'Point' && (
+              <>
+                <Button bttype="tertiary" startIcon={<CloseIcon />} onClick={cancel}>
+                  Annuller
+                </Button>
+                <Button
+                  bttype="tertiary"
+                  startIcon={<UndoIcon />}
+                  disabled={mode.draft.vertices.length === 0}
+                  onClick={() => changeDraft((vertices) => vertices.slice(0, -1))}
+                >
+                  Fortryd
+                </Button>
+                <Button bttype="tertiary" startIcon={<AddIcon />} onClick={addVertex}>
+                  Tilføj punkt
+                </Button>
+                <Button
+                  bttype="primary"
+                  startIcon={<CheckIcon />}
+                  disabled={mode.draft.vertices.length < MIN_VERTICES[mode.draft.shape]}
+                  onClick={() => finishDraft(mode.draft)}
+                >
+                  Færdig
+                </Button>
+              </>
+            )}
+            {mode.kind === 'drawing' && (
+              <Button bttype="tertiary" startIcon={<CloseIcon />} onClick={cancel}>
+                Annuller
+              </Button>
+            )}
+            {mode.kind === 'editing' && (
+              <>
+                <Button bttype="tertiary" startIcon={<CloseIcon />} onClick={cancel}>
+                  Annuller
+                </Button>
+                <Button
+                  bttype="primary"
+                  startIcon={<SaveIcon />}
+                  onClick={() => void saveGeometry(mode.id)}
+                >
+                  Gem geometri
+                </Button>
+              </>
+            )}
+          </Stack>
+
+          {/* Styled like Justér's speed dial (src/components/CustomSpeedDial.tsx). */}
+          {mode.kind === 'idle' && (
+            <SpeedDial
+              ariaLabel="Ny feltobservation"
+              direction="up"
+              open={dialOpen}
+              icon={
+                <Box sx={{display: 'flex', alignItems: 'center', px: isMobile ? 0 : 2}}>
+                  <AddLocationAltIcon />
+                  {!isMobile && (
+                    <Typography sx={{pl: 1, textTransform: 'none'}}>Ny feltobservation</Typography>
+                  )}
+                </Box>
+              }
+              sx={{
+                position: 'absolute',
+                bottom: 24,
+                right: 16,
+                zIndex: 1000,
+                alignItems: 'end',
+              }}
+              FabProps={{
+                onClick: () => setDialOpen((open) => !open),
+                sx: {
+                  width: isMobile ? undefined : 'fit-content',
+                  borderRadius: isMobile ? undefined : 4.5,
+                  backgroundColor: 'secondary.main',
+                  ':hover': {backgroundColor: 'secondary.dark'},
+                },
+              }}
+            >
+              {SHAPES.map(({shape, label, icon}) => (
+                <SpeedDialAction
+                  key={shape}
+                  icon={icon}
+                  slotProps={{
+                    fab: {
+                      onClick: () => startCreate(shape),
+                      sx: {
+                        color: 'white',
+                        backgroundColor: 'primary.main',
+                        borderRadius: 4,
+                        ':hover': {backgroundColor: 'secondary.main'},
+                      },
+                    },
+                    tooltip: {title: label, open: true},
+                    staticTooltipLabel: {sx: {borderRadius: 2.5}},
+                  }}
+                />
+              ))}
+            </SpeedDial>
+          )}
+        </Box>
+        {layersOpen && (
+          <LayerPanel
             projectNo={selectedProject}
-            layers={projectLayers}
+            projectLayers={projectLayers}
             canDelete={editableSelectedProject !== null}
             onDelete={(layer) => {
               if (window.confirm(`Slet projektlaget "${layer.name}" for alle i projektet?`)) {
@@ -335,241 +591,8 @@ const ObservationPage = () => {
                 });
               }
             }}
+            onClose={() => setLayersOpen(false)}
           />
-          <OverfoerselMenu overfoersel={overfoersel} notPersisted={!persisted} />
-          <NavBar.Menu disableProfile={false} />
-        </Box>
-      </NavBar>
-
-      <Box sx={{position: 'relative', flex: 1, overflow: 'hidden'}}>
-        <ObservationMap
-          observations={shownObservations}
-          types={types}
-          gisLayerIds={activeGisLayers}
-          background={background}
-          ortofotoYear={ortofotoYear}
-          draft={draft}
-          projectLayers={visibleProjectLayers}
-          heading={compass.heading}
-          onSelect={(id) => mode.kind === 'idle' && setTarget({kind: 'existing', id})}
-          onReady={(api) => {
-            mapApi.current = api;
-          }}
-        />
-
-        <Paper
-          elevation={3}
-          sx={{
-            position: 'absolute',
-            top: 8,
-            left: 8,
-            right: 8,
-            maxWidth: 480,
-            mx: 'auto',
-            zIndex: 1000,
-            display: 'flex',
-            p: 0.5,
-          }}
-        >
-          <ProjectField
-            projects={projects}
-            observations={observations}
-            value={selectedProject}
-            onChange={setSelectedProject}
-          />
-        </Paper>
-
-        {mode.kind === 'crosshair' && <Crosshair />}
-
-        {/* Map controls on the left. Compass and GPS only show when permission is missing. */}
-        <Stack
-          spacing={1}
-          sx={{position: 'absolute', left: 16, bottom: 40, zIndex: 1000, alignItems: 'flex-start'}}
-        >
-          <Legend observations={projectObservations} types={types} projectLayers={projectLayers} />
-          {compass.needsPermission && (
-            <Tooltip title="Vis retning (kompas)">
-              <Fab size="small" aria-label="Vis retning" onClick={compass.requestPermission}>
-                <ExploreIcon />
-              </Fab>
-            </Tooltip>
-          )}
-          {(locationPermission === 'prompt' || locationPermission === 'denied') && (
-            <Tooltip title="Vis min placering">
-              <Fab
-                size="small"
-                aria-label="Vis min placering"
-                onClick={() => {
-                  if (locationPermission === 'denied') {
-                    toast.info(
-                      'Placering er blokeret for siden. Giv adgang i browserens indstillinger.'
-                    );
-                  }
-                  mapApi.current?.relocate();
-                }}
-              >
-                <LocationDisabledIcon />
-              </Fab>
-            </Tooltip>
-          )}
-          {mode.kind === 'idle' && (
-            <Tooltip
-              title={editMode ? 'Redigeringstilstand er slået til' : 'Slå redigeringstilstand til'}
-            >
-              <Fab
-                size="small"
-                color={editMode ? 'primary' : 'default'}
-                aria-label="Redigeringstilstand"
-                aria-pressed={editMode}
-                onClick={() => setEditMode(!editMode)}
-              >
-                <EditIcon />
-              </Fab>
-            </Tooltip>
-          )}
-        </Stack>
-
-        {hint && (
-          <Paper
-            elevation={3}
-            sx={{
-              position: 'absolute',
-              bottom: isMobile ? 132 : 88,
-              left: 8,
-              right: 8,
-              maxWidth: 480,
-              mx: 'auto',
-              zIndex: 1000,
-              px: 2,
-              py: 1,
-            }}
-          >
-            <Typography variant="body2">{hint}</Typography>
-          </Paper>
-        )}
-
-        <Stack
-          direction="row"
-          spacing={1}
-          useFlexGap
-          sx={{
-            position: 'absolute',
-            bottom: 24,
-            right: 16,
-            left: isMobile ? 16 : 'auto',
-            justifyContent: 'flex-end',
-            flexWrap: 'wrap',
-            zIndex: 1000,
-          }}
-        >
-          {mode.kind === 'crosshair' && mode.draft.shape === 'Point' && (
-            <>
-              <Button bttype="tertiary" startIcon={<CloseIcon />} onClick={cancel}>
-                Annuller
-              </Button>
-              <Button bttype="primary" startIcon={<CheckIcon />} onClick={confirmPoint}>
-                Bekræft placering
-              </Button>
-            </>
-          )}
-          {mode.kind === 'crosshair' && mode.draft.shape !== 'Point' && (
-            <>
-              <Button bttype="tertiary" startIcon={<CloseIcon />} onClick={cancel}>
-                Annuller
-              </Button>
-              <Button
-                bttype="tertiary"
-                startIcon={<UndoIcon />}
-                disabled={mode.draft.vertices.length === 0}
-                onClick={() => changeDraft((vertices) => vertices.slice(0, -1))}
-              >
-                Fortryd
-              </Button>
-              <Button bttype="tertiary" startIcon={<AddIcon />} onClick={addVertex}>
-                Tilføj punkt
-              </Button>
-              <Button
-                bttype="primary"
-                startIcon={<CheckIcon />}
-                disabled={mode.draft.vertices.length < MIN_VERTICES[mode.draft.shape]}
-                onClick={() => finishDraft(mode.draft)}
-              >
-                Færdig
-              </Button>
-            </>
-          )}
-          {mode.kind === 'drawing' && (
-            <Button bttype="tertiary" startIcon={<CloseIcon />} onClick={cancel}>
-              Annuller
-            </Button>
-          )}
-          {mode.kind === 'editing' && (
-            <>
-              <Button bttype="tertiary" startIcon={<CloseIcon />} onClick={cancel}>
-                Annuller
-              </Button>
-              <Button
-                bttype="primary"
-                startIcon={<SaveIcon />}
-                onClick={() => void saveGeometry(mode.id)}
-              >
-                Gem geometri
-              </Button>
-            </>
-          )}
-        </Stack>
-
-        {/* Styled like Justér's speed dial (src/components/CustomSpeedDial.tsx). */}
-        {mode.kind === 'idle' && (
-          <SpeedDial
-            ariaLabel="Ny feltobservation"
-            direction="up"
-            open={dialOpen}
-            icon={
-              <Box sx={{display: 'flex', alignItems: 'center', px: isMobile ? 0 : 2}}>
-                <AddLocationAltIcon />
-                {!isMobile && (
-                  <Typography sx={{pl: 1, textTransform: 'none'}}>Ny feltobservation</Typography>
-                )}
-              </Box>
-            }
-            sx={{
-              position: 'absolute',
-              bottom: 24,
-              right: 16,
-              zIndex: 1000,
-              alignItems: 'end',
-            }}
-            FabProps={{
-              onClick: () => setDialOpen((open) => !open),
-              sx: {
-                width: isMobile ? undefined : 'fit-content',
-                borderRadius: isMobile ? undefined : 4.5,
-                backgroundColor: 'secondary.main',
-                ':hover': {backgroundColor: 'secondary.dark'},
-              },
-            }}
-          >
-            {SHAPES.map(({shape, label, icon}) => (
-              <SpeedDialAction
-                key={shape}
-                icon={icon}
-                slotProps={{
-                  fab: {
-                    onClick: () => startCreate(shape),
-                    sx: {
-                      color: 'white',
-                      backgroundColor: 'primary.main',
-                      borderRadius: 4,
-                      ':hover': {backgroundColor: 'secondary.main'},
-                    },
-                  },
-                  tooltip: {title: label, open: true},
-                  staticTooltipLabel: {sx: {borderRadius: 2.5}},
-                }}
-              />
-            ))}
-          </SpeedDial>
         )}
       </Box>
 
