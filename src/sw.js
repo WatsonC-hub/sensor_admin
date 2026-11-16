@@ -14,12 +14,14 @@ cleanupOutdatedCaches();
 
 registerRoute(
   new NavigationRoute(createHandlerBoundToURL('index.html'), {
-    allowlist: [/^\/$/],
+    // /observation must load offline too: its data lives in IndexedDB.
+    allowlist: [/^\/$/, /^\/observation\/?$/],
   })
 );
 
 registerRoute(
-  /\/api\/(?!(data|auth)).*/,
+  // field_observation is left out: Dexie is its cache, and a cached reply must never pose as fresh.
+  /\/api\/(?!(data|auth|field_observation)).*/,
   new NetworkFirst({
     cacheName: 'api',
     plugins: [

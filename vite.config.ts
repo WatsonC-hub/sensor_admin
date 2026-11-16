@@ -82,6 +82,12 @@ const pwaOptions: Partial<VitePWAOptions> = {
     ],
     shortcuts: [
       {
+        name: 'Feltobservationer',
+        url: '/observation',
+        description: 'Åben Feltobservationer',
+        icons: [{src: 'android-launchericon-96-96.png', sizes: '96x96', type: 'image/png'}],
+      },
+      {
         name: 'Field',
         url: '/field',
         description: 'Åben Field',
@@ -277,6 +283,14 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/events/, ''),
+      },
+      // Feltobservation PoC: Explorer's GIS layer catalog and its GC2 WMS proxy, kept
+      // same-origin so no CORS is needed. Production needs the same rule in front of Field.
+      '/explorer': {
+        target: 'https://explorer.watsonc.dk',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/explorer/, ''),
       },
       '/static/images': {
         target: 'https://dhmol4s2b971r.cloudfront.net',

@@ -326,6 +326,41 @@ The umbrella term for service deadlines on a lokation. So far it holds only the 
 Sending a tidsserie's data on to external systems (DMP, Jupiter). DMP synkronisering requires a **dataejer**, the CVR owner of the data.
 _Avoid_: sync
 
+## Feltobservationer
+
+**Feltobservation**:
+Something a consultant or underleverandør documents on site, such as a drænbrønd, a jordprøve or a vandløbsopmåling. It has a geometry (punkt, linje or polygon), an observationstype, a note and photos, and optionally a projekt. Without a projekt, only the person who created it can see it.
+_Avoid_: registrering, observation, field documentation
+
+**Observationstype**:
+The kind of feltobservation, for example generel or drænbrønd. It decides which geometries are allowed and which typefelter it has.
+
+**Typefelt**:
+A field defined on an observationstype, for example jordart on a jordprøve. Typefelter are data, not code. A typefelt can be archived but never removed or changed in kind.
+
+**Feltgruppe**:
+A named list of typefelter, defined once and used by several observationstyper as one typefelt holding a list of rows. Example: Geologi, with one row per layer (bund i m u.t., jordtype, kommentar), used by Prøvepunkt and Boreprofil.
+_Avoid_: underformular
+
+**Projektlag**:
+A reference layer uploaded to one projekt, for example a projekt area. It is shown on the map in Feltobservationer when its projekt is chosen, and is never a feltobservation: it has no type and nothing is registered on it.
+_Avoid_: hjælpelag, baggrundslag
+
+**Relation**:
+A typefelt that points to another feltobservation, stored on the side that has many, for example a dræn/ledning's brønd. The other direction (a brønd's ledninger) is always computed, never stored.
+_Avoid_: link, kobling
+
+**Forberedelse**:
+Drawing or importing feltobservationer before fieldwork, usually on desktop. In the field, the team fills in their typefelter.
+Not the same as turforberedelse, which gathers what a tur needs (kontakter, adgang, ressourcer).
+
+**Intern note**:
+A note on a feltobservation that is never shown to customers.
+
+**Overførsel**:
+Exchanging feltobservationer between the device and the server: sending local changes and fetching colleagues' changes. Its mode is **Auto** (it pauses by itself on a poor connection) or **Manuel** (only when the user presses Overfør).
+_Avoid_: synkronisering, sync (synkronisering means sending tidsserie data to DMP or Jupiter)
+
 ## Rettigheder
 
 **Superbruger**:

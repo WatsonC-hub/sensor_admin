@@ -119,6 +119,12 @@ export const queryKeys = {
     all: () => ['location_groups'] as const,
   },
   contactRoles: () => ['contact_roles'] as const,
+  explorerGisLayers: () => ['explorer_gis_layers'] as const,
+  ortofotoYears: () => ['ortofoto_years'] as const,
+  fieldObservationProjectLayers: (projectNo?: string) =>
+    projectNo === undefined
+      ? (['field_observation_project_layers'] as const)
+      : (['field_observation_project_layers', projectNo] as const),
   imagesById: (loc_id_or_boreholeno: number | string) => ['images', loc_id_or_boreholeno] as const,
   dtm: () => ['dtm'] as const,
   locationTypes: () => ['location_types'] as const,
