@@ -210,7 +210,7 @@ type ActiveGisRowProps = {
 const ActiveGisRow = ({layerId, layer, online, onRaise, onLower, onRemove}: ActiveGisRowProps) => {
   const [open, setOpen] = useState(false);
   const [opacities, setOpacities] = useAtom(gisLayerOpacityAtom);
-  const transparency = Math.round((1 - (opacities[layerId] ?? 1)) * 100);
+  const visibility = Math.round((opacities[layerId] ?? 1) * 100);
   const title = layer?.title ?? layerId;
 
   return (
@@ -233,7 +233,7 @@ const ActiveGisRow = ({layerId, layer, online, onRaise, onLower, onRemove}: Acti
             </Typography>
           )}
         </Box>
-        <Tooltip title="Gennemsigtighed, rækkefølge og signatur">
+        <Tooltip title="Synlighed, rækkefølge og signatur">
           <IconButton
             size="small"
             color={open ? 'primary' : 'default'}
@@ -253,17 +253,17 @@ const ActiveGisRow = ({layerId, layer, online, onRaise, onLower, onRemove}: Acti
       <Collapse in={open} unmountOnExit>
         <Box sx={{px: 2, pb: 1.5}}>
           <Typography variant="caption" component="div" sx={{color: 'text.secondary'}}>
-            Gennemsigtighed: {transparency} %
+            Synlighed: {visibility} %
           </Typography>
           <Slider
             size="small"
             min={0}
-            max={90}
+            max={100}
             step={10}
-            value={transparency}
-            aria-label="Gennemsigtighed"
+            value={visibility}
+            aria-label="Synlighed"
             onChange={(_event, value) =>
-              setOpacities((current) => ({...current, [layerId]: 1 - Number(value) / 100}))
+              setOpacities((current) => ({...current, [layerId]: Number(value) / 100}))
             }
           />
           <Box sx={{display: 'flex', gap: 1, mb: 1.5}}>

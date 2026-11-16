@@ -190,7 +190,7 @@ own `register` schema, the UI lives on its own route, and nothing else in Field 
 - **Kortlag panel** (`LayerPanel.tsx`, 2026-11-16): on desktop a panel docked beside the map that
   stays open while you work; on a phone full screen with a close button. Three sections:
   Baggrundskort, **På kortet** (shown projektlag, then GIS layers top first, each with
-  gennemsigtighed, Flyt op/ned and its GC2 legend from `/explorer/gc2/api/v1/legend/html/watsonc`),
+  synlighed (0–100 %), Flyt op/ned and its GC2 legend from `/explorer/gc2/api/v1/legend/html/watsonc`),
   and **Tilføj lag** (search over layer and group names, Explorer's groups collapsed with
   "on/total", the projekt's projektlag first). Offline, the GIS layers are marked as not shown.
 - `/explorer` is a same-origin proxy to `https://explorer.watsonc.dk`, so no CORS is needed. **It
