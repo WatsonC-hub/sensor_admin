@@ -29,6 +29,8 @@ type Features = {
   routesAndParking: boolean;
   alarms: boolean;
   stationProgress: boolean;
+  /** Feltobservationer (/observation). Missing from older auth responses: treated as off. */
+  fieldObservations?: boolean;
 };
 
 const defaultUser: UserAccessControl = {
@@ -47,6 +49,7 @@ const defaultUser: UserAccessControl = {
     routesAndParking: false,
     alarms: false,
     stationProgress: false,
+    fieldObservations: false,
   },
   attributes: {
     has_own_service: false,

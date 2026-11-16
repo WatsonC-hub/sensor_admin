@@ -71,9 +71,9 @@ export const uploadImage = async (image: LocalImage & {data: ArrayBuffer}) => {
   return data.row;
 };
 
-export const getChanges = async (since: number) => {
+export const getChanges = async (cursor: string) => {
   const {data} = await apiClient.get<ChangesResponse>('/field_observation/changes', {
-    params: {since},
+    params: {cursor},
     timeout: METADATA_TIMEOUT_MS,
   });
   return data;

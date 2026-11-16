@@ -7,6 +7,7 @@ import type {
   Meta,
   ObservationType,
   Project,
+  ProjectLayer,
 } from '~/features/fieldObservation/types';
 
 /**
@@ -20,6 +21,8 @@ export class FieldObservationDb extends Dexie {
   projects!: EntityTable<Project, 'project_no'>;
   types!: EntityTable<ObservationType, 'id'>;
   meta!: EntityTable<Meta, 'key'>;
+  /** Projektlag fetched for the projekter the user has chosen, so they also show offline. */
+  projectLayers!: EntityTable<ProjectLayer, 'id'>;
 
   constructor(name: string) {
     super(name);
@@ -30,6 +33,7 @@ export class FieldObservationDb extends Dexie {
       types: 'id',
       meta: 'key',
     });
+    this.version(2).stores({projectLayers: 'id, project_no'});
   }
 }
 

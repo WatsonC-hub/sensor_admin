@@ -7,23 +7,22 @@ const now = () => new Date().toISOString();
 
 export type ObservationFields = Pick<
   LocalObservation,
-  'type_id' | 'project_no' | 'note' | 'internal_note'
+  'type_id' | 'project_no' | 'note' | 'internal_note' | 'properties'
 >;
 
-export const createObservation = async (
-  db: FieldObservationDb,
+const newObservation = (
   geom: Geometry,
   positionAccuracy: number | null,
-  fields: ObservationFields
-) => {
+  fields: ObservationFields,
+  customFields: unknown[] = []
+): LocalObservation => {
   const time = now();
-  const observation: LocalObservation = {
+  return {
     id: crypto.randomUUID(),
     geom,
     position_accuracy_m: positionAccuracy,
+    custom_fields: customFields,
     ...fields,
-    properties: {},
-    custom_fields: [],
     created_at: time,
     updated_at: time,
     created_by: null,
@@ -34,8 +33,29 @@ export const createObservation = async (
     local_rev: 1,
     sync_error: null,
   };
+};
+
+export const createObservation = async (
+  db: FieldObservationDb,
+  geom: Geometry,
+  positionAccuracy: number | null,
+  fields: ObservationFields
+) => {
+  const observation = newObservation(geom, positionAccuracy, fields);
   await db.observations.add(observation);
   return observation.id;
+};
+
+/** Many at once (import), in one transaction: either all are saved or none. */
+export const createObservations = async (
+  db: FieldObservationDb,
+  items: {geom: Geometry; fields: ObservationFields; customFields: unknown[]}[]
+) => {
+  const observations = items.map((item) =>
+    newObservation(item.geom, null, item.fields, item.customFields)
+  );
+  await db.observations.bulkAdd(observations);
+  return observations.map((observation) => observation.id);
 };
 
 const touch = <T extends {local_rev: number}>(row: T) => ({
@@ -48,12 +68,14 @@ const touch = <T extends {local_rev: number}>(row: T) => ({
 export const updateObservation = async (
   db: FieldObservationDb,
   id: string,
-  fields: Partial<ObservationFields>
+  fields: Partial<ObservationFields & {geom: Geometry}>
 ) => {
   await db.transaction('rw', db.observations, async () => {
     const row = await db.observations.get(id);
     if (!row) return;
-    await db.observations.update(id, {...fields, ...touch(row)});
+    // A moved geometry no longer has the GPS accuracy it was captured with.
+    const accuracy = fields.geom ? {position_accuracy_m: null} : {};
+    await db.observations.update(id, {...fields, ...accuracy, ...touch(row)});
   });
 };
 

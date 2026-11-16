@@ -1,3 +1,4 @@
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
 import LayersIcon from '@mui/icons-material/Layers';
 import {
   Alert,
@@ -21,6 +22,7 @@ import {
   Select,
   Tab,
   Tabs,
+  Typography,
 } from '@mui/material';
 import {useAtom} from 'jotai';
 import React, {useMemo, useState} from 'react';
@@ -30,11 +32,13 @@ import {BACKGROUND_MAPS, useOrtofotoYears} from '~/features/fieldObservation/bac
 import {
   activeGisLayersAtom,
   backgroundMapAtom,
+  hiddenProjectLayersAtom,
   ortofotoYearAtom,
 } from '~/features/fieldObservation/state';
 
 import type {GisLayer} from '~/features/fieldObservation/api/useGisLayers';
 import type {BackgroundMapId} from '~/features/fieldObservation/backgroundMaps';
+import type {ProjectLayer} from '~/features/fieldObservation/types';
 
 const NO_GROUP = 'Andre lag';
 
@@ -138,10 +142,85 @@ const GisLayersTab = () => {
   );
 };
 
-/** Background maps and Explorer's GIS layers, in two tabs as in Explorer's layer panel. */
-const LayerMenu = () => {
+type ProjectLayersProps = {
+  /** The projekt chosen in the projekt field, or null. */
+  projectNo: string | null;
+  layers: ProjectLayer[];
+  /** The user may delete projektlag in this projekt (edit rights). */
+  canDelete: boolean;
+  onDelete: (layer: ProjectLayer) => void;
+};
+
+const ProjectLayersTab = ({projectNo, layers, canDelete, onDelete}: ProjectLayersProps) => {
+  const [hidden, setHidden] = useAtom(hiddenProjectLayersAtom);
+  const toggle = (id: string) =>
+    setHidden((current) =>
+      current.includes(id) ? current.filter((layerId) => layerId !== id) : [...current, id]
+    );
+
+  if (!projectNo) {
+    return (
+      <Typography variant="body2" sx={{p: 2, color: 'text.secondary'}}>
+        Vælg et projekt for at se dets projektlag.
+      </Typography>
+    );
+  }
+  if (layers.length === 0) {
+    return (
+      <Typography variant="body2" sx={{p: 2, color: 'text.secondary'}}>
+        Projekt {projectNo} har ingen projektlag. Upload et med Importér fil.
+      </Typography>
+    );
+  }
+  return (
+    <List dense>
+      {layers.map((layer) => (
+        <ListItemButton key={layer.id} onClick={() => toggle(layer.id)}>
+          <ListItemIcon sx={{minWidth: 36}}>
+            <Checkbox
+              edge="start"
+              size="small"
+              checked={!hidden.includes(layer.id)}
+              tabIndex={-1}
+              disableRipple
+            />
+          </ListItemIcon>
+          <Box
+            sx={{
+              width: 14,
+              height: 14,
+              mr: 1.5,
+              flexShrink: 0,
+              borderRadius: 0.5,
+              border: 2,
+              borderColor: layer.style.color ?? '#e65100',
+              bgcolor: layer.style.fillColor ?? 'transparent',
+            }}
+          />
+          <ListItemText primary={layer.name} secondary={`${layer.feature_count} objekter`} />
+          {canDelete && (
+            <IconButton
+              edge="end"
+              size="small"
+              aria-label={`Slet ${layer.name}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                onDelete(layer);
+              }}
+            >
+              <DeleteOutlineIcon fontSize="small" />
+            </IconButton>
+          )}
+        </ListItemButton>
+      ))}
+    </List>
+  );
+};
+
+/** Background maps, the projekt's projektlag and Explorer's GIS layers, in tabs. */
+const LayerMenu = (projectLayers: ProjectLayersProps) => {
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-  const [tab, setTab] = useState<'baggrund' | 'gis'>('baggrund');
+  const [tab, setTab] = useState<'baggrund' | 'projekt' | 'gis'>('baggrund');
   const [active] = useAtom(activeGisLayersAtom);
 
   return (
@@ -167,9 +246,12 @@ const LayerMenu = () => {
       >
         <Tabs value={tab} onChange={(_event, value) => setTab(value)} variant="fullWidth">
           <Tab value="baggrund" label="Baggrund" />
+          <Tab value="projekt" label="Projektlag" />
           <Tab value="gis" label="GIS-lag" />
         </Tabs>
-        {tab === 'baggrund' ? <BackgroundTab /> : <GisLayersTab />}
+        {tab === 'baggrund' && <BackgroundTab />}
+        {tab === 'projekt' && <ProjectLayersTab {...projectLayers} />}
+        {tab === 'gis' && <GisLayersTab />}
       </Popover>
     </>
   );

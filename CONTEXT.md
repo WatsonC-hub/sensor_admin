@@ -309,6 +309,18 @@ The kind of feltobservation, for example generel or drænbrønd. It decides whic
 **Typefelt**:
 A field defined on an observationstype, for example jordart on a jordprøve. Typefelter are data, not code. A typefelt can be archived but never removed or changed in kind.
 
+**Feltgruppe**:
+A named list of typefelter, defined once and used by several observationstyper as one typefelt holding a list of rows. Example: Geologi, with one row per layer (bund i m u.t., jordtype, kommentar), used by Prøvepunkt and Boreprofil.
+_Avoid_: underformular
+
+**Projektlag**:
+A reference layer uploaded to one projekt, for example a projekt area. It is shown on the map in Feltobservationer when its projekt is chosen, and is never a feltobservation: it has no type and nothing is registered on it.
+_Avoid_: hjælpelag, baggrundslag
+
+**Relation**:
+A typefelt that points to another feltobservation, stored on the side that has many, for example a dræn/ledning's brønd. The other direction (a brønd's ledninger) is always computed, never stored.
+_Avoid_: link, kobling
+
 **Forberedelse**:
 Drawing or importing feltobservationer before fieldwork, usually on desktop. In the field, the team fills in their typefelter.
 Not the same as turforberedelse, which gathers what a tur needs (kontakter, adgang, ressourcer).

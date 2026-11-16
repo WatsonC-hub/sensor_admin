@@ -39,16 +39,20 @@ export const useSwitchMode = () => {
   };
 };
 
-/** On app start at `/`, open the mode the user was last in. Runs once per page load. */
-export const useRestoreLastMode = () => {
+/**
+ * On app start at `/`, open the mode the user was last in. Runs once per page load, and only
+ * for users with Funktionsadgang to Feltobservationer.
+ */
+export const useRestoreLastMode = (allowed: boolean) => {
   const location = useLocation();
   const navigate = useNavigate();
   const checked = useRef(false);
   useEffect(() => {
-    if (checked.current) return;
+    // Wait for the user's flags: they are all false until the user is loaded.
+    if (checked.current || !allowed) return;
     checked.current = true;
     if (location.pathname === '/' && getLastMode() === 'feltobservationer') {
       void navigate(OBSERVATION_PATH, {replace: true});
     }
-  }, [location.pathname, navigate]);
+  }, [location.pathname, navigate, allowed]);
 };

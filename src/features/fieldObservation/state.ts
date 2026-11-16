@@ -18,3 +18,15 @@ export const ortofotoYearAtom = atomWithStorage<number | null>(
 export const activeGisLayersAtom = atomWithStorage<string[]>('fieldObservation.gisLayers', []);
 
 export const selectedProjectAtom = atomWithStorage<string | null>('fieldObservation.project', null);
+
+/** Ids of projektlag the user has hidden. Projektlag are shown unless hidden. */
+export const hiddenProjectLayersAtom = atomWithStorage<string[]>(
+  'fieldObservation.hiddenProjectLayers',
+  []
+);
+
+/** Legend keys (types and their variants, see styles.ts) the user has hidden on the map. */
+export const hiddenLegendAtom = atomWithStorage<string[]>('fieldObservation.hiddenLegend', []);
+
+/** Redigeringstilstand: clicking a feltobservation opens it in Rediger instead of Vis. */
+export const editModeAtom = atomWithStorage<boolean>('fieldObservation.editMode', false);

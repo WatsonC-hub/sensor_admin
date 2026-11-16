@@ -154,7 +154,10 @@ const refreshReferenceData = async (db: FieldObservationDb) => {
   const stored = await db.meta.get('referenceDataAt');
   const fetchedAt = stored?.key === 'referenceDataAt' ? stored.value : 0;
   const fresh = Date.now() - fetchedAt < REFERENCE_DATA_MAX_AGE_MS;
-  if (fresh && (await db.types.count()) > 0) return;
+  const storedTypes = await db.types.toArray();
+  // Types stored before typefelter or styles existed lack them; fetch them again at once.
+  const complete = storedTypes.every((type) => Array.isArray(type.fields) && type.style);
+  if (fresh && storedTypes.length > 0 && complete) return;
   const [projects, types] = await Promise.all([getProjects(), getTypes()]);
   await db.transaction('rw', db.projects, db.types, db.meta, async () => {
     await db.projects.clear();
@@ -169,10 +172,13 @@ const refreshReferenceData = async (db: FieldObservationDb) => {
 const pull = async (db: FieldObservationDb) => {
   await refreshReferenceData(db);
 
-  let cursor = (await db.meta.get('cursor'))?.value ?? 0;
+  // The cursor is the server's (transaction snapshots, so no row is skipped). A number is
+  // from the old version cursor: pull everything once; local unsent edits still win.
+  const stored = (await db.meta.get('cursor'))?.value;
+  let cursor = typeof stored === 'string' ? stored : '';
   let hasMore = true;
   while (hasMore) {
-    const changes = await getChanges(Number(cursor));
+    const changes = await getChanges(cursor);
     await db.transaction('rw', db.observations, db.images, db.meta, async () => {
       for (const row of changes.observations) {
         const local = await db.observations.get(row.id);

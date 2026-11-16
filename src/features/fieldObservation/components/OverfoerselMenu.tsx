@@ -4,7 +4,6 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {
   Alert,
   Badge,
-  Button,
   CircularProgress,
   FormControlLabel,
   IconButton,
@@ -14,6 +13,8 @@ import {
   Typography,
 } from '@mui/material';
 import React, {useState} from 'react';
+
+import Button from '~/components/Button';
 
 import type {useOverfoersel} from '~/features/fieldObservation/overfoersel/useOverfoersel';
 
@@ -101,7 +102,12 @@ const OverfoerselMenu = ({overfoersel, notPersisted}: Props) => {
             }
             label="Automatisk overførsel"
           />
-          <Button variant="contained" disabled={running} onClick={() => void syncNow()}>
+          <Button
+            bttype="primary"
+            startIcon={<CloudUploadIcon />}
+            disabled={running}
+            onClick={() => void syncNow()}
+          >
             Overfør nu
           </Button>
         </Stack>

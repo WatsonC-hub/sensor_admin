@@ -33,7 +33,7 @@ const ObservationPage = lazy(
 const Router = () => {
   const user = useUser();
   const isObservationRoute = useMatch(OBSERVATION_PATH) !== null;
-  useRestoreLastMode();
+  useRestoreLastMode(user.features.fieldObservations === true);
   // early return of no IoT access or borehole access
   // redirect component
 
@@ -124,7 +124,11 @@ const Router = () => {
     } as SelectionCommand<CommandPalette>,
   ]);
 
-  // Consultants and underleverandører may have neither flag; /observation only needs a login.
+  // Feltobservationer has its own Funktionsadgang; consultants and underleverandører may have
+  // it without IoT or pejleboring access.
+  if (isObservationRoute && !user.features.fieldObservations) {
+    return <AccessDenied />;
+  }
   if (!user.features.iotAccess && !user.features.boreholeAccess && !isObservationRoute) {
     return <AccessDenied />;
   }

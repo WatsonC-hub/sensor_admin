@@ -8,6 +8,8 @@ export const observationFormSchema = z.object({
   project_no: z.string().transform((value) => value || null),
   note: optionalText,
   internal_note: optionalText,
+  // Validated per type by propertiesSchema (typeFields.ts), added in the dialog.
+  properties: z.record(z.string(), z.unknown()),
 });
 
 export type ObservationFormInput = z.input<typeof observationFormSchema>;

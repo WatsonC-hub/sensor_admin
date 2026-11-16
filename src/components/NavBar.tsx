@@ -166,6 +166,9 @@ const NavBarMenu = ({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const switchMode = useSwitchMode();
   const inObservationMode = useMatch(OBSERVATION_PATH) !== null;
+  const {
+    features: {fieldObservations},
+  } = useUser();
 
   const handleClick: MouseEventHandler<HTMLButtonElement> = (event) => {
     if (event.currentTarget instanceof HTMLElement) setAnchorEl(event.currentTarget);
@@ -228,16 +231,21 @@ const NavBarMenu = ({
           </MenuItem>
         )}
 
-        <MenuItem
-          key="switch-mode"
-          onClick={() => {
-            handleClose();
-            switchMode(inObservationMode ? 'servicering' : 'feltobservationer');
-          }}
-        >
-          <ListItemIcon>{inObservationMode ? <BuildIcon /> : <AddLocationAltIcon />}</ListItemIcon>
-          {inObservationMode ? 'Skift til Servicering' : 'Skift til Feltobservationer'}
-        </MenuItem>
+        {/* Only users with Funktionsadgang to Feltobservationer get the switch. */}
+        {(inObservationMode || fieldObservations) && (
+          <MenuItem
+            key="switch-mode"
+            onClick={() => {
+              handleClose();
+              switchMode(inObservationMode ? 'servicering' : 'feltobservationer');
+            }}
+          >
+            <ListItemIcon>
+              {inObservationMode ? <BuildIcon /> : <AddLocationAltIcon />}
+            </ListItemIcon>
+            {inObservationMode ? 'Skift til Servicering' : 'Skift til Feltobservationer'}
+          </MenuItem>
+        )}
 
         <MenuItem
           key="guides"
