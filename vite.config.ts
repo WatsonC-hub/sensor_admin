@@ -52,7 +52,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
     background_color: '#00786d',
     id: '/',
     dir: 'ltr',
-    display: 'minimal-ui',
+    display: 'standalone',
     orientation: 'portrait',
     start_url: '/',
     lang: 'da-DK',
