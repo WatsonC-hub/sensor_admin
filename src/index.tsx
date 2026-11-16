@@ -53,9 +53,29 @@ if (import.meta.env.PROD) {
   });
 }
 
+// The browser looks for a new sw.js only when a page is navigated to. An installed app (PWA) that
+// is brought back from the background is not navigated, so it can keep running an old bundle for
+// days. Check again every hour and whenever the app comes back into view. A new service worker
+// takes over at once (skipWaiting in sw.js) and registerSW then reloads the page.
+const SW_UPDATE_INTERVAL_MS = 60 * 60 * 1000;
+
 if ('serviceWorker' in navigator) {
-  // && !/localhost/.test(window.location)) {
-  registerSW({immediate: true});
+  registerSW({
+    immediate: true,
+    onRegisteredSW(_swUrl: string, registration: ServiceWorkerRegistration | undefined) {
+      if (!registration) return;
+      const checkForUpdate = () => {
+        if (registration.installing || !navigator.onLine) return;
+        registration.update().catch(() => {
+          // Offline or the server is unreachable; try again next time.
+        });
+      };
+      setInterval(checkForUpdate, SW_UPDATE_INTERVAL_MS);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') checkForUpdate();
+      });
+    },
+  });
 }
 
 onlineManager.setOnline(navigator.onLine);
