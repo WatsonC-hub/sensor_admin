@@ -36,9 +36,11 @@ const pwaOptions: Partial<VitePWAOptions> = {
   srcDir: 'src',
   filename: 'sw.js',
   registerType: 'autoUpdate',
+  // globPatterns already precaches every file in dist. Don't add includeAssets on top: it lists the
+  // same files again, and a file listed twice with different revisions makes sw.js throw on start
+  // (add-to-cache-list-conflicting-entries), so no new service worker can ever install. Files under
+  // public/assets/ are the risky ones: they share Vite's hashed assets/ folder and get no revision.
   injectManifest: {globPatterns: ['**/!(*.map)'], maximumFileSizeToCacheInBytes: 5000000},
-  includeAssets: ['**/*'],
-  // includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
 
   // injectManifest: {
   //   globPatterns: ['**/*.{js,css,html,json,webmanifest,png,svg,ico,woff,woff2}'],
