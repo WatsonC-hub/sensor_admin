@@ -52,6 +52,8 @@ type Props = {
   types: ObservationType[];
   /** Explorer GIS layer ids ("schema.table") to show, bottom first. */
   gisLayerIds: string[];
+  /** Opacity (0–1) per GIS layer id; a missing id is fully opaque. */
+  gisLayerOpacity: Record<string, number>;
   background: BackgroundMapId;
   ortofotoYear: number | null;
   draft: Draft | null;
@@ -102,6 +104,7 @@ const ObservationMap = ({
   observations,
   types,
   gisLayerIds,
+  gisLayerOpacity,
   background,
   ortofotoYear,
   draft,
@@ -136,6 +139,9 @@ const ObservationMap = ({
     map.attributionControl.setPrefix(false);
     map.pm.setLang('da');
     mapRef.current = map;
+    // The layer panel docks beside the map on desktop and changes its width.
+    const resizeObserver = new ResizeObserver(() => map.invalidateSize());
+    resizeObserver.observe(map.getContainer());
     // GIS layers sit above the base map and below the feltobservationer.
     map.createPane(GIS_PANE).style.zIndex = '350';
     map.createPane(PROJECT_PANE).style.zIndex = '370';
@@ -273,6 +279,7 @@ const ObservationMap = ({
     return () => {
       stopDraw();
       map.stopLocate();
+      resizeObserver.disconnect();
       map.remove();
       mapRef.current = null;
       layerRef.current = null;
@@ -319,8 +326,9 @@ const ObservationMap = ({
         shown.set(id, layer);
       }
       layer.setZIndex(index + 1);
+      layer.setOpacity(gisLayerOpacity[id] ?? 1);
     });
-  }, [gisLayerIds]);
+  }, [gisLayerIds, gisLayerOpacity]);
 
   useEffect(() => {
     const render = () => {
