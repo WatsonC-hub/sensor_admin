@@ -4,6 +4,7 @@ import {Box, Chip, Grid, IconButton, Link, Typography} from '@mui/material';
 import {useFindBorehole} from '~/features/station/api/useBorehole';
 import {convertDate} from '~/helpers/dateConverter';
 import {getGroupLink} from '~/helpers/links';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useAppContext} from '~/state/contexts';
 
@@ -11,6 +12,7 @@ import BoreholeIcon from './BoreholeIcon';
 
 const BoreholeContent = () => {
   const {boreholeno} = useAppContext(['boreholeno']);
+  const {isMobile} = useBreakpoints();
   const {boreholeIntake} = useNavigationFunctions();
 
   const {data, isLoading} = useFindBorehole(boreholeno);
@@ -124,7 +126,18 @@ const BoreholeContent = () => {
             fontWeight: 'bold',
           }}
         >
-          {boreholeno}
+          <Link
+            color="inherit"
+            href={`https://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${boreholeno}`}
+            target={!isMobile ? '_blank' : undefined}
+            rel={!isMobile ? 'noopener' : undefined}
+            sx={{
+              cursor: 'pointer',
+              textDecorationColor: 'rgba(0, 0, 0, 0.4)',
+            }}
+          >
+            {boreholeno}
+          </Link>
         </Typography>
         {data.description && (
           <Box
