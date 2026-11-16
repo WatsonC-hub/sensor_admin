@@ -10,7 +10,7 @@ import type {
  * typefelter (see the spec, "Kortstil og signaturforklaring"). Styles are data on the type.
  */
 
-/** The icon library: files in public/assets/fieldObservation/icons (see the README there). */
+/** The icon library: files in public/fieldObservation/icons (see the README there). */
 export const ICONS = [
   'pin',
   'soil',
@@ -36,7 +36,7 @@ const COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
 
 export const iconUrl = (icon: string) => {
   const name = (ICONS as readonly string[]).includes(icon) ? icon : DEFAULT_ICON;
-  return `/assets/fieldObservation/icons/${name}.svg`;
+  return `/fieldObservation/icons/${name}.svg`;
 };
 
 const safeColor = (color: string | undefined, fallback: string) =>
