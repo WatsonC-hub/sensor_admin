@@ -60,8 +60,8 @@ own `register` schema, the UI lives on its own route, and nothing else in Field 
 6. On a bad connection, Auto pauses by itself; the icon turns orange and the popover says the
    connection is poor. Auto resumes by itself when the connection is good again, or the user presses
    **Overfør nu**. The user can also turn Auto off permanently.
-7. A layers icon in the top bar opens two tabs: **Baggrund** (Kort and Satellit from Field,
-   OpenStreetMap, and Dataforsyningen's ortofoto with a choice of year) and **GIS-lag** (Explorer's
+7. A layers icon in the top bar opens two tabs: **Baggrund** (Luftfoto, which can be downloaded
+   for offline use, Kort from Field, and Dataforsyningen's ortofoto with a choice of year) and **GIS-lag** (Explorer's
    GIS layer catalog, grouped as in Explorer, turned on and off with checkboxes). The choices are
    remembered on the device.
 8. A colleague's device pulls the new feltobservation on its next overførsel and shows it.
@@ -193,11 +193,23 @@ own `register` schema, the UI lives on its own route, and nothing else in Field 
   synlighed (0–100 %), Flyt op/ned and its GC2 legend from `/explorer/gc2/api/v1/legend/html/watsonc`),
   and **Tilføj lag** (search over layer and group names, Explorer's groups collapsed with
   "on/total", the projekt's projektlag first). Offline, the GIS layers are marked as not shown.
+- **Zoom til projekt** (2026-11-17): picking a projekt in the projekt field zooms the map to its
+  extent (its feltobservationer plus its shown projektlag, max zoom 17), once that data has loaded.
+  The projekt restored from the device on page load does not move the map. A button in the map
+  controls on the left zooms to the projekt again; it is hidden when the projekt has no geometry.
 - `/explorer` is a same-origin proxy to `https://explorer.watsonc.dk`, so no CORS is needed. **It
   only exists in the vite dev server; production needs the same rule in front of Field.**
 - The ortofoto is tiled WMS straight from Dataforsyningen (`orto_foraar_DAF`, layer
   `geodanmark_<year>_12_5cm`), as Explorer does it. The URL and token are copied from Explorer,
   which has no endpoint for its background maps yet. Explorer's vector background map is left out.
+- **Luftfoto** (2026-11-17), the default baggrundskort: the newest ortofoto as WMTS tiles
+  (`orto_foraar_webm_DAF`, web mercator), which can be downloaded for offline use. In Kortlag,
+  "Hent det viste område" fetches the area on screen into IndexedDB (`leaflet.offline`): the 4
+  zoom levels above the view plus levels down to a chosen Detaljeniveau, each previewed at a fixed
+  street in Aarhus with parked cars so the detail can be judged by known sizes. A tile that is not
+  stored and cannot be fetched is drawn from the nearest stored coarser tile, enlarged. Older
+  years stay WMS-only ("Ortofoto, alle årgange") and cannot be downloaded. Debug:
+  `localStorage.luftfotoDebug = '1'` labels each tile with its source.
 - The rest of Field's offline behaviour is unchanged.
 
 ## Demo / acceptance
@@ -214,7 +226,7 @@ own `register` schema, the UI lives on its own route, and nothing else in Field 
 
 ## Out of scope
 
-- Offline map tiles
+- Offline tiles for GIS layers and older ortofoto years (only the newest Luftfoto can be downloaded)
 - Drawing lines and polygons, and moving geometry
 - Published views, GC2 and the Explorer layer
 - Customer access per row

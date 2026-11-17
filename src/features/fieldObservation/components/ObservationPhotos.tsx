@@ -26,6 +26,9 @@ export type StagedPhoto = {
   url: string;
 };
 
+/** Thumbnail size in Rediger: small enough for one row next to the fields on a phone. */
+const TILE_SIZE = 72;
+
 /** One photo as the tiles and the viewer show it. */
 type Shown = {
   key: string;
@@ -317,34 +320,65 @@ const ObservationPhotos = ({db, observationId, disabled, staged, onStagedChange}
 
   return (
     <Stack spacing={1}>
-      <Stack direction="row" spacing={1} useFlexGap sx={{flexWrap: 'wrap', alignItems: 'center'}}>
-        {all.map((photo, index) => (
-          <Tile
-            key={photo.key}
-            photo={photo}
-            size={88}
-            onOpen={() => setOpen(index)}
-            onDelete={disabled ? undefined : () => remove(photo.key)}
-          />
-        ))}
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          multiple
-          hidden
-          onChange={(event) => void handleFiles(event.target.files)}
-        />
-        {!disabled && (
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        hidden
+        onChange={(event) => void handleFiles(event.target.files)}
+      />
+      {all.length === 0 ? (
+        // No photos yet: a one-line button takes less room than an empty tile row.
+        !disabled && (
           <Button
             bttype="tertiary"
+            size="small"
             startIcon={<AddAPhotoIcon />}
             onClick={() => inputRef.current?.click()}
+            sx={{alignSelf: 'flex-start'}}
           >
             Tilføj billede
           </Button>
-        )}
-      </Stack>
+        )
+      ) : (
+        // One line that scrolls sideways, so many photos don't push the fields down.
+        <Stack direction="row" spacing={1} sx={{overflowX: 'auto', pb: 0.5}}>
+          {all.map((photo, index) => (
+            <Tile
+              key={photo.key}
+              photo={photo}
+              size={TILE_SIZE}
+              onOpen={() => setOpen(index)}
+              onDelete={disabled ? undefined : () => remove(photo.key)}
+            />
+          ))}
+          {!disabled && (
+            <Box
+              component="button"
+              type="button"
+              aria-label="Tilføj billede"
+              onClick={() => inputRef.current?.click()}
+              sx={{
+                width: TILE_SIZE,
+                height: TILE_SIZE,
+                flexShrink: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px dashed',
+                borderColor: 'primary.main',
+                borderRadius: 1,
+                bgcolor: 'transparent',
+                color: 'primary.main',
+                cursor: 'pointer',
+              }}
+            >
+              <AddAPhotoIcon />
+            </Box>
+          )}
+        </Stack>
+      )}
       {open !== null && (
         <PhotoViewer
           photos={all}

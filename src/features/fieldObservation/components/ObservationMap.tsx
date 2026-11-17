@@ -12,6 +12,7 @@ import {markerHtml, resolveStyle} from '~/features/fieldObservation/styles';
 import {SingleTileWms} from '~/features/map/singleTileWms';
 
 import type {BackgroundMapId} from '~/features/fieldObservation/backgroundMaps';
+import type {MapView} from '~/features/fieldObservation/offlineTiles';
 import type {
   Geometry,
   LocalObservation,
@@ -23,6 +24,8 @@ export type DrawShape = Geometry['type'];
 
 export type ObservationMapApi = {
   getCenter: () => L.LatLng;
+  /** The area and zoom shown on the map now. */
+  getView: () => MapView;
   /** Centre the map on the device's position, if there is one. */
   centerOnUser: () => void;
   /** The latest GPS fix, if any. */
@@ -211,6 +214,7 @@ const ObservationMap = ({
 
     onReady({
       getCenter: () => map.getCenter(),
+      getView: () => ({bounds: map.getBounds(), zoom: map.getZoom()}),
       centerOnUser: () => {
         if (fix) map.setView(fix.latlng, Math.max(map.getZoom(), USER_ZOOM));
       },

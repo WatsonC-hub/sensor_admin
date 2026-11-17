@@ -39,6 +39,7 @@ import Button from '~/components/Button';
 import {useGisLayers} from '~/features/fieldObservation/api/useGisLayers';
 import {gisLegendGraphicUrl, useGisLegend} from '~/features/fieldObservation/api/useGisLegend';
 import {BACKGROUND_MAPS, useOrtofotoYears} from '~/features/fieldObservation/backgroundMaps';
+import OfflineArea from '~/features/fieldObservation/components/OfflineArea';
 import {
   activeGisLayersAtom,
   backgroundMapAtom,
@@ -50,6 +51,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import useOnlineStatus from '~/hooks/useOnlineStatus';
 
 import type {GisLayer} from '~/features/fieldObservation/api/useGisLayers';
+import type {MapView} from '~/features/fieldObservation/offlineTiles';
 import type {ProjectLayer} from '~/features/fieldObservation/types';
 
 const NO_GROUP = 'Andre lag';
@@ -99,7 +101,7 @@ const ProjectSwatch = ({layer}: {layer: ProjectLayer}) => (
   />
 );
 
-const BackgroundSection = () => {
+const BackgroundSection = ({getMapView}: {getMapView: () => MapView | null}) => {
   const [background, setBackground] = useAtom(backgroundMapAtom);
   const [year, setYear] = useAtom(ortofotoYearAtom);
   const {data: years, isPending, isError} = useOrtofotoYears(background === 'ortofoto');
@@ -158,6 +160,7 @@ const BackgroundSection = () => {
           )}
         </Box>
       )}
+      {background === 'luftfoto' && <OfflineArea getMapView={getMapView} />}
     </>
   );
 };
@@ -630,13 +633,17 @@ export const LayerButton = ({open, onClick}: {open: boolean; onClick: () => void
   );
 };
 
-type Props = ProjectLayerProps & {onClose: () => void};
+type Props = ProjectLayerProps & {
+  onClose: () => void;
+  /** The area and zoom shown on the map, for downloading luftfoto; null before the map is ready. */
+  getMapView: () => MapView | null;
+};
 
 /**
  * Kortlag: background map, what is on the map, and the layer catalog. On desktop a panel
  * docked beside the map that stays open while you work; on a phone a full-screen view.
  */
-const LayerPanel = ({onClose, ...projectLayerProps}: Props) => {
+const LayerPanel = ({onClose, getMapView, ...projectLayerProps}: Props) => {
   const {isMobile} = useBreakpoints();
   const content = (
     <>
@@ -662,7 +669,7 @@ const LayerPanel = ({onClose, ...projectLayerProps}: Props) => {
         </IconButton>
       </Box>
       <Box sx={{flex: 1, minHeight: 0, overflowY: 'auto', pb: 3}}>
-        <BackgroundSection />
+        <BackgroundSection getMapView={getMapView} />
         <OnMapSection projectLayers={projectLayerProps.projectLayers} />
         <CatalogSection {...projectLayerProps} />
       </Box>

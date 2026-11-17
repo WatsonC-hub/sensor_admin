@@ -5,12 +5,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import ExploreIcon from '@mui/icons-material/Explore';
 import LocationDisabledIcon from '@mui/icons-material/LocationDisabled';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
 import PentagonOutlinedIcon from '@mui/icons-material/PentagonOutlined';
 import PlaceIcon from '@mui/icons-material/Place';
 import SaveIcon from '@mui/icons-material/Save';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import UndoIcon from '@mui/icons-material/Undo';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
 import {
   Box,
   Fab,
@@ -22,6 +24,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import {useIsFetching} from '@tanstack/react-query';
 import {useLiveQuery} from 'dexie-react-hooks';
 import {useAtom, useAtomValue} from 'jotai';
 import React, {useEffect, useMemo, useRef, useState} from 'react';
@@ -59,6 +62,7 @@ import {
   selectedProjectAtom,
 } from '~/features/fieldObservation/state';
 import {hiddenByLegend} from '~/features/fieldObservation/styles';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 import type {DialogTarget} from '~/features/fieldObservation/components/ObservationDialog';
@@ -214,6 +218,45 @@ const ObservationPage = () => {
     [projectLayers, hiddenProjectLayers]
   );
   const deleteProjectLayer = useDeleteProjectLayer(db);
+  const projectLayersFetching =
+    useIsFetching({queryKey: queryKeys.fieldObservationProjectLayers(selectedProject ?? '')}) > 0;
+  // The projekt's extent: its feltobservationer and its shown projektlag. The project_no check
+  // drops the previous projekt's layers while the new ones load.
+  const projectExtent = useMemo<Geometry[]>(() => {
+    if (selectedProject === null) return [];
+    return [
+      ...projectObservations
+        .filter((observation) => !observation.deleted_at)
+        .map((observation) => observation.geom),
+      ...visibleProjectLayers
+        .filter((layer) => layer.project_no === selectedProject)
+        .flatMap((layer) => layer.features.features.map((feature) => feature.geometry)),
+    ];
+  }, [selectedProject, projectObservations, visibleProjectLayers]);
+  // A projekt the user just picked, waiting for its data before the map zooms to it. Only the
+  // user's own picks set it, so the projekt restored from the device on load doesn't move the map.
+  const pendingZoomRef = useRef<string | null>(null);
+  useEffect(() => {
+    const pending = pendingZoomRef.current;
+    if (pending === null) return;
+    if (pending !== selectedProject) {
+      pendingZoomRef.current = null;
+      return;
+    }
+    // Wait for the projektlag from the server, and for anything at all to zoom to. Later data
+    // changes don't zoom again, because the pending zoom is used up here.
+    if (projectLayersFetching || projectExtent.length === 0) return;
+    pendingZoomRef.current = null;
+    mapApi.current?.fitTo(projectExtent);
+  }, [selectedProject, projectExtent, projectLayersFetching]);
+  const selectProject = (projectNo: string | null) => {
+    if (projectNo !== null && projectNo === selectedProject) {
+      mapApi.current?.fitTo(projectExtent);
+      return;
+    }
+    pendingZoomRef.current = projectNo;
+    setSelectedProject(projectNo);
+  };
   // Only a projekt the user can edit, or new feltobservationer would be rejected.
   const editableSelectedProject = projects.some((project) => project.project_no === selectedProject)
     ? selectedProject
@@ -221,6 +264,8 @@ const ObservationPage = () => {
 
   const startCreate = (shape: DrawShape) => {
     setDialOpen(false);
+    // A zoom still waiting for data would jump away from where the user is drawing.
+    pendingZoomRef.current = null;
     const api = mapApi.current;
     if (!api) return;
     if (isMobile) {
@@ -370,7 +415,7 @@ const ObservationPage = () => {
               projects={projects}
               observations={observations}
               value={selectedProject}
-              onChange={setSelectedProject}
+              onChange={selectProject}
             />
           </Paper>
 
@@ -392,6 +437,36 @@ const ObservationPage = () => {
               types={types}
               projectLayers={projectLayers}
             />
+            {projectExtent.length > 0 && (
+              <Tooltip title="Zoom til projekt">
+                <Fab
+                  size="small"
+                  aria-label="Zoom til projekt"
+                  onClick={() => mapApi.current?.fitTo(projectExtent)}
+                >
+                  <ZoomOutMapIcon />
+                </Fab>
+              </Tooltip>
+            )}
+            {(locationPermission === 'granted' || locationPermission === 'unknown') && (
+              <Tooltip title="Zoom til min placering">
+                <Fab
+                  size="small"
+                  aria-label="Zoom til min placering"
+                  onClick={() => {
+                    const api = mapApi.current;
+                    if (!api) return;
+                    if (!api.lastFix()) {
+                      toast.info('Venter på din placering');
+                      return;
+                    }
+                    api.centerOnUser();
+                  }}
+                >
+                  <MyLocationIcon />
+                </Fab>
+              </Tooltip>
+            )}
             {compass.needsPermission && (
               <Tooltip title="Vis retning (kompas)">
                 <Fab size="small" aria-label="Vis retning" onClick={compass.requestPermission}>
@@ -581,6 +656,7 @@ const ObservationPage = () => {
         </Box>
         {layersOpen && (
           <LayerPanel
+            getMapView={() => mapApi.current?.getView() ?? null}
             projectNo={selectedProject}
             projectLayers={projectLayers}
             canDelete={editableSelectedProject !== null}
@@ -611,7 +687,7 @@ const ObservationPage = () => {
             toast.success(
               <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
                 <span>Flyttet til {projectNo}</span>
-                <Button bttype="link" size="small" onClick={() => setSelectedProject(projectNo)}>
+                <Button bttype="link" size="small" onClick={() => selectProject(projectNo)}>
                   Vis projekt
                 </Button>
               </Box>
