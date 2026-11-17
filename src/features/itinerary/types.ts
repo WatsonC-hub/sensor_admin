@@ -26,6 +26,10 @@ export type Taskitinerary = TaskitineraryBase & {
   /** Lokationer currently on the tur or besøgt. */
   link_count?: number;
   visited_count?: number;
+  /** Lokationer that left the tur without a visit: fjernet, flyttet or flettet ud. */
+  removed_count?: number;
+  /** Lokationer frigivet when the tur was ended by hand. */
+  released_count?: number;
 };
 
 /** One period a lokation is on a tur. */

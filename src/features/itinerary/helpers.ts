@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import type {
   Afslutningsaarsag,
   MovedTo,
+  Taskitinerary,
   Tilknytning,
   TilknytningSlut,
   TurForloebEvent,
@@ -62,6 +63,25 @@ export const tilknytningSlutLabel: Record<TilknytningSlut, string> = {
   frigivet: 'Frigivet',
   flettet_ud: 'Flyttet til anden tur',
 };
+
+/**
+ * "x / y besøgt", followed by the lokationer that left the tur without a visit,
+ * e.g. "0 / 0 besøgt · 3 fjernet/flyttet".
+ */
+export const progressLabel = (
+  itinerary: Pick<
+    Taskitinerary,
+    'visited_count' | 'link_count' | 'removed_count' | 'released_count'
+  >,
+  noun = 'besøgt'
+) =>
+  [
+    `${itinerary.visited_count ?? 0} / ${itinerary.link_count ?? 0} ${noun}`,
+    itinerary.removed_count ? `${itinerary.removed_count} fjernet/flyttet` : null,
+    itinerary.released_count ? `${itinerary.released_count} frigivet` : null,
+  ]
+    .filter(Boolean)
+    .join(' · ');
 
 /** "Flyttet til <tur>" for a fjernet tilknytning that was moved, else null. */
 export const movedLabel = (moved: MovedTo) =>
