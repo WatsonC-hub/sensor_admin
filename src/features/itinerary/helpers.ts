@@ -139,9 +139,21 @@ const isWork = (event: TurForloebEvent): event is WorkEvent =>
 const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
 /**
+ * ", til 10:50" when a row groups registrations made in different minutes, so the row's time
+ * (the first registration) and this show the span. The span goes in the text rather than the
+ * time column, which keeps the column aligned.
+ */
+const untilLast = (events: WorkEvent[]) => {
+  const first = dayjs(events[0].at).format('HH:mm');
+  const last = dayjs(events[events.length - 1].at).format('HH:mm');
+  return first === last ? '' : `, til ${last}`;
+};
+
+/**
  * The rows of one visit, in the order they happened: one row for the tilsyn ("Tilsyn,
- * batteriskift"), one row for all pejlinger ("5 pejlinger"), and one row per closed opgave
- * ("Sender ikke færdiggjort"). Each row shows the time of its first registration.
+ * batteriskift"), one row for all pejlinger ("5 pejlinger, til 10:50"), and one row per
+ * closed opgave ("Sender ikke færdiggjort"). Each row shows the time of its first
+ * registration.
  */
 const visitItems = (events: WorkEvent[]): VisitItem[] => {
   const items: VisitItem[] = [];
@@ -152,14 +164,15 @@ const visitItems = (events: WorkEvent[]): VisitItem[] => {
     const parts = [];
     if (details.some((d) => d.includes('tilsyn') || d === '')) parts.push('tilsyn');
     if (details.some((d) => d.includes('batteriskift'))) parts.push('batteriskift');
-    items.push({at: tilsyn[0].at, text: capitalize(parts.join(', '))});
+    items.push({at: tilsyn[0].at, text: capitalize(parts.join(', ')) + untilLast(tilsyn)});
   }
 
   const pejlinger = events.filter((e) => e.type === 'pejling');
   if (pejlinger.length > 0) {
     items.push({
       at: pejlinger[0].at,
-      text: pejlinger.length === 1 ? 'Pejling' : `${pejlinger.length} pejlinger`,
+      text:
+        pejlinger.length === 1 ? 'Pejling' : `${pejlinger.length} pejlinger${untilLast(pejlinger)}`,
     });
   }
 
