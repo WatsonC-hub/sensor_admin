@@ -23,6 +23,8 @@ export type DrawShape = Geometry['type'];
 
 export type ObservationMapApi = {
   getCenter: () => L.LatLng;
+  /** The area shown on the map now. */
+  getBounds: () => L.LatLngBounds;
   /** Centre the map on the device's position, if there is one. */
   centerOnUser: () => void;
   /** The latest GPS fix, if any. */
@@ -211,6 +213,7 @@ const ObservationMap = ({
 
     onReady({
       getCenter: () => map.getCenter(),
+      getBounds: () => map.getBounds(),
       centerOnUser: () => {
         if (fix) map.setView(fix.latlng, Math.max(map.getZoom(), USER_ZOOM));
       },

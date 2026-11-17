@@ -2,6 +2,7 @@ import {queryOptions, useQuery} from '@tanstack/react-query';
 import axios from 'axios';
 import L from 'leaflet';
 
+import {createLuftfotoLayer, DATAFORSYNINGEN_TOKEN} from '~/features/fieldObservation/offlineTiles';
 import {createDefaultLayer, createSatelliteLayer} from '~/features/map/mapConsts';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 
@@ -11,21 +12,25 @@ import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
  * Explorer has no endpoint for these yet, so the ortofoto setup is copied from
  * calypso-explorer client/src/hooks/useOrtoFoto.ts and components/mapExport/baseLayer.ts.
  */
-export type BackgroundMapId = 'field' | 'satellit' | 'osm' | 'ortofoto';
+export type BackgroundMapId = 'field' | 'satellit' | 'osm' | 'ortofoto' | 'luftfoto';
 
 export const BACKGROUND_MAPS: {id: BackgroundMapId; title: string}[] = [
   {id: 'field', title: 'Kort (Field)'},
   {id: 'satellit', title: 'Satellit (Field)'},
   {id: 'osm', title: 'OpenStreetMap'},
   {id: 'ortofoto', title: 'Ortofoto (Dataforsyningen)'},
+  // SPIKE: the newest ortofoto as tiles that can be downloaded for offline use.
+  {id: 'luftfoto', title: 'Luftfoto (offline)'},
 ];
 
 // Copied from Explorer, which uses the same public token in its client.
 const ORTOFOTO_WMS_URL = 'https://api.dataforsyningen.dk/orto_foraar_DAF';
-const ORTOFOTO_TOKEN = 'eaca82e1cb411d78e841c7eba8ec1bbc';
+const ORTOFOTO_TOKEN = DATAFORSYNINGEN_TOKEN;
 
 export const createBackgroundLayer = (id: BackgroundMapId, ortofotoYear: number | null) => {
   switch (id) {
+    case 'luftfoto':
+      return createLuftfotoLayer();
     case 'satellit':
       return createSatelliteLayer();
     case 'osm':
