@@ -5,6 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import ExploreIcon from '@mui/icons-material/Explore';
 import LocationDisabledIcon from '@mui/icons-material/LocationDisabled';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
 import PentagonOutlinedIcon from '@mui/icons-material/PentagonOutlined';
 import PlaceIcon from '@mui/icons-material/Place';
 import SaveIcon from '@mui/icons-material/Save';
@@ -444,6 +445,25 @@ const ObservationPage = () => {
                   onClick={() => mapApi.current?.fitTo(projectExtent)}
                 >
                   <ZoomOutMapIcon />
+                </Fab>
+              </Tooltip>
+            )}
+            {(locationPermission === 'granted' || locationPermission === 'unknown') && (
+              <Tooltip title="Zoom til min placering">
+                <Fab
+                  size="small"
+                  aria-label="Zoom til min placering"
+                  onClick={() => {
+                    const api = mapApi.current;
+                    if (!api) return;
+                    if (!api.lastFix()) {
+                      toast.info('Venter på din placering');
+                      return;
+                    }
+                    api.centerOnUser();
+                  }}
+                >
+                  <MyLocationIcon />
                 </Fab>
               </Tooltip>
             )}
