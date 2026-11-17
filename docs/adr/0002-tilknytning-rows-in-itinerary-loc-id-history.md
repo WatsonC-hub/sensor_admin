@@ -2,11 +2,11 @@
 
 A tur's history is stored as one row per tilknytning in `sensor_drift.itinerary_loc_id_history`. A row is inserted when a lokation is put on a tur. It is updated once when the lokation leaves the tur: `ended_at`, `ended_by` and `end_event` (besøgt, fjernet, frigivet or flettet_ud). Nothing else rewrites the rows. In particular, merging two ture closes the old rows and inserts new ones, instead of moving the rows to the target tur.
 
-The rows keep the shape the code from before Turhistorik wrote, so old and new backends can run side by side. `done` keeps its old meaning: it is true only when the last opgave in Feltarbejde at the lokation was finished. A lokation that is removed or moved gets a row without a tur after it, as before, and `done` stays false. A tilknytning is open while it is the lokation's newest row, has a tur, has `done = false` and has no `end_event`.
+The rows keep the shape the code from before Turhistorik wrote, so old and new backends can run side by side. `done` keeps its old meaning: it is true when no opgave at the lokation is left in Feltarbejde, whatever status the last one moved to. A row can therefore be `done = true` and end fjernet, for example when the last opgave is moved to Kontorarbejde from the office. A lokation that is removed or moved gets a row without a tur after it, as before, and `done` stays false. A tilknytning is open while it is the lokation's newest row, has a tur, has `done = false` and has no `end_event`.
 
 The first version set `done = true` on every ending. That changed what `done` meant for anyone reading the table directly (for example queries that read `done = true` as "visited"), so it was reverted, and the affected rows were restored.
 
-The view `itinerary_loc_id_relation` (the newest row per lokation, where `done` is false) is unchanged. It still answers "which tur is this lokation on now" for the map, the lokation lists and the turforberedelse. The history queries for afsluttede ture and the Turforløb are plain selects on the table, filtered by `task_itinerary_id`.
+The view `itinerary_loc_id_relation` (the newest row per lokation, where `done` is false) is unchanged. It still answers "which tur is this lokation on now" for the map, the lokation lists and the turforberedelse. As before Turhistorik, ending a tur by hand doesn't touch `done` or insert a row, so the view can still return an afsluttet tur for the lokationer that were released; readers that care filter on `completed`. The history queries for afsluttede ture and the Turforløb are plain selects on the table, filtered by `task_itinerary_id`.
 
 ## Considered options
 

@@ -139,7 +139,7 @@ const ForloebRow = ({line, showProjects}: {line: ForloebLine; showProjects: bool
     </Link>
   );
 
-  if (line.kind === 'not_visited')
+  if (line.kind === 'not_visited' || line.kind === 'without_visit')
     return (
       <Box sx={{display: 'flex', gap: 1.5, alignItems: 'baseline'}}>
         <Time at={line.at} />

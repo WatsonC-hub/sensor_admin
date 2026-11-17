@@ -94,7 +94,8 @@ export const usePejling = () => {
       toast.success('Pejling ændret');
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.pejling(ts_id)],
+      // An edited or deleted pejling changes what the Turforløb shows.
+      invalidates: [queryKeys.Timeseries.pejling(ts_id), queryKeys.Itineraries.all()],
     },
   });
 
@@ -104,7 +105,8 @@ export const usePejling = () => {
       toast.success('Pejling slettet');
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.pejling(ts_id)],
+      // An edited or deleted pejling changes what the Turforløb shows.
+      invalidates: [queryKeys.Timeseries.pejling(ts_id), queryKeys.Itineraries.all()],
     },
   });
 
