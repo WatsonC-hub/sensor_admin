@@ -66,7 +66,7 @@ const DetailCard = ({
 }) => {
   const tooBig = option.tiles > MAX_TILES;
   const referenceZoom = plan.options.at(-1)?.maxZoom ?? option.maxZoom;
-  const preview = detailPreview(plan.area, option.maxZoom, referenceZoom, FRAME);
+  const preview = detailPreview(option.maxZoom, referenceZoom, FRAME);
   return (
     <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5}}>
       <Box
@@ -80,19 +80,22 @@ const DetailCard = ({
           opacity: tooBig ? 0.4 : 1,
         }}
       >
-        <Box
-          component="img"
-          src={preview.url}
-          alt=""
-          sx={{
-            position: 'absolute',
-            left: preview.left,
-            top: preview.top,
-            width: preview.size,
-            height: preview.size,
-            maxWidth: 'none',
-          }}
-        />
+        {preview.map((tile) => (
+          <Box
+            key={tile.url}
+            component="img"
+            src={tile.url}
+            alt=""
+            sx={{
+              position: 'absolute',
+              left: tile.left,
+              top: tile.top,
+              width: tile.size,
+              height: tile.size,
+              maxWidth: 'none',
+            }}
+          />
+        ))}
       </Box>
       <Typography variant="caption" sx={{lineHeight: 1.2, textTransform: 'none'}}>
         {tooBig ? 'For stort' : formatMegabytes(estimateBytes(option.tiles))}
@@ -193,7 +196,7 @@ const OfflineArea = ({getMapView}: {getMapView: () => MapView | null}) => {
               Detaljeniveau
             </Typography>
             <Typography variant="caption" sx={{color: 'text.secondary', mt: -0.5}}>
-              Sådan ser midten af området ud helt zoomet ind.
+              Sådan ser en vej med parkerede biler ud helt zoomet ind.
             </Typography>
             <ToggleButtonGroup
               exclusive

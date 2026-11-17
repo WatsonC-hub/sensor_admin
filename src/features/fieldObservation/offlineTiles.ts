@@ -241,34 +241,44 @@ export const planDownload = ({bounds, zoom}: MapView): DownloadPlan => {
   return {area: bounds, minZoom, options, defaultMaxZoom};
 };
 
-/** How to show a level's tile in a detail preview: the image and where it sits in the frame. */
-export type DetailPreview = {url: string; size: number; left: number; top: number};
+/**
+ * Where the detail previews look: a terraced street in Aarhus with parked cars, pavement and a
+ * tiled roof, so the user can judge the detail by things of a known size. The area being
+ * downloaded is often forest or field, where every level looks much the same. The photo is
+ * the newest ortofoto, so check the spot still shows cars when a new year is published.
+ */
+const PREVIEW_SPOT = L.latLng(56.163649, 10.204612);
+
+/** One tile of a detail preview, placed in the preview frame (CSS px). */
+export type PreviewTile = {url: string; left: number; top: number; size: number};
 
 /**
- * A preview of what `level` looks like when zoomed in to `referenceZoom`: the same small spot
- * near the area's centre, cut from the level's tile and enlarged. `frame` is the preview's
- * size in CSS px, shown 1:1 at the reference zoom. The spot is the centre of a reference-zoom
- * tile, so at every coarser level it lies well inside one tile.
+ * What `level` looks like when zoomed in to `referenceZoom`: the preview spot, cut from the
+ * level's tiles and enlarged. `frame` is the preview's size in CSS px, shown 1:1 at the
+ * reference zoom. Returns the one to four tiles the frame overlaps.
  */
 export const detailPreview = (
-  area: L.LatLngBounds,
   level: number,
   referenceZoom: number,
   frame: number
-): DetailPreview => {
-  const crs = L.CRS.EPSG3857;
-  const centre = crs.latLngToPoint(area.getCenter(), referenceZoom);
-  const spot = centre.divideBy(256).floor().add([0.5, 0.5]).multiplyBy(256);
+): PreviewTile[] => {
   const scale = 2 ** (referenceZoom - level);
-  const point = spot.divideBy(scale);
-  const tile = point.divideBy(256).floor();
-  const inTile = point.subtract(tile.multiplyBy(256));
-  return {
-    url: getTileUrl(LUFTFOTO_URL, {x: tile.x, y: tile.y, z: level}),
-    size: 256 * scale,
-    left: frame / 2 - inTile.x * scale,
-    top: frame / 2 - inTile.y * scale,
-  };
+  const centre = L.CRS.EPSG3857.latLngToPoint(PREVIEW_SPOT, referenceZoom);
+  // The frame's edges in the level's pixels.
+  const min = centre.subtract([frame / 2, frame / 2]).divideBy(scale);
+  const max = centre.add([frame / 2, frame / 2]).divideBy(scale);
+  const tiles: PreviewTile[] = [];
+  for (let y = Math.floor(min.y / 256); y * 256 < max.y; y++) {
+    for (let x = Math.floor(min.x / 256); x * 256 < max.x; x++) {
+      tiles.push({
+        url: getTileUrl(LUFTFOTO_URL, {x, y, z: level}),
+        left: (x * 256 - min.x) * scale,
+        top: (y * 256 - min.y) * scale,
+        size: 256 * scale,
+      });
+    }
+  }
+  return tiles;
 };
 
 /** The tiles covering the plan's area at every zoom from its minZoom to `maxZoom`. */
