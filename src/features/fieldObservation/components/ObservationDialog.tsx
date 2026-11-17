@@ -30,10 +30,12 @@ import {useForm, useWatch} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {createTypedForm} from '~/components/formComponents/Form';
+import FormInput from '~/components/FormInput';
 import MoveProjectDialog from '~/features/fieldObservation/components/MoveProjectDialog';
 import ObservationPhotos from '~/features/fieldObservation/components/ObservationPhotos';
 import ObservationView from '~/features/fieldObservation/components/ObservationView';
 import TypeFieldInputs from '~/features/fieldObservation/components/TypeFieldInputs';
+import {compactInput, fieldRowSx} from '~/features/fieldObservation/formLayout';
 import {directionText} from '~/features/fieldObservation/geo';
 import {
   addImage,
@@ -272,8 +274,10 @@ const ObservationDialog = ({
           : undefined
       }
     >
-      <DialogTitle sx={{display: 'flex', alignItems: 'center', pr: 1, py: 1}}>
-        <Typography variant="h6" component="span" sx={{flex: 1}}>
+      <DialogTitle
+        sx={{display: 'flex', alignItems: 'center', pl: isMobile ? 1.5 : 3, pr: 1, py: 0.5}}
+      >
+        <Typography variant={isMobile ? 'subtitle1' : 'h6'} component="span" sx={{flex: 1}}>
           {target.kind === 'new' ? 'Ny feltobservation' : 'Feltobservation'}
           {/* Where a new one lands, without a field to read or fill in. */}
           {target.kind === 'new' && defaultProjectNo && (
@@ -286,7 +290,7 @@ const ObservationDialog = ({
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers sx={isMobile ? {px: 1.5, py: 1} : undefined}>
         {showView ? (
           <ObservationView
             db={db}
@@ -317,59 +321,61 @@ const ObservationDialog = ({
               staged={staged}
               onStagedChange={setStaged}
             />
-            <Form formMethods={formMethods} gridSizes={12}>
-              <Form.Input
-                name="type_id"
-                label="Type"
-                size="small"
-                select
-                keyType="number"
-                disabled={!canEdit}
-                options={typeOptions.map((type) => ({[type.id]: type.name}))}
-              />
-              {/* Only when no projekt (that the user can edit) is chosen on the map; moving an
-                  existing one is in the Flyt menu. */}
-              {target.kind === 'new' && defaultProjectNo === null && (
-                <Form.Input
-                  name="project_no"
-                  label="Projekt"
-                  size="small"
-                  select
-                  disabled={!canEdit}
-                  options={projectOptions}
-                  helperText="Uden projekt kan kun du se feltobservationen"
-                />
-              )}
-              <Form.Input
-                name="note"
-                label="Note"
-                size="small"
-                multiline
-                minRows={2}
-                disabled={!canEdit}
-              />
-            </Form>
-            {/* Typefelter use the same form components, so they share the form's context. */}
+            {/* One wrapping layout (no grid), so short fields can share a line on a phone. */}
             <Form formMethods={formMethods} useGrid={false}>
-              <TypeFieldInputs
-                fields={fields}
-                stored={observation?.properties ?? {}}
-                disabled={!canEdit}
-                relationCandidates={(field) =>
-                  relationCandidates(field, geom, selfId, observations, types)
-                }
-              />
-            </Form>
-            {/* Intern note always last: it is the least used field. */}
-            <Form formMethods={formMethods} gridSizes={12}>
-              <Form.Input
-                name="internal_note"
-                label="Intern note"
-                size="small"
-                helperText="Vises aldrig for kunder"
-                multiline
-                disabled={!canEdit}
-              />
+              <Stack spacing={1.5} sx={{pt: 1}}>
+                <Box sx={fieldRowSx}>
+                  <Box sx={{flex: '1 1 140px', minWidth: 0}}>
+                    <FormInput<ObservationFormInput>
+                      name="type_id"
+                      label="Type"
+                      {...compactInput()}
+                      select
+                      keyType="number"
+                      disabled={!canEdit}
+                      options={typeOptions.map((type) => ({[type.id]: type.name}))}
+                    />
+                  </Box>
+                  {/* Only when no projekt (that the user can edit) is chosen on the map; moving
+                      an existing one is in the Flyt menu. */}
+                  {target.kind === 'new' && defaultProjectNo === null && (
+                    <Box sx={{flex: '1 1 140px', minWidth: 0}}>
+                      <FormInput<ObservationFormInput>
+                        name="project_no"
+                        label="Projekt"
+                        {...compactInput()}
+                        select
+                        disabled={!canEdit}
+                        options={projectOptions}
+                        helperText="Uden projekt kan kun du se den"
+                      />
+                    </Box>
+                  )}
+                </Box>
+                <FormInput<ObservationFormInput>
+                  name="note"
+                  label="Note"
+                  {...compactInput()}
+                  multiline
+                  disabled={!canEdit}
+                />
+                <TypeFieldInputs
+                  fields={fields}
+                  stored={observation?.properties ?? {}}
+                  disabled={!canEdit}
+                  relationCandidates={(field) =>
+                    relationCandidates(field, geom, selfId, observations, types)
+                  }
+                />
+                {/* Intern note always last: it is the least used field. */}
+                <FormInput<ObservationFormInput>
+                  name="internal_note"
+                  label="Intern note (vises aldrig for kunder)"
+                  {...compactInput()}
+                  multiline
+                  disabled={!canEdit}
+                />
+              </Stack>
             </Form>
             {direction?.direction !== null && direction?.direction !== undefined && (
               <Typography variant="body2">
@@ -408,7 +414,7 @@ const ObservationDialog = ({
           </Stack>
         )}
       </DialogContent>
-      <DialogActions sx={{flexWrap: 'wrap', gap: 1, px: 2}}>
+      <DialogActions sx={{flexWrap: 'wrap', gap: 1, px: isMobile ? 1 : 2, py: isMobile ? 0.5 : 1}}>
         {showView ? (
           <>
             <Box sx={{flex: 1}} />
@@ -425,21 +431,38 @@ const ObservationDialog = ({
           <>
             {target.kind === 'existing' && canEdit && (
               <>
-                <Button
-                  bttype="danger"
-                  startIcon={<DeleteIcon />}
-                  onClick={() => void handleDelete()}
-                >
-                  Slet
-                </Button>
-                <Button
-                  bttype="tertiary"
-                  startIcon={<EditLocationAltIcon />}
-                  endIcon={<ArrowDropDownIcon />}
-                  onClick={(event) => setMoveMenu(event.currentTarget)}
-                >
-                  Flyt
-                </Button>
+                {/* Icons only on a phone, so all actions fit on one line. */}
+                {isMobile ? (
+                  <>
+                    <IconButton aria-label="Slet" color="error" onClick={() => void handleDelete()}>
+                      <DeleteIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="Flyt"
+                      onClick={(event) => setMoveMenu(event.currentTarget)}
+                    >
+                      <EditLocationAltIcon />
+                    </IconButton>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      bttype="danger"
+                      startIcon={<DeleteIcon />}
+                      onClick={() => void handleDelete()}
+                    >
+                      Slet
+                    </Button>
+                    <Button
+                      bttype="tertiary"
+                      startIcon={<EditLocationAltIcon />}
+                      endIcon={<ArrowDropDownIcon />}
+                      onClick={(event) => setMoveMenu(event.currentTarget)}
+                    >
+                      Flyt
+                    </Button>
+                  </>
+                )}
                 <Menu
                   anchorEl={moveMenu}
                   open={moveMenu !== null}
