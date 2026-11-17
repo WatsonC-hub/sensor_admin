@@ -193,6 +193,10 @@ own `register` schema, the UI lives on its own route, and nothing else in Field 
   synlighed (0–100 %), Flyt op/ned and its GC2 legend from `/explorer/gc2/api/v1/legend/html/watsonc`),
   and **Tilføj lag** (search over layer and group names, Explorer's groups collapsed with
   "on/total", the projekt's projektlag first). Offline, the GIS layers are marked as not shown.
+- **Zoom til projekt** (2026-11-17): picking a projekt in the projekt field zooms the map to its
+  extent (its feltobservationer plus its shown projektlag, max zoom 17), once that data has loaded.
+  The projekt restored from the device on page load does not move the map. A button in the map
+  controls on the left zooms to the projekt again; it is hidden when the projekt has no geometry.
 - `/explorer` is a same-origin proxy to `https://explorer.watsonc.dk`, so no CORS is needed. **It
   only exists in the vite dev server; production needs the same rule in front of Field.**
 - The ortofoto is tiled WMS straight from Dataforsyningen (`orto_foraar_DAF`, layer
