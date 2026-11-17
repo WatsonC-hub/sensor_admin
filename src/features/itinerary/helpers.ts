@@ -112,7 +112,10 @@ export type ForloebLine =
       projectnos: string[];
       items: VisitItem[];
     }
-  | {kind: 'not_visited'; at: string; loc_id: number; loc_name: string; summary: string};
+  | {kind: 'not_visited'; at: string; loc_id: number; loc_name: string; summary: string}
+  /** An opgave closed before anyone registered a pejling or tilsyn at the lokation on this
+   * tur, e.g. from the office. Shown on its own line so it isn't mistaken for a visit. */
+  | {kind: 'without_visit'; at: string; loc_id: number; loc_name: string; summary: string};
 
 export type ForloebDay = {day: string; lines: ForloebLine[]};
 
@@ -222,13 +225,22 @@ const summarizeProjects = (work: WorkEvent[]): ForloebProject[] => {
 /**
  * Turns the raw Turforløb into a timeline, oldest first: by day, then one entry per visit.
  * A visit is the work registered at the same lokation in a row, with nothing at another
- * lokation in between; it lists the projekter the work was for. Planning events (lokationer
- * added or moved) are left out; they're in the Lokationer tab. A lokation that left the
- * tur without any work gets a line saying so. Next to the timeline, a summary per projekt.
+ * lokation in between; it lists the projekter the work was for. Only a pejling or tilsyn
+ * shows someone was there. Opgaver closed before anyone registered one at the lokation on
+ * this tur (since its tilknytning started; often closed from the office) get a line each,
+ * marked "uden besøg på turen", instead of a visit. After a visit on the tur, closings are
+ * a normal entry however much later they come, since they finish that visit's work. We
+ * can't tell where an opgave was closed, only whether the lokation had been visited.
+ * Planning events (lokationer added or moved) are left out; they're in the Lokationer tab.
+ * A lokation that left the tur without a visit gets a line saying so. Next to the timeline,
+ * a summary per projekt.
  */
 export const buildForloeb = (events: TurForloebEvent[]): Forloeb => {
   const work = events.filter(isWork);
-  const visitedLocIds = new Set(work.map((e) => e.loc_id));
+  const isFieldWork = (e: WorkEvent) => e.type === 'pejling' || e.type === 'tilsyn';
+  const visitedLocIds = new Set(work.filter(isFieldWork).map((e) => e.loc_id));
+  // Lokationer with a pejling or tilsyn since their current tilknytning started.
+  const visitedOnTur = new Set<number>();
   // The last tilknytning event per lokation. A lokation that was removed and added again
   // is still on the tur, so only its final removal counts.
   const lastLinkEvent = new Map<number, TurForloebEvent>();
@@ -246,7 +258,18 @@ export const buildForloeb = (events: TurForloebEvent[]): Forloeb => {
   let visit = null as {loc_id: number; loc_name: string; at: string; events: WorkEvent[]} | null;
 
   const closeVisit = () => {
-    if (visit && currentDay) {
+    if (visit && currentDay && !visit.events.some(isFieldWork) && !visitedOnTur.has(visit.loc_id)) {
+      // Only opgaver closed, and nobody has been at the lokation on this tur yet.
+      for (const item of visitItems(visit.events)) {
+        currentDay.lines.push({
+          kind: 'without_visit',
+          at: item.at,
+          loc_id: visit.loc_id,
+          loc_name: visit.loc_name,
+          summary: `${item.text} (uden besøg på turen)`,
+        });
+      }
+    } else if (visit && currentDay) {
       const projectnos = [
         ...new Set(visit.events.map((e) => e.projectno).filter((no) => no !== null)),
       ];
@@ -275,11 +298,18 @@ export const buildForloeb = (events: TurForloebEvent[]): Forloeb => {
       days.push(currentDay);
     }
 
+    if (event.type === 'tilknytning_start' && event.loc_id !== null) {
+      // A new tilknytning: visits on an earlier one don't count for it.
+      if (visit?.loc_id === event.loc_id) closeVisit();
+      visitedOnTur.delete(event.loc_id);
+    }
+
     if (isWork(event) && event.loc_id !== null) {
       if (visit?.loc_id !== event.loc_id) {
         closeVisit();
         visit = {loc_id: event.loc_id, loc_name: event.loc_name ?? '', at: event.at, events: []};
       }
+      if (isFieldWork(event)) visitedOnTur.add(event.loc_id);
       visit.events.push(event);
       continue;
     }
