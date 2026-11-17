@@ -4,7 +4,7 @@ A tur's history is stored as one row per tilknytning in `sensor_drift.itinerary_
 
 The rows keep the shape the code from before Turhistorik wrote, so old and new backends can run side by side. `done` keeps its old meaning: it is true only when the last opgave in Feltarbejde at the lokation was finished. A lokation that is removed or moved gets a row without a tur after it, as before, and `done` stays false. A tilknytning is open while it is the lokation's newest row, has a tur, has `done = false` and has no `end_event`.
 
-The first version set `done = true` on every ending. That changed what `done` meant for anyone reading the table directly (for example queries that read `done = true` as "visited"), so it was reverted. `2026-11-itinerary-history-restore-done.sql` restores the rows.
+The first version set `done = true` on every ending. That changed what `done` meant for anyone reading the table directly (for example queries that read `done = true` as "visited"), so it was reverted, and the affected rows were restored.
 
 The view `itinerary_loc_id_relation` (the newest row per lokation, where `done` is false) is unchanged. It still answers "which tur is this lokation on now" for the map, the lokation lists and the turforberedelse. The history queries for afsluttede ture and the Turforløb are plain selects on the table, filtered by `task_itinerary_id`.
 
@@ -20,6 +20,7 @@ The view `itinerary_loc_id_relation` (the newest row per lokation, where `done` 
 - Rows are written twice: once to open and once to close. A row that is closed is never opened again. Adding the lokation again creates a new row.
 - Opgaver lukket, pejlinger and tilsyn are not stored on the tur. They are matched by lokation and time window (`timeofmeas`/`dato` between `created_at` and `ended_at`).
 - Rows from before this change have no `ended_at`/`end_event`, or only a guessed value, so the history of old ture is partial. The app doesn't flag it.
+- On old rows `done = true` is not proof of a visit. The old code set it whenever no opgave at the lokation was left in Feltarbejde, also when the last one was moved to Kontorarbejde or Afventer from the office. Ending a tur by hand didn't release its lokationer, so work weeks later could still set it. The backfill first read every old `done = true` as besøgt; rows where no work fell inside the tilknytning are corrected to fjernet or frigivet by a one-off script (November 2026). The Forløb window for an old row without `ended_at` stops at the lokation's next tilknytning or the end of the tur, whichever comes first.
 - Known loose ends in the rows without a tur, left alone for now (November 2026):
   - They have `start_event = 'tilføjet'`, the column default, though they mean "on no tur". Nothing reads it.
   - Their `created_by` is the person who removed or moved the lokation. The 1,037 old removals have no `ended_by`, which could be filled in from it.
