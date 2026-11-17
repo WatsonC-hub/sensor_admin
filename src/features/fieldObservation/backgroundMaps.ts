@@ -3,25 +3,26 @@ import axios from 'axios';
 import L from 'leaflet';
 
 import {createLuftfotoLayer, DATAFORSYNINGEN_TOKEN} from '~/features/fieldObservation/offlineTiles';
-import {createDefaultLayer, createSatelliteLayer} from '~/features/map/mapConsts';
+import {createDefaultLayer} from '~/features/map/mapConsts';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 
 /**
- * Background maps for /observation: Field's own two, plus Explorer's tile and WMS kinds
- * (OpenStreetMap and the Dataforsyningen ortofoto). Explorer's vector style map is left out.
+ * Background maps for /observation: the newest luftfoto (downloadable for offline use), Field's
+ * own map, and Dataforsyningen's ortofoto with every year. Explorer's vector style map is left out.
  * Explorer has no endpoint for these yet, so the ortofoto setup is copied from
  * calypso-explorer client/src/hooks/useOrtoFoto.ts and components/mapExport/baseLayer.ts.
  */
-export type BackgroundMapId = 'field' | 'satellit' | 'osm' | 'ortofoto' | 'luftfoto';
+export type BackgroundMapId = 'luftfoto' | 'field' | 'ortofoto';
 
 export const BACKGROUND_MAPS: {id: BackgroundMapId; title: string}[] = [
+  // The default: the newest ortofoto as tiles that can be downloaded for offline use.
+  {id: 'luftfoto', title: 'Luftfoto (kan hentes offline)'},
   {id: 'field', title: 'Kort (Field)'},
-  {id: 'satellit', title: 'Satellit (Field)'},
-  {id: 'osm', title: 'OpenStreetMap'},
-  {id: 'ortofoto', title: 'Ortofoto (Dataforsyningen)'},
-  // SPIKE: the newest ortofoto as tiles that can be downloaded for offline use.
-  {id: 'luftfoto', title: 'Luftfoto (offline)'},
+  {id: 'ortofoto', title: 'Ortofoto, alle årgange (Dataforsyningen)'},
 ];
+
+export const isBackgroundMapId = (id: unknown): id is BackgroundMapId =>
+  BACKGROUND_MAPS.some((map) => map.id === id);
 
 // Copied from Explorer, which uses the same public token in its client.
 const ORTOFOTO_WMS_URL = 'https://api.dataforsyningen.dk/orto_foraar_DAF';
@@ -31,14 +32,6 @@ export const createBackgroundLayer = (id: BackgroundMapId, ortofotoYear: number 
   switch (id) {
     case 'luftfoto':
       return createLuftfotoLayer();
-    case 'satellit':
-      return createSatelliteLayer();
-    case 'osm':
-      return L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19,
-      });
     case 'ortofoto':
       return L.tileLayer.wms(ORTOFOTO_WMS_URL, {
         // Until the year list has loaded, last year's photos are the safest guess:

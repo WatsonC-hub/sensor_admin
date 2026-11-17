@@ -1,10 +1,25 @@
+import {atom} from 'jotai';
 import {atomWithStorage} from 'jotai/utils';
+
+import {isBackgroundMapId} from '~/features/fieldObservation/backgroundMaps';
 
 import type {BackgroundMapId} from '~/features/fieldObservation/backgroundMaps';
 
-export const backgroundMapAtom = atomWithStorage<BackgroundMapId>(
+/** The newest luftfoto, which can also be downloaded for offline use. */
+const DEFAULT_BACKGROUND_MAP: BackgroundMapId = 'luftfoto';
+
+const storedBackgroundMapAtom = atomWithStorage<string>(
   'fieldObservation.backgroundMap',
-  'field'
+  DEFAULT_BACKGROUND_MAP
+);
+
+/** The chosen background map; a stored map that no longer exists (e.g. 'osm') reads as the default. */
+export const backgroundMapAtom = atom(
+  (get) => {
+    const stored = get(storedBackgroundMapAtom);
+    return isBackgroundMapId(stored) ? stored : DEFAULT_BACKGROUND_MAP;
+  },
+  (_get, set, id: BackgroundMapId) => set(storedBackgroundMapAtom, id)
 );
 
 /** Ortofoto year; null means the newest. */
