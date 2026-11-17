@@ -93,7 +93,8 @@ export const useTilsyn = () => {
       toast.success('Tilsyn ændret');
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.tilsyn(ts_id)],
+      // An edited or deleted tilsyn changes what the Turforløb shows.
+      invalidates: [queryKeys.Timeseries.tilsyn(ts_id), queryKeys.Itineraries.all()],
     },
   });
 
@@ -103,7 +104,8 @@ export const useTilsyn = () => {
       toast.success('Tilsyn slettet');
     },
     meta: {
-      invalidates: [queryKeys.Timeseries.tilsyn(ts_id)],
+      // An edited or deleted tilsyn changes what the Turforløb shows.
+      invalidates: [queryKeys.Timeseries.tilsyn(ts_id), queryKeys.Itineraries.all()],
     },
   });
 

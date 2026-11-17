@@ -181,8 +181,10 @@ const visitItems = (events: WorkEvent[]): VisitItem[] => {
 
   for (const event of events) {
     if (event.type !== 'opgave_lukket') continue;
-    // detail is "<opgave name>: <status name>"
-    const [name, status] = event.detail.split(': ');
+    // detail is "<opgave name>: <status name>"; the name itself may contain ": ".
+    const cut = event.detail.lastIndexOf(': ');
+    const [name, status] =
+      cut === -1 ? [event.detail, ''] : [event.detail.slice(0, cut), event.detail.slice(cut + 2)];
     items.push({
       at: event.at,
       text: status ? `${name.trim()} ${status.toLowerCase()}` : name.trim(),
