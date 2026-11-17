@@ -636,7 +636,7 @@ const ObservationPage = () => {
         </Box>
         {layersOpen && (
           <LayerPanel
-            getMapBounds={() => mapApi.current?.getBounds() ?? null}
+            getMapView={() => mapApi.current?.getView() ?? null}
             projectNo={selectedProject}
             projectLayers={projectLayers}
             canDelete={editableSelectedProject !== null}

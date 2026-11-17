@@ -51,7 +51,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import useOnlineStatus from '~/hooks/useOnlineStatus';
 
 import type {GisLayer} from '~/features/fieldObservation/api/useGisLayers';
-import type {LatLngBounds} from 'leaflet';
+import type {MapView} from '~/features/fieldObservation/offlineTiles';
 import type {ProjectLayer} from '~/features/fieldObservation/types';
 
 const NO_GROUP = 'Andre lag';
@@ -101,7 +101,7 @@ const ProjectSwatch = ({layer}: {layer: ProjectLayer}) => (
   />
 );
 
-const BackgroundSection = ({getMapBounds}: {getMapBounds: () => LatLngBounds | null}) => {
+const BackgroundSection = ({getMapView}: {getMapView: () => MapView | null}) => {
   const [background, setBackground] = useAtom(backgroundMapAtom);
   const [year, setYear] = useAtom(ortofotoYearAtom);
   const {data: years, isPending, isError} = useOrtofotoYears(background === 'ortofoto');
@@ -160,7 +160,7 @@ const BackgroundSection = ({getMapBounds}: {getMapBounds: () => LatLngBounds | n
           )}
         </Box>
       )}
-      {background === 'luftfoto' && <OfflineArea getMapBounds={getMapBounds} />}
+      {background === 'luftfoto' && <OfflineArea getMapView={getMapView} />}
     </>
   );
 };
@@ -635,15 +635,15 @@ export const LayerButton = ({open, onClick}: {open: boolean; onClick: () => void
 
 type Props = ProjectLayerProps & {
   onClose: () => void;
-  /** The area shown on the map, for downloading luftfoto; null before the map is ready. */
-  getMapBounds: () => LatLngBounds | null;
+  /** The area and zoom shown on the map, for downloading luftfoto; null before the map is ready. */
+  getMapView: () => MapView | null;
 };
 
 /**
  * Kortlag: background map, what is on the map, and the layer catalog. On desktop a panel
  * docked beside the map that stays open while you work; on a phone a full-screen view.
  */
-const LayerPanel = ({onClose, getMapBounds, ...projectLayerProps}: Props) => {
+const LayerPanel = ({onClose, getMapView, ...projectLayerProps}: Props) => {
   const {isMobile} = useBreakpoints();
   const content = (
     <>
@@ -669,7 +669,7 @@ const LayerPanel = ({onClose, getMapBounds, ...projectLayerProps}: Props) => {
         </IconButton>
       </Box>
       <Box sx={{flex: 1, minHeight: 0, overflowY: 'auto', pb: 3}}>
-        <BackgroundSection getMapBounds={getMapBounds} />
+        <BackgroundSection getMapView={getMapView} />
         <OnMapSection projectLayers={projectLayerProps.projectLayers} />
         <CatalogSection {...projectLayerProps} />
       </Box>
