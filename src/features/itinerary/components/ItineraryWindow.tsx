@@ -11,7 +11,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import LoadingSkeleton from '~/LoadingSkeleton';
 
 import {useItinerary, useItineraryMutations} from '../api/useItinerary';
-import {afslutningsaarsagLabel} from '../helpers';
+import {afslutningsaarsagLabel, progressLabel} from '../helpers';
 import ItineraryLocations from './ItineraryLocations';
 import ItineraryTimeline from './ItineraryTimeline';
 
@@ -139,7 +139,7 @@ const ItineraryHeader = ({itinerary}: {itinerary: Taskitinerary}) => {
                 afsluttetAf ? ` af ${afsluttetAf}` : ''
               }`
             : null,
-          `${itinerary.visited_count ?? 0} / ${itinerary.link_count ?? 0} besøgt`,
+          progressLabel(itinerary),
         ]
           .filter(Boolean)
           .join(' · ')}

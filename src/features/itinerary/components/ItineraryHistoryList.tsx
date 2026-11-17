@@ -22,7 +22,7 @@ import useDebouncedValue from '~/hooks/useDebouncedValue';
 import LoadingSkeleton from '~/LoadingSkeleton';
 
 import {useItineraryHistory} from '../api/useItinerary';
-import {afslutningsaarsagLabel} from '../helpers';
+import {afslutningsaarsagLabel, progressLabel} from '../helpers';
 import ItineraryCardLayout from './ItineraryCardLayout';
 
 import type {Taskitinerary} from '../types';
@@ -190,7 +190,7 @@ const CompletedItineraryCard = ({itinerary}: {itinerary: Taskitinerary}) => {
     >
       <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1}}>
         <Typography sx={{fontSize: 'small'}}>
-          {itinerary.visited_count ?? 0} / {itinerary.link_count ?? 0} lokationer besøgt
+          {progressLabel(itinerary, 'lokationer besøgt')}
         </Typography>
         {itinerary.completion_reason && itinerary.completion_reason !== 'ukendt' && (
           <Chip size="small" label={afslutningsaarsagLabel[itinerary.completion_reason]} />
