@@ -58,3 +58,62 @@ export const lineDirection = (line: Extract<Geometry, {type: 'LineString'}>, anc
   const reversed = anchor !== undefined && distanceM(last, anchor) < distanceM(first, anchor);
   return reversed ? bearingDeg(last, first) : bearingDeg(first, last);
 };
+
+/** The point halfway along a line, measured by length (not the middle vertex). */
+export const lineMidpoint = (coordinates: Position[]): Position | null => {
+  const first = coordinates[0];
+  if (!first) return null;
+  const lengths = coordinates.slice(1).map((point, i) => distanceM(coordinates[i], point));
+  let remaining = lengths.reduce((sum, length) => sum + length, 0) / 2;
+  for (let i = 0; i < lengths.length; i++) {
+    if (remaining <= lengths[i] && lengths[i] > 0) {
+      const t = remaining / lengths[i];
+      const [a, b] = [coordinates[i], coordinates[i + 1]];
+      return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+    }
+    remaining -= lengths[i];
+  }
+  return first;
+};
+
+/**
+ * A point that is always inside a polygon (also a concave one or one with holes), for a label:
+ * the middle of the widest stretch inside it, on a horizontal line through its middle.
+ */
+export const polygonInsidePoint = (rings: Position[][]): Position | null => {
+  const outer = rings[0];
+  if (!outer?.length) return null;
+  const lats = outer.map((point) => point[1]);
+  const y = (Math.min(...lats) + Math.max(...lats)) / 2;
+  const crossings: number[] = [];
+  for (const ring of rings) {
+    ring.forEach((a, i) => {
+      const b = ring[(i + 1) % ring.length];
+      if (a[1] > y !== b[1] > y)
+        crossings.push(a[0] + ((y - a[1]) / (b[1] - a[1])) * (b[0] - a[0]));
+    });
+  }
+  crossings.sort((a, b) => a - b);
+  let best: Position | null = null;
+  let widest = -1;
+  for (let i = 0; i + 1 < crossings.length; i += 2) {
+    const width = crossings[i + 1] - crossings[i];
+    if (width > widest) {
+      widest = width;
+      best = [(crossings[i] + crossings[i + 1]) / 2, y];
+    }
+  }
+  return best ?? outer[0];
+};
+
+/** Where a line or flade shows its type's badge; null for a point (the point is the badge). */
+export const badgePosition = (geom: Geometry): Position | null => {
+  switch (geom.type) {
+    case 'Point':
+      return null;
+    case 'LineString':
+      return lineMidpoint(geom.coordinates);
+    case 'Polygon':
+      return polygonInsidePoint(geom.coordinates);
+  }
+};

@@ -39,34 +39,67 @@ type SwatchProps = {
   icon: string;
   dashArray?: string;
   fillOpacity?: number;
+  /** Lines and flader of a feltobservation carry their type's badge; projektlag don't. */
+  badge?: boolean;
 };
 
+/** A round badge in `color` with the icon in white, as on the map. */
+const Badge = ({color, icon, size}: {color: string; icon: string; size: number}) => (
+  <Box
+    sx={{
+      width: size,
+      height: size,
+      boxSizing: 'border-box',
+      borderRadius: '50%',
+      bgcolor: color,
+      border: size < 20 ? '1px solid #fff' : 'none',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexShrink: 0,
+    }}
+  >
+    <Box
+      sx={{
+        width: Math.round(size * 0.64),
+        height: Math.round(size * 0.64),
+        ...iconMaskStyle(icon, '#fff'),
+      }}
+    />
+  </Box>
+);
+
 /** What a feature looks like on the map, small: badge with icon, line or flade. */
-export const Swatch = ({kind, color, icon, dashArray, fillOpacity = 0.2}: SwatchProps) => {
-  if (kind === 'LINESTRING') {
-    return (
-      <svg width="24" height="12" aria-hidden>
+export const Swatch = ({
+  kind,
+  color,
+  icon,
+  dashArray,
+  fillOpacity = 0.2,
+  badge = true,
+}: SwatchProps) => {
+  if (kind === 'POINT') return <Badge color={color} icon={icon} size={22} />;
+  const alpha = Math.round(Math.min(Math.max(fillOpacity, 0), 1) * 255)
+    .toString(16)
+    .padStart(2, '0');
+  const shape =
+    kind === 'LINESTRING' ? (
+      <svg width="28" height="12" aria-hidden style={{display: 'block'}}>
         <line
-          x1="2"
+          x1="1"
           y1="6"
-          x2="22"
+          x2="27"
           y2="6"
           stroke={color}
           strokeWidth="3"
           strokeDasharray={dashArray}
         />
       </svg>
-    );
-  }
-  if (kind === 'POLYGON') {
-    const alpha = Math.round(Math.min(Math.max(fillOpacity, 0), 1) * 255)
-      .toString(16)
-      .padStart(2, '0');
-    return (
+    ) : (
       <Box
         sx={{
-          width: 20,
-          height: 14,
+          width: 24,
+          height: 18,
           border: 2,
           borderColor: color,
           borderStyle: dashArray ? 'dashed' : 'solid',
@@ -74,21 +107,21 @@ export const Swatch = ({kind, color, icon, dashArray, fillOpacity = 0.2}: Swatch
         }}
       />
     );
-  }
+  if (!badge) return shape;
   return (
-    <Box
-      sx={{
-        width: 22,
-        height: 22,
-        borderRadius: '50%',
-        bgcolor: color,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-      }}
-    >
-      <Box sx={{width: 14, height: 14, ...iconMaskStyle(icon, '#fff')}} />
+    <Box sx={{position: 'relative', display: 'flex', alignItems: 'center'}}>
+      {shape}
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Badge color={color} icon={icon} size={14} />
+      </Box>
     </Box>
   );
 };
@@ -299,6 +332,7 @@ const Legend = ({observations, types, projectLayers}: Props) => {
                         kind="POLYGON"
                         color={layer.style.color ?? '#e65100'}
                         icon="pin"
+                        badge={false}
                         fillOpacity={layer.style.fillOpacity ?? 0.1}
                       />
                     </Box>
