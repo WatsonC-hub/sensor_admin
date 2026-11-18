@@ -269,6 +269,11 @@ tools in Field can take some of that work over.
   - Each observationstype has a field list in `observation_type.fields` (jsonb), e.g.
     `[{key, label, kind, options?, archived?}]`.
   - Kinds: text, number, select, boolean, date.
+  - A select's `options` are `[{value, label}]` (decided 2026-11-18): `value` is stored in
+    `properties`, `label` is shown in the dropdown and in Vis. Options are append-only like
+    typefelter: a value never changes and is never reused, but its label can be renamed.
+    Import matches either the value or the label. (`register_option_labels.sql` converted the
+    old string lists, keeping each string as both value and label.)
   - Field builds the form and the zod validation from the definition at runtime. The server
     validates `properties` against the same definition.
   - A type that needs something special (e.g. boreprofiler with layers) can later get its own

@@ -60,9 +60,12 @@ const fieldSchema = (field: TypeField): z.ZodType<unknown, unknown> => {
     case 'select':
       return z
         .string()
-        .refine((value) => value === '' || (field.options ?? []).includes(value), {
-          error: `Vælg en af mulighederne i ${field.label}`,
-        })
+        .refine(
+          (value) => value === '' || (field.options ?? []).some((option) => option.value === value),
+          {
+            error: `Vælg en af mulighederne i ${field.label}`,
+          }
+        )
         .transform((value) => value || null);
     case 'date':
       return z

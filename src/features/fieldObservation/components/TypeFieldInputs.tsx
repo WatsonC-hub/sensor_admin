@@ -166,7 +166,7 @@ const ScalarInput = ({
           select
           options={[
             {'': 'Ikke angivet'},
-            ...(field.options ?? []).map((option) => ({[option]: option})),
+            ...(field.options ?? []).map((option) => ({[option.value]: option.label})),
           ]}
         />
       );
