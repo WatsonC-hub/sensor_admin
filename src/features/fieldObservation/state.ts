@@ -49,5 +49,17 @@ export const hiddenProjectLayersAtom = atomWithStorage<string[]>(
 /** Legend keys (types and their variants, see styles.ts) the user has hidden on the map. */
 export const hiddenLegendAtom = atomWithStorage<string[]>('fieldObservation.hiddenLegend', []);
 
+/**
+ * The observationstype last used for a new feltobservation, per geometry type (Point,
+ * LineString, Polygon). A new one starts with it, since fieldwork often records the same type
+ * many times in a row.
+ */
+export const lastTypeIdAtom = atomWithStorage<Record<string, number>>(
+  'fieldObservation.lastTypeIdByGeometry',
+  {},
+  undefined,
+  {getOnInit: true}
+);
+
 /** Redigeringstilstand: clicking a feltobservation opens it in Rediger instead of Vis. */
 export const editModeAtom = atomWithStorage<boolean>('fieldObservation.editMode', false);

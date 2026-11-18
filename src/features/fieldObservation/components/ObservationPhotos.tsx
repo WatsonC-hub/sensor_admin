@@ -11,7 +11,7 @@ import {toast} from 'react-toastify';
 
 import Button from '~/components/Button';
 import {deleteImage, updateImageNote} from '~/features/fieldObservation/localWrites';
-import {resizePhoto, serverImageUrl} from '~/features/fieldObservation/photos';
+import {originalImageUrl, resizePhoto, serverImageUrl} from '~/features/fieldObservation/photos';
 
 import type {FieldObservationDb} from '~/features/fieldObservation/db';
 import type {LocalImage} from '~/features/fieldObservation/types';
@@ -39,8 +39,6 @@ type Shown = {
   status: 'staged' | 'local' | null;
 };
 
-const FULL_SIZE = 2048;
-
 const useImages = (db: FieldObservationDb, observationId: string | null) =>
   useLiveQuery(
     () =>
@@ -66,7 +64,7 @@ const useShownImages = (images: LocalImage[]): Shown[] => {
         return {
           key: image.id,
           thumb: local ?? (image.s3_key ? serverImageUrl(image.s3_key) : null),
-          full: local ?? (image.s3_key ? serverImageUrl(image.s3_key, FULL_SIZE) : null),
+          full: local ?? (image.s3_key ? originalImageUrl(image.s3_key) : null),
           note: image.note,
           status: image.bytes_uploaded === 0 || image.dirty !== 0 ? 'local' : null,
         };
