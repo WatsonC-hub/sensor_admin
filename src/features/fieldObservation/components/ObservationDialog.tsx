@@ -25,6 +25,7 @@ import {
   Typography,
 } from '@mui/material';
 import {useLiveQuery} from 'dexie-react-hooks';
+import {useAtom} from 'jotai';
 import React, {useEffect, useRef, useState} from 'react';
 import {useForm, useWatch} from 'react-hook-form';
 
@@ -50,6 +51,7 @@ import {
   touchingRelations,
 } from '~/features/fieldObservation/relations';
 import {observationFormSchema} from '~/features/fieldObservation/schema';
+import {lastTypeIdAtom} from '~/features/fieldObservation/state';
 import {allowsGeometry, propertiesSchema} from '~/features/fieldObservation/typeFields';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
@@ -149,7 +151,7 @@ const ObservationDialog = ({
     resolver,
     defaultValues: toFormValues(undefined, defaultProjectNo),
   });
-  const {reset, control, getValues, setValue, formState} = formMethods;
+  const {reset, resetField, control, getValues, setValue, formState} = formMethods;
   const typeId = useWatch({control, name: 'type_id'});
   const properties = useWatch({control, name: 'properties'});
   const fields = types.find((type) => type.id === typeId)?.fields ?? [];
@@ -160,6 +162,18 @@ const ObservationDialog = ({
     (type) =>
       !geometryType || allowsGeometry(type, geometryType) || type.id === observation?.type_id
   );
+
+  // A new feltobservation starts with the type last used for its geometry type, if that type
+  // still allows it. Set as the field's default, so closing without other changes doesn't ask.
+  const [lastTypeIds, setLastTypeIds] = useAtom(lastTypeIdAtom);
+  const lastTypeId = geometryType ? lastTypeIds[geometryType] : undefined;
+  const lastTypeAllowed = typeOptions.some((type) => type.id === lastTypeId);
+  useEffect(() => {
+    if (target.kind === 'new' && lastTypeAllowed && !getValues('type_id')) {
+      resetField('type_id', {defaultValue: lastTypeId as number});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTypeAllowed]);
 
   const geom = target.kind === 'new' ? target.geom : observation?.geom;
   const selfId = target.kind === 'existing' ? target.id : null;
@@ -216,6 +230,9 @@ const ObservationDialog = ({
         target.kind === 'new'
           ? await createObservation(db, target.geom, target.accuracy, values)
           : target.id;
+      if (target.kind === 'new') {
+        setLastTypeIds((last) => ({...last, [target.geom.type]: values.type_id}));
+      }
       if (target.kind === 'existing') await updateObservation(db, id, values);
       for (const photo of staged) {
         // oxlint-disable-next-line no-await-in-loop
