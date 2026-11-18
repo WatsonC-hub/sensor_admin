@@ -62,7 +62,11 @@ export const coerce = (value: unknown, field: TypeField): unknown => {
     }
     case 'select': {
       const text = normalize(asText(value));
-      return field.options?.find((option) => normalize(option) === text) ?? asText(value);
+      // A file may hold either the stored value or the label people see.
+      const option = field.options?.find(
+        (o) => normalize(o.value) === text || normalize(o.label) === text
+      );
+      return option?.value ?? asText(value);
     }
     case 'date':
       return typeof value === 'string' ? value.trim().slice(0, 10) : value;

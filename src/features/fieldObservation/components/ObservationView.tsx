@@ -50,6 +50,15 @@ const asText = (value: unknown): string => {
   return JSON.stringify(value);
 };
 
+/** A typefelt's value as shown: a select shows its option's label, not the stored value. */
+const fieldText = (field: TypeField, value: unknown): string => {
+  if (field.kind === 'select') {
+    const option = field.options?.find((o) => o.value === value);
+    if (option) return option.label;
+  }
+  return asText(value);
+};
+
 const isEmpty = (value: unknown) =>
   value === null ||
   value === undefined ||
@@ -108,7 +117,7 @@ const GroupTable = ({field, rows}: {field: TypeField; rows: Record<string, unkno
             <TableRow key={index}>
               {depth && <TableCell sx={{whiteSpace: 'nowrap'}}>{intervals[index]}</TableCell>}
               {others.map((sub) => (
-                <TableCell key={sub.key}>{asText(row[sub.key])}</TableCell>
+                <TableCell key={sub.key}>{fieldText(sub, row[sub.key])}</TableCell>
               ))}
             </TableRow>
           ))}
@@ -202,7 +211,7 @@ const ObservationView = ({
                     {relationLabel(value)}
                   </Link>
                 ) : (
-                  asText(value)
+                  fieldText(field, value)
                 )}
               </Row>
             );

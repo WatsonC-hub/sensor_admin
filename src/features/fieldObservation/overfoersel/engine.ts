@@ -23,11 +23,15 @@ import type {
 /**
  * One overførsel run: push metadata, push photo bytes, then pull.
  * Throws on the first network failure, so the controller can count it.
+ * `refreshReferenceData` fetches projekter and observationstyper even if they are recent.
  */
-export const runOverfoersel = async (db: FieldObservationDb) => {
+export const runOverfoersel = async (
+  db: FieldObservationDb,
+  {refreshReferenceData = false}: {refreshReferenceData?: boolean} = {}
+) => {
   await pushMetadata(db);
   await pushPhotos(db);
-  await pull(db);
+  await pull(db, refreshReferenceData);
 };
 
 const BATCH_SIZE = 200;
@@ -149,15 +153,18 @@ const pushPhotos = async (db: FieldObservationDb) => {
 
 const REFERENCE_DATA_MAX_AGE_MS = 60 * 60 * 1000;
 
-/** Projekter and observationstyper rarely change, so they are fetched at most hourly. */
-const refreshReferenceData = async (db: FieldObservationDb) => {
+/**
+ * Projekter and observationstyper rarely change, so automatic runs fetch them at most hourly.
+ * `force` (app opened, or Overfør pressed) fetches them anyway, so a new projekt shows at once.
+ */
+const refreshReferenceData = async (db: FieldObservationDb, force: boolean) => {
   const stored = await db.meta.get('referenceDataAt');
   const fetchedAt = stored?.key === 'referenceDataAt' ? stored.value : 0;
   const fresh = Date.now() - fetchedAt < REFERENCE_DATA_MAX_AGE_MS;
   const storedTypes = await db.types.toArray();
   // Types stored before typefelter or styles existed lack them; fetch them again at once.
   const complete = storedTypes.every((type) => Array.isArray(type.fields) && type.style);
-  if (fresh && storedTypes.length > 0 && complete) return;
+  if (!force && fresh && storedTypes.length > 0 && complete) return;
   const [projects, types] = await Promise.all([getProjects(), getTypes()]);
   await db.transaction('rw', db.projects, db.types, db.meta, async () => {
     await db.projects.clear();
@@ -169,8 +176,8 @@ const refreshReferenceData = async (db: FieldObservationDb) => {
 };
 
 /** Fetch everything that changed on the server since the last cursor. */
-const pull = async (db: FieldObservationDb) => {
-  await refreshReferenceData(db);
+const pull = async (db: FieldObservationDb, forceReferenceData: boolean) => {
+  await refreshReferenceData(db, forceReferenceData);
 
   // The cursor is the server's (transaction snapshots, so no row is skipped). A number is
   // from the old version cursor: pull everything once; local unsent edits still win.

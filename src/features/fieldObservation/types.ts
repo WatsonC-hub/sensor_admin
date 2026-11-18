@@ -76,6 +76,12 @@ export type TypeFieldKind =
   | 'relation';
 
 /**
+ * One choice in a select typefelt: `value` is stored, `label` is shown. Append-only like
+ * typefelter: a value never changes and is never reused, but its label can be renamed.
+ */
+export type SelectOption = {value: string; label: string};
+
+/**
  * One typefelt. Append-only: a key and its kind never change. Removing a field sets
  * `archived`, which hides it for new data but keeps existing values valid.
  */
@@ -83,7 +89,7 @@ export type TypeField = {
   key: string;
   label: string;
   kind: TypeFieldKind;
-  options?: string[] | null;
+  options?: SelectOption[] | null;
   archived?: boolean;
   /** number: the value must be greater than this. */
   min_exclusive?: number | null;

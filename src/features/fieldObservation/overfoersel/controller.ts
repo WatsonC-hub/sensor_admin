@@ -55,6 +55,12 @@ export class OverfoerselController {
   private goodPings = 0;
   private started = false;
   private startToken = 0;
+  /**
+   * Requests to fetch projekter and observationstyper on the next run, past the hourly limit:
+   * one when the app opens and one per Overfør. A run that succeeds settles the requests it saw,
+   * so a press during a run still gets its own refresh.
+   */
+  private referenceDataRequests = 0;
 
   constructor(private readonly db: FieldObservationDb) {}
 
@@ -76,6 +82,7 @@ export class OverfoerselController {
     // A stop() during the await below invalidates this token, so a stale start
     // never creates an interval that nobody will clear.
     const token = ++this.startToken;
+    this.referenceDataRequests += 1;
     const mode = (await this.db.meta.get('mode'))?.value;
     if (token !== this.startToken) return;
     if (mode === 'auto' || mode === 'manual') this.set({mode});
@@ -107,6 +114,7 @@ export class OverfoerselController {
       await this.db.observations.where('dirty').equals(-1).modify({dirty: 1, sync_error: null});
       await this.db.images.where('dirty').equals(-1).modify({dirty: 1, sync_error: null});
     });
+    this.referenceDataRequests += 1;
     await this.run();
   };
 
@@ -135,7 +143,9 @@ export class OverfoerselController {
     if (this.state.running) return;
     this.set({running: true});
     try {
-      await runOverfoersel(this.db);
+      const requests = this.referenceDataRequests;
+      await runOverfoersel(this.db, {refreshReferenceData: requests > 0});
+      this.referenceDataRequests -= requests;
       this.goodPings = 0;
       this.set({
         running: false,
