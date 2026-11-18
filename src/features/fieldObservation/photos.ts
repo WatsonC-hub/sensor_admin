@@ -35,3 +35,9 @@ export const resizePhoto = async (
 /** Thumbnail of a photo the server has, through the existing image proxy. */
 export const serverImageUrl = (s3Key: string, size = 640) =>
   `/static/images/${s3Key}?format=auto&width=${size}&height=${size}`;
+
+/**
+ * The photo as uploaded, without resizing. Photos are already scaled down to MAX_EDGE on the
+ * device, and asking the proxy for a large resize is slow (around 20 s).
+ */
+export const originalImageUrl = (s3Key: string) => `/static/images/${s3Key}`;
