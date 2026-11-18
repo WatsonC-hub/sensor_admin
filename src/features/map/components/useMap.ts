@@ -12,6 +12,7 @@ import L from 'leaflet';
 import {LocateControl} from 'leaflet.locatecontrol';
 
 import '~/css/leaflet.css';
+import '~/features/map/leafletDefaultIcon';
 
 import './L.basemapControl';
 import {useEffect, useRef, useState} from 'react';
