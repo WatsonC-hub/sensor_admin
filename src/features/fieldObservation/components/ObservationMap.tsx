@@ -10,6 +10,7 @@ import {gisLayerWmsUrl} from '~/features/fieldObservation/api/useGisLayers';
 import {createBackgroundLayer} from '~/features/fieldObservation/backgroundMaps';
 import {badgePosition} from '~/features/fieldObservation/geo';
 import {
+  labelText,
   markerHtml,
   OUTLINE_PX,
   POINT_BADGE_SIZE,
@@ -79,6 +80,19 @@ const DENMARK: L.LatLngTuple = [56.215868, 8.228759];
 
 const DRAFT_COLOR = '#d32f2f';
 const USER_ZOOM = 17;
+/** Map labels show from this zoom; further out they would cover each other and the map. */
+const LABEL_MIN_ZOOM = 16;
+/** On the map container while zoomed out past LABEL_MIN_ZOOM (see leaflet.css). */
+const LABELS_OFF_CLASS = 'fo-labels-off';
+
+/** A permanent label to the right of a badge `size` px wide. */
+const bindLabel = (layer: L.Layer, text: string, size: number) =>
+  layer.bindTooltip(text, {
+    permanent: true,
+    direction: 'right',
+    offset: [size / 2, 0],
+    className: 'fo-label',
+  });
 
 const GIS_PANE = 'gis';
 // Projektlag: above Explorer's GIS layers, below the feltobservationer.
@@ -160,6 +174,11 @@ const ObservationMap = ({
     // GIS layers sit above the base map and below the feltobservationer.
     map.createPane(GIS_PANE).style.zIndex = '350';
     map.createPane(PROJECT_PANE).style.zIndex = '370';
+    // Labels are hidden with a class when zoomed out, so nothing is redrawn on zoom.
+    const toggleLabels = () =>
+      map.getContainer().classList.toggle(LABELS_OFF_CLASS, map.getZoom() < LABEL_MIN_ZOOM);
+    toggleLabels();
+    map.on('zoomend', toggleLabels);
     projectGroupRef.current = L.layerGroup().addTo(map);
 
     L.control.scale({position: 'bottomleft', imperial: false, maxWidth: 100}).addTo(map);
@@ -371,7 +390,9 @@ const ObservationMap = ({
       decorations.clear();
       for (const observation of observations) {
         if (observation.deleted_at || featureLayers.has(observation.id)) continue;
-        const style = resolveStyle(typesById.get(observation.type_id), observation.properties);
+        const type = typesById.get(observation.type_id);
+        const style = resolveStyle(type, observation.properties);
+        const label = labelText(type, observation.properties);
         const notSent = observation.dirty !== 0;
         const select = () => {
           if (editingRef.current) return;
@@ -410,6 +431,7 @@ const ObservationMap = ({
             contextmenuItems: [],
           });
           badge.on('click', select);
+          if (label) bindLabel(badge, label, SHAPE_BADGE_SIZE);
           extras.push(badge);
         }
         const feature = L.geoJSON(geoJson, {
@@ -433,6 +455,8 @@ const ObservationMap = ({
         const [layer] = feature.getLayers() as EditableLayer[];
         if (!layer) continue;
         layer.on('click', select);
+        // A line or flade has its label on the badge, which is hidden while it is edited.
+        if (label && !badgeAt) bindLabel(layer, label, POINT_BADGE_SIZE);
         // The outline goes first, so it is drawn under the line (the badge has its own pane).
         extras.forEach((extra) => group.addLayer(extra));
         if (extras.length) decorations.set(observation.id, extras);

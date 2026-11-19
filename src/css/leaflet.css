@@ -53,3 +53,24 @@
   opacity: 0;
   transform: scale(0.95);
 }
+
+/* Feltobservation map labels (a type's labelField), hidden when zoomed out. */
+.leaflet-tooltip.fo-label {
+  padding: 1px 5px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #212121;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fo-labels-off .leaflet-tooltip.fo-label {
+  display: none;
+}
