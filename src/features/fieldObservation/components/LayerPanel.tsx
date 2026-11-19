@@ -32,7 +32,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import {useAtom, useAtomValue} from 'jotai';
+import {useAtom, useAtomValue, useSetAtom} from 'jotai';
 import React, {useMemo, useState} from 'react';
 
 import Button from '~/components/Button';
@@ -45,6 +45,7 @@ import {
   backgroundMapAtom,
   gisLayerOpacityAtom,
   hiddenProjectLayersAtom,
+  projectLayerOrderAtom,
   ortofotoYearAtom,
 } from '~/features/fieldObservation/state';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -310,12 +311,24 @@ const OnMapSection = ({projectLayers}: {projectLayers: ProjectLayer[]}) => {
   const shownProjectLayers = projectLayers.filter((layer) => !hidden.includes(layer.id));
   const count = active.length + shownProjectLayers.length;
 
+  const setProjectLayerOrder = useSetAtom(projectLayerOrderAtom);
+
   const swap = (index: number, other: number) =>
     setActive((current) => {
       const next = [...current];
       [next[index], next[other]] = [next[other], next[index]];
       return next;
     });
+
+  // Swaps two shown projektlag; hidden ones keep their place. `projectLayers` is the projekt's
+  // full list, top first. Other projekters' ids stay in the stored order after this projekt's.
+  const swapProjectLayers = (id: string, otherId: string) => {
+    const ids = projectLayers.map((layer) => layer.id);
+    const index = ids.indexOf(id);
+    const other = ids.indexOf(otherId);
+    [ids[index], ids[other]] = [ids[other], ids[index]];
+    setProjectLayerOrder((current) => [...ids, ...current.filter((key) => !ids.includes(key))]);
+  };
 
   return (
     <>
@@ -340,7 +353,7 @@ const OnMapSection = ({projectLayers}: {projectLayers: ProjectLayer[]}) => {
       ) : (
         <Box sx={{borderTop: 1, borderColor: 'divider'}}>
           {/* Projektlag are always drawn above the GIS layers. */}
-          {shownProjectLayers.map((layer) => (
+          {shownProjectLayers.map((layer, index) => (
             <Box
               key={layer.id}
               sx={{
@@ -363,6 +376,38 @@ const OnMapSection = ({projectLayers}: {projectLayers: ProjectLayer[]}) => {
                   Projektlag
                 </Typography>
               </Box>
+              {shownProjectLayers.length > 1 && (
+                <>
+                  <Tooltip title="Flyt op">
+                    <span>
+                      <IconButton
+                        size="small"
+                        aria-label={`Flyt ${layer.name} op`}
+                        disabled={index === 0}
+                        onClick={() =>
+                          swapProjectLayers(layer.id, shownProjectLayers[index - 1].id)
+                        }
+                      >
+                        <KeyboardArrowUpIcon fontSize="small" />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                  <Tooltip title="Flyt ned">
+                    <span>
+                      <IconButton
+                        size="small"
+                        aria-label={`Flyt ${layer.name} ned`}
+                        disabled={index === shownProjectLayers.length - 1}
+                        onClick={() =>
+                          swapProjectLayers(layer.id, shownProjectLayers[index + 1].id)
+                        }
+                      >
+                        <KeyboardArrowDownIcon fontSize="small" />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                </>
+              )}
               <Tooltip title="Fjern fra kortet">
                 <IconButton
                   size="small"

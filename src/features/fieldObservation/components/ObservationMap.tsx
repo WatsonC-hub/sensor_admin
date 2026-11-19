@@ -67,7 +67,7 @@ type Props = {
   background: BackgroundMapId;
   ortofotoYear: number | null;
   draft: Draft | null;
-  /** Projektlag to show (already filtered to the visible ones). */
+  /** Projektlag to show (already filtered to the visible ones), top layer first. */
   projectLayers: ProjectLayer[];
   /** Compass heading of the device (0 = north), shown as a cone on the position dot. */
   heading: number | null;
@@ -449,7 +449,8 @@ const ObservationMap = ({
     const group = projectGroupRef.current;
     if (!group) return;
     group.clearLayers();
-    for (const layer of projectLayers) {
+    // Bottom layer first: within the pane, a layer added later is drawn on top.
+    for (const layer of [...projectLayers].reverse()) {
       const style = {...PROJECT_LAYER_STYLE, ...layer.style, pane: PROJECT_PANE};
       L.geoJSON(layer.features as GeoJSON.FeatureCollection, {
         pane: PROJECT_PANE,

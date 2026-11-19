@@ -46,6 +46,21 @@ export const hiddenProjectLayersAtom = atomWithStorage<string[]>(
   []
 );
 
+/**
+ * Projektlag ids, top layer first, as the user ordered them on this device. It holds ids from
+ * every projekt; a layer missing from it (e.g. just uploaded) is drawn above the ordered ones.
+ */
+export const projectLayerOrderAtom = atomWithStorage<string[]>(
+  'fieldObservation.projectLayerOrder',
+  []
+);
+
+/** Sorts projektlag by `order`, top layer first. Layers not in `order` keep their order on top. */
+export const sortProjectLayers = <T extends {id: string}>(layers: T[], order: string[]) => {
+  const rank = new Map(order.map((id, index) => [id, index]));
+  return [...layers].sort((a, b) => (rank.get(a.id) ?? -1) - (rank.get(b.id) ?? -1));
+};
+
 /** Legend keys (types and their variants, see styles.ts) the user has hidden on the map. */
 export const hiddenLegendAtom = atomWithStorage<string[]>('fieldObservation.hiddenLegend', []);
 
