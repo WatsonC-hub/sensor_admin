@@ -4,6 +4,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CloseIcon from '@mui/icons-material/Close';
 import CloudOffIcon from '@mui/icons-material/CloudOff';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import {Box, Dialog, IconButton, Stack, TextField, Tooltip, Typography} from '@mui/material';
 import {useLiveQuery} from 'dexie-react-hooks';
 import React, {useEffect, useMemo, useRef, useState} from 'react';
@@ -252,13 +254,56 @@ type Props = {
   onStagedChange: (staged: StagedPhoto[]) => void;
 };
 
+/** A dashed tile after the photos that adds one: from the camera or from the phone. */
+const AddTile = ({
+  label,
+  onClick,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) => (
+  <Tooltip title={label}>
+    <Box
+      component="button"
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      sx={{
+        width: TILE_SIZE,
+        height: TILE_SIZE,
+        flexShrink: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px dashed',
+        borderColor: 'primary.main',
+        borderRadius: 1,
+        bgcolor: 'transparent',
+        color: 'primary.main',
+        cursor: 'pointer',
+      }}
+    >
+      {children}
+    </Box>
+  </Tooltip>
+);
+
 /**
  * Photos in Rediger, as tiles. New photos are kept in the form and saved with Gem, also on a
  * new feltobservation. Already saved photos: comment (in the fullscreen view) and delete apply
  * at once.
  */
+/**
+ * A phone or tablet, where the camera can be opened directly. On a desktop, `capture` is ignored
+ * and the camera button would just be a second file picker.
+ */
+const CAN_TAKE_PHOTO = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
+
 const ObservationPhotos = ({db, observationId, disabled, staged, onStagedChange}: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const saved = useShownImages(useImages(db, observationId));
   const [open, setOpen] = useState<number | null>(null);
 
@@ -294,6 +339,7 @@ const ObservationPhotos = ({db, observationId, disabled, staged, onStagedChange}
     }
     onStagedChange([...staged, ...added]);
     if (inputRef.current) inputRef.current.value = '';
+    if (cameraRef.current) cameraRef.current.value = '';
   };
 
   const remove = (key: string) => {
@@ -326,18 +372,39 @@ const ObservationPhotos = ({db, observationId, disabled, staged, onStagedChange}
         hidden
         onChange={(event) => void handleFiles(event.target.files)}
       />
+      {/* Opens the camera straight away (Android's photo picker has no camera since Android 14).
+          The photo goes to the browser, not the phone's gallery, with most camera apps. */}
+      <input
+        ref={cameraRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        hidden
+        onChange={(event) => void handleFiles(event.target.files)}
+      />
       {all.length === 0 ? (
-        // No photos yet: a one-line button takes less room than an empty tile row.
+        // No photos yet: one-line buttons take less room than an empty tile row.
         !disabled && (
-          <Button
-            bttype="tertiary"
-            size="small"
-            startIcon={<AddAPhotoIcon />}
-            onClick={() => inputRef.current?.click()}
-            sx={{alignSelf: 'flex-start'}}
-          >
-            Tilføj billede
-          </Button>
+          <Stack direction="row" spacing={1}>
+            {CAN_TAKE_PHOTO && (
+              <Button
+                bttype="tertiary"
+                size="small"
+                startIcon={<PhotoCameraIcon />}
+                onClick={() => cameraRef.current?.click()}
+              >
+                Tag billede
+              </Button>
+            )}
+            <Button
+              bttype="tertiary"
+              size="small"
+              startIcon={CAN_TAKE_PHOTO ? <PhotoLibraryIcon /> : <AddAPhotoIcon />}
+              onClick={() => inputRef.current?.click()}
+            >
+              {CAN_TAKE_PHOTO ? 'Vælg billede' : 'Tilføj billede'}
+            </Button>
+          </Stack>
         )
       ) : (
         // One line that scrolls sideways, so many photos don't push the fields down.
@@ -351,29 +418,18 @@ const ObservationPhotos = ({db, observationId, disabled, staged, onStagedChange}
               onDelete={disabled ? undefined : () => remove(photo.key)}
             />
           ))}
+          {!disabled && CAN_TAKE_PHOTO && (
+            <AddTile label="Tag billede" onClick={() => cameraRef.current?.click()}>
+              <PhotoCameraIcon />
+            </AddTile>
+          )}
           {!disabled && (
-            <Box
-              component="button"
-              type="button"
-              aria-label="Tilføj billede"
+            <AddTile
+              label={CAN_TAKE_PHOTO ? 'Vælg billede' : 'Tilføj billede'}
               onClick={() => inputRef.current?.click()}
-              sx={{
-                width: TILE_SIZE,
-                height: TILE_SIZE,
-                flexShrink: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '1px dashed',
-                borderColor: 'primary.main',
-                borderRadius: 1,
-                bgcolor: 'transparent',
-                color: 'primary.main',
-                cursor: 'pointer',
-              }}
             >
-              <AddAPhotoIcon />
-            </Box>
+              {CAN_TAKE_PHOTO ? <PhotoLibraryIcon /> : <AddAPhotoIcon />}
+            </AddTile>
           )}
         </Stack>
       )}

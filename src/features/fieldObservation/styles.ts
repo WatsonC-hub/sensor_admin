@@ -133,9 +133,20 @@ export const iconMaskStyle = (icon: string, color: string) => {
   return {WebkitMask: mask, mask, backgroundColor: color} as const;
 };
 
-/** HTML for a point marker: a round badge in the style's colour with the icon in white. */
-export const markerHtml = (style: ResolvedStyle, notSent: boolean) => {
+/** Badge size in px: a point's marker, and the smaller badge on a line or flade. */
+export const POINT_BADGE_SIZE = 28;
+export const SHAPE_BADGE_SIZE = 22;
+
+/** Width of the white outline drawn under lines and flader, on each side of the line. */
+export const OUTLINE_PX = 2;
+
+/**
+ * HTML for a badge: a round badge in the style's colour with the icon in white. Points are this
+ * badge; lines and flader carry a smaller one. Not overført: a dashed orange ring.
+ */
+export const markerHtml = (style: ResolvedStyle, notSent: boolean, size = POINT_BADGE_SIZE) => {
   const border = notSent ? '2px dashed #ed6c02' : '2px solid #fff';
   const mask = `url(${iconUrl(style.icon)}) center / contain no-repeat`;
-  return `<div style="width:28px;height:28px;box-sizing:border-box;border-radius:50%;background:${style.color};border:${border};box-shadow:0 1px 3px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center"><span style="width:18px;height:18px;background:#fff;-webkit-mask:${mask};mask:${mask}"></span></div>`;
+  const iconSize = Math.round(size * 0.64);
+  return `<div style="width:${size}px;height:${size}px;box-sizing:border-box;border-radius:50%;background:${style.color};border:${border};box-shadow:0 1px 3px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center"><span style="width:${iconSize}px;height:${iconSize}px;background:#fff;-webkit-mask:${mask};mask:${mask}"></span></div>`;
 };

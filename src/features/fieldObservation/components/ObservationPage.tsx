@@ -58,6 +58,8 @@ import {
   gisLayerOpacityAtom,
   hiddenLegendAtom,
   hiddenProjectLayersAtom,
+  projectLayerOrderAtom,
+  sortProjectLayers,
   ortofotoYearAtom,
   selectedProjectAtom,
 } from '~/features/fieldObservation/state';
@@ -211,7 +213,13 @@ const ObservationPage = () => {
   const locationPermission = useLocationPermission();
   const [editMode, setEditMode] = useAtom(editModeAtom);
   // Projektlag belong to the chosen projekt and are only loaded once one is chosen.
-  const projectLayers = useProjectLayers(db, selectedProject);
+  const storedProjectLayers = useProjectLayers(db, selectedProject);
+  const projectLayerOrder = useAtomValue(projectLayerOrderAtom);
+  // Top layer first, everywhere: the layer menu, the signaturforklaring and the map.
+  const projectLayers = useMemo(
+    () => sortProjectLayers(storedProjectLayers, projectLayerOrder),
+    [storedProjectLayers, projectLayerOrder]
+  );
   const hiddenProjectLayers = useAtomValue(hiddenProjectLayersAtom);
   const visibleProjectLayers = useMemo(
     () => projectLayers.filter((layer) => !hiddenProjectLayers.includes(layer.id)),

@@ -351,6 +351,7 @@ Reference layers for one projekt (a projekt area, old drawings), shown on the ma
 - **Rights:** everyone with edit rights on the projekt can upload and delete; view rights to see.
 - **Loading:** only for the projekt chosen in the projekt field (`GET /field_observation/layers?project_no=`). Stored on the device (Dexie), so they show offline once fetched. No overførsel, LWW or history: they are written online only.
 - **Map:** a **Projektlag** tab in the layer menu with a checkbox per layer (shown unless hidden, remembered on the device) and delete. Drawn above Explorer's GIS layers and below the feltobservationer, not clickable.
+- **Order** (decided 2026-11-19, from field feedback): under **På kortet**, up and down arrows move a projektlag among the other projektlag; they stay above the GIS layers. The order is remembered per device, not shared on the projekt. A new projektlag is drawn on top.
 
 ### Vis og Rediger (decided 2026-11-12)
 - Clicking a feltobservation opens **Vis**: a compact read-only view (typefelter as label–value, geologi as a small Fra–til table, relations as links, direction, connected feltobservationer, ekstra felter from import, and photo thumbnails). On mobile it is a sheet over the lower part of the map.
@@ -370,6 +371,7 @@ Reference layers for one projekt (a projekt area, old drawings), shown on the ma
 - **Style is data on the type:** `observation_type.style` (jsonb, script `register_style.sql`) with `icon`, `color`, optional `weight`/`dashArray`/`fillOpacity` for lines and flader, and `rules`.
 - **Rules:** the first rule that matches sets colour and/or icon. A rule tests one typefelt with `equals`, `empty` or `notEmpty`, and has a `label` for the signaturforklaring. Example: Prøvepunkt is red by default ("Ikke udtaget") and green when `proeve_udtaget` is true.
 - **Points** are a round badge in the colour with the icon in white. Not overført: a dashed orange ring. Lines and flader keep their colour; not overført is drawn dotted.
+- **Lines and flader read as feltobservationer** (decided 2026-11-18): a white outline under them, like the white ring on a point badge, and a smaller badge with the type's icon, halfway along a line or inside a flade (the middle of its widest stretch, so concave shapes and holes work). The badge opens the feltobservation like the shape does and gets the dashed orange ring when not overført. Outline and badge are hidden while the geometry is edited. In the signaturforklaring, line and flade swatches carry a mini badge (a white outline can't be seen on its white background).
 - **Icons are a fixed library** of local files in `public/fieldObservation/icons`, with a strict standard (24×24 viewBox, single-colour filled paths, no styles or scripts; see the README there). They are recoloured with a CSS mask, so the SVG is never inlined, and they are precached for offline use. Most come from Material Icons; soil, manhole and borehole are drawn.
 - **Signaturforklaring:** a button at the bottom left opens a panel with each type on the map (icon or line/flade, name, count) and, under it, each rule variant. Checkboxes hide a type or a single variant (e.g. show only prøvepunkter not yet taken). Projektlag for the chosen projekt are listed too, sharing their checkboxes with the layer menu. Hidden choices are remembered on the device. The panel scrolls, so a long list works on a phone.
 
@@ -418,5 +420,6 @@ Changes from the plan, made while building and testing the PoC:
 - **Bug fixed during testing:** with raw `text()` SQL, asyncpg neither encodes Python dicts to jsonb
   nor decodes json columns. The API now sends JSON as text with `CAST(... AS jsonb)` and decodes
   `geom`, `properties` and `custom_fields` on the way out.
+- **Field feedback (2026-11-19):** on a phone or tablet, Rediger has **Tag billede** (`capture="environment"`, opens the camera; Android 14+'s photo picker has no camera) next to **Vælg billede**. Projektlag are fetched again on every forced overførsel run (app open, **Overfør nu**) and, on automatic runs, once they are older than 5 minutes; before, a new projektlag only showed after a reload.
 - **Not yet tested in the app:** the throttling and pause/resume scenario, two users and LWW, and
   the full demo sequence above.
