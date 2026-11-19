@@ -53,9 +53,7 @@ export default function Station() {
   useEffect(() => {
     if (
       metadata?.calculated &&
-      (pageToShow == stationPages.TILSYN ||
-        pageToShow === stationPages.UDSTYR ||
-        pageToShow === stationPages.JUSTERINGER)
+      (pageToShow == stationPages.TILSYN || pageToShow === stationPages.UDSTYR)
     )
       setPageToShow(stationPages.PEJLING);
 

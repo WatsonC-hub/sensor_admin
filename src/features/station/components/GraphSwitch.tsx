@@ -49,7 +49,6 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
     'Fjernet data': !!metadata?.calculated,
     'Korrigerede spring': !!metadata?.calculated,
     'Valide værdier': !!metadata?.calculated,
-    Godkendt: !!metadata?.calculated,
   };
 
   return (

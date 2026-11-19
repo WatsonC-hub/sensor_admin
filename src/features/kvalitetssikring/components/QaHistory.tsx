@@ -49,6 +49,8 @@ export default function QAHistory() {
   const setInitiateConfirmTimeseries = useSetAtom(initiateConfirmTimeseriesAtom);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const speedDialActions: Array<DialAction> = [];
+  // A calculated tidsserie has no rådata of its own, so it can only be godkendt.
+  const isCalculated = !!timeseries?.calculated;
 
   const {post: postQaData} = useCertifyQaMutations();
   const {data: certify} = useCertifyQa();
@@ -77,6 +79,7 @@ export default function QAHistory() {
       },
       color: navIconStyle(dataAdjustment === qaAdjustment.REMOVE),
       toastTip: 'Markér et område på grafen',
+      hidden: isCalculated,
     },
     {
       key: 'defineValues',
@@ -88,6 +91,7 @@ export default function QAHistory() {
       },
       color: navIconStyle(dataAdjustment === qaAdjustment.BOUNDS),
       toastTip: 'Markér et område på grafen',
+      hidden: isCalculated,
     },
     {
       key: 'levelCorrection',
@@ -99,7 +103,7 @@ export default function QAHistory() {
       },
       color: navIconStyle(dataAdjustment === qaAdjustment.CORRECTION),
       toastTip: 'Klik på et datapunkt på grafen',
-      hidden: timeseries?.correction_type !== 'translation',
+      hidden: isCalculated || timeseries?.correction_type !== 'translation',
     }
   );
   const adjustmentData = [
