@@ -204,7 +204,8 @@ const StationDrawer = () => {
           page: stationPages.JUSTERINGER,
           icon: <QueryStatsIcon />,
           requiredTsId: true,
-          disabled: !iotAccess || metadata?.calculated || metadata?.unit_uuid === null,
+          // A calculated tidsserie has no udstyr, but it can still be godkendt.
+          disabled: !iotAccess || (!metadata?.calculated && metadata?.unit_uuid === null),
           onHover: () => handlePrefetch(getQAHistoryOptions(ts_id!)),
           tooltip:
             'På denne side kan du kvalitetssikre din tidsserie ved blandt andet at justere data, fjerne data og se historik for ændringer.',

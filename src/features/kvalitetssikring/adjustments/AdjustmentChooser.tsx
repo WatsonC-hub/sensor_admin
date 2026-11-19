@@ -24,7 +24,9 @@ const AdjustmentChooser = () => {
   const [selection, setSelection] = useAtom(qaSelection);
   const {isMobile} = useBreakpoints();
   const {data: timeseries} = useTimeseriesData();
-  const canLevelCorrect = timeseries?.correction_type === 'translation';
+  // A calculated tidsserie can only be godkendt, also if ?adjust= is left over from another tidsserie.
+  const isCalculated = !!timeseries?.calculated;
+  const canLevelCorrect = timeseries?.correction_type === 'translation' && !isCalculated;
   const setInitiateSelect = useSetAtom(initiateSelectAtom);
   const setLevelCorrection = useSetAtom(levelCorrectionAtom);
   const [initiateConfirmTimeseries, setInitiateConfirmTimeseries] = useAtom(
@@ -87,8 +89,12 @@ const AdjustmentChooser = () => {
                   onClose={handleOnClose}
                 />
               )}
-              {dataAdjustment === 'remove' && <DataExclude onClose={handleOnClose} />}
-              {dataAdjustment === 'bounds' && <ValueBounds onClose={handleOnClose} />}
+              {dataAdjustment === 'remove' && !isCalculated && (
+                <DataExclude onClose={handleOnClose} />
+              )}
+              {dataAdjustment === 'bounds' && !isCalculated && (
+                <ValueBounds onClose={handleOnClose} />
+              )}
               {dataAdjustment === 'correction' && canLevelCorrect && (
                 <LevelCorrection onClose={handleOnClose} />
               )}
