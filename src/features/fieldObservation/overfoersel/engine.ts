@@ -10,6 +10,8 @@ import {
   pushBatch,
   uploadImage,
 } from '~/features/fieldObservation/overfoersel/api';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
+import {queryClient} from '~/queryClient';
 
 import type {FieldObservationDb} from '~/features/fieldObservation/db';
 import type {
@@ -23,7 +25,8 @@ import type {
 /**
  * One overførsel run: push metadata, push photo bytes, then pull.
  * Throws on the first network failure, so the controller can count it.
- * `refreshReferenceData` fetches projekter and observationstyper even if they are recent.
+ * `refreshReferenceData` fetches projekter, observationstyper and the shown projektlag even if
+ * they are recent.
  */
 export const runOverfoersel = async (
   db: FieldObservationDb,
@@ -32,6 +35,19 @@ export const runOverfoersel = async (
   await pushMetadata(db);
   await pushPhotos(db);
   await pull(db, refreshReferenceData);
+  await refreshProjectLayers(refreshReferenceData);
+};
+
+/**
+ * Projektlag are not part of the pull: they are fetched by the map's query, for the chosen projekt
+ * only. A forced run (app open, Overfør nu) fetches them now; an automatic run only once they are
+ * stale, since a projektlag can be large. A failure is left to the query, not counted as a failed
+ * run.
+ */
+const refreshProjectLayers = async (force: boolean) => {
+  const queryKey = queryKeys.fieldObservationProjectLayers();
+  if (force) await queryClient.invalidateQueries({queryKey});
+  else await queryClient.refetchQueries({queryKey, type: 'active', stale: true});
 };
 
 const BATCH_SIZE = 200;
