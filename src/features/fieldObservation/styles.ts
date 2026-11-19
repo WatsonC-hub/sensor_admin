@@ -86,6 +86,29 @@ export const resolveStyle = (
   };
 };
 
+/**
+ * The map label of a feltobservation: the value of its type's `labelField`, or null when the
+ * type has none or the value is empty. Only text, number and select typefelter give a label.
+ */
+export const labelText = (
+  type: ObservationType | undefined,
+  properties: Record<string, unknown>
+): string | null => {
+  const key = typeStyle(type).labelField;
+  const field = key ? type?.fields?.find((candidate) => candidate.key === key) : undefined;
+  if (!field) return null;
+  const value = properties[field.key];
+  if (isEmpty(value)) return null;
+  if (field.kind === 'select') {
+    return field.options?.find((option) => option.value === value)?.label ?? String(value);
+  }
+  if (field.kind === 'number' && typeof value === 'number') {
+    return value.toLocaleString('da-DK', {maximumFractionDigits: 2});
+  }
+  if (field.kind === 'text' && typeof value === 'string') return value.trim() || null;
+  return null;
+};
+
 /** One row in the legend for a type: its default look and one per rule. */
 export type LegendVariant = {variant: Variant; label: string; color: string; icon: string};
 

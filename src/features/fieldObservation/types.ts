@@ -119,6 +119,8 @@ export type TypeStyle = {
   icon?: string;
   color?: string;
   defaultLabel?: string;
+  /** Key of the typefelt shown as a label on the map; none means no labels for the type. */
+  labelField?: string;
   weight?: number;
   dashArray?: string;
   fillOpacity?: number;
