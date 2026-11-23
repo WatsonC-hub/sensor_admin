@@ -415,7 +415,7 @@ ejerlavsnavn, added to Explorer's datagrundlag sync for this; calypso-explorer P
   feltobservationer or projektlag has no extent, so nothing is fetched. Fewer coordinate decimals
   (e.g. `ST_ReducePrecision`) would make the JSON smaller.
 
-## Distribution: GeoPackage per projekt (decided 2026-11-23, endpoint built)
+## Distribution: GeoPackage per projekt (decided 2026-11-23, built)
 
 ### Why
 
@@ -546,11 +546,16 @@ QGIS layers, read-only.
 
 ### Field
 
-- A **Hent som GeoPackage** button for the chosen projekt. Where it goes (Kortlag panel or by the
-  projekt field) is decided when it is built.
-- It is disabled when no projekt is chosen, and offline.
-- The file comes from the server, so feltobservationer that are not overført are not in it. The
-  button warns when there are some for the projekt.
+- **Hent som GeoPackage** is a download icon in the top bar, next to **Importér fil**
+  (`ExportButton.tsx`, `api/useExportGeoPackage.ts`). Like import, it is shown on desktop only:
+  the file is for QGIS.
+- It downloads the projekt chosen in the projekt field. With no projekt chosen it is disabled, and
+  its tooltip says to choose one. While the file is being built, it shows a spinner.
+- The file comes from the server, so feltobservationer that are not overført are not in it. After
+  the download, a toast says how many of the projekt's feltobservationer were left out for that
+  reason.
+- Offline, or when the server refuses, the download fails at once with the app's usual error
+  toast. It is never queued like a registrering (`networkMode: 'always'`).
 
 ### Not now
 
@@ -581,7 +586,7 @@ QGIS layers, read-only.
   - the styles from `layer_styles` are applied by themselves;
   - the rule style, the labels and the column aliases come through;
   - the photo field is set up as an image.
-- **Field button:** not built.
+- **Field button built**, see Field above. It was not tried in the running app.
 
 ### Still to verify
 
