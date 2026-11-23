@@ -41,6 +41,7 @@ import {useVectorLayers} from '~/features/fieldObservation/api/useVectorLayers';
 import {setLastMode} from '~/features/fieldObservation/appMode';
 import {useOrtofotoYears} from '~/features/fieldObservation/backgroundMaps';
 import {useCompass} from '~/features/fieldObservation/compass';
+import ExportButton from '~/features/fieldObservation/components/ExportButton';
 import ImportDialog from '~/features/fieldObservation/components/ImportDialog';
 import LayerPanel, {LayerButton} from '~/features/fieldObservation/components/LayerPanel';
 import Legend from '~/features/fieldObservation/components/Legend';
@@ -370,7 +371,7 @@ const ObservationPage = () => {
         <NavBar.Logo />
         {!isMobile && <NavBar.Title title="Feltobservationer" />}
         <Box sx={{display: 'flex', alignItems: 'center'}}>
-          {/* Import is preparation work, done on desktop. */}
+          {/* Import and export to QGIS are desk work, done on desktop. */}
           {!isMobile && (
             <Tooltip title="Importér fil">
               <IconButton
@@ -382,6 +383,13 @@ const ObservationPage = () => {
                 <UploadFileIcon />
               </IconButton>
             </Tooltip>
+          )}
+          {!isMobile && (
+            <ExportButton
+              projectNo={selectedProject}
+              observations={projectObservations}
+              disabled={mode.kind !== 'idle'}
+            />
           )}
           <LayerButton open={layersOpen} onClick={() => setLayersOpen((open) => !open)} />
           <OverfoerselMenu overfoersel={overfoersel} notPersisted={!persisted} />
