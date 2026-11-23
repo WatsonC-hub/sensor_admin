@@ -16,7 +16,7 @@ import {
   Typography,
 } from '@mui/material';
 import {useAtom} from 'jotai';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 
 import {hiddenLegendAtom, hiddenProjectLayersAtom} from '~/features/fieldObservation/state';
 import {
@@ -27,6 +27,7 @@ import {
   variantKey,
 } from '~/features/fieldObservation/styles';
 
+import type {LegendVariant} from '~/features/fieldObservation/styles';
 import type {
   LocalObservation,
   ObservationType,
@@ -131,6 +132,51 @@ const geometryKind = (type: ObservationType): SwatchProps['kind'] => {
   return first === 'LINESTRING' || first === 'POLYGON' ? first : 'POINT';
 };
 
+/** Whether a legend key is the type's own key or one of its variants' keys. */
+const isKeyOfType = (key: string, typeId: number) =>
+  key === typeKey(typeId) || key.startsWith(`${typeKey(typeId)}:`);
+
+const DOUBLE_TAP_MS = 350;
+
+/**
+ * Click handling that tells a single tap from a double tap on the same row. We time it
+ * ourselves because mobile browsers don't fire dblclick reliably. The first tap still runs
+ * `onSingle`; the second runs `onDouble`, which sets the state outright.
+ */
+const useDoubleTap = () => {
+  const last = useRef<{key: string; time: number} | null>(null);
+  return (key: string, onSingle: () => void, onDouble: () => void) => {
+    const now = Date.now();
+    if (last.current?.key === key && now - last.current.time < DOUBLE_TAP_MS) {
+      last.current = null;
+      onDouble();
+    } else {
+      last.current = {key, time: now};
+      onSingle();
+    }
+  };
+};
+
+type AllCheckboxProps = {
+  /** How many of the group's rows are shown, out of `total`. */
+  shown: number;
+  total: number;
+  onChange: (showAll: boolean) => void;
+};
+
+/** Tri-state checkbox in a group heading: show or hide every row in the group. */
+const AllCheckbox = ({shown, total, onChange}: AllCheckboxProps) => (
+  <Checkbox
+    edge="start"
+    size="small"
+    checked={shown === total}
+    indeterminate={shown > 0 && shown < total}
+    onChange={() => onChange(shown < total)}
+    slotProps={{input: {'aria-label': shown < total ? 'Vis alle' : 'Skjul alle'}}}
+    sx={{mr: 0.5}}
+  />
+);
+
 type Props = {
   /** The feltobservationer in the chosen projekt, before the legend's own filter. */
   observations: LocalObservation[];
@@ -169,9 +215,46 @@ const Legend = ({observations, types, projectLayers}: Props) => {
     setHiddenLayers((current) =>
       current.includes(id) ? current.filter((candidate) => candidate !== id) : [...current, id]
     );
-  const hiddenCount =
-    shownTypes.filter((type) => hidden.some((key) => key.startsWith(typeKey(type.id)))).length +
-    projectLayers.filter((layer) => hiddenLayers.includes(layer.id)).length;
+  const tap = useDoubleTap();
+
+  // The "all" checkboxes and double taps only change the rows in the legend now. Keys for
+  // types and projektlag of other projekter stay as the user left them.
+  const withoutShownTypes = (current: string[]) =>
+    current.filter((key) => !shownTypes.some((type) => isKeyOfType(key, type.id)));
+  const setAllTypes = (show: boolean) =>
+    setHidden((current) => [
+      ...withoutShownTypes(current),
+      ...(show ? [] : shownTypes.map((type) => typeKey(type.id))),
+    ]);
+  /** Show only this type, or only this one variant of it. */
+  const soloType = (type: ObservationType, variant?: LegendVariant['variant']) =>
+    setHidden((current) => [
+      ...withoutShownTypes(current),
+      ...shownTypes.filter((other) => other.id !== type.id).map((other) => typeKey(other.id)),
+      ...(variant === undefined
+        ? []
+        : legendVariants(type)
+            .filter((other) => other.variant !== variant)
+            .map((other) => variantKey(type.id, other.variant))),
+    ]);
+  const withoutShownLayers = (current: string[]) =>
+    current.filter((id) => !projectLayers.some((layer) => layer.id === id));
+  const setAllLayers = (show: boolean) =>
+    setHiddenLayers((current) => [
+      ...withoutShownLayers(current),
+      ...(show ? [] : projectLayers.map((layer) => layer.id)),
+    ]);
+  const soloLayer = (id: string) =>
+    setHiddenLayers((current) => [
+      ...withoutShownLayers(current),
+      ...projectLayers.filter((layer) => layer.id !== id).map((layer) => layer.id),
+    ]);
+
+  const hiddenTypeCount = shownTypes.filter((type) =>
+    hidden.some((key) => isKeyOfType(key, type.id))
+  ).length;
+  const hiddenLayerCount = projectLayers.filter((layer) => hiddenLayers.includes(layer.id)).length;
+  const hiddenCount = hiddenTypeCount + hiddenLayerCount;
 
   return (
     <>
@@ -235,7 +318,18 @@ const Legend = ({observations, types, projectLayers}: Props) => {
             </IconButton>
           </Box>
           <List dense disablePadding>
-            <ListSubheader sx={{top: 41, lineHeight: '32px'}}>Feltobservationer</ListSubheader>
+            <ListSubheader
+              sx={{top: 41, lineHeight: '32px', display: 'flex', alignItems: 'center'}}
+            >
+              {shownTypes.length > 0 && (
+                <AllCheckbox
+                  shown={shownTypes.length - hiddenTypeCount}
+                  total={shownTypes.length}
+                  onChange={setAllTypes}
+                />
+              )}
+              Feltobservationer
+            </ListSubheader>
             {shownTypes.length === 0 && (
               <Typography variant="body2" sx={{px: 2, py: 1, color: 'text.secondary'}}>
                 Ingen feltobservationer på kortet.
@@ -248,7 +342,16 @@ const Legend = ({observations, types, projectLayers}: Props) => {
               const typeHidden = hidden.includes(typeKey(type.id));
               return (
                 <li key={type.id}>
-                  <ListItemButton onClick={() => toggle(typeKey(type.id))} sx={{py: 0}}>
+                  <ListItemButton
+                    onClick={() =>
+                      tap(
+                        typeKey(type.id),
+                        () => toggle(typeKey(type.id)),
+                        () => soloType(type)
+                      )
+                    }
+                    sx={{py: 0}}
+                  >
                     <ListItemIcon sx={{minWidth: 32}}>
                       <Checkbox
                         edge="start"
@@ -279,7 +382,13 @@ const Legend = ({observations, types, projectLayers}: Props) => {
                         <ListItemButton
                           key={key}
                           disabled={typeHidden}
-                          onClick={() => toggle(key)}
+                          onClick={() =>
+                            tap(
+                              key,
+                              () => toggle(key),
+                              () => soloType(type, variant.variant)
+                            )
+                          }
                           sx={{py: 0, pl: 5}}
                         >
                           <ListItemIcon sx={{minWidth: 32}}>
@@ -315,9 +424,28 @@ const Legend = ({observations, types, projectLayers}: Props) => {
             })}
             {projectLayers.length > 0 && (
               <>
-                <ListSubheader sx={{top: 41, lineHeight: '32px'}}>Projektlag</ListSubheader>
+                <ListSubheader
+                  sx={{top: 41, lineHeight: '32px', display: 'flex', alignItems: 'center'}}
+                >
+                  <AllCheckbox
+                    shown={projectLayers.length - hiddenLayerCount}
+                    total={projectLayers.length}
+                    onChange={setAllLayers}
+                  />
+                  Projektlag
+                </ListSubheader>
                 {projectLayers.map((layer) => (
-                  <ListItemButton key={layer.id} onClick={() => toggleLayer(layer.id)} sx={{py: 0}}>
+                  <ListItemButton
+                    key={layer.id}
+                    onClick={() =>
+                      tap(
+                        `layer:${layer.id}`,
+                        () => toggleLayer(layer.id),
+                        () => soloLayer(layer.id)
+                      )
+                    }
+                    sx={{py: 0}}
+                  >
                     <ListItemIcon sx={{minWidth: 32}}>
                       <Checkbox
                         edge="start"
@@ -342,6 +470,12 @@ const Legend = ({observations, types, projectLayers}: Props) => {
               </>
             )}
           </List>
+          <Typography
+            variant="caption"
+            sx={{display: 'block', px: 2, py: 1, color: 'text.secondary'}}
+          >
+            Dobbelttryk på en linje for kun at vise den.
+          </Typography>
         </Paper>
       </Popper>
     </>
