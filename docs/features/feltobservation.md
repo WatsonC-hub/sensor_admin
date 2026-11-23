@@ -157,8 +157,9 @@ own `register` schema, the UI lives on its own route, and nothing else in Field 
   `field_observation_images/{observation_id}/{image_id}.jpg`. Thumbnails come from the existing
   image proxy.
 - Later, not in the PoC: one published view per geometry type (`field_observation_point`, `_line`,
-  `_polygon`) without `internal_note` and without rows that have no projekt. GC2, Explorer and QGIS
-  read these views.
+  `_polygon`) without `internal_note` and without rows that have no projekt. GC2 and Explorer read
+  these views. QGIS gets a GeoPackage per projekt instead (see Distribution), because colleagues
+  have no database access.
 
 **Endpoints** (new router `/field_observation` in `python_api`)
 
@@ -413,6 +414,160 @@ ejerlavsnavn, added to Explorer's datagrundlag sync for this; calypso-explorer P
   written in code, not read from GC2; more than 20,000 features are cut off; a projekt with no
   feltobservationer or projektlag has no extent, so nothing is fetched. Fewer coordinate decimals
   (e.g. `ST_ReducePrecision`) would make the JSON smaller.
+
+## Distribution: GeoPackage per projekt (decided 2026-11-23, not built)
+
+### Why
+
+Colleagues work with the feltobservationer in QGIS afterwards, for example to make maps and
+reports. They have no database access, so QGIS can't read the `register` tables or views directly.
+They get **one GeoPackage per projekt** with the projekt's feltobservationer as ordinary, styled
+QGIS layers, read-only.
+
+### Decisions
+
+- **Internal use first.** The goal is QGIS for Watsonc's own staff. Customers and other data
+  platforms come later and may need other channels (published views in GC2, an API with tokens).
+- **Two steps, one build function:**
+  1. **Now:** a **Hent som GeoPackage** button in Field for the chosen projekt. The file is built
+     on request and downloaded.
+  2. **Later:** a QGIS plugin. It logs in to our system, lists the user's projekter, and fetches
+     the chosen projekt's file. The API checks rights and answers with a pre-signed S3 URL that is
+     valid for a few minutes, so S3 stays private and users need no AWS keys. **Hent seneste**
+     downloads a new copy to a local folder and reloads the layers. A local copy is used instead of
+     reading the file over HTTP (`/vsicurl/`), because GDAL caches what it reads and doesn't notice
+     a replaced file, and the file could be replaced in the middle of a read. The local copy also
+     works offline.
+- **Read-only.** Feltobservationer are still written only through Field (ADR 0002). Editing from
+  QGIS is parked (see below).
+- **Flattening in Python, not in database views.** One module in `python_api` reads the types and the
+  projekt's rows and writes the layers with `pyogrio` (already used by import). No SQL script, and
+  nothing to regenerate when a type changes. GC2 views can later be generated from the same module.
+- **Few new points from QGIS go through import.** If a colleague finds a missing point while
+  working in QGIS, they draw it in a layer with the same columns, save it as a GeoPackage and
+  import it in Field. Import pre-matches columns to typefelter by key or label (`autoMapping` in
+  `importMapping.ts`), so the export's column names make the mapping automatic. Normally, new
+  feltobservationer are made in Field.
+
+### Content of the file
+
+- **Coordinate system:** EPSG:25832.
+- **What is left out:**
+  - intern note;
+  - soft-deleted rows;
+  - the history table.
+  
+  Feltobservationer without a projekt can't be in a projekt file anyway.
+- **One layer per observationstype and geometry type.** A QGIS layer holds one geometry type.
+  - Table name: the type's `schema_key`. `_punkt`, `_linje` or `_flade` is added only when the type
+    has more than one geometry type in the projekt (e.g. `generel` with `geometry_types` null).
+  - Layer title (GeoPackage `identifier`): the type's name, e.g. "Drænbrønd".
+  - Only types with feltobservationer in the projekt get a layer.
+- **Standard columns** on every layer:
+  - `id` (uuid);
+  - `projekt`;
+  - `note`;
+  - `oprettet` and `opdateret` (device times);
+  - `oprettet_af` and `opdateret_af` (the user's name, not the id);
+  - `noejagtighed_m` (`position_accuracy_m`).
+- **Typefelter as columns:**
+  - Column name: the typefelt's `key`, which is stable because typefelter are append-only. The
+    `label` is set as the column's alias in the layer style, so QGIS shows Danish names.
+  - Archived typefelter are included.
+  - Column types follow the kind:
+
+    | Kind | Column type | Value |
+    |---|---|---|
+    | number | Real | the number |
+    | boolean | Boolean | true/false |
+    | date | Date | the date |
+    | text | Text | the text |
+    | select | Text | the option's **label** (import accepts label or value) |
+    | relation | Text | the target feltobservation's uuid |
+
+- **Ekstra felter** (`custom_fields` from import): one JSON text column, `ekstra_felter`.
+- **Feltgrupper:** one table without geometry per feltgruppe, e.g. `geologi`, shared by every type
+  that uses it. Columns:
+  - `observation_id`;
+  - `lag_nr`;
+  - `fra_mut` and `til_mut`, computed as a running sum (the first layer starts at 0);
+  - then the group's own fields, by the same rules as typefelter.
+- **Photos:** a table without geometry, `billeder`, with these columns:
+  - `observation_id`;
+  - `note`;
+  - `taget` (`taken_at`);
+  - `url`: the photo as uploaded, `https://<Field's domain>/static/images/<s3_key>`;
+  - `thumb_url`: the same with `?width=640&height=640`.
+
+  `/static/images` goes to CloudFront and needs no login, so QGIS can open the links. Photos are not
+  embedded, so the file stays small. Anyone with the file can open the photos; that is acceptable
+  for internal use, but must be revisited before customers get the file.
+- **Projektlag:** one layer per projektlag in the projekt, named after the projektlag, with the
+  file's own columns (the union of the keys in `properties`) and its Leaflet style translated.
+- **Styles:** the GeoPackage gets a `layer_styles` table with one default style (QML) per layer,
+  which QGIS applies when the layer is opened. It is generated from `observation_type.style`:
+  - colour;
+  - `rules` as rule-based categories, with each rule's `label`;
+  - `weight`, `dashArray` and `fillOpacity` on lines and flader;
+  - `labelField` as labels;
+  - column aliases;
+  - the photo links shown as images in the feature form.
+
+  In v1, points are coloured circles. Field's icons can come later, embedded as SVG.
+- **Om filen:** a table without geometry, `om_filen`, with one row:
+  - projekt number and title;
+  - time of build;
+  - number of feltobservationer;
+  - the highest `version` in the data.
+
+  The plugin can later compare that `version` with the server to see whether the file is out of
+  date.
+
+### API
+
+- `GET /field_observation/projects/{project_no}/export.gpkg`. It requires **view rights** on the
+  projekt (`get_view_permissions`) and the `fieldObservations` Funktionsadgang, like the rest of the
+  router.
+  - The file is written to a temporary file and returned as a download named
+    `feltobservationer_<project_no>_<date>.gpkg`.
+  - A projekt without feltobservationer still gives a file, with only `om_filen` and any projektlag.
+- Later, for the plugin, the same function writes `s3://…/<project_no>.gpkg` some minutes after the
+  projekt's last change, and an endpoint hands out the pre-signed URL. The plugin's login is not
+  decided: an OAuth/OIDC browser login if calypso-auth can offer it, otherwise a personal access
+  token made in Field.
+
+### Field
+
+- A **Hent som GeoPackage** button for the chosen projekt. Where it goes (Kortlag panel or by the
+  projekt field) is decided when it is built.
+- It is disabled when no projekt is chosen, and offline.
+- The file comes from the server, so feltobservationer that are not overført are not in it. The
+  button warns when there are some for the projekt.
+
+### Not now
+
+- **Editing from QGIS (parked).** It is possible in theory with Mergin Maps' `geodiff`:
+  1. The plugin keeps an untouched copy of the downloaded file.
+  2. It compares that copy with the edited one.
+  3. It sends the changes, field by field, to the API, where rights, validation and history apply as
+     for Field.
+
+  The S3 file would never be merged into; it is always rebuilt from the database. This needs:
+  - a new patch endpoint with conflict checks per field. Last-write-wins per row would let a bulk
+    edit in QGIS overwrite notes from the field;
+  - translation back from flat columns and feltgruppe tables;
+  - a report of rejected rows.
+
+  Not worth it now: colleagues mainly need to view, and new points go through import.
+- Published views for GC2 and Explorer, and distribution to customers or other data platforms.
+- Embedded photos and Field's icons in the styles.
+
+### To verify when building
+
+- That a photo link opens outside Field without a login (paste one into a private browser window).
+- That QGIS shows the photo links in the feature form from the generated style.
+- How long building takes for the largest projekt, and whether the router's `statement_timeout`
+  needs raising, as for import.
 
 ## Known PoC limitations
 
