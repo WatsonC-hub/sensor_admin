@@ -126,6 +126,8 @@ export const queryKeys = {
     projectNo === undefined
       ? (['field_observation_project_layers'] as const)
       : (['field_observation_project_layers', projectNo] as const),
+  fieldObservationVectorLayer: (layerId: string, projectNo: string, bbox: string) =>
+    ['field_observation_vector_layer', layerId, projectNo, bbox] as const,
   imagesById: (loc_id_or_boreholeno: number | string) => ['images', loc_id_or_boreholeno] as const,
   dtm: () => ['dtm'] as const,
   locationTypes: () => ['location_types'] as const,

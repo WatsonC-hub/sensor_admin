@@ -4,9 +4,10 @@ import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {Box} from '@mui/material';
 import L from 'leaflet';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 
 import {gisLayerWmsUrl} from '~/features/fieldObservation/api/useGisLayers';
+import {VECTOR_LAYERS} from '~/features/fieldObservation/api/useVectorLayers';
 import {createBackgroundLayer} from '~/features/fieldObservation/backgroundMaps';
 import {badgePosition} from '~/features/fieldObservation/geo';
 import {
@@ -26,6 +27,7 @@ import type {
   LocalObservation,
   ObservationType,
   ProjectLayer,
+  VectorLayerCache,
 } from '~/features/fieldObservation/types';
 
 export type DrawShape = Geometry['type'];
@@ -63,6 +65,8 @@ type Props = {
   types: ObservationType[];
   /** Explorer GIS layer ids ("schema.table") to show, bottom first. */
   gisLayerIds: string[];
+  /** SPIKE: GIS layers stored as vector data for the projekt; drawn instead of their WMS. */
+  vectorLayers: VectorLayerCache[];
   /** Opacity (0–1) per GIS layer id; a missing id is fully opaque. */
   gisLayerOpacity: Record<string, number>;
   background: BackgroundMapId;
@@ -131,6 +135,7 @@ const ObservationMap = ({
   observations,
   types,
   gisLayerIds,
+  vectorLayers,
   gisLayerOpacity,
   background,
   ortofotoYear,
@@ -148,6 +153,7 @@ const ObservationMap = ({
   const layerRef = useRef<L.LayerGroup | null>(null);
   const draftLayerRef = useRef<L.LayerGroup | null>(null);
   const wmsLayersRef = useRef(new Map<string, SingleTileWms>());
+  const vectorGroupRef = useRef<L.LayerGroup | null>(null);
   // The drawn layer of each feltobservation, so it can be edited.
   const featureLayersRef = useRef(new Map<string, EditableLayer>());
   // The white outline and badge of each line and flade, hidden while it is edited.
@@ -342,18 +348,54 @@ const ObservationMap = ({
     };
   }, [background, ortofotoYear]);
 
+  // A GIS layer stored as vector data for the projekt is drawn from the device, not as WMS.
+  const vectorIds = useMemo(() => vectorLayers.map((layer) => layer.layer_id), [vectorLayers]);
+
+  // SPIKE: vector GIS layers on one canvas in the GIS pane, so thousands of polygons stay fast.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    vectorGroupRef.current?.remove();
+    const group = L.layerGroup().addTo(map);
+    vectorGroupRef.current = group;
+    const renderer = L.canvas({pane: GIS_PANE, padding: 0.5});
+    for (const cache of vectorLayers) {
+      const started = performance.now();
+      L.geoJSON(cache.features, {
+        pane: GIS_PANE,
+        interactive: false,
+        pmIgnore: true,
+        snapIgnore: true,
+        style: {
+          ...VECTOR_LAYERS[cache.layer_id]?.style,
+          renderer,
+          opacity: gisLayerOpacity[cache.layer_id] ?? 0.9,
+        },
+      }).addTo(group);
+      // SPIKE: the numbers are what the spike is for.
+      // oxlint-disable-next-line no-console
+      console.info(
+        `[vektorlag] drew ${cache.feature_count} features of ${cache.layer_id} in ${Math.round(performance.now() - started)} ms`
+      );
+    }
+    return () => {
+      group.remove();
+    };
+  }, [vectorLayers, gisLayerOpacity]);
+
   // Explorer GIS layers as WMS, through Explorer's GC2 proxy (same request Explorer makes).
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     const shown = wmsLayersRef.current;
     for (const [id, layer] of shown) {
-      if (!gisLayerIds.includes(id)) {
+      if (!gisLayerIds.includes(id) || vectorIds.includes(id)) {
         layer.remove();
         shown.delete(id);
       }
     }
     gisLayerIds.forEach((id, index) => {
+      if (vectorIds.includes(id)) return;
       let layer = shown.get(id);
       if (!layer) {
         // One image per viewport, not tiles: GC2/MapServer renders a whole map per request.
@@ -369,7 +411,7 @@ const ObservationMap = ({
       layer.setZIndex(index + 1);
       layer.setOpacity(gisLayerOpacity[id] ?? 1);
     });
-  }, [gisLayerIds, gisLayerOpacity]);
+  }, [gisLayerIds, gisLayerOpacity, vectorIds]);
 
   useEffect(() => {
     const render = () => {
