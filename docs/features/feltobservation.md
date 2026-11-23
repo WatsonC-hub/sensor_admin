@@ -415,7 +415,7 @@ ejerlavsnavn, added to Explorer's datagrundlag sync for this; calypso-explorer P
   feltobservationer or projektlag has no extent, so nothing is fetched. Fewer coordinate decimals
   (e.g. `ST_ReducePrecision`) would make the JSON smaller.
 
-## Distribution: GeoPackage per projekt (decided 2026-11-23, not built)
+## Distribution: GeoPackage per projekt (decided 2026-11-23, endpoint built)
 
 ### Why
 
@@ -463,13 +463,18 @@ QGIS layers, read-only.
     has more than one geometry type in the projekt (e.g. `generel` with `geometry_types` null).
   - Layer title (GeoPackage `identifier`): the type's name, e.g. "Drænbrønd".
   - Only types with feltobservationer in the projekt get a layer.
+  - Table names spell out æ, ø and å as ae, oe and aa, and are made unique.
 - **Standard columns** on every layer:
   - `id` (uuid);
   - `projekt`;
+  - `type` (the observationstype's name, useful when layers are merged);
   - `note`;
-  - `oprettet` and `opdateret` (device times);
-  - `oprettet_af` and `opdateret_af` (the user's name, not the id);
-  - `noejagtighed_m` (`position_accuracy_m`).
+  - `noejagtighed_m` (`position_accuracy_m`);
+  - `antal_billeder`;
+  - `oprettet` and `opdateret` (device times, written as Danish local time);
+  - `oprettet_af` and `opdateret_af` (the user's name from `users.user_display_name`, not the id).
+
+  A typefelt whose key equals a standard column gets `_felt` added to its column name.
 - **Typefelter as columns:**
   - Column name: the typefelt's `key`, which is stable because typefelter are append-only. The
     `label` is set as the column's alias in the layer style, so QGIS shows Danish names.
@@ -489,9 +494,12 @@ QGIS layers, read-only.
 - **Feltgrupper:** one table without geometry per feltgruppe, e.g. `geologi`, shared by every type
   that uses it. Columns:
   - `observation_id`;
-  - `lag_nr`;
-  - `fra_mut` and `til_mut`, computed as a running sum (the first layer starts at 0);
+  - `nr` (the row's place in the list, from 1);
   - then the group's own fields, by the same rules as typefelter.
+
+  A number field marked `increasing` (geologi's `bund_mut`) is the bottom of an interval, so a
+  `fra` column comes before it with the bottom of the row above (0 for the first row). For geologi
+  that gives `fra` and `bund_mut` as the layer's top and bottom in m u.t.
 - **Photos:** a table without geometry, `billeder`, with these columns:
   - `observation_id`;
   - `note`;
@@ -516,7 +524,7 @@ QGIS layers, read-only.
   In v1, points are coloured circles. Field's icons can come later, embedded as SVG.
 - **Om filen:** a table without geometry, `om_filen`, with one row:
   - projekt number and title;
-  - time of build;
+  - when it was built (`hentet`);
   - number of feltobservationer;
   - the highest `version` in the data.
 
@@ -562,12 +570,28 @@ QGIS layers, read-only.
 - Published views for GC2 and Explorer, and distribution to customers or other data platforms.
 - Embedded photos and Field's icons in the styles.
 
-### To verify when building
+### Status (2026-11-23)
 
+- **Endpoint built** in `python_api` (`app/field_observation/export.py`, route in `router.py`),
+  with tests that build a file from sample data. Geometry goes out as 2D (`ST_Force2D`); Z values
+  are dropped. The data is read in one REPEATABLE READ snapshot with the import's 60 s
+  `statement_timeout`.
+- **Checked in QGIS 4.0.2** (headless, on a sample file):
+  - every table opens;
+  - the styles from `layer_styles` are applied by themselves;
+  - the rule style, the labels and the column aliases come through;
+  - the photo field is set up as an image.
+- **Field button:** not built.
+
+### Still to verify
+
+- The export's SQL against the real database. In particular, the join to `users.user_display_name`
+  compares the ids as text, because the column types weren't checked.
 - That a photo link opens outside Field without a login (paste one into a private browser window).
-- That QGIS shows the photo links in the feature form from the generated style.
-- How long building takes for the largest projekt, and whether the router's `statement_timeout`
-  needs raising, as for import.
+- That QGIS's feature form actually loads and shows the photo from the link. Only the widget setup
+  was checked.
+- How long building takes for the largest projekt.
+- The layer order when all layers are added at once (points should lie above lines and flader).
 
 ## Known PoC limitations
 
