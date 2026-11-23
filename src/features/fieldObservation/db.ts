@@ -8,6 +8,7 @@ import type {
   ObservationType,
   Project,
   ProjectLayer,
+  VectorLayerCache,
 } from '~/features/fieldObservation/types';
 
 /**
@@ -23,6 +24,8 @@ export class FieldObservationDb extends Dexie {
   meta!: EntityTable<Meta, 'key'>;
   /** Projektlag fetched for the projekter the user has chosen, so they also show offline. */
   projectLayers!: EntityTable<ProjectLayer, 'id'>;
+  /** SPIKE: GIS layers as vector data for a projekt's area, so they also show offline. */
+  vectorLayers!: EntityTable<VectorLayerCache, 'key'>;
 
   constructor(name: string) {
     super(name);
@@ -34,6 +37,7 @@ export class FieldObservationDb extends Dexie {
       meta: 'key',
     });
     this.version(2).stores({projectLayers: 'id, project_no'});
+    this.version(3).stores({vectorLayers: 'key, project_no'});
   }
 }
 

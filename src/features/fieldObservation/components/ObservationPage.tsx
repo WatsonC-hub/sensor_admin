@@ -37,6 +37,7 @@ import {
   useDeleteProjectLayer,
   useProjectLayers,
 } from '~/features/fieldObservation/api/useProjectLayers';
+import {useVectorLayers} from '~/features/fieldObservation/api/useVectorLayers';
 import {setLastMode} from '~/features/fieldObservation/appMode';
 import {useOrtofotoYears} from '~/features/fieldObservation/backgroundMaps';
 import {useCompass} from '~/features/fieldObservation/compass';
@@ -241,6 +242,8 @@ const ObservationPage = () => {
         .flatMap((layer) => layer.features.features.map((feature) => feature.geometry)),
     ];
   }, [selectedProject, projectObservations, visibleProjectLayers]);
+  // SPIKE: GIS layers that are fetched as vector data for the projekt's area and kept offline.
+  const vectorLayers = useVectorLayers(db, selectedProject, projectExtent, activeGisLayers);
   // A projekt the user just picked, waiting for its data before the map zooms to it. Only the
   // user's own picks set it, so the projekt restored from the device on load doesn't move the map.
   const pendingZoomRef = useRef<string | null>(null);
@@ -393,6 +396,7 @@ const ObservationPage = () => {
             observations={shownObservations}
             types={types}
             gisLayerIds={activeGisLayers}
+            vectorLayers={vectorLayers}
             gisLayerOpacity={gisLayerOpacity}
             background={background}
             ortofotoYear={ortofotoYear}

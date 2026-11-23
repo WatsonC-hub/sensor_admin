@@ -383,6 +383,37 @@ Reference layers for one projekt (a projekt area, old drawings), shown on the ma
 - **Large shared context data** (e.g. cadastral plots for a whole municipality). Projektlag cover
   data per projekt; layers shared across projekter are better served as Explorer GIS layers.
 
+### Spike: GIS layers as vector data, offline (2026-11-23)
+
+Can an Explorer GIS layer be kept on the device for the projekt's area, like a projektlag? Tried with
+**Matrikler** (`datagrundlag.matrikel_lodflade`, the current jordstykker with matrikelnummer and
+ejerlavsnavn, added to Explorer's datagrundlag sync for this; calypso-explorer PR #1). Branch
+`spike/matrikler-vector`.
+
+- **How:** when Matrikler is on in Kortlag and a projekt is chosen, Field asks GC2's SQL API (through
+  Explorer's `/gc2` proxy) for the polygons in the projekt's extent plus 500 m, in EPSG:4326, and
+  stores them in Dexie (`vectorLayers`, one record per layer and projekt). The map draws them on one
+  canvas in the GIS pane instead of the layer's WMS, so they show offline too. Without a projekt, an
+  extent or a stored copy, the layer stays WMS. Only layers listed in `VECTOR_LAYERS`
+  (`api/useVectorLayers.ts`) work this way, with a fixed style each. Timings go to the console
+  (`[vektorlag]`).
+- **Numbers** (matrikler, measured from outside the app; the proxy gzips):
+
+  | Area | Features | JSON | On the wire | Time |
+  |---|---|---|---|---|
+  | Land, 2 × 2 km | 318 | 0.2 MB | 0.04 MB | 1.3 s |
+  | Landsby og mark, 3 × 3 km | 1,324 | 0.7 MB | 0.16 MB | 2.0 s |
+  | By, 2.5 × 2.8 km (Aarhus C) | 4,388 | 2.4 MB | 0.5 MB | 3.6 s |
+  | Storby, 5 × 5 km (Nørrebro) | 15,450 | 7.9 MB | 1.7 MB | 11.4 s |
+
+- **Still to try in the app:** how long storing and drawing take on a phone (logged), panning and
+  zooming with 15,000 polygons on canvas, and the layer offline after a reload.
+- **Not in the spike:** labels and clicking a matrikel; refreshing on **Overfør nu** (it refetches
+  once a day, or when the projekt's extent changes); old copies are never removed; styles are
+  written in code, not read from GC2; more than 20,000 features are cut off; a projekt with no
+  feltobservationer or projektlag has no extent, so nothing is fetched. Fewer coordinate decimals
+  (e.g. `ST_ReducePrecision`) would make the JSON smaller.
+
 ## Known PoC limitations
 
 - ~~The pull cursor can skip a row whose transaction commits late with a lower `version`.~~

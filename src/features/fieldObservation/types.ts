@@ -158,6 +158,23 @@ export type LayerStyle = {
 };
 
 /** Reference data for one projekt (e.g. a projekt area): shown on the map, never registered. */
+/** SPIKE: a GIS layer's features for one projekt's area, stored on the device (useVectorLayers). */
+export type VectorLayerCache = {
+  /** "layerId|project_no". */
+  key: string;
+  layer_id: string;
+  project_no: string;
+  /** [minLon, minLat, maxLon, maxLat] the features were fetched for. */
+  bbox: [number, number, number, number];
+  fetched_at: string;
+  feature_count: number;
+  /** Size of the response, for the spike's numbers. */
+  bytes: number;
+  /** True when the area had more features than were kept. */
+  truncated: boolean;
+  features: GeoJSON.FeatureCollection;
+};
+
 export type ProjectLayer = {
   id: string;
   project_no: string;
