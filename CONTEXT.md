@@ -310,7 +310,7 @@ The kind of feltobservation, for example generel or drænbrønd. It decides whic
 A field defined on an observationstype, for example jordart on a jordprøve. Typefelter are data, not code. A typefelt can be archived but never removed or changed in kind.
 
 **Feltgruppe**:
-A named list of typefelter, defined once and used by several observationstyper as one typefelt holding a list of rows. Example: Geologi, with one row per layer (bund i m u.t., jordtype, kommentar), used by Prøvepunkt and Boreprofil.
+A named list of typefelter, defined once and used by several observationstyper as one typefelt holding a list of rows. Example: Geologi, with one row per layer (bund i m u.t., jordtype, kommentar), used by Fosforprøve and Boreprofil.
 _Avoid_: underformular
 
 **Projektlag**:
