@@ -36,6 +36,7 @@ export const runOverfoersel = async (
   await pushPhotos(db);
   await pull(db, refreshReferenceData);
   await refreshProjectLayers(refreshReferenceData);
+  await refreshVectorLayers(refreshReferenceData);
 };
 
 /**
@@ -46,6 +47,17 @@ export const runOverfoersel = async (
  */
 const refreshProjectLayers = async (force: boolean) => {
   const queryKey = queryKeys.fieldObservationProjectLayers();
+  if (force) await queryClient.invalidateQueries({queryKey});
+  else await queryClient.refetchQueries({queryKey, type: 'active', stale: true});
+};
+
+/**
+ * GIS layers saved on the device as vector data are fetched by the map's queries, for the chosen
+ * projekt and the layers that are on. A forced run (app open, Overfør nu) fetches them again now;
+ * an automatic run only once they are a day old. Failures show on the layer in Kortlag.
+ */
+const refreshVectorLayers = async (force: boolean) => {
+  const queryKey = queryKeys.fieldObservationVectorLayer();
   if (force) await queryClient.invalidateQueries({queryKey});
   else await queryClient.refetchQueries({queryKey, type: 'active', stale: true});
 };
