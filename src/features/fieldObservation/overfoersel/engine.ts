@@ -201,6 +201,11 @@ const refreshReferenceData = async (db: FieldObservationDb, force: boolean) => {
     await db.types.bulkPut(types);
     await db.meta.put({key: 'referenceDataAt', value: Date.now()});
   });
+  // GIS layers saved for a projekt the user no longer has would only take space.
+  await db.vectorLayers
+    .where('project_no')
+    .noneOf(projects.map((project) => project.project_no))
+    .delete();
 };
 
 /** Fetch everything that changed on the server since the last cursor. */

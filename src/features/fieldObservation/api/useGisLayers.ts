@@ -1,11 +1,14 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
-import axios from 'axios';
 
+import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 
+import type {VectorLayerStyle} from '~/features/fieldObservation/vectorStyle';
+
 /**
- * Explorer's GIS layer catalog (GC2 layers in schema `explorer` tagged `gis`).
- * Read through Explorer, proxied under /explorer, so Field owns no layer setup of its own.
+ * Explorer's GIS layers (GC2 layers in schema `explorer` or `datagrundlag` tagged `gis`), listed by
+ * our API from the same database. They are drawn as WMS through Explorer's GC2 proxy; the
+ * `offline` ones can also be fetched as features for the projekt's area and kept on the device.
  */
 export type GisLayer = {
   /** "schema.table"; also the WMS layer name. */
@@ -13,8 +16,10 @@ export type GisLayer = {
   title: string;
   group: string | null;
   geometry_type: string | null;
-  has_labels: boolean;
-  maxscale: number | null;
+  /** Has features (not a raster or a cascaded WMS) and isn't tagged `no-wfs` in GC2. */
+  offline: boolean;
+  /** GC2's class styling as Leaflet styles; only for offline layers. */
+  style: VectorLayerStyle | null;
 };
 
 export const EXPLORER_BASE = '/explorer';
@@ -26,9 +31,9 @@ export const gisLayerWmsUrl = (layerId: string) => {
 };
 
 export const gisLayersQueryOptions = queryOptions({
-  queryKey: queryKeys.explorerGisLayers(),
+  queryKey: queryKeys.fieldObservationGisLayers(),
   queryFn: async () => {
-    const {data} = await axios.get<GisLayer[]>(`${EXPLORER_BASE}/api/gis-layers/gis`, {
+    const {data} = await apiClient.get<GisLayer[]>('/field_observation/gis-layers', {
       timeout: 15_000,
     });
     return data;

@@ -1,10 +1,10 @@
 import type L from 'leaflet';
 
 /**
- * GC2 class styling, turned into Leaflet styles for GIS layers drawn as vector data (offline).
- * GC2 draws a feature with the first class whose MapServer expression matches it; the expressions
- * GC2 styling uses here (`[col]==1`, `"[col]"=="text"`, AND/OR/NOT, `<`, …) are evaluated in JS
- * against the feature's properties.
+ * Styling of GIS layers drawn as vector data (offline). The API turns each GC2 class into a
+ * Leaflet style (python_api field_observation/gis_layers.py); here each feature gets the first
+ * class whose MapServer expression matches its properties, as GC2 draws it. The expressions GC2
+ * styling uses (`[col]==1`, `"[col]"=="text"`, AND/OR/NOT, `<`, …) are evaluated in JS.
  */
 
 export type VectorGeometryKind = 'point' | 'line' | 'polygon';
@@ -17,106 +17,8 @@ export type VectorClassStyle = Required<
 
 export type VectorClass = {expression: string; style: VectorClassStyle};
 
-/** A layer's classes in GC2's drawing order. Stored with the features, so it works offline. */
+/** A layer's classes in GC2's drawing order, from the API. Stored with the features for offline. */
 export type VectorLayerStyle = {kind: VectorGeometryKind; classes: VectorClass[]};
-
-/** One style of a GC2 class (`styles` array), or the class itself in GC2's older flat format. */
-export type Gc2Style = {
-  color?: string;
-  outlinecolor?: string;
-  width?: string | number;
-  opacity?: string | number;
-  style_opacity?: string | number;
-  symbol?: string;
-  size?: string | number;
-  sortid?: string | number;
-};
-
-export type Gc2Class = Gc2Style & {
-  expression?: string;
-  sortid?: string | number;
-  styles?: Gc2Style[];
-};
-
-const DEFAULT_OUTLINE = '#555555';
-
-const toNumber = (value: unknown, fallback: number) => {
-  if (value === '' || value === null || value === undefined) return fallback;
-  const number = Number(value);
-  return Number.isFinite(number) ? number : fallback;
-};
-
-/** GC2 opacity is a percentage. */
-const toOpacity = (value: unknown) => Math.min(1, Math.max(0, toNumber(value, 100) / 100));
-
-const bySortId = <T extends {sortid?: string | number}>(items: T[]) =>
-  items
-    .map((item, index) => ({item, index}))
-    .sort(
-      (a, b) =>
-        toNumber(a.item.sortid, -Infinity) - toNumber(b.item.sortid, -Infinity) || a.index - b.index
-    )
-    .map(({item}) => item);
-
-export const geometryKind = (gc2Type: string): VectorGeometryKind =>
-  gc2Type.includes('POINT') ? 'point' : gc2Type.includes('LINE') ? 'line' : 'polygon';
-
-/** One class's GC2 styles as a single Leaflet style. */
-const classStyle = (kind: VectorGeometryKind, gc2Class: Gc2Class): VectorClassStyle => {
-  const styles = gc2Class.styles ?? [{...gc2Class, opacity: gc2Class.style_opacity}];
-  const style: VectorClassStyle = {
-    stroke: false,
-    weight: 1,
-    opacity: 1,
-    fill: false,
-    fillOpacity: 1,
-    radius: 4,
-  };
-  for (const gc2Style of bySortId(styles)) {
-    const opacity = toOpacity(gc2Style.opacity);
-    const weight = toNumber(gc2Style.width, 1);
-    if (kind === 'line') {
-      const color = gc2Style.color || gc2Style.outlinecolor;
-      if (color) Object.assign(style, {stroke: true, color, weight, opacity});
-      continue;
-    }
-    if (kind === 'point' && gc2Style.size !== undefined) {
-      style.radius = toNumber(gc2Style.size, 8) / 2;
-    }
-    // A hatch fill is drawn as a light fill: canvas has no hatch pattern.
-    const hatch = gc2Style.symbol?.startsWith('hatch') ?? false;
-    if (gc2Style.color) {
-      Object.assign(style, {
-        fill: true,
-        fillColor: gc2Style.color,
-        fillOpacity: hatch ? opacity * 0.3 : opacity,
-      });
-    }
-    if (gc2Style.outlinecolor) {
-      Object.assign(style, {stroke: true, color: gc2Style.outlinecolor, weight, opacity});
-    } else if (hatch && !gc2Style.color) {
-      Object.assign(style, {stroke: true, color: DEFAULT_OUTLINE, weight, opacity});
-    }
-  }
-  // Nothing usable: a grey outline rather than an invisible layer.
-  if (!style.stroke && !style.fill) {
-    Object.assign(style, {stroke: true, color: DEFAULT_OUTLINE, weight: 1, opacity: 1});
-  }
-  return style;
-};
-
-/** A GC2 layer's classes as a VectorLayerStyle. A layer without classes gets one default class. */
-export const toVectorLayerStyle = (gc2Type: string, classes: Gc2Class[]): VectorLayerStyle => {
-  const kind = geometryKind(gc2Type);
-  const sorted = bySortId(classes);
-  return {
-    kind,
-    classes: (sorted.length > 0 ? sorted : [{}]).map((gc2Class) => ({
-      expression: gc2Class.expression ?? '',
-      style: classStyle(kind, gc2Class),
-    })),
-  };
-};
 
 // --- MapServer expressions --------------------------------------------------------------------
 

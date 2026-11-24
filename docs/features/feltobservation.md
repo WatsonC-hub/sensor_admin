@@ -394,23 +394,28 @@ this; calypso-explorer PR #1), then made to work for every layer that has featur
   `bitmapsource`), or tagged **`no-wfs`** in GC2. `no-wfs` is the opt-out for a layer that is too
   large, too slow or not public: it says the layer isn't suitable for fetching as features
   (WFS-style). It is set in GC2's tag editor; no code change. The rest stay WMS, online only.
-- **Where Field reads it:** GC2's own metadata, `/explorer/gc2/api/v1/meta/watsonc/tag:gis`
-  (`api/useGc2Meta.ts`), read anonymously through Explorer's `/gc2` proxy. It gives the geometry
-  type, srid, geometry column, columns, tags and the GC2 classes. **Explorer is not changed for
-  this:** its catalog (`/api/gis-layers/gis`) still only lists the layers, and Field turns GC2's
-  classes into Leaflet styles itself (`vectorStyle.ts`). Like ADR 0008 in calypso-explorer, this
-  depends on the proxy forwarding `/api/v1/meta` and `/api/v1/sql`; when OD-022 narrows the proxy,
-  keep both open.
-- **How:** when such a layer is on in Kortlag and a projekt is chosen, Field asks GC2's SQL API for
-  the layer's non-geometry columns and its geometry cut to the projekt's extent plus 500 m
-  (`ST_Intersection`, so a kommune or an indvindingsopland stays small), in EPSG:4326. It stores
+- **Through our own API, not GC2's:** python_api reads GC2's layer registry
+  (`settings.geometry_columns_view`) and the layer tables in the watsonc database directly
+  (`app/field_observation/gis_layers.py`), so the format Field gets is ours, whatever GC2 does
+  with its own APIs. Both endpoints need login and the fieldObservations flag:
+  - `GET /field_observation/gis-layers`: the layer list (same rule as Explorer's catalog: GC2
+    layers in `explorer` and `datagrundlag` tagged `gis`), with `offline` and, for offline
+    layers, the GC2 classes turned into Leaflet styles. Field uses it instead of Explorer's
+    catalog; Explorer is not changed. WMS and the signaturforklaring still go through Explorer's
+    `/gc2` proxy.
+  - `GET /field_observation/gis-layers/{layer_id}/features?bbox=minLon,minLat,maxLon,maxLat`: the
+    features in the bbox (at most 1° a side), cut to it, with only the columns the class
+    expressions read, 6 decimals (~0.1 m), at most 20,000 (`truncated`), 60 s statement timeout.
+- **How:** when such a layer is on in Kortlag and a projekt is chosen, Field fetches its features
+  for the projekt's extent plus 500 m (`ST_Intersection`, so a kommune or an indvindingsopland
+  stays small). It stores
   them in Dexie (`vectorLayers`, one record per layer and projekt) with the layer's style at the
   time. The map draws them on one canvas in the GIS pane instead of the layer's WMS. Saving is
   automatic: a layer that is on is saved for the projekt. It is fetched again once a day, when the
   projekt's extent grows, on **Hent igen** (the layer's settings in "På kortet"), and on **Overfør
   nu**.
-- **Styling:** each feature gets the first GC2 class whose MapServer expression matches its
-  properties, as GC2 draws it (`[col]==1`, `"[col]"=="tekst"`, AND/OR/NOT, `<`, `>`). A class with
+- **Styling:** the API turns each GC2 class into a Leaflet style; Field gives each feature the
+  first class whose MapServer expression matches its properties (`vectorStyle.ts`), as GC2 draws it (`[col]==1`, `"[col]"=="tekst"`, AND/OR/NOT, `<`, `>`). A class with
   an expression Field can't read makes unmatched features use the first class instead of
   disappearing. Fill and outline come from the class's `styles` (polygon: `color` + `opacity` is
   the fill, `outlinecolor` + `width` the outline); points are circle markers of half the GC2
@@ -421,7 +426,11 @@ this; calypso-explorer PR #1), then made to work for every layer that has featur
   still shown), and a cloud with a line through it when it won't show offline (online only, no
   projekt, no extent, or not saved yet). Offline, the alert names only the layers that won't show;
   there is no alert when all of them do.
-- **Numbers** (matrikler, measured from outside the app; the proxy gzips):
+- **Saved copies are removed** when the layer is turned off (all projekters' copies of it; turning
+  it on again fetches it anew), and on overførsel for projekter the user no longer has. Copies for
+  other projekter whose layers are still on stay, so changing projekt offline still works.
+- **Numbers** from the spike (matrikler through GC2's SQL API with two columns, 6+ decimals; the
+  proxy gzips). The API sends fewer decimals and only styling columns:
 
   | Area | Features | JSON | On the wire | Time |
   |---|---|---|---|---|
@@ -430,14 +439,12 @@ this; calypso-explorer PR #1), then made to work for every layer that has featur
   | By, 2.5 × 2.8 km (Aarhus C) | 4,388 | 2.4 MB | 0.5 MB | 3.6 s |
   | Storby, 5 × 5 km (Nørrebro) | 15,450 | 7.9 MB | 1.7 MB | 11.4 s |
 
-  Selecting all columns instead of two makes the JSON larger than these numbers.
-- **Not yet:** labels and clicking a feature; old copies (layers turned off, other projekter) are
-  never removed; more than 20,000 features are cut off; a projekt with no feltobservationer or
-  projektlag has no extent, so nothing is fetched; vector layers share one canvas, so their order
-  against WMS layers isn't kept. Fewer coordinate decimals (e.g. `ST_ReducePrecision`) would make
-  the JSON smaller.
-- **Noticed:** GC2's meta API also returns a cascaded layer's `wmssource`, which for DHM Skyggekort
-  holds a Dataforsyningen token, readable by anyone through the proxy. Field doesn't keep it.
+- **Not yet:** labels and clicking a feature (needs more columns than styling); more than 20,000
+  features are cut off; a projekt with no feltobservationer or projektlag has no extent, so nothing
+  is fetched; vector layers share one canvas, so their order against WMS layers isn't kept. The
+  "GIS layer" rule (tag `gis`, two schemas) is now in both Explorer and python_api.
+- **Noticed:** GC2's meta API (`/gc2/api/v1/meta`) returns a cascaded layer's `wmssource`, which for
+  DHM Skyggekort holds a Dataforsyningen token, readable by anyone through Explorer's proxy.
 
 ## Distribution: GeoPackage per projekt (decided 2026-11-23, built)
 

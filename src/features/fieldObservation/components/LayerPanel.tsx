@@ -41,7 +41,6 @@ import {useAtom, useAtomValue, useSetAtom} from 'jotai';
 import React, {useMemo, useState} from 'react';
 
 import Button from '~/components/Button';
-import {isWfsSuitable, useGc2Meta} from '~/features/fieldObservation/api/useGc2Meta';
 import {useGisLayers} from '~/features/fieldObservation/api/useGisLayers';
 import {gisLegendGraphicUrl, useGisLegend} from '~/features/fieldObservation/api/useGisLegend';
 import {isSavedOffline} from '~/features/fieldObservation/api/useVectorLayers';
@@ -596,7 +595,6 @@ const CatalogSection = ({projectNo, projectLayers, canDelete, onDelete}: Project
   const [active, setActive] = useAtom(activeGisLayersAtom);
   const [hidden, setHidden] = useAtom(hiddenProjectLayersAtom);
   const {data: layers, isPending, isError} = useGisLayers();
-  const {data: metaById} = useGc2Meta();
 
   const groups = useMemo(() => {
     const byGroup = new Map<string, GisLayer[]>();
@@ -759,7 +757,7 @@ const CatalogSection = ({projectNo, projectLayers, canDelete, onDelete}: Project
                     />
                   </ListItemIcon>
                   <ListItemText primary={layer.title} />
-                  {isWfsSuitable(metaById?.[layer.id]) && (
+                  {layer.offline && (
                     <Tooltip title="Kan gemmes på enheden, så laget også vises offline. Det gemmes for det valgte projekts område, når det er slået til">
                       <Chip
                         label="Offline"
