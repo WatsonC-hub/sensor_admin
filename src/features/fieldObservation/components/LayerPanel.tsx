@@ -6,14 +6,18 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import LayersIcon from '@mui/icons-material/Layers';
+import OfflinePinIcon from '@mui/icons-material/OfflinePin';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
 import TuneIcon from '@mui/icons-material/Tune';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import {
   Alert,
   Badge,
   Box,
   ButtonBase,
   Checkbox,
+  Chip,
   CircularProgress,
   Collapse,
   Dialog,
@@ -32,12 +36,14 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import {useQueryClient} from '@tanstack/react-query';
 import {useAtom, useAtomValue, useSetAtom} from 'jotai';
 import React, {useMemo, useState} from 'react';
 
 import Button from '~/components/Button';
 import {useGisLayers} from '~/features/fieldObservation/api/useGisLayers';
 import {gisLegendGraphicUrl, useGisLegend} from '~/features/fieldObservation/api/useGisLegend';
+import {isSavedOffline} from '~/features/fieldObservation/api/useVectorLayers';
 import {BACKGROUND_MAPS, useOrtofotoYears} from '~/features/fieldObservation/backgroundMaps';
 import OfflineArea from '~/features/fieldObservation/components/OfflineArea';
 import {
@@ -48,10 +54,12 @@ import {
   projectLayerOrderAtom,
   ortofotoYearAtom,
 } from '~/features/fieldObservation/state';
+import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useOnlineStatus from '~/hooks/useOnlineStatus';
 
 import type {GisLayer} from '~/features/fieldObservation/api/useGisLayers';
+import type {VectorLayerStatus} from '~/features/fieldObservation/api/useVectorLayers';
 import type {MapView} from '~/features/fieldObservation/offlineTiles';
 import type {ProjectLayer} from '~/features/fieldObservation/types';
 
@@ -201,17 +209,85 @@ const GisLegend = ({layerId}: {layerId: string}) => {
   );
 };
 
+const formatFetchedAt = (iso: string) =>
+  new Date(iso).toLocaleString('da-DK', {dateStyle: 'short', timeStyle: 'short'});
+
+const savedText = (record: {feature_count: number; fetched_at: string; truncated: boolean}) =>
+  `${record.feature_count.toLocaleString('da-DK')} objekter · hentet ${formatFetchedAt(record.fetched_at)}` +
+  (record.truncated ? ' · kun en del af området (for mange objekter)' : '');
+
+/** Tooltip text for a layer that isn't shown offline, by why it isn't. */
+const NOT_SAVED_TEXT: Partial<Record<VectorLayerStatus['state'], string>> = {
+  'online-only': 'Kun online: laget kan ikke gemmes på enheden',
+  'no-project': 'Vises ikke offline. Vælg et projekt, så gemmes laget for projektets område',
+  'no-area':
+    'Vises ikke offline. Projektet har ingen feltobservationer eller projektlag at gemme laget for',
+  'not-saved': 'Ikke gemt endnu. Laget gemmes på enheden, når du er online',
+  unknown: 'Vises ikke, før du er online igen',
+};
+
+/** Whether the layer is saved on the device for the projekt, being saved, failed, or online only. */
+const OfflineStatusIcon = ({
+  status,
+  projectNo,
+  online,
+}: {
+  status: VectorLayerStatus | undefined;
+  projectNo: string | null;
+  online: boolean;
+}) => {
+  if (!status) return null;
+  let title: string;
+  let icon: React.ReactElement;
+  if (status.state === 'saving') {
+    title = status.record ? 'Henter laget igen …' : 'Gemmer laget på enheden …';
+    icon = <CircularProgress size={16} aria-label={title} />;
+  } else if (status.state === 'saved') {
+    title = `Gemt på enheden for ${projectNo} · ${savedText(status.record)}`;
+    icon = <OfflinePinIcon fontSize="small" color="success" aria-label={title} />;
+  } else if (status.state === 'error') {
+    title = status.record
+      ? `Kunne ikke hentes igen (${status.message}). Viser den gemte udgave: ${savedText(status.record)}`
+      : `Kunne ikke gemmes på enheden (${status.message}). Vises ikke offline`;
+    icon = <WarningAmberIcon fontSize="small" color="warning" aria-label={title} />;
+  } else {
+    // Online, a layer that only isn't saved yet or whose metadata is still loading needs no icon.
+    if (online && (status.state === 'unknown' || status.state === 'not-saved')) return null;
+    title = NOT_SAVED_TEXT[status.state] ?? '';
+    icon = (
+      <CloudOffIcon fontSize="small" color={online ? 'disabled' : 'warning'} aria-label={title} />
+    );
+  }
+  return (
+    <Tooltip title={title} enterTouchDelay={0}>
+      <Box sx={{display: 'flex', alignItems: 'center', mr: 0.5}}>{icon}</Box>
+    </Tooltip>
+  );
+};
+
 type ActiveGisRowProps = {
   layerId: string;
   layer: GisLayer | undefined;
   online: boolean;
+  projectNo: string | null;
+  status: VectorLayerStatus | undefined;
   /** Null when the layer is already at the top or bottom. */
   onRaise: (() => void) | null;
   onLower: (() => void) | null;
   onRemove: () => void;
 };
 
-const ActiveGisRow = ({layerId, layer, online, onRaise, onLower, onRemove}: ActiveGisRowProps) => {
+const ActiveGisRow = ({
+  layerId,
+  layer,
+  online,
+  projectNo,
+  status,
+  onRaise,
+  onLower,
+  onRemove,
+}: ActiveGisRowProps) => {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [opacities, setOpacities] = useAtom(gisLayerOpacityAtom);
   const visibility = Math.round((opacities[layerId] ?? 1) * 100);
@@ -222,11 +298,7 @@ const ActiveGisRow = ({layerId, layer, online, onRaise, onLower, onRemove}: Acti
       <Box
         sx={{display: 'flex', alignItems: 'center', gap: 0.5, pl: 2, pr: 1, minHeight: ROW_HEIGHT}}
       >
-        {!online && (
-          <Tooltip title="Vises ikke, før du er online igen">
-            <CloudOffIcon fontSize="small" color="warning" sx={{mr: 0.5}} />
-          </Tooltip>
-        )}
+        <OfflineStatusIcon status={status} projectNo={projectNo} online={online} />
         <Box sx={{flex: 1, minWidth: 0}}>
           <Typography variant="body2" noWrap title={title}>
             {title}
@@ -290,6 +362,28 @@ const ActiveGisRow = ({layerId, layer, online, onRaise, onLower, onRemove}: Acti
               Flyt ned
             </Button>
           </Box>
+          {projectNo !== null && (status?.state === 'saved' || status?.state === 'error') && (
+            <Box sx={{mb: 1.5}}>
+              <Button
+                bttype="tertiary"
+                size="small"
+                startIcon={<RefreshIcon />}
+                disabled={!online}
+                onClick={() =>
+                  void queryClient.refetchQueries({
+                    queryKey: queryKeys.fieldObservationVectorLayer(layerId, projectNo),
+                  })
+                }
+              >
+                Hent igen
+              </Button>
+              <Typography variant="caption" component="div" sx={{color: 'text.secondary'}}>
+                {online
+                  ? `Henter laget for ${projectNo} igen og gemmer det på enheden.`
+                  : 'Kræver, at du er online.'}
+              </Typography>
+            </Box>
+          )}
           <Typography variant="caption" component="div" sx={{color: 'text.secondary', mb: 0.5}}>
             Signatur
           </Typography>
@@ -301,7 +395,13 @@ const ActiveGisRow = ({layerId, layer, online, onRaise, onLower, onRemove}: Acti
 };
 
 /** What is on the map now, top layer first: the projekt's shown projektlag, then GIS layers. */
-const OnMapSection = ({projectLayers}: {projectLayers: ProjectLayer[]}) => {
+type OnMapSectionProps = {
+  projectNo: string | null;
+  projectLayers: ProjectLayer[];
+  vectorLayerStatuses: Record<string, VectorLayerStatus>;
+};
+
+const OnMapSection = ({projectNo, projectLayers, vectorLayerStatuses}: OnMapSectionProps) => {
   const online = useOnlineStatus();
   // Bottom layer first, as the map draws them.
   const [active, setActive] = useAtom(activeGisLayersAtom);
@@ -310,6 +410,10 @@ const OnMapSection = ({projectLayers}: {projectLayers: ProjectLayer[]}) => {
   const byId = useMemo(() => new Map((layers ?? []).map((layer) => [layer.id, layer])), [layers]);
   const shownProjectLayers = projectLayers.filter((layer) => !hidden.includes(layer.id));
   const count = active.length + shownProjectLayers.length;
+  // Only these disappear offline; the rest are drawn from the device.
+  const notOffline = active
+    .filter((id) => !isSavedOffline(vectorLayerStatuses[id]))
+    .map((id) => byId.get(id)?.title ?? id);
 
   const setProjectLayerOrder = useSetAtom(projectLayerOrderAtom);
 
@@ -341,9 +445,11 @@ const OnMapSection = ({projectLayers}: {projectLayers: ProjectLayer[]}) => {
       >
         På kortet
       </SectionTitle>
-      {!online && active.length > 0 && (
+      {!online && notOffline.length > 0 && (
         <Alert severity="warning" icon={<CloudOffIcon fontSize="inherit" />} sx={{mx: 2, mb: 1}}>
-          Du er offline. GIS-lagene vises igen, når du er online.
+          {notOffline.length === 1
+            ? `Du er offline. ${notOffline[0]} vises ikke, før du er online igen.`
+            : `Du er offline. Disse lag vises ikke, før du er online igen: ${notOffline.join(', ')}.`}
         </Alert>
       )}
       {count === 0 ? (
@@ -428,6 +534,8 @@ const OnMapSection = ({projectLayers}: {projectLayers: ProjectLayer[]}) => {
                 layerId={id}
                 layer={byId.get(id)}
                 online={online}
+                projectNo={projectNo}
+                status={vectorLayerStatuses[id]}
                 onRaise={index < active.length - 1 ? () => swap(index, index + 1) : null}
                 onLower={index > 0 ? () => swap(index, index - 1) : null}
                 onRemove={() => setActive((current) => current.filter((layerId) => layerId !== id))}
@@ -649,6 +757,16 @@ const CatalogSection = ({projectNo, projectLayers, canDelete, onDelete}: Project
                     />
                   </ListItemIcon>
                   <ListItemText primary={layer.title} />
+                  {layer.offline && (
+                    <Tooltip title="Kan gemmes på enheden, så laget også vises offline. Det gemmes for det valgte projekts område, når det er slået til">
+                      <Chip
+                        label="Offline"
+                        size="small"
+                        variant="outlined"
+                        sx={{ml: 1, height: 20, fontSize: '0.7rem', color: 'text.secondary'}}
+                      />
+                    </Tooltip>
+                  )}
                 </ListItemButton>
               ))}
             </Collapse>
@@ -679,6 +797,8 @@ export const LayerButton = ({open, onClick}: {open: boolean; onClick: () => void
 };
 
 type Props = ProjectLayerProps & {
+  /** Per GIS layer that is on: whether it is saved on the device for the projekt. */
+  vectorLayerStatuses: Record<string, VectorLayerStatus>;
   onClose: () => void;
   /** The area and zoom shown on the map, for downloading luftfoto; null before the map is ready. */
   getMapView: () => MapView | null;
@@ -688,7 +808,7 @@ type Props = ProjectLayerProps & {
  * Kortlag: background map, what is on the map, and the layer catalog. On desktop a panel
  * docked beside the map that stays open while you work; on a phone a full-screen view.
  */
-const LayerPanel = ({onClose, getMapView, ...projectLayerProps}: Props) => {
+const LayerPanel = ({onClose, getMapView, vectorLayerStatuses, ...projectLayerProps}: Props) => {
   const {isMobile} = useBreakpoints();
   const content = (
     <>
@@ -715,7 +835,11 @@ const LayerPanel = ({onClose, getMapView, ...projectLayerProps}: Props) => {
       </Box>
       <Box sx={{flex: 1, minHeight: 0, overflowY: 'auto', pb: 3}}>
         <BackgroundSection getMapView={getMapView} />
-        <OnMapSection projectLayers={projectLayerProps.projectLayers} />
+        <OnMapSection
+          projectNo={projectLayerProps.projectNo}
+          projectLayers={projectLayerProps.projectLayers}
+          vectorLayerStatuses={vectorLayerStatuses}
+        />
         <CatalogSection {...projectLayerProps} />
       </Box>
     </>

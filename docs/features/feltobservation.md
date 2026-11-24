@@ -384,21 +384,53 @@ Reference layers for one projekt (a projekt area, old drawings), shown on the ma
 - **Large shared context data** (e.g. cadastral plots for a whole municipality). Projektlag cover
   data per projekt; layers shared across projekter are better served as Explorer GIS layers.
 
-### Spike: GIS layers as vector data, offline (2026-11-23)
+### GIS layers as vector data, offline (spike 2026-11-23, generalized 2026-11-24)
 
-Can an Explorer GIS layer be kept on the device for the projekt's area, like a projektlag? Tried with
-**Matrikler** (`datagrundlag.matrikel_lodflade`, the current jordstykker with matrikelnummer and
-ejerlavsnavn, added to Explorer's datagrundlag sync for this; calypso-explorer PR #1). Branch
-`spike/matrikler-vector`.
+An Explorer GIS layer can be kept on the device for the projekt's area, like a projektlag. Tried
+first with **Matrikler** (`datagrundlag.matrikel_lodflade`, added to Explorer's datagrundlag sync for
+this; calypso-explorer PR #1), then made to work for every layer that has features.
 
-- **How:** when Matrikler is on in Kortlag and a projekt is chosen, Field asks GC2's SQL API (through
-  Explorer's `/gc2` proxy) for the polygons in the projekt's extent plus 500 m, in EPSG:4326, and
-  stores them in Dexie (`vectorLayers`, one record per layer and projekt). The map draws them on one
-  canvas in the GIS pane instead of the layer's WMS, so they show offline too. Without a projekt, an
-  extent or a stored copy, the layer stays WMS. Only layers listed in `VECTOR_LAYERS`
-  (`api/useVectorLayers.ts`) work this way, with a fixed style each. Timings go to the console
-  (`[vektorlag]`).
-- **Numbers** (matrikler, measured from outside the app; the proxy gzips):
+- **Which layers:** every GIS layer that isn't a raster, a cascaded WMS (GC2 `wmssource` or
+  `bitmapsource`), or tagged **`no-wfs`** in GC2. `no-wfs` is the opt-out for a layer that is too
+  large, too slow or not public: it says the layer isn't suitable for fetching as features
+  (WFS-style). It is set in GC2's tag editor; no code change. The rest stay WMS, online only.
+- **Through our own API, not GC2's:** python_api reads GC2's layer registry
+  (`settings.geometry_columns_view`) and the layer tables in the watsonc database directly
+  (`app/field_observation/gis_layers.py`), so the format Field gets is ours, whatever GC2 does
+  with its own APIs. Both endpoints need login and the fieldObservations flag:
+  - `GET /field_observation/gis-layers`: the layer list (same rule as Explorer's catalog: GC2
+    layers in `explorer` and `datagrundlag` tagged `gis`), with `offline` and, for offline
+    layers, the GC2 classes turned into Leaflet styles. Field uses it instead of Explorer's
+    catalog; Explorer is not changed. WMS and the signaturforklaring still go through Explorer's
+    `/gc2` proxy.
+  - `GET /field_observation/gis-layers/{layer_id}/features?bbox=minLon,minLat,maxLon,maxLat`: the
+    features in the bbox (at most 1° a side), cut to it, with only the columns the class
+    expressions read, 6 decimals (~0.1 m), at most 20,000 (`truncated`), 60 s statement timeout.
+- **How:** when such a layer is on in Kortlag and a projekt is chosen, Field fetches its features
+  for the projekt's extent plus 500 m (`ST_Intersection`, so a kommune or an indvindingsopland
+  stays small). It stores
+  them in Dexie (`vectorLayers`, one record per layer and projekt) with the layer's style at the
+  time. The map draws them on one canvas in the GIS pane instead of the layer's WMS. Saving is
+  automatic: a layer that is on is saved for the projekt. It is fetched again once a day, when the
+  projekt's extent grows, on **Hent igen** (the layer's settings in "På kortet"), and on **Overfør
+  nu**.
+- **Styling:** the API turns each GC2 class into a Leaflet style; Field gives each feature the
+  first class whose MapServer expression matches its properties (`vectorStyle.ts`), as GC2 draws it (`[col]==1`, `"[col]"=="tekst"`, AND/OR/NOT, `<`, `>`). A class with
+  an expression Field can't read makes unmatched features use the first class instead of
+  disappearing. Fill and outline come from the class's `styles` (polygon: `color` + `opacity` is
+  the fill, `outlinecolor` + `width` the outline); points are circle markers of half the GC2
+  `size`. A hatch fill is drawn as a light fill. The layer's Synlighed slider scales the opacity.
+- **In Kortlag:** in "Tilføj lag" a small **Offline** chip marks the layers that can be saved. In
+  "På kortet" each GIS layer shows a green pin when saved (tooltip: projekt, number of objekter,
+  when fetched), a spinner while it is fetched, a warning when fetching failed (the saved copy is
+  still shown), and a cloud with a line through it when it won't show offline (online only, no
+  projekt, no extent, or not saved yet). Offline, the alert names only the layers that won't show;
+  there is no alert when all of them do.
+- **Saved copies are removed** when the layer is turned off (all projekters' copies of it; turning
+  it on again fetches it anew), and on overførsel for projekter the user no longer has. Copies for
+  other projekter whose layers are still on stay, so changing projekt offline still works.
+- **Numbers** from the spike (matrikler through GC2's SQL API with two columns, 6+ decimals; the
+  proxy gzips). The API sends fewer decimals and only styling columns:
 
   | Area | Features | JSON | On the wire | Time |
   |---|---|---|---|---|
@@ -407,13 +439,12 @@ ejerlavsnavn, added to Explorer's datagrundlag sync for this; calypso-explorer P
   | By, 2.5 × 2.8 km (Aarhus C) | 4,388 | 2.4 MB | 0.5 MB | 3.6 s |
   | Storby, 5 × 5 km (Nørrebro) | 15,450 | 7.9 MB | 1.7 MB | 11.4 s |
 
-- **Still to try in the app:** how long storing and drawing take on a phone (logged), panning and
-  zooming with 15,000 polygons on canvas, and the layer offline after a reload.
-- **Not in the spike:** labels and clicking a matrikel; refreshing on **Overfør nu** (it refetches
-  once a day, or when the projekt's extent changes); old copies are never removed; styles are
-  written in code, not read from GC2; more than 20,000 features are cut off; a projekt with no
-  feltobservationer or projektlag has no extent, so nothing is fetched. Fewer coordinate decimals
-  (e.g. `ST_ReducePrecision`) would make the JSON smaller.
+- **Not yet:** labels and clicking a feature (needs more columns than styling); more than 20,000
+  features are cut off; a projekt with no feltobservationer or projektlag has no extent, so nothing
+  is fetched; vector layers share one canvas, so their order against WMS layers isn't kept. The
+  "GIS layer" rule (tag `gis`, two schemas) is now in both Explorer and python_api.
+- **Noticed:** GC2's meta API (`/gc2/api/v1/meta`) returns a cascaded layer's `wmssource`, which for
+  DHM Skyggekort holds a Dataforsyningen token, readable by anyone through Explorer's proxy.
 
 ## Distribution: GeoPackage per projekt (decided 2026-11-23, built)
 

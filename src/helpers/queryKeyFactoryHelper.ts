@@ -119,15 +119,21 @@ export const queryKeys = {
     all: () => ['location_groups'] as const,
   },
   contactRoles: () => ['contact_roles'] as const,
-  explorerGisLayers: () => ['explorer_gis_layers'] as const,
+  fieldObservationGisLayers: () => ['field_observation_gis_layers'] as const,
   explorerGisLegend: (layerId: string) => ['explorer_gis_legend', layerId] as const,
   ortofotoYears: () => ['ortofoto_years'] as const,
   fieldObservationProjectLayers: (projectNo?: string) =>
     projectNo === undefined
       ? (['field_observation_project_layers'] as const)
       : (['field_observation_project_layers', projectNo] as const),
-  fieldObservationVectorLayer: (layerId: string, projectNo: string, bbox: string) =>
-    ['field_observation_vector_layer', layerId, projectNo, bbox] as const,
+  /** Without arguments, or without bbox, a prefix for invalidating and refetching. */
+  fieldObservationVectorLayer: (layerId?: string, projectNo?: string, bbox?: string) =>
+    [
+      'field_observation_vector_layer',
+      ...(layerId === undefined ? [] : [layerId]),
+      ...(projectNo === undefined ? [] : [projectNo]),
+      ...(bbox === undefined ? [] : [bbox]),
+    ] as const,
   imagesById: (loc_id_or_boreholeno: number | string) => ['images', loc_id_or_boreholeno] as const,
   dtm: () => ['dtm'] as const,
   locationTypes: () => ['location_types'] as const,

@@ -1,3 +1,5 @@
+import type {VectorLayerStyle} from '~/features/fieldObservation/vectorStyle';
+
 export type Geometry =
   | {type: 'Point'; coordinates: [number, number] | [number, number, number]}
   | {type: 'LineString'; coordinates: number[][]}
@@ -157,8 +159,7 @@ export type LayerStyle = {
   fillOpacity?: number;
 };
 
-/** Reference data for one projekt (e.g. a projekt area): shown on the map, never registered. */
-/** SPIKE: a GIS layer's features for one projekt's area, stored on the device (useVectorLayers). */
+/** A GIS layer's features for one projekt's area, stored on the device (useVectorLayers). */
 export type VectorLayerCache = {
   /** "layerId|project_no". */
   key: string;
@@ -168,13 +169,16 @@ export type VectorLayerCache = {
   bbox: [number, number, number, number];
   fetched_at: string;
   feature_count: number;
-  /** Size of the response, for the spike's numbers. */
+  /** Size of the response. */
   bytes: number;
   /** True when the area had more features than were kept. */
   truncated: boolean;
+  /** The layer's GC2 styling when fetched, so it is drawn the same offline. Missing on spike rows. */
+  style?: VectorLayerStyle;
   features: GeoJSON.FeatureCollection;
 };
 
+/** Reference data for one projekt (e.g. a projekt area): shown on the map, never registered. */
 export type ProjectLayer = {
   id: string;
   project_no: string;

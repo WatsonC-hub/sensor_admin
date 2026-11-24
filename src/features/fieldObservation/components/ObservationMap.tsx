@@ -7,7 +7,6 @@ import L from 'leaflet';
 import React, {useEffect, useMemo, useRef} from 'react';
 
 import {gisLayerWmsUrl} from '~/features/fieldObservation/api/useGisLayers';
-import {VECTOR_LAYERS} from '~/features/fieldObservation/api/useVectorLayers';
 import {createBackgroundLayer} from '~/features/fieldObservation/backgroundMaps';
 import {badgePosition} from '~/features/fieldObservation/geo';
 import {
@@ -18,6 +17,7 @@ import {
   resolveStyle,
   SHAPE_BADGE_SIZE,
 } from '~/features/fieldObservation/styles';
+import {featureStyler} from '~/features/fieldObservation/vectorStyle';
 import {SingleTileWms} from '~/features/map/singleTileWms';
 
 import type {BackgroundMapId} from '~/features/fieldObservation/backgroundMaps';
@@ -29,6 +29,7 @@ import type {
   ProjectLayer,
   VectorLayerCache,
 } from '~/features/fieldObservation/types';
+import type {VectorLayerStyle} from '~/features/fieldObservation/vectorStyle';
 
 export type DrawShape = Geometry['type'];
 
@@ -65,7 +66,7 @@ type Props = {
   types: ObservationType[];
   /** Explorer GIS layer ids ("schema.table") to show, bottom first. */
   gisLayerIds: string[];
-  /** SPIKE: GIS layers stored as vector data for the projekt; drawn instead of their WMS. */
+  /** GIS layers stored as vector data for the projekt; drawn instead of their WMS. */
   vectorLayers: VectorLayerCache[];
   /** Opacity (0–1) per GIS layer id; a missing id is fully opaque. */
   gisLayerOpacity: Record<string, number>;
@@ -101,6 +102,24 @@ const bindLabel = (layer: L.Layer, text: string, size: number) =>
 const GIS_PANE = 'gis';
 // Projektlag: above Explorer's GIS layers, below the feltobservationer.
 const PROJECT_PANE = 'projectLayers';
+/** For rows saved by the spike, before the GC2 styling was stored with the features. */
+const FALLBACK_VECTOR_STYLE: VectorLayerStyle = {
+  kind: 'polygon',
+  classes: [
+    {
+      expression: '',
+      style: {
+        stroke: true,
+        color: '#e65100',
+        weight: 1,
+        opacity: 0.9,
+        fill: false,
+        fillOpacity: 0,
+        radius: 4,
+      },
+    },
+  ],
+};
 const PROJECT_LAYER_STYLE = {color: '#e65100', weight: 2, opacity: 0.9, fillOpacity: 0.1};
 // Screen distance within which the crosshair snaps to a point feltobservation.
 const SNAP_PX = 24;
@@ -351,7 +370,8 @@ const ObservationMap = ({
   // A GIS layer stored as vector data for the projekt is drawn from the device, not as WMS.
   const vectorIds = useMemo(() => vectorLayers.map((layer) => layer.layer_id), [vectorLayers]);
 
-  // SPIKE: vector GIS layers on one canvas in the GIS pane, so thousands of polygons stay fast.
+  // Vector GIS layers on one canvas in the GIS pane, so thousands of polygons stay fast. Styled
+  // like GC2 draws them, in the order of the layer list.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -359,29 +379,44 @@ const ObservationMap = ({
     const group = L.layerGroup().addTo(map);
     vectorGroupRef.current = group;
     const renderer = L.canvas({pane: GIS_PANE, padding: 0.5});
-    for (const cache of vectorLayers) {
-      const started = performance.now();
+    const ordered = [...vectorLayers].sort(
+      (a, b) => gisLayerIds.indexOf(a.layer_id) - gisLayerIds.indexOf(b.layer_id)
+    );
+    for (const cache of ordered) {
+      const styleOf = featureStyler(cache.style ?? FALLBACK_VECTOR_STYLE);
+      const layerOpacity = gisLayerOpacity[cache.layer_id] ?? 1;
+      const pathOptions = (feature: GeoJSON.Feature | undefined): L.CircleMarkerOptions => {
+        const style = styleOf(feature?.properties ?? null);
+        if (!style) return {stroke: false, fill: false, renderer};
+        return {
+          ...style,
+          opacity: style.opacity * layerOpacity,
+          fillOpacity: style.fillOpacity * layerOpacity,
+          renderer,
+        };
+      };
       L.geoJSON(cache.features, {
         pane: GIS_PANE,
         interactive: false,
         pmIgnore: true,
         snapIgnore: true,
-        style: {
-          ...VECTOR_LAYERS[cache.layer_id]?.style,
-          renderer,
-          opacity: gisLayerOpacity[cache.layer_id] ?? 0.9,
-        },
+        // GC2 draws nothing for a feature no class matches.
+        filter: (feature) => styleOf(feature.properties) !== null,
+        style: pathOptions,
+        pointToLayer: (feature: GeoJSON.Feature, latlng) =>
+          L.circleMarker(latlng, {
+            ...pathOptions(feature),
+            pane: GIS_PANE,
+            interactive: false,
+            pmIgnore: true,
+            snapIgnore: true,
+          }),
       }).addTo(group);
-      // SPIKE: the numbers are what the spike is for.
-      // oxlint-disable-next-line no-console
-      console.info(
-        `[vektorlag] drew ${cache.feature_count} features of ${cache.layer_id} in ${Math.round(performance.now() - started)} ms`
-      );
     }
     return () => {
       group.remove();
     };
-  }, [vectorLayers, gisLayerOpacity]);
+  }, [vectorLayers, gisLayerIds, gisLayerOpacity]);
 
   // Explorer GIS layers as WMS, through Explorer's GC2 proxy (same request Explorer makes).
   useEffect(() => {

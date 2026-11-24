@@ -1,35 +1,26 @@
 import {useQueries} from '@tanstack/react-query';
-import axios from 'axios';
+import {isAxiosError} from 'axios';
 import {useLiveQuery} from 'dexie-react-hooks';
-import {useMemo} from 'react';
+import {useEffect, useMemo, useRef} from 'react';
 
-import {EXPLORER_BASE} from '~/features/fieldObservation/api/useGisLayers';
+import {apiClient} from '~/apiClient';
+import {useGisLayers} from '~/features/fieldObservation/api/useGisLayers';
 import {vertices} from '~/features/fieldObservation/geo';
 import {queryKeys} from '~/helpers/queryKeyFactoryHelper';
 import useOnlineStatus from '~/hooks/useOnlineStatus';
 
-import type L from 'leaflet';
+import type {GisLayer} from '~/features/fieldObservation/api/useGisLayers';
 import type {FieldObservationDb} from '~/features/fieldObservation/db';
 import type {Geometry, VectorLayerCache} from '~/features/fieldObservation/types';
 
 /**
- * SPIKE (2026-11-23): GIS layers fetched as vector data for the projekt's area, stored on the
- * device and drawn on canvas, so they also show offline. Only the layers listed here; every other
- * GIS layer stays WMS. Timings are logged to the console with the "[vektorlag]" prefix.
+ * GIS layers fetched as vector data for the chosen projekt's area from our API, stored on the
+ * device and drawn on canvas, so they also show offline. Every layer the catalog marks `offline`
+ * (python_api field_observation/gis_layers.py); the rest stay WMS, online only.
  */
-export const VECTOR_LAYERS: Record<string, {columns: string[]; style: L.PathOptions}> = {
-  'datagrundlag.matrikel_lodflade': {
-    columns: ['matrikelnummer', 'ejerlavsnavn'],
-    style: {color: '#e65100', weight: 1, opacity: 0.9, fill: false},
-  },
-};
 
 /** Around the projekt's feltobservationer and projektlag, so the edges are covered too. */
 const BUFFER_M = 500;
-/** More than this is cut off (and logged); a projekt that big needs another approach. */
-const MAX_FEATURES = 20_000;
-/** The layer's geometries are stored in this SRID in GC2 (datagrundlag is EPSG:25832). */
-const LAYER_SRID = 25832;
 
 type Bbox = [number, number, number, number];
 
@@ -56,66 +47,84 @@ export const extentBbox = (geometries: Geometry[]): Bbox | null => {
 
 const cacheKey = (layerId: string, projectNo: string) => `${layerId}|${projectNo}`;
 
+type FeaturesResponse = {
+  layer_id: string;
+  feature_count: number;
+  truncated: boolean;
+  features: GeoJSON.FeatureCollection;
+};
+
+/** The API's `detail` for a failed request (the body is text, as requested), if any. */
+const apiDetail = (error: unknown) => {
+  const body: unknown = isAxiosError(error) ? error.response?.data : undefined;
+  if (typeof body !== 'string') return undefined;
+  try {
+    const {detail} = JSON.parse(body) as {detail?: unknown};
+    return typeof detail === 'string' ? detail : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+/** The layer's features in the bbox, cut to it, with the columns its styling reads. */
 const fetchVectorLayer = async (
   db: FieldObservationDb,
-  layerId: string,
+  layer: GisLayer,
   projectNo: string,
   bbox: Bbox
 ) => {
-  const {columns} = VECTOR_LAYERS[layerId];
-  // Only numbers and the fixed layer config go into the SQL.
-  const envelope = `ST_Transform(ST_MakeEnvelope(${bbox.map((value) => value.toFixed(6)).join(', ')}, 4326), ${LAYER_SRID})`;
-  const q =
-    `SELECT gid, ${columns.join(', ')}, the_geom FROM ${layerId} ` +
-    `WHERE the_geom && ${envelope} LIMIT ${MAX_FEATURES + 1}`;
-
-  const started = performance.now();
-  const response = await axios.get<string>(`${EXPLORER_BASE}/gc2/api/v1/sql/watsonc`, {
-    params: {q, srs: 4326},
-    responseType: 'text',
-    timeout: 120_000,
-  });
-  const fetchedMs = performance.now() - started;
-  const body = JSON.parse(response.data) as {
-    success?: boolean;
-    message?: string;
-    features?: GeoJSON.Feature[];
-  };
-  if (!body.success || !body.features) {
-    throw new Error(body.message ?? `${layerId} kunne ikke hentes`);
+  let text: string;
+  try {
+    const response = await apiClient.get<string>(
+      `/field_observation/gis-layers/${encodeURIComponent(layer.id)}/features`,
+      {params: {bbox: bbox.join(',')}, responseType: 'text', timeout: 120_000}
+    );
+    text = response.data;
+  } catch (error) {
+    throw new Error(apiDetail(error) ?? `${layer.title} kunne ikke hentes`, {cause: error});
   }
-  const truncated = body.features.length > MAX_FEATURES;
-  const features = truncated ? body.features.slice(0, MAX_FEATURES) : body.features;
+  const body = JSON.parse(text) as FeaturesResponse;
 
   const record: VectorLayerCache = {
-    key: cacheKey(layerId, projectNo),
-    layer_id: layerId,
+    key: cacheKey(layer.id, projectNo),
+    layer_id: layer.id,
     project_no: projectNo,
     bbox,
     fetched_at: new Date().toISOString(),
-    feature_count: features.length,
-    bytes: response.data.length,
-    truncated,
-    features: {type: 'FeatureCollection', features},
+    feature_count: body.feature_count,
+    bytes: text.length,
+    truncated: body.truncated,
+    style: layer.style ?? undefined,
+    features: body.features,
   };
-  const storeStarted = performance.now();
   await db.vectorLayers.put(record);
-  const storedMs = performance.now() - storeStarted;
-
-  // SPIKE: the numbers are what the spike is for.
-  // oxlint-disable-next-line no-console
-  console.info(
-    `[vektorlag] ${layerId} for ${projectNo}: ${features.length} features` +
-      `${truncated ? ' (CUT OFF)' : ''}, ${(record.bytes / 1e6).toFixed(1)} MB, ` +
-      `fetch ${Math.round(fetchedMs)} ms, store ${Math.round(storedMs)} ms`,
-    bbox
-  );
   return record.fetched_at;
 };
 
+/** Whether a GIS layer that is on is saved on the device for the projekt, and if not, why. */
+export type VectorLayerStatus =
+  /** A raster, a cascaded WMS or tagged no-wfs in GC2: WMS only, so not shown offline. */
+  | {state: 'online-only'}
+  /** The catalog isn't loaded (yet), and nothing is saved. */
+  | {state: 'unknown'}
+  /** Can be saved, but no projekt is chosen. */
+  | {state: 'no-project'}
+  /** Can be saved, but the projekt has no feltobservationer or projektlag to give it an area. */
+  | {state: 'no-area'}
+  /** Can be saved, but hasn't been yet (offline since it was turned on). */
+  | {state: 'not-saved'}
+  | {state: 'saving'; record: VectorLayerCache | null}
+  | {state: 'saved'; record: VectorLayerCache}
+  | {state: 'error'; record: VectorLayerCache | null; message: string};
+
+/** True when the layer is drawn from the device, so it also shows offline. */
+export const isSavedOffline = (status: VectorLayerStatus | undefined) =>
+  status !== undefined && 'record' in status && status.record !== null;
+
 /**
- * The vector GIS layers for the chosen projekt, from the device. While online, a layer that is on
- * is fetched for the projekt's area once a day, or when the area grows past the stored one.
+ * The vector GIS layers for the chosen projekt, from the device, and each active layer's status.
+ * While online, a layer that is on is fetched for the projekt's area once a day, when the area
+ * grows past the stored one, on Hent igen, or on Overfør nu.
  */
 export const useVectorLayers = (
   db: FieldObservationDb,
@@ -125,31 +134,86 @@ export const useVectorLayers = (
 ) => {
   const online = useOnlineStatus();
   const bbox = useMemo(() => extentBbox(extent), [extent]);
-  const layerIds = activeLayerIds.filter((id) => id in VECTOR_LAYERS);
+  const {data: catalog} = useGisLayers();
+  const byId = useMemo(
+    () => (catalog ? new Map(catalog.map((layer) => [layer.id, layer])) : null),
+    [catalog]
+  );
+  const suitable = activeLayerIds
+    .map((id) => byId?.get(id))
+    .filter((layer): layer is GisLayer => layer?.offline === true);
 
-  useQueries({
-    queries: layerIds.map((layerId) => ({
+  // A layer turned off loses its saved copies (every projekt's): it would only take space, and
+  // turning it on again fetches it anew. Only a change while the page is open counts, so the
+  // stored list arriving after the first render deletes nothing.
+  const previousActive = useRef<string[] | null>(null);
+  useEffect(() => {
+    const previous = previousActive.current;
+    previousActive.current = activeLayerIds;
+    const removed = previous?.filter((id) => !activeLayerIds.includes(id)) ?? [];
+    if (removed.length > 0) {
+      void db.vectorLayers
+        .where('key')
+        .startsWithAnyOf(removed.map((id) => `${id}|`))
+        .delete();
+    }
+  }, [db, activeLayerIds]);
+
+  const results = useQueries({
+    queries: suitable.map((layer) => ({
       queryKey: queryKeys.fieldObservationVectorLayer(
-        layerId,
+        layer.id,
         projectNo ?? '',
         bbox?.join(',') ?? ''
       ),
-      queryFn: () => fetchVectorLayer(db, layerId, projectNo!, bbox!),
+      queryFn: () => fetchVectorLayer(db, layer, projectNo!, bbox!),
       enabled: online && projectNo !== null && bbox !== null,
       staleTime: 24 * 60 * 60 * 1000,
       retry: 1,
     })),
   });
 
-  return useLiveQuery(
+  const stored = useLiveQuery(
     async () => {
-      if (!projectNo || layerIds.length === 0) return [];
+      if (!projectNo || activeLayerIds.length === 0) return [];
       const records = await db.vectorLayers.bulkGet(
-        layerIds.map((layerId) => cacheKey(layerId, projectNo))
+        activeLayerIds.map((layerId) => cacheKey(layerId, projectNo))
       );
       return records.filter((record): record is VectorLayerCache => record !== undefined);
     },
-    [db, projectNo, layerIds.join(',')],
+    [db, projectNo, activeLayerIds.join(',')],
     []
   );
+
+  // A layer later tagged no-wfs in GC2 is drawn as WMS again, not from its old copy.
+  const records = useMemo(
+    () => stored.filter((record) => !byId || byId.get(record.layer_id)?.offline === true),
+    [stored, byId]
+  );
+
+  const statuses: Record<string, VectorLayerStatus> = {};
+  for (const layerId of activeLayerIds) {
+    const record = records.find((item) => item.layer_id === layerId) ?? null;
+    const index = suitable.findIndex((layer) => layer.id === layerId);
+    const query = index >= 0 ? results[index] : undefined;
+    if (query?.isFetching) {
+      statuses[layerId] = {state: 'saving', record};
+    } else if (query?.isError) {
+      statuses[layerId] = {state: 'error', record, message: query.error.message};
+    } else if (record) {
+      statuses[layerId] = {state: 'saved', record};
+    } else if (byId && index < 0) {
+      statuses[layerId] = {state: 'online-only'};
+    } else if (!byId) {
+      statuses[layerId] = {state: 'unknown'};
+    } else if (projectNo === null) {
+      statuses[layerId] = {state: 'no-project'};
+    } else if (bbox === null) {
+      statuses[layerId] = {state: 'no-area'};
+    } else {
+      statuses[layerId] = {state: 'not-saved'};
+    }
+  }
+
+  return {records, statuses};
 };
