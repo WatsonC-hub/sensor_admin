@@ -173,3 +173,9 @@ export const markerHtml = (style: ResolvedStyle, notSent: boolean, size = POINT_
   const iconSize = Math.round(size * 0.64);
   return `<div style="width:${size}px;height:${size}px;box-sizing:border-box;border-radius:50%;background:${style.color};border:${border};box-shadow:0 1px 3px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center"><span style="width:${iconSize}px;height:${iconSize}px;background:#fff;-webkit-mask:${mask};mask:${mask}"></span></div>`;
 };
+
+/** The geometry a type's legend swatch shows: its first allowed geometry, a point if any. */
+export const geometryKind = (type: ObservationType): 'POINT' | 'LINESTRING' | 'POLYGON' => {
+  const first = type.geometry_types?.[0];
+  return first === 'LINESTRING' || first === 'POLYGON' ? first : 'POINT';
+};

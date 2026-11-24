@@ -501,7 +501,10 @@ QGIS layers, read-only.
   - `type` (the observationstype's name, useful when layers are merged);
   - `note`;
   - `noejagtighed_m` (`position_accuracy_m`);
-  - `antal_billeder`;
+  - with photos chosen: `antal_billeder`, and `foto_1`, `foto_2` and `foto_3`, links to the first
+    three photos at full size, in the order they were taken. QGIS's **Identify** tool (i) shows
+    them as links that open in the browser, so a photo is two clicks away without a join to
+    `billeder`;
   - `oprettet` and `opdateret` (device times, written as Danish local time);
   - `oprettet_af` and `opdateret_af` (the user's name from `users.user_display_name`, not the id).
 
@@ -550,14 +553,37 @@ QGIS layers, read-only.
   - `weight`, `dashArray` and `fillOpacity` on lines and flader;
   - `labelField` as labels;
   - column aliases;
-  - the photo links shown as images in the feature form.
+  - the photo links shown as images in the feature form;
+  - a **map tip** on every feltobservation layer (decided 2026-11-24).
 
   In v1, points are coloured circles. Field's icons can come later, embedded as SVG.
+- **Map tip** (QGIS shows it when the mouse rests on a feature, once **Show Map Tips** is
+  on). It is HTML with QGIS expressions, stored in the layer's style, so it works without a
+  plugin or a QGIS project:
+  - the type's name, and the `labelField` value if there is one ("Fosforprøve · P1");
+  - every filled-in typefelt and the note, as label–value. Empty fields are left out, booleans
+    show Ja/Nej, dates dd-MM-yyyy. Relations are left out, since a uuid means nothing to a reader;
+  - when photos are chosen and the feltobservation has any: "Billeder: 3 · åbn med Identificér
+    (i)".
+
+  **QGIS 4 draws map tips with QTextBrowser** (tested 2026-11-24 in QGIS 4.0.2), not a browser
+  engine. That decides the design:
+  - Web images are never fetched: an `<img>` with a link shows a broken-image icon. An image
+    embedded in the HTML (`data:` URI) does show.
+  - Links are shown, and the mouse can move onto the map tip, but a click only closes it.
+  - Without set colours the map tip takes the theme's colours and draws dark bars. So all colours
+    are set, and the white background is on a `<table bgcolor>`, which QTextBrowser honours.
+
+  Embedding thumbnails was dropped: fetching hundreds of them through the image proxy for every
+  export is too slow. Photos are opened from the Identify tool instead. A plugin could later cache
+  photos locally and show them, since QTextBrowser can show local files.
 - **Om filen:** a table without geometry, `om_filen`, with one row:
   - projekt number and title;
   - when it was built (`hentet`);
   - number of feltobservationer;
-  - the highest `version` in the data.
+  - the highest `version` in the data;
+  - the choice it was made with: `valgte_typer` (schema_keys, or "alle"), `valgte_projektlag`
+    (ids, or "alle") and `billeder`.
 
   The plugin can later compare that `version` with the server to see whether the file is out of
   date.
@@ -570,6 +596,10 @@ QGIS layers, read-only.
   - The file is written to a temporary file and returned as a download named
     `feltobservationer_<project_no>_<date>.gpkg`.
   - A projekt without feltobservationer still gives a file, with only `om_filen` and any projektlag.
+  - **Selection** (decided 2026-11-24): `types` (schema_keys) and `project_layers` (ids), each
+    comma-separated, and `images` (true/false). A missing list means everything, an empty one
+    means none. Whole types only, never a style variant: a file with half a type is easy to misread
+    later. A type's feltgrupper come with it.
 - Later, for the plugin, the same function writes `s3://…/<project_no>.gpkg` some minutes after the
   projekt's last change, and an endpoint hands out the pre-signed URL. The plugin's login is not
   decided: an OAuth/OIDC browser login if calypso-auth can offer it, otherwise a personal access
@@ -580,11 +610,22 @@ QGIS layers, read-only.
 - **Hent som GeoPackage** is a download icon in the top bar, next to **Importér fil**
   (`ExportButton.tsx`, `api/useExportGeoPackage.ts`). Like import, it is shown on desktop only:
   the file is for QGIS.
-- It downloads the projekt chosen in the projekt field. With no projekt chosen it is disabled, and
-  its tooltip says to choose one. While the file is being built, it shows a spinner.
-- The file comes from the server, so feltobservationer that are not overført are not in it. After
-  the download, a toast says how many of the projekt's feltobservationer were left out for that
-  reason.
+- It works on the projekt chosen in the projekt field. With no projekt chosen it is disabled, and
+  its tooltip says to choose one.
+- It opens **Hent som GeoPackage** (`ExportDialog.tsx`), grouped like the signaturforklaring and
+  with the same swatches and tri-state group checkboxes:
+  - **Feltobservationer:** the types in the projekt with their counts, and the feltgrupper that
+    come along ("Med Geologi").
+  - **Projektlag:** the projekt's projektlag. They are often not relevant in QGIS.
+  - **Andet:** **Billeder** (the billeder table, the foto columns and the photo count in the map
+    tip).
+- The first time for a projekt, the dialog starts with the types the signaturforklaring shows, no
+  projektlag, and photos on. After a download, the choice is remembered per projekt on the device
+  (`exportChoiceAtom`). Types new since then start unchecked.
+- **Hent** is disabled when neither a type nor a projektlag is chosen. The dialog closes when the
+  file is saved.
+- The file comes from the server, so feltobservationer that are not overført are not in it. The
+  dialog warns how many of the chosen types' feltobservationer that applies to.
 - Offline, or when the server refuses, the download fails at once with the app's usual error
   toast. It is never queued like a registrering (`networkMode: 'always'`).
 
@@ -606,7 +647,7 @@ QGIS layers, read-only.
 - Published views for GC2 and Explorer, and distribution to customers or other data platforms.
 - Embedded photos and Field's icons in the styles.
 
-### Status (2026-11-23)
+### Status (2026-11-24)
 
 - **Endpoint built** in `python_api` (`app/field_observation/export.py`, route in `router.py`),
   with tests that build a file from sample data. Geometry goes out as 2D (`ST_Force2D`); Z values
@@ -616,16 +657,18 @@ QGIS layers, read-only.
   - every table opens;
   - the styles from `layer_styles` are applied by themselves;
   - the rule style, the labels and the column aliases come through;
-  - the photo field is set up as an image.
-- **Field button built**, see Field above. It was not tried in the running app.
+  - the map tip is loaded and switched on, and evaluates per feature to the expected HTML.
+- **Checked in QGIS 4.0.2's GUI** (by hand, real data, 2026-11-24):
+  - the export's SQL works, including the names from `users.user_display_name`;
+  - the map tip style (white box, grey labels) reads well; web images and links in it don't work
+    (see Map tip);
+  - the photo links in `foto_1`.. show as links in the Identify tool.
+- **Field button and selection dialog built**, see Field above. Not tried in the running app.
 
 ### Still to verify
 
-- The export's SQL against the real database. In particular, the join to `users.user_display_name`
-  compares the ids as text, because the column types weren't checked.
-- That a photo link opens outside Field without a login (paste one into a private browser window).
-- That QGIS's feature form actually loads and shows the photo from the link. Only the widget setup
-  was checked.
+- That the `billeder` table's image field shows the thumbnail in QGIS 4's feature form. Its
+  widget is set up, but QGIS 4 may not load web images there either.
 - How long building takes for the largest projekt.
 - The layer order when all layers are added at once (points should lie above lines and flader).
 
