@@ -502,8 +502,9 @@ QGIS layers, read-only.
   - `note`;
   - `noejagtighed_m` (`position_accuracy_m`);
   - with photos chosen: `antal_billeder`, and `foto_1`, `foto_2` and `foto_3`, links to the first
-    three photos' thumbnails, in the order they were taken. They are on the feature itself so the
-    map tip and the form can show them without a join to `billeder`;
+    three photos at full size, in the order they were taken. QGIS's **Identify** tool (i) shows
+    them as links that open in the browser, so a photo is two clicks away without a join to
+    `billeder`;
   - `oprettet` and `opdateret` (device times, written as Danish local time);
   - `oprettet_af` and `opdateret_af` (the user's name from `users.user_display_name`, not the id).
 
@@ -562,7 +563,20 @@ QGIS layers, read-only.
   - the type's name, and the `labelField` value if there is one ("Fosforprøve · P1");
   - every filled-in typefelt and the note, as label–value. Empty fields are left out, booleans
     show Ja/Nej, dates dd-MM-yyyy. Relations are left out, since a uuid means nothing to a reader;
-  - up to three photos (`foto_1` to `foto_3`) when photos are chosen.
+  - when photos are chosen and the feltobservation has any: "Billeder: 3 · åbn med Identificér
+    (i)".
+
+  **QGIS 4 draws map tips with QTextBrowser** (tested 2026-11-24 in QGIS 4.0.2), not a browser
+  engine. That decides the design:
+  - Web images are never fetched: an `<img>` with a link shows a broken-image icon. An image
+    embedded in the HTML (`data:` URI) does show.
+  - Links are shown, and the mouse can move onto the map tip, but a click only closes it.
+  - Without set colours the map tip takes the theme's colours and draws dark bars. So all colours
+    are set, and the white background is on a `<table bgcolor>`, which QTextBrowser honours.
+
+  Embedding thumbnails was dropped: fetching hundreds of them through the image proxy for every
+  export is too slow. Photos are opened from the Identify tool instead. A plugin could later cache
+  photos locally and show them, since QTextBrowser can show local files.
 - **Om filen:** a table without geometry, `om_filen`, with one row:
   - projekt number and title;
   - when it was built (`hentet`);
@@ -603,7 +617,8 @@ QGIS layers, read-only.
   - **Feltobservationer:** the types in the projekt with their counts, and the feltgrupper that
     come along ("Med Geologi").
   - **Projektlag:** the projekt's projektlag. They are often not relevant in QGIS.
-  - **Andet:** **Billeder** (the billeder table, the foto columns and the photos in the map tip).
+  - **Andet:** **Billeder** (the billeder table, the foto columns and the photo count in the map
+    tip).
 - The first time for a projekt, the dialog starts with the types the signaturforklaring shows, no
   projektlag, and photos on. After a download, the choice is remembered per projekt on the device
   (`exportChoiceAtom`). Types new since then start unchecked.
@@ -642,19 +657,18 @@ QGIS layers, read-only.
   - every table opens;
   - the styles from `layer_styles` are applied by themselves;
   - the rule style, the labels and the column aliases come through;
-  - the photo field is set up as an image;
-  - the map tip is loaded and switched on, and evaluates per feature to the expected HTML. QGIS 4's
-    map tip is drawn by a web view that uses Qt WebEngine, which QGIS 4 ships.
+  - the map tip is loaded and switched on, and evaluates per feature to the expected HTML.
+- **Checked in QGIS 4.0.2's GUI** (by hand, real data, 2026-11-24):
+  - the export's SQL works, including the names from `users.user_display_name`;
+  - the map tip style (white box, grey labels) reads well; web images and links in it don't work
+    (see Map tip);
+  - the photo links in `foto_1`.. show as links in the Identify tool.
 - **Field button and selection dialog built**, see Field above. Not tried in the running app.
 
 ### Still to verify
 
-- The export's SQL against the real database. In particular, the join to `users.user_display_name`
-  compares the ids as text, because the column types weren't checked.
-- That a photo link opens outside Field without a login (paste one into a private browser window).
-- That QGIS's feature form actually loads and shows the photo from the link. Only the widget setup
-  was checked.
-- That the map tip shows the photos in QGIS 4's GUI (remote images). Only the HTML was checked.
+- That the `billeder` table's image field shows the thumbnail in QGIS 4's feature form. Its
+  widget is set up, but QGIS 4 may not load web images there either.
 - How long building takes for the largest projekt.
 - The layer order when all layers are added at once (points should lie above lines and flader).
 
