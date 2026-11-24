@@ -393,6 +393,8 @@ const ObservationPage = () => {
             <ExportButton
               projectNo={selectedProject}
               observations={projectObservations}
+              types={types}
+              projectLayers={projectLayers}
               disabled={mode.kind !== 'idle'}
             />
           )}

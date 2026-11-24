@@ -21,6 +21,7 @@ import React, {useRef, useState} from 'react';
 import {hiddenLegendAtom, hiddenProjectLayersAtom} from '~/features/fieldObservation/state';
 import {
   iconMaskStyle,
+  geometryKind,
   legendVariants,
   resolveStyle,
   typeKey,
@@ -127,11 +128,6 @@ export const Swatch = ({
   );
 };
 
-const geometryKind = (type: ObservationType): SwatchProps['kind'] => {
-  const first = type.geometry_types?.[0];
-  return first === 'LINESTRING' || first === 'POLYGON' ? first : 'POINT';
-};
-
 /** Whether a legend key is the type's own key or one of its variants' keys. */
 const isKeyOfType = (key: string, typeId: number) =>
   key === typeKey(typeId) || key.startsWith(`${typeKey(typeId)}:`);
@@ -165,7 +161,7 @@ type AllCheckboxProps = {
 };
 
 /** Tri-state checkbox in a group heading: show or hide every row in the group. */
-const AllCheckbox = ({shown, total, onChange}: AllCheckboxProps) => (
+export const AllCheckbox = ({shown, total, onChange}: AllCheckboxProps) => (
   <Checkbox
     edge="start"
     size="small"

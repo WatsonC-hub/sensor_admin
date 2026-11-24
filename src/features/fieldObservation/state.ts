@@ -76,5 +76,20 @@ export const lastTypeIdAtom = atomWithStorage<Record<string, number>>(
   {getOnInit: true}
 );
 
+/** What to put in a GeoPackage from Hent som GeoPackage. */
+export type ExportChoice = {
+  /** Observationstyper by schema_key. */
+  types: string[];
+  /** Projektlag ids. */
+  projectLayers: string[];
+  images: boolean;
+};
+
+/** The last Hent som GeoPackage choice per projekt, so the dialog opens with it. */
+export const exportChoiceAtom = atomWithStorage<Record<string, ExportChoice>>(
+  'fieldObservation.exportChoice',
+  {}
+);
+
 /** Redigeringstilstand: clicking a feltobservation opens it in Rediger instead of Vis. */
 export const editModeAtom = atomWithStorage<boolean>('fieldObservation.editMode', false);
