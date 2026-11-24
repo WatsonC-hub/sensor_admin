@@ -8,7 +8,9 @@ import React, {useEffect, useMemo, useRef} from 'react';
 
 import {gisLayerWmsUrl} from '~/features/fieldObservation/api/useGisLayers';
 import {createBackgroundLayer} from '~/features/fieldObservation/backgroundMaps';
+import {BadgeMarker} from '~/features/fieldObservation/badgeCanvas';
 import {badgePosition} from '~/features/fieldObservation/geo';
+import {createMapLabels} from '~/features/fieldObservation/mapLabels';
 import {
   labelText,
   markerHtml,
@@ -21,7 +23,9 @@ import {featureStyler} from '~/features/fieldObservation/vectorStyle';
 import {SingleTileWms} from '~/features/map/singleTileWms';
 
 import type {BackgroundMapId} from '~/features/fieldObservation/backgroundMaps';
+import type {MapLabel} from '~/features/fieldObservation/mapLabels';
 import type {MapView} from '~/features/fieldObservation/offlineTiles';
+import type {ResolvedStyle} from '~/features/fieldObservation/styles';
 import type {
   Geometry,
   LocalObservation,
@@ -87,21 +91,16 @@ const DRAFT_COLOR = '#d32f2f';
 const USER_ZOOM = 17;
 /** Map labels show from this zoom; further out they would cover each other and the map. */
 const LABEL_MIN_ZOOM = 16;
-/** On the map container while zoomed out past LABEL_MIN_ZOOM (see leaflet.css). */
-const LABELS_OFF_CLASS = 'fo-labels-off';
-
-/** A permanent label to the right of a badge `size` px wide. */
-const bindLabel = (layer: L.Layer, text: string, size: number) =>
-  layer.bindTooltip(text, {
-    permanent: true,
-    direction: 'right',
-    offset: [size / 2, 0],
-    className: 'fo-label',
-  });
 
 const GIS_PANE = 'gis';
 // Projektlag: above Explorer's GIS layers, below the feltobservationer.
 const PROJECT_PANE = 'projectLayers';
+// Feltobservationer: lines, flader and badges on one canvas, badges drawn last so they are on top
+// and win a click. One canvas, not one per kind: a canvas on top would take every click.
+const FEATURE_PANE = 'observations';
+// A feltobservation being edited (SVG, for Geoman's handles) and the crosshair draft, above the
+// canvas so they can be grabbed.
+const EDIT_PANE = 'observationEdit';
 /** For rows saved by the spike, before the GC2 styling was stored with the features. */
 const FALLBACK_VECTOR_STYLE: VectorLayerStyle = {
   kind: 'polygon',
@@ -150,6 +149,44 @@ type EditableLayer = L.Path | L.Marker;
 const badgeIcon = (html: string, size: number) =>
   L.divIcon({className: '', html, iconSize: [size, size], iconAnchor: [size / 2, size / 2]});
 
+/** How a feltobservation is drawn; kept so it can be drawn again for editing. */
+type Drawn = {geom: Geometry; style: ResolvedStyle; notSent: boolean};
+
+/** A line or flade as a Leaflet path (GeoJSON is [lng, lat]). */
+const shapeLayer = (geom: Geometry, options: L.PolylineOptions): L.Path | null => {
+  switch (geom.type) {
+    case 'LineString':
+      return L.polyline(L.GeoJSON.coordsToLatLngs(geom.coordinates, 0), options);
+    case 'Polygon':
+      return L.polygon(L.GeoJSON.coordsToLatLngs(geom.coordinates, 1), options);
+    case 'Point':
+      return null;
+  }
+};
+
+/** Path options for a feltobservation's line or flade; not overført is drawn dotted. */
+const shapeStyle = (style: ResolvedStyle, notSent: boolean): L.PolylineOptions => ({
+  color: style.color,
+  weight: style.weight,
+  dashArray: notSent ? '2 6' : style.dashArray,
+  fillColor: style.color,
+  fillOpacity: style.fillOpacity,
+});
+
+/** A layer Geoman can edit, above the canvas: an HTML marker for a point, else an SVG path. */
+const editableLayer = ({geom, style, notSent}: Drawn): EditableLayer | null => {
+  if (geom.type === 'Point') {
+    const [lng, lat] = geom.coordinates;
+    return L.marker([lat, lng], {
+      icon: badgeIcon(markerHtml(style, notSent), POINT_BADGE_SIZE),
+      keyboard: false,
+      contextmenu: false,
+      contextmenuItems: [],
+    });
+  }
+  return shapeLayer(geom, {...shapeStyle(style, notSent), pane: EDIT_PANE});
+};
+
 const ObservationMap = ({
   observations,
   types,
@@ -170,14 +207,18 @@ const ObservationMap = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.LayerGroup | null>(null);
+  const featureRendererRef = useRef<L.Canvas | null>(null);
+  const labelsRef = useRef<ReturnType<typeof createMapLabels> | null>(null);
+  const drawnRef = useRef(new Map<string, Drawn>());
   const draftLayerRef = useRef<L.LayerGroup | null>(null);
   const wmsLayersRef = useRef(new Map<string, SingleTileWms>());
   const vectorGroupRef = useRef<L.LayerGroup | null>(null);
-  // The drawn layer of each feltobservation, so it can be edited.
-  const featureLayersRef = useRef(new Map<string, EditableLayer>());
-  // The white outline and badge of each line and flade, hidden while it is edited.
+  // The canvas layer of each feltobservation: a point's badge, or a line or flade.
+  const featureLayersRef = useRef(new Map<string, L.Path>());
+  // The white outline and badge of each line and flade, removed while it is edited.
   const decorationsRef = useRef(new Map<string, L.Layer[]>());
-  const editingRef = useRef<EditableLayer | null>(null);
+  // The feltobservation being edited, drawn as its own layer for Geoman.
+  const editingRef = useRef<{id: string; layer: EditableLayer} | null>(null);
   const renderRef = useRef<() => void>(() => {});
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
@@ -199,11 +240,15 @@ const ObservationMap = ({
     // GIS layers sit above the base map and below the feltobservationer.
     map.createPane(GIS_PANE).style.zIndex = '350';
     map.createPane(PROJECT_PANE).style.zIndex = '370';
-    // Labels are hidden with a class when zoomed out, so nothing is redrawn on zoom.
-    const toggleLabels = () =>
-      map.getContainer().classList.toggle(LABELS_OFF_CLASS, map.getZoom() < LABEL_MIN_ZOOM);
-    toggleLabels();
-    map.on('zoomend', toggleLabels);
+    // Above the overlay pane (position dot, Leaflet's default for paths), below markers.
+    map.createPane(FEATURE_PANE).style.zIndex = '420';
+    map.createPane(EDIT_PANE).style.zIndex = '430';
+    // Tolerance: a line can be tapped a little beside it.
+    featureRendererRef.current = L.canvas({pane: FEATURE_PANE, padding: 0.5, tolerance: 4});
+    const labels = createMapLabels(map, LABEL_MIN_ZOOM);
+    labelsRef.current = labels;
+    // A line or flade being drawn goes above the feltobservation canvas, not under it.
+    map.pm.setGlobalOptions({panes: {layerPane: 'markerPane'}});
     projectGroupRef.current = L.layerGroup().addTo(map);
 
     L.control.scale({position: 'bottomleft', imperial: false, maxWidth: 100}).addTo(map);
@@ -261,9 +306,11 @@ const ObservationMap = ({
     };
 
     const stopEdit = () => {
-      const layer = editingRef.current;
+      const editing = editingRef.current;
       editingRef.current = null;
-      if (!layer) return null;
+      labels.exclude(null);
+      if (!editing) return null;
+      const {layer} = editing;
       layer.pm.disable();
       return (layer.toGeoJSON() as GeoJSON.Feature).geometry as Geometry;
     };
@@ -294,13 +341,21 @@ const ObservationMap = ({
       cancelDraw: stopDraw,
       startEdit: (id) => {
         stopEdit();
-        const layer = featureLayersRef.current.get(id);
+        const drawn = drawnRef.current.get(id);
+        const group = layerRef.current;
+        if (!drawn || !group) return false;
+        const layer = editableLayer(drawn);
         if (!layer) return false;
-        // The outline and badge would stay behind while points move; the next render
-        // (after save or cancel) draws them again.
+        // Geoman edits an HTML marker or SVG path in place of the canvas layer. The outline,
+        // badge and label would stay behind while points move; the next render (after save
+        // or cancel) draws them again.
+        featureLayersRef.current.get(id)?.remove();
+        featureLayersRef.current.delete(id);
         decorationsRef.current.get(id)?.forEach((decoration) => decoration.remove());
         decorationsRef.current.delete(id);
-        editingRef.current = layer;
+        labels.exclude(id);
+        group.addLayer(layer);
+        editingRef.current = {id, layer};
         layer.pm.enable({allowSelfIntersection: false, draggable: true});
         return true;
       },
@@ -341,8 +396,13 @@ const ObservationMap = ({
     const wmsLayers = wmsLayersRef.current;
     const featureLayers = featureLayersRef.current;
     const decorations = decorationsRef.current;
+    const drawn = drawnRef.current;
     return () => {
       stopDraw();
+      labels.remove();
+      labelsRef.current = null;
+      featureRendererRef.current = null;
+      drawn.clear();
       map.stopLocate();
       resizeObserver.disconnect();
       map.remove();
@@ -451,95 +511,113 @@ const ObservationMap = ({
   useEffect(() => {
     const render = () => {
       const group = layerRef.current;
-      if (!group) return;
+      const renderer = featureRendererRef.current;
+      if (!group || !renderer) return;
       const typesById = new Map(types.map((type) => [type.id, type]));
       // A feature being edited keeps its layer, so Geoman's handles stay put.
       const editing = editingRef.current;
       group.eachLayer((layer) => {
-        if (layer !== editing) group.removeLayer(layer);
+        if (layer !== editing?.layer) group.removeLayer(layer);
       });
       const featureLayers = featureLayersRef.current;
-      for (const [id, layer] of featureLayers) {
-        if (layer !== editing) featureLayers.delete(id);
-      }
+      featureLayers.clear();
       // A feature being edited has no decorations (see startEdit), so all of these are gone.
       const decorations = decorationsRef.current;
       decorations.clear();
+      const drawn = drawnRef.current;
+      drawn.clear();
+      // Badges are added after all lines and flader, so they are drawn on top and win a click.
+      const badges: L.Layer[] = [];
+      const labels: MapLabel[] = [];
       for (const observation of observations) {
-        if (observation.deleted_at || featureLayers.has(observation.id)) continue;
+        if (observation.deleted_at) continue;
         const type = typesById.get(observation.type_id);
         const style = resolveStyle(type, observation.properties);
-        const label = labelText(type, observation.properties);
         const notSent = observation.dirty !== 0;
+        drawn.set(observation.id, {geom: observation.geom, style, notSent});
+        if (observation.id === editing?.id) continue;
+        const label = labelText(type, observation.properties);
         const select = () => {
           if (editingRef.current) return;
           onSelectRef.current(observation.id);
         };
-        const geoJson = {
-          type: 'Feature',
-          geometry: observation.geom,
-          properties: {},
-        } as GeoJSON.Feature;
+        // The type's icon in a round badge; not overført gets a dashed orange ring.
+        const badge = {color: style.color, icon: style.icon, notSent};
+
+        if (observation.geom.type === 'Point') {
+          const [lng, lat] = observation.geom.coordinates;
+          const point = new BadgeMarker(
+            [lat, lng],
+            {...badge, size: POINT_BADGE_SIZE},
+            {renderer, pane: FEATURE_PANE, bubblingMouseEvents: false}
+          );
+          point.on('click', select);
+          badges.push(point);
+          featureLayers.set(observation.id, point);
+          if (label) {
+            labels.push({
+              id: observation.id,
+              latlng: point.getLatLng(),
+              text: label,
+              offsetX: POINT_BADGE_SIZE / 2,
+            });
+          }
+          continue;
+        }
+
         // Lines and flader get a white outline under them (like the white ring around a
         // badge) and a smaller badge with the type's icon, so they read as feltobservationer.
-        const extras: L.Layer[] = [];
+        const outline = shapeLayer(observation.geom, {
+          renderer,
+          pane: FEATURE_PANE,
+          interactive: false,
+          pmIgnore: true,
+          snapIgnore: true,
+          color: '#fff',
+          weight: style.weight + 2 * OUTLINE_PX,
+          opacity: 0.9,
+          fill: false,
+          lineCap: 'round',
+          lineJoin: 'round',
+        });
+        const shape = shapeLayer(observation.geom, {
+          ...shapeStyle(style, notSent),
+          renderer,
+          pane: FEATURE_PANE,
+        });
+        if (!outline || !shape) continue;
+        shape.on('click', select);
+        // The outline goes first, so it is drawn under the line.
+        group.addLayer(outline);
+        group.addLayer(shape);
+        featureLayers.set(observation.id, shape);
+        const extras: L.Layer[] = [outline];
         const badgeAt = badgePosition(observation.geom);
         if (badgeAt) {
-          const outline = L.geoJSON(geoJson, {
-            interactive: false,
-            pmIgnore: true,
-            snapIgnore: true,
-            style: {
-              color: '#fff',
-              weight: style.weight + 2 * OUTLINE_PX,
-              opacity: 0.9,
-              fill: false,
-              lineCap: 'round',
-              lineJoin: 'round',
-            },
-          });
-          extras.push(...outline.getLayers());
-          const badge = L.marker([badgeAt[1], badgeAt[0]], {
-            icon: badgeIcon(markerHtml(style, notSent, SHAPE_BADGE_SIZE), SHAPE_BADGE_SIZE),
-            keyboard: false,
-            pmIgnore: true,
-            snapIgnore: true,
-            contextmenu: false,
-            contextmenuItems: [],
-          });
-          badge.on('click', select);
-          if (label) bindLabel(badge, label, SHAPE_BADGE_SIZE);
-          extras.push(badge);
+          const latlng = L.latLng(badgeAt[1], badgeAt[0]);
+          const shapeBadge = new BadgeMarker(
+            latlng,
+            {...badge, size: SHAPE_BADGE_SIZE},
+            {
+              renderer,
+              pane: FEATURE_PANE,
+              bubblingMouseEvents: false,
+              pmIgnore: true,
+              snapIgnore: true,
+            }
+          );
+          shapeBadge.on('click', select);
+          badges.push(shapeBadge);
+          extras.push(shapeBadge);
+          // A line or flade has its label on the badge.
+          if (label) {
+            labels.push({id: observation.id, latlng, text: label, offsetX: SHAPE_BADGE_SIZE / 2});
+          }
         }
-        const feature = L.geoJSON(geoJson, {
-          // Points: the type's icon in a round badge; not overført gets a dashed orange ring.
-          pointToLayer: (_feature, latlng) =>
-            L.marker(latlng, {
-              icon: badgeIcon(markerHtml(style, notSent), POINT_BADGE_SIZE),
-              keyboard: false,
-              contextmenu: false,
-              contextmenuItems: [],
-            }),
-          // Lines and flader keep their colour; not overført is drawn dotted.
-          style: {
-            color: style.color,
-            weight: style.weight,
-            dashArray: notSent ? '2 6' : style.dashArray,
-            fillColor: style.color,
-            fillOpacity: style.fillOpacity,
-          },
-        });
-        const [layer] = feature.getLayers() as EditableLayer[];
-        if (!layer) continue;
-        layer.on('click', select);
-        // A line or flade has its label on the badge, which is hidden while it is edited.
-        if (label && !badgeAt) bindLabel(layer, label, POINT_BADGE_SIZE);
-        // The outline goes first, so it is drawn under the line (the badge has its own pane).
-        extras.forEach((extra) => group.addLayer(extra));
-        if (extras.length) decorations.set(observation.id, extras);
-        group.addLayer(layer);
-        featureLayers.set(observation.id, layer);
+        decorations.set(observation.id, extras);
       }
+      badges.forEach((badge) => group.addLayer(badge));
+      labelsRef.current?.set(labels);
     };
     renderRef.current = render;
     render();
@@ -594,7 +672,13 @@ const ObservationMap = ({
     if (!map || !group) return;
     group.clearLayers();
     if (!draft) return;
-    const style = {color: DRAFT_COLOR, weight: 3, dashArray: '6 6', interactive: false};
+    const style = {
+      color: DRAFT_COLOR,
+      weight: 3,
+      dashArray: '6 6',
+      interactive: false,
+      pane: EDIT_PANE,
+    };
     for (const vertex of draft.vertices) {
       L.circleMarker(vertex, {
         radius: 5,
@@ -603,6 +687,7 @@ const ObservationMap = ({
         fillColor: DRAFT_COLOR,
         fillOpacity: 1,
         interactive: false,
+        pane: EDIT_PANE,
       }).addTo(group);
     }
     if (draft.shape === 'Point' || draft.vertices.length === 0) return;
