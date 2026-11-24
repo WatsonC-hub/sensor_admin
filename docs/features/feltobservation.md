@@ -7,6 +7,86 @@ progress. Branch/PR: `feature/feltobservation-poc`, `feature/feltobservation-fas
 feltobservationer. Fase 2 (below) builds typefelter, drawing and import on the same route and
 schema.
 
+## Backlog (started 2026-11-24)
+
+The open items in one list. Detail stays in the sections linked below; move an item out of here
+when it is done or decided.
+
+**Ideas and wishes**
+
+- **Import: clearer field mapping.** Seen 2026-11-23: a colleague imported a layer and forgot to
+  choose **Spring over** for many fields. Idea:
+  - the select box lists only the type's own fields;
+  - **Spring over** and **Ekstra felt** become a button switch next to it, per field;
+  - an action for all remaining fields ("Spring over resten" / "Ekstra felt for resten"), so the user
+    still decides actively but doesn't have to click through every field.
+- **Changes made outside the app must reach the devices.** Seen 2026-11-23: 450 feltobservationer
+  deleted with SQL `DELETE` stayed on every device that had them cached, even after a sync. A hard
+  delete leaves no `deleted_at` tombstone and no `version` bump, so `/changes` never reports it.
+  This matters beyond cleanup, e.g. for automatic jobs that edit rows. Options to consider:
+  - a trigger that turns `DELETE` into a soft delete, or writes a tombstone table that `/changes`
+    reads;
+  - check that SQL `UPDATE`s already reach devices (the trigger bumps `version`; check that
+    `change_xid` is set too, or the snapshot window skips the row);
+  - a way for the server to tell a device to drop its copy and pull everything again (e.g. a reset
+    generation number per projekt or globally).
+  - Also: a bulk delete in the app (e.g. per import or selection), so SQL isn't needed for cleanup.
+- **"Ryd lokale data" in the `⋮` menu.** Today the only fix for a stale device is clearing the
+  browser's site data with developer tools. A button that deletes the local copy and pulls everything
+  again, behind a confirmation dialog. It must warn about, or first send, rows not yet transferred
+  (`dirty`), so nothing captured offline is lost.
+- **Re-import without duplicates.** Users often seed feltobservationer from a layer they made in
+  QGIS (e.g. points where a "Fosforprøve" must be taken). Later they add a few points to the same
+  QGIS layer and import it again, and every old point is created a second time. Import should find
+  which features are new. Ideas to weigh:
+  - remember each imported feature's source id (e.g. the file's `fid` or a chosen id column) with
+    the import, and match on it the next time;
+  - fall back to matching on geometry (same or very close position, same type) when there is no
+    stable id;
+  - show the result before saving: N new, N already imported (skip, or update?), N changed;
+  - a GeoPackage exported from Field already carries `id` (uuid); importing that back could match
+    on it directly.
+
+**Bugs**
+
+- [ ] **GeoPackage layer names.** In QGIS the layers show the table name, e.g. `generel_punkt`,
+  instead of a readable "Generel - punkt". The spec sets the type's name as the GeoPackage
+  `identifier`, but it lacks the geometry suffix and QGIS seems to name the layer by table. Check
+  what QGIS 4 reads, and set a readable name there (identifier with "- punkt/linje/flade", and/or
+  the layer name in `layer_styles`).
+
+**To verify**
+
+- [ ] "Hent som GeoPackage" button and selection dialog in the running app (Distribution → Field)
+- [ ] Thumbnails in the `billeder` table's feature form in QGIS 4
+- [ ] How long building the GeoPackage takes for the largest projekt
+- [ ] Layer order when all GeoPackage layers are added at once (points above lines and flader)
+- [ ] Throttling and pause/resume during overførsel
+- [ ] Two users editing the same row (last write wins)
+
+**Known limitations to fix**
+
+- [ ] A feltobservation moved to a projekt the device can't see stays as a stale local copy
+- [ ] `/observation` still renders inside Field's shell
+- [ ] No shortcut from a lokationsvindue to Feltobservationer
+
+**Small iterations**
+
+- [ ] Another pass on the Kortlag panel (`LayerPanel.tsx`)
+
+**Needs thought** (see Fase 2 → Parked)
+
+- Should a feltobservation have a status?
+- Large shared context data (matrikler for a whole kommune); partly answered by the vector GIS
+  layer spike
+
+**Later** (see Distribution → Not now)
+
+- QGIS plugin that logs in and fetches the GeoPackage via a pre-signed S3 URL
+- Editing from QGIS (geodiff)
+- Published views for GC2 and Explorer; distribution to customers and other platforms
+- Embedded photos and Field's icons in the QGIS styles
+
 ## Goal
 
 Consultants and underleverandører document what they find on site (drænbrønde, boringer, jordprøver,
