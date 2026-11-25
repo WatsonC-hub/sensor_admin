@@ -46,6 +46,12 @@ when it is done or decided.
   - show the result before saving: N new, N already imported (skip, or update?), N changed;
   - a GeoPackage exported from Field already carries `id` (uuid); importing that back could match
     on it directly.
+- **Quick photo point.** At a new place with nothing prepared, field people often just want a
+  "general" point with a photo. Today that takes many presses. Idea: one button (e.g. a camera
+  button on the map) that opens the camera, then creates a new point of the general type at the
+  current GPS position with the photo attached, and opens Rediger so the user only writes a note
+  and presses **Gem**. Open questions: which type (always `generel`, or the last used), and what to
+  do when the GPS accuracy is poor.
 
 **Bugs**
 
